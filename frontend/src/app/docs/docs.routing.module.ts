@@ -12,7 +12,6 @@ if (browserWindowEnv.BASE_MODULE && (browserWindowEnv.BASE_MODULE === 'bisq' || 
   routes = [
     {
       path: '',
-      pathMatch: 'full',
       redirectTo: 'api/rest'
     },
     {
@@ -32,7 +31,6 @@ if (browserWindowEnv.BASE_MODULE && (browserWindowEnv.BASE_MODULE === 'bisq' || 
   routes = [
     {
       path: '',
-      pathMatch: 'full',
       redirectTo: 'faq'
     },
     {

@@ -168,7 +168,7 @@ class Blocks {
       blockExtended.extras.avgFeeRate = stats.avgfeerate;
     }
 
-    if (['mainnet', 'testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
       if (blockExtended.extras?.coinbaseTx !== undefined) {
         pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
@@ -405,7 +405,7 @@ class Blocks {
 
         if (blockHeightTip >= 2016) {
           const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
-          const previousPeriodBlock = await bitcoinApi.$getBlock(previousPeriodBlockHash);
+          const previousPeriodBlock = await bitcoinClient.getBlock(previousPeriodBlockHash)
           this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
           logger.debug(`Initial difficulty adjustment data set.`);
         }
@@ -527,12 +527,14 @@ class Blocks {
       }
     }
 
-    const block = await bitcoinApi.$getBlock(hash);
+    let block = await bitcoinClient.getBlock(hash);
 
     // Not Bitcoin network, return the block as it
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return block;
     }
+
+    block = prepareBlock(block);
 
     // Bitcoin network, add our custom data on top
     const transactions = await this.$getTransactionsExtended(hash, block.height, true);
@@ -577,47 +579,43 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    try {
-      let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
-      const returnBlocks: BlockExtended[] = [];
+    let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
+    const returnBlocks: BlockExtended[] = [];
 
-      if (currentHeight < 0) {
-        return returnBlocks;
-      }
-
-      if (currentHeight === 0 && Common.indexingEnabled()) {
-        currentHeight = await blocksRepository.$mostRecentBlockHeight();
-      }
-
-      // Check if block height exist in local cache to skip the hash lookup
-      const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
-      let startFromHash: string | null = null;
-      if (blockByHeight) {
-        startFromHash = blockByHeight.id;
-      } else if (!Common.indexingEnabled()) {
-        startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
-      }
-
-      let nextHash = startFromHash;
-      for (let i = 0; i < limit && currentHeight >= 0; i++) {
-        let block = this.getBlocks().find((b) => b.height === currentHeight);
-        if (block) {
-          returnBlocks.push(block);
-        } else if (Common.indexingEnabled()) {
-          block = await this.$indexBlock(currentHeight);
-          returnBlocks.push(block);
-        } else if (nextHash != null) {
-          block = prepareBlock(await bitcoinApi.$getBlock(nextHash));
-          nextHash = block.previousblockhash;
-          returnBlocks.push(block);
-        }
-        currentHeight--;
-      }
-
+    if (currentHeight < 0) {
       return returnBlocks;
-    } catch (e) {
-      throw e;
     }
+
+    if (currentHeight === 0 && Common.indexingEnabled()) {
+      currentHeight = await blocksRepository.$mostRecentBlockHeight();
+    }
+
+    // Check if block height exist in local cache to skip the hash lookup
+    const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
+    let startFromHash: string | null = null;
+    if (blockByHeight) {
+      startFromHash = blockByHeight.id;
+    } else if (!Common.indexingEnabled()) {
+      startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
+    }
+
+    let nextHash = startFromHash;
+    for (let i = 0; i < limit && currentHeight >= 0; i++) {
+      let block = this.getBlocks().find((b) => b.height === currentHeight);
+      if (block) {
+        returnBlocks.push(block);
+      } else if (Common.indexingEnabled()) {
+        block = await this.$indexBlock(currentHeight);
+        returnBlocks.push(block);
+      } else if (nextHash != null) {
+        block = prepareBlock(await bitcoinClient.getBlock(nextHash));
+        nextHash = block.previousblockhash;
+        returnBlocks.push(block);
+      }
+      currentHeight--;
+    }
+
+    return returnBlocks;
   }
 
   public getLastDifficultyAdjustmentTime(): number {
