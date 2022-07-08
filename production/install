@@ -1613,7 +1613,10 @@ EOF
     ;;
 esac
 
+##### Build Mempool
 
+echo "[*] Build Mempool"
+osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade"
 
 
 
@@ -1692,8 +1695,21 @@ esac
 
 ##### finish
 
-echo 'Please reboot to start all the services.'
+case $OS in
 
+    FreeBSD)
+    ;;
+
+    Debian)
+        echo "This are the generated Tor addresses:"
+        echo "${NGINX_MEMPOOL_ONION}"
+        echo "${NGINX_BISQ_ONION}"
+        echo "${NGINX_LIQUID_ONION}"
+    ;;
+esac
+
+echo
+echo 'Please reboot to start all the services.'
 echo '[*] Done!'
 
 exit 0
