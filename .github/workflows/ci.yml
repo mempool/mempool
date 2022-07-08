@@ -55,6 +55,7 @@ jobs:
       matrix:
         node: ["16.15.0", "18.5.0"]
         flavor: ["dev", "prod"]
+      fail-fast: false
     runs-on: "ubuntu-latest"
 
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
