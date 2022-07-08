@@ -1,13 +1,13 @@
 [Unit]
-Description=Elementsd
+Description=Elementsd-liquidtestnet
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -chain=liquidtestnet -pid=/elements/elements-testnet.pid
+ExecStart=/usr/local/bin/elementsd -daemon -printtoconsole -chain=liquidtestnet -pid=/elements/elements-liquidtestnet.pid
 ExecStop=/usr/local/bin/elements-cli stop
 
 Type=forking
-PIDFile=/elements/elements-testnet.pid
+PIDFile=/elements/elements-liquidtestnet.pid
 Restart=on-failure
 
 User=elements
