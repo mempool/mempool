@@ -529,7 +529,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled',
+    initialNavigation: 'enabledNonBlocking',
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled',
     preloadingStrategy: PreloadAllModules
