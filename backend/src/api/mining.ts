@@ -189,10 +189,12 @@ class Mining {
     }
 
     try {
+      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.time * 1000;
+
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
-      const genesisTimestamp = 1231006505000; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
-
+ 
       const lastMonday = new Date(now.setDate(now.getDate() - (now.getDay() + 6) % 7));
       const lastMondayMidnight = this.getDateMidnight(lastMonday);
       let toTimestamp = lastMondayMidnight.getTime();
@@ -297,8 +299,9 @@ class Mining {
     }
 
     try {
+      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.time * 1000;
       const indexedTimestamp = (await HashratesRepository.$getNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
-      const genesisTimestamp = (config.MEMPOOL.NETWORK === 'signet') ? 1598918400000 : 1231006505000; // bitcoin-cli getblock 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
       const hashrates: any[] = [];
@@ -368,8 +371,8 @@ class Mining {
         ++totalIndexed;
       }
 
-      // Add genesis block manually on mainnet and testnet
-      if ('signet' !== config.MEMPOOL.NETWORK && toTimestamp <= genesisTimestamp && !indexedTimestamp.includes(genesisTimestamp)) {
+      // Add genesis block manually
+      if (!indexedTimestamp.includes(genesisTimestamp / 1000)) {
         hashrates.push({
           hashrateTimestamp: genesisTimestamp / 1000,
           avgHashrate: await bitcoinClient.getNetworkHashPs(1, 1),
@@ -410,13 +413,17 @@ class Mining {
     let totalIndexed = 0;
 
     if (indexedHeights[0] !== true) {
+      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
       await DifficultyAdjustmentsRepository.$saveAdjustments({
-        time: (config.MEMPOOL.NETWORK === 'signet') ? 1598918400 : 1231006505,
+        time: genesisBlock.time,
         height: 0,
-        difficulty: (config.MEMPOOL.NETWORK === 'signet') ? 0.001126515290698186 : 1.0,
+        difficulty: genesisBlock.difficulty,
         adjustment: 0.0,
       });
     }
+
+    let totalBlockChecked = 0;
+    let timer = new Date().getTime() / 1000;
 
     for (const block of blocks) {
       if (block.difficulty !== currentDifficulty) {
@@ -437,6 +444,14 @@ class Mining {
 
         totalIndexed++;
         currentDifficulty = block.difficulty;
+      }
+
+      totalBlockChecked++;
+      const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+      if (elapsedSeconds > 5) {
+        const progress = Math.round(totalBlockChecked / blocks.length * 100);
+        logger.info(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`);
+        timer = new Date().getTime() / 1000;
       }
     }
 
