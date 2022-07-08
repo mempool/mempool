@@ -647,193 +647,193 @@ ext4CreateDir()
 
 # does bitcoin exist?
 
-##########
-# dialog #
-##########
-
-: ${DIALOG=dialog}
-
-: ${DIALOG_OK=0}
-: ${DIALOG_CANCEL=1}
-: ${DIALOG_HELP=2}
-: ${DIALOG_EXTRA=3}
-: ${DIALOG_ITEM_HELP=4}
-: ${DIALOG_ESC=255}
-
-: ${SIG_OFFNE=0}
-: ${SIG_HUP=1}
-: ${SIG_INT=2}
-: ${SIG_QUIT=3}
-: ${SIG_KILL=9}
-: ${SIG_TERM=15}
-
-input=`tempfile 2>/dev/null` || input=/tmp/input$$
-output=`tempfile 2>/dev/null` || output=/tmp/test$$
-trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_TRAP $SIG_TERM
-
-DIALOG_ERROR=254
-export DIALOG_ERROR
-
-backtitle="Mempool Fullnode Installer"
-title="Mempool Fullnode Installer"
-returncode=0
-
-#################
-# dialog part 1 #
-#################
-
-$CUT >$input <<-EOF
-Tor:Enable Tor v3 HS Onion:ON
-Certbot:Enable HTTPS using Certbot:ON
-Mainnet:Enable Bitcoin Mainnet:ON
-Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
-Testnet:Enable Bitcoin Testnet:ON
-Liquid:Enable Elements Liquid:ON
-Bisq:Enable Bisq:ON
-Lightmode:Enable Electrs Lightmode to save disk space:ON
-Smalldisk:Disable Electrs Compaction to save disk space:ON
-Firewall:Enable Firewall:ON
-EOF
-
-cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
-cat $output >$input
-
-$DIALOG --backtitle "${backtitle}" \
-        --title "${title}" "$@" \
-        --checklist "Toggle the features below to configure your fullnode:\n" \
-        20 80 10 \
-        --file $input 2> $output
-
-retval=$?
-
-tempfile=$output
-if [ $retval != $DIALOG_OK ];then
-    echo "Installation aborted."
-    exit 1
-fi
-
-if grep Tor $tempfile >/dev/null 2>&1;then
-    TOR_INSTALL=ON
-else
-    TOR_INSTALL=OFF
-fi
-
-if grep Certbot $tempfile >/dev/null 2>&1;then
-    CERTBOT_INSTALL=ON
-else
-    CERTBOT_INSTALL=OFF
-fi
-
-if grep Mainnet $tempfile >/dev/null 2>&1;then
-    BITCOIN_MAINNET_ENABLE=ON
-else
-    BITCOIN_MAINNET_ENABLE=OFF
-fi
-
-if grep Mainnet-Minfee $tempfile >/dev/null 2>&1;then
-    BITCOIN_MAINNET_MINFEE_ENABLE=ON
-else
-    BITCOIN_MAINNET_MINFEE_ENABLE=OFF
-fi
-
-if grep Testnet $tempfile >/dev/null 2>&1;then
-    BITCOIN_TESTNET_ENABLE=ON
-else
-    BITCOIN_TESTNET_ENABLE=OFF
-fi
-
-if grep Liquid $tempfile >/dev/null 2>&1;then
-    ELEMENTS_INSTALL=ON
-    ELEMENTS_LIQUID_ENABLE=ON
-else
-    ELEMENTS_INSTALL=OFF
-    ELEMENTS_LIQUID_ENABLE=OFF
-fi
-
-if grep Bisq $tempfile >/dev/null 2>&1;then
-    BISQ_INSTALL=ON
-    BISQ_MAINNET_ENABLE=ON
-else
-    BISQ_INSTALL=OFF
-    BISQ_MAINNET_ENABLE=OFF
-fi
-
-if grep Lightmode $tempfile >/dev/null 2>&1;then
-    BITCOIN_ELECTRS_LIGHT_MODE=ON
-else
-    BITCOIN_ELECTRS_LIGHT_MODE=OFF
-fi
-
-if grep Smalldisk $tempfile >/dev/null 2>&1;then
-    BITCOIN_ELECTRS_LIGHT_MODE=ON
-else
-    BITCOIN_ELECTRS_LIGHT_MODE=OFF
-fi
-
-#################
-# dialog part 2 #
-#################
-
-$DIALOG --cr-wrap \
-        --title "INPUT BOX" --clear \
-        --inputbox "$@" \
-"Enter the FQDN hostname for obtaining an SSL certificate using Certbot:" 0 0 "${HOSTNAME}" 2> $tempfile
-HOSTNAME=$(cat $tempfile)
-
-#################
-# dialog part 3 #
-#################
-
-#   --form text height width formheight
-#   [ label y x item y x flen ilen ]
-    #"BISQ_BLOCKNOTIFY_HOST"             0 1 "${BISQ_BLOCKNOTIFY_HOST}"              0 30 0 0 \
-
-$DIALOG --ok-label "Submit" \
-    --backtitle "$backtitle" "$@" \
-    --form "Your fullnode will be installed as follows:" 0 0 0 \
-    "BISQ_LATEST_RELEASE"               1 1 "${BISQ_LATEST_RELEASE}"                1 35 35 0 \
-    "BISQ_REPO_BRANCH"                  2 1 "${BISQ_REPO_BRANCH}"                   2 35 35 0 \
-    "BISQ_REPO_NAME"                    3 1 "${BISQ_REPO_NAME}"                     3 35 35 0 \
-    "BISQ_REPO_URL"                     4 1 "${BISQ_REPO_URL}"                      4 35 35 0 \
-    "BITCOIN_ELECTRS_LATEST_RELEASE"    5 1 "${BITCOIN_ELECTRS_LATEST_RELEASE}"    5 35 35 0 \
-    "BITCOIN_ELECTRS_LIGHT_MODE"        6 1 "${BITCOIN_ELECTRS_LIGHT_MODE}"        6 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_BRANCH"       7 1 "${BITCOIN_ELECTRS_REPO_BRANCH}"       7 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_NAME"         8 1 "${BITCOIN_ELECTRS_REPO_NAME}"         8 35 35 0 \
-    "BITCOIN_ELECTRS_REPO_URL"          9 1 "${BITCOIN_ELECTRS_REPO_URL}"          9 35 35 0 \
-    "BITCOIN_LATEST_RELEASE"            10 1 "${BITCOIN_LATEST_RELEASE}"            10 35 35 0 \
-    "BITCOIN_MAINNET_ENABLE"            11 1 "${BITCOIN_MAINNET_ENABLE}"            11 35 35 0 \
-    "BITCOIN_REPO_BRANCH"               12 1 "${BITCOIN_REPO_BRANCH}"               12 35 35 0 \
-    "BITCOIN_REPO_NAME"                 13 1 "${BITCOIN_REPO_NAME}"                 13 35 35 0 \
-    "BITCOIN_REPO_URL"                  14 1 "${BITCOIN_REPO_URL}"                  14 35 35 0 \
-    "BITCOIN_TESTNET_ENABLE"            15 1 "${BITCOIN_TESTNET_ENABLE}"            15 35 35 0 \
-    "ELEMENTS_INSTALL"                  16 1 "${ELEMENTS_INSTALL}"                  16 35 35 0 \
-    "ELEMENTS_LATEST_RELEASE"           17 1 "${ELEMENTS_LATEST_RELEASE}"           17 35 35 0 \
-    "ELEMENTS_LIQUID_ENABLE"            18 1 "${ELEMENTS_LIQUID_ENABLE}"            18 35 35 0 \
-    "ELEMENTS_REPO_BRANCH"              19 1 "${ELEMENTS_REPO_BRANCH}"              19 35 35 0 \
-    "ELEMENTS_REPO_NAME"                20 1 "${ELEMENTS_REPO_NAME}"                20 35 35 0 \
-    "ELEMENTS_REPO_URL"                 21 1 "${ELEMENTS_REPO_URL}"                 21 35 35 0 \
-    "MEMPOOL_LATEST_RELEASE"            22 1 "${MEMPOOL_LATEST_RELEASE}"            22 35 35 0 \
-    "MEMPOOL_LIQUID_HTTP_HOST"          23 1 "${MEMPOOL_LIQUID_HTTP_HOST}"          23 35 35 0 \
-    "MEMPOOL_LIQUID_HTTP_PORT"          24 1 "${MEMPOOL_LIQUID_HTTP_PORT}"          24 35 35 0 \
-    "MEMPOOL_MAINNET_HTTP_HOST"         25 1 "${MEMPOOL_MAINNET_HTTP_HOST}"         25 35 35 0 \
-    "MEMPOOL_MAINNET_HTTP_PORT"         26 1 "${MEMPOOL_MAINNET_HTTP_PORT}"         26 35 35 0 \
-    "MEMPOOL_REPO_BRANCH"               27 1 "${MEMPOOL_REPO_BRANCH}"               27 35 35 0 \
-    "MEMPOOL_REPO_NAME"                 28 1 "${MEMPOOL_REPO_NAME}"                 28 35 35 0 \
-    "MEMPOOL_REPO_URL"                  29 1 "${MEMPOOL_REPO_URL}"                  29 35 35 0 \
-    "MEMPOOL_TESTNET_HTTP_HOST"         30 1 "${MEMPOOL_TESTNET_HTTP_HOST}"         30 35 35 0 \
-    "MEMPOOL_TESTNET_HTTP_PORT"         31 1 "${MEMPOOL_TESTNET_HTTP_PORT}"         31 35 35 0 \
-    "MEMPOOL_TOR_HS"                    32 1 "${MEMPOOL_TOR_HS}"                    32 35 35 0 \
-    "HOSTNAME"                          33 1 "${HOSTNAME}"                          33 35 35 0 \
-    "TOR_INSTALL"                       34 1 "${TOR_INSTALL}"                       34 35 35 0 \
-    "CERTBOT_INSTALL"                   35 1 "${CERTBOT_INSTALL}"                   35 35 35 0 \
-2> $tempfile
-
-retval=$?
-
-if [ $retval != $DIALOG_OK ];then
-    echo "Installation aborted."
-    exit 1
-fi
+###########
+## dialog #
+###########
+#
+#: ${DIALOG=dialog}
+#
+#: ${DIALOG_OK=0}
+#: ${DIALOG_CANCEL=1}
+#: ${DIALOG_HELP=2}
+#: ${DIALOG_EXTRA=3}
+#: ${DIALOG_ITEM_HELP=4}
+#: ${DIALOG_ESC=255}
+#
+#: ${SIG_OFFNE=0}
+#: ${SIG_HUP=1}
+#: ${SIG_INT=2}
+#: ${SIG_QUIT=3}
+#: ${SIG_KILL=9}
+#: ${SIG_TERM=15}
+#
+#input=`tempfile 2>/dev/null` || input=/tmp/input$$
+#output=`tempfile 2>/dev/null` || output=/tmp/test$$
+#trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_TRAP $SIG_TERM
+#
+#DIALOG_ERROR=254
+#export DIALOG_ERROR
+#
+#backtitle="Mempool Fullnode Installer"
+#title="Mempool Fullnode Installer"
+#returncode=0
+#
+##################
+## dialog part 1 #
+##################
+#
+#$CUT >$input <<-EOF
+#Tor:Enable Tor v3 HS Onion:ON
+#Certbot:Enable HTTPS using Certbot:ON
+#Mainnet:Enable Bitcoin Mainnet:ON
+#Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
+#Testnet:Enable Bitcoin Testnet:ON
+#Liquid:Enable Elements Liquid:ON
+#Bisq:Enable Bisq:ON
+#Lightmode:Enable Electrs Lightmode to save disk space:ON
+#Smalldisk:Disable Electrs Compaction to save disk space:ON
+#Firewall:Enable Firewall:ON
+#EOF
+#
+#cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
+#cat $output >$input
+#
+#$DIALOG --backtitle "${backtitle}" \
+#        --title "${title}" "$@" \
+#        --checklist "Toggle the features below to configure your fullnode:\n" \
+#        20 80 10 \
+#        --file $input 2> $output
+#
+#retval=$?
+#
+#tempfile=$output
+#if [ $retval != $DIALOG_OK ];then
+#    echo "Installation aborted."
+#    exit 1
+#fi
+#
+#if grep Tor $tempfile >/dev/null 2>&1;then
+#    TOR_INSTALL=ON
+#else
+#    TOR_INSTALL=OFF
+#fi
+#
+#if grep Certbot $tempfile >/dev/null 2>&1;then
+#    CERTBOT_INSTALL=ON
+#else
+#    CERTBOT_INSTALL=OFF
+#fi
+#
+#if grep Mainnet $tempfile >/dev/null 2>&1;then
+#    BITCOIN_MAINNET_ENABLE=ON
+#else
+#    BITCOIN_MAINNET_ENABLE=OFF
+#fi
+#
+#if grep Mainnet-Minfee $tempfile >/dev/null 2>&1;then
+#    BITCOIN_MAINNET_MINFEE_ENABLE=ON
+#else
+#    BITCOIN_MAINNET_MINFEE_ENABLE=OFF
+#fi
+#
+#if grep Testnet $tempfile >/dev/null 2>&1;then
+#    BITCOIN_TESTNET_ENABLE=ON
+#else
+#    BITCOIN_TESTNET_ENABLE=OFF
+#fi
+#
+#if grep Liquid $tempfile >/dev/null 2>&1;then
+#    ELEMENTS_INSTALL=ON
+#    ELEMENTS_LIQUID_ENABLE=ON
+#else
+#    ELEMENTS_INSTALL=OFF
+#    ELEMENTS_LIQUID_ENABLE=OFF
+#fi
+#
+#if grep Bisq $tempfile >/dev/null 2>&1;then
+#    BISQ_INSTALL=ON
+#    BISQ_MAINNET_ENABLE=ON
+#else
+#    BISQ_INSTALL=OFF
+#    BISQ_MAINNET_ENABLE=OFF
+#fi
+#
+#if grep Lightmode $tempfile >/dev/null 2>&1;then
+#    BITCOIN_ELECTRS_LIGHT_MODE=ON
+#else
+#    BITCOIN_ELECTRS_LIGHT_MODE=OFF
+#fi
+#
+#if grep Smalldisk $tempfile >/dev/null 2>&1;then
+#    BITCOIN_ELECTRS_LIGHT_MODE=ON
+#else
+#    BITCOIN_ELECTRS_LIGHT_MODE=OFF
+#fi
+#
+##################
+## dialog part 2 #
+##################
+#
+#$DIALOG --cr-wrap \
+#        --title "INPUT BOX" --clear \
+#        --inputbox "$@" \
+#"Enter the FQDN hostname for obtaining an SSL certificate using Certbot:" 0 0 "${HOSTNAME}" 2> $tempfile
+#HOSTNAME=$(cat $tempfile)
+#
+##################
+## dialog part 3 #
+##################
+#
+##   --form text height width formheight
+##   [ label y x item y x flen ilen ]
+#    #"BISQ_BLOCKNOTIFY_HOST"             0 1 "${BISQ_BLOCKNOTIFY_HOST}"              0 30 0 0 \
+#
+#$DIALOG --ok-label "Submit" \
+#    --backtitle "$backtitle" "$@" \
+#    --form "Your fullnode will be installed as follows:" 0 0 0 \
+#    "BISQ_LATEST_RELEASE"               1 1 "${BISQ_LATEST_RELEASE}"                1 35 35 0 \
+#    "BISQ_REPO_BRANCH"                  2 1 "${BISQ_REPO_BRANCH}"                   2 35 35 0 \
+#    "BISQ_REPO_NAME"                    3 1 "${BISQ_REPO_NAME}"                     3 35 35 0 \
+#    "BISQ_REPO_URL"                     4 1 "${BISQ_REPO_URL}"                      4 35 35 0 \
+#    "BITCOIN_ELECTRS_LATEST_RELEASE"    5 1 "${BITCOIN_ELECTRS_LATEST_RELEASE}"    5 35 35 0 \
+#    "BITCOIN_ELECTRS_LIGHT_MODE"        6 1 "${BITCOIN_ELECTRS_LIGHT_MODE}"        6 35 35 0 \
+#    "BITCOIN_ELECTRS_REPO_BRANCH"       7 1 "${BITCOIN_ELECTRS_REPO_BRANCH}"       7 35 35 0 \
+#    "BITCOIN_ELECTRS_REPO_NAME"         8 1 "${BITCOIN_ELECTRS_REPO_NAME}"         8 35 35 0 \
+#    "BITCOIN_ELECTRS_REPO_URL"          9 1 "${BITCOIN_ELECTRS_REPO_URL}"          9 35 35 0 \
+#    "BITCOIN_LATEST_RELEASE"            10 1 "${BITCOIN_LATEST_RELEASE}"            10 35 35 0 \
+#    "BITCOIN_MAINNET_ENABLE"            11 1 "${BITCOIN_MAINNET_ENABLE}"            11 35 35 0 \
+#    "BITCOIN_REPO_BRANCH"               12 1 "${BITCOIN_REPO_BRANCH}"               12 35 35 0 \
+#    "BITCOIN_REPO_NAME"                 13 1 "${BITCOIN_REPO_NAME}"                 13 35 35 0 \
+#    "BITCOIN_REPO_URL"                  14 1 "${BITCOIN_REPO_URL}"                  14 35 35 0 \
+#    "BITCOIN_TESTNET_ENABLE"            15 1 "${BITCOIN_TESTNET_ENABLE}"            15 35 35 0 \
+#    "ELEMENTS_INSTALL"                  16 1 "${ELEMENTS_INSTALL}"                  16 35 35 0 \
+#    "ELEMENTS_LATEST_RELEASE"           17 1 "${ELEMENTS_LATEST_RELEASE}"           17 35 35 0 \
+#    "ELEMENTS_LIQUID_ENABLE"            18 1 "${ELEMENTS_LIQUID_ENABLE}"            18 35 35 0 \
+#    "ELEMENTS_REPO_BRANCH"              19 1 "${ELEMENTS_REPO_BRANCH}"              19 35 35 0 \
+#    "ELEMENTS_REPO_NAME"                20 1 "${ELEMENTS_REPO_NAME}"                20 35 35 0 \
+#    "ELEMENTS_REPO_URL"                 21 1 "${ELEMENTS_REPO_URL}"                 21 35 35 0 \
+#    "MEMPOOL_LATEST_RELEASE"            22 1 "${MEMPOOL_LATEST_RELEASE}"            22 35 35 0 \
+#    "MEMPOOL_LIQUID_HTTP_HOST"          23 1 "${MEMPOOL_LIQUID_HTTP_HOST}"          23 35 35 0 \
+#    "MEMPOOL_LIQUID_HTTP_PORT"          24 1 "${MEMPOOL_LIQUID_HTTP_PORT}"          24 35 35 0 \
+#    "MEMPOOL_MAINNET_HTTP_HOST"         25 1 "${MEMPOOL_MAINNET_HTTP_HOST}"         25 35 35 0 \
+#    "MEMPOOL_MAINNET_HTTP_PORT"         26 1 "${MEMPOOL_MAINNET_HTTP_PORT}"         26 35 35 0 \
+#    "MEMPOOL_REPO_BRANCH"               27 1 "${MEMPOOL_REPO_BRANCH}"               27 35 35 0 \
+#    "MEMPOOL_REPO_NAME"                 28 1 "${MEMPOOL_REPO_NAME}"                 28 35 35 0 \
+#    "MEMPOOL_REPO_URL"                  29 1 "${MEMPOOL_REPO_URL}"                  29 35 35 0 \
+#    "MEMPOOL_TESTNET_HTTP_HOST"         30 1 "${MEMPOOL_TESTNET_HTTP_HOST}"         30 35 35 0 \
+#    "MEMPOOL_TESTNET_HTTP_PORT"         31 1 "${MEMPOOL_TESTNET_HTTP_PORT}"         31 35 35 0 \
+#    "MEMPOOL_TOR_HS"                    32 1 "${MEMPOOL_TOR_HS}"                    32 35 35 0 \
+#    "HOSTNAME"                          33 1 "${HOSTNAME}"                          33 35 35 0 \
+#    "TOR_INSTALL"                       34 1 "${TOR_INSTALL}"                       34 35 35 0 \
+#    "CERTBOT_INSTALL"                   35 1 "${CERTBOT_INSTALL}"                   35 35 35 0 \
+#2> $tempfile
+#
+#retval=$?
+#
+#if [ $retval != $DIALOG_OK ];then
+#    echo "Installation aborted."
+#    exit 1
+#fi
 
 ############################
 # START DOING ACTUAL STUFF #
@@ -841,8 +841,6 @@ fi
 
 date
 echo "[*] Mempool installation script for ${OS}"
-
-set -x
 
 ###################################
 # create filesystems if necessary #
