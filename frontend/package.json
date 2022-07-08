@@ -104,7 +104,7 @@
     "@angular/language-service": "~13.3.10",
     "@nguniversal/builders": "~13.1.1",
     "@types/express": "^4.17.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint": "^8.19.0",
