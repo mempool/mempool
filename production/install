@@ -905,7 +905,7 @@ echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v16.15.0'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v16.16.0 --shared-zlib'
 
 ####################
 # Tor installation #
