@@ -734,7 +734,7 @@ class Routes {
 
   public async $getDifficultyAdjustments(req: Request, res: Response) {
     try {
-      const difficulty = await DifficultyAdjustmentsRepository.$getAdjustments(req.params.interval, true);
+      const difficulty = await DifficultyAdjustmentsRepository.$getRawAdjustments(req.params.interval, true);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
