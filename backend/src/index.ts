@@ -35,6 +35,8 @@ import miningRoutes from "./api/mining/mining-routes";
 import bisqRoutes from "./api/bisq/bisq.routes";
 import liquidRoutes from "./api/liquid/liquid.routes";
 import bitcoinRoutes from "./api/bitcoin/bitcoin.routes";
+import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
+import mining from "./api/mining";
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -166,7 +168,7 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
-      priceUpdater.$run();
+      priceUpdater.$run().then(mining.$indexBlockPrices.bind(this));
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;

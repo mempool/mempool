@@ -11,8 +11,11 @@ import indexer from '../../indexer';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
+import PricesRepository from '../repositories/PricesRepository';
 
 class Mining {
+  blocksPriceIndexingRunning = false;
+
   constructor() {
   }
 
@@ -451,6 +454,70 @@ class Mining {
     } else {
       logger.debug(`Indexed ${totalIndexed} difficulty adjustments`);
     }
+  }
+
+  /**
+   * Create a link between blocks and the latest price at when they were mined
+   */
+  public async $indexBlockPrices() {
+    if (this.blocksPriceIndexingRunning === true) {
+      return;
+    }
+    this.blocksPriceIndexingRunning = true;
+
+    try {
+      const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
+      const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
+
+      let totalInserted = 0;
+      const blocksPrices: BlockPrice[] = [];
+
+      for (const block of blocksWithoutPrices) {
+        // Quick optimisation, out mtgox feed only goes back to 2010-07-19 02:00:00, so skip the first 68951 blocks
+        if (block.height < 68951) {
+          blocksPrices.push({
+            height: block.height,
+            priceId: prices[0].id,
+          });
+          continue;
+        }
+        for (const price of prices) {
+          if (block.timestamp < price.time) {
+            blocksPrices.push({
+              height: block.height,
+              priceId: price.id,
+            });
+            break;
+          };
+        }
+
+        if (blocksPrices.length >= 100000) {
+          totalInserted += blocksPrices.length;
+          if (blocksWithoutPrices.length > 200000) {
+            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
+          } else {
+            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+          }
+          await BlocksRepository.$saveBlockPrices(blocksPrices);
+          blocksPrices.length = 0;
+        }
+      }
+
+      if (blocksPrices.length > 0) {
+        totalInserted += blocksPrices.length;
+        if (blocksWithoutPrices.length > 200000) {
+          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
+        } else {
+          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+        }
+        await BlocksRepository.$saveBlockPrices(blocksPrices);
+      }
+    } catch (e) {
+      this.blocksPriceIndexingRunning = false;
+      throw e;
+    }
+
+    this.blocksPriceIndexingRunning = false;
   }
 
   private getDateMidnight(date: Date): Date {
