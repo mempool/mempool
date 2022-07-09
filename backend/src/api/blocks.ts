@@ -579,15 +579,11 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
+    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
     const returnBlocks: BlockExtended[] = [];
 
     if (currentHeight < 0) {
       return returnBlocks;
-    }
-
-    if (currentHeight === 0 && Common.indexingEnabled()) {
-      currentHeight = await blocksRepository.$mostRecentBlockHeight();
     }
 
     // Check if block height exist in local cache to skip the hash lookup
