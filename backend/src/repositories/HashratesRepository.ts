@@ -1,6 +1,5 @@
 import { escape } from 'mysql2';
 import { Common } from '../api/common';
-import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import PoolsRepository from './PoolsRepository';

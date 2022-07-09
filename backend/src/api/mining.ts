@@ -223,25 +223,27 @@ class Mining {
 
         let pools = await PoolsRepository.$getPoolsInfoBetween(fromTimestamp / 1000, toTimestamp / 1000);
         const totalBlocks = pools.reduce((acc, pool) => acc + pool.blockCount, 0);
-        pools = pools.map((pool: any) => {
-          pool.hashrate = (pool.blockCount / totalBlocks) * lastBlockHashrate;
-          pool.share = (pool.blockCount / totalBlocks);
-          return pool;
-        });
-
-        for (const pool of pools) {
-          hashrates.push({
-            hashrateTimestamp: toTimestamp / 1000,
-            avgHashrate: pool['hashrate'],
-            poolId: pool.poolId,
-            share: pool['share'],
-            type: 'weekly',
+        if (totalBlocks > 0) {
+          pools = pools.map((pool: any) => {
+            pool.hashrate = (pool.blockCount / totalBlocks) * lastBlockHashrate;
+            pool.share = (pool.blockCount / totalBlocks);
+            return pool;
           });
-        }
 
-        newlyIndexed += hashrates.length;
-        await HashratesRepository.$saveHashrates(hashrates);
-        hashrates.length = 0;
+          for (const pool of pools) {
+            hashrates.push({
+              hashrateTimestamp: toTimestamp / 1000,
+              avgHashrate: pool['hashrate'] ,
+              poolId: pool.poolId,
+              share: pool['share'],
+              type: 'weekly',
+            });
+          }
+
+          newlyIndexed += hashrates.length;
+          await HashratesRepository.$saveHashrates(hashrates);
+          hashrates.length = 0;
+        }
 
         const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
         if (elapsedSeconds > 1) {
