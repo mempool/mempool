@@ -121,6 +121,11 @@ export interface BlockSummary {
   transactions: TransactionStripped[];
 }
 
+export interface BlockPrice {
+  height: number;
+  priceId: number;
+}
+
 export interface TransactionMinerInfo {
   vin: VinStrippedToScriptsig[];
   vout: VoutStrippedToScriptPubkey[];

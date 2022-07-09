@@ -1,4 +1,4 @@
-import { BlockExtended } from '../mempool.interfaces';
+import { BlockExtended, BlockPrice } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -275,9 +275,7 @@ class BlocksRepository {
       previous_block_hash as previousblockhash,
       avg_fee,
       avg_fee_rate,
-      IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
       FROM blocks
-      LEFT JOIN rates on rates.height = blocks.height
       WHERE pool_id = ?`;
     params.push(pool.id);
 
@@ -335,12 +333,10 @@ class BlocksRepository {
         merkle_root,
         previous_block_hash as previousblockhash,
         avg_fee,
-        avg_fee_rate,
-        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
+        avg_fee_rate
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        LEFT JOIN rates on rates.height = blocks.height
-        WHERE blocks.height = ${height};
+        WHERE blocks.height = ${height}
       `);
 
       if (rows.length <= 0) {
@@ -365,10 +361,8 @@ class BlocksRepository {
         pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
         previous_block_hash as previousblockhash,
-        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        LEFT JOIN rates on rates.height = blocks.height
         WHERE hash = '${hash}';
       `;
       const [rows]: any[] = await DB.query(query);
@@ -393,7 +387,20 @@ class BlocksRepository {
       const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty FROM blocks`);
       return rows;
     } catch (e) {
-      logger.err('Cannot generate difficulty history. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get blocks difficulty list from the db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Return blocks height
+   */
+   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -481,10 +488,9 @@ class BlocksRepository {
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees,
-        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
+        CAST(AVG(fees) as INT) as avgFees
         FROM blocks
-        LEFT JOIN rates on rates.height = blocks.height`;
+      `;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
@@ -508,10 +514,9 @@ class BlocksRepository {
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards,
-        IFNULL(JSON_EXTRACT(rates.bisq_rates, '$.USD'), null) as usd
+        CAST(AVG(reward) as INT) as avgRewards
         FROM blocks
-        LEFT JOIN rates on rates.height = blocks.height`;
+      `;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
@@ -636,6 +641,62 @@ class BlocksRepository {
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
+    }
+  }
+
+  /**
+   * Get all blocks which have not be linked to a price yet
+   */
+   public async $getBlocksWithoutPrice(): Promise<object[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
+        FROM blocks
+        LEFT JOIN blocks_prices ON blocks.height = blocks_prices.height
+        WHERE blocks_prices.height IS NULL
+        ORDER BY blocks.height
+      `);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Save block price
+   */
+   public async $saveBlockPrice(blockPrice: BlockPrice): Promise<void> {
+    try {
+      await DB.query(`INSERT INTO blocks_prices(height, price_id) VALUE (?, ?)`, [blockPrice.height, blockPrice.priceId]);
+    } catch (e: any) {
+      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
+        logger.debug(`Cannot save block price for block ${blockPrice.height} because it has already been indexed, ignoring`);
+      } else {
+        logger.err(`Cannot save block price into db. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Save block price by batch
+   */
+   public async $saveBlockPrices(blockPrices: BlockPrice[]): Promise<void> {
+    try {
+      let query = `INSERT INTO blocks_prices(height, price_id) VALUES`;
+      for (const price of blockPrices) {
+        query += ` (${price.height}, ${price.priceId}),`
+      }
+      query = query.slice(0, -1);
+      await DB.query(query);
+    } catch (e: any) {
+      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
+        logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
+      } else {
+        logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
     }
   }
 }

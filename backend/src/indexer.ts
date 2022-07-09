@@ -48,7 +48,7 @@ class Indexer {
       }
 
       await mining.$indexDifficultyAdjustments();
-      await this.$resetHashratesIndexingState();
+      await this.$resetHashratesIndexingState(); // TODO - Remove this as it's not efficient
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
