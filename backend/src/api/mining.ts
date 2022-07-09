@@ -184,6 +184,8 @@ class Mining {
     }
 
     try {
+      const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlockTimestamp());
+
       const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
       const genesisTimestamp = genesisBlock.time * 1000;
 
@@ -204,7 +206,7 @@ class Mining {
       logger.debug(`Indexing weekly mining pool hashrate`);
       loadingIndicators.setProgress('weekly-hashrate-indexing', 0);
 
-      while (toTimestamp > genesisTimestamp) {
+      while (toTimestamp > genesisTimestamp && toTimestamp > oldestConsecutiveBlockTimestamp) {
         const fromTimestamp = toTimestamp - 604800000;
 
         // Skip already indexed weeks
@@ -212,14 +214,6 @@ class Mining {
           toTimestamp -= 604800000;
           ++totalIndexed;
           continue;
-        }
-
-        // Check if we have blocks for the previous week (which mean that the week
-        // we are currently indexing has complete data)
-        const blockStatsPreviousWeek: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, (fromTimestamp - 604800000) / 1000, (toTimestamp - 604800000) / 1000);
-        if (blockStatsPreviousWeek.blockCount === 0) { // We are done indexing
-          break;
         }
 
         const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
@@ -289,6 +283,8 @@ class Mining {
       return;
     }
 
+    const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlockTimestamp());
+
     try {
       const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
       const genesisTimestamp = genesisBlock.time * 1000;
@@ -307,7 +303,7 @@ class Mining {
       logger.debug(`Indexing daily network hashrate`);
       loadingIndicators.setProgress('daily-hashrate-indexing', 0);
 
-      while (toTimestamp > genesisTimestamp) {
+      while (toTimestamp > genesisTimestamp && toTimestamp > oldestConsecutiveBlockTimestamp) {
         const fromTimestamp = toTimestamp - 86400000;
 
         // Skip already indexed days
@@ -317,17 +313,9 @@ class Mining {
           continue;
         }
 
-        // Check if we have blocks for the previous day (which mean that the day
-        // we are currently indexing has complete data)
-        const blockStatsPreviousDay: any = await BlocksRepository.$blockCountBetweenTimestamp(
-          null, (fromTimestamp - 86400000) / 1000, (toTimestamp - 86400000) / 1000);
-        if (blockStatsPreviousDay.blockCount === 0 && config.MEMPOOL.NETWORK === 'mainnet') { // We are done indexing
-          break;
-        }
-
         const blockStats: any = await BlocksRepository.$blockCountBetweenTimestamp(
           null, fromTimestamp / 1000, toTimestamp / 1000);
-        const lastBlockHashrate = await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
+        const lastBlockHashrate = blockStats.blockCount === 0 ? 0 : await bitcoinClient.getNetworkHashPs(blockStats.blockCount,
           blockStats.lastBlockHeight);
 
         hashrates.push({
@@ -363,7 +351,7 @@ class Mining {
       }
 
       // Add genesis block manually
-      if (!indexedTimestamp.includes(genesisTimestamp / 1000)) {
+      if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && !indexedTimestamp.includes(genesisTimestamp / 1000)) {
         hashrates.push({
           hashrateTimestamp: genesisTimestamp / 1000,
           avgHashrate: await bitcoinClient.getNetworkHashPs(1, 1),
