@@ -183,6 +183,9 @@ case $OS in
         TOR_PKG=tor
         TOR_USER=_tor
         TOR_GROUP=_tor
+        NGINX_USER=www
+        NGINX_ETC_FOLDER=/usr/local/etc/nginx
+        NGINX_CONFIGURATION=/usr/local/etc/nginx/nginx.conf
         CERTBOT_PKG=py39-certbot
     ;;
 
@@ -197,6 +200,7 @@ case $OS in
         TOR_USER=debian-tor
         TOR_GROUP=debian-tor
         CERTBOT_PKG=python3-certbot-nginx
+        NGINX_USER=www-data
         NGINX_ETC_FOLDER=/etc/nginx
         NGINX_CONFIGURATION=/etc/nginx/nginx.conf
     ;;
@@ -1534,26 +1538,17 @@ NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
 NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
 
 echo "[*] Adding Nginx configuration"
-case $OS in
-
-    FreeBSD)
-        echo "[*] FIXME: nginx must be configured manually on FreeBSD"
-    ;;
-
-    Debian)
-        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-        mkdir -p /var/cache/nginx/services /var/cache/nginx/api
-        chown www-data: /var/cache/nginx/services /var/cache/nginx/api
-        ln -s /mempool/mempool /etc/nginx/mempool
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!www-data!" "${NGINX_CONFIGURATION}"
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-        echo "[*] Restarting Nginx"
-        osSudo "${ROOT_USER}" service nginx restart
-    ;;
-esac
+osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
+mkdir -p /var/cache/nginx/services /var/cache/nginx/api
+chown ${NGINX_USER}: /var/cache/nginx/services /var/cache/nginx/api
+ln -s /mempool/mempool /etc/nginx/mempool
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+echo "[*] Restarting Nginx"
+osSudo "${ROOT_USER}" service nginx restart
 
 ##### OS systemd
 
