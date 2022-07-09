@@ -30,6 +30,32 @@ class HashratesRepository {
     }
   }
 
+  public async $getRawNetworkDailyHashrate(interval: string | null): Promise<any[]> {
+    interval = Common.getSqlInterval(interval);
+
+    let query = `SELECT
+      UNIX_TIMESTAMP(hashrate_timestamp) as timestamp,
+      avg_hashrate as avgHashrate
+      FROM hashrates`;
+
+    if (interval) {
+      query += ` WHERE hashrate_timestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()
+        AND hashrates.type = 'daily'`;
+    } else {
+      query += ` WHERE hashrates.type = 'daily'`;
+    }
+
+    query += ` ORDER by hashrate_timestamp`;
+
+    try {
+      const [rows]: any[] = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getNetworkDailyHashrate(interval: string | null): Promise<any[]> {
     interval = Common.getSqlInterval(interval);
 

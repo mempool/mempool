@@ -173,19 +173,14 @@ class Mining {
    */
   public async $generatePoolHashrateHistory(): Promise<void> {
     const now = new Date();
+    const lastestRunDate = await HashratesRepository.$getLatestRun('last_weekly_hashrates_indexing');
 
-    try {
-      const lastestRunDate = await HashratesRepository.$getLatestRun('last_weekly_hashrates_indexing');
-
-      // Run only if:
-      // * lastestRunDate is set to 0 (node backend restart, reorg)
-      // * we started a new week (around Monday midnight)
-      const runIndexing = lastestRunDate === 0 || now.getUTCDay() === 1 && lastestRunDate !== now.getUTCDate();
-      if (!runIndexing) {
-        return;
-      }
-    } catch (e) {
-      throw e;
+    // Run only if:
+    // * lastestRunDate is set to 0 (node backend restart, reorg)
+    // * we started a new week (around Monday midnight)
+    const runIndexing = lastestRunDate === 0 || now.getUTCDay() === 1 && lastestRunDate !== now.getUTCDate();
+    if (!runIndexing) {
+      return;
     }
 
     try {
@@ -287,21 +282,17 @@ class Mining {
    * [INDEXING] Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
-    try {
-      // We only run this once a day around midnight
-      const latestRunDate = await HashratesRepository.$getLatestRun('last_hashrates_indexing');
-      const now = new Date().getUTCDate();
-      if (now === latestRunDate) {
-        return;
-      }
-    } catch (e) {
-      throw e;
+    // We only run this once a day around midnight
+    const latestRunDate = await HashratesRepository.$getLatestRun('last_hashrates_indexing');
+    const now = new Date().getUTCDate();
+    if (now === latestRunDate) {
+      return;
     }
 
     try {
       const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
       const genesisTimestamp = genesisBlock.time * 1000;
-      const indexedTimestamp = (await HashratesRepository.$getNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
+      const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
       const hashrates: any[] = [];
