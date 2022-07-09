@@ -6,7 +6,7 @@ import channelsApi from '../../api/explorer/channels.api';
 import * as net from 'net';
 
 class LightningStatsUpdater {
-  constructor() {}
+  hardCodedStartTime = '2018-01-12';
 
   public async $startService() {
     logger.info('Starting Lightning Stats service');
@@ -47,7 +47,8 @@ class LightningStatsUpdater {
   }
 
   private async $runTasks() {
-    await this.$populateHistoricalData();
+    await this.$populateHistoricalStatistics();
+    await this.$populateHistoricalNodeStatistics();
     await this.$logLightningStatsDaily();
     await this.$logNodeStatsDaily();
   }
@@ -85,11 +86,10 @@ class LightningStatsUpdater {
   }
 
   // We only run this on first launch
-  private async $populateHistoricalData() {
-    const startTime = '2018-01-13';
+  private async $populateHistoricalStatistics() {
     try {
       const [rows]: any = await DB.query(`SELECT COUNT(*) FROM lightning_stats`);
-      // Only store once per day
+      // Only run if table is empty
       if (rows[0]['COUNT(*)'] > 0) {
         return;
       }
@@ -97,10 +97,11 @@ class LightningStatsUpdater {
 
       const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels ORDER BY created ASC`);
 
-      let date: Date = new Date(startTime);
+      let date: Date = new Date(this.hardCodedStartTime);
       const currentDate = new Date();
 
       while (date < currentDate) {
+        date.setUTCDate(date.getUTCDate() + 1);
         let totalCapacity = 0;
         let channelsCount = 0;
         for (const channel of channels) {
@@ -140,9 +141,10 @@ class LightningStatsUpdater {
       }
 
       const [nodes]: any = await DB.query(`SELECT first_seen, sockets FROM nodes ORDER BY first_seen ASC`);
-      date = new Date(startTime);
+      date = new Date(this.hardCodedStartTime);
 
       while (date < currentDate) {
+        date.setUTCDate(date.getUTCDate() + 1);
         let nodeCount = 0;
         let clearnetNodes = 0;
         let torNodes = 0;
@@ -181,14 +183,76 @@ class LightningStatsUpdater {
           unannouncedNodes,
           date.getTime() / 1000,
         ]);
-
-        // Add one day and continue
-        date.setDate(date.getDate() + 1);
       }
 
       logger.info('Historical stats populated.');
     } catch (e) {
       logger.err('$populateHistoricalData() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private async $populateHistoricalNodeStatistics() {
+    try {
+      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM node_stats`);
+      // Only run if table is empty
+      if (rows[0]['COUNT(*)'] > 0) {
+        return;
+      }
+      logger.info(`Running historical node stats population...`);
+
+      const [nodes]: any = await DB.query(`SELECT public_key, first_seen, alias FROM nodes ORDER BY first_seen ASC`);
+
+      for (const node of nodes) {
+        const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels WHERE node1_public_key = ? OR node2_public_key = ? ORDER BY created ASC`, [node.public_key, node.public_key]);
+        
+        let date: Date = new Date(this.hardCodedStartTime);
+        const currentDate = new Date();
+
+        let lastTotalCapacity = 0;
+        let lastChannelsCount = 0;
+
+        while (date < currentDate) {
+          date.setUTCDate(date.getUTCDate() + 1);
+          let totalCapacity = 0;
+          let channelsCount = 0;
+          for (const channel of channels) {
+            if (new Date(channel.created) > date) {
+              break;
+            }
+            if (channel.closing_date !== null && new Date(channel.closing_date) < date) {
+              continue;
+            }
+            totalCapacity += channel.capacity;
+            channelsCount++;
+          }
+
+          if (lastTotalCapacity === totalCapacity && lastChannelsCount === channelsCount) {
+            continue;
+          }
+
+          lastTotalCapacity = totalCapacity;
+          lastChannelsCount = channelsCount;
+  
+          const query = `INSERT INTO node_stats(
+            public_key,
+            added,
+            capacity,
+            channels
+          )
+          VALUES (?, FROM_UNIXTIME(?), ?, ?)`;
+          
+          await DB.query(query, [
+            node.public_key,
+            date.getTime() / 1000,
+            totalCapacity,
+            channelsCount,
+          ]);
+        }
+        logger.debug('Updated node_stats for: ' + node.alias);
+      }
+      logger.info('Historical stats populated.');
+    } catch (e) {
+      logger.err('$populateHistoricalNodeData() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
