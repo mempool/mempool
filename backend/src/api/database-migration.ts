@@ -174,7 +174,7 @@ class DatabaseMigration {
         this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
         await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
         await this.$executeQuery(`ALTER TABLE blocks
-          ADD med_fee INT UNSIGNED NULL,
+          ADD avg_fee INT UNSIGNED NULL,
           ADD avg_fee_rate INT UNSIGNED NULL
         `);
         await this.$executeQuery('ALTER TABLE blocks MODIFY `reward` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
