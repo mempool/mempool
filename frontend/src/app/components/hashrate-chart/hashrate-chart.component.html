@@ -12,8 +12,11 @@
       </div>
       <div class="item">
         <h5 class="card-title" i18n="block.difficulty">Difficulty</h5>
-        <p class="card-text">
-          {{ hashrates.currentDifficulty | amountShortener }}
+        <p class="card-text" *ngIf="network === 'signet'">
+          {{ hashrates.currentDifficulty | amountShortener : 5 }}
+        </p>
+        <p class="card-text" *ngIf="network !== 'signet'">
+          {{ hashrates.currentDifficulty | amountShortener : 2 }}
         </p>
       </div>
     </div>

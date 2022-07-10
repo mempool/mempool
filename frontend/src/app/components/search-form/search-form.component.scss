@@ -32,6 +32,7 @@ form {
 }
 
 .search-box-container {
+  position: relative;
   width: 100%;
   @media (min-width: 768px) {
     min-width: 400px;
