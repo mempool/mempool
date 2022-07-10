@@ -222,6 +222,10 @@ class PoolsParser {
    * Delete blocks which needs to be reindexed
    */
    private async $deleteBlocskToReindex(finalPoolDataUpdate: any[]) {
+    if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
+      return;
+    }
+
     const blockCount = await BlocksRepository.$blockCount(null, null);
     if (blockCount === 0) {
       return;
