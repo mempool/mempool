@@ -39,7 +39,7 @@ class ChannelsRoutes {
   private async $getChannelsForNode(req: Request, res: Response) {
     try {
       if (typeof req.query.public_key !== 'string') {
-        res.status(501).send('Missing parameter: public_key');
+        res.status(400).send('Missing parameter: public_key');
         return;
       }
       const index = parseInt(typeof req.query.index === 'string' ? req.query.index : '0', 10) || 0;
@@ -57,7 +57,7 @@ class ChannelsRoutes {
   private async $getChannelsByTransactionIds(req: Request, res: Response) {
     try {
       if (!Array.isArray(req.query.txId)) {
-        res.status(500).send('Not an array');
+        res.status(400).send('Not an array');
         return;
       }
       const txIds: string[] = [];
