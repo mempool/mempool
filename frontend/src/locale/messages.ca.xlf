@@ -941,6 +941,10 @@
           <context context-type="linenumber">20,21</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">124,125</context>
         </context-group>
@@ -1347,7 +1351,7 @@
         <target>Intercanvis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="bisq-graph-volume" datatype="html">
@@ -1355,7 +1359,7 @@
         <target>Volum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4b137ec8bf73a47063740b75c0c40d5fd3c48015" datatype="html">
@@ -2024,15 +2028,6 @@
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">264,266</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="bc4c61d3713989e3c8c6610fca3ea1ca1cb19edb" datatype="html">
-        <source>Value</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <note priority="1" from="description">Transaction value</note>
-        <note priority="1" from="meaning">transaction.value</note>
       </trans-unit>
       <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
         <source>Fee</source>

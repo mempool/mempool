@@ -35,6 +35,8 @@ class Indexer {
     this.runIndexer = false;
     this.indexerRunning = true;
 
+    logger.debug(`Running mining indexer`);
+
     try {
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
@@ -54,9 +56,15 @@ class Indexer {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
       setTimeout(() => this.reindex(), 10000);
+      this.indexerRunning = false;
+      return;
     }
 
     this.indexerRunning = false;
+
+    const runEvery = 1000 * 3600; // 1 hour
+    logger.debug(`Indexing completed. Next run planned at ${new Date(new Date().getTime() + runEvery).toUTCString()}`);
+    setTimeout(() => this.reindex(), runEvery);
   }
 
   async $resetHashratesIndexingState() {
