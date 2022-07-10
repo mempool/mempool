@@ -15,7 +15,11 @@ export class ChangeComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges(): void {
-    this.change = (this.current - this.previous) / this.previous * 100;
+    if (!this.previous) {
+      this.change = 0;
+    } else {
+      this.change = (this.current - this.previous) / this.previous * 100;
+    }
   }
 
 }
