@@ -57,7 +57,6 @@ export class LightningStatisticsChartComponent implements OnInit {
   ngOnInit(): void {
     let firstRun = true;
 
-    this.seoService.setTitle($localize`:@@mining.hashrate-difficulty:Hashrate and Weight`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
