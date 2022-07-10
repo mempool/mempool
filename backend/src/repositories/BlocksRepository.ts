@@ -610,6 +610,24 @@ class BlocksRepository {
       throw e;
     }
   }
+
+  /**
+   * Return the oldest block  from a consecutive chain of block from the most recent one
+   */
+  public async $getOldestConsecutiveBlock(): Promise<any> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty FROM blocks ORDER BY height DESC`);
+      for (let i = 0; i < rows.length - 1; ++i) {
+        if (rows[i].height - rows[i + 1].height > 1) {
+          return rows[i];
+        }
+      }
+      return rows[rows.length - 1];
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksRepository();
