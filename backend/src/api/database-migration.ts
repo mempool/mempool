@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 25;
+  private static currentVersion = 26;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -255,6 +255,14 @@ class DatabaseMigration {
         await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
         await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
         await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('node_stats'));
+      }
+
+      if (databaseSchemaVersion < 26 && isBitcoin === true) {
+        this.uniqueLog(logger.notice, `'lightning_stats' table has been truncated. Will re-generate historical data from scratch.`);
+        await this.$executeQuery(`TRUNCATE lightning_stats`);
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD tor_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD unannounced_nodes int(11) NOT NULL DEFAULT "0"');
       }
 
     } catch (e) {
