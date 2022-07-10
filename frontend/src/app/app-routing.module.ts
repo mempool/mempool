@@ -96,6 +96,10 @@ let routes: Routes = [
             path: 'api',
             loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
+          {
+            path: 'lightning',
+            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+          },
         ],
       },
       {
@@ -186,6 +190,10 @@ let routes: Routes = [
             path: 'api',
             loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
+          {
+            path: 'lightning',
+            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+          },
         ],
       },
       {
@@ -272,6 +280,10 @@ let routes: Routes = [
       {
         path: 'api',
         loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+      },
+      {
+        path: 'lightning',
+        loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
       },
     ],
   },

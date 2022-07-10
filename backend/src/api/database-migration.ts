@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 24;
+  private static currentVersion = 27;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -248,6 +248,32 @@ class DatabaseMigration {
         await this.$executeQuery('DROP TABLE IF EXISTS `blocks_audits`');
         await this.$executeQuery(this.getCreateBlocksAuditsTableQuery(), await this.$checkIfTableExists('blocks_audits'));
       }
+
+      if (databaseSchemaVersion < 25 && isBitcoin === true) {
+        await this.$executeQuery(`INSERT INTO state VALUES('last_node_stats', 0, '1970-01-01');`);
+        await this.$executeQuery(this.getCreateLightningStatisticsQuery(), await this.$checkIfTableExists('lightning_stats'));
+        await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
+        await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
+        await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('node_stats'));
+      }
+
+      if (databaseSchemaVersion < 26 && isBitcoin === true) {
+        this.uniqueLog(logger.notice, `'lightning_stats' table has been truncated. Will re-generate historical data from scratch.`);
+        await this.$executeQuery(`TRUNCATE lightning_stats`);
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD tor_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_nodes int(11) NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD unannounced_nodes int(11) NOT NULL DEFAULT "0"');
+      }
+
+      if (databaseSchemaVersion < 27 && isBitcoin === true) {
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_capacity bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_fee_rate int(11) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD avg_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_capacity bigint(20) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_fee_rate int(11) unsigned NOT NULL DEFAULT "0"');
+        await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
+      }
+
     } catch (e) {
       throw e;
     }
@@ -569,6 +595,82 @@ class DatabaseMigration {
       adjustment float NOT NULL,
       PRIMARY KEY (height),
       INDEX (time)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateLightningStatisticsQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS lightning_stats (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      added datetime NOT NULL,
+      channel_count int(11) NOT NULL,
+      node_count int(11) NOT NULL,
+      total_capacity double unsigned NOT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateNodesQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS nodes (
+      public_key varchar(66) NOT NULL,
+      first_seen datetime NOT NULL,
+      updated_at datetime NOT NULL,
+      alias varchar(200) CHARACTER SET utf8mb4 NOT NULL,
+      color varchar(200) NOT NULL,
+      sockets text DEFAULT NULL,
+      PRIMARY KEY (public_key),
+      KEY alias (alias(10))
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateChannelsQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS channels (
+      id bigint(11) unsigned NOT NULL,
+      short_id varchar(15) NOT NULL DEFAULT '',
+      capacity bigint(20) unsigned NOT NULL,
+      transaction_id varchar(64) NOT NULL,
+      transaction_vout int(11) NOT NULL,
+      updated_at datetime DEFAULT NULL,
+      created datetime DEFAULT NULL,
+      status int(11) NOT NULL DEFAULT 0,
+      closing_transaction_id varchar(64) DEFAULT NULL,
+      closing_date datetime DEFAULT NULL,
+      closing_reason int(11) DEFAULT NULL,
+      node1_public_key varchar(66) NOT NULL,
+      node1_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_cltv_delta int(11) DEFAULT NULL,
+      node1_fee_rate bigint(11) DEFAULT NULL,
+      node1_is_disabled tinyint(1) DEFAULT NULL,
+      node1_max_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node1_min_htlc_mtokens bigint(20) DEFAULT NULL,
+      node1_updated_at datetime DEFAULT NULL,
+      node2_public_key varchar(66) NOT NULL,
+      node2_base_fee_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_cltv_delta int(11) DEFAULT NULL,
+      node2_fee_rate bigint(11) DEFAULT NULL,
+      node2_is_disabled tinyint(1) DEFAULT NULL,
+      node2_max_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_min_htlc_mtokens bigint(20) unsigned DEFAULT NULL,
+      node2_updated_at datetime DEFAULT NULL,
+      PRIMARY KEY (id),
+      KEY node1_public_key (node1_public_key),
+      KEY node2_public_key (node2_public_key),
+      KEY status (status),
+      KEY short_id (short_id),
+      KEY transaction_id (transaction_id),
+      KEY closing_transaction_id (closing_transaction_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateNodesStatsQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS node_stats (
+      id int(11) unsigned NOT NULL AUTO_INCREMENT,
+      public_key varchar(66) NOT NULL DEFAULT '',
+      added date NOT NULL,
+      capacity bigint(20) unsigned NOT NULL DEFAULT 0,
+      channels int(11) unsigned NOT NULL DEFAULT 0,
+      PRIMARY KEY (id),
+      UNIQUE KEY added (added,public_key),
+      KEY public_key (public_key)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

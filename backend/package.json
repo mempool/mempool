@@ -1,6 +1,6 @@
 {
   "name": "mempool-backend",
-  "version": "2.4.1-dev",
+  "version": "2.5.0-dev",
   "description": "Bitcoin mempool visualizer and blockchain explorer backend",
   "license": "GNU Affero General Public License v3.0",
   "homepage": "https://mempool.space",
@@ -34,8 +34,10 @@
     "@types/node": "^16.11.41",
     "axios": "~0.27.2",
     "bitcoinjs-lib": "6.0.1",
+    "bolt07": "^1.8.1",
     "crypto-js": "^4.0.0",
     "express": "^4.18.0",
+    "lightning": "^5.16.3",
     "mysql2": "2.3.3",
     "node-worker-threads-pool": "^1.5.1",
     "socks-proxy-agent": "~7.0.0",

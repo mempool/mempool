@@ -1,0 +1,100 @@
+<div class="container-xl" *ngIf="(node$ | async) as node">
+  <div class="title-container mb-2">
+    <h1 class="mb-0">{{ node.alias }}</h1>
+    <span class="tx-link">
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.public_key | shortenString : 12 }}</a>
+      <app-clipboard [text]="node.public_key"></app-clipboard>
+    </span>
+  </div>
+
+  <div class="clearfix"></div>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="address.total-received">Total capacity</td>
+                <td>
+                  <app-sats [satoshis]="node.capacity"></app-sats><app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Total channels</td>
+                <td>
+                  {{ node.channel_count }}
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.total-received">Average channel size</td>
+                <td>
+                  <app-sats [satoshis]="node.channels_capacity_avg"></app-sats><app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="address.total-received">First seen</td>
+                <td>
+                  <app-timestamp [dateString]="node.first_seen"></app-timestamp>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Last update</td>
+                <td>
+                  <app-timestamp [dateString]="node.updated_at"></app-timestamp>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="address.balance">Color</td>
+                <td><div [ngStyle]="{'color': node.color}">{{ node.color }}</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+
+    <div class="input-group mb-3" *ngIf="node.socketsObject.length">
+      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown" *ngIf="node.socketsObject.length > 1; else noDropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor (focus)="myDrop.open()"><div class="dropdownLabel">{{ node.socketsObject[selectedSocketIndex].label }}</div></button>
+        <div ngbDropdownMenu aria-labelledby="dropdownManual">
+          <button *ngFor="let socket of node.socketsObject; let i = index;" ngbDropdownItem (click)="changeSocket(i)">{{ socket.label }}</button>
+        </div>
+      </div>
+      <ng-template #noDropdown>
+        <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
+      </ng-template>
+      <input type="text" class="form-control" aria-label="Text input with dropdown button" [value]="node.socketsObject[selectedSocketIndex].socket">
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true" (mouseout)="qrCodeVisible = false">
+        <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+        <div class="qr-wrapper" [hidden]="!qrCodeVisible">
+          <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
+        </div>
+      </button>
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
+        <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
+      </button>
+    </div>
+
+    <br>
+
+    <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+    
+    <br>
+
+    <app-channels-list [publicKey]="node.public_key"></app-channels-list>
+
+</div>
+
+<br>
