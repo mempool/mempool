@@ -11,6 +11,7 @@ import * as tlite from 'tlite';
 export class ClipboardComponent implements AfterViewInit {
   @ViewChild('btn') btn: ElementRef;
   @ViewChild('buttonWrapper') buttonWrapper: ElementRef;
+  @Input() size: 'small' | 'normal' = 'normal';
   @Input() text: string;
   copiedMessage: string = $localize`:@@clipboard.copied-message:Copied!`;
 

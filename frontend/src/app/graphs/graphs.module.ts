@@ -57,6 +57,9 @@ import { CommonModule } from '@angular/common';
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     })
+  ],
+  exports: [
+    NgxEchartsModule,
   ]
 })
 export class GraphsModule { }
