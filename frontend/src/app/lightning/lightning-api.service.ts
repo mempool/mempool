@@ -52,6 +52,10 @@ export class LightningApiService {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/nodes/top');
   }
 
+  listChannelStats$(publicKey: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBasePath + '/channels/' + publicKey + '/statistics');
+  }
+
   listStatistics$(): Observable<any> {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/statistics');
   }

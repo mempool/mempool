@@ -35,7 +35,7 @@ export class LightningDashboardComponent implements OnInit {
         map((object) => object.topByChannels),
       );
 
-    this.statistics$ = this.lightningApiService.getLatestStatistics$();
+    this.statistics$ = this.lightningApiService.getLatestStatistics$().pipe(share());
   }
 
 }

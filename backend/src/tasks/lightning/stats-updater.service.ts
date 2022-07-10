@@ -2,6 +2,7 @@
 import DB from '../../database';
 import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
+import channelsApi from '../../api/explorer/channels.api';
 import * as net from 'net';
 
 class LightningStatsUpdater {
@@ -124,15 +125,15 @@ class LightningStatsUpdater {
         )
         VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)`;
 
-      await DB.query(query, [
-        date.getTime() / 1000,
-        channelsCount,
-        0,
-        totalCapacity,
-        0,
-        0,
-        0
-      ]);
+        await DB.query(query, [
+          date.getTime() / 1000,
+          channelsCount,
+          0,
+          totalCapacity,
+          0,
+          0,
+          0
+        ]);
 
         // Add one day and continue
         date.setDate(date.getDate() + 1);
@@ -232,6 +233,8 @@ class LightningStatsUpdater {
         }
       }
 
+      const channelStats = await channelsApi.$getChannelsStats();
+
       const query = `INSERT INTO lightning_stats(
           added,
           channel_count,
@@ -239,9 +242,15 @@ class LightningStatsUpdater {
           total_capacity,
           tor_nodes,
           clearnet_nodes,
-          unannounced_nodes
+          unannounced_nodes,
+          avg_capacity,
+          avg_fee_rate,
+          avg_base_fee_mtokens,
+          med_capacity,
+          med_fee_rate,
+          med_base_fee_mtokens
         )
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?)`;
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await DB.query(query, [
         networkGraph.channels.length,
@@ -249,7 +258,13 @@ class LightningStatsUpdater {
         total_capacity,
         torNodes,
         clearnetNodes,
-        unannouncedNodes
+        unannouncedNodes,
+        channelStats.avgCapacity,
+        channelStats.avgFeeRate,
+        channelStats.avgBaseFee,
+        channelStats.medianCapacity,
+        channelStats.medianFeeRate,
+        channelStats.medianBaseFee,
       ]);
       logger.info(`Lightning daily stats done.`);
     } catch (e) {
