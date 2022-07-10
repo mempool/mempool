@@ -953,6 +953,10 @@
           <context context-type="linenumber">20,21</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">124,125</context>
         </context-group>
@@ -1363,7 +1367,7 @@
         <target>تداولات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="bisq-graph-volume" datatype="html">
@@ -1371,7 +1375,7 @@
         <target> حجم التداول</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4b137ec8bf73a47063740b75c0c40d5fd3c48015" datatype="html">
@@ -1993,6 +1997,7 @@
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
         <source>At block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>في الكتله: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">188</context>
@@ -2016,6 +2021,7 @@
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
         <source>Around block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>تقريبا في الكتله: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -2073,16 +2079,6 @@
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">264,266</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="bc4c61d3713989e3c8c6610fca3ea1ca1cb19edb" datatype="html">
-        <source>Value</source>
-        <target>القيمه</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <note priority="1" from="description">Transaction value</note>
-        <note priority="1" from="meaning">transaction.value</note>
       </trans-unit>
       <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
         <source>Fee</source>
@@ -2240,6 +2236,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>دقة توقع الكتلة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2256,6 +2253,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>معدل المطابقة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">176,174</context>
@@ -2873,6 +2871,7 @@
       </trans-unit>
       <trans-unit id="49bba8e970aa3b1bec6fcff7228ef95ceb335f59" datatype="html">
         <source>Usually places your transaction in between the second and third mempool blocks</source>
+        <target>عادةً ما تضع معاملتك بين كتل الميم بول الثانية والثالثة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2894,6 +2893,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
+        <target>عادةً ما تضع معاملتك بين كتل الأولى والثانية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3078,6 +3078,7 @@
       </trans-unit>
       <trans-unit id="8105839921891777281" datatype="html">
         <source>Hashrate (MA)</source>
+        <target>الهاش ريت (معدل التحرك)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">288,287</context>
@@ -3250,6 +3251,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>حظ حوض التعدين (١ اسبوع)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3258,6 +3260,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>حظ احواض التعدين</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3266,6 +3269,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>الحظ العام لجميع أحواض التعدين خلال الأسبوع الماضي. الحظ الأكبر من 100٪ يعني أن متوسط وقت الكتلة الحالي أقل من 10 دقائق.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3274,6 +3278,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>عدد الاحواض (١ اسبوع)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3282,6 +3287,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
+        <target>عدد الاحواض</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3290,6 +3296,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
+        <target>كم عدد أحواض التعدين الفريدة التي وجدت كتلة واحدة على الأقل خلال الأسبوع الماضي.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3315,6 +3322,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
+        <target>عدد الكتل المعثور عليها خلال الاسبوع الماضي.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -4471,6 +4479,7 @@
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
+        <target>اعادة تشغيل خادم API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">34,35</context>
