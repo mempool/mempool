@@ -121,20 +121,20 @@ describe('Mainnet', () => {
         cy.visit('/');
         cy.get('.search-box-container > .form-control').type('1wiz').then(() => {
           cy.wait('@search-1wiz');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 10);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 10);
         });
 
         cy.get('.search-box-container > .form-control').type('S').then(() => {
           cy.wait('@search-1wizS');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 5);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 5);
         });
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
           cy.wait('@search-1wizSA');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1)
+          cy.get('app-search-results button.dropdown-item').should('have.length', 1)
         });
 
-        cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+        cy.get('app-search-results button.dropdown-item.active').click().then(() => {
           cy.url().should('include', '/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC');
           cy.waitForSkeletonGone();
           cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
@@ -145,8 +145,8 @@ describe('Mainnet', () => {
         it(`allows searching for partial case insensitive bech32m addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
-            cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
@@ -159,8 +159,8 @@ describe('Mainnet', () => {
         it(`allows searching for partial case insensitive bech32 addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
-            cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
