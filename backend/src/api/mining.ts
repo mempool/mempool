@@ -184,7 +184,7 @@ class Mining {
     }
 
     try {
-      const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlockTimestamp());
+      const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
       const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
       const genesisTimestamp = genesisBlock.time * 1000;
@@ -285,7 +285,7 @@ class Mining {
       return;
     }
 
-    const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlockTimestamp());
+    const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
       const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
@@ -389,18 +389,22 @@ class Mining {
     }
 
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-
-    let currentDifficulty = 0;
+    const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+    let currentDifficulty = genesisBlock.difficulty;
     let totalIndexed = 0;
 
-    if (indexedHeights[0] !== true) {
-      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+    if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
       await DifficultyAdjustmentsRepository.$saveAdjustments({
         time: genesisBlock.time,
         height: 0,
-        difficulty: genesisBlock.difficulty,
+        difficulty: currentDifficulty,
         adjustment: 0.0,
       });
+    }
+
+    const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
+    if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
+      currentDifficulty = oldestConsecutiveBlock.difficulty;
     }
 
     let totalBlockChecked = 0;
@@ -408,12 +412,14 @@ class Mining {
 
     for (const block of blocks) {
       if (block.difficulty !== currentDifficulty) {
-        if (block.height === 0 || indexedHeights[block.height] === true) { // Already indexed
-          currentDifficulty = block.difficulty;
+        if (indexedHeights[block.height] === true) { // Already indexed
+          if (block.height >= oldestConsecutiveBlock.height) {
+            currentDifficulty = block.difficulty;
+          }
           continue;          
         }
 
-        let adjustment = block.difficulty / Math.max(1, currentDifficulty);
+        let adjustment = block.difficulty / currentDifficulty;
         adjustment = Math.round(adjustment * 1000000) / 1000000; // Remove float point noise
 
         await DifficultyAdjustmentsRepository.$saveAdjustments({
@@ -424,8 +430,10 @@ class Mining {
         });
 
         totalIndexed++;
-        currentDifficulty = block.difficulty;
-      }
+        if (block.height >= oldestConsecutiveBlock.height) {
+          currentDifficulty = block.difficulty;
+        }
+    }
 
       totalBlockChecked++;
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
