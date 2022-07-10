@@ -130,6 +130,16 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.sendRawTransaction(rawTransaction);
   }
 
+  async $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
+    const txOut = await this.bitcoindClient.getTxOut(txId, vout, false);
+    return {
+      spent: txOut === null,
+      status: {
+        confirmed: true,
+      }
+    };
+  }
+
   async $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
     const outSpends: IEsploraApi.Outspend[] = [];
     const tx = await this.$getRawTransaction(txId, true, false);
@@ -195,7 +205,9 @@ class BitcoinApi implements AbstractBitcoinApi {
         sequence: vin.sequence,
         txid: vin.txid || '',
         vout: vin.vout || 0,
-        witness: vin.txinwitness,
+        witness: vin.txinwitness || [],
+        inner_redeemscript_asm: '',
+        inner_witnessscript_asm: '',
       };
     });
 
