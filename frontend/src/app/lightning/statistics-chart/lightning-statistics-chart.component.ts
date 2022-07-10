@@ -1,7 +1,7 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
-import { startWith, switchMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -38,7 +38,7 @@ export class LightningStatisticsChartComponent implements OnInit {
 
   @HostBinding('attr.dir') dir = 'ltr';
 
-  blockSizesWeightsObservable$: Observable<any>;
+  capacityObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
@@ -57,34 +57,44 @@ export class LightningStatisticsChartComponent implements OnInit {
   ngOnInit(): void {
     let firstRun = true;
 
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    if (this.widget) {
+      this.miningWindowPreference = '1y';
+    } else {
+      this.seoService.setTitle($localize`Channels and Capacity`);
+      this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
+    }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
-    this.radioGroupForm.get('dateSpan').valueChanges
+    this.capacityObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
       .pipe(
         startWith(this.miningWindowPreference),
         switchMap((timespan) => {
           this.timespan = timespan;
-          if (!firstRun) {
-            this.storageService.setValue('miningWindowPreference', timespan);
+          if (!this.widget && !firstRun) {
+            this.storageService.setValue('lightningWindowPreference', timespan);
           }
           firstRun = false;
           this.miningWindowPreference = timespan;
           this.isLoading = true;
-          return this.lightningApiService.listStatistics$()
+          return this.lightningApiService.listStatistics$(timespan)
             .pipe(
-              tap((data) => {
+              tap((response) => {
+                const data = response.body;
                 this.prepareChartOptions({
                   channel_count: data.map(val => [val.added * 1000, val.channel_count]),
                   capacity: data.map(val => [val.added * 1000, val.total_capacity]),
                 });
                 this.isLoading = false;
               }),
+              map((response) => {
+                return {
+                  days: parseInt(response.headers.get('x-total-count'), 10),
+                };
+              }),
             );
         }),
-      ).subscribe(() => {
-      });
+      )
   }
 
   prepareChartOptions(data) {
