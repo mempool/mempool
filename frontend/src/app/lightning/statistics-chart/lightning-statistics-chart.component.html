@@ -1,0 +1,32 @@
+<div [class]="widget === false ? 'full-container' : ''">
+
+  <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
+    <span i18n="mining.hashrate-difficulty">Hashrate & Difficulty</span>
+    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+    </button>
+  </div>
+
+  <div [class]="!widget ? 'chart' : 'chart-widget'" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
+  <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+</div>
+
+<ng-template #loadingStats>
+  <div class="pool-distribution">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.miners-luck">Hashrate</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="master-page.blocks">Difficulty</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+  </div>
+</ng-template>

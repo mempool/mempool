@@ -1,0 +1,96 @@
+<div class="container-xl" *ngIf="(channel$ | async) as channel">
+  <div class="title-container">
+    <h1 class="mb-0">{{ channel.short_id }}</h1>
+    <span class="tx-link">
+      <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
+      <app-clipboard [text]="channel.id"></app-clipboard>
+    </span>
+  </div>
+  <div class="badges mb-2">
+    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
+    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
+    <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
+  </div>
+
+  <div class="clearfix"></div>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="address.total-sent">Created</td>
+                <td><app-timestamp [dateString]="channel.created"></app-timestamp></td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Last update</td>
+                <td><app-timestamp [dateString]="channel.updated_at"></app-timestamp></td>
+              </tr>
+              <tr>
+                <td i18n="address.total-sent">Opening transaction</td>
+                <td>
+                  <a [routerLink]="['/tx' | relativeUrl, channel.transaction_id + ':' + channel.transaction_vout]" >
+                    <span>{{ channel.transaction_id | shortenString : 10 }}</span>
+                  </a>
+                  <app-clipboard [text]="channel.transaction_id"></app-clipboard>
+                </td>
+              </tr>
+              <ng-template [ngIf]="channel.closing_transaction_id">
+                <tr *ngIf="channel.closing_transaction_id">
+                  <td i18n="address.total-sent">Closing transaction</td>
+                  <td>
+                    <a [routerLink]="['/tx' | relativeUrl, channel.closing_transaction_id]" >
+                      <span>{{ channel.closing_transaction_id | shortenString : 10 }}</span>
+                    </a>
+                    <app-clipboard [text]="channel.closing_transaction_id"></app-clipboard>
+                  </td>
+                </tr>
+                <tr>
+                  <td i18n="address.total-sent">Closing type</td>
+                  <td>
+                    <app-closing-type [type]="channel.closing_reason"></app-closing-type>
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td i18n="address.total-received">Capacity</td>
+                <td><app-sats [satoshis]="channel.capacity"></app-sats><app-fiat [value]="channel.capacity" digitsInfo="1.0-0"></app-fiat></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+
+    <div class="row row-cols-1 row-cols-md-2">
+      <div class="col">
+        <app-channel-box [channel]="channel.node_left"></app-channel-box>
+      </div>
+      <div class="col">
+        <app-channel-box [channel]="channel.node_right"></app-channel-box>
+    </div>
+  </div>
+
+</div>
+
+<br>
+
+<ng-template [ngIf]="error">
+  <div class="text-center">
+    <span i18n="error.general-loading-data">Error loading data.</span>
+    <br><br>
+    <i>{{ error.status }}: {{ error.error }}</i>
+  </div>
+</ng-template>
