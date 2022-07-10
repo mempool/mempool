@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { ApiService } from 'src/app/services/api.service';
 import { formatNumber } from '@angular/common';
 import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { StateService } from 'src/app/services/state.service';
 
 @Component({
   selector: 'app-difficulty-adjustments-table',
@@ -26,10 +27,16 @@ export class DifficultyAdjustmentsTable implements OnInit {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
+    public stateService: StateService
   ) {
   }
 
   ngOnInit(): void {
+    let decimals = 2;
+    if (this.stateService.network === 'signet') {
+      decimals = 5;
+    }
+
     this.hashrateObservable$ = this.apiService.getDifficultyAdjustments$('3m')
       .pipe(
         map((response) => {
@@ -43,7 +50,7 @@ export class DifficultyAdjustmentsTable implements OnInit {
               change: (adjustment[3] - 1) * 100,
               difficultyShorten: formatNumber(
                 adjustment[2] / selectedPowerOfTen.divider,
-                this.locale, '1.2-2') + selectedPowerOfTen.unit
+                this.locale, `1.${decimals}-${decimals}`) + selectedPowerOfTen.unit
             });
           }
           this.isLoading = false;
