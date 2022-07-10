@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, share } from 'rxjs/operators';
+import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
@@ -16,9 +17,12 @@ export class LightningDashboardComponent implements OnInit {
 
   constructor(
     private lightningApiService: LightningApiService,
+    private seoService: SeoService,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setTitle($localize`Lightning Dashboard`);
+
     const sharedObservable = this.lightningApiService.listTopNodes$().pipe(share());
 
     this.nodesByCapacity$ = sharedObservable
