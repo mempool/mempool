@@ -250,7 +250,7 @@ class LightningStatsUpdater {
           med_fee_rate,
           med_base_fee_mtokens
         )
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?)`;
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await DB.query(query, [
         networkGraph.channels.length,
