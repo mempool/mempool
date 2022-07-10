@@ -23,6 +23,7 @@ interface IConfig {
     EXTERNAL_RETRY_INTERVAL: number;
     USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
+    AUTOMATIC_BLOCK_REINDEXING: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -113,6 +114,7 @@ const defaults: IConfig = {
     'EXTERNAL_RETRY_INTERVAL': 0,
     'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
+    'AUTOMATIC_BLOCK_REINDEXING': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
