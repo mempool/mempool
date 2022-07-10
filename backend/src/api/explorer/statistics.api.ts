@@ -1,10 +1,21 @@
 import logger from '../../logger';
 import DB from '../../database';
+import { Common } from '../common';
 
 class StatisticsApi {
-  public async $getStatistics(): Promise<any> {
+  public async $getStatistics(interval: string | null = null): Promise<any> {
+    interval = Common.getSqlInterval(interval);
+
+    let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, node_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes
+      FROM lightning_stats`;
+
+    if (interval) {
+      query += ` WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+    }
+
+    query += ` ORDER BY id DESC`;
+
     try {
-      const query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, node_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes FROM lightning_stats ORDER BY id DESC`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
@@ -27,6 +38,15 @@ class StatisticsApi {
     }
   }
 
+  public async $getStatisticsCount(): Promise<number> {
+    try {
+      const [rows]: any = await DB.query(`SELECT count(*) as count FROM lightning_stats`);
+      return rows[0].count;
+    } catch (e) {
+      logger.err('$getLatestStatistics error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new StatisticsApi();
