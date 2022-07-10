@@ -24,7 +24,7 @@ import { LightningApiService } from '../lightning-api.service';
   `],
 })
 export class LightningStatisticsChartComponent implements OnInit {
-  @Input() right: number | string = 65;
+  @Input() right: number | string = 45;
   @Input() left: number | string = 55;
   @Input() widget = false;
 
@@ -76,7 +76,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             .pipe(
               tap((data) => {
                 this.prepareChartOptions({
-                  nodes: data.map(val => [val.added * 1000, val.node_count]),
+                  channel_count: data.map(val => [val.added * 1000, val.channel_count]),
                   capacity: data.map(val => [val.added * 1000, val.total_capacity]),
                 });
                 this.isLoading = false;
@@ -89,7 +89,7 @@ export class LightningStatisticsChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     let title: object;
-    if (data.nodes.length === 0) {
+    if (data.channel_count.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -109,8 +109,8 @@ export class LightningStatisticsChartComponent implements OnInit {
         '#D81B60',
       ],
       grid: {
-        top: 30,
-        bottom: 70,
+        top: 40,
+        bottom: this.widget ? 30 : 70,
         right: this.right,
         left: this.left,
       },
@@ -133,7 +133,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           let weightString = '';
 
           for (const tick of ticks) {
-            if (tick.seriesIndex === 0) { // Nodes
+            if (tick.seriesIndex === 0) { // Channels
               sizeString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 1) { // Capacity
               weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100000000, this.locale, '1.0-0')} BTC`;
@@ -149,18 +149,18 @@ export class LightningStatisticsChartComponent implements OnInit {
           return tooltip;
         }
       },
-      xAxis: data.nodes.length === 0 ? undefined : {
+      xAxis: data.channel_count.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      legend: data.nodes.length === 0 ? undefined : {
+      legend: data.channel_count.length === 0 ? undefined : {
         padding: 10,
         data: [
           {
-            name: 'Nodes',
+            name: 'Channels',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -168,7 +168,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Capacity',
+            name: 'Capacity (BTC)',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -177,20 +177,18 @@ export class LightningStatisticsChartComponent implements OnInit {
           },
         ],
         selected: JSON.parse(this.storageService.getValue('sizes_ln_legend'))  ?? {
-          'Nodes': true,
-          'Capacity': true,
+          'Channels': true,
+          'Capacity (BTC)': true,
         }
       },
-      yAxis: data.nodes.length === 0 ? undefined : [
+      yAxis: data.channel_count.length === 0 ? undefined : [
         {
-          min: (value) => {
-            return value.min * 0.9;
-          },
+          min: 0,
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${Math.round(val)}`;
+              return `${formatNumber(Math.round(val), this.locale, '1.0-0')}`;
             }
           },
           splitLine: {
@@ -202,15 +200,13 @@ export class LightningStatisticsChartComponent implements OnInit {
           },
         },
         {
-          min: (value) => {
-            return value.min * 0.9;
-          },
+          min: 0,
           type: 'value',
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${val / 100000000} BTC`;
+              return `${formatNumber(Math.round(val / 100000000), this.locale, '1.0-0')}`;
             }
           },
           splitLine: {
@@ -218,13 +214,13 @@ export class LightningStatisticsChartComponent implements OnInit {
           }
         }
       ],
-      series: data.nodes.length === 0 ? [] : [
+      series: data.channel_count.length === 0 ? [] : [
         {
           zlevel: 1,
-          name: 'Nodes',
+          name: 'Channels',
           showSymbol: false,
           symbol: 'none',
-          data: data.nodes,
+          data: data.channel_count,
           type: 'line',
           lineStyle: {
             width: 2,
@@ -238,21 +234,12 @@ export class LightningStatisticsChartComponent implements OnInit {
               opacity: 1,
               width: 1,
             },
-            data: [{
-              yAxis: 1,
-              label: {
-                position: 'end',
-                show: true,
-                color: '#ffffff',
-                formatter: `1 MB`
-              }
-            }],
           }
         },
         {
           zlevel: 0,
           yAxisIndex: 1,
-          name: 'Capacity',
+          name: 'Capacity (BTC)',
           showSymbol: false,
           symbol: 'none',
           stack: 'Total',

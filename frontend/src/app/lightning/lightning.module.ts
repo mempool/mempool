@@ -16,6 +16,7 @@ import { ClosingTypeComponent } from './channel/closing-type/closing-type.compon
 import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
 import { NodeStatisticsChartComponent } from './node-statistics-chart/node-statistics-chart.component';
 import { GraphsModule } from '../graphs/graphs.module';
+import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -29,6 +30,7 @@ import { GraphsModule } from '../graphs/graphs.module';
     ChannelBoxComponent,
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
+    NodesNetworksChartComponent,
   ],
   imports: [
     CommonModule,
