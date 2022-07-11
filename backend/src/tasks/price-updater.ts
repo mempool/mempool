@@ -177,6 +177,8 @@ class PriceUpdater {
     }
     if (insertedCount > 0) {
       logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+    } else {
+      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
     }
 
     // Insert Kraken weekly prices
@@ -251,6 +253,8 @@ class PriceUpdater {
 
     if (totalInserted > 0) {
       logger.notice(`Inserted ${totalInserted} hourly historical prices into the db`);
+    } else {
+      logger.debug(`Inserted ${totalInserted} hourly historical prices into the db`);
     }
   }
 }
