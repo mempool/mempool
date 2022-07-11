@@ -334,6 +334,7 @@ DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
+DEBIAN_PKG+=(geoipupdate)
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
@@ -341,6 +342,7 @@ FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py39-pip rust llvm90 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb105-server keybase)
+FREEBSD_PKG+=(geoipupdate)
 
 #############################
 ##### utility functions #####
