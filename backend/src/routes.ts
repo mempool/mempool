@@ -761,7 +761,19 @@ class Routes {
   public async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+
+      const blockAge = new Date().getTime() / 1000 - block.timestamp;
+      const day = 24 * 3600;
+      let cacheDuration;
+      if (blockAge > 365 * day) {
+        cacheDuration = 30 * day;
+      } else if (blockAge > 30 * day) {
+        cacheDuration = 10 * day;
+      } else {
+        cacheDuration = 600
+      }
+
+      res.setHeader('Expires', new Date(Date.now() + 1000 * cacheDuration).toUTCString());
       res.json(block);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
