@@ -97,7 +97,7 @@
                 <td *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4">
                   <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
                     <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                      onError="this.src = './resources/mining-pools/default.svg'">
+                      onError="this.src = '/resources/mining-pools/default.svg'">
                     <span class="pool-name">{{ block.extras.pool.name }}</span>
                   </a>
                 </td>
