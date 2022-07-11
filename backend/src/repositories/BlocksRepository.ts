@@ -274,7 +274,7 @@ class BlocksRepository {
       merkle_root,
       previous_block_hash as previousblockhash,
       avg_fee,
-      avg_fee_rate,
+      avg_fee_rate
       FROM blocks
       WHERE pool_id = ?`;
     params.push(pool.id);
@@ -288,6 +288,7 @@ class BlocksRepository {
       LIMIT 10`;
 
     try {
+      console.log(query, params);
       const [rows] = await DB.query(query, params);
 
       const blocks: BlockExtended[] = [];
@@ -360,12 +361,12 @@ class BlocksRepository {
         SELECT *, blocks.height, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
         pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
-        previous_block_hash as previousblockhash,
+        previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        WHERE hash = '${hash}';
+        WHERE hash = '?';
       `;
-      const [rows]: any[] = await DB.query(query);
+      const [rows]: any[] = await DB.query(query, [hash]);
 
       if (rows.length <= 0) {
         return null;
@@ -488,8 +489,11 @@ class BlocksRepository {
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees
+        CAST(AVG(fees) as INT) as avgFees,
+        prices.USD
         FROM blocks
+        JOIN blocks_prices on blocks_prices.height = blocks.height
+        JOIN prices on prices.id = blocks_prices.price_id
       `;
 
       if (interval !== null) {
@@ -514,8 +518,11 @@ class BlocksRepository {
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards
+        CAST(AVG(reward) as INT) as avgRewards,
+        prices.USD
         FROM blocks
+        JOIN blocks_prices on blocks_prices.height = blocks.height
+        JOIN prices on prices.id = blocks_prices.price_id
       `;
 
       if (interval !== null) {
@@ -660,22 +667,6 @@ class BlocksRepository {
     } catch (e) {
       logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
-    }
-  }
-
-  /**
-   * Save block price
-   */
-   public async $saveBlockPrice(blockPrice: BlockPrice): Promise<void> {
-    try {
-      await DB.query(`INSERT INTO blocks_prices(height, price_id) VALUE (?, ?)`, [blockPrice.height, blockPrice.priceId]);
-    } catch (e: any) {
-      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
-        logger.debug(`Cannot save block price for block ${blockPrice.height} because it has already been indexed, ignoring`);
-      } else {
-        logger.err(`Cannot save block price into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
-      }
     }
   }
 

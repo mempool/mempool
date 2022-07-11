@@ -1,4 +1,4 @@
-import { IndexedDifficultyAdjustment, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
+import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import PoolsRepository from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
@@ -7,11 +7,10 @@ import logger from '../../logger';
 import { Common } from '../common';
 import loadingIndicators from '../loading-indicators';
 import { escape } from 'mysql2';
-import indexer from '../../indexer';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
-import PricesRepository from '../repositories/PricesRepository';
+import PricesRepository from '../../repositories/PricesRepository';
 
 class Mining {
   blocksPriceIndexingRunning = false;
@@ -34,7 +33,7 @@ class Mining {
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFees(
-      this.getTimeRangeForAmounts(interval),
+      this.getTimeRange(interval, 5),
       Common.getSqlInterval(interval)
     );
   }
@@ -44,7 +43,7 @@ class Mining {
    */
   public async $getHistoricalBlockRewards(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockRewards(
-      this.getTimeRangeForAmounts(interval),
+      this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
   }
@@ -529,33 +528,18 @@ class Mining {
     return date;
   }
 
-  private getTimeRangeForAmounts(interval: string | null): number {
+  private getTimeRange(interval: string | null, scale = 1): number {
     switch (interval) {
-      case '3y': return 1296000;
-      case '2y': return 864000;
-      case '1y': return 432000;
-      case '6m': return 216000;
-      case '3m': return 108000;
-      case '1m': return 36000;
-      case '1w': return 8400;
-      case '3d': return 3600;
-      case '24h': return 1200; 
-      default: return 3888000;
-    }
-  }
-
-  private getTimeRange(interval: string | null): number {
-    switch (interval) {
-      case '3y': return 43200; // 12h
-      case '2y': return 28800; // 8h
-      case '1y': return 28800; // 8h
-      case '6m': return 10800; // 3h
-      case '3m': return 7200; // 2h
-      case '1m': return 1800; // 30min
-      case '1w': return 300; // 5min
-      case '3d': return 1;
-      case '24h': return 1;
-      default: return 86400;
+      case '3y': return 43200 * scale; // 12h
+      case '2y': return 28800 * scale; // 8h
+      case '1y': return 28800 * scale; // 8h
+      case '6m': return 10800 * scale; // 3h
+      case '3m': return 7200 * scale; // 2h
+      case '1m': return 1800 * scale; // 30min
+      case '1w': return 300 * scale; // 5min
+      case '3d': return 1 * scale;
+      case '24h': return 1 * scale;
+      default: return 86400 * scale;
     }
   }
 }

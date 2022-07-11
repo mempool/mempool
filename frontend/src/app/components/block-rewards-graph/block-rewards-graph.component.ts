@@ -58,14 +58,14 @@ export class BlockRewardsGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+        if (['3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -82,7 +82,7 @@ export class BlockRewardsGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000, val.avgHeight]),
-                  blockRewardsUSD: response.body.filter(val => val.usd > 0).map(val => [val.timestamp * 1000, val.avgRewards / 100000000 * val.usd, val.avgHeight]),
+                  blockRewardsUSD: response.body.filter(val => val.USD > 0).map(val => [val.timestamp * 1000, val.avgRewards / 100000000 * val.USD, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -104,12 +104,12 @@ export class BlockRewardsGraphComponent implements OnInit {
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#00ACC1' },
-          { offset: 1, color: '#0D47A1' },
-        ]),
-        new graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
+        ]),
+        new graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#C0CA33' },
+          { offset: 1, color: '#1B5E20' },
         ]),
       ],
       grid: {
@@ -232,9 +232,6 @@ export class BlockRewardsGraphComponent implements OnInit {
           type: 'line',
           smooth: 0.25,
           symbol: 'none',
-          areaStyle: {
-            opacity: 0.25,
-          },
         },
         {
           legendHoverLink: false,
@@ -248,6 +245,9 @@ export class BlockRewardsGraphComponent implements OnInit {
           lineStyle: {
             width: 2,
             opacity: 0.75,
+          },
+          areaStyle: {
+            opacity: 0.05,
           }
         },
       ],
