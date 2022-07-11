@@ -8,6 +8,8 @@ import { WebsocketService } from "src/app/services/websocket.service";
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements OnInit {
+  padding = 'w-50';
+
   constructor(
     public stateService: StateService,
     private websocketService: WebsocketService
@@ -15,5 +17,9 @@ export class GraphsComponent implements OnInit {
 
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
+
+    if (this.stateService.env.MINING_DASHBOARD === true && this.stateService.env.LIGHTNING === true) {
+      this.padding = 'w-33';
+    }
   }
 }
