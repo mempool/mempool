@@ -98,6 +98,11 @@ interface IConfig {
     BISQ_URL: string;
     BISQ_ONION: string;
   };
+  MAXMIND: {
+    ENABLED: boolean;
+    GEOLITE2_CITY: string;
+    GEOLITE2_ASN: string;
+  },
 }
 
 const defaults: IConfig = {
@@ -197,7 +202,12 @@ const defaults: IConfig = {
     'LIQUID_ONION': 'http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1',
     'BISQ_URL': 'https://bisq.markets/api',
     'BISQ_ONION': 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
-  }
+  },
+  "MAXMIND": {
+    'ENABLED': false,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb"
+  },
 };
 
 class Config implements IConfig {
@@ -215,6 +225,7 @@ class Config implements IConfig {
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
+  MAXMIND: IConfig['MAXMIND'];
 
   constructor() {
     const configs = this.merge(configFile, defaults);
@@ -232,6 +243,7 @@ class Config implements IConfig {
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
+    this.MAXMIND = configs.MAXMIND;
   }
 
   merge = (...objects: object[]): IConfig => {

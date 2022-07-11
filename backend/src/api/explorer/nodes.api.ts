@@ -13,6 +13,17 @@ class NodesApi {
     }
   }
 
+  public async $getAllNodes(): Promise<any> {
+    try {
+      const query = `SELECT * FROM nodes`;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getAllNodes error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getNodeStats(public_key: string): Promise<any> {
     try {
       const query = `SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
