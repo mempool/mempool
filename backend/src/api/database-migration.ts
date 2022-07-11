@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 28;
+  private static currentVersion = 29;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -278,6 +278,17 @@ class DatabaseMigration {
         await this.$executeQuery(`TRUNCATE lightning_stats`);
         await this.$executeQuery(`TRUNCATE node_stats`);
         await this.$executeQuery(`ALTER TABLE lightning_stats MODIFY added DATE`);
+      }
+
+      if (databaseSchemaVersion < 29 && isBitcoin === true) {
+        await this.$executeQuery(this.getCreateGeoNamesTableQuery(), await this.$checkIfTableExists('geo_names'));
+        await this.$executeQuery('ALTER TABLE `nodes` ADD as_number int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD city_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD country_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD accuracy_radius int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD subdivision_id int(11) unsigned NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD longitude double NULL DEFAULT NULL');
+        await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
       }
 
     } catch (e) {
@@ -691,6 +702,16 @@ class DatabaseMigration {
       PRIMARY KEY (hash),
       INDEX (height)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateGeoNamesTableQuery(): string {
+    return `CREATE TABLE geo_names (
+      id int(11) unsigned NOT NULL,
+      type enum('city','country','division','continent') NOT NULL,
+      names text DEFAULT NULL,
+      UNIQUE KEY id (id,type),
+      KEY id_2 (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
   }
 
   public async $truncateIndexedData(tables: string[]) {

@@ -63,6 +63,11 @@
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
   },
+  "MAXMIND": {
+    "ENABLED": false,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb"
+  },
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
