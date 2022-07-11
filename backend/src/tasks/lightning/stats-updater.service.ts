@@ -206,7 +206,7 @@ class LightningStatsUpdater {
               torNodes++;
               isUnnanounced = false;
             }
-            const hasClearnet = [4, 6].includes(net.isIP(socket.split(':')[0]));
+            const hasClearnet = [4, 6].includes(net.isIP(socket.substring(0, socket.lastIndexOf(':'))));
             if (hasClearnet) {
               clearnetNodes++;
               isUnnanounced = false;

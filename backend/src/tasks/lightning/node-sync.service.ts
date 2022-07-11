@@ -8,6 +8,7 @@ import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
+import { $lookupNodeLocation } from './sync-tasks/node-locations';
 
 class NodeSyncService {
   constructor() {}
@@ -32,6 +33,10 @@ class NodeSyncService {
         await this.$saveNode(node);
       }
       logger.info(`Nodes updated.`);
+
+      if (config.MAXMIND.ENABLED) {
+        await $lookupNodeLocation();
+      }
 
       await this.$setChannelsInactive();
 
