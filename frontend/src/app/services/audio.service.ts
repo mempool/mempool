@@ -18,7 +18,7 @@ export class AudioService {
       return;
     }
     this.isPlaying = true;
-    this.audio.src = '../../../resources/sounds/' + name + '.mp3';
+    this.audio.src = '/resources/sounds/' + name + '.mp3';
     this.audio.load();
     this.audio.volume = 0.65; // 65% volume
     this.audio.play().catch((e) => {
