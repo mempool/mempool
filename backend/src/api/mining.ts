@@ -250,9 +250,8 @@ class Mining {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const weeksPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
           const progress = Math.round(totalIndexed / totalWeekIndexed * 10000) / 100;
-          const timeLeft = Math.round((totalWeekIndexed - totalIndexed) / weeksPerSeconds);
           const formattedDate = new Date(fromTimestamp).toUTCString();
-          logger.debug(`Getting weekly pool hashrate for ${formattedDate} | ~${weeksPerSeconds.toFixed(2)} weeks/sec | total: ~${totalIndexed}/${Math.round(totalWeekIndexed)} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          logger.debug(`Getting weekly pool hashrate for ${formattedDate} | ~${weeksPerSeconds.toFixed(2)} weeks/sec | total: ~${totalIndexed}/${Math.round(totalWeekIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
           loadingIndicators.setProgress('weekly-hashrate-indexing', progress, false);
@@ -265,6 +264,8 @@ class Mining {
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
         logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
+      } else {
+        logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
       }
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
@@ -339,9 +340,8 @@ class Mining {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const daysPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
           const progress = Math.round(totalIndexed / totalDayIndexed * 10000) / 100;
-          const timeLeft = Math.round((totalDayIndexed - totalIndexed) / daysPerSeconds);
           const formattedDate = new Date(fromTimestamp).toUTCString();
-          logger.debug(`Getting network daily hashrate for ${formattedDate} | ~${daysPerSeconds.toFixed(2)} days/sec | total: ~${totalIndexed}/${Math.round(totalDayIndexed)} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          logger.debug(`Getting network daily hashrate for ${formattedDate} | ~${daysPerSeconds.toFixed(2)} days/sec | total: ~${totalIndexed}/${Math.round(totalDayIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
           loadingIndicators.setProgress('daily-hashrate-indexing', progress);
@@ -369,6 +369,8 @@ class Mining {
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
         logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
+      } else {
+        logger.debug(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
@@ -446,6 +448,8 @@ class Mining {
 
     if (totalIndexed > 0) {
       logger.notice(`Indexed ${totalIndexed} difficulty adjustments`);
+    } else {
+      logger.debug(`Indexed ${totalIndexed} difficulty adjustments`);
     }
   }
 
