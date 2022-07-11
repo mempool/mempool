@@ -1,16 +1,16 @@
-import { IndexedDifficultyAdjustment, PoolInfo, PoolStats, RewardStats } from '../mempool.interfaces';
-import BlocksRepository from '../repositories/BlocksRepository';
-import PoolsRepository from '../repositories/PoolsRepository';
-import HashratesRepository from '../repositories/HashratesRepository';
-import bitcoinClient from './bitcoin/bitcoin-client';
-import logger from '../logger';
-import { Common } from './common';
-import loadingIndicators from './loading-indicators';
+import { IndexedDifficultyAdjustment, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
+import BlocksRepository from '../../repositories/BlocksRepository';
+import PoolsRepository from '../../repositories/PoolsRepository';
+import HashratesRepository from '../../repositories/HashratesRepository';
+import bitcoinClient from '../bitcoin/bitcoin-client';
+import logger from '../../logger';
+import { Common } from '../common';
+import loadingIndicators from '../loading-indicators';
 import { escape } from 'mysql2';
-import indexer from '../indexer';
-import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
-import config from '../config';
-import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import indexer from '../../indexer';
+import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
+import config from '../../config';
+import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 
 class Mining {
   constructor() {
