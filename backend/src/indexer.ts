@@ -1,7 +1,7 @@
 import { Common } from './api/common';
 import blocks from './api/blocks';
 import mempool from './api/mempool';
-import mining from './api/mining';
+import mining from './api/mining/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
