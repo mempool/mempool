@@ -527,13 +527,12 @@ class Blocks {
       }
     }
 
-    let block = await bitcoinClient.getBlock(hash);
-
     // Not Bitcoin network, return the block as it
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return block;
+      return await bitcoinApi.$getBlock(hash);
     }
 
+    let block = await bitcoinClient.getBlock(hash);
     block = prepareBlock(block);
 
     // Bitcoin network, add our custom data on top
@@ -547,8 +546,8 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false,
-    skipDBLookup: boolean = false): Promise<TransactionStripped[]>
+  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
+    skipDBLookup = false): Promise<TransactionStripped[]>
   {
     if (skipMemoryCache === false) {
       // Check the memory cache
