@@ -81,7 +81,7 @@ export class PoolComponent implements OnInit {
           }
 
           return Object.assign({
-            logo: `./resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
+            logo: `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
           }, poolStats);
         })
       );
