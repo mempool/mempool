@@ -60,14 +60,14 @@ export class BlockFeesGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Block Fees`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+        if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -84,7 +84,7 @@ export class BlockFeesGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
-                  blockFeesUSD: response.body.filter(val => val.usd > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val.usd, val.avgHeight]),
+                  blockFeesUSD: response.body.filter(val => val.USD > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val.USD, val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -103,12 +103,12 @@ export class BlockFeesGraphComponent implements OnInit {
     this.chartOptions = {
       color: [
         new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#00ACC1' },
-          { offset: 1, color: '#0D47A1' },
-        ]),
-        new graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
+        ]),
+        new graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#C0CA33' },
+          { offset: 1, color: '#1B5E20' },
         ]),
       ],
       animation: false,
@@ -188,9 +188,6 @@ export class BlockFeesGraphComponent implements OnInit {
               return `${val} BTC`;
             }
           },
-          max: (value) => {
-            return Math.floor(value.max * 2 * 10) / 10;
-          },
           splitLine: {
             lineStyle: {
               type: 'dotted',
@@ -223,9 +220,10 @@ export class BlockFeesGraphComponent implements OnInit {
           type: 'line',
           smooth: 0.25,
           symbol: 'none',
-          areaStyle: {
-            opacity: 0.25,
-          },
+          lineStyle: {
+            width: 1,
+            opacity: 1,
+          }
         },
         {
           legendHoverLink: false,
@@ -238,7 +236,7 @@ export class BlockFeesGraphComponent implements OnInit {
           symbol: 'none',
           lineStyle: {
             width: 2,
-            opacity: 0.75,
+            opacity: 1,
           }
         },
       ],

@@ -279,7 +279,8 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `nodes` ADD longitude double NULL DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
     }
-    if (databaseSchemaVersion < 25 && isBitcoin == true) { // Link blocks to prices
+
+    if (databaseSchemaVersion < 30 && isBitcoin == true) { // Link blocks to prices
       await this.$executeQuery('ALTER TABLE `prices` ADD `id` int NULL AUTO_INCREMENT UNIQUE');
       await this.$executeQuery('DROP TABLE IF EXISTS `blocks_prices`');
       await this.$executeQuery(this.getCreateBlocksPricesTableQuery(), await this.$checkIfTableExists('blocks_prices'));
