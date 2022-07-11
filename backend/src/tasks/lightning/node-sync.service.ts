@@ -44,7 +44,9 @@ class NodeSyncService {
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
-      await this.$runClosedChannelsForensics();
+      if (config.MEMPOOL.BACKEND === 'esplora') {
+        await this.$runClosedChannelsForensics();
+      }
 
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
