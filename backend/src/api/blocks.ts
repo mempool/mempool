@@ -19,7 +19,7 @@ import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
-import mining from './mining';
+import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import difficultyAdjustment from './difficulty-adjustment';
 
