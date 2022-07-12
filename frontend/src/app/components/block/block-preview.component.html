@@ -1,0 +1,92 @@
+<div class="box preview-box" *ngIf="!error">
+  <div class="row">
+    <div class="col-sm">
+      <h1 class="block-title">
+        <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container>
+          <span class="next-previous-blocks">
+            <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
+          </span>
+        </ng-template>
+        <ng-template [ngIf]="blockHeight" i18n="shared.block-title">Block <ng-container *ngTemplateOutlet="blockTemplateContent"></ng-container></ng-template>
+        <ng-template #blockTemplateContent>
+          <span class="next-previous-blocks">
+            <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
+          </span>
+        </ng-template>
+      </h1>
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <!-- <tr>
+          <td class="td-width" i18n="block.hash">Hash</td>
+          <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block?.id]" title="{{ block?.id }}">{{ block?.id | shortenString : 13 }}</a></td>
+          </tr> -->
+          <tr>
+            <td i18n="block.timestamp">Timestamp</td>
+            <td>
+              {{ block?.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+            </td>
+          </tr>
+          <tr>
+            <td i18n="block.size">Size</td>
+            <td [innerHTML]="'&lrm;' + (block?.size | bytes: 2)"></td>
+          </tr>
+          <tr>
+            <td i18n="block.weight">Weight</td>
+            <td [innerHTML]="'&lrm;' + (block?.weight | wuBytes: 2)"></td>
+          </tr>
+          <ng-template [ngIf]="webGlEnabled">
+            <tr *ngIf="block?.extras?.medianFee != undefined">
+              <td class="td-width" i18n="block.median-fee">Median fee</td>
+              <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+            </tr>
+            <ng-template [ngIf]="fees !== undefined">
+              <tr>
+                <td i18n="block.total-fees|Total fees in a block">Total fees</td>
+                <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees">
+                  <app-amount [satoshis]="block?.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                </td>
+                <ng-template #liquidTotalFees>
+                  <td>
+                    <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
+                  </td>
+                </ng-template>
+              </tr>
+              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
+                <td>
+                  <app-amount [satoshis]="block?.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                </td>
+              </tr>
+            </ng-template>
+            <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+              <td i18n="block.miner">Miner</td>
+              <td *ngIf="stateService.env.MINING_DASHBOARD">
+                <a [attr.data-cy]="'block-details-miner-badge'" placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block?.extras.pool.slug]" class="badge"
+                  [class]="block?.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                  {{ block?.extras.pool.name }}
+                </a>
+              </td>
+              <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
+                <span [attr.data-cy]="'block-details-miner-badge'" placement="bottom" class="badge"
+                  [class]="block?.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
+                  {{ block?.extras.pool.name }}
+              </span>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm chart-container" *ngIf="webGlEnabled">
+      <app-block-overview-graph
+        #blockGraph
+        [isLoading]="false"
+        [resolution]="75"
+        [blockLimit]="stateService.blockVSize"
+        [orientation]="'top'"
+        [flip]="false"
+        (txClickEvent)="onTxClick($event)"
+      ></app-block-overview-graph>
+    </div>
+  </div>
+</div>
