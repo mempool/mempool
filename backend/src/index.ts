@@ -24,7 +24,6 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
-import priceUpdater from './tasks/price-updater';
 import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
@@ -166,7 +165,6 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
-      priceUpdater.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;

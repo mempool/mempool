@@ -17,11 +17,11 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
+import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
-import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -150,6 +150,7 @@ class Blocks {
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
     blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
+    blockExtended.extras.usd = fiatConversion.getConversionRates().USD;
 
     if (block.height === 0) {
       blockExtended.extras.medianFee = 0; // 50th percentiles

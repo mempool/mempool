@@ -27,6 +27,7 @@ export function prepareBlock(block: any): BlockExtended {
         name: block.pool_name,
         slug: block.pool_slug,
       } : undefined),
+      usd: block?.extras?.usd ?? block.usd ?? null,
     }
   };
 }

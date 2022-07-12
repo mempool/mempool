@@ -351,6 +351,7 @@ export class HashrateChartComponent implements OnInit {
       series: data.hashrates.length === 0 ? [] : [
         {
           zlevel: 0,
+          yAxisIndex: 0,
           name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
           showSymbol: false,
           symbol: 'none',
