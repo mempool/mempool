@@ -363,7 +363,7 @@ class BlocksRepository {
         previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        WHERE hash = '?';
+        WHERE hash = ?;
       `;
       const [rows]: any[] = await DB.query(query, [hash]);
 
