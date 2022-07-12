@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 29;
+  private static currentVersion = 30;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -289,6 +289,10 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE `nodes` ADD subdivision_id int(11) unsigned NULL DEFAULT NULL');
         await this.$executeQuery('ALTER TABLE `nodes` ADD longitude double NULL DEFAULT NULL');
         await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
+      }
+
+      if (databaseSchemaVersion < 30 && isBitcoin === true) {
+        await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization") NOT NULL');
       }
 
     } catch (e) {
