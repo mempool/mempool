@@ -6,6 +6,7 @@ class NodesRoutes {
 
   public initRoutes(app: Application) {
     app
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/asShare', this.$getNodesAsShare)
@@ -65,6 +66,18 @@ class NodesRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
       res.json(nodesPerAs);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getNodesPerCountry(req: Request, res: Response) {
+    try {
+      const nodes = await nodesApi.$getNodesPerCountry(req.params.country.toLowerCase());
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(nodes);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
