@@ -124,6 +124,21 @@ class NodesApi {
       throw e;
     }
   }
+
+  public async $getNodesPerCountry(country: string) {
+    try {
+      const query = `SELECT nodes.* FROM nodes
+        JOIN geo_names ON geo_names.id = nodes.country_id
+        WHERE LOWER(json_extract(names, '$.en')) = ?
+      `;
+
+      const [rows]: any = await DB.query(query, [`"${country}"`]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get nodes for country ${country}. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
 }
 
 export default new NodesApi();
