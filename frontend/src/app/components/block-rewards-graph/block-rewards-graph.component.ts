@@ -98,9 +98,23 @@ export class BlockRewardsGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title: object;
+    if (data.blockRewards.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     const scaleFactor = 0.1;
 
     this.chartOptions = {
+      title: title,
       animation: false,
       color: [
         new graphic.LinearGradient(0, 0, 0, 1, [
@@ -159,7 +173,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      legend: {
+      legend: data.blockRewards.length === 0 ? undefined : {
         data: [
           {
             name: 'Rewards BTC',
@@ -179,7 +193,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           },
         ],
       },
-      yAxis: [
+      yAxis: data.blockRewards.length === 0 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -222,7 +236,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           },
         },
       ],
-      series: [
+      series: data.blockRewards.length === 0 ? undefined : [
         {
           legendHoverLink: false,
           zlevel: 0,
@@ -251,7 +265,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           }
         },
       ],
-      dataZoom: [{
+      dataZoom: data.blockRewards.length === 0 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,

@@ -100,7 +100,21 @@ export class BlockFeesGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title: object;
+    if (data.blockFees.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     this.chartOptions = {
+      title: title,
       color: [
         new graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#FDD835' },
@@ -159,7 +173,7 @@ export class BlockFeesGraphComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      legend: {
+      legend: data.blockFees.length === 0 ? undefined : {
         data: [
           {
             name: 'Fees BTC',
@@ -179,7 +193,7 @@ export class BlockFeesGraphComponent implements OnInit {
           },
         ],
       },
-      yAxis: [
+      yAxis: data.blockFees.length === 0 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -210,7 +224,7 @@ export class BlockFeesGraphComponent implements OnInit {
           },
         },
       ],
-      series: [
+      series: data.blockFees.length === 0 ? undefined : [
         {
           legendHoverLink: false,
           zlevel: 0,
@@ -240,7 +254,7 @@ export class BlockFeesGraphComponent implements OnInit {
           }
         },
       ],
-      dataZoom: [{
+      dataZoom: data.blockFees.length === 0 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,
