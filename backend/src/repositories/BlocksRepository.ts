@@ -288,7 +288,6 @@ class BlocksRepository {
       LIMIT 10`;
 
     try {
-      console.log(query, params);
       const [rows] = await DB.query(query, params);
 
       const blocks: BlockExtended[] = [];
