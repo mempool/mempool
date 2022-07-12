@@ -1,0 +1,35 @@
+.preview-wrapper {
+  position: relative;
+  display: block;
+  margin: auto;
+  max-width: 1024px;
+  max-height: 512px;
+  padding-bottom: 64px;
+
+  footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    min-height: 64px;
+    padding: 0rem 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: #11131f;
+    text-align: start;
+  }
+
+  .footer-brand {
+    width: 60%;
+  }
+
+  .network {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
