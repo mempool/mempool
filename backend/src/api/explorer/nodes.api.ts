@@ -93,6 +93,35 @@ class NodesApi {
       throw e;
     }
   }
+
+  public async $getNodesAsShare() {
+    try {
+      let query = `SELECT names, COUNT(*) as nodesCount from nodes
+        JOIN geo_names ON geo_names.id = nodes.as_number
+        GROUP BY as_number
+        ORDER BY COUNT(*) DESC
+        LIMIT 20
+      `;
+      const [nodesCountPerAS]: any = await DB.query(query);
+
+      query = `SELECT COUNT(*) as total FROM nodes WHERE as_number IS NOT NULL`;
+      const [nodesWithAS]: any = await DB.query(query);
+
+      const nodesPerAs: any[] = [];
+      for (const as of nodesCountPerAS) {
+        nodesPerAs.push({
+          name: JSON.parse(as.names),
+          count: as.nodesCount,
+          share: Math.floor(as.nodesCount / nodesWithAS[0].total * 10000) / 100,
+        })
+      }
+
+      return nodesPerAs;
+    } catch (e) {
+      logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
 }
 
 export default new NodesApi();
