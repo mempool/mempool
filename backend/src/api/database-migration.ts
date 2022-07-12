@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 30;
+  private static currentVersion = 31;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -280,10 +280,15 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
     }
 
-    if (databaseSchemaVersion < 30 && isBitcoin == true) { // Link blocks to prices
+    if (databaseSchemaVersion < 30 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization") NOT NULL');
+    }
+
+    if (databaseSchemaVersion < 31 && isBitcoin == true) { // Link blocks to prices
       await this.$executeQuery('ALTER TABLE `prices` ADD `id` int NULL AUTO_INCREMENT UNIQUE');
       await this.$executeQuery('DROP TABLE IF EXISTS `blocks_prices`');
       await this.$executeQuery(this.getCreateBlocksPricesTableQuery(), await this.$checkIfTableExists('blocks_prices'));
+
     }
   }
 
