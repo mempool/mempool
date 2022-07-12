@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, share, switchMap, tap } from 'rxjs/operators';
-import { BlockAudit, TransactionStripped } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { detectWebGL } from '../../shared/graphs.utils';
-import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { Observable, Subscription, combineLatest } from 'rxjs';
+import { map, share, switchMap, tap, startWith } from 'rxjs/operators';
+import { BlockAudit, TransactionStripped } from 'src/app/interfaces/node-api.interface';
+import { ApiService } from 'src/app/services/api.service';
+import { StateService } from 'src/app/services/state.service';
+import { detectWebGL } from 'src/app/shared/graphs.utils';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overview-graph.component';
 
 @Component({
@@ -22,7 +22,7 @@ import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overv
     }
   `],
 })
-export class BlockAuditComponent implements OnInit, OnDestroy {
+export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   blockAudit: BlockAudit = undefined;
   transactions: string[];
   auditObservable$: Observable<BlockAudit>;
@@ -36,8 +36,10 @@ export class BlockAuditComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   isMobile = window.innerWidth <= 767.98;
 
-  @ViewChild('blockGraphTemplate') blockGraphTemplate: BlockOverviewGraphComponent;
-  @ViewChild('blockGraphMined') blockGraphMined: BlockOverviewGraphComponent;
+  childChangeSubscription: Subscription;
+
+  @ViewChildren('blockGraphTemplate') blockGraphTemplate: QueryList<BlockOverviewGraphComponent>;
+  @ViewChildren('blockGraphMined') blockGraphMined: QueryList<BlockOverviewGraphComponent>;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +51,7 @@ export class BlockAuditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.childChangeSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -83,15 +86,8 @@ export class BlockAuditComponent implements OnInit, OnDestroy {
               return blockAudit;
             }),
             tap((blockAudit) => {
+              this.blockAudit = blockAudit;
               this.changeMode(this.mode);
-              if (this.blockGraphTemplate) {
-                this.blockGraphTemplate.destroy();
-                this.blockGraphTemplate.setup(blockAudit.template);
-              }
-              if (this.blockGraphMined) {
-                this.blockGraphMined.destroy();
-                this.blockGraphMined.setup(blockAudit.transactions);
-              }
               this.isLoading = false;
             }),
           );
@@ -100,14 +96,47 @@ export class BlockAuditComponent implements OnInit, OnDestroy {
     );
   }
 
+  ngAfterViewInit() {
+    this.childChangeSubscription = combineLatest([this.blockGraphTemplate.changes.pipe(startWith(null)), this.blockGraphMined.changes.pipe(startWith(null))]).subscribe(() => {
+      console.log('changed!');
+      this.setupBlockGraphs();
+    })
+  }
+
+  setupBlockGraphs() {
+    console.log('setting up block graphs')
+    if (this.blockAudit) {
+      this.blockGraphTemplate.forEach(graph => {
+        graph.destroy();
+        if (this.isMobile && this.mode === 'added') {
+          graph.setup(this.blockAudit.transactions);
+        } else {
+          graph.setup(this.blockAudit.template);
+        }
+      })
+      this.blockGraphMined.forEach(graph => {
+        graph.destroy();
+        graph.setup(this.blockAudit.transactions);
+      })
+    }
+  }
+
   onResize(event: any) {
-    this.isMobile = event.target.innerWidth <= 767.98;
+    const isMobile = event.target.innerWidth <= 767.98;
+    const changed = isMobile !== this.isMobile;
+    this.isMobile = isMobile;
     this.paginationMaxSize = event.target.innerWidth < 670 ? 3 : 5;
+
+    if (changed) {
+      this.changeMode(this.mode);
+    }
   }
 
   changeMode(mode: 'missing' | 'added') {
     this.router.navigate([], { fragment: mode });
     this.mode = mode;
+
+    this.setupBlockGraphs();
   }
 
   onTxClick(event: TransactionStripped): void {
