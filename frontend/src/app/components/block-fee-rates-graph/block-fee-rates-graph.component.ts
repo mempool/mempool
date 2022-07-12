@@ -180,8 +180,8 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           }
           let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
 
-          for (const pool of data.reverse()) {
-            tooltip += `${pool.marker} ${pool.seriesName}: ${pool.data[1]} sats/vByte<br>`;
+          for (const rate of data.reverse()) {
+            tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1]} sats/vByte<br>`;
           }
 
           if (['24h', '3d'].includes(this.timespan)) {

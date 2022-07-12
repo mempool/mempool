@@ -1,4 +1,4 @@
-import { IndexedDifficultyAdjustment, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
+import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import PoolsRepository from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
@@ -7,12 +7,14 @@ import logger from '../../logger';
 import { Common } from '../common';
 import loadingIndicators from '../loading-indicators';
 import { escape } from 'mysql2';
-import indexer from '../../indexer';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
+import PricesRepository from '../../repositories/PricesRepository';
 
 class Mining {
+  blocksPriceIndexingRunning = false;
+
   constructor() {
   }
 
@@ -31,7 +33,7 @@ class Mining {
    */
   public async $getHistoricalBlockFees(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFees(
-      this.getTimeRange(interval),
+      this.getTimeRange(interval, 5),
       Common.getSqlInterval(interval)
     );
   }
@@ -453,6 +455,70 @@ class Mining {
     }
   }
 
+  /**
+   * Create a link between blocks and the latest price at when they were mined
+   */
+  public async $indexBlockPrices() {
+    if (this.blocksPriceIndexingRunning === true) {
+      return;
+    }
+    this.blocksPriceIndexingRunning = true;
+
+    try {
+      const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
+      const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
+
+      let totalInserted = 0;
+      const blocksPrices: BlockPrice[] = [];
+
+      for (const block of blocksWithoutPrices) {
+        // Quick optimisation, out mtgox feed only goes back to 2010-07-19 02:00:00, so skip the first 68951 blocks
+        if (block.height < 68951) {
+          blocksPrices.push({
+            height: block.height,
+            priceId: prices[0].id,
+          });
+          continue;
+        }
+        for (const price of prices) {
+          if (block.timestamp < price.time) {
+            blocksPrices.push({
+              height: block.height,
+              priceId: price.id,
+            });
+            break;
+          };
+        }
+
+        if (blocksPrices.length >= 100000) {
+          totalInserted += blocksPrices.length;
+          if (blocksWithoutPrices.length > 200000) {
+            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
+          } else {
+            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+          }
+          await BlocksRepository.$saveBlockPrices(blocksPrices);
+          blocksPrices.length = 0;
+        }
+      }
+
+      if (blocksPrices.length > 0) {
+        totalInserted += blocksPrices.length;
+        if (blocksWithoutPrices.length > 200000) {
+          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
+        } else {
+          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+        }
+        await BlocksRepository.$saveBlockPrices(blocksPrices);
+      }
+    } catch (e) {
+      this.blocksPriceIndexingRunning = false;
+      throw e;
+    }
+
+    this.blocksPriceIndexingRunning = false;
+  }
+
   private getDateMidnight(date: Date): Date {
     date.setUTCHours(0);
     date.setUTCMinutes(0);
@@ -462,18 +528,18 @@ class Mining {
     return date;
   }
 
-  private getTimeRange(interval: string | null): number {
+  private getTimeRange(interval: string | null, scale = 1): number {
     switch (interval) {
-      case '3y': return 43200; // 12h
-      case '2y': return 28800; // 8h
-      case '1y': return 28800; // 8h
-      case '6m': return 10800; // 3h
-      case '3m': return 7200; // 2h
-      case '1m': return 1800; // 30min
-      case '1w': return 300; // 5min
-      case '3d': return 1;
-      case '24h': return 1;
-      default: return 86400; // 24h
+      case '3y': return 43200 * scale; // 12h
+      case '2y': return 28800 * scale; // 8h
+      case '1y': return 28800 * scale; // 8h
+      case '6m': return 10800 * scale; // 3h
+      case '3m': return 7200 * scale; // 2h
+      case '1m': return 1800 * scale; // 30min
+      case '1w': return 300 * scale; // 5min
+      case '3d': return 1 * scale;
+      case '24h': return 1 * scale;
+      default: return 86400 * scale;
     }
   }
 }
