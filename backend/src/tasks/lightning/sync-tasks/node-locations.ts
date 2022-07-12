@@ -52,6 +52,13 @@ export async function $lookupNodeLocation(): Promise<void> {
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'city', ?)`,
                 [city.city?.geoname_id, JSON.stringify(city.city?.names)]);
             }
+
+            // Store AS name
+            if (asn.autonomous_system_organization) {
+              await DB.query(
+                `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'as_organization', ?)`,
+                [asn.autonomous_system_number, JSON.stringify(asn.autonomous_system_organization)]);
+            }
           }
         }
       }
