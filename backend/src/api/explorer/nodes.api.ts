@@ -5,7 +5,7 @@ class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
     try {
       const query = `
-        SELECT nodes.*,
+        SELECT nodes.*, geo_names_as.names as as_organization, geo_names_city.names as city, geo_names_country.names as country, 
           (SELECT Count(*)
           FROM channels
           WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_count,
@@ -16,10 +16,19 @@ class NodesApi {
           FROM channels
           WHERE status < 2 AND ( node1_public_key = ? OR node2_public_key = ? )) AS channels_capacity_avg
         FROM nodes
+        LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
+        LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
+        LEFT JOIN geo_names geo_names_country on geo_names_country.id = country_id
         WHERE public_key = ?
       `;
       const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
-      return rows[0];
+      if (rows.length > 0) {
+        rows[0].as_organization = JSON.parse(rows[0].as_organization);
+        rows[0].city = JSON.parse(rows[0].city);
+        rows[0].country = JSON.parse(rows[0].country);
+        return rows[0];
+      }
+      return null;
     } catch (e) {
       logger.err('$getNode error: ' + (e instanceof Error ? e.message : e));
       throw e;
