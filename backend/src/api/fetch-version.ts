@@ -8,8 +8,8 @@ function getVersion(): string {
 }
 
 function getGitCommit(): string {
-  if (process.env.DOCKER_COMMIT_HASH) {
-    return process.env.DOCKER_COMMIT_HASH;
+  if (process.env.MEMPOOL_COMMIT_HASH) {
+    return process.env.MEMPOOL_COMMIT_HASH;
   } else {
     const gitRevParse = spawnSync('git', ['rev-parse', '--short', 'HEAD']);
     if (!gitRevParse.error) {
