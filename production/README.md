@@ -289,11 +289,11 @@ Get an SSL certificate using `certbot`:
 certbot --nginx -d mempool.ninja
 ```
 
-Make a symlink from `/usr/local/etc/nginx/mempool` to `/mempool/mempool`, copy the `nginx.conf`, and edit as necessary. You probably only need to edit the top-level `nginx.conf` file.
+Make a symlink from `/usr/local/etc/nginx/mempool` to `/mempool/mempool/production/nginx`, copy the `nginx.conf`, and edit as necessary. You probably only need to edit the top-level `nginx.conf` file.
 ```
 cd /usr/local/etc/nginx
-ln -s /mempool/mempool
-cp /mempool/mempool/nginx.conf .
+ln -s /mempool/mempool/production/nginx mempool
+cp ./mempool/nginx.conf .
 vi nginx.conf
 ```
 
