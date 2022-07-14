@@ -33,6 +33,14 @@
                   <app-sats [satoshis]="node.channels_capacity_avg"></app-sats><app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
                 </td>
               </tr>
+              <tr *ngIf="node.country && node.city && node.subdivision">
+                <td i18n="location">Location</td>
+                <td>{{ node.city.en }}, {{ node.subdivision.en }}<br>{{ node.country.en }}</td>
+              </tr>
+              <tr *ngIf="node.country && !node.city">
+                <td i18n="location">Location</td>
+                <td>{{ node.country.en }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -55,6 +63,12 @@
               <tr>
                 <td i18n="address.balance">Color</td>
                 <td><div [ngStyle]="{'color': node.color}">{{ node.color }}</div></td>
+              </tr>
+              <tr *ngIf="node.country">
+                <td i18n="isp">ISP</td>
+                <td>
+                  {{ node.as_organization }} [ASN {{node.as_number}}]
+                </td>
               </tr>
             </tbody>
           </table>

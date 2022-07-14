@@ -16,7 +16,7 @@ export interface PriceFeed {
   currencies: string[];
 
   $fetchPrice(currency): Promise<number>;
-  $fetchRecentHourlyPrice(currencies: string[]): Promise<PriceHistory>;
+  $fetchRecentPrice(currencies: string[], type: string): Promise<PriceHistory>;
 }
 
 export interface PriceHistory {
@@ -177,13 +177,16 @@ class PriceUpdater {
     }
     if (insertedCount > 0) {
       logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+    } else {
+      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
     }
 
     // Insert Kraken weekly prices
     await new KrakenApi().$insertHistoricalPrice();
 
     // Insert missing recent hourly prices
-    await this.$insertMissingRecentPrices();
+    await this.$insertMissingRecentPrices('day');
+    await this.$insertMissingRecentPrices('hour');
 
     this.historyInserted = true;
     this.lastHistoricalRun = new Date().getTime();
@@ -193,17 +196,17 @@ class PriceUpdater {
    * Find missing hourly prices and insert them in the database
    * It has a limited backward range and it depends on which API are available
    */
-  private async $insertMissingRecentPrices(): Promise<void> {
+  private async $insertMissingRecentPrices(type: 'hour' | 'day'): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
 
-    logger.info(`Fetching hourly price history from exchanges and saving missing ones into the database, this may take a while`);
+    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database, this may take a while`);
 
     const historicalPrices: PriceHistory[] = [];
 
     // Fetch all historical hourly prices
     for (const feed of this.feeds) {
       try {
-        historicalPrices.push(await feed.$fetchRecentHourlyPrice(this.currencies));
+        historicalPrices.push(await feed.$fetchRecentPrice(this.currencies, type));
       } catch (e) {
         logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`);
       }
@@ -250,7 +253,9 @@ class PriceUpdater {
     }
 
     if (totalInserted > 0) {
-      logger.notice(`Inserted ${totalInserted} hourly historical prices into the db`);
+      logger.notice(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
+    } else {
+      logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
     }
   }
 }

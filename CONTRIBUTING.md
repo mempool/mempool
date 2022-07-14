@@ -6,6 +6,8 @@ In order to clarify the intellectual property license granted with Contributions
 
 When submitting a pull request for the first time, please create a file with a name like `/contributors/{github_username}.txt`, and in the content of that file indicate your agreement to the Contributor License Agreement terms below. An example of what that file should contain can be seen in wiz's agreement file. (This method of CLA "signing" is borrowed from Medium's open source project.)
 
+Also, please GPG-sign all your commits (`git config commit.gpgsign true`).
+
 # Contributor License Agreement
 
 Last Updated: January 25, 2022

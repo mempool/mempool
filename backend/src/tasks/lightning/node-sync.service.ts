@@ -8,6 +8,7 @@ import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
+import { $lookupNodeLocation } from './sync-tasks/node-locations';
 
 class NodeSyncService {
   constructor() {}
@@ -33,6 +34,10 @@ class NodeSyncService {
       }
       logger.info(`Nodes updated.`);
 
+      if (config.MAXMIND.ENABLED) {
+        await $lookupNodeLocation();
+      }
+
       await this.$setChannelsInactive();
 
       for (const channel of networkGraph.channels) {
@@ -44,7 +49,9 @@ class NodeSyncService {
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
-      await this.$runClosedChannelsForensics();
+      if (config.MEMPOOL.BACKEND === 'esplora') {
+        await this.$runClosedChannelsForensics();
+      }
 
     } catch (e) {
       logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));

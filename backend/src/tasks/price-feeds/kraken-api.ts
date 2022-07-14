@@ -26,7 +26,7 @@ class KrakenApi implements PriceFeed {
     return response ? parseInt(response['result'][this.getTicker(currency)]['c'][0], 10) : -1;
   }
 
-  public async $fetchRecentHourlyPrice(currencies: string[]): Promise<PriceHistory> {
+  public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 
     for (const currency of currencies) {

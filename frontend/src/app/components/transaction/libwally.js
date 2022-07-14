@@ -28,7 +28,7 @@ const WALLY_OK = 0,
   ASSET_TAG_LEN = 32,
   BLINDING_FACTOR_LEN = 32;
 
-const WASM_URL = `./resources/wallycore/wallycore.js`;
+const WASM_URL = `/resources/wallycore/wallycore.js`;
 
 let load_promise, Module;
 export function load() {
