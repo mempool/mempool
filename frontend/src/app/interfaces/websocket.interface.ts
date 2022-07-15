@@ -70,6 +70,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  status?: 'found' | 'missing' | 'added';
 }
 
 export interface IBackendInfo {
