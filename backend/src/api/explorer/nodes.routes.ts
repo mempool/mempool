@@ -1,6 +1,8 @@
 import config from '../../config';
 import { Application, Request, Response } from 'express';
 import nodesApi from './nodes.api';
+import DB from '../../database';
+
 class NodesRoutes {
   constructor() { }
 
@@ -73,11 +75,22 @@ class NodesRoutes {
 
   private async $getNodesPerCountry(req: Request, res: Response) {
     try {
+      const [countryName]: any[] = await DB.query(`SELECT names FROM geo_names WHERE LOWER(JSON_EXTRACT(geo_names.names, '$.en')) = ?`,
+        [`"${req.params.country}"`]);
+
+      if (countryName.length === 0) {
+        res.status(404).send(`This country does not exists`);
+        return;
+      }
+
       const nodes = await nodesApi.$getNodesPerCountry(req.params.country.toLowerCase());
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(nodes);
+      res.json({
+        country: JSON.parse(countryName[0].names),
+        nodes: nodes,
+      });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
