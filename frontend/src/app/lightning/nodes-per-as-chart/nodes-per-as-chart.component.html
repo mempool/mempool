@@ -1,0 +1,41 @@
+<div class="full-container h-100">
+
+  <div class="card-header">
+    <span i18n="lightning.nodes-per-as">Nodes per AS</span>
+    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+    </button>
+  </div>
+
+  <div class="container pb-lg-0 bottom-padding">
+    <div class="pb-lg-5" *ngIf="nodesPerAsObservable$ | async">
+      <div class="chart w-100" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+        (chartInit)="onChartInit($event)">
+      </div>
+    </div>
+
+    <div class="text-center loadingGraphs" *ngIf="isLoading">
+      <div class="spinner-border text-light"></div>
+    </div>
+
+    <table class="table table-borderless text-center">
+      <thead>
+        <tr>
+          <th class="d-none d-md-block" i18n="mining.rank">Rank</th>
+          <th class="" i18n="lightning.as-name">Name</th>
+          <th class="" i18n="lightning.share">Hashrate</th>
+          <th class="" i18n="lightning.nodes">Nodes</th>
+        </tr>
+      </thead>
+      <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
+        <tr *ngFor="let asEntry of asList">
+          <td class="d-none d-md-block">{{ asEntry.rank }}</td>
+          <td class="text-truncate" style="max-width: 100px">{{ asEntry.name }}</td>
+          <td class="">{{ asEntry.share }}%</td>
+          <td class="">{{ asEntry.count }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

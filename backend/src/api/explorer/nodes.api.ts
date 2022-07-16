@@ -100,7 +100,6 @@ class NodesApi {
         JOIN geo_names ON geo_names.id = nodes.as_number
         GROUP BY as_number
         ORDER BY COUNT(*) DESC
-        LIMIT 20
       `;
       const [nodesCountPerAS]: any = await DB.query(query);
 
