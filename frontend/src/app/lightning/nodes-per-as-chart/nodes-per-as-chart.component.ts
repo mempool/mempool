@@ -5,6 +5,7 @@ import { chartColors } from 'src/app/app.constants';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { download } from 'src/app/shared/graphs.utils';
+import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 
 @Component({
   selector: 'app-nodes-per-as-chart',
@@ -30,6 +31,7 @@ export class NodesPerAsChartComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
+    private amountShortenerPipe: AmountShortenerPipe
   ) {
   }
 
@@ -89,7 +91,9 @@ export class NodesPerAsChartComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             return `<b style="color: white">${as.name} (${as.share}%)</b><br>` +
-              $localize`${as.count.toString()} nodes`;
+              $localize`${as.count.toString()} nodes<br>` +
+              $localize`${this.amountShortenerPipe.transform(as.capacity / 100000000, 2)} BTC capacity`
+            ;
           }
         },
         data: as.slug,
