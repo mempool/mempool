@@ -19,6 +19,7 @@ import { GraphsModule } from '../graphs/graphs.module';
 import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 import { ChannelsStatisticsComponent } from './channels-statistics/channels-statistics.component';
 import { NodesPerAsChartComponent } from '../lightning/nodes-per-as-chart/nodes-per-as-chart.component';
+import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -35,6 +36,7 @@ import { NodesPerAsChartComponent } from '../lightning/nodes-per-as-chart/nodes-
     NodesNetworksChartComponent,
     ChannelsStatisticsComponent,
     NodesPerAsChartComponent,
+    NodesPerCountry,
   ],
   imports: [
     CommonModule,

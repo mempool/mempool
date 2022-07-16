@@ -127,12 +127,27 @@ class NodesApi {
 
   public async $getNodesPerCountry(country: string) {
     try {
-      const query = `SELECT nodes.* FROM nodes
-        JOIN geo_names ON geo_names.id = nodes.country_id
-        WHERE LOWER(json_extract(names, '$.en')) = ?
+      const query = `
+        SELECT node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
+          UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
+          geo_names_city.names as city
+        FROM node_stats
+        JOIN (
+          SELECT public_key, MAX(added) as last_added
+          FROM node_stats
+          GROUP BY public_key
+        ) as b ON b.public_key = node_stats.public_key AND b.last_added = node_stats.added
+        LEFT JOIN nodes ON nodes.public_key = node_stats.public_key
+        LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id
+        LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id
+        WHERE LOWER(JSON_EXTRACT(geo_names_country.names, '$.en')) = ?
+        ORDER BY capacity DESC
       `;
 
       const [rows]: any = await DB.query(query, [`"${country}"`]);
+      for (let i = 0; i < rows.length; ++i) {
+        rows[i].city = JSON.parse(rows[i].city);
+      }
       return rows;
     } catch (e) {
       logger.err(`Cannot get nodes for country ${country}. Reason: ${e instanceof Error ? e.message : e}`);
