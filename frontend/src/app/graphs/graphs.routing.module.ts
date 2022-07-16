@@ -101,7 +101,7 @@ const routes: Routes = [
             component: LightningStatisticsChartComponent,
           },
           {
-            path: 'lightning/nodes-per-as',
+            path: 'lightning/nodes-per-isp',
             component: NodesPerAsChartComponent,
           },
           {

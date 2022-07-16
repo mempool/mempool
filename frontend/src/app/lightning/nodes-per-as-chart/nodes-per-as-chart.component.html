@@ -1,12 +1,13 @@
 <div class="full-container h-100">
 
   <div class="card-header">
-    <div class="d-flex d-md-block align-items-baseline">
-      <span i18n="lightning.nodes-per-as">Nodes per AS</span>
+    <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
+      <span i18n="lightning.nodes-per-isp">Lightning nodes per ISP</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>
+    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
   </div>
 
   <div class="container pb-lg-0 bottom-padding">
@@ -26,7 +27,7 @@
           <th *ngIf="!isMobile()" i18n="mining.rank">Rank</th>
           <th i18n="lightning.as-name">Name</th>
           <th *ngIf="!isMobile()" i18n="lightning.share">Share</th>
-          <th i18n="lightning.nodes">Nodes</th>
+          <th i18n="lightning.nodes-count">Nodes</th>
           <th i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>

@@ -36,7 +36,7 @@ export class NodesPerAsChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Nodes per AS`);
+    this.seoService.setTitle($localize`Lightning nodes per ISP`);
 
     this.nodesPerAsObservable$ = this.apiService.getNodesPerAs()
       .pipe(
