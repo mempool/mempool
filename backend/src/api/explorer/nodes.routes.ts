@@ -8,6 +8,7 @@ class NodesRoutes {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/asShare', this.$getNodesAsShare)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
     ;
@@ -52,6 +53,18 @@ class NodesRoutes {
         topByCapacity: topCapacityNodes,
         topByChannels: topChannelsNodes,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getNodesAsShare(req: Request, res: Response) {
+    try {
+      const nodesPerAs = await nodesApi.$getNodesAsShare();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(nodesPerAs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
