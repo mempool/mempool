@@ -1,10 +1,12 @@
 <div class="full-container h-100">
 
   <div class="card-header">
-    <span i18n="lightning.nodes-per-as">Nodes per AS</span>
-    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
-      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-    </button>
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="lightning.nodes-per-as">Nodes per AS</span>
+      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
   </div>
 
   <div class="container pb-lg-0 bottom-padding">
