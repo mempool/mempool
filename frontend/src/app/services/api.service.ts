@@ -254,4 +254,8 @@ export class ApiService {
   getNodesPerAs(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/asShare');
   }
+
+  getNodeForCountry$(country: string): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/country/' + country);
+  }
 }

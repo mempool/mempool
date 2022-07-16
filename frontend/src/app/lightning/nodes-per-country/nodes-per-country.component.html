@@ -1,0 +1,42 @@
+<div class="container-xl full-height" style="min-height: 335px">
+  <h1 class="float-left" i18n="lightning.nodes-in-country">Nodes in {{ country }}</h1>
+
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead>
+        <th class="alias text-left" i18n="lightning.alias">Alias</th>
+        <th class="timestamp-first text-left" i18n="lightning.first_seen">First seen</th>
+        <th class="timestamp-update text-left" i18n="lightning.last_update">Last update</th>
+        <th class="capacity text-right" i18n="lightning.capacity">Capacity</th>
+        <th class="channels text-right" i18n="lightning.channels">Channels</th>
+        <th class="city text-right" i18n="lightning.city">City</th>
+      </thead>
+      <tbody *ngIf="nodes$ | async as nodes">
+        <tr *ngFor="let node of nodes; let i= index; trackBy: trackByPublicKey">
+          <td class="alias text-left text-truncate">
+            <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
+          </td>
+          <td class="timestamp-first text-left">
+            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.first_seen"></app-timestamp>
+          </td>
+          <td class="timestamp-update text-left">
+            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updated_at"></app-timestamp>
+          </td>
+          <td class="capacity text-right">
+            <app-amount *ngIf="node.capacity > 100000000; else smallchannel" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+            <ng-template #smallchannel>
+              {{ node.capacity | amountShortener: 1 }}
+              <span class="sats" i18n="shared.sats">sats</span>
+            </ng-template>
+          </td>
+          <td class="channels text-right">
+            {{ node.channels }}
+          </td>
+          <td class="city text-right text-truncate">
+            {{ node?.city?.en ?? '-' }}
+          </td>
+      </tbody>
+    </table>
+  </div>
+
+</div>
