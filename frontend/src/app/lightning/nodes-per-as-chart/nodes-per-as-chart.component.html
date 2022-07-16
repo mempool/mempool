@@ -21,18 +21,20 @@
     <table class="table table-borderless text-center">
       <thead>
         <tr>
-          <th class="d-none d-md-block" i18n="mining.rank">Rank</th>
-          <th class="" i18n="lightning.as-name">Name</th>
-          <th class="" i18n="lightning.share">Hashrate</th>
-          <th class="" i18n="lightning.nodes">Nodes</th>
+          <th *ngIf="!isMobile()" i18n="mining.rank">Rank</th>
+          <th i18n="lightning.as-name">Name</th>
+          <th *ngIf="!isMobile()" i18n="lightning.share">Share</th>
+          <th i18n="lightning.nodes">Nodes</th>
+          <th i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
         <tr *ngFor="let asEntry of asList">
-          <td class="d-none d-md-block">{{ asEntry.rank }}</td>
+          <td *ngIf="!isMobile()">{{ asEntry.rank }}</td>
           <td class="text-truncate" style="max-width: 100px">{{ asEntry.name }}</td>
-          <td class="">{{ asEntry.share }}%</td>
-          <td class="">{{ asEntry.count }}</td>
+          <td *ngIf="!isMobile()">{{ asEntry.share }}%</td>
+          <td>{{ asEntry.count }}</td>
+          <td><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
         </tr>
       </tbody>
     </table>
