@@ -11,6 +11,13 @@
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
+            <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
+              <label ngbButtonLabel class="btn-primary btn-sm mr-2">
+                <a [routerLink]="['/tv' | relativeUrl]" style="color: white">
+                  <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
+                </a>
+                </label>
+            </div>
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H

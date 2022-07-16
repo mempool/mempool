@@ -210,4 +210,8 @@ export class StatisticsComponent implements OnInit {
       this.incomingGraph.onSaveChart(this.timespan);
     }
   }
+
+  isMobile() {
+    return (window.innerWidth <= 767.98);
+  }
 }
