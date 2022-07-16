@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { ActivatedRoute } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { SeoService } from 'src/app/services/seo.service';
 
 @Component({
   selector: 'app-nodes-per-country',
@@ -15,18 +16,17 @@ export class NodesPerCountry implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    private seoService: SeoService,
     private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-    this.country = this.route.snapshot.params.country;
-    this.country = this.country.charAt(0).toUpperCase() + this.country.slice(1);
-
     this.nodes$ = this.apiService.getNodeForCountry$(this.route.snapshot.params.country)
       .pipe(
-        map(nodes => {
-          console.log(nodes);
-          return nodes;
+        map(response => {
+          this.country = response.country.en
+          this.seoService.setTitle($localize`Lightning nodes in ${this.country}`);
+          return response.nodes;
         })
       );
   }
