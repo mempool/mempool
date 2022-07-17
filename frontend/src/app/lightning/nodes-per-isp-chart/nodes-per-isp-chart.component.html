@@ -21,25 +21,25 @@
       <div class="spinner-border text-light"></div>
     </div>
 
-    <table class="table table-borderless text-center">
+    <table class="table table-borderless text-center m-auto" style="max-width: 900px">
       <thead>
         <tr>
-          <th *ngIf="!isMobile()" i18n="mining.rank">Rank</th>
-          <th i18n="lightning.isp">ISP</th>
-          <th *ngIf="!isMobile()" i18n="lightning.share">Share</th>
-          <th i18n="lightning.nodes-count">Nodes</th>
-          <th i18n="lightning.capacity">Capacity</th>
+          <th class="rank text-left pl-0" i18n="mining.rank">Rank</th>
+          <th class="name text-left" i18n="lightning.isp">ISP</th>
+          <th class="share text-right" i18n="lightning.share">Share</th>
+          <th class="nodes text-right" i18n="lightning.nodes-count">Nodes</th>
+          <th class="capacity text-right pr-0" i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
         <tr *ngFor="let asEntry of asList">
-          <td *ngIf="!isMobile()">{{ asEntry.rank }}</td>
-          <td class="text-truncate" style="max-width: 100px">
-            <a [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
+          <td class="rank text-left pl-0">{{ asEntry.rank }}</td>
+          <td class="name text-left text-truncate"  style="max-width: 100px">
+          <a [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
           </td>
-          <td *ngIf="!isMobile()">{{ asEntry.share }}%</td>
-          <td>{{ asEntry.count }}</td>
-          <td><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
+          <td class="share text-right">{{ asEntry.share }}%</td>
+          <td class="nodes text-right">{{ asEntry.count }}</td>
+          <td class="capacity text-right pr-0"><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
         </tr>
       </tbody>
     </table>

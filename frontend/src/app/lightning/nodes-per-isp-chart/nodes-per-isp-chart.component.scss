@@ -34,3 +34,42 @@
     padding-bottom: 65px
   };
 }
+
+.rank {
+  width: 20%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.name {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 80%;
+    max-width: 150px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.share {
+  width: 20%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.nodes {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 10%;
+  }
+}
+
+.capacity {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 10%;
+    max-width: 100px;
+  }
+}
