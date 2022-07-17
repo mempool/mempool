@@ -3,11 +3,12 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i>
-          <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
-          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('mempool')">
-            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-          </button>
+          <div class="d-flex d-md-block align-items-baseline">
+            <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
+            <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('mempool')">
+              <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+            </button>
+          </div>  
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
@@ -91,11 +92,12 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i>
-          <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
-          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
-            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-          </button>
+          <div class="d-flex d-md-block align-items-baseline">
+            <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+            <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
+              <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+            </button>
+          </div>  
         </div>
 
         <div class="card-body">
