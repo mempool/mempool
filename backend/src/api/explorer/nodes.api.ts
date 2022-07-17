@@ -186,6 +186,39 @@ class NodesApi {
       throw e;
     }
   }
+
+  public async $getNodesCountries() {
+    try {
+      let query = `SELECT geo_names.names as names, geo_names_iso.names as iso_code, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
+        FROM nodes
+        JOIN geo_names ON geo_names.id = nodes.country_id AND geo_names.type = 'country'
+        JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
+        GROUP BY country_id
+        ORDER BY COUNT(DISTINCT nodes.public_key) DESC
+      `;
+      const [nodesCountPerCountry]: any = await DB.query(query);
+
+      query = `SELECT COUNT(*) as total FROM nodes WHERE country_id IS NOT NULL`;
+      const [nodesWithAS]: any = await DB.query(query);
+
+      const nodesPerCountry: any[] = [];
+      for (const country of nodesCountPerCountry) {
+        nodesPerCountry.push({
+          name: JSON.parse(country.names),
+          iso: country.iso_code, 
+          count: country.nodesCount,
+          share: Math.floor(country.nodesCount / nodesWithAS[0].total * 10000) / 100,
+          capacity: country.capacity,
+        })
+      }
+
+      return nodesPerCountry;
+    } catch (e) {
+      logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
 }
 
 export default new NodesApi();
