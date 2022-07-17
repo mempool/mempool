@@ -13,6 +13,7 @@ class NodesRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp', this.$getNodesISP)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/countries', this.$getNodesCountries)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
     ;
@@ -124,6 +125,18 @@ class NodesRoutes {
         isp: JSON.parse(isp[0].isp_name),
         nodes: nodes,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getNodesCountries(req: Request, res: Response) {
+    try {
+      const nodesPerAs = await nodesApi.$getNodesCountries();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(nodesPerAs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
