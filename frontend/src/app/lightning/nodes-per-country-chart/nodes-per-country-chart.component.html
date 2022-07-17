@@ -24,20 +24,20 @@
     <table class="table table-borderless text-center m-auto" style="max-width: 900px">
       <thead>
         <tr>
-          <th class="text-left rank" *ngIf="!isMobile()" i18n="mining.rank">Rank</th>
+          <th class="text-left rank" i18n="mining.rank">Rank</th>
           <th class="text-left name" i18n="lightning.as-name">Name</th>
-          <th class="text-right share" *ngIf="!isMobile()" i18n="lightning.share">Share</th>
+          <th class="text-right share" i18n="lightning.share">Share</th>
           <th class="text-right nodes" i18n="lightning.nodes-count">Nodes</th>
           <th class="text-right capacity" i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerCountryObservable$ | async) as countries">
         <tr *ngFor="let country of countries">
-          <td class="text-left rank" *ngIf="!isMobile()">{{ country.rank }}</td>
+          <td class="text-left rank">{{ country.rank }}</td>
           <td class="text-left text-truncate name">
             <a [routerLink]="['/lightning/nodes/country' | relativeUrl, country.iso]">{{ country.name.en }}</a>
           </td>
-          <td class="text-right share" *ngIf="!isMobile()">{{ country.share }}%</td>
+          <td class="text-right share">{{ country.share }}%</td>
           <td class="text-right nodes">{{ country.count }}</td>
           <td class="text-right capacity">
             <app-amount *ngIf="country.capacity > 100000000; else smallchannel" [satoshis]="country.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
