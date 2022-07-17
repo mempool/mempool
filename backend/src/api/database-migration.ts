@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 31;
+  private static currentVersion = 33;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -297,7 +297,14 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `id` int NULL AUTO_INCREMENT UNIQUE');
       await this.$executeQuery('DROP TABLE IF EXISTS `blocks_prices`');
       await this.$executeQuery(this.getCreateBlocksPricesTableQuery(), await this.$checkIfTableExists('blocks_prices'));
+    }
 
+    if (databaseSchemaVersion < 32 && isBitcoin == true) {
+      await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD `template` JSON DEFAULT "[]"');
+    }
+
+    if (databaseSchemaVersion < 33 && isBitcoin == true) {
+      await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization", "country_iso_code") NOT NULL');
     }
   }
 
