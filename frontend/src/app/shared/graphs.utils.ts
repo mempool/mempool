@@ -90,3 +90,11 @@ export function detectWebGL() {
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   return (gl && gl instanceof WebGLRenderingContext);
 }
+
+export function getFlagEmoji(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char =>  127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}

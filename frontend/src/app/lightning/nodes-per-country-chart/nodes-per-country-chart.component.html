@@ -35,7 +35,11 @@
         <tr *ngFor="let country of countries">
           <td class="text-left rank">{{ country.rank }}</td>
           <td class="text-left text-truncate name">
-            <a [routerLink]="['/lightning/nodes/country' | relativeUrl, country.iso]">{{ country.name.en }}</a>
+            <div class="d-flex">
+              <span style="font-size: 20px">{{ country.flag }}</span>
+              &nbsp;
+              <a class="mt-auto mb-auto" [routerLink]="['/lightning/nodes/country' | relativeUrl, country.iso]">{{ country.name.en }}</a>
+            </div>
           </td>
           <td class="text-right share">{{ country.share }}%</td>
           <td class="text-right nodes">{{ country.count }}</td>
