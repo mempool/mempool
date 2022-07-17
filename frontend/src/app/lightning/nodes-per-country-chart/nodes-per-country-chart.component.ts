@@ -46,15 +46,16 @@ export class NodesPerCountryChartComponent implements OnInit {
 
     this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry()
       .pipe(
-        tap(data => {
-          this.isLoading = false;
-          this.prepareChartOptions(data);
-        }),
         map(data => {
           for (let i = 0; i < data.length; ++i) {
             data[i].rank = i + 1;
+            data[i].iso = data[i].iso.toLowerCase();
           }
           return data.slice(0, 100);
+        }),
+        tap(data => {
+          this.isLoading = false;
+          this.prepareChartOptions(data);
         }),
         share()
       );
