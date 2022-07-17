@@ -25,7 +25,7 @@
       <thead>
         <tr>
           <th *ngIf="!isMobile()" i18n="mining.rank">Rank</th>
-          <th i18n="lightning.as-name">Name</th>
+          <th i18n="lightning.isp">ISP</th>
           <th *ngIf="!isMobile()" i18n="lightning.share">Share</th>
           <th i18n="lightning.nodes-count">Nodes</th>
           <th i18n="lightning.capacity">Capacity</th>
@@ -34,7 +34,9 @@
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
         <tr *ngFor="let asEntry of asList">
           <td *ngIf="!isMobile()">{{ asEntry.rank }}</td>
-          <td class="text-truncate" style="max-width: 100px">{{ asEntry.name }}</td>
+          <td class="text-truncate" style="max-width: 100px">
+            <a [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
+          </td>
           <td *ngIf="!isMobile()">{{ asEntry.share }}%</td>
           <td>{{ asEntry.count }}</td>
           <td><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>

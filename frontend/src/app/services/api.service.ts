@@ -258,4 +258,8 @@ export class ApiService {
   getNodeForCountry$(country: string): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/country/' + country);
   }
+
+  getNodeForISP$(isp: string): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp/' + isp);
+  }
 }

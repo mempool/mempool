@@ -96,7 +96,7 @@ class NodesApi {
 
   public async $getNodesAsShare() {
     try {
-      let query = `SELECT names, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
+      let query = `SELECT nodes.as_number as ispId, geo_names.names as names, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
         FROM nodes
         JOIN geo_names ON geo_names.id = nodes.as_number
         JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
@@ -111,6 +111,7 @@ class NodesApi {
       const nodesPerAs: any[] = [];
       for (const as of nodesCountPerAS) {
         nodesPerAs.push({
+          ispId: as.ispId,
           name: JSON.parse(as.names),
           count: as.nodesCount,
           share: Math.floor(as.nodesCount / nodesWithAS[0].total * 10000) / 100,
@@ -151,6 +152,37 @@ class NodesApi {
       return rows;
     } catch (e) {
       logger.err(`Cannot get nodes for country id ${countryId}. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
+  public async $getNodesPerISP(ISPId: string) {
+    try {
+      const query = `
+        SELECT node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
+          UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
+          geo_names_city.names as city, geo_names_country.names as country
+        FROM node_stats
+        JOIN (
+          SELECT public_key, MAX(added) as last_added
+          FROM node_stats
+          GROUP BY public_key
+        ) as b ON b.public_key = node_stats.public_key AND b.last_added = node_stats.added
+        JOIN nodes ON nodes.public_key = node_stats.public_key
+        JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+        LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+        WHERE nodes.as_number = ?
+        ORDER BY capacity DESC
+      `;
+
+      const [rows]: any = await DB.query(query, [ISPId]);
+      for (let i = 0; i < rows.length; ++i) {
+        rows[i].country = JSON.parse(rows[i].country);
+        rows[i].city = JSON.parse(rows[i].city);
+      }
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get nodes for ISP id ${ISPId}. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }

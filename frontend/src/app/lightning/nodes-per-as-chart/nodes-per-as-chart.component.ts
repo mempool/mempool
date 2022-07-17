@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { map, Observable, share, tap } from 'rxjs';
 import { chartColors } from 'src/app/app.constants';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { StateService } from 'src/app/services/state.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-nodes-per-as-chart',
@@ -31,7 +34,10 @@ export class NodesPerAsChartComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
-    private amountShortenerPipe: AmountShortenerPipe
+    private amountShortenerPipe: AmountShortenerPipe,
+    private router: Router,
+    private zone: NgZone,
+    private stateService: StateService,
   ) {
   }
 
@@ -96,7 +102,7 @@ export class NodesPerAsChartComponent implements OnInit {
             ;
           }
         },
-        data: as.slug,
+        data: as.ispId,
       } as PieSeriesOption);
     });
 
@@ -126,6 +132,7 @@ export class NodesPerAsChartComponent implements OnInit {
             totalNodeOther.toString() + ` nodes`;
         }
       },
+      data: 9999 as any,
     } as PieSeriesOption);
 
     return data;
@@ -149,7 +156,7 @@ export class NodesPerAsChartComponent implements OnInit {
         {
           zlevel: 0,
           minShowLabelAngle: 3.6,
-          name: 'Mining pool',
+          name: 'Lightning nodes',
           type: 'pie',
           radius: pieSize,
           data: this.generateChartSerieData(as),
@@ -193,6 +200,16 @@ export class NodesPerAsChartComponent implements OnInit {
       return;
     }
     this.chartInstance = ec;
+
+    this.chartInstance.on('click', (e) => {
+      if (e.data.data === 9999) { // "Other"
+        return;
+      }
+      this.zone.run(() => {
+        const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/nodes/isp/${e.data.data}`);
+        this.router.navigate([url]);
+      });
+    });
   }
 
   onSaveChart() {
