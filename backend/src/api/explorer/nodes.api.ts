@@ -129,7 +129,7 @@ class NodesApi {
   public async $getNodesPerCountry(countryId: string) {
     try {
       const query = `
-        SELECT DISTINCT   node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
+        SELECT node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
           UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city
         FROM node_stats
@@ -139,8 +139,8 @@ class NodesApi {
           GROUP BY public_key
         ) as b ON b.public_key = node_stats.public_key AND b.last_added = node_stats.added
         JOIN nodes ON nodes.public_key = node_stats.public_key
-        JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id
-        LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id
+        JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+        LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
         WHERE geo_names_country.id = ?
         ORDER BY capacity DESC
       `;
@@ -183,6 +183,39 @@ class NodesApi {
       return rows;
     } catch (e) {
       logger.err(`Cannot get nodes for ISP id ${ISPId}. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
+  public async $getNodesCountries() {
+    try {
+      let query = `SELECT geo_names.names as names, geo_names_iso.names as iso_code, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
+        FROM nodes
+        JOIN geo_names ON geo_names.id = nodes.country_id AND geo_names.type = 'country'
+        JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
+        GROUP BY country_id
+        ORDER BY COUNT(DISTINCT nodes.public_key) DESC
+      `;
+      const [nodesCountPerCountry]: any = await DB.query(query);
+
+      query = `SELECT COUNT(*) as total FROM nodes WHERE country_id IS NOT NULL`;
+      const [nodesWithAS]: any = await DB.query(query);
+
+      const nodesPerCountry: any[] = [];
+      for (const country of nodesCountPerCountry) {
+        nodesPerCountry.push({
+          name: JSON.parse(country.names),
+          iso: country.iso_code, 
+          count: country.nodesCount,
+          share: Math.floor(country.nodesCount / nodesWithAS[0].total * 10000) / 100,
+          capacity: country.capacity,
+        })
+      }
+
+      return nodesPerCountry;
+    } catch (e) {
+      logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }

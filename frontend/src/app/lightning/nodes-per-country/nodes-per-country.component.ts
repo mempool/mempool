@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { getFlagEmoji } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-nodes-per-country',
@@ -12,7 +13,7 @@ import { SeoService } from 'src/app/services/seo.service';
 })
 export class NodesPerCountry implements OnInit {
   nodes$: Observable<any>;
-  country: string;
+  country: {name: string, flag: string};
 
   constructor(
     private apiService: ApiService,
@@ -24,8 +25,11 @@ export class NodesPerCountry implements OnInit {
     this.nodes$ = this.apiService.getNodeForCountry$(this.route.snapshot.params.country)
       .pipe(
         map(response => {
-          this.country = response.country.en
-          this.seoService.setTitle($localize`Lightning nodes in ${this.country}`);
+          this.country = {
+            name: response.country.en,
+            flag: getFlagEmoji(this.route.snapshot.params.country)
+          };
+          this.seoService.setTitle($localize`Lightning nodes in ${this.country.name}`);
           return response.nodes;
         })
       );
