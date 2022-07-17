@@ -75,20 +75,25 @@ class NodesRoutes {
 
   private async $getNodesPerCountry(req: Request, res: Response) {
     try {
-      const [countryName]: any[] = await DB.query(`SELECT names FROM geo_names WHERE LOWER(JSON_EXTRACT(geo_names.names, '$.en')) = ?`,
-        [`"${req.params.country}"`]);
+      const [country]: any[] = await DB.query(
+        `SELECT geo_names.id, geo_names_country.names as country_names
+        FROM geo_names
+        JOIN geo_names geo_names_country on geo_names.id = geo_names_country.id AND geo_names_country.type = 'country'
+        WHERE geo_names.type = 'country_iso_code' AND geo_names.names = ?`,
+        [req.params.country]
+      );
 
-      if (countryName.length === 0) {
-        res.status(404).send(`This country does not exists`);
+      if (country.length === 0) {
+        res.status(404).send(`This country does not exist or does not host any lightning nodes on clearnet`);
         return;
       }
 
-      const nodes = await nodesApi.$getNodesPerCountry(req.params.country.toLowerCase());
+      const nodes = await nodesApi.$getNodesPerCountry(country[0].id);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json({
-        country: JSON.parse(countryName[0].names),
+        country: JSON.parse(country[0].country_names),
         nodes: nodes,
       });
     } catch (e) {
