@@ -20,6 +20,7 @@ import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networ
 import { ChannelsStatisticsComponent } from './channels-statistics/channels-statistics.component';
 import { NodesPerAsChartComponent } from '../lightning/nodes-per-as-chart/nodes-per-as-chart.component';
 import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
+import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -37,6 +38,7 @@ import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component
     ChannelsStatisticsComponent,
     NodesPerAsChartComponent,
     NodesPerCountry,
+    NodesPerISP,
   ],
   imports: [
     CommonModule,

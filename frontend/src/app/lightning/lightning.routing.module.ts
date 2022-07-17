@@ -5,6 +5,7 @@ import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper
 import { NodeComponent } from './node/node.component';
 import { ChannelComponent } from './channel/channel.component';
 import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
+import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 
 const routes: Routes = [
     {
@@ -26,6 +27,10 @@ const routes: Routes = [
         {
           path: 'nodes/country/:country',
           component: NodesPerCountry,
+        },
+        {
+          path: 'nodes/isp/:isp',
+          component: NodesPerISP,
         },
         {
           path: '**',
