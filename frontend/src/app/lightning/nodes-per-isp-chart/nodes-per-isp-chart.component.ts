@@ -11,12 +11,12 @@ import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe'
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
-  selector: 'app-nodes-per-as-chart',
-  templateUrl: './nodes-per-as-chart.component.html',
-  styleUrls: ['./nodes-per-as-chart.component.scss'],
+  selector: 'app-nodes-per-isp-chart',
+  templateUrl: './nodes-per-isp-chart.component.html',
+  styleUrls: ['./nodes-per-isp-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesPerAsChartComponent implements OnInit {
+export class NodesPerISPChartComponent implements OnInit {
   miningWindowPreference: string;
 
   isLoading = true;
