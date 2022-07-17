@@ -18,7 +18,7 @@ import { NodeStatisticsChartComponent } from './node-statistics-chart/node-stati
 import { GraphsModule } from '../graphs/graphs.module';
 import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 import { ChannelsStatisticsComponent } from './channels-statistics/channels-statistics.component';
-import { NodesPerAsChartComponent } from '../lightning/nodes-per-as-chart/nodes-per-as-chart.component';
+import { NodesPerISPChartComponent } from './nodes-per-isp-chart/nodes-per-isp-chart.component';
 import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
 import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 @NgModule({
@@ -36,7 +36,7 @@ import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
     LightningStatisticsChartComponent,
     NodesNetworksChartComponent,
     ChannelsStatisticsComponent,
-    NodesPerAsChartComponent,
+    NodesPerISPChartComponent,
     NodesPerCountry,
     NodesPerISP,
   ],

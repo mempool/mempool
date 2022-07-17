@@ -20,7 +20,7 @@ import { TelevisionComponent } from '../components/television/television.compone
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { NodesNetworksChartComponent } from '../lightning/nodes-networks-chart/nodes-networks-chart.component';
 import { LightningStatisticsChartComponent } from '../lightning/statistics-chart/lightning-statistics-chart.component';
-import { NodesPerAsChartComponent } from '../lightning/nodes-per-as-chart/nodes-per-as-chart.component';
+import { NodesPerISPChartComponent } from '../lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -102,7 +102,7 @@ const routes: Routes = [
           },
           {
             path: 'lightning/nodes-per-isp',
-            component: NodesPerAsChartComponent,
+            component: NodesPerISPChartComponent,
           },
           {
             path: '',
