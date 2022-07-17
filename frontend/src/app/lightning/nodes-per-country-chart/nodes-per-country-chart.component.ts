@@ -130,8 +130,9 @@ export class NodesPerCountryChartComponent implements OnInit {
         formatter: () => {
           return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
             totalNodeOther.toString() + ` nodes`;
-        }
+        },
       },
+      data: 9999 as any
     } as PieSeriesOption);
 
     return data;
