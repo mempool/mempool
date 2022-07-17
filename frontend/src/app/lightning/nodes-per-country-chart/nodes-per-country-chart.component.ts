@@ -9,6 +9,7 @@ import { StateService } from 'src/app/services/state.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { getFlagEmoji } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',
@@ -50,6 +51,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           for (let i = 0; i < data.length; ++i) {
             data[i].rank = i + 1;
             data[i].iso = data[i].iso.toLowerCase();
+            data[i].flag = getFlagEmoji(data[i].iso);
           }
           return data.slice(0, 100);
         }),
