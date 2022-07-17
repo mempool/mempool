@@ -4,6 +4,7 @@ import { LightningDashboardComponent } from './lightning-dashboard/lightning-das
 import { LightningWrapperComponent } from './lightning-wrapper/lightning-wrapper.component';
 import { NodeComponent } from './node/node.component';
 import { ChannelComponent } from './channel/channel.component';
+import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
 
 const routes: Routes = [
     {
@@ -21,6 +22,10 @@ const routes: Routes = [
         {
           path: 'channel/:short_id',
           component: ChannelComponent,
+        },
+        {
+          path: 'nodes/country/:country',
+          component: NodesPerCountry,
         },
         {
           path: '**',
