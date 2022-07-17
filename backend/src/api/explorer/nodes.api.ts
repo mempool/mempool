@@ -94,7 +94,7 @@ class NodesApi {
     }
   }
 
-  public async $getNodesAsShare() {
+  public async $getNodesISP() {
     try {
       let query = `SELECT nodes.as_number as ispId, geo_names.names as names, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
         FROM nodes
