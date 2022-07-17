@@ -9,6 +9,7 @@ class NodesRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/asShare', this.$getNodesAsShare)
@@ -94,6 +95,33 @@ class NodesRoutes {
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json({
         country: JSON.parse(country[0].country_names),
+        nodes: nodes,
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getNodesPerISP(req: Request, res: Response) {
+    try {
+      const [isp]: any[] = await DB.query(
+        `SELECT geo_names.names as isp_name
+        FROM geo_names
+        WHERE geo_names.type = 'as_organization' AND geo_names.id = ?`,
+        [req.params.isp]
+      );
+
+      if (isp.length === 0) {
+        res.status(404).send(`This ISP does not exist or does not host any lightning nodes on clearnet`);
+        return;
+      }
+
+      const nodes = await nodesApi.$getNodesPerISP(req.params.isp);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json({
+        isp: JSON.parse(isp[0].isp_name),
         nodes: nodes,
       });
     } catch (e) {
