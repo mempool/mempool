@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@mempool/electrum-client": "^1.1.7",
-    "@types/node": "^16.11.41",
+    "@types/node": "^18.0.6",
     "axios": "~0.27.2",
     "bitcoinjs-lib": "6.0.1",
     "bolt07": "^1.8.1",
