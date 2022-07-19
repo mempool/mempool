@@ -280,8 +280,7 @@ class Blocks {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
           const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
-          const timeLeft = Math.round((indexedBlocks.length - totalIndexed) / blockPerSeconds);
-          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
         }
@@ -293,7 +292,11 @@ class Blocks {
         totalIndexed++;
         newlyIndexed++;
       }
-      logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      if (newlyIndexed > 0) {
+        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      } else {
+        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      }
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
@@ -348,8 +351,7 @@ class Blocks {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
-            const timeLeft = Math.round((indexingBlockAmount - totalIndexed) / blockPerSeconds);
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
             loadingIndicators.setProgress('block-indexing', progress, false);
@@ -365,7 +367,11 @@ class Blocks {
 
         currentBlockHeight -= chunkSize;
       }
-      logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      if (newlyIndexed > 0) {
+        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      } else {
+        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      }
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));

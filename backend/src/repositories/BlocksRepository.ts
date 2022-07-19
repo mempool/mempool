@@ -446,7 +446,7 @@ class BlocksRepository {
         ++idx;
       }
 
-      logger.info(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
+      logger.debug(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
       return true;
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
