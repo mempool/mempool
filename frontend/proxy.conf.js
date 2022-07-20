@@ -85,7 +85,7 @@ if (configContent && configContent.BASE_MODULE == "liquid") {
     });
 } else {
     PROXY_CONFIG.push({
-        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json'],
+        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json', '/ressources/worldmap.json'],
         target: "https://mempool.space",
         secure: false,
         changeOrigin: true,
