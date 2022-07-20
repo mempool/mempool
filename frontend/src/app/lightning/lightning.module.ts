@@ -22,6 +22,7 @@ import { NodesPerISPChartComponent } from './nodes-per-isp-chart/nodes-per-isp-c
 import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
 import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 import { NodesPerCountryChartComponent } from '../lightning/nodes-per-country-chart/nodes-per-country-chart.component';
+import { NodesMap } from '../lightning/nodes-map/nodes-map.component';
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -41,6 +42,7 @@ import { NodesPerCountryChartComponent } from '../lightning/nodes-per-country-ch
     NodesPerCountry,
     NodesPerISP,
     NodesPerCountryChartComponent,
+    NodesMap,
   ],
   imports: [
     CommonModule,
