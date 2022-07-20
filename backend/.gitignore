@@ -1,9 +1,9 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # production config and external assets
-*.json
-!mempool-config.sample.json
 
+mempool-config.json
+pools.json
 icons.json
 
 # compiled output
