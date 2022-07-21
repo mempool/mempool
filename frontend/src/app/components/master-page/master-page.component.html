@@ -2,7 +2,9 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <ng-template [ngIf]="subdomain">
-    <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" height="35" class="subdomain_logo" onload="this.style.display='block'">
+    <div class="subdomain_container">
+      <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
+    </div>
   </ng-template>
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
