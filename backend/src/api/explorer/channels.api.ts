@@ -32,7 +32,7 @@ class ChannelsApi {
         row.node2_public_key, row.node2_alias, row.node2_longitude, row.node2_latitude,
         row.capacity]);
     } catch (e) {
-      logger.err('$getAllChannels error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getAllChannelsGeo error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
