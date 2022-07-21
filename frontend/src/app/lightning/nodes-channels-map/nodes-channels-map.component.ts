@@ -86,7 +86,6 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         map: 'world',
         shading: 'color',
         silent: true,
-        environment: '#000',
         postEffect: {
           enable: true,
           bloom: {
