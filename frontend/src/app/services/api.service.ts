@@ -270,4 +270,8 @@ export class ApiService {
   getNodesPerCountry(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/countries');
   }
+
+  getChannelsGeo$(): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels-geo');
+  }
 }
