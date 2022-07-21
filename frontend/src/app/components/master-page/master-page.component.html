@@ -1,6 +1,9 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <ng-template [ngIf]="subdomain">
+    <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" height="35" class="subdomain_logo" onload="this.style.display='block'">
+  </ng-template>
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       <img *ngIf="!officialMempoolSpace" src="/resources/mempool-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }" alt="The Mempool Open Source Project logo">
