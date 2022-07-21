@@ -1,0 +1,17 @@
+<div class="full-container">
+
+  <div class="card-header">
+    <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
+      <span i18n="lightning.nodes-heatmap">Lightning nodes world heat map</span>
+      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true" (click)="onSaveChart()"></fa-icon>
+      </button>
+    </div>
+    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
+  </div>
+
+  <div *ngIf="observable$ | async" class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)">
+  </div>
+
+</div>
