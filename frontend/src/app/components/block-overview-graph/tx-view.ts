@@ -143,9 +143,7 @@ export default class TxView implements TransactionStripped {
 
   getColor(): Color {
     // Block audit
-    if (this.status === 'found') {
-      // return hexToColor('1a4987');
-    } else if (this.status === 'missing') {
+    if (this.status === 'missing') {
       return hexToColor('039BE5');
     } else if (this.status === 'added') {
       return hexToColor('D81B60');

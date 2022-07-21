@@ -4,7 +4,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { combineLatest, Observable, tap } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
-import { EChartsOption, MapSeriesOption, registerMap } from 'echarts';
+import { EChartsOption, registerMap } from 'echarts';
 import { download } from 'src/app/shared/graphs.utils';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
