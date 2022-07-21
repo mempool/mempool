@@ -238,6 +238,10 @@ export class ApiService {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
   }
 
+  getEnterpriseInfo$(name: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/enterprise/info/` + name);
+  }
+
   getChannelByTxIds$(txIds: string[]): Observable<{ inputs: any[], outputs: any[] }> {
     let params = new HttpParams();
     txIds.forEach((txId: string) => {
