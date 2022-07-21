@@ -62,7 +62,7 @@ class KrakenApi implements PriceFeed {
     // CHF weekly price history goes back to timestamp 1575504000 (December 5, 2019)
     // AUD weekly price history goes back to timestamp 1591833600 (June 11, 2020)
 
-    const priceHistory: any = {}; // map: timestamp -> Prices
+    let priceHistory: any = {}; // map: timestamp -> Prices
 
     for (const currency of this.currencies) {
       const response = await query(this.urlHist.replace('{GRANULARITY}', '10080') + currency);
@@ -83,6 +83,10 @@ class KrakenApi implements PriceFeed {
     }
 
     for (const time in priceHistory) {
+      if (priceHistory[time].USD === -1) {
+        delete priceHistory[time];
+        continue;
+      }
       await PricesRepository.$savePrices(parseInt(time, 10), priceHistory[time]);
     }
 

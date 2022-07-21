@@ -3,14 +3,22 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i>
-          <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
-          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('mempool')">
-            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-          </button>
+          <div class="d-flex d-md-block align-items-baseline">
+            <span i18n="statistics.memory-by-vBytes">Mempool by vBytes (sat/vByte)</span>
+            <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('mempool')">
+              <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+            </button>
+          </div>  
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
+            <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
+              <label ngbButtonLabel class="btn-primary btn-sm mr-2">
+                <a [routerLink]="['/tv' | relativeUrl]" style="color: white">
+                  <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
+                </a>
+                </label>
+            </div>
             <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
               <label ngbButtonLabel class="btn-primary btn-sm">
                 <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H
@@ -84,11 +92,12 @@
     <div>
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i>
-          <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
-          <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
-            <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-          </button>
+          <div class="d-flex d-md-block align-items-baseline">
+            <span i18n="statistics.transaction-vbytes-per-second">Transaction vBytes per second (vB/s)</span>
+            <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart('incoming')">
+              <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+            </button>
+          </div>  
         </div>
 
         <div class="card-body">
