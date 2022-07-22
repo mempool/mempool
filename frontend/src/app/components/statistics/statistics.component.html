@@ -14,7 +14,7 @@
             [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
             <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
               <label ngbButtonLabel class="btn-primary btn-sm mr-2">
-                <a [routerLink]="['/tv' | relativeUrl]" style="color: white">
+                <a [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
                   <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
                 </a>
                 </label>
