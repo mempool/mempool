@@ -17,18 +17,18 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveSummary(height: number, mined: BlockSummary | null = null, template: BlockSummary | null = null) {
-    const blockId = mined?.id ?? template?.id;
+  public async $saveSummary(params: { height: number, mined?: BlockSummary, template?: BlockSummary}) {
+    const blockId = params.mined?.id ?? params.template?.id;
     try {
       const [dbSummary]: any[] = await DB.query(`SELECT * FROM blocks_summaries WHERE id = "${blockId}"`);
       if (dbSummary.length === 0) { // First insertion
         await DB.query(`INSERT INTO blocks_summaries VALUE (?, ?, ?, ?)`, [
-          height, blockId, JSON.stringify(mined?.transactions ?? []), JSON.stringify(template?.transactions ?? [])
+          params.height, blockId, JSON.stringify(params.mined?.transactions ?? []), JSON.stringify(params.template?.transactions ?? [])
         ]);
-      } else if (mined !== null) { // Update mined block summary
-        await DB.query(`UPDATE blocks_summaries SET transactions = ? WHERE id = "${mined.id}"`, [JSON.stringify(mined?.transactions)]);
-      } else if (template !== null) { // Update template block summary
-        await DB.query(`UPDATE blocks_summaries SET template = ? WHERE id = "${template.id}"`, [JSON.stringify(template?.transactions)]);
+      } else if (params.mined !== undefined) { // Update mined block summary
+        await DB.query(`UPDATE blocks_summaries SET transactions = ? WHERE id = "${params.mined.id}"`, [JSON.stringify(params.mined.transactions)]);
+      } else if (params.template !== undefined) { // Update template block summary
+        await DB.query(`UPDATE blocks_summaries SET template = ? WHERE id = "${params.template.id}"`, [JSON.stringify(params.template?.transactions)]);
       }
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
