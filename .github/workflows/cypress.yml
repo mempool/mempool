@@ -6,7 +6,7 @@ on:
 jobs:
   cypress:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
       matrix:
