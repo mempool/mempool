@@ -224,21 +224,38 @@ class LightningStatsUpdater {
           total_capacity,
           tor_nodes,
           clearnet_nodes,
-          unannounced_nodes
+          unannounced_nodes,
+          avg_capacity,
+          avg_fee_rate,
+          avg_base_fee_mtokens,
+          med_capacity,
+          med_fee_rate,
+          med_base_fee_mtokens
         )
-        VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)`;
+        VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const rowTimestamp = date.getTime() / 1000; // Save timestamp for the row insertion down below
+
+        date.setUTCDate(date.getUTCDate() + 1);
+
+        // Last iteration, save channels stats
+        const channelStats = (date >= currentDate ? await channelsApi.$getChannelsStats() : undefined);
 
         await DB.query(query, [
-          date.getTime() / 1000,
+          rowTimestamp,
           channelsCount,
           nodeCount,
           totalCapacity,
           torNodes,
           clearnetNodes,
           unannouncedNodes,
-        ]);
-
-        date.setUTCDate(date.getUTCDate() + 1);
+          channelStats?.avgCapacity ?? 0,
+          channelStats?.avgFeeRate ?? 0,
+          channelStats?.avgBaseFee ?? 0,
+          channelStats?.medianCapacity ?? 0,
+          channelStats?.medianFeeRate ?? 0,
+          channelStats?.medianBaseFee ?? 0,
+          ]);
       }
 
       logger.info('Historical stats populated.');

@@ -578,7 +578,7 @@ class Blocks {
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+      await BlocksSummariesRepository.$saveSummary({height: block.height, mined: summary});
     }
 
     return summary.transactions;
