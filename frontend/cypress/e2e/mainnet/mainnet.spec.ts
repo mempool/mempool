@@ -35,23 +35,23 @@ const getRectangle = ($el) => $el[0].getBoundingClientRect();
 describe('Mainnet', () => {
   beforeEach(() => {
     //cy.intercept('/sockjs-node/info*').as('socket');
-    cy.intercept('/api/block-height/*').as('block-height');
-    cy.intercept('/api/v1/block/*').as('block');
-    cy.intercept('/api/block/*/txs/0').as('block-txs');
-    cy.intercept('/api/v1/block/*/summary').as('block-summary');
-    cy.intercept('/api/v1/outspends/*').as('outspends');
-    cy.intercept('/api/tx/*/outspends').as('tx-outspends');
-    cy.intercept('/resources/pools.json').as('pools');
+    // cy.intercept('/api/block-height/*').as('block-height');
+    // cy.intercept('/api/v1/block/*').as('block');
+    // cy.intercept('/api/block/*/txs/0').as('block-txs');
+    // cy.intercept('/api/v1/block/*/summary').as('block-summary');
+    // cy.intercept('/api/v1/outspends/*').as('outspends');
+    // cy.intercept('/api/tx/*/outspends').as('tx-outspends');
+    // cy.intercept('/resources/pools.json').as('pools');
 
     // Search Auto Complete
     cy.intercept('/api/address-prefix/1wiz').as('search-1wiz');
     cy.intercept('/api/address-prefix/1wizS').as('search-1wizS');
     cy.intercept('/api/address-prefix/1wizSA').as('search-1wizSA');
 
-    Cypress.Commands.add('waitForBlockData', () => {
-      cy.wait('@tx-outspends');
-      cy.wait('@pools');
-    });
+    // Cypress.Commands.add('waitForBlockData', () => {
+    //   cy.wait('@tx-outspends');
+    //   cy.wait('@pools');
+    // });
   });
 
   if (baseModule === 'mempool') {
