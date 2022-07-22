@@ -60,7 +60,7 @@ describe('Signet', () => {
       });
     });
 
-    describe('tv mode', () => {
+    describe.skip('tv mode', () => {
       it('loads the tv screen - desktop', () => {
         cy.viewport('macbook-16');
         cy.visit('/signet/graphs');
