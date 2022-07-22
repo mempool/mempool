@@ -33,8 +33,13 @@ class PricesRepository {
   }
 
   public async $getPricesTimes(): Promise<number[]> {
-    const [times]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != -1`);
+    const [times]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != -1 ORDER BY time`);
     return times.map(time => time.time);
+  }
+
+  public async $getPricesTimesAndId(): Promise<number[]> {
+    const [times]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time, id, USD from prices ORDER BY time`);
+    return times;
   }
 }
 

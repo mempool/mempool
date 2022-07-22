@@ -32,10 +32,12 @@
   </div>
 
   <div class="card-header" *ngIf="!widget">
-    <span i18n="mining.pools">Pools Ranking</span>
-    <button class="btn" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
-      <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-    </button>
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="mining.pools">Pools Ranking</span>
+      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>  
     <form [formGroup]="radioGroupForm" class="formRadioGroup"
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">

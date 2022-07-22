@@ -5,6 +5,7 @@ import mining from './api/mining/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
+import priceUpdater from './tasks/price-updater';
 
 class Indexer {
   runIndexer = true;
@@ -38,6 +39,8 @@ class Indexer {
     logger.debug(`Running mining indexer`);
 
     try {
+      await priceUpdater.$run();
+
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
@@ -47,8 +50,9 @@ class Indexer {
         return;
       }
 
+      await mining.$indexBlockPrices();
       await mining.$indexDifficultyAdjustments();
-      await this.$resetHashratesIndexingState();
+      await this.$resetHashratesIndexingState(); // TODO - Remove this as it's not efficient
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();

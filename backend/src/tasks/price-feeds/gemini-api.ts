@@ -16,7 +16,7 @@ class GeminiApi implements PriceFeed {
     return response ? parseInt(response['last'], 10) : -1;
   }
 
-  public async $fetchRecentHourlyPrice(currencies: string[]): Promise<PriceHistory> {
+  public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
     const priceHistory: PriceHistory = {};
 
     for (const currency of currencies) {
@@ -24,7 +24,7 @@ class GeminiApi implements PriceFeed {
         continue;
       }
 
-      const response = await query(this.urlHist.replace('{GRANULARITY}', '1hr').replace('{CURRENCY}', currency));
+      const response = await query(this.urlHist.replace('{GRANULARITY}', type === 'hour' ? '1hr' : '1day').replace('{CURRENCY}', currency));
       const pricesRaw = response ? response : [];
 
       for (const price of pricesRaw as any[]) {

@@ -20,6 +20,10 @@ import { TelevisionComponent } from '../components/television/television.compone
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { NodesNetworksChartComponent } from '../lightning/nodes-networks-chart/nodes-networks-chart.component';
 import { LightningStatisticsChartComponent } from '../lightning/statistics-chart/lightning-statistics-chart.component';
+import { NodesPerISPChartComponent } from '../lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
+import { NodesPerCountryChartComponent } from '../lightning/nodes-per-country-chart/nodes-per-country-chart.component';
+import { NodesMap } from '../lightning/nodes-map/nodes-map.component';
+import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels-map.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -98,6 +102,22 @@ const routes: Routes = [
           {
             path: 'lightning/capacity',
             component: LightningStatisticsChartComponent,
+          },
+          {
+            path: 'lightning/nodes-per-isp',
+            component: NodesPerISPChartComponent,
+          },
+          {
+            path: 'lightning/nodes-per-country',
+            component: NodesPerCountryChartComponent,
+          },
+          {
+            path: 'lightning/nodes-map',
+            component: NodesMap,
+          },
+          {
+            path: 'lightning/nodes-channels-map',
+            component: NodesChannelsMap,
           },
           {
             path: '',
