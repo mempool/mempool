@@ -63,7 +63,7 @@ describe('Signet', () => {
     describe('tv mode', () => {
       it('loads the tv screen - desktop', () => {
         cy.viewport('macbook-16');
-        cy.visit('/signet');
+        cy.visit('/signet/graphs');
         cy.waitForSkeletonGone();
         cy.get('#btn-tv').click().then(() => {
           cy.get('.chart-holder').should('be.visible');
@@ -73,18 +73,16 @@ describe('Signet', () => {
       });
 
       it('loads the tv screen - mobile', () => {
-        cy.visit('/signet');
+        cy.visit('/signet/graphs');
         cy.waitForSkeletonGone();
         cy.get('#btn-tv').click().then(() => {
           cy.viewport('iphone-8');
           cy.get('.chart-holder').should('be.visible');
           cy.get('.tv-only').should('not.exist');
-          //TODO: Remove comment when the bug is fixed
-          //cy.get('#mempool-block-0').should('be.visible');
+          cy.get('#mempool-block-0').should('be.visible');
         });
       });
     });
-
 
     it('loads the api screen', () => {
       cy.visit('/signet');
