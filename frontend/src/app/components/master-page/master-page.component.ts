@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from 'src/app/services/language.service';
+import { EnterpriseService } from 'src/app/services/enterprise.service';
 
 @Component({
   selector: 'app-master-page',
@@ -16,10 +17,12 @@ export class MasterPageComponent implements OnInit {
   isMobile = window.innerWidth <= 767.98;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   urlLanguage: string;
+  subdomain = '';
 
   constructor(
     public stateService: StateService,
     private languageService: LanguageService,
+    private enterpriseService: EnterpriseService,
   ) { }
 
   ngOnInit() {
@@ -27,6 +30,7 @@ export class MasterPageComponent implements OnInit {
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
+    this.subdomain = this.enterpriseService.getSubdomain();
   }
 
   collapse(): void {
