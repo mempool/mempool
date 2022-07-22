@@ -6,86 +6,53 @@ on:
 jobs:
   cypress:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4, 5]
-        os: ["ubuntu-latest"]
-        browser: [chrome]
-    name: E2E tests on ${{ matrix.browser }} - ${{ matrix.os }}
+        module: ["mempool", "liquid", "bisq"]
+        include:
+          - module: "mempool"
+            spec: |
+              cypress/e2e/mainnet/*.spec.ts
+              cypress/e2e/signet/*.spec.ts
+              cypress/e2e/testnet/*.spec.ts
+          - module: "liquid"
+            spec: |
+              cypress/e2e/liquid/liquid.spec.ts
+              cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+          - module: "bisq"
+            spec: |
+              cypress/e2e/bisq/bisq.spec.ts
+          
+    name: E2E tests for ${{ matrix.module }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: ${{ matrix.module }}
+          
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version: 16.15.0
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      - name: ${{ matrix.browser }} browser tests (Mempool)
-        uses: cypress-io/github-action@v4
-        with:
-          tag: ${{ github.event_name }}
-          working-directory: frontend
-          build: npm run config:defaults:mempool
-          start: npm run start:local-staging
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 120
-          record: true
-          parallel: true
-          spec: |
-            cypress/e2e/mainnet/*.spec.ts
-            cypress/e2e/signet/*.spec.ts
-            cypress/e2e/testnet/*.spec.ts
-          group: Tests on ${{ matrix.browser }} (Mempool)
-          browser: ${{ matrix.browser }}
-          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
-        env:
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
-      - name: ${{ matrix.browser }} browser tests (Liquid)
+      - name: Chrome browser tests (${{ matrix.module }})
         uses: cypress-io/github-action@v4
-        if: always()
         with:
           tag: ${{ github.event_name }}
-          working-directory: frontend
-          build: npm run config:defaults:liquid
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:local-staging
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 120
           record: true
           parallel: true
-          spec: |
-            cypress/e2e/liquid/liquid.spec.ts
-            cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
-          group: Tests on ${{ matrix.browser }} (Liquid)
-          browser: ${{ matrix.browser }}
-          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
-        env:
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-
-      - name: ${{ matrix.browser }} browser tests (Bisq)
-        uses: cypress-io/github-action@v4
-        if: always()
-        with:
-          tag: ${{ github.event_name }}
-          working-directory: frontend
-          build: npm run config:defaults:bisq
-          start: npm run start:local-staging
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 120
-          record: true
-          parallel: true
-          spec: cypress/e2e/bisq/bisq.spec.ts
-          group: Tests on ${{ matrix.browser }} (Bisq)
-          browser: ${{ matrix.browser }}
+          spec: ${{ matrix.spec }}
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
