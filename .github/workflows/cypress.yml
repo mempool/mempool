@@ -38,7 +38,6 @@ jobs:
           node-version: 16.15.0
           cache: 'npm'
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
-          path: ${{ matrix.module }}
 
       - name: Chrome browser tests (${{ matrix.module }})
         uses: cypress-io/github-action@v4
