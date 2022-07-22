@@ -409,7 +409,7 @@ describe('Mainnet', () => {
 
     it('loads the tv screen - desktop', () => {
       cy.viewport('macbook-16');
-      cy.visit('/');
+      cy.visit('/graphs/mempool');
       cy.waitForSkeletonGone();
       cy.get('#btn-tv').click().then(() => {
         cy.viewport('macbook-16');
