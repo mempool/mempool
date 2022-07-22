@@ -36,8 +36,10 @@ describe('Mainnet', () => {
   beforeEach(() => {
     //cy.intercept('/sockjs-node/info*').as('socket');
     cy.intercept('/api/block-height/*').as('block-height');
-    cy.intercept('/api/block/*').as('block');
+    cy.intercept('/api/v1/block/*').as('block');
     cy.intercept('/api/block/*/txs/0').as('block-txs');
+    cy.intercept('/api/v1/block/*/summary').as('block-summary');
+    cy.intercept('/api/v1/outspends/*').as('outspends');
     cy.intercept('/api/tx/*/outspends').as('tx-outspends');
     cy.intercept('/resources/pools.json').as('pools');
 
