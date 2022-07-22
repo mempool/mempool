@@ -12,6 +12,7 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 import { BlockExtended, TransactionStripped } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from 'src/app/shared/graphs.utils';
 
 @Component({
   selector: 'app-block',
@@ -390,10 +391,4 @@ export class BlockComponent implements OnInit, OnDestroy {
     const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
     this.router.navigate([url]);
   }
-}
-
-function detectWebGL() {
-  const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  return (gl && gl instanceof WebGLRenderingContext);
 }
