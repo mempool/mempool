@@ -19,6 +19,15 @@
   }
 }
 
+.full-container.nodepage {
+  margin-top: 50px;
+}
+
+.full-container.widget {
+  height: 250px;
+  min-height: 250px;
+}
+
 .widget {
   width: 99vw;
   height: 250px;
@@ -27,10 +36,6 @@
 
 .widget > .chart {
   -webkit-mask: linear-gradient(180deg, #11131f00 0%, #11131fff 20%);
-}
-
-.full-container.nodepage {
-  margin-top: 50px;
 }
 
 .chart {
