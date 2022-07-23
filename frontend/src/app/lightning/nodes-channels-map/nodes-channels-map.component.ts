@@ -51,7 +51,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
        switchMap((params: ParamMap) => {
         return zip(
           this.assetsService.getWorldMapJson$,
-          this.apiService.getChannelsGeo$(params.get('public_key')),
+          this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined),
         ).pipe(tap((data) => {
           registerMap('world', data[0]);
 
@@ -100,16 +100,16 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         postEffect: {
           enable: true,
           bloom: {
-            intensity: 0.01,
+            intensity: this.style === 'nodepage' ? 0.1 : 0.01,
           }
         },
         viewControl: {
-          center: this.widget ? [2, 0, -10] : undefined,
+          center: this.style === 'widget' ? [0, 0, -1] : undefined,
           minDistance: 0.1,
-          distance: this.widget ? 20 : 60,
+          distance: this.style === 'widget' ? 45 : 60,
           alpha: 90,
           panMouseButton: 'left',
-          rotateMouseButton: 'none',
+          rotateMouseButton: undefined,
           zoomSensivity: 0.5,
         },
         itemStyle: {
@@ -128,7 +128,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           blendMode: 'lighter',
           lineStyle: {
             width: 1,
-            opacity: this.style === 'graph' ? 0.025 : 1,
+            opacity: ['widget', 'graph'].includes(this.style) ? 0.025 : 1,
           },
           data: channels
         },
