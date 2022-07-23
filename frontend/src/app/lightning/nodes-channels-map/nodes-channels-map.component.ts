@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, tap, zip } from 'rxjs';
@@ -9,7 +9,6 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 import { StateService } from 'src/app/services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
 import 'echarts-gl';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -18,10 +17,11 @@ import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit, OnDestroy {
+  @Input() widget = false;
   observable$: Observable<any>;
 
   chartInstance = undefined;
-  chartOptions: EChartsOption = {color: 'dark'};
+  chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'canvas',
   };
@@ -93,18 +93,19 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           }
         },
         viewControl: {
-          minDistance: 1,
-          distance: 60,
-          alpha: 89,
+          center: this.widget ? [2, 0, -10] : undefined,
+          minDistance: 0.1,
+          distance: this.widget ? 20 : 60,
+          alpha: 90,
           panMouseButton: 'left',
-          rotateMouseButton: 'right',
+          rotateMouseButton: 'none',
           zoomSensivity: 0.5,
         },
         itemStyle: {
           color: '#FFFFFF',
           opacity: 0.02,
           borderWidth: 1,
-          borderColor: 'black',
+          borderColor: '#00000050',
         },
         regionHeight: 0.01,
       },
@@ -136,11 +137,8 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           emphasis: {
             label: {
               position: 'top',
-              // @ts-ignore
-              textStyle: {
-                color: 'white',
-                fontSize: 16,
-              },
+              color: 'white',
+              fontSize: 16,
               formatter: function(value) {
                 return value.name;
               },
