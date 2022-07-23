@@ -34,7 +34,7 @@
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
         <tr *ngFor="let asEntry of asList">
           <td class="rank text-left pl-0">{{ asEntry.rank }}</td>
-          <td class="name text-left text-truncate"  style="max-width: 100px">
+          <td class="name text-left text-truncate" style="max-width: 250px">
           <a [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
           </td>
           <td class="share text-right">{{ asEntry.share }}%</td>
