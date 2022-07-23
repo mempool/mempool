@@ -1,0 +1,56 @@
+.container-xl {
+  max-width: 1400px;
+  padding-bottom: 100px;
+}
+
+.sats {
+  color: #ffffff66;
+  font-size: 12px;
+  top: 0px;
+}
+
+.alias {
+  width: 30%;
+  max-width: 400px;
+  padding-right: 70px;
+  @media (max-width: 576px) {
+    width: 50%;
+    max-width: 150px;
+    padding-right: 0px;
+  }
+}
+
+.timestamp-first {
+  width: 20%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.timestamp-update {
+  width: 16%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.capacity {
+  width: 10%;
+  @media (max-width: 576px) {
+    width: 25%;
+  }
+}
+
+.channels {
+  width: 10%;
+  @media (max-width: 576px) {
+    width: 25%;
+  }
+}
+
+.city {
+  max-width: 150px;
+  @media (max-width: 576px) {
+    display: none
+  }
+}

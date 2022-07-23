@@ -26,7 +26,8 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
-      ;
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
+    ;
   }
 
   private async $getPool(req: Request, res: Response): Promise<void> {
@@ -229,6 +230,18 @@ class MiningRoutes {
       res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(blockPredictions.map(prediction => [prediction.time, prediction.height, prediction.match_rate]));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getBlockAudit(req: Request, res: Response) {
+    try {
+      const audit = await BlocksAuditsRepository.$getBlockAudit(req.params.hash);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
+      res.json(audit);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

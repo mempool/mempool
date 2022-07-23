@@ -39,6 +39,13 @@ export async function $lookupNodeLocation(): Promise<void> {
                 [city.country?.geoname_id, JSON.stringify(city.country?.names)]);
              }
 
+            // Store Country ISO code
+            if (city.country?.iso_code) {
+              await DB.query(
+               `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'country_iso_code', ?)`,
+               [city.country?.geoname_id, city.country?.iso_code]);
+            }
+
             // Store Division
             if (city.subdivisions && city.subdivisions[0]) {
               await DB.query(

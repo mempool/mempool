@@ -9,6 +9,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
 export class TimestampComponent implements OnChanges {
   @Input() unixTime: number;
   @Input() dateString: string;
+  @Input() customFormat: string;
 
   seconds: number;
 
