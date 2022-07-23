@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
-import { Observable, tap, zip } from 'rxjs';
+import { Observable, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
 import { download } from 'src/app/shared/graphs.utils';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
@@ -17,7 +17,9 @@ import 'echarts-gl';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit, OnDestroy {
-  @Input() widget = false;
+  @Input() style: 'graph' | 'nodepage' | 'widget' = 'graph';
+  @Input() publicKey: string | undefined;
+
   observable$: Observable<any>;
 
   chartInstance = undefined;
@@ -33,38 +35,46 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 
   ngOnDestroy(): void {}
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes channels world map`);
+    if (this.style === 'graph') {
+      this.seoService.setTitle($localize`Lightning nodes channels world map`);
+    }
+    
+    this.observable$ = this.activatedRoute.paramMap
+     .pipe(
+       switchMap((params: ParamMap) => {
+        return zip(
+          this.assetsService.getWorldMapJson$,
+          this.apiService.getChannelsGeo$(params.get('public_key')),
+        ).pipe(tap((data) => {
+          registerMap('world', data[0]);
 
-    this.observable$ = zip(
-      this.assetsService.getWorldMapJson$,
-      this.apiService.getChannelsGeo$(),
-    ).pipe(tap((data) => {
-      registerMap('world', data[0]);
+          const channelsLoc = [];
+          const nodes = [];
+          for (const channel of data[1]) {
+            channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
+            nodes.push({
+              publicKey: channel[0],
+              name: channel[1],
+              value: [channel[2], channel[3]],
+            });
+            nodes.push({
+              publicKey: channel[4],
+              name: channel[5],
+              value: [channel[6], channel[7]],
+            });
+          }
 
-      const channelsLoc = [];
-      const nodes = [];
-      for (const channel of data[1]) {
-        channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
-        nodes.push({
-          publicKey: channel[0],
-          name: channel[1],
-          value: [channel[2], channel[3]],
-        });
-        nodes.push({
-          publicKey: channel[4],
-          name: channel[5],
-          value: [channel[6], channel[7]],
-        });
-      }
-
-      this.prepareChartOptions(nodes, channelsLoc);
-    }));
+          this.prepareChartOptions(nodes, channelsLoc);
+        }));
+      })
+     );
   }
 
   prepareChartOptions(nodes, channels) {
@@ -75,13 +85,14 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`No data to display yet`,
+        text: $localize`No geolocation data available`,
         left: 'center',
         top: 'center'
       };
     }
 
     this.chartOptions = {
+      title: title ?? undefined,
       geo3D: {
         map: 'world',
         shading: 'color',
@@ -117,7 +128,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           blendMode: 'lighter',
           lineStyle: {
             width: 1,
-            opacity: 0.025,
+            opacity: this.style === 'graph' ? 0.025 : 1,
           },
           data: channels
         },
