@@ -5,6 +5,9 @@
     <span *ngIf="segwitGains.potentialP2shGains" class="badge badge-danger mr-1" i18n-ngbTooltip="ngbTooltip about missed out gains" ngbTooltip="This transaction could save {{ segwitGains.potentialBech32Gains * 100 | number : '1.0-0' }}% on fees by upgrading to native SegWit-Bech32 or {{ segwitGains.potentialP2shGains * 100 | number:  '1.0-0' }}% by upgrading to SegWit-P2SH" placement="bottom"><del i18n="tx-features.tag.segwit|SegWit">SegWit</del></span>
   </ng-template>
 </ng-template>
-<span *ngIf="isTaproot" class="badge badge-success mr-1" i18n-ngbTooltip="Taproot tooltip" ngbTooltip="This transaction uses Taproot" placement="bottom" i18n="tx-features.tag.taproot">Taproot</span>
+<span *ngIf="isTaproot; else noTaproot" class="badge badge-success mr-1" i18n-ngbTooltip="Taproot tooltip" ngbTooltip="This transaction uses Taproot" placement="bottom" i18n="tx-features.tag.taproot">Taproot</span>
+<ng-template #noTaproot>
+  <span class="badge badge-danger mr-1" i18n-ngbTooltip="No Taproot tooltip" ngbTooltip="This transaction could save on fees and improve privacy by using Taproot" placement="bottom"><del i18n="tx-features.tag.taproot">Taproot</del></span>
+</ng-template>
 <span *ngIf="isRbfTransaction; else rbfDisabled" class="badge badge-success" i18n-ngbTooltip="RBF tooltip" ngbTooltip="This transaction support Replace-By-Fee (RBF) allowing fee bumping" placement="bottom" i18n="tx-features.tag.rbf|RBF">RBF</span>
 <ng-template #rbfDisabled><span class="badge badge-danger mr-1" i18n-ngbTooltip="RBF disabled tooltip" ngbTooltip="This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method" placement="bottom"><del i18n="tx-features.tag.rbf|RBF">RBF</del></span></ng-template>

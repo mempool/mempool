@@ -1,3 +1,4 @@
+import transactionUtils from '../api/transaction-utils';
 import DB from '../database';
 import logger from '../logger';
 import { BlockAudit } from '../mempool.interfaces';
@@ -42,6 +43,30 @@ class BlocksAuditRepositories {
       return rows[0].count;
     } catch (e: any) {
       logger.err(`Cannot fetch block prediction history. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getBlockAudit(hash: string): Promise<any> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT blocks.height, blocks.hash as id, UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.size,
+        blocks.weight, blocks.tx_count,
+        transactions, template, missing_txs as missingTxs, added_txs as addedTxs, match_rate as matchRate
+        FROM blocks_audits
+        JOIN blocks ON blocks.hash = blocks_audits.hash
+        JOIN blocks_summaries ON blocks_summaries.id = blocks_audits.hash
+        WHERE blocks_audits.hash = "${hash}"
+      `);
+      
+      rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
+      rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
+      rows[0].transactions = JSON.parse(rows[0].transactions);
+      rows[0].template = JSON.parse(rows[0].template);
+            
+      return rows[0];
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { ElectrsApiService } from './services/electrs-api.service';
 import { StateService } from './services/state.service';
+import { EnterpriseService } from './services/enterprise.service';
 import { WebsocketService } from './services/websocket.service';
 import { AudioService } from './services/audio.service';
 import { SeoService } from './services/seo.service';
@@ -36,6 +37,7 @@ import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe
     AudioService,
     SeoService,
     StorageService,
+    EnterpriseService,
     LanguageService,
     ShortenStringPipe,
     FiatShortenerPipe,
