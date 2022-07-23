@@ -1,6 +1,4 @@
 <div *ngIf="channels$ | async as response; else skeleton">
-  <h2 class="float-left">Channels ({{ response.totalItems }})</h2>
-
   <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
     <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
       <label ngbButtonLabel class="btn-primary btn-sm">
