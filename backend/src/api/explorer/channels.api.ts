@@ -13,9 +13,10 @@ class ChannelsApi {
     }
   }
 
-  public async $getAllChannelsGeo(): Promise<any[]> {
+  public async $getAllChannelsGeo(publicKey?: string): Promise<any[]> {
     try {
-      const query = `SELECT nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
+      const params: string[] = [];
+      let query = `SELECT nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
         nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
         nodes_2.public_key as node2_public_key, nodes_2.alias AS node2_alias,
         nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude,
@@ -26,7 +27,14 @@ class ChannelsApi {
       WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
         AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
       `;
-      const [rows]: any = await DB.query(query);
+
+      if (publicKey !== undefined) {
+        query += ' AND (nodes_1.public_key = ? OR nodes_2.public_key = ?)';
+        params.push(publicKey);
+        params.push(publicKey);
+      }
+
+      const [rows]: any = await DB.query(query, params);
       return rows.map((row) => [
         row.node1_public_key, row.node1_alias, row.node1_longitude, row.node1_latitude,
         row.node2_public_key, row.node2_alias, row.node2_longitude, row.node2_latitude,

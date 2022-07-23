@@ -19,6 +19,15 @@
   }
 }
 
+.full-container.nodepage {
+  margin-top: 50px;
+}
+
+.full-container.widget {
+  height: 250px;
+  min-height: 250px;
+}
+
 .widget {
   width: 99vw;
   height: 250px;
@@ -30,6 +39,7 @@
 }
 
 .chart {
+  min-height: 500px;
   width: 100%;
   height: 100%;
   padding-right: 10px;
