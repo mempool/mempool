@@ -156,7 +156,7 @@ export class BlockPredictionGraphComponent implements OnInit {
         type: 'category',
         axisLine: { onZero: true },
         axisLabel: {
-          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10) * 1000),
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
