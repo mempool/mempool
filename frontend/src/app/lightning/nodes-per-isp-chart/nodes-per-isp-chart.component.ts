@@ -61,7 +61,7 @@ export class NodesPerISPChartComponent implements OnInit {
   }
 
   generateChartSerieData(as) {
-    const shareThreshold = this.isMobile() ? 2 : 1;
+    const shareThreshold = this.isMobile() ? 2 : 0.5;
     const data: object[] = [];
     let totalShareOther = 0;
     let totalNodeOther = 0;
@@ -155,7 +155,7 @@ export class NodesPerISPChartComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          minShowLabelAngle: 3.6,
+          minShowLabelAngle: 1.8,
           name: 'Lightning nodes',
           type: 'pie',
           radius: pieSize,
