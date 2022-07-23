@@ -451,9 +451,12 @@ class WebsocketHandler {
             value: tx.value,
           };
         });  
-        BlocksSummariesRepository.$saveSummary(block.height, null, {
-          id: block.id,
-          transactions: stripped
+        BlocksSummariesRepository.$saveSummary({
+          height: block.height,
+          template: {
+            id: block.id,
+            transactions: stripped
+          }
         });
 
         BlocksAuditsRepository.$saveAudit({
