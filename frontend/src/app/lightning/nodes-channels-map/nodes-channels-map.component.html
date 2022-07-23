@@ -1,6 +1,6 @@
-<div [class]="widget ? 'widget' : 'full-container'">
+<div [class]="'full-container ' + style">
 
-  <div class="card-header" *ngIf="!widget">
+  <div *ngIf="style === 'graph'" class="card-header">
     <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
       <span i18n="lightning.nodes-channels-world-map">Lightning nodes channels world map</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px">
