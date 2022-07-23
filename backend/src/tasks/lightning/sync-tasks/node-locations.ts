@@ -11,7 +11,7 @@ export async function $lookupNodeLocation(): Promise<void> {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
     const lookupAsn = await maxmind.open<AsnResponse>(config.MAXMIND.GEOLITE2_ASN);
-    const lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOLITE2_ISP);
+    const lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
 
     for (const node of nodes) {
       const sockets: string[] = node.sockets.split(',');
