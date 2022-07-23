@@ -107,7 +107,20 @@
     
     <br>
 
-    <app-channels-list [publicKey]="node.public_key"></app-channels-list>
+    <div class="d-flex justify-content-between">
+      <h2>Channels ({{ node.channel_count }})</h2>
+      <div class="d-flex align-items-center justify-content-end">
+        <span style="margin-bottom: 0.5rem">List</span>&nbsp;
+        <label class="switch">
+          <input type="checkbox" (change)="channelsListModeChange($event)">
+          <span class="slider round"></span>
+        </label>
+        &nbsp;<span style="margin-bottom: 0.5rem">Map</span>
+      </div>
+    </div>
+
+    <app-nodes-channels-map *ngIf="channelsListMode === 'map'" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
+    <app-channels-list *ngIf="channelsListMode === 'list'" [publicKey]="node.public_key"></app-channels-list>
 
 </div>
 
