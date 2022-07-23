@@ -11,6 +11,7 @@ class ChannelsRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/search/:search', this.$searchChannelsById)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/:short_id', this.$getChannel)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels', this.$getChannelsForNode)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels-geo', this.$getChannelsGeo)
     ;
   }
 
@@ -88,6 +89,15 @@ class ChannelsRoutes {
         inputs: inputs,
         outputs: outputs,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getChannelsGeo(req: Request, res: Response) {
+    try {
+      const channels = await channelsApi.$getAllChannelsGeo();
+      res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
