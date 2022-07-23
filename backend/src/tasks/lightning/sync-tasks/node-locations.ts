@@ -1,5 +1,5 @@
 import * as net from 'net';
-import maxmind, { CityResponse, AsnResponse } from 'maxmind';
+import maxmind, { CityResponse, AsnResponse, IspResponse } from 'maxmind';
 import nodesApi from '../../../api/explorer/nodes.api';
 import config from '../../../config';
 import DB from '../../../database';
@@ -11,6 +11,7 @@ export async function $lookupNodeLocation(): Promise<void> {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
     const lookupAsn = await maxmind.open<AsnResponse>(config.MAXMIND.GEOLITE2_ASN);
+    const lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
 
     for (const node of nodes) {
       const sockets: string[] = node.sockets.split(',');
@@ -20,9 +21,29 @@ export async function $lookupNodeLocation(): Promise<void> {
         if (hasClearnet && ip !== '127.0.1.1' && ip !== '127.0.0.1') {
           const city = lookupCity.get(ip);
           const asn = lookupAsn.get(ip);
-          if (city && asn) {
-            const query = `UPDATE nodes SET as_number = ?, city_id = ?, country_id = ?, subdivision_id = ?, longitude = ?, latitude = ?, accuracy_radius = ? WHERE public_key = ?`;
-            const params = [asn.autonomous_system_number, city.city?.geoname_id, city.country?.geoname_id, city.subdivisions ? city.subdivisions[0].geoname_id : null, city.location?.longitude, city.location?.latitude, city.location?.accuracy_radius, node.public_key];
+          const isp = lookupIsp.get(ip);
+
+          if (city && (asn || isp)) {
+            const query = `UPDATE nodes SET 
+              as_number = ?, 
+              city_id = ?, 
+              country_id = ?, 
+              subdivision_id = ?, 
+              longitude = ?, 
+              latitude = ?, 
+              accuracy_radius = ?
+            WHERE public_key = ?`;
+
+            const params = [
+              isp?.autonomous_system_number ?? asn?.autonomous_system_number,
+              city.city?.geoname_id,
+              city.country?.geoname_id,
+              city.subdivisions ? city.subdivisions[0].geoname_id : null,
+              city.location?.longitude,
+              city.location?.latitude,
+              city.location?.accuracy_radius,
+              node.public_key
+            ];
             await DB.query(query, params);
 
              // Store Continent
@@ -61,10 +82,10 @@ export async function $lookupNodeLocation(): Promise<void> {
             }
 
             // Store AS name
-            if (asn.autonomous_system_organization) {
+            if (isp?.autonomous_system_organization ?? asn?.autonomous_system_organization) {
               await DB.query(
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'as_organization', ?)`,
-                [asn.autonomous_system_number, JSON.stringify(asn.autonomous_system_organization)]);
+                [isp?.autonomous_system_number ?? asn?.autonomous_system_number, JSON.stringify(isp?.isp ?? asn?.autonomous_system_organization)]);
             }
           }
         }
