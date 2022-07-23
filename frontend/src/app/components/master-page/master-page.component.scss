@@ -9,12 +9,14 @@ fa-icon {
 .navbar {
   z-index: 100;
   min-height: 64px;
+  display: flex;
+  justify-content: space-around !important;
 }
 
 li.nav-item {
-  margin: auto 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  margin: auto 6px;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 @media (min-width: 992px) {
