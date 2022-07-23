@@ -1,0 +1,21 @@
+<ng-container *ngIf="{ val: network$ | async } as network">
+<div class="preview-wrapper">
+  <router-outlet></router-outlet>
+
+  <footer>
+    <span class="footer-brand" style="position: relative;">
+      <img *ngIf="!officialMempoolSpace" src="/resources/mempool-logo.png" height="35" width="140" class="logo">
+      <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" style="width: 140px; height: 35px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
+    </span>
+
+    <div [ngSwitch]="network.val">
+      <span *ngSwitchCase="'signet'" class="network signet"><img src="/resources/signet-logo.png" style="width: 30px;" class="signet mr-1" alt="logo"> Signet</span>
+      <span *ngSwitchCase="'testnet'" class="network testnet"><img src="/resources/testnet-logo.png" style="width: 30px;" class="mr-1" alt="testnet logo"> Testnet</span>
+      <span *ngSwitchCase="'bisq'" class="network bisq"><img src="/resources/bisq-logo.png" style="width: 30px;" class="mr-1" alt="bisq logo"> Bisq</span>
+      <span *ngSwitchCase="'liquid'" class="network liquid"><img src="/resources/liquid-logo.png" style="width: 30px;" class="mr-1" alt="liquid mainnet logo"> Liquid</span>
+      <span *ngSwitchCase="'liquidtestnet'" class="network liquidtestnet"><img src="/resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1" alt="liquid testnet logo"> Liquid Testnet</span>
+      <span *ngSwitchDefault class="network mainnet"><img src="/resources/bitcoin-logo.png" style="width: 30px;" class="mainnet mr-1" alt="bitcoin logo"> Mainnet</span>
+    </div>
+  </footer>
+</div>
+</ng-container>
