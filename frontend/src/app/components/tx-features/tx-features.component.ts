@@ -12,12 +12,13 @@ export class TxFeaturesComponent implements OnChanges {
   @Input() tx: Transaction;
 
   segwitGains = {
-    realizedGains: 0,
+    realizedBech32Gains: 0,
     potentialBech32Gains: 0,
     potentialP2shGains: 0,
+    potentialTaprootGains: 0,
+    realizedTaprootGains: 0
   };
   isRbfTransaction: boolean;
-  isTaproot: boolean;
 
   constructor() { }
 
@@ -27,6 +28,5 @@ export class TxFeaturesComponent implements OnChanges {
     }
     this.segwitGains = calcSegwitFeeGains(this.tx);
     this.isRbfTransaction = this.tx.vin.some((v) => v.sequence < 0xfffffffe);
-    this.isTaproot = this.tx.vin.some((v) => v.prevout && v.prevout.scriptpubkey_type === 'v1_p2tr');
   }
 }

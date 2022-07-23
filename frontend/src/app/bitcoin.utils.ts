@@ -1,26 +1,32 @@
 import { Transaction, Vin } from './interfaces/electrs.interface';
+import { parseMultisigScript } from './components/address-labels/address-labels.component';
 
 const P2SH_P2WPKH_COST = 21 * 4; // the WU cost for the non-witness part of P2SH-P2WPKH
 const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH-P2WSH
 
 export function calcSegwitFeeGains(tx: Transaction) {
   // calculated in weight units
-  let realizedGains = 0;
+  let realizedBech32Gains = 0;
   let potentialBech32Gains = 0;
   let potentialP2shGains = 0;
+  let potentialTaprootGains = 0;
+  let realizedTaprootGains = 0;
 
   for (const vin of tx.vin) {
     if (!vin.prevout) { continue; }
 
-    const isP2pkh = vin.prevout.scriptpubkey_type === 'p2pkh';
-    const isP2sh  = vin.prevout.scriptpubkey_type === 'p2sh';
-    const isP2wsh = vin.prevout.scriptpubkey_type === 'v0_p2wsh';
-    const isP2wpkh = vin.prevout.scriptpubkey_type === 'v0_p2wpkh';
-    const isP2tr  = vin.prevout.scriptpubkey_type === 'v1_p2tr';
+    const isP2pk         = vin.prevout.scriptpubkey_type === 'p2pk';
+    // const isBareMultisig = vin.prevout.scriptpubkey_type === 'multisig'; // type will be unknown, so use the multisig helper from the address labels
+    const isBareMultisig = !!parseMultisigScript(vin.prevout.scriptpubkey_asm);
+    const isP2pkh        = vin.prevout.scriptpubkey_type === 'p2pkh';
+    const isP2sh         = vin.prevout.scriptpubkey_type === 'p2sh';
+    const isP2wsh        = vin.prevout.scriptpubkey_type === 'v0_p2wsh';
+    const isP2wpkh       = vin.prevout.scriptpubkey_type === 'v0_p2wpkh';
+    const isP2tr         = vin.prevout.scriptpubkey_type === 'v1_p2tr';
 
     const op = vin.scriptsig ? vin.scriptsig_asm.split(' ')[0] : null;
     const isP2sh2Wpkh = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_22';
-    const isP2sh2Wsh = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_34';
+    const isP2sh2Wsh  = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_34';
 
     switch (true) {
       // Native Segwit - P2WPKH/P2WSH (Bech32)
@@ -28,41 +34,84 @@ export function calcSegwitFeeGains(tx: Transaction) {
       case isP2wsh:
       case isP2tr:
         // maximal gains: the scriptSig is moved entirely to the witness part
-        realizedGains += witnessSize(vin) * 3;
+        realizedBech32Gains += witnessSize(vin) * 3;
         // XXX P2WSH output creation is more expensive, should we take this into consideration?
         break;
 
       // Backward compatible Segwit - P2SH-P2WPKH
       case isP2sh2Wpkh:
         // the scriptSig is moved to the witness, but we have extra 21 extra non-witness bytes (48 WU)
-        realizedGains += witnessSize(vin) * 3 - P2SH_P2WPKH_COST;
+        realizedBech32Gains += witnessSize(vin) * 3 - P2SH_P2WPKH_COST;
         potentialBech32Gains += P2SH_P2WPKH_COST;
         break;
 
       // Backward compatible Segwit - P2SH-P2WSH
       case isP2sh2Wsh:
         // the scriptSig is moved to the witness, but we have extra 35 extra non-witness bytes
-        realizedGains += witnessSize(vin) * 3 - P2SH_P2WSH_COST;
+        realizedBech32Gains += witnessSize(vin) * 3 - P2SH_P2WSH_COST;
         potentialBech32Gains += P2SH_P2WSH_COST;
         break;
 
-      // Non-segwit P2PKH/P2SH
+      // Non-segwit P2PKH/P2SH/P2PK/bare multisig
       case isP2pkh:
       case isP2sh:
+      case isP2pk:
+      case isBareMultisig: {
         const fullGains = scriptSigSize(vin) * 3;
         potentialBech32Gains += fullGains;
         potentialP2shGains += fullGains - (isP2pkh ? P2SH_P2WPKH_COST : P2SH_P2WSH_COST);
         break;
+      }
+    }
 
-    // TODO: should we also consider P2PK and pay-to-bare-script (non-p2sh-wrapped) as upgradable to P2WPKH and P2WSH?
+    if (isP2tr) {
+      if (vin.witness.length == 1) {
+        // key path spend
+        // we don't know if this was a multisig or single sig (the goal of taproot :)),
+        // so calculate fee savings by comparing to the cheapest single sig input type: P2WPKH and say "saved at least ...%"
+        // the witness size of P2WPKH is 1 (stack size) + 1 (size) + 72 (low s signature) + 1 (size) + 33 (pubkey) = 108 WU
+        // the witness size of key path P2TR is 1 (stack size) + 1 (size) + 64 (signature) = 66 WU
+        realizedTaprootGains += 42;
+      } else {
+        // script path spend
+        // complex scripts with multiple spending paths can often be made around 2x to 3x smaller with the Taproot script tree
+        // because only the hash of the alternative spending path has the be in the witness data, not the entire script,
+        // but only assumptions can be made because the scripts themselves are unknown (again, the goal of taproot :))
+        // TODO maybe add some complex scripts that are specified somewhere, so that size is known, such as lightning scripts
+      }
+    } else {
+      const script = isP2sh2Wsh || isP2wsh ? vin.inner_witnessscript_asm : vin.inner_redeemscript_asm;
+      let replacementSize: number;
+      if (
+        // single sig
+        isP2pk || isP2pkh || isP2wpkh || isP2sh2Wpkh ||
+        // multisig
+        isBareMultisig || parseMultisigScript(script)
+      ) {
+        // the scriptSig and scriptWitness can all be replaced by a 66 witness WU with taproot
+        replacementSize = 66;
+      } else if (script) {
+        // not single sig, not multisig: the complex scripts
+        // rough calculations on spending paths
+        // every OP_IF and OP_NOTIF indicates an _extra_ spending path, so add 1
+        const spendingPaths = script.split(' ').filter(op => /^(OP_IF|OP_NOTIF)$/g.test(op)).length + 1;
+        // now assume the script could have been split in ${spendingPaths} equal tapleaves
+        replacementSize = script.length / 2 / spendingPaths +
+        // but account for the leaf and branch hashes and internal key in the control block
+          32 * Math.log2((spendingPaths - 1) || 1) + 33;
+      }
+      potentialTaprootGains += witnessSize(vin) + scriptSigSize(vin) * 4 - replacementSize;
     }
   }
 
   // returned as percentage of the total tx weight
-  return { realizedGains: realizedGains / (tx.weight + realizedGains) // percent of the pre-segwit tx size
-         , potentialBech32Gains: potentialBech32Gains / tx.weight
-         , potentialP2shGains: potentialP2shGains / tx.weight
-         };
+  return {
+    realizedBech32Gains: realizedBech32Gains / (tx.weight + realizedBech32Gains), // percent of the pre-segwit tx size
+    potentialBech32Gains: potentialBech32Gains / tx.weight,
+    potentialP2shGains: potentialP2shGains / tx.weight,
+    potentialTaprootGains: potentialTaprootGains / tx.weight,
+    realizedTaprootGains: realizedTaprootGains / tx.weight
+  };
 }
 
 // https://github.com/shesek/move-decimal-point
@@ -128,7 +177,7 @@ export const formatNumber = (s, precision = null) => {
 };
 
 // Utilities for segwitFeeGains
-const witnessSize = (vin: Vin) => vin.witness.reduce((S, w) => S + (w.length / 2), 0);
+const witnessSize = (vin: Vin) => vin.witness ? vin.witness.reduce((S, w) => S + (w.length / 2), 0) : 0;
 const scriptSigSize = (vin: Vin) => vin.scriptsig ? vin.scriptsig.length / 2 : 0;
 
 // Power of ten wrapper
