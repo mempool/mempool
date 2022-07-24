@@ -18,6 +18,7 @@ export class NodeComponent implements OnInit {
   selectedSocketIndex = 0;
   qrCodeVisible = false;
   channelsListMode = 'list';
+  channelsListStatus: string;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -68,5 +69,9 @@ export class NodeComponent implements OnInit {
     } else {
       this.channelsListMode = 'list';
     }
+  }
+
+  onChannelsListStatusChanged(e) {
+    this.channelsListStatus = e;
   }
 }
