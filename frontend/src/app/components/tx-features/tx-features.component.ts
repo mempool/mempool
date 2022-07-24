@@ -12,9 +12,11 @@ export class TxFeaturesComponent implements OnChanges {
   @Input() tx: Transaction;
 
   segwitGains = {
-    realizedGains: 0,
+    realizedBech32Gains: 0,
     potentialBech32Gains: 0,
     potentialP2shGains: 0,
+    potentialTaprootGains: 0,
+    realizedTaprootGains: 0
   };
   isRbfTransaction: boolean;
   isTaproot: boolean;
