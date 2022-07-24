@@ -78,6 +78,7 @@ li.nav-item {
 
 .navbar-brand {
   position: relative;
+  height: 65px;
 }
 
 nav {
@@ -86,7 +87,7 @@ nav {
 
 .connection-badge {
   position: absolute;
-  top: 13px;
+  top: 22px;
   width: 100%;
 }
 
@@ -150,6 +151,7 @@ nav {
   width: 140px;
   margin-right: 15px;
   text-align: center;
+  align-self: center;
 }
 
 .logo-holder {
@@ -160,4 +162,10 @@ nav {
 .navbar-brand {
   flex-direction: row;
   display: flex;
+}
+
+app-svg-images {
+  align-self: center;
+  width: 140px;
+  height: 35px;
 }
