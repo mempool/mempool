@@ -10,7 +10,7 @@
     </div>
   </form>
 
-  <table class="table table-borderless">
+  <table class="table table-borderless" *ngIf="response.channels.length > 1">
     <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
     <tbody>
       <tr *ngFor="let channel of response.channels; let i = index;">
@@ -19,7 +19,11 @@
     </tbody>
   </table>
   
-  <ngb-pagination class="pagination-container float-right" [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+  <ngb-pagination *ngIf="response.channels.length > 1" class="pagination-container float-right" [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+
+  <table class="table table-borderless" *ngIf="response.channels.length === 0">
+    <div class="d-flex justify-content-center" i18n="lightning.empty-channels-list">No channels to display</div>
+  </table>
 </div>
   
 <ng-template #tableHeader>
