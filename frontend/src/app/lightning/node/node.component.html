@@ -24,7 +24,7 @@
               <tr>
                 <td i18n="address.total-sent">Total channels</td>
                 <td>
-                  {{ node.channel_count }}
+                  {{ node.channel_active_count }}
                 </td>
               </tr>
               <tr>
@@ -108,7 +108,7 @@
     <br>
 
     <div class="d-flex justify-content-between">
-      <h2>Channels ({{ node.channel_count }})</h2>
+      <h2>Channels ({{ channelsListStatus === 'open' ? node.channel_active_count : node.channel_closed_count }})</h2>
       <div class="d-flex align-items-center justify-content-end">
         <span style="margin-bottom: 0.5rem">List</span>&nbsp;
         <label class="switch">
@@ -120,7 +120,8 @@
     </div>
 
     <app-nodes-channels-map *ngIf="channelsListMode === 'map'" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
-    <app-channels-list *ngIf="channelsListMode === 'list'" [publicKey]="node.public_key"></app-channels-list>
+    <app-channels-list *ngIf="channelsListMode === 'list'" [publicKey]="node.public_key"
+      (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
 
 </div>
 
