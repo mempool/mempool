@@ -64,7 +64,7 @@ export function calcSegwitFeeGains(tx: Transaction) {
     }
 
     if (isP2tr) {
-      if (vin.witness.length == 1) {
+      if (vin.witness.length === 1) {
         // key path spend
         // we don't know if this was a multisig or single sig (the goal of taproot :)),
         // so calculate fee savings by comparing to the cheapest single sig input type: P2WPKH and say "saved at least ...%"
