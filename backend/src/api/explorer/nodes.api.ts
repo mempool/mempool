@@ -9,7 +9,10 @@ class NodesApi {
         geo_names_country.names as country, geo_names_subdivision.names as subdivision,
           (SELECT Count(*)
           FROM channels
-          WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_count,
+          WHERE channels.status = 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_closed_count,
+          (SELECT Count(*)
+          FROM channels
+          WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_active_count,
           (SELECT Sum(capacity)
           FROM channels
           WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS capacity,
@@ -23,7 +26,7 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_country on geo_names_country.id = country_id
         WHERE public_key = ?
       `;
-      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
+      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
       if (rows.length > 0) {
         rows[0].as_organization = JSON.parse(rows[0].as_organization);
         rows[0].subdivision = JSON.parse(rows[0].subdivision);

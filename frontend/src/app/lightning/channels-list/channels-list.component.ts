@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { LightningApiService } from '../lightning-api.service';
 })
 export class ChannelsListComponent implements OnInit, OnChanges {
   @Input() publicKey: string;
+  @Output() channelsStatusChangedEvent = new EventEmitter<string>();
   channels$: Observable<any>;
 
   // @ts-ignore
@@ -41,13 +42,17 @@ export class ChannelsListComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false })
+    this.channelsStatusChangedEvent.emit(this.defaultStatus);
 
     this.channels$ = combineLatest([
       this.channelsPage$,
       this.channelStatusForm.get('status').valueChanges.pipe(startWith(this.defaultStatus))
     ])
     .pipe(
-      switchMap(([page, status]) =>this.lightningApiService.getChannelsByNodeId$(this.publicKey, (page -1) * this.itemsPerPage, status)),
+      switchMap(([page, status]) => {
+        this.channelsStatusChangedEvent.emit(status);
+        return this.lightningApiService.getChannelsByNodeId$(this.publicKey, (page -1) * this.itemsPerPage, status);
+      }),
       map((response) => {
         return {
           channels: response.body,
