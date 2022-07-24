@@ -57,20 +57,26 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
 
           const channelsLoc = [];
           const nodes = [];
+          const nodesPubkeys = {};
           for (const channel of data[1]) {
             channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
-            nodes.push({
-              publicKey: channel[0],
-              name: channel[1],
-              value: [channel[2], channel[3]],
-            });
-            nodes.push({
-              publicKey: channel[4],
-              name: channel[5],
-              value: [channel[6], channel[7]],
-            });
+            if (!nodesPubkeys[channel[0]]) {
+              nodes.push({
+                publicKey: channel[0],
+                name: channel[1],
+                value: [channel[2], channel[3]],
+              });
+              nodesPubkeys[channel[0]] = true;
+            }
+            if (!nodesPubkeys[channel[4]]) {
+              nodes.push({
+                publicKey: channel[4],
+                name: channel[5],
+                value: [channel[6], channel[7]],
+              });
+              nodesPubkeys[channel[4]] = true;  
+            }
           }
-
           this.prepareChartOptions(nodes, channelsLoc);
         }));
       })
@@ -100,7 +106,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         postEffect: {
           enable: true,
           bloom: {
-            intensity: this.style === 'nodepage' ? 0.1 : 0.01,
+            intensity: 0.1,
           }
         },
         viewControl: {
@@ -113,10 +119,10 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           zoomSensivity: 0.5,
         },
         itemStyle: {
-          color: '#FFFFFF',
+          color: 'white',
           opacity: 0.02,
           borderWidth: 1,
-          borderColor: '#00000050',
+          borderColor: 'black',
         },
         regionHeight: 0.01,
       },
