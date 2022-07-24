@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
@@ -18,6 +18,9 @@ export class NodeComponent implements OnInit {
   selectedSocketIndex = 0;
   qrCodeVisible = false;
   channelsListMode = 'list';
+  channelsListStatus: string;
+  error: Error;
+  publicKey: string;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -29,6 +32,7 @@ export class NodeComponent implements OnInit {
     this.node$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
+          this.publicKey = params.get('public_key');
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
@@ -55,6 +59,13 @@ export class NodeComponent implements OnInit {
           node.socketsObject = socketsObject;
           return node;
         }),
+        catchError(err => {
+          this.error = err;
+          return [{
+            alias: this.publicKey,
+            public_key: this.publicKey,
+          }];
+        })
       );
   }
 
@@ -68,5 +79,9 @@ export class NodeComponent implements OnInit {
     } else {
       this.channelsListMode = 'list';
     }
+  }
+
+  onChannelsListStatusChanged(e) {
+    this.channelsListStatus = e;
   }
 }
