@@ -11,6 +11,9 @@ BITCOIN_RPC_PASS=$(grep '^rpcpassword' /bitcoin/bitcoin.conf | cut -d '=' -f2)
 ELEMENTS_RPC_USER=$(grep '^rpcuser' /elements/elements.conf | cut -d '=' -f2)
 ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2)
 
+# get mysql credentials
+. /mempool/mysql_credentials
+
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
     exit 1
@@ -73,6 +76,18 @@ build_backend()
 	-e "s!__BITCOIN_RPC_PASS__!${BITCOIN_RPC_PASS}!" \
 	-e "s!__ELEMENTS_RPC_USER__!${ELEMENTS_RPC_USER}!" \
 	-e "s!__ELEMENTS_RPC_PASS__!${ELEMENTS_RPC_PASS}!" \
+        -e "s!__MEMPOOL_MAINNET_USER__!${MEMPOOL_MAINNET_USER}!" \
+        -e "s!__MEMPOOL_MAINNET_PASS__!${MEMPOOL_MAINNET_PASS}!" \
+        -e "s!__MEMPOOL_TESTNET_USER__!${MEMPOOL_TESTNET_USER}!" \
+        -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
+        -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
+        -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
+        -e "s!__MEMPOOL_LIQUID_USER__!${MEMPOOL_LIQUID_USER}!" \
+        -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
+        -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${LIQUIDTESTNET_USER}!" \
+        -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
+        -e "s!__MEMPOOL_BISQ_USER__!${MEMPOOL_BISQ_USER}!" \
+        -e "s!__MEMPOOL_BISQ_PASS__!${MEMPOOL_BISQ_PASS}!" \
 	"mempool-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1
