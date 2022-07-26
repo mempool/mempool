@@ -20,11 +20,13 @@ export class SeoService {
   setTitle(newTitle: string): void {
     this.titleService.setTitle(newTitle + ' - ' + this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: newTitle});
+    this.metaService.updateTag({ property: 'twitter:description', content: newTitle});
   }
 
   resetTitle(): void {
     this.titleService.setTitle(this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: this.getTitle()});
+    this.metaService.updateTag({ property: 'twitter:description', content: this.getTitle()});
   }
 
   setEnterpriseTitle(title: string) {

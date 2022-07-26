@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { StateService } from 'src/app/services/state.service';
+import { OpenGraphService } from 'src/app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -16,6 +17,7 @@ export class AppComponent implements OnInit {
   constructor(
     public router: Router,
     private stateService: StateService,
+    private openGraphService: OpenGraphService,
     private location: Location,
     tooltipConfig: NgbTooltipConfig,
     @Inject(LOCALE_ID) private locale: string,
