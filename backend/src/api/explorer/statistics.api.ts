@@ -13,7 +13,7 @@ class StatisticsApi {
       query += ` WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    query += ` ORDER BY id DESC`;
+    query += ` ORDER BY added DESC`;
 
     try {
       const [rows]: any = await DB.query(query);
@@ -26,8 +26,8 @@ class StatisticsApi {
 
   public async $getLatestStatistics(): Promise<any> {
     try {
-      const [rows]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1`);
-      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1 OFFSET 7`);
+      const [rows]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY added DESC LIMIT 1`);
+      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY added DESC LIMIT 1 OFFSET 7`);
       return {
         latest: rows[0],
         previous: rows2[0],
