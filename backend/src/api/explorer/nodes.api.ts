@@ -5,7 +5,7 @@ class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
     try {
       const query = `
-        SELECT nodes.*, geo_names_as.names as as_organization, geo_names_city.names as city,
+        SELECT nodes.*, geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
         geo_names_country.names as country, geo_names_subdivision.names as subdivision,
           (SELECT Count(*)
           FROM channels
@@ -24,6 +24,7 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
         LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = subdivision_id
         LEFT JOIN geo_names geo_names_country on geo_names_country.id = country_id
+        LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         WHERE public_key = ?
       `;
       const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
