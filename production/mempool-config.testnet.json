@@ -24,8 +24,8 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "mempool_testnet",
-    "PASSWORD": "mempool_testnet",
+    "USERNAME": "__MEMPOOL_TESTNET_USER__",
+    "PASSWORD": "__MEMPOOL_TESTNET_PASS__",
     "DATABASE": "mempool_testnet"
   },
   "STATISTICS": {
