@@ -290,7 +290,10 @@ let routes: Routes = [
         children: [
           {
             path: ':id',
-            component: BlockComponent
+            component: BlockComponent,
+            data: {
+              ogImage: true
+            }
           },
         ],
       },
