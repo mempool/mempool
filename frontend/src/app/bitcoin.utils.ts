@@ -5,9 +5,9 @@ const P2SH_P2WSH_COST  = 35 * 4; // the WU cost for the non-witness part of P2SH
 
 export function calcSegwitFeeGains(tx: Transaction) {
   // calculated in weight units
-  let realizedBech32Gains = 0;
-  let potentialBech32Gains = 0;
-  let potentialP2shGains = 0;
+  let realizedSegwitGains = 0;
+  let potentialSegwitGains = 0;
+  let potentialP2shSegwitGains = 0;
   let potentialTaprootGains = 0;
   let realizedTaprootGains = 0;
 
@@ -24,31 +24,33 @@ export function calcSegwitFeeGains(tx: Transaction) {
     const isP2tr         = vin.prevout.scriptpubkey_type === 'v1_p2tr';
 
     const op = vin.scriptsig ? vin.scriptsig_asm.split(' ')[0] : null;
-    const isP2sh2Wpkh = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_22';
-    const isP2sh2Wsh  = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_34';
+    const isP2shP2Wpkh = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_22';
+    const isP2shP2Wsh  = isP2sh && !!vin.witness && op === 'OP_PUSHBYTES_34';
 
     switch (true) {
-      // Native Segwit - P2WPKH/P2WSH (Bech32)
+      // Native Segwit - P2WPKH/P2WSH/P2TR
       case isP2wpkh:
       case isP2wsh:
       case isP2tr:
         // maximal gains: the scriptSig is moved entirely to the witness part
-        realizedBech32Gains += witnessSize(vin) * 3;
+        // if taproot is used savings are 42 WU higher because it produces smaller signatures and doesn't require a pubkey in the witness
+        // this number is explained above `realizedTaprootGains += 42;`
+        realizedSegwitGains += (witnessSize(vin) + (isP2tr ? 42 : 0)) * 3;
         // XXX P2WSH output creation is more expensive, should we take this into consideration?
         break;
 
       // Backward compatible Segwit - P2SH-P2WPKH
-      case isP2sh2Wpkh:
-        // the scriptSig is moved to the witness, but we have extra 21 extra non-witness bytes (48 WU)
-        realizedBech32Gains += witnessSize(vin) * 3 - P2SH_P2WPKH_COST;
-        potentialBech32Gains += P2SH_P2WPKH_COST;
+      case isP2shP2Wpkh:
+        // the scriptSig is moved to the witness, but we have extra 21 extra non-witness bytes (84 WU)
+        realizedSegwitGains += witnessSize(vin) * 3 - P2SH_P2WPKH_COST;
+        potentialSegwitGains += P2SH_P2WPKH_COST;
         break;
 
       // Backward compatible Segwit - P2SH-P2WSH
-      case isP2sh2Wsh:
-        // the scriptSig is moved to the witness, but we have extra 35 extra non-witness bytes
-        realizedBech32Gains += witnessSize(vin) * 3 - P2SH_P2WSH_COST;
-        potentialBech32Gains += P2SH_P2WSH_COST;
+      case isP2shP2Wsh:
+        // the scriptSig is moved to the witness, but we have extra 35 extra non-witness bytes (140 WU)
+        realizedSegwitGains += witnessSize(vin) * 3 - P2SH_P2WSH_COST;
+        potentialSegwitGains += P2SH_P2WSH_COST;
         break;
 
       // Non-segwit P2PKH/P2SH/P2PK/bare multisig
@@ -56,9 +58,13 @@ export function calcSegwitFeeGains(tx: Transaction) {
       case isP2sh:
       case isP2pk:
       case isBareMultisig: {
-        const fullGains = scriptSigSize(vin) * 3;
-        potentialBech32Gains += fullGains;
-        potentialP2shGains += fullGains - (isP2pkh ? P2SH_P2WPKH_COST : P2SH_P2WSH_COST);
+        let fullGains = scriptSigSize(vin) * 3;
+        if (isBareMultisig) {
+          // a _bare_ multisig has the keys in the output script, but P2SH and P2WSH require them to be in the scriptSig/scriptWitness
+          fullGains -= vin.prevout.scriptpubkey.length / 2;
+        }
+        potentialSegwitGains += fullGains;
+        potentialP2shSegwitGains += fullGains - (isP2pkh ? P2SH_P2WPKH_COST : P2SH_P2WSH_COST);
         break;
       }
     }
@@ -79,11 +85,11 @@ export function calcSegwitFeeGains(tx: Transaction) {
         // TODO maybe add some complex scripts that are specified somewhere, so that size is known, such as lightning scripts
       }
     } else {
-      const script = isP2sh2Wsh || isP2wsh ? vin.inner_witnessscript_asm : vin.inner_redeemscript_asm;
+      const script = isP2shP2Wsh || isP2wsh ? vin.inner_witnessscript_asm : vin.inner_redeemscript_asm;
       let replacementSize: number;
       if (
         // single sig
-        isP2pk || isP2pkh || isP2wpkh || isP2sh2Wpkh ||
+        isP2pk || isP2pkh || isP2wpkh || isP2shP2Wpkh ||
         // multisig
         isBareMultisig || parseMultisigScript(script)
       ) {
@@ -105,11 +111,11 @@ export function calcSegwitFeeGains(tx: Transaction) {
 
   // returned as percentage of the total tx weight
   return {
-    realizedBech32Gains: realizedBech32Gains / (tx.weight + realizedBech32Gains), // percent of the pre-segwit tx size
-    potentialBech32Gains: potentialBech32Gains / tx.weight,
-    potentialP2shGains: potentialP2shGains / tx.weight,
+    realizedSegwitGains: realizedSegwitGains / (tx.weight + realizedSegwitGains), // percent of the pre-segwit tx size
+    potentialSegwitGains: potentialSegwitGains / tx.weight,
+    potentialP2shSegwitGains: potentialP2shSegwitGains / tx.weight,
     potentialTaprootGains: potentialTaprootGains / tx.weight,
-    realizedTaprootGains: realizedTaprootGains / tx.weight
+    realizedTaprootGains: realizedTaprootGains / (tx.weight + realizedTaprootGains)
   };
 }
 
@@ -188,12 +194,12 @@ export function moveDec(num: number, n: number) {
   return neg + (int || '0') + (frac.length ? '.' + frac : '');
 }
 
-function zeros(n) {
+function zeros(n: number) {
   return new Array(n + 1).join('0');
 }
 
 // Formats a number for display. Treats the number as a string to avoid rounding errors.
-export const formatNumber = (s, precision = null) => {
+export const formatNumber = (s: number | string, precision: number | null = null) => {
   let [ whole, dec ] = s.toString().split('.');
 
   // divide numbers into groups of three separated with a thin space (U+202F, "NARROW NO-BREAK SPACE"),
@@ -219,27 +225,27 @@ const witnessSize = (vin: Vin) => vin.witness ? vin.witness.reduce((S, w) => S +
 const scriptSigSize = (vin: Vin) => vin.scriptsig ? vin.scriptsig.length / 2 : 0;
 
 // Power of ten wrapper
-export function selectPowerOfTen(val: number) {
+export function selectPowerOfTen(val: number): { divider: number, unit: string } {
   const powerOfTen = {
     exa: Math.pow(10, 18),
     peta: Math.pow(10, 15),
-    terra: Math.pow(10, 12),
+    tera: Math.pow(10, 12),
     giga: Math.pow(10, 9),
     mega: Math.pow(10, 6),
     kilo: Math.pow(10, 3),
   };
 
-  let selectedPowerOfTen;
+  let selectedPowerOfTen: { divider: number, unit: string };
   if (val < powerOfTen.kilo) {
     selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
   } else if (val < powerOfTen.mega) {
     selectedPowerOfTen = { divider: powerOfTen.kilo, unit: 'k' };
   } else if (val < powerOfTen.giga) {
     selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
-  } else if (val < powerOfTen.terra) {
+  } else if (val < powerOfTen.tera) {
     selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
   } else if (val < powerOfTen.peta) {
-    selectedPowerOfTen = { divider: powerOfTen.terra, unit: 'T' };
+    selectedPowerOfTen = { divider: powerOfTen.tera, unit: 'T' };
   } else if (val < powerOfTen.exa) {
     selectedPowerOfTen = { divider: powerOfTen.peta, unit: 'P' };
   } else {
