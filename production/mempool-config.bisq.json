@@ -21,8 +21,8 @@
     "ENABLED": false,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "mempool_bisq",
-    "PASSWORD": "mempool_bisq",
+    "USERNAME": "__MEMPOOL_BISQ_USER__",
+    "PASSWORD": "__MEMPOOL_BISQ_PASS__",
     "DATABASE": "mempool_bisq"
   },
   "STATISTICS": {
