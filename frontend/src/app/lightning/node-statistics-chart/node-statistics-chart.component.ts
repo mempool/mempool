@@ -169,9 +169,6 @@ export class NodeStatisticsChartComponent implements OnInit {
       },
       yAxis: data.channels.length === 0 ? undefined : [
         {
-          min: (value) => {
-            return value.min * 0.9;
-          },
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
@@ -188,9 +185,6 @@ export class NodeStatisticsChartComponent implements OnInit {
           },
         },
         {
-          min: (value) => {
-            return value.min * 0.9;
-          },
           type: 'value',
           position: 'right',
           axisLabel: {
@@ -225,15 +219,6 @@ export class NodeStatisticsChartComponent implements OnInit {
               opacity: 1,
               width: 1,
             },
-            data: [{
-              yAxis: 1,
-              label: {
-                position: 'end',
-                show: true,
-                color: '#ffffff',
-                formatter: `1 MB`
-              }
-            }],
           }
         },
         {
