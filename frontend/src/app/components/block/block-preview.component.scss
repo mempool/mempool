@@ -1,7 +1,27 @@
 .box {
-  padding: 2rem 6rem;
+  padding: 2rem 3rem;
 }
 
 .block-title {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.75em;
+  font-size: 42px;
+
+  ::ng-deep .next-previous-blocks {
+    font-size: 42px;
+  }
+}
+
+.table {
+  font-size: 24px;
+}
+
+.chart-container {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 420px;
+  min-width: 420px;
+}
+
+::ng-deep .symbol {
+  font-size: 18px;
 }
