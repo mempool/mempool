@@ -140,7 +140,9 @@
 
   <div class="d-flex justify-content-between" *ngIf="!error">
     <h2>Channels ({{ channelsListStatus === 'open' ? node.channel_active_count : node.channel_closed_count }})</h2>
-    <app-toggle [textLeft]="'List'" [textRight]="'Map'" (toggleStatusChanged)="channelsListModeChange($event)"></app-toggle>
+    <div class="d-flex justify-content-end">
+      <app-toggle [textLeft]="'List'" [textRight]="'Map'" (toggleStatusChanged)="channelsListModeChange($event)"></app-toggle>
+    </div>
   </div>
 
   <app-nodes-channels-map *ngIf="channelsListMode === 'map' && !error" [style]="'nodepage'" [publicKey]="node.public_key">

@@ -1,4 +1,4 @@
-import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
+import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-toggle',
@@ -6,10 +6,14 @@ import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter } from 
   styleUrls: ['./toggle.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToggleComponent {
+export class ToggleComponent implements AfterViewInit {
   @Output() toggleStatusChanged = new EventEmitter<boolean>();
   @Input() textLeft: string;
   @Input() textRight: string;
+
+  ngAfterViewInit(): void {
+    this.toggleStatusChanged.emit(false);
+  }
 
   onToggleStatusChanged(e): void {
     this.toggleStatusChanged.emit(e.target.checked);
