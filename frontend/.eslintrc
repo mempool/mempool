@@ -14,10 +14,11 @@
     "@typescript-eslint/ban-types": 1,
     "@typescript-eslint/no-empty-function": 1,
     "@typescript-eslint/no-explicit-any": 1,
-    "@typescript-eslint/no-inferrable-types": 1,
+    "@typescript-eslint/no-inferrable-types": 0,
     "@typescript-eslint/no-namespace": 1,
     "@typescript-eslint/no-this-alias": 1,
     "@typescript-eslint/no-var-requires": 1,
+    "@typescript-eslint/explicit-function-return-type": 1,
     "no-case-declarations": 1,
     "no-console": 1,
     "no-constant-condition": 1,
@@ -29,6 +30,8 @@
     "no-useless-catch": 1,
     "no-var": 1,
     "prefer-const": 1,
-    "prefer-rest-params": 1
+    "prefer-rest-params": 1,
+    "quotes": [1, "single", { "allowTemplateLiterals": true }],
+    "semi": 1
   }
 }
