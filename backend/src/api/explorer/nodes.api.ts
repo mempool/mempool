@@ -98,29 +98,59 @@ class NodesApi {
     }
   }
 
-  public async $getNodesISP() {
+  public async $getNodesISP(groupBy: string, showTor: boolean) {
     try {
-      let query = `SELECT GROUP_CONCAT(DISTINCT(nodes.as_number)) as ispId, geo_names.names as names, COUNT(DISTINCT nodes.public_key) as nodesCount, SUM(capacity) as capacity
+      const orderBy = groupBy === 'capacity' ? `CAST(SUM(capacity) as INT)` : `COUNT(DISTINCT nodes.public_key)`;
+      
+      // Clearnet
+      let query = `SELECT GROUP_CONCAT(DISTINCT(nodes.as_number)) as ispId, geo_names.names as names,
+          COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
         FROM nodes
         JOIN geo_names ON geo_names.id = nodes.as_number
         JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
         GROUP BY geo_names.names
-        ORDER BY COUNT(DISTINCT nodes.public_key) DESC
-      `;
+        ORDER BY ${orderBy} DESC
+      `;      
       const [nodesCountPerAS]: any = await DB.query(query);
 
-      query = `SELECT COUNT(*) as total FROM nodes WHERE as_number IS NOT NULL`;
-      const [nodesWithAS]: any = await DB.query(query);
-
+      let total = 0;
       const nodesPerAs: any[] = [];
+
+      for (const asGroup of nodesCountPerAS) {
+        if (groupBy === 'capacity') {
+          total += asGroup.capacity;
+        } else {
+          total += asGroup.nodesCount;
+        }
+      }
+
+      // Tor
+      if (showTor) {
+        query = `SELECT COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
+          FROM nodes
+          JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
+          ORDER BY ${orderBy} DESC
+        `;      
+        const [nodesCountTor]: any = await DB.query(query);
+
+        total += groupBy === 'capacity' ? nodesCountTor[0].capacity : nodesCountTor[0].nodesCount;
+        nodesPerAs.push({
+          ispId: null,
+          name: 'Tor',
+          count: nodesCountTor[0].nodesCount,
+          share: Math.floor((groupBy === 'capacity' ? nodesCountTor[0].capacity : nodesCountTor[0].nodesCount) / total * 10000) / 100,
+          capacity: nodesCountTor[0].capacity,
+        });
+      }
+
       for (const as of nodesCountPerAS) {
         nodesPerAs.push({
           ispId: as.ispId,
           name: JSON.parse(as.names),
           count: as.nodesCount,
-          share: Math.floor(as.nodesCount / nodesWithAS[0].total * 10000) / 100,
+          share: Math.floor((groupBy === 'capacity' ? as.capacity : as.nodesCount) / total * 10000) / 100,
           capacity: as.capacity,
-        })
+        });
       }
 
       return nodesPerAs;

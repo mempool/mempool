@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { map, Observable, share, tap } from 'rxjs';
+import { combineLatest, map, Observable, share, Subject, switchMap, tap } from 'rxjs';
 import { chartColors } from 'src/app/app.constants';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
@@ -17,19 +17,19 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {
-  miningWindowPreference: string;
-
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
   };
   timespan = '';
-  chartInstance: any = undefined;
+  chartInstance = undefined;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
   nodesPerAsObservable$: Observable<any>;
+  groupBySubject = new Subject<boolean>();
+  showTorSubject = new Subject<boolean>();
 
   constructor(
     private apiService: ApiService,
@@ -44,23 +44,31 @@ export class NodesPerISPChartComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes per ISP`);
 
-    this.nodesPerAsObservable$ = this.apiService.getNodesPerAs()
+    this.nodesPerAsObservable$ = combineLatest([this.groupBySubject, this.showTorSubject])
       .pipe(
-        tap(data => {
-          this.isLoading = false;
-          this.prepareChartOptions(data);
-        }),
-        map(data => {
-          for (let i = 0; i < data.length; ++i) {
-            data[i].rank = i + 1;
-          }
-          return data.slice(0, 100);
+        switchMap((selectedFilters) => {
+          return this.apiService.getNodesPerAs(
+            selectedFilters[0] ? 'capacity' : 'node-count',
+            selectedFilters[1] // Show Tor nodes
+          )
+            .pipe(
+              tap(data => {
+                this.isLoading = false;
+                this.prepareChartOptions(data);
+              }),
+              map(data => {
+                for (let i = 0; i < data.length; ++i) {
+                  data[i].rank = i + 1;
+                }
+                return data.slice(0, 100);
+              })
+            );
         }),
         share()
       );
   }
 
-  generateChartSerieData(as) {
+  generateChartSerieData(as): PieSeriesOption[] {
     const shareThreshold = this.isMobile() ? 2 : 0.5;
     const data: object[] = [];
     let totalShareOther = 0;
@@ -78,6 +86,9 @@ export class NodesPerISPChartComponent implements OnInit {
         return;
       }
       data.push({
+        itemStyle: {
+          color: as.ispId === null ? '#7D4698' : undefined,
+        },
         value: as.share,
         name: as.name + (this.isMobile() ? `` : ` (${as.share}%)`),
         label: {
@@ -138,14 +149,14 @@ export class NodesPerISPChartComponent implements OnInit {
     return data;
   }
 
-  prepareChartOptions(as) {
+  prepareChartOptions(as): void {
     let pieSize = ['20%', '80%']; // Desktop
     if (this.isMobile()) {
       pieSize = ['15%', '60%'];
     }
 
     this.chartOptions = {
-      color: chartColors,
+      color: chartColors.slice(3),
       tooltip: {
         trigger: 'item',
         textStyle: {
@@ -191,18 +202,18 @@ export class NodesPerISPChartComponent implements OnInit {
     };
   }
 
-  isMobile() {
+  isMobile(): boolean {
     return (window.innerWidth <= 767.98);
   }
 
-  onChartInit(ec) {
+  onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
     }
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
-      if (e.data.data === 9999) { // "Other"
+      if (e.data.data === 9999 || e.data.data === null) { // "Other" or Tor
         return;
       }
       this.zone.run(() => {
@@ -212,7 +223,7 @@ export class NodesPerISPChartComponent implements OnInit {
     });
   }
 
-  onSaveChart() {
+  onSaveChart(): void {
     const now = new Date();
     this.chartOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.chartOptions);
@@ -224,8 +235,12 @@ export class NodesPerISPChartComponent implements OnInit {
     this.chartInstance.setOption(this.chartOptions);
   }
 
-  isEllipsisActive(e) {
-    return (e.offsetWidth < e.scrollWidth);
+  onTorToggleStatusChanged(e): void {
+    this.showTorSubject.next(e);
+  }
+
+  onGroupToggleStatusChanged(e): void {
+    this.groupBySubject.next(e);
   }
 }
 
