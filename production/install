@@ -218,6 +218,21 @@ MYSQL_HOME=/mysql
 MYSQL_USER=mysql
 MYSQL_GROUP=mysql
 
+# mempool mysql user/password
+MEMPOOL_MAINNET_USER='mempool'
+MEMPOOL_TESTNET_USER='mempool_testnet'
+MEMPOOL_SIGNET_USER='mempool_signet'
+MEMPOOL_LIQUID_USER='mempool_liquid'
+MEMPOOL_LIQUIDTESTNET_USER='mempool_liquidtestnet'
+MEMPOOL_BISQ_USER='mempool_bisq'
+# generate random hex string
+MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_LIQUID_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_LIQUIDTESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_BISQ_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+
 # mempool data folder and user/group
 MEMPOOL_HOME=/mempool
 MEMPOOL_USER=mempool
@@ -1513,22 +1528,38 @@ esac
 
 mysql << _EOF_
 create database mempool;
-grant all on mempool.* to 'mempool'@'localhost' identified by 'mempool';
+grant all on mempool.* to '${MEMPOOL_MAINNET_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_PASS}';
 
 create database mempool_testnet;
-grant all on mempool_testnet.* to 'mempool_testnet'@'localhost' identified by 'mempool_testnet';
+grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identified by '${MEMPOOL_TESTNET_PASS}';
 
 create database mempool_signet;
-grant all on mempool_signet.* to 'mempool_signet'@'localhost' identified by 'mempool_signet';
+grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
 create database mempool_liquid;
-grant all on mempool_liquid.* to 'mempool_liquid'@'localhost' identified by 'mempool_liquid';
+grant all on mempool_liquid.* to '${MEMPOOL_LIQUID_USER}'@'localhost' identified by '${MEMPOOL_LIQUID_PASS}';
 
 create database mempool_liquidtestnet;
-grant all on mempool_liquidtestnet.* to 'mempool_liquidtestnet'@'localhost' identified by 'mempool_liquidtestnet';
+grant all on mempool_liquidtestnet.* to '${MEMPOOL_LIQUIDTESTNET_USER}'@'localhost' identified by '${MEMPOOL_LIQUIDTESTNET_PASS}';
 
 create database mempool_bisq;
-grant all on mempool_bisq.* to 'mempool_bisq'@'localhost' identified by 'mempool_bisq';
+grant all on mempool_bisq.* to '${MEMPOOL_BISQ_USER}'@'localhost' identified by '${MEMPOOL_BISQ_PASS}';
+_EOF_
+
+echo "[*] save MySQL credentials"
+cat > ${MEMPOOL_HOME}/mysql_credentials << _EOF_
+declare -x MEMPOOL_MAINNET_USER="${MEMPOOL_MAINNET_USER}"
+declare -x MEMPOOL_MAINNET_PASS="${MEMPOOL_MAINNET_PASS}"
+declare -x MEMPOOL_TESTNET_USER="${MEMPOOL_TESTNET_USER}"
+declare -x MEMPOOL_TESTNET_PASS="${MEMPOOL_TESTNET_PASS}"
+declare -x MEMPOOL_SIGNET_USER="${MEMPOOL_SIGNET_USER}"
+declare -x MEMPOOL_SIGNET_PASS="${MEMPOOL_SIGNET_PASS}"
+declare -x MEMPOOL_LIQUID_USER="${MEMPOOL_LIQUID_USER}"
+declare -x MEMPOOL_LIQUID_PASS="${MEMPOOL_LIQUID_PASS}"
+declare -x MEMPOOL_LIQUIDTESTNET_USER="${MEMPOOL_LIQUIDTESTNET_USER}"
+declare -x MEMPOOL_LIQUIDTESTNET_PASS="${MEMPOOL_LIQUIDTESTNET_PASS}"
+declare -x MEMPOOL_BISQ_USER="${MEMPOOL_BISQ_USER}"
+declare -x MEMPOOL_BISQ_PASS="${MEMPOOL_BISQ_PASS}"
 _EOF_
 
 ##### nginx

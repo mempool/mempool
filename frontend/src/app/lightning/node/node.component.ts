@@ -3,6 +3,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
+import { getFlagEmoji } from 'src/app/shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
@@ -51,6 +52,7 @@ export class NodeComponent implements OnInit {
             } else if (socket.indexOf('onion') > -1) {
               label = 'Tor';
             }
+            node.flag = getFlagEmoji(node.iso_code);
             socketsObject.push({
               label: label,
               socket: node.public_key + '@' + socket,
@@ -73,8 +75,8 @@ export class NodeComponent implements OnInit {
     this.selectedSocketIndex = index;
   }
 
-  channelsListModeChange(e) {
-    if (e.target.checked === true) {
+  channelsListModeChange(toggle) {
+    if (toggle === true) {
       this.channelsListMode = 'map';
     } else {
       this.channelsListMode = 'list';
