@@ -2070,7 +2070,7 @@ export const restApiDocsData = [
     fragment: "get-block-raw",
     title: "GET Block Raw",
     description: {
-      default: "Returns the raw block representation in binary for Esplora backend, or hex for Bitcoin Core RPC backend."
+      default: "Returns the raw block representation in binary."
     },
     urlString: "/block/:hash/raw",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
