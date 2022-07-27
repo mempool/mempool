@@ -80,6 +80,7 @@ import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
+import { ToggleComponent } from './components/toggle/toggle.component';
 
 @NgModule({
   declarations: [
@@ -154,6 +155,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     SatsComponent,
     SearchResultsComponent,
     TimestampComponent,
+    ToggleComponent,
   ],
   imports: [
     CommonModule,
@@ -255,6 +257,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     SatsComponent,
     SearchResultsComponent,
     TimestampComponent,
+    ToggleComponent,
   ]
 })
 export class SharedModule {

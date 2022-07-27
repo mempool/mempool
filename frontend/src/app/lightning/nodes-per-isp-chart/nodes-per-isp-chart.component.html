@@ -7,7 +7,9 @@
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>
-    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
+    <small class="d-block" style="color: #ffffff66; min-height: 25px" i18n="lightning.tor-nodes-excluded">
+      <span *ngIf="!(showTorObservable$ | async)">(Tor nodes excluded)</span>
+    </small>
   </div>
 
   <div class="container pb-lg-0 bottom-padding">
@@ -19,6 +21,11 @@
 
     <div class="text-center loadingGraphs" *ngIf="isLoading">
       <div class="spinner-border text-light"></div>
+    </div>
+
+    <div class="d-flex toggle">
+      <app-toggle [textLeft]="'Show Tor'" [textRight]="" (toggleStatusChanged)="onTorToggleStatusChanged($event)"></app-toggle>
+      <app-toggle [textLeft]="'Nodes'" [textRight]="'Capacity'" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
     </div>
 
     <table class="table table-borderless text-center m-auto" style="max-width: 900px">
@@ -34,8 +41,9 @@
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
         <tr *ngFor="let asEntry of asList">
           <td class="rank text-left pl-0">{{ asEntry.rank }}</td>
-          <td class="name text-left text-truncate" style="max-width: 250px">
-          <a [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
+          <td class="name text-left text-truncate">
+            <a *ngIf="asEntry.ispId" [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
+            <span *ngIf="!asEntry.ispId">{{ asEntry.name }}</span>
           </td>
           <td class="share text-right">{{ asEntry.share }}%</td>
           <td class="nodes text-right">{{ asEntry.count }}</td>
