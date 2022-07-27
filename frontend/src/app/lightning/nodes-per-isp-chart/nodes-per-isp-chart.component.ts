@@ -28,6 +28,7 @@ export class NodesPerISPChartComponent implements OnInit {
   @HostBinding('attr.dir') dir = 'ltr';
 
   nodesPerAsObservable$: Observable<any>;
+  showTorObservable$: Observable<boolean>;
   groupBySubject = new Subject<boolean>();
   showTorSubject = new Subject<boolean>();
 
@@ -44,6 +45,7 @@ export class NodesPerISPChartComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes per ISP`);
 
+    this.showTorObservable$ = this.showTorSubject.asObservable();
     this.nodesPerAsObservable$ = combineLatest([this.groupBySubject, this.showTorSubject])
       .pipe(
         switchMap((selectedFilters) => {

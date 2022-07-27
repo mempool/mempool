@@ -7,7 +7,9 @@
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>
-    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
+    <small class="d-block" style="color: #ffffff66; min-height: 25px" i18n="lightning.tor-nodes-excluded">
+      <span *ngIf="!(showTorObservable$ | async)">(Tor nodes excluded)</span>
+    </small>
   </div>
 
   <div class="container pb-lg-0 bottom-padding">
