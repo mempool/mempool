@@ -381,6 +381,7 @@ class NodeSyncService {
         WHERE short_id NOT IN (
           ${graphChannelsIds.map(id => `"${id}"`).join(',')}
         )
+        AND status != 2
       `);
     } catch (e) {
       logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
