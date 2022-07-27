@@ -53,7 +53,7 @@ class Server {
   }
 
   async clusterTask({ page, data: { url, action } }) {
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.goto(url, { waitUntil: "networkidle0" });
     switch (action) {
       case 'screenshot': {
         await page.evaluate(async () => {
@@ -73,11 +73,21 @@ class Server {
             }),
           ]);
         });
+        const waitForReady = await page.$('meta[property="og:loading"]');
+        const alreadyReady = await page.$('meta[property="og:ready"]');
+        if (waitForReady != null && alreadyReady == null) {
+          try {
+            await page.waitForSelector('meta[property="og:ready]"', { timeout: 10000 });
+          } catch (e) {
+            // probably timed out
+          }
+        }
         return page.screenshot();
       } break;
       default: {
         try {
-          await page.waitForSelector('meta[property="og:title"', { timeout: 5000 })
+          await page.waitForSelector('meta[property="og:title"]', { timeout: 10000 })
+          const tag = await page.$('meta[property="og:title"]');
         } catch (e) {
           // probably timed out
         }
