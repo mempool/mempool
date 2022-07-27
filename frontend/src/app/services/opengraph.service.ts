@@ -58,4 +58,14 @@ export class OpenGraphService {
     this.metaService.updateTag({ property: 'og:image:width', content: '1000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
   }
+
+  /// signal that the unfurler should wait for a 'ready' signal before taking a screenshot
+  setPreviewLoading() {
+    this.metaService.updateTag({ property: 'og:loading', content: 'loading'});
+  }
+
+  // signal to the unfurler that the page is ready for a screenshot
+  setPreviewReady() {
+    this.metaService.updateTag({ property: 'og:ready', content: 'ready'});
+  }
 }
