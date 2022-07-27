@@ -76,6 +76,11 @@ class Server {
         return page.screenshot();
       } break;
       default: {
+        try {
+          await page.waitForSelector('meta[property="og:title"', { timeout: 5000 })
+        } catch (e) {
+          // probably timed out
+        }
         return page.content();
       }
     }
@@ -96,6 +101,14 @@ class Server {
   }
 
   async renderHTML(req, res) {
+    // drop requests for static files
+    const path = req.params[0];
+    const match = path.match(/\.[\w]+$/);
+    if (match?.length && match[0] !== '.html') {
+      res.status(404).send();
+      return
+    }
+
     try {
       let html = await this.cluster?.execute({ url: this.mempoolHost + req.params[0], action: 'html' });
 
