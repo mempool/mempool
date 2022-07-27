@@ -9,8 +9,8 @@ class DatabaseMigration {
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
 
-  private blocksTruncatedMessage = `'blocks' table has been truncated. Re-indexing from scratch.`;
-  private hashratesTruncatedMessage = `'hashrates' table has been truncated. Re-indexing from scratch.`;
+  private blocksTruncatedMessage = `'blocks' table has been truncated.`;
+  private hashratesTruncatedMessage = `'hashrates' table has been truncated.`;
 
   /**
    * Avoid printing multiple time the same message
@@ -257,7 +257,7 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 26 && isBitcoin === true) {
       if (config.LIGHTNING.ENABLED) {
-        this.uniqueLog(logger.notice, `'lightning_stats' table has been truncated. Will re-generate historical data from scratch.`);
+        this.uniqueLog(logger.notice, `'lightning_stats' table has been truncated.`);
       }
       await this.$executeQuery(`TRUNCATE lightning_stats`);
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD tor_nodes int(11) NOT NULL DEFAULT "0"');
@@ -276,7 +276,7 @@ class DatabaseMigration {
     
     if (databaseSchemaVersion < 28 && isBitcoin === true) {
       if (config.LIGHTNING.ENABLED) {
-        this.uniqueLog(logger.notice, `'lightning_stats' and 'node_stats' tables have been truncated. Will re-generate historical data from scratch.`);
+        this.uniqueLog(logger.notice, `'lightning_stats' and 'node_stats' tables have been truncated.`);
       }
       await this.$executeQuery(`TRUNCATE lightning_stats`);
       await this.$executeQuery(`TRUNCATE node_stats`);
