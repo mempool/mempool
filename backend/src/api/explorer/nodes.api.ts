@@ -12,13 +12,13 @@ class NodesApi {
           WHERE channels.status = 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_closed_count,
           (SELECT Count(*)
           FROM channels
-          WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_active_count,
+          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_active_count,
           (SELECT Sum(capacity)
           FROM channels
-          WHERE channels.status < 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS capacity,
+          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS capacity,
           (SELECT Avg(capacity)
           FROM channels
-          WHERE status < 2 AND ( node1_public_key = ? OR node2_public_key = ? )) AS channels_capacity_avg
+          WHERE status = 1 AND ( node1_public_key = ? OR node2_public_key = ? )) AS channels_capacity_avg
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
