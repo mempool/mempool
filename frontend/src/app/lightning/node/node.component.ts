@@ -75,8 +75,8 @@ export class NodeComponent implements OnInit {
     this.selectedSocketIndex = index;
   }
 
-  channelsListModeChange(e) {
-    if (e.target.checked === true) {
+  channelsListModeChange(toggle) {
+    if (toggle === true) {
       this.channelsListMode = 'map';
     } else {
       this.channelsListMode = 'list';
