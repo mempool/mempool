@@ -474,7 +474,7 @@ class BitcoinRoutes {
   private async getRawBlock(req: Request, res: Response) {
     try {
       const result = await bitcoinApi.$getRawBlock(req.params.hash);
-      res.setHeader('content-type', 'text/plain');
+      res.setHeader('content-type', 'application/octet-stream');
       res.send(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
