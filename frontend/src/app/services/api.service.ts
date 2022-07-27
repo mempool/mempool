@@ -255,8 +255,9 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
-  getNodesPerAs(): Observable<any> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp');
+  getNodesPerAs(groupBy: 'capacity' | 'node-count', showTorNodes: boolean): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp-ranking'
+      + `?groupBy=${groupBy}&showTor=${showTorNodes}`);
   }
 
   getNodeForCountry$(country: string): Observable<any> {
