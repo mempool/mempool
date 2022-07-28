@@ -38,11 +38,13 @@ class NodeSyncService {
         await $lookupNodeLocation();
       }
 
-      await this.$setChannelsInactive();
-
+      const graphChannelsIds: string[] = [];
       for (const channel of networkGraph.channels) {
         await this.$saveChannel(channel);
+        graphChannelsIds.push(channel.id);
       }
+      await this.$setChannelsInactive(graphChannelsIds);
+
       logger.info(`Channels updated.`);
 
       await this.$findInactiveNodesAndChannels();
@@ -106,7 +108,22 @@ class NodeSyncService {
 
     try {
       // @ts-ignore
-      const [channels]: [ILightningApi.Channel[]] = await DB.query(`SELECT channels.id FROM channels WHERE channels.status = 1 AND ((SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node1_public_key) = 0 OR (SELECT COUNT(*) FROM nodes WHERE nodes.public_key = channels.node2_public_key) = 0)`);
+      const [channels]: [ILightningApi.Channel[]] = await DB.query(`
+        SELECT channels.id
+        FROM channels
+        WHERE channels.status = 1
+        AND (
+          (
+            SELECT COUNT(*)
+            FROM nodes
+            WHERE nodes.public_key = channels.node1_public_key
+          ) = 0
+        OR (
+            SELECT COUNT(*)
+            FROM nodes
+            WHERE nodes.public_key = channels.node2_public_key
+          ) = 0)
+        `);
 
       for (const channel of channels) {
         await this.$updateChannelStatus(channel.id, 0);
@@ -356,9 +373,16 @@ class NodeSyncService {
     }
   }
 
-  private async $setChannelsInactive(): Promise<void> {
+  private async $setChannelsInactive(graphChannelsIds: string[]): Promise<void> {
     try {
-      await DB.query(`UPDATE channels SET status = 0 WHERE status = 1`);
+      await DB.query(`
+        UPDATE channels
+        SET status = 0
+        WHERE short_id NOT IN (
+          ${graphChannelsIds.map(id => `"${id}"`).join(',')}
+        )
+        AND status != 2
+      `);
     } catch (e) {
       logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
     }

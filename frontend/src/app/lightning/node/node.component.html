@@ -43,11 +43,23 @@
             </tr>
             <tr *ngIf="node.country && node.city && node.subdivision">
               <td i18n="location">Location</td>
-              <td>{{ node.city.en }}, {{ node.subdivision.en }}<br>{{ node.country.en }}</td>
+              <td>
+                <span>{{ node.city.en }}, {{ node.subdivision.en }}</span>
+                <br>
+                <a class="d-flex align-items-center" [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
+                  <span class="link">{{ node.country.en }}</span>
+                  &nbsp;
+                  <span class="flag">{{ node.flag }}</span>
+                </a>
+              </td>
             </tr>
             <tr *ngIf="node.country && !node.city">
               <td i18n="location">Location</td>
-              <td>{{ node.country.en }}</td>
+              <td>
+                <a [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
+                  {{ node.country.en }} {{ node.flag }}
+                </a>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -77,7 +89,9 @@
             <tr *ngIf="node.country">
               <td i18n="isp">ISP</td>
               <td>
-                {{ node.as_organization }} [ASN {{node.as_number}}]
+                <a [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
+                  {{ node.as_organization }} [ASN {{node.as_number}}]
+                </a>                
               </td>
             </tr>
           </tbody>
@@ -126,13 +140,8 @@
 
   <div class="d-flex justify-content-between" *ngIf="!error">
     <h2>Channels ({{ channelsListStatus === 'open' ? node.channel_active_count : node.channel_closed_count }})</h2>
-    <div class="d-flex align-items-center justify-content-end">
-      <span style="margin-bottom: 0.5rem">List</span>&nbsp;
-      <label class="switch">
-        <input type="checkbox" (change)="channelsListModeChange($event)">
-        <span class="slider round"></span>
-      </label>
-      &nbsp;<span style="margin-bottom: 0.5rem">Map</span>
+    <div class="d-flex justify-content-end">
+      <app-toggle [textLeft]="'List'" [textRight]="'Map'" (toggleStatusChanged)="channelsListModeChange($event)"></app-toggle>
     </div>
   </div>
 
