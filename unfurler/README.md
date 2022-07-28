@@ -9,6 +9,22 @@ Some additional server configuration is required to properly route requests (see
 
 ## Setup
 
+### 0. Install deps
+
+For Linux, in addition to NodeJS/npm you'll need at least:
+* nginx
+* cups
+* chromium-bsu
+* libatk1.0
+* libatk-bridge2.0
+* libxkbcommon-dev
+* libxcomposite-dev
+* libxdamage-dev
+* libxrandr-dev
+* libgbm-dev
+* libpango1.0-dev
+* libasound-dev
+
 ### 1. Clone Mempool Repository
 
 Get the latest Mempool code:

@@ -45,7 +45,7 @@
 .name {
   width: 25%;
   @media (max-width: 576px) {
-    width: 80%;
+    width: 70%;
     max-width: 150px;
     padding-left: 0;
     padding-right: 0;
@@ -69,7 +69,17 @@
 .capacity {
   width: 20%;
   @media (max-width: 576px) {
-    width: 10%;
+    width: 20%;
     max-width: 100px;
+  }
+}
+
+.toggle {
+  justify-content: space-between;
+  padding-top: 15px;
+  @media (min-width: 576px) {
+    padding-bottom: 15px;
+    padding-left: 105px;
+    padding-right: 105px;
   }
 }
