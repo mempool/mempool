@@ -36,6 +36,7 @@
 
 .widget > .chart {
   -webkit-mask: linear-gradient(180deg, #11131f00 0%, #11131fff 20%);
+  min-height: 250px;
 }
 
 .chart {
@@ -43,23 +44,18 @@
   width: 100%;
   height: 100%;
   padding-right: 10px;
-
   @media (max-width: 992px) {
     padding-bottom: 25px;
   }
-
   @media (max-width: 829px) {
     padding-bottom: 50px;
   }
-
   @media (max-width: 767px) {
     padding-bottom: 25px;
   }
-
   @media (max-width: 629px) {
     padding-bottom: 55px;
   }
-
   @media (max-width: 567px) {
     padding-bottom: 55px;
   }
