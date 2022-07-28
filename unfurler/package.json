@@ -4,7 +4,7 @@
   "description": "Renderer for mempool open graph link preview images",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mononaut/mempool-unfurl"
+    "url": "git+https://github.com/mempool/mempool"
   },
   "main": "index.ts",
   "scripts": {
