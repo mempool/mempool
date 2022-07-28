@@ -15,6 +15,11 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  @media (max-width: 992px) {
+    margin: auto 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 @media (min-width: 992px) {
