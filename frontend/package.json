@@ -16,7 +16,8 @@
     "mempool",
     "blockchain",
     "explorer",
-    "liquid"
+    "liquid",
+    "lightning"
   ],
   "main": "index.ts",
   "scripts": {

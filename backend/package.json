@@ -16,12 +16,14 @@
     "mempool",
     "blockchain",
     "explorer",
-    "liquid"
+    "liquid",
+    "lightning"
   ],
   "main": "index.ts",
   "scripts": {
+    "configure-lnd": "node configure-lnd.js",
     "tsc": "./node_modules/typescript/bin/tsc",
-    "build": "npm run tsc",
+    "build": "node configure-lnd.js fallback && npm run tsc",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=4096 dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -30,14 +32,14 @@
     "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.6.8",
+    "@grpc/proto-loader": "^0.7.0",
     "@mempool/electrum-client": "^1.1.7",
     "@types/node": "^16.11.41",
     "axios": "~0.27.2",
     "bitcoinjs-lib": "6.0.1",
-    "bolt07": "^1.8.1",
     "crypto-js": "^4.0.0",
     "express": "^4.18.0",
-    "lightning": "^5.16.3",
     "maxmind": "^4.3.6",
     "mysql2": "2.3.3",
     "node-worker-threads-pool": "^1.5.1",
