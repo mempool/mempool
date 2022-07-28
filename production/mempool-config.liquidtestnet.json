@@ -28,8 +28,8 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "mempool_liquidtestnet",
-    "PASSWORD": "mempool_liquidtestnet",
+    "USERNAME": "__MEMPOOL_LIQUIDTESTNET_USER__",
+    "PASSWORD": "__MEMPOOL_LIQUIDTESTNET_PASS__",
     "DATABASE": "mempool_liquidtestnet"
   },
   "STATISTICS": {
