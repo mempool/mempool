@@ -1,0 +1,46 @@
+h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.qrcode-col {
+  width: 420px;
+  min-width: 420px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.table {
+  font-size: 24px;
+
+  ::ng-deep .symbol {
+    font-size: 18px;
+  }
+}
+
+.address-link {
+  font-size: 20px;
+  margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  .truncated-address {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: calc(505px - 4em);
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .last-four {
+    display: inline-block;
+    white-space: nowrap;
+  }
+}
