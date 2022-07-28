@@ -87,7 +87,10 @@ let routes: Routes = [
               children: [
               {
                 path: ':id',
-                component: BlockComponent
+                component: BlockComponent,
+                data: {
+                  ogImage: true
+                }
               },
             ],
           },
@@ -190,7 +193,10 @@ let routes: Routes = [
             children: [
               {
                 path: ':id',
-                component: BlockComponent
+                component: BlockComponent,
+                data: {
+                  ogImage: true
+                }
               },
             ],
           },
@@ -290,7 +296,10 @@ let routes: Routes = [
         children: [
           {
             path: ':id',
-            component: BlockComponent
+            component: BlockComponent,
+            data: {
+              ogImage: true
+            }
           },
         ],
       },
@@ -323,6 +332,14 @@ let routes: Routes = [
     children: [
       {
         path: 'block/:id',
+        component: BlockPreviewComponent
+      },
+      {
+        path: 'testnet/block/:id',
+        component: BlockPreviewComponent
+      },
+      {
+        path: 'signet/block/:id',
         component: BlockPreviewComponent
       },
     ],
@@ -416,7 +433,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               children: [
                 {
                   path: ':id',
-                  component: BlockComponent
+                  component: BlockComponent,
+                  data: {
+                    ogImage: true
+                  }
                 },
               ],
             },
@@ -520,7 +540,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           children: [
             {
               path: ':id',
-              component: BlockComponent
+              component: BlockComponent,
+              data: {
+                ogImage: true
+              }
             },
           ],
         },
@@ -557,6 +580,20 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: 'api',
           loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+        },
+      ],
+    },
+    {
+      path: 'preview',
+      component: MasterPagePreviewComponent,
+      children: [
+        {
+          path: 'block/:id',
+          component: BlockPreviewComponent
+        },
+        {
+          path: 'testnet/block/:id',
+          component: BlockPreviewComponent
         },
       ],
     },

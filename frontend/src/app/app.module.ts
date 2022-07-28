@@ -10,6 +10,7 @@ import { EnterpriseService } from './services/enterprise.service';
 import { WebsocketService } from './services/websocket.service';
 import { AudioService } from './services/audio.service';
 import { SeoService } from './services/seo.service';
+import { OpenGraphService } from './services/opengraph.service';
 import { SharedModule } from './shared/shared.module';
 import { StorageService } from './services/storage.service';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
@@ -36,6 +37,7 @@ import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe
     WebsocketService,
     AudioService,
     SeoService,
+    OpenGraphService,
     StorageService,
     EnterpriseService,
     LanguageService,

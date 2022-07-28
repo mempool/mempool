@@ -27,10 +27,6 @@
             </td>
           </tr>
           <tr>
-            <td i18n="block.size">Size</td>
-            <td [innerHTML]="'&lrm;' + (block?.size | bytes: 2)"></td>
-          </tr>
-          <tr>
             <td i18n="block.weight">Weight</td>
             <td [innerHTML]="'&lrm;' + (block?.weight | wuBytes: 2)"></td>
           </tr>
@@ -50,12 +46,6 @@
                     <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
                   </td>
                 </ng-template>
-              </tr>
-              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
-                <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
-                <td>
-                  <app-amount [satoshis]="block?.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
-                </td>
               </tr>
             </ng-template>
             <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
