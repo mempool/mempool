@@ -50,6 +50,7 @@ import { BlockAuditComponent } from '../components/block-audit/block-audit.compo
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { AddressComponent } from '../components/address/address.component';
+import { AddressPreviewComponent } from '../components/address/address-preview.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -125,6 +126,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -227,6 +229,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
