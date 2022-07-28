@@ -82,6 +82,15 @@ export class NodesPerISPChartComponent implements OnInit {
     }
 
     as.forEach((as) => {
+      let color = undefined;
+      if (as.name === null) {
+        as.name = 'Unknown';
+        color = '#D81B60';
+      } else if (as.name === 'Tor') {
+        color = '#7D4698';
+      }
+      
+
       if (as.share < shareThreshold) {
         totalShareOther += as.share;
         totalNodeOther += as.count;
@@ -89,7 +98,7 @@ export class NodesPerISPChartComponent implements OnInit {
       }
       data.push({
         itemStyle: {
-          color: as.ispId === null ? '#7D4698' : undefined,
+          color: color
         },
         value: as.share,
         name: as.name + (this.isMobile() ? `` : ` (${as.share}%)`),

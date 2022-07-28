@@ -106,8 +106,9 @@ class NodesApi {
       let query = `SELECT GROUP_CONCAT(DISTINCT(nodes.as_number)) as ispId, geo_names.names as names,
           COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
         FROM nodes
-        JOIN geo_names ON geo_names.id = nodes.as_number
+        LEFT JOIN geo_names ON geo_names.id = nodes.as_number
         JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
+        WHERE nodes.sockets NOT LIKE "%onion%"
         GROUP BY geo_names.names
         ORDER BY ${orderBy} DESC
       `;      
@@ -129,6 +130,7 @@ class NodesApi {
         query = `SELECT COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
           FROM nodes
           JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
+          WHERE nodes.sockets LIKE "%onion%" AND nodes.sockets NOT LIKE "%,%"
           ORDER BY ${orderBy} DESC
         `;      
         const [nodesCountTor]: any = await DB.query(query);
