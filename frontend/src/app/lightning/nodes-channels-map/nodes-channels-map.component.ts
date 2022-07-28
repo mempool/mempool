@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, switchMap, tap, zip } from 'rxjs';
@@ -26,7 +26,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'canvas',
-  };
+  }; 
 
   constructor(
     private seoService: SeoService,
@@ -98,6 +98,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     }
 
     this.chartOptions = {
+      silent: true,
       title: title ?? undefined,
       geo3D: {
         map: 'world',
@@ -110,9 +111,10 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           }
         },
         viewControl: {
-          center: this.style === 'widget' ? [0, 0, -1] : undefined,
-          minDistance: 0.1,
-          distance: this.style === 'widget' ? 45 : 60,
+          center: this.style === 'widget' ? [0, 0, -10] : undefined,
+          minDistance: this.style === 'widget' ? 22 : 0.1,
+          maxDistance: this.style === 'widget' ? 22 : 60,
+          distance: this.style === 'widget' ? 22 : 60,
           alpha: 90,
           panMouseButton: 'left',
           rotateMouseButton: undefined,
@@ -167,6 +169,14 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     };
   }
 
+  @HostListener('window:wheel', ['$event'])
+  onWindowScroll(e): void {
+    // Not very smooth when using the mouse
+    if (this.style === 'widget' && e.target.tagName === 'CANVAS') {
+      window.scrollBy({left: 0, top: e.deltaY, behavior: 'auto'});
+    }
+  }
+
   onChartInit(ec) {
     if (this.chartInstance !== undefined) {
       return;
@@ -174,6 +184,15 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
 
     this.chartInstance = ec;
 
+    if (this.style === 'widget') {
+      this.chartInstance.getZr().on('click', (e) => {
+        this.zone.run(() => {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/graphs/lightning/nodes-channels-map`);
+          this.router.navigate([url]);
+        });
+      });
+    }
+    
     this.chartInstance.on('click', (e) => {
       if (e.data && e.data.publicKey) {
         this.zone.run(() => {
