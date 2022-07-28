@@ -1,0 +1,14 @@
+{
+  "SERVER": {
+    "HOST": "http://localhost",
+    "HTTP_PORT": 4201
+  },
+  "MEMPOOL": {
+    "HTTP_HOST": "http://localhost",
+    "HTTP_PORT": 4200
+  },
+  "PUPPETEER": {
+    "CLUSTER_SIZE": 2,
+    "EXEC_PATH": "/usr/local/bin/chrome" // optional
+  }
+}
