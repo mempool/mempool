@@ -1,3 +1,5 @@
+// Imported from https://github.com/shesek/lightning-client-js
+
 'use strict';
 
 const methods = [
@@ -96,7 +98,7 @@ import { createConnection, Socket } from 'net';
 import { homedir } from 'os';
 import path from 'path';
 import { createInterface, Interface } from 'readline';
-import logger from '../../logger';
+import logger from '../../../logger';
 
 class LightningError extends Error {
   type: string = 'lightning';
@@ -113,7 +115,7 @@ const defaultRpcPath = path.join(homedir(), '.lightning')
   , fStat = (...p) => statSync(path.join(...p))
   , fExists = (...p) => existsSync(path.join(...p))
 
-class CLightningClient extends EventEmitter {
+export default class CLightningClient extends EventEmitter {
   private rpcPath: string;
   private reconnectWait: number;
   private reconnectTimeout;
@@ -182,7 +184,7 @@ class CLightningClient extends EventEmitter {
         return;
       }
       const data = JSON.parse(line);
-      logger.debug(`[CLightningClient] #${data.id} <-- ${JSON.stringify(data.error || data.result)}`);
+      // logger.debug(`[CLightningClient] #${data.id} <-- ${JSON.stringify(data.error || data.result)}`);
       _self.emit('res:' + data.id, data);
     });
   }
@@ -210,7 +212,7 @@ class CLightningClient extends EventEmitter {
     }, this.reconnectWait * 1000);
   }
 
-  call(method, args = []): Promise<unknown> {
+  call(method, args = []): Promise<any> {
     const _self = this;
 
     const callInt = ++this.reqcount;
@@ -245,5 +247,3 @@ methods.forEach(k => {
     return this.call(k, args);
   };
 });
-
-export default new CLightningClient();
