@@ -1,6 +1,8 @@
-import logger from "../../../logger";
-import { ILightningApi } from "../lightning-api.interface";
+import { ILightningApi } from '../lightning-api.interface';
 
+/**
+ * Convert a clightning "listnode" entry to a lnd node entry
+ */
 export function convertNode(clNode: any): ILightningApi.Node {
   return {
     alias: clNode.alias ?? '',
@@ -12,7 +14,10 @@ export function convertNode(clNode: any): ILightningApi.Node {
   };
 }
 
-export function convertAndmergeBidirectionalChannels(clChannels: any[]): ILightningApi.Channel[] {
+/**
+ * Convert clightning "listchannels" response to lnd "describegraph.channels" format
+ */
+ export function convertAndmergeBidirectionalChannels(clChannels: any[]): ILightningApi.Channel[] {
   const consolidatedChannelList: ILightningApi.Channel[] = [];
   const clChannelsDict = {};
   const clChannelsDictCount = {};
@@ -23,27 +28,24 @@ export function convertAndmergeBidirectionalChannels(clChannels: any[]): ILightn
       clChannelsDictCount[clChannel.short_channel_id] = 1;
     } else {
       consolidatedChannelList.push(
-        buildBidirectionalChannel(clChannel, clChannelsDict[clChannel.short_channel_id])
+        buildFullChannel(clChannel, clChannelsDict[clChannel.short_channel_id])
       );
       delete clChannelsDict[clChannel.short_channel_id];
       clChannelsDictCount[clChannel.short_channel_id]++;
     }
   }
-  const bidirectionalChannelsCount = consolidatedChannelList.length;
-
   for (const short_channel_id of Object.keys(clChannelsDict)) {
-    consolidatedChannelList.push(buildUnidirectionalChannel(clChannelsDict[short_channel_id]));
+    consolidatedChannelList.push(buildIncompleteChannel(clChannelsDict[short_channel_id]));
   }
-  const unidirectionalChannelsCount = consolidatedChannelList.length - bidirectionalChannelsCount;
-
-  logger.debug(`clightning knows ${clChannels.length} channels. ` +
-    `We found ${bidirectionalChannelsCount} bidirectional channels ` +
-    `and ${unidirectionalChannelsCount} unidirectional channels.`); 
 
   return consolidatedChannelList;
 }
 
-function buildBidirectionalChannel(clChannelA: any, clChannelB: any): ILightningApi.Channel {
+/**
+ * Convert two clightning "getchannels" entries into a full a lnd "describegraph.channels" format
+ * In this case, clightning knows the channel policy for both nodes
+ */
+function buildFullChannel(clChannelA: any, clChannelB: any): ILightningApi.Channel {
   const lastUpdate = Math.max(clChannelA.last_update ?? 0, clChannelB.last_update ?? 0);
   
   return {
@@ -59,7 +61,11 @@ function buildBidirectionalChannel(clChannelA: any, clChannelB: any): ILightning
   };
 }
 
-function buildUnidirectionalChannel(clChannel: any): ILightningApi.Channel {
+/**
+ * Convert one clightning "getchannels" entry into a full a lnd "describegraph.channels" format
+ * In this case, clightning knows the channel policy of only one node
+ */
+ function buildIncompleteChannel(clChannel: any): ILightningApi.Channel {
   return {
     id: clChannel.short_channel_id,
     capacity: clChannel.satoshis,
@@ -70,7 +76,10 @@ function buildUnidirectionalChannel(clChannel: any): ILightningApi.Channel {
   };
 }
 
-function convertPolicy(clChannel: any): ILightningApi.Policy {
+/**
+ * Convert a clightning "listnode" response to a lnd channel policy format
+ */
+ function convertPolicy(clChannel: any): ILightningApi.Policy {
   return {
     public_key: clChannel.source,
     base_fee_mtokens: clChannel.base_fee_millisatoshi,
@@ -82,7 +91,10 @@ function convertPolicy(clChannel: any): ILightningApi.Policy {
   };
 }
 
-function getEmptyPolicy(): ILightningApi.Policy {
+/**
+ * Create an empty channel policy in lnd format
+ */
+ function getEmptyPolicy(): ILightningApi.Policy {
   return {
     public_key: 'null',
     base_fee_mtokens: '0',
