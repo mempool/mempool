@@ -5,9 +5,9 @@ import bitcoinClient from '../../api/bitcoin/bitcoin-client';
 import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
 import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
-import lightningApi from '../../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
+import lightningApi from '../../api/lightning/lightning-api-factory';
 
 class NodeSyncService {
   constructor() {}
