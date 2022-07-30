@@ -39,6 +39,9 @@ BITCOIN_INSTALL=ON
 BISQ_INSTALL=ON
 ELEMENTS_INSTALL=ON
 
+# install UNFURL
+UNFURL_INSTALL=ON
+
 # configure 4 network instances
 BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
@@ -49,8 +52,10 @@ ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 
 # enable lightmode and disable compaction to fit on 1TB SSD drive
+BITCOIN_ELECTRS_INSTALL=ON
 BITCOIN_ELECTRS_LIGHT_MODE=ON
 BITCOIN_ELECTRS_COMPACTION=OFF
+ELEMENTS_ELECTRS_INSTALL=ON
 ELEMENTS_ELECTRS_LIGHT_MODE=ON
 ELEMENTS_ELECTRS_COMPACTION=OFF
 
@@ -278,6 +283,12 @@ BISQ_GROUP=bisq
 # bisq home folder, needs about 1GB
 BISQ_HOME=/bisq
 
+# Unfurl user/group
+UNFURL_USER=unfurl
+UNFURL_GROUP=unfurl
+# Unfurl home folder
+UNFURL_HOME=/unfurl
+
 # liquid user/group
 ELEMENTS_USER=elements
 ELEMENTS_GROUP=elements
@@ -315,6 +326,13 @@ BISQ_REPO_BRANCH=master
 BISQ_LATEST_RELEASE=master
 echo -n '.'
 
+UNFURL_REPO_URL=https://github.com/mempool/mempool
+UNFURL_REPO_NAME=unfurl
+UNFURL_REPO_BRANCH=master
+#UNFURL_LATEST_RELEASE=$(curl -s https://api.github.com/repos/mempool/mempool/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
+UNFURL_LATEST_RELEASE=master
+echo -n '.'
+
 ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
@@ -350,6 +368,10 @@ DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
 DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
 DEBIAN_PKG+=(geoipupdate)
+
+DEBIAN_UNFURL_PKG=()
+DEBIAN_UNFURL_PKG+=(cups chromium-bsu libatk1.0 libatk-bridge2.0 libxkbcommon-dev libxcomposite-dev)
+DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev libasound-dev)
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
@@ -712,6 +734,7 @@ Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
 Bisq:Enable Bisq:ON
+Unfurl:Enable Unfurl:ON
 EOF
 
 cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
@@ -785,12 +808,30 @@ else
     ELEMENTS_INSTALL=OFF
 fi
 
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+    BITCOIN_ELECTRS_INSTALL=ON
+else
+    BITCOIN_ELECTRS_INSTALL=OFF
+fi
+
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    ELEMENTS_ELECTRS_INSTALL=ON
+else
+    ELEMENTS_ELECTRS_INSTALL=OFF
+fi
+
 if grep Bisq $tempfile >/dev/null 2>&1;then
     BISQ_INSTALL=ON
     BISQ_MAINNET_ENABLE=ON
 else
     BISQ_INSTALL=OFF
     BISQ_MAINNET_ENABLE=OFF
+fi
+
+if grep Unfurl $tempfile >/dev/null 2>&1;then
+    UNFURL_INSTALL=ON
+else
+    UNFURL_INSTALL=OFF
 fi
 
 ##################
@@ -1074,65 +1115,72 @@ fi
 # Bitcoin -> Electrs installation #
 ###################################
 
-echo "[*] Creating Bitcoin Electrs data folder"
-osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
-osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then 
-    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_MAINNET_DATA}"
+if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
+
+    echo "[*] Creating Bitcoin Electrs data folder"
+    osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_ELECTRS_HOME}"
+    if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_MAINNET_DATA}"
+    fi
+    if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET_DATA}"
+    fi
+    if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_SIGNET_DATA}"
+    fi
+
+    echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
+    osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
+    osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_ELECTRS_REPO_BRANCH}" "${BITCOIN_ELECTRS_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME}"
+
+    echo "[*] Checking out Electrs ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME} && git checkout ${BITCOIN_ELECTRS_LATEST_RELEASE}"
+
+    case $OS in
+        FreeBSD)
+           echo "[*] Installing Rust from pkg install"
+        ;;
+        Debian)
+           echo "[*] Installing Rust from rustup.rs"
+           osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+        ;;
+    esac
+
+    echo "[*] Building Bitcoin Electrs release binary"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
+
+    case $OS in
+        FreeBSD)
+            echo "[*] Patching Bitcoin Electrs code for FreeBSD"
+            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
+            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
+            osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
+        ;;
+        Debian)
+        ;;
+    esac
+
+    echo "[*] Building Bitcoin Electrs release binary"
+    osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
 fi
-if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then 
-    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET_DATA}"
-fi
-if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then 
-    osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_SIGNET_DATA}"
-fi
-
-echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
-osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
-osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_ELECTRS_REPO_BRANCH}" "${BITCOIN_ELECTRS_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME}"
-
-echo "[*] Checking out Electrs ${BITCOIN_ELECTRS_LATEST_RELEASE}"
-osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME} && git checkout ${BITCOIN_ELECTRS_LATEST_RELEASE}"
-
-case $OS in
-    FreeBSD)
-       echo "[*] Installing Rust from pkg install"
-    ;;
-    Debian)
-       echo "[*] Installing Rust from rustup.rs"
-       osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
-    ;;
-esac
-
-echo "[*] Building Bitcoin Electrs release binary"
-osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version" || true
-
-case $OS in
-    FreeBSD)
-        echo "[*] Patching Bitcoin Electrs code for FreeBSD"
-        osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_HOME}/.cargo/registry/src/github.com-1ecc6299db9ec823/sysconf-0.3.4\" && patch -p1 < \"${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/sysconf.patch\""
-        osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/new_index/\" && sed -i.bak -e s/Snappy/None/ db.rs && rm db.rs.bak"
-        osSudo "${BITCOIN_USER}" sh -c "cd \"${BITCOIN_ELECTRS_HOME}/src/bin/\" && sed -i.bak -e 's/from_secs(5)/from_secs(1)/' electrs.rs && rm electrs.rs.bak"
-    ;;
-    Debian)
-    ;;
-esac
-
-echo "[*] Building Bitcoin Electrs release binary"
-osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_ELECTRS_HOME} && cargo run --release --bin electrs -- --version"
 
 ##################################
 # Liquid -> Electrs installation #
 ##################################
 
-if [ "${ELEMENTS_INSTALL}" = ON ;then
+if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
 
     echo "[*] Creating Liquid Electrs data folder"
     osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_ELECTRS_HOME}"
     osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
     osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_ELECTRS_HOME}"
-    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
-    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
+    fi
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
+    fi
     
     echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
@@ -1244,6 +1292,50 @@ if [ "${BISQ_INSTALL}" = ON ];then
         ;;
 
     esac
+fi
+
+#######################
+# Unfurl installation #
+#######################
+
+if [ "${UNFURL_INSTALL}" = ON ];then
+
+    echo "[*] Creating Unfurl user"
+    osGroupCreate "${UNFURL_GROUP}"
+    osUserCreate "${UNFURL_USER}" "${UNFURL_HOME}" "${UNFURL_GROUP}"
+    osSudo "${ROOT_USER}" chsh -s `which zsh` "${UNFURL_USER}"
+
+    echo "[*] Creating Unfurl folder"
+    osSudo "${ROOT_USER}" mkdir -p "${UNFURL_HOME}"
+    osSudo "${ROOT_USER}" chown -R "${UNFURL_USER}:${UNFURL_GROUP}" "${UNFURL_HOME}"
+    osSudo "${UNFURL_USER}" touch "${UNFURL_HOME}/.zshrc"
+
+    echo "[*] Insalling Unfurl source"
+    case $OS in
+
+        FreeBSD)
+            echo "[*] FIXME: Unfurl must be installed manually on FreeBSD"
+        ;;
+
+        Debian)
+            echo "[*] Installing packages for Unfurl"
+            osPackageInstall ${DEBIAN_UNFURL_PKG[@]}
+            echo "[*] Cloning Mempool (Unfurl) repo from ${UNFURL_REPO_URL}"
+            osSudo "${UNFURL_USER}" git config --global pull.rebase true
+            osSudo "${UNFURL_USER}" git config --global advice.detachedHead false
+            osSudo "${UNFURL_USER}" git clone --branch "${UNFURL_REPO_BRANCH}" "${UNFURL_REPO_URL}" "${UNFURL_HOME}/${UNFURL_REPO_NAME}"
+            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-build upgrade
+            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-kill stop
+            osSudo "${UNFURL_USER}" ln -s unfurl/production/unfurl-start start
+            echo "[*] Installing nvm.sh from GitHub"
+            osSudo "${UNFURL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
+
+            echo "[*] Building NodeJS via nvm.sh"
+            osSudo "${UNFURL_USER}" zsh -c 'source ~/.zshrc ; nvm install v16.16.0 --shared-zlib'
+
+        ;;
+    esac
+
 fi
 
 ################################
