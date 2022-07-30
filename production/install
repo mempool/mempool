@@ -182,7 +182,6 @@ case $OS in
         ROOT_USER=root
         ROOT_GROUP=wheel
         ROOT_HOME=/root
-        TOR_HOME=/var/db/tor
         TOR_CONFIGURATION=/usr/local/etc/tor/torrc
         TOR_RESOURCES=/var/db/tor
         TOR_PKG=tor
@@ -198,7 +197,6 @@ case $OS in
         ROOT_USER=root
         ROOT_GROUP=root
         ROOT_HOME=/root
-        TOR_HOME=/etc/tor
         TOR_CONFIGURATION=/etc/tor/torrc
         TOR_RESOURCES=/var/lib/tor
         TOR_PKG=tor
@@ -985,7 +983,7 @@ if [ "${TOR_INSTALL}" = ON ];then
     osPackageInstall "${TOR_PKG}"
 
     echo "[*] Installing Tor base configuration"
-    osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_HOME}/torrc"
+    osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_CONFIGURATION}"
     osSudo "${ROOT_USER}" sed -i.orig "s!__TOR_RESOURCES__!${TOR_RESOURCES}!" "${TOR_CONFIGURATION}"
 
     echo "[*] Adding Tor HS configuration for Mempool"
