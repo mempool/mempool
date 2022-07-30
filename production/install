@@ -51,12 +51,11 @@ BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 
-# install Electrs
-ELECTRS_INSTALL=ON
-
 # enable lightmode and disable compaction to fit on 1TB SSD drive
+BITCOIN_ELECTRS_INSTALL=ON
 BITCOIN_ELECTRS_LIGHT_MODE=ON
 BITCOIN_ELECTRS_COMPACTION=OFF
+ELEMENTS_ELECTRS_INSTALL=ON
 ELEMENTS_ELECTRS_LIGHT_MODE=ON
 ELEMENTS_ELECTRS_COMPACTION=OFF
 
@@ -809,10 +808,16 @@ else
     ELEMENTS_INSTALL=OFF
 fi
 
-if [ "${BITCOIN_INSTALL}" = ON -o "${ELEMENTS_INSTALL}" = ON ];then
-    ELECTRS_INSTALL=ON
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+    BITCOIN_ELECTRS_INSTALL=ON
 else
-    ELECTRS_INSTALL=OFF
+    BITCOIN_ELECTRS_INSTALL=OFF
+fi
+
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+    ELEMENTS_ELECTRS_INSTALL=ON
+else
+    ELEMENTS_ELECTRS_INSTALL=OFF
 fi
 
 if grep Bisq $tempfile >/dev/null 2>&1;then
@@ -1110,7 +1115,7 @@ fi
 # Bitcoin -> Electrs installation #
 ###################################
 
-if [ "${ELECTRS_INSTALL}" = ON ];then
+if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
 
     echo "[*] Creating Bitcoin Electrs data folder"
     osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_ELECTRS_HOME}"
@@ -1164,14 +1169,18 @@ fi
 # Liquid -> Electrs installation #
 ##################################
 
-if [ "${ELEMENTS_INSTALL}" = ON ;then
+if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
 
     echo "[*] Creating Liquid Electrs data folder"
     osSudo "${ROOT_USER}" mkdir -p "${ELEMENTS_ELECTRS_HOME}"
     osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}"
     osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_ELECTRS_HOME}"
-    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
-    osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUID_DATA}"
+    fi
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
+    fi
     
     echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
