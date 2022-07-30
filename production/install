@@ -183,7 +183,7 @@ case $OS in
         ROOT_GROUP=wheel
         ROOT_HOME=/root
         TOR_HOME=/var/db/tor
-        TOR_CONFIGURATION=/var/db/tor/torrc
+        TOR_CONFIGURATION=/usr/local/etc/tor/torrc
         TOR_RESOURCES=/var/db/tor
         TOR_PKG=tor
         TOR_USER=_tor
