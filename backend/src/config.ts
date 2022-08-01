@@ -35,7 +35,7 @@ interface IConfig {
   LND: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
-    SOCKET: string;
+    REST_API_URL: string;
   };
   ELECTRUM: {
     HOST: string;
@@ -182,7 +182,7 @@ const defaults: IConfig = {
   'LND': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
-    'SOCKET': 'localhost:10009',
+    'REST_API_URL': 'https://localhost:8080',
   },
   'SOCKS5PROXY': {
     'ENABLED': false,
