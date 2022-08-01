@@ -66,7 +66,15 @@ class NodesApi {
 
   public async $getTopCapacityNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.capacity DESC LIMIT 10`;
+      const query = `
+        SELECT IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, nodes.public_key,
+          CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
+          CAST(COALESCE(node_stats.channels, 0) as INT) as channels
+        FROM nodes
+        LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key
+        ORDER BY node_stats.added DESC, node_stats.capacity DESC
+        LIMIT 10
+      `;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
@@ -77,7 +85,15 @@ class NodesApi {
 
   public async $getTopChannelsNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.channels DESC LIMIT 10`;
+      const query = `
+        SELECT IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, nodes.public_key,
+          CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
+          CAST(COALESCE(node_stats.channels, 0) as INT) as channels
+        FROM nodes
+        LEFT JOIN node_stats
+        ON node_stats.public_key = nodes.public_key
+        ORDER BY node_stats.added DESC, node_stats.channels DESC
+        LIMIT 10`;
       const [rows]: any = await DB.query(query);
       return rows;
     } catch (e) {
