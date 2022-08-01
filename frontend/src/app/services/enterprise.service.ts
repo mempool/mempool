@@ -24,7 +24,7 @@ export class EnterpriseService {
       this.subdomain = subdomain;
       this.fetchSubdomainInfo();
       this.disableSubnetworks();
-    } else {
+    } else if (document.location.hostname === 'mempool.space') {
       this.insertMatomo();
     }
   }
