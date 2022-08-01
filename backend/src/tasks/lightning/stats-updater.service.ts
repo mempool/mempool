@@ -52,7 +52,7 @@ class LightningStatsUpdater {
 
   private async $lightningIsSynced(): Promise<boolean> {
     const nodeInfo = await lightningApi.$getInfo();
-    return nodeInfo.is_synced_to_chain && nodeInfo.is_synced_to_graph;
+    return nodeInfo.synced_to_chain && nodeInfo.synced_to_graph;
   }
 
   private async $runTasks(): Promise<void> {
@@ -66,13 +66,13 @@ class LightningStatsUpdater {
 
   private async $logLightningStatsDaily() {
     try {
-      logger.info(`Running lightning daily stats log...`);  
+      logger.info(`Running lightning daily stats log...`);
 
       const networkGraph = await lightningApi.$getNetworkGraph();
       let total_capacity = 0;
-      for (const channel of networkGraph.channels) {
+      for (const channel of networkGraph.edges) {
         if (channel.capacity) {
-          total_capacity += channel.capacity;
+          total_capacity += parseInt(channel.capacity);
         }
       }
 
@@ -80,20 +80,17 @@ class LightningStatsUpdater {
       let torNodes = 0;
       let unannouncedNodes = 0;
       for (const node of networkGraph.nodes) {
-        let isUnnanounced = true;
-        for (const socket of node.sockets) {
-          const hasOnion = socket.indexOf('.onion') !== -1;
+        for (const socket of node.addresses) {
+          const hasOnion = socket.addr.indexOf('.onion') !== -1;
           if (hasOnion) {
             torNodes++;
-            isUnnanounced = false;
           }
-          const hasClearnet = [4, 6].includes(net.isIP(socket.split(':')[0]));
+          const hasClearnet = [4, 6].includes(net.isIP(socket.addr.split(':')[0]));
           if (hasClearnet) {
             clearnetNodes++;
-            isUnnanounced = false;
           }
         }
-        if (isUnnanounced) {
+        if (node.addresses.length === 0) {
           unannouncedNodes++;
         }
       }
@@ -118,7 +115,7 @@ class LightningStatsUpdater {
         VALUES (NOW() - INTERVAL 1 DAY, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       await DB.query(query, [
-        networkGraph.channels.length,
+        networkGraph.edges.length,
         networkGraph.nodes.length,
         total_capacity,
         torNodes,
@@ -292,7 +289,7 @@ class LightningStatsUpdater {
 
       for (const node of nodes) {
         const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels WHERE node1_public_key = ? OR node2_public_key = ? ORDER BY created ASC`, [node.public_key, node.public_key]);
-        
+
         const date: Date = new Date(this.hardCodedStartTime);
         const currentDate = new Date();
         this.setDateMidnight(currentDate);
@@ -322,7 +319,7 @@ class LightningStatsUpdater {
 
           lastTotalCapacity = totalCapacity;
           lastChannelsCount = channelsCount;
-  
+
           const query = `INSERT INTO node_stats(
             public_key,
             added,
