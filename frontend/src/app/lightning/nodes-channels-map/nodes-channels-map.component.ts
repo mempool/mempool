@@ -98,7 +98,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     }
 
     this.chartOptions = {
-      silent: true,
+      silent: this.style === 'widget' ? true : false,
       title: title ?? undefined,
       geo3D: {
         map: 'world',
