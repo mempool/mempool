@@ -249,7 +249,7 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
 
     return {
       nodes: listnodes['nodes'].map(node => convertNode(node)),
-      channels: channelsList,
+      edges: channelsList,
     };
   }
 }

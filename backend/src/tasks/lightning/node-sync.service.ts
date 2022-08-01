@@ -8,6 +8,7 @@ import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
 import lightningApi from '../../api/lightning/lightning-api-factory';
+import { convertChannelId } from '../../api/lightning/clightning/clightning-convert';
 
 class NodeSyncService {
   constructor() {}
@@ -320,7 +321,7 @@ class NodeSyncService {
         ;`;
 
       await DB.query(query, [
-        channel.channel_id,
+        this.toIntegerId(channel.channel_id),
         this.toShortId(channel.channel_id),
         channel.capacity,
         txid,
@@ -391,8 +392,7 @@ class NodeSyncService {
 
   private async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
-      const updatedAt = this.utcDateToMysql(node.last_update);
-      const sockets = node.addresses.map(a => a.addr).join(',');
+      const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
       const query = `INSERT INTO nodes(
           public_key,
           first_seen,
@@ -401,15 +401,16 @@ class NodeSyncService {
           color,
           sockets
         )
-        VALUES (?, NOW(), ?, ?, ?, ?) ON DUPLICATE KEY UPDATE updated_at = ?, alias = ?, color = ?, sockets = ?;`;
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?)
+        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, color = ?, sockets = ?`;
 
       await DB.query(query, [
         node.pub_key,
-        updatedAt,
+        node.last_update,
         node.alias,
         node.color,
         sockets,
-        updatedAt,
+        node.last_update,
         node.alias,
         node.color,
         sockets,
@@ -419,8 +420,19 @@ class NodeSyncService {
     }
   }
 
+  private toIntegerId(id: string): string {
+    if (config.LIGHTNING.BACKEND === 'lnd') {
+      return id;
+    }
+    return convertChannelId(id);
+  }
+
   /** Decodes a channel id returned by lnd as uint64 to a short channel id */
   private toShortId(id: string): string {
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      return id;
+    }
+
     const n = BigInt(id);
     return [
       n >> 40n, // nth block
