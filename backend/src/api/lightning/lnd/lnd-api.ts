@@ -1,44 +1,40 @@
+import axios, { AxiosRequestConfig } from 'axios';
+import { Agent } from 'https';
+import * as fs from 'fs';
 import { AbstractLightningApi } from '../lightning-api-abstract-factory';
 import { ILightningApi } from '../lightning-api.interface';
-import * as fs from 'fs';
-import { authenticatedLndGrpc, getWalletInfo, getNetworkGraph, getNetworkInfo } from 'lightning';
 import config from '../../../config';
-import logger from '../../../logger';
 
 class LndApi implements AbstractLightningApi {
-  private lnd: any;
+  axiosConfig: AxiosRequestConfig = {};
+
   constructor() {
-    if (!config.LIGHTNING.ENABLED) {
-      return;
-    }
-    try {
-      const tls = fs.readFileSync(config.LND.TLS_CERT_PATH).toString('base64');
-      const macaroon = fs.readFileSync(config.LND.MACAROON_PATH).toString('base64');
-
-      const { lnd } = authenticatedLndGrpc({
-        cert: tls,
-        macaroon: macaroon,
-        socket: config.LND.SOCKET,
-      });
-
-      this.lnd = lnd;
-    } catch (e) {
-      logger.err('Could not initiate the LND service handler: ' + (e instanceof Error ? e.message : e));
-      process.exit(1);
+    if (config.LIGHTNING.ENABLED) {
+      this.axiosConfig = {
+        headers: {
+          'Grpc-Metadata-macaroon': fs.readFileSync(config.LND.MACAROON_PATH).toString('hex')
+        },
+        httpsAgent: new Agent({
+          ca: fs.readFileSync(config.LND.TLS_CERT_PATH)
+        }),
+        timeout: 10000
+      };
     }
   }
 
   async $getNetworkInfo(): Promise<ILightningApi.NetworkInfo> {
-    return await getNetworkInfo({ lnd: this.lnd });
+    return axios.get<ILightningApi.NetworkInfo>(config.LND.REST_API_URL + '/v1/graph/info', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   async $getInfo(): Promise<ILightningApi.Info> {
-    // @ts-ignore
-    return await getWalletInfo({ lnd: this.lnd });
+    return axios.get<ILightningApi.Info>(config.LND.REST_API_URL + '/v1/getinfo', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
-    return await getNetworkGraph({ lnd: this.lnd });
+    return axios.get<ILightningApi.NetworkGraph>(config.LND.REST_API_URL + '/v1/graph', this.axiosConfig)
+      .then((response) => response.data);
   }
 }
 
