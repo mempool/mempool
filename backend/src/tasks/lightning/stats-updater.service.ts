@@ -3,7 +3,7 @@ import DB from '../../database';
 import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import channelsApi from '../../api/explorer/channels.api';
-import * as net from 'net';
+import { isIP } from 'net';
 
 class LightningStatsUpdater {
   hardCodedStartTime = '2018-01-12';
@@ -27,9 +27,6 @@ class LightningStatsUpdater {
       setTimeout(() => this.$startService(), 60 * 1000);
       return;
     }
-
-    await this.$populateHistoricalStatistics();
-    await this.$populateHistoricalNodeStatistics();
 
     setTimeout(() => {
       this.$runTasks();
@@ -85,7 +82,7 @@ class LightningStatsUpdater {
           if (hasOnion) {
             torNodes++;
           }
-          const hasClearnet = [4, 6].includes(net.isIP(socket.addr.split(':')[0]));
+          const hasClearnet = [4, 6].includes(isIP(socket.split(':')[0]));
           if (hasClearnet) {
             clearnetNodes++;
           }
@@ -165,182 +162,6 @@ class LightningStatsUpdater {
       logger.info('Daily node stats has updated.');
     } catch (e) {
       logger.err('$logNodeStatsDaily() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  // We only run this on first launch
-  private async $populateHistoricalStatistics() {
-    try {
-      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM lightning_stats`);
-      // Only run if table is empty
-      if (rows[0]['COUNT(*)'] > 0) {
-        return;
-      }
-      logger.info(`Running historical stats population...`);
-
-      const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels ORDER BY created ASC`);
-      const [nodes]: any = await DB.query(`SELECT first_seen, sockets FROM nodes ORDER BY first_seen ASC`);
-
-      const date: Date = new Date(this.hardCodedStartTime);
-      const currentDate = new Date();
-      this.setDateMidnight(currentDate);
-
-      while (date < currentDate) {
-        let totalCapacity = 0;
-        let channelsCount = 0;
-
-        for (const channel of channels) {
-          if (new Date(channel.created) > date) {
-            break;
-          }
-          if (channel.closing_date === null || new Date(channel.closing_date) > date) {
-            totalCapacity += channel.capacity;
-            channelsCount++;
-          }
-        }
-
-        let nodeCount = 0;
-        let clearnetNodes = 0;
-        let torNodes = 0;
-        let unannouncedNodes = 0;
-
-        for (const node of nodes) {
-          if (new Date(node.first_seen) > date) {
-            break;
-          }
-          nodeCount++;
-
-          const sockets = node.sockets.split(',');
-          let isUnnanounced = true;
-          for (const socket of sockets) {
-            const hasOnion = socket.indexOf('.onion') !== -1;
-            if (hasOnion) {
-              torNodes++;
-              isUnnanounced = false;
-            }
-            const hasClearnet = [4, 6].includes(net.isIP(socket.substring(0, socket.lastIndexOf(':'))));
-            if (hasClearnet) {
-              clearnetNodes++;
-              isUnnanounced = false;
-            }
-          }
-          if (isUnnanounced) {
-            unannouncedNodes++;
-          }
-        }
-
-        const query = `INSERT INTO lightning_stats(
-          added,
-          channel_count,
-          node_count,
-          total_capacity,
-          tor_nodes,
-          clearnet_nodes,
-          unannounced_nodes,
-          avg_capacity,
-          avg_fee_rate,
-          avg_base_fee_mtokens,
-          med_capacity,
-          med_fee_rate,
-          med_base_fee_mtokens
-        )
-        VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-        const rowTimestamp = date.getTime() / 1000; // Save timestamp for the row insertion down below
-
-        date.setUTCDate(date.getUTCDate() + 1);
-
-        // Last iteration, save channels stats
-        const channelStats = (date >= currentDate ? await channelsApi.$getChannelsStats() : undefined);
-
-        await DB.query(query, [
-          rowTimestamp,
-          channelsCount,
-          nodeCount,
-          totalCapacity,
-          torNodes,
-          clearnetNodes,
-          unannouncedNodes,
-          channelStats?.avgCapacity ?? 0,
-          channelStats?.avgFeeRate ?? 0,
-          channelStats?.avgBaseFee ?? 0,
-          channelStats?.medianCapacity ?? 0,
-          channelStats?.medianFeeRate ?? 0,
-          channelStats?.medianBaseFee ?? 0,
-          ]);
-      }
-
-      logger.info('Historical stats populated.');
-    } catch (e) {
-      logger.err('$populateHistoricalData() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  private async $populateHistoricalNodeStatistics() {
-    try {
-      const [rows]: any = await DB.query(`SELECT COUNT(*) FROM node_stats`);
-      // Only run if table is empty
-      if (rows[0]['COUNT(*)'] > 0) {
-        return;
-      }
-      logger.info(`Running historical node stats population...`);
-
-      const [nodes]: any = await DB.query(`SELECT public_key, first_seen, alias FROM nodes ORDER BY first_seen ASC`);
-
-      for (const node of nodes) {
-        const [channels]: any = await DB.query(`SELECT capacity, created, closing_date FROM channels WHERE node1_public_key = ? OR node2_public_key = ? ORDER BY created ASC`, [node.public_key, node.public_key]);
-
-        const date: Date = new Date(this.hardCodedStartTime);
-        const currentDate = new Date();
-        this.setDateMidnight(currentDate);
-
-        let lastTotalCapacity = 0;
-        let lastChannelsCount = 0;
-
-        while (date < currentDate) {
-          let totalCapacity = 0;
-          let channelsCount = 0;
-          for (const channel of channels) {
-            if (new Date(channel.created) > date) {
-              break;
-            }
-            if (channel.closing_date !== null && new Date(channel.closing_date) < date) {
-              date.setUTCDate(date.getUTCDate() + 1);
-              continue;
-            }
-            totalCapacity += channel.capacity;
-            channelsCount++;
-          }
-
-          if (lastTotalCapacity === totalCapacity && lastChannelsCount === channelsCount) {
-            date.setUTCDate(date.getUTCDate() + 1);
-            continue;
-          }
-
-          lastTotalCapacity = totalCapacity;
-          lastChannelsCount = channelsCount;
-
-          const query = `INSERT INTO node_stats(
-            public_key,
-            added,
-            capacity,
-            channels
-          )
-          VALUES (?, FROM_UNIXTIME(?), ?, ?)`;
-
-          await DB.query(query, [
-            node.public_key,
-            date.getTime() / 1000,
-            totalCapacity,
-            channelsCount,
-          ]);
-          date.setUTCDate(date.getUTCDate() + 1);
-        }
-        logger.debug('Updated node_stats for: ' + node.alias);
-      }
-      logger.info('Historical stats populated.');
-    } catch (e) {
-      logger.err('$populateHistoricalNodeData() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 }
