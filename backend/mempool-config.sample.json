@@ -79,8 +79,8 @@
   },
   "LND": {
     "TLS_CERT_PATH": "tls.cert",
-    "MACAROON_PATH": "admin.macaroon",
-    "SOCKET": "localhost:10009"
+    "MACAROON_PATH": "readonly.macaroon",
+    "REST_API_URL": "https://localhost:8080"
   },
   "SOCKS5PROXY": {
     "ENABLED": false,
