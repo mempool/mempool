@@ -36,6 +36,8 @@ class LightningStatsImporter {
   latestNodeCount = 1; // Ignore gap in the data
 
   async $run(): Promise<void> {
+    logger.info(`Importing historical lightning stats`);
+
     // const [channels]: any[] = await DB.query('SELECT short_id from channels;');
     // logger.info('Caching funding txs for currently existing channels');
     // await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
@@ -106,7 +108,7 @@ class LightningStatsImporter {
   /**
    * Generate LN network stats for one day
    */
-  async computeNetworkStats(timestamp: number, networkGraph): Promise<void> {
+  public async computeNetworkStats(timestamp: number, networkGraph): Promise<void> {
     // Node counts and network shares
     let clearnetNodes = 0;
     let torNodes = 0;
