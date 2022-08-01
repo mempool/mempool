@@ -8,14 +8,19 @@ export function convertNode(clNode: any): ILightningApi.Node {
     alias: clNode.alias ?? '',
     color: `#${clNode.color ?? ''}`,
     features: [], // TODO parse and return clNode.feature
-    public_key: clNode.nodeid,
-    sockets: clNode.addresses?.map(addr => `${addr.address}:${addr.port}`) ?? [],
-    updated_at: new Date((clNode?.last_timestamp ?? 0) * 1000).toUTCString(),
+    pub_key: clNode.nodeid,
+    addresses: clNode.addresses?.map((addr) => {
+      return {
+        network: addr.type,
+        addr: `${addr.address}:${addr.port}`
+      };
+    }),
+    last_update: clNode?.last_timestamp ?? 0,
   };
 }
 
 /**
- * Convert clightning "listchannels" response to lnd "describegraph.channels" format
+ * Convert clightning "listchannels" response to lnd "describegraph.edges" format
  */
  export function convertAndmergeBidirectionalChannels(clChannels: any[]): ILightningApi.Channel[] {
   const consolidatedChannelList: ILightningApi.Channel[] = [];
@@ -41,67 +46,58 @@ export function convertNode(clNode: any): ILightningApi.Node {
   return consolidatedChannelList;
 }
 
+export function convertChannelId(channelId): string {
+  const s = channelId.split('x').map(part => parseInt(part));
+  return BigInt((s[0] << 40) | (s[1] << 16) | s[2]).toString();
+}
+
 /**
- * Convert two clightning "getchannels" entries into a full a lnd "describegraph.channels" format
+ * Convert two clightning "getchannels" entries into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy for both nodes
  */
 function buildFullChannel(clChannelA: any, clChannelB: any): ILightningApi.Channel {
   const lastUpdate = Math.max(clChannelA.last_update ?? 0, clChannelB.last_update ?? 0);
   
   return {
-    id: clChannelA.short_channel_id,
+    channel_id: clChannelA.short_channel_id,
     capacity: clChannelA.satoshis,
-    transaction_id: '', // TODO
-    transaction_vout: 0, // TODO
-    updated_at: new Date(lastUpdate * 1000).toUTCString(),
-    policies: [
-      convertPolicy(clChannelA),
-      convertPolicy(clChannelB)
-    ]
+    last_update: lastUpdate,
+    node1_policy: convertPolicy(clChannelA),
+    node2_policy: convertPolicy(clChannelB),
+    chan_point: ':0', // TODO
+    node1_pub: clChannelA.source,
+    node2_pub: clChannelB.source,
   };
 }
 
 /**
- * Convert one clightning "getchannels" entry into a full a lnd "describegraph.channels" format
+ * Convert one clightning "getchannels" entry into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy of only one node
  */
  function buildIncompleteChannel(clChannel: any): ILightningApi.Channel {
   return {
-    id: clChannel.short_channel_id,
+    channel_id: clChannel.short_channel_id,
     capacity: clChannel.satoshis,
-    policies: [convertPolicy(clChannel), getEmptyPolicy()],
-    transaction_id: '', // TODO
-    transaction_vout: 0, // TODO
-    updated_at: new Date((clChannel.last_update ?? 0) * 1000).toUTCString(),
+    last_update: clChannel.last_update ?? 0,
+    node1_policy: convertPolicy(clChannel),
+    node2_policy: null,
+    chan_point: ':0', // TODO
+    node1_pub: clChannel.source,
+    node2_pub: clChannel.destination,
   };
 }
 
 /**
  * Convert a clightning "listnode" response to a lnd channel policy format
  */
- function convertPolicy(clChannel: any): ILightningApi.Policy {
+ function convertPolicy(clChannel: any): ILightningApi.RoutingPolicy {
   return {
-    public_key: clChannel.source,
-    base_fee_mtokens: clChannel.base_fee_millisatoshi,
-    fee_rate: clChannel.fee_per_millionth,
-    is_disabled: !clChannel.active,
-    max_htlc_mtokens: clChannel.htlc_maximum_msat.slice(0, -4),
-    min_htlc_mtokens: clChannel.htlc_minimum_msat.slice(0, -4),
-    updated_at: new Date((clChannel.last_update ?? 0) * 1000).toUTCString(),
-  };
-}
-
-/**
- * Create an empty channel policy in lnd format
- */
- function getEmptyPolicy(): ILightningApi.Policy {
-  return {
-    public_key: 'null',
-    base_fee_mtokens: '0',
-    fee_rate: 0,
-    is_disabled: true,
-    max_htlc_mtokens: '0',
-    min_htlc_mtokens: '0',
-    updated_at: new Date(0).toUTCString(),
+    time_lock_delta: 0, // TODO
+    min_htlc: clChannel.htlc_minimum_msat.slice(0, -4),
+    max_htlc_msat: clChannel.htlc_maximum_msat.slice(0, -4),
+    fee_base_msat: clChannel.base_fee_millisatoshi,
+    fee_rate_milli_msat: clChannel.fee_per_millionth,
+    disabled: !clChannel.active,
+    last_update: clChannel.last_update ?? 0,
   };
 }
