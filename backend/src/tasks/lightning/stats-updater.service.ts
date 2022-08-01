@@ -4,11 +4,12 @@ import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import channelsApi from '../../api/explorer/channels.api';
 import { isIP } from 'net';
+import LightningStatsImporter from './sync-tasks/stats-importer';
 
 class LightningStatsUpdater {
   hardCodedStartTime = '2018-01-12';
 
-  public async $startService() {
+  public async $startService(): Promise<void> {
     logger.info('Starting Lightning Stats service');
     let isInSync = false;
     let error: any;
@@ -27,6 +28,8 @@ class LightningStatsUpdater {
       setTimeout(() => this.$startService(), 60 * 1000);
       return;
     }
+
+    LightningStatsImporter.$run();
 
     setTimeout(() => {
       this.$runTasks();
