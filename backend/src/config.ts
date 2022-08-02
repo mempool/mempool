@@ -38,6 +38,9 @@ interface IConfig {
     MACAROON_PATH: string;
     REST_API_URL: string;
   };
+  CLIGHTNING: {
+    SOCKET: string;
+  };
   ELECTRUM: {
     HOST: string;
     PORT: number;
@@ -186,6 +189,9 @@ const defaults: IConfig = {
     'MACAROON_PATH': '',
     'REST_API_URL': 'https://localhost:8080',
   },
+  'CLIGHTNING': {
+    'SOCKET': '',
+  },
   'SOCKS5PROXY': {
     'ENABLED': false,
     'USE_ONION': true,
@@ -226,6 +232,7 @@ class Config implements IConfig {
   BISQ: IConfig['BISQ'];
   LIGHTNING: IConfig['LIGHTNING'];
   LND: IConfig['LND'];
+  CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
@@ -244,6 +251,7 @@ class Config implements IConfig {
     this.BISQ = configs.BISQ;
     this.LIGHTNING = configs.LIGHTNING;
     this.LND = configs.LND;
+    this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
