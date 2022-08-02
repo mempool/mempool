@@ -1,7 +1,10 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, promises } from 'fs';
 import bitcoinClient from '../../../api/bitcoin/bitcoin-client';
 import config from '../../../config';
+import DB from '../../../database';
 import logger from '../../../logger';
+
+const fsPromises = promises;
 
 const BLOCKS_CACHE_MAX_SIZE = 100;  
 const CACHE_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/ln-funding-txs-cache.json';
@@ -21,7 +24,7 @@ class FundingTxFetcher {
     // Load funding tx disk cache
     if (Object.keys(this.fundingTxCache).length === 0 && existsSync(CACHE_FILE_NAME)) {
       try {
-        this.fundingTxCache = JSON.parse(readFileSync(CACHE_FILE_NAME, 'utf-8'));
+        this.fundingTxCache = JSON.parse(await fsPromises.readFile(CACHE_FILE_NAME, 'utf-8'));
       } catch (e) {
         logger.err(`Unable to parse channels funding txs disk cache. Starting from scratch`);
         this.fundingTxCache = {};
@@ -51,7 +54,7 @@ class FundingTxFetcher {
       elapsedSeconds = Math.round((new Date().getTime() / 1000) - cacheTimer);
       if (elapsedSeconds > 60) {
         logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`);
-        writeFileSync(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
+        fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
         cacheTimer = new Date().getTime() / 1000;
       }
     }
@@ -59,7 +62,7 @@ class FundingTxFetcher {
     if (this.channelNewlyProcessed > 0) {
       logger.info(`Indexed ${this.channelNewlyProcessed} additional channels funding tx`);
       logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`);
-      writeFileSync(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
+      fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
     }
 
     this.running = false;
@@ -76,13 +79,30 @@ class FundingTxFetcher {
     const outputIdx = parts[2];
 
     let block = this.blocksCache[blockHeight];
+    // Check if we have the block in the `blocks_summaries` table to avoid calling core
+    if (!block) {
+      const [rows] = await DB.query(`
+        SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) AS time, blocks_summaries.transactions AS tx
+        FROM blocks_summaries
+        JOIN blocks ON blocks.hash = blocks_summaries.id
+        WHERE blocks_summaries.height = ${blockHeight}
+      `);
+      block = rows[0] ?? null;
+      if (block) {
+        block.tx = JSON.parse(block.tx);
+        if (block.tx.length === 0) {
+          block = null;
+        }
+      }
+    }
+    // Fetch it from core
     if (!block) {
       const blockHash = await bitcoinClient.getBlockHash(parseInt(blockHeight, 10));
       block = await bitcoinClient.getBlock(blockHash, 2);
-      this.blocksCache[block.height] = block;
     }
+    this.blocksCache[block.height] = block;
 
-    const blocksCacheHashes = Object.keys(this.blocksCache).sort();
+    const blocksCacheHashes = Object.keys(this.blocksCache).sort((a, b) => parseInt(b) - parseInt(a)).reverse();
     if (blocksCacheHashes.length > BLOCKS_CACHE_MAX_SIZE) {
       for (let i = 0; i < 10; ++i) {
         delete this.blocksCache[blocksCacheHashes[i]];
@@ -92,7 +112,7 @@ class FundingTxFetcher {
     this.fundingTxCache[channelId] = {
       timestamp: block.time,
       txid: block.tx[txIdx].txid,
-      value: block.tx[txIdx].vout[outputIdx].value,
+      value: block.tx[txIdx].value / 100000000 ?? block.tx[txIdx].vout[outputIdx].value,
     };
 
     ++this.channelNewlyProcessed;

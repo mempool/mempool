@@ -1,4 +1,3 @@
-import DB from '../../database';
 import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import LightningStatsImporter from './sync-tasks/stats-importer';
