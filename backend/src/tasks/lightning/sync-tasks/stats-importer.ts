@@ -151,9 +151,11 @@ class LightningStatsImporter {
     const alreadyCountedChannels = {};
     
     for (const channel of networkGraph.channels) {
-      const tx = await fundingTxFetcher.$fetchChannelOpenTx(channel.scid.slice(0, -2));
+      const short_id = channel.scid.slice(0, -2);
+
+      const tx = await fundingTxFetcher.$fetchChannelOpenTx(short_id);
       if (!tx) {
-        logger.err(`Unable to fetch funding tx for channel ${channel.scid}. Capacity and creation date will stay unknown.`);
+        logger.err(`Unable to fetch funding tx for channel ${short_id}. Capacity and creation date is unknown. Skipping channel.`);
         continue;
       }
 
@@ -175,10 +177,10 @@ class LightningStatsImporter {
       nodeStats[channel.destination].capacity += Math.round(tx.value * 100000000);
       nodeStats[channel.destination].channels++;
 
-      if (!alreadyCountedChannels[channel.scid.slice(0, -2)]) {
+      if (!alreadyCountedChannels[short_id]) {
         capacity += Math.round(tx.value * 100000000);
         capacities.push(Math.round(tx.value * 100000000));
-        alreadyCountedChannels[channel.scid.slice(0, -2)] = true;
+        alreadyCountedChannels[short_id] = true;
       }
 
       avgFeeRate += channel.fee_proportional_millionths;
