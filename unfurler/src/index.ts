@@ -48,6 +48,16 @@ class Server {
     });
   }
 
+  async stopServer() {
+    if (this.cluster) {
+      await this.cluster.idle();
+      await this.cluster.close();
+    }
+    if (this.server) {
+      await this.server.close();
+    }
+  }
+
   setUpRoutes() {
     this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
     this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
@@ -133,3 +143,9 @@ class Server {
 }
 
 const server = new Server();
+
+process.on('SIGTERM', async () => {
+  console.info('Shutting down Mempool Unfurl Server');
+  await server.stopServer();
+  process.exit(0);
+});
