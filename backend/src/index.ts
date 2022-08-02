@@ -34,6 +34,7 @@ import miningRoutes from './api/mining/mining-routes';
 import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
+import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -136,7 +137,8 @@ class Server {
     }
 
     if (config.LIGHTNING.ENABLED) {
-      networkSyncService.$startService()
+      fundingTxFetcher.$init()
+      .then(() => networkSyncService.$startService())
       .then(() => lightningStatsUpdater.$startService());
     }
 

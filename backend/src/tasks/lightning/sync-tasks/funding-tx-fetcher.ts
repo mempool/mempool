@@ -1,8 +1,6 @@
 import { existsSync, promises } from 'fs';
-import bitcoinApiFactory from '../../../api/bitcoin/bitcoin-api-factory';
 import bitcoinClient from '../../../api/bitcoin/bitcoin-client';
 import config from '../../../config';
-import DB from '../../../database';
 import logger from '../../../logger';
 
 const fsPromises = promises;
@@ -16,12 +14,7 @@ class FundingTxFetcher {
   private channelNewlyProcessed = 0;
   public fundingTxCache = {};
 
-  async $fetchChannelsFundingTxs(channelIds: string[]): Promise<void> {
-    if (this.running) {
-      return;
-    }
-    this.running = true;
-
+  async $init(): Promise<void> {
     // Load funding tx disk cache
     if (Object.keys(this.fundingTxCache).length === 0 && existsSync(CACHE_FILE_NAME)) {
       try {
@@ -32,6 +25,13 @@ class FundingTxFetcher {
       }
       logger.debug(`Imported ${Object.keys(this.fundingTxCache).length} funding tx amount from the disk cache`);
     }
+  }
+
+  async $fetchChannelsFundingTxs(channelIds: string[]): Promise<void> {
+    if (this.running) {
+      return;
+    }
+    this.running = true;
     
     const globalTimer = new Date().getTime() / 1000;
     let cacheTimer = new Date().getTime() / 1000;
