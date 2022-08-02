@@ -44,7 +44,6 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.openGraphService.setPreviewLoading();
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.addressLoadingStatus$ = this.route.paramMap
@@ -56,6 +55,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
     this.mainSubscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
+          this.openGraphService.waitFor('address-data');
           this.error = undefined;
           this.isLoadingAddress = true;
           this.loadedConfirmedTxCount = 0;
@@ -90,7 +90,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           this.address = address;
           this.updateChainStats();
           this.isLoadingAddress = false;
-          this.openGraphService.setPreviewReady();
+          this.openGraphService.waitOver('address-data');
         })
       )
       .subscribe(() => {},

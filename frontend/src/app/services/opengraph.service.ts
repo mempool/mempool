@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -12,8 +12,11 @@ import { LanguageService } from './language.service';
 export class OpenGraphService {
   network = '';
   defaultImageUrl = '';
+  previewLoadingEvents = {};
+  previewLoadingCount = 0;
 
   constructor(
+    private ngZone: NgZone,
     private metaService: Meta,
     private stateService: StateService,
     private LanguageService: LanguageService,
@@ -39,6 +42,9 @@ export class OpenGraphService {
         this.clearOgImage();
       }
     });
+
+    // expose this service to global scope, so we can access it from the unfurler
+    window['ogService'] = this;
   }
 
   setOgImage() {
@@ -59,13 +65,44 @@ export class OpenGraphService {
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
   }
 
-  /// signal that the unfurler should wait for a 'ready' signal before taking a screenshot
-  setPreviewLoading() {
-    this.metaService.updateTag({ property: 'og:loading', content: 'loading'});
+  /// register an event that needs to resolve before we can take a screenshot
+  waitFor(event) {
+    if (!this.previewLoadingEvents[event]) {
+      this.previewLoadingEvents[event] = 1;
+      this.previewLoadingCount++;
+    } else {
+      this.previewLoadingEvents[event]++;
+    }
+    this.metaService.updateTag({ property: 'og:preview:loading', content: 'loading'});
   }
 
-  // signal to the unfurler that the page is ready for a screenshot
-  setPreviewReady() {
-    this.metaService.updateTag({ property: 'og:ready', content: 'ready'});
+  // signal that an event has resolved
+  // if all registered events have resolved, signal we are ready for a screenshot
+  waitOver(event) {
+    if (this.previewLoadingEvents[event]) {
+      this.previewLoadingEvents[event]--;
+      if (this.previewLoadingEvents[event] === 0) {
+        delete this.previewLoadingEvents[event]
+        this.previewLoadingCount--;
+      }
+    }
+    if (this.previewLoadingCount === 0) {
+      this.metaService.updateTag({ property: 'og:preview:ready', content: 'ready'});
+    }
+  }
+
+  resetLoading() {
+    this.previewLoadingEvents = {};
+    this.previewLoadingCount = 0;
+    this.metaService.removeTag("property='og:preview:loading'");
+    this.metaService.removeTag("property='og:preview:ready'");
+    this.metaService.removeTag("property='og:meta:ready'");
+  }
+
+  loadPage(path) {
+    this.resetLoading();
+    this.ngZone.run(() => {
+      this.router.navigateByUrl(path);
+    })
   }
 }
