@@ -31,11 +31,15 @@ interface IConfig {
   LIGHTNING: {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
+    TOPOLOGY_FOLDER: string;
   };
   LND: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
     REST_API_URL: string;
+  };
+  CLIGHTNING: {
+    SOCKET: string;
   };
   ELECTRUM: {
     HOST: string;
@@ -177,12 +181,16 @@ const defaults: IConfig = {
   },
   'LIGHTNING': {
     'ENABLED': false,
-    'BACKEND': 'lnd'
+    'BACKEND': 'lnd',
+    'TOPOLOGY_FOLDER': '',
   },
   'LND': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
     'REST_API_URL': 'https://localhost:8080',
+  },
+  'CLIGHTNING': {
+    'SOCKET': '',
   },
   'SOCKS5PROXY': {
     'ENABLED': false,
@@ -224,6 +232,7 @@ class Config implements IConfig {
   BISQ: IConfig['BISQ'];
   LIGHTNING: IConfig['LIGHTNING'];
   LND: IConfig['LND'];
+  CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
@@ -242,6 +251,7 @@ class Config implements IConfig {
     this.BISQ = configs.BISQ;
     this.LIGHTNING = configs.LIGHTNING;
     this.LND = configs.LND;
+    this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
