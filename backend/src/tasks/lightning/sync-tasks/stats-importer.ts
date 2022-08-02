@@ -1,9 +1,11 @@
 import DB from '../../../database';
-import { readdirSync, readFileSync } from 'fs';
+import { promises } from 'fs';
 import { XMLParser } from 'fast-xml-parser';
 import logger from '../../../logger';
 import fundingTxFetcher from './funding-tx-fetcher';
 import config from '../../../config';
+
+const fsPromises = promises;
 
 interface Node {
   id: string;
@@ -33,14 +35,12 @@ class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
   parser = new XMLParser();
 
-  latestNodeCount = 1; // Ignore gap in the data
-
   async $run(): Promise<void> {
     logger.info(`Importing historical lightning stats`);
 
-    // const [channels]: any[] = await DB.query('SELECT short_id from channels;');
-    // logger.info('Caching funding txs for currently existing channels');
-    // await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
+    const [channels]: any[] = await DB.query('SELECT short_id from channels;');
+    logger.info('Caching funding txs for currently existing channels');
+    await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
     
     await this.$importHistoricalLightningStats();
   }
@@ -148,6 +148,8 @@ class LightningStatsImporter {
     const capacities: number[] = [];
     const feeRates: number[] = [];
     const baseFees: number[] = [];
+    const alreadyCountedChannels = {};
+    
     for (const channel of networkGraph.channels) {
       const tx = await fundingTxFetcher.$fetchChannelOpenTx(channel.scid.slice(0, -2));
       if (!tx) {
@@ -173,10 +175,14 @@ class LightningStatsImporter {
       nodeStats[channel.destination].capacity += Math.round(tx.value * 100000000);
       nodeStats[channel.destination].channels++;
 
-      capacity += Math.round(tx.value * 100000000);
+      if (!alreadyCountedChannels[channel.scid.slice(0, -2)]) {
+        capacity += Math.round(tx.value * 100000000);
+        capacities.push(Math.round(tx.value * 100000000));
+        alreadyCountedChannels[channel.scid.slice(0, -2)] = true;
+      }
+
       avgFeeRate += channel.fee_proportional_millionths;
       avgBaseFee += channel.fee_base_msat;
-      capacities.push(Math.round(tx.value * 100000000));
       feeRates.push(channel.fee_proportional_millionths);
       baseFees.push(channel.fee_base_msat);
     }
@@ -186,6 +192,7 @@ class LightningStatsImporter {
     const medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
     const medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
     const medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
+    const avgCapacity = Math.round(capacity / capacities.length);
     
     let query = `INSERT INTO lightning_stats(
       added,
@@ -207,14 +214,14 @@ class LightningStatsImporter {
 
     await DB.query(query, [
       timestamp,
-      networkGraph.channels.length,
+      capacities.length,
       networkGraph.nodes.length,
       capacity,
       torNodes,
       clearnetNodes,
       unannouncedNodes,
       clearnetTorNodes,
-      Math.round(capacity / networkGraph.channels.length),
+      avgCapacity,
       avgFeeRate,
       avgBaseFee,
       medCapacity,
@@ -241,10 +248,10 @@ class LightningStatsImporter {
   }
 
   async $importHistoricalLightningStats(): Promise<void> {
-    const fileList = readdirSync(this.topologiesFolder);
+    const fileList = await fsPromises.readdir(this.topologiesFolder);
     fileList.sort().reverse();
 
-    const [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(added) as added FROM lightning_stats');
+    const [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(added) AS added FROM lightning_stats');
     const existingStatsTimestamps = {};
     for (const row of rows) {
       existingStatsTimestamps[row.added] = true;
@@ -252,26 +259,30 @@ class LightningStatsImporter {
 
     for (const filename of fileList) {
       const timestamp = parseInt(filename.split('_')[1], 10);
-      const fileContent = readFileSync(`${this.topologiesFolder}/${filename}`, 'utf8');
-
-      const graph = this.parseFile(fileContent);
-      if (!graph) {
-        continue;
-      }
-
-      // Ignore drop of more than 90% of the node count as it's probably a missing data point
-      const diffRatio = graph.nodes.length / this.latestNodeCount;
-      if (diffRatio < 0.90) {
-        continue;
-      }
-      this.latestNodeCount = graph.nodes.length;
 
       // Stats exist already, don't calculate/insert them
-      if (existingStatsTimestamps[timestamp] === true) {
+      if (existingStatsTimestamps[timestamp] !== undefined) {
         continue;
       }
 
       logger.debug(`Processing ${this.topologiesFolder}/${filename}`);
+      const fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
+
+      let graph;
+      if (filename.indexOf('.json') !== -1) {
+        try {
+          graph = JSON.parse(fileContent);
+        } catch (e) {
+          logger.debug(`Invalid topology file, cannot parse the content`);
+        }
+      } else {
+        graph = this.parseFile(fileContent);
+        if (!graph) {
+          logger.debug(`Invalid topology file, cannot parse the content`);
+          continue;
+        }
+        await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
+      }
 
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.channels.length} channels`);
@@ -282,6 +293,8 @@ class LightningStatsImporter {
 
       logger.debug(`Generating LN network stats for ${datestr}`);
       await this.computeNetworkStats(timestamp, graph);
+
+      existingStatsTimestamps[timestamp] = true;
     }
 
     logger.info(`Lightning network stats historical import completed`);
