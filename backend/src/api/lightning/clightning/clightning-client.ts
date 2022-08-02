@@ -245,7 +245,7 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
     const listnodes: any[] = await this.call('listnodes');
     const listchannels: any[] = await this.call('listchannels');
-    const channelsList = convertAndmergeBidirectionalChannels(listchannels['channels']);
+    const channelsList = await convertAndmergeBidirectionalChannels(listchannels['channels']);
 
     return {
       nodes: listnodes['nodes'].map(node => convertNode(node)),
