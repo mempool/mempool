@@ -248,6 +248,8 @@ class LightningStatsImporter {
   }
 
   async $importHistoricalLightningStats(): Promise<void> {
+    let latestNodeCount = 1;
+
     const fileList = await fsPromises.readdir(this.topologiesFolder);
     fileList.sort().reverse();
 
@@ -284,6 +286,17 @@ class LightningStatsImporter {
         await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
       }
 
+      if (timestamp > 1556316000) {
+        // "No, the reason most likely is just that I started collection in 2019,
+        // so what I had before that is just the survivors from before, which weren't that many"
+        const diffRatio = graph.nodes.length / latestNodeCount;
+        if (diffRatio < 0.9) {
+          // Ignore drop of more than 90% of the node count as it's probably a missing data point
+          continue;
+        }
+      }
+      latestNodeCount = graph.nodes.length;
+      
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.channels.length} channels`);
 
