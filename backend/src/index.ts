@@ -28,7 +28,7 @@ import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
 import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
-import nodeSyncService from './tasks/lightning/node-sync.service';
+import networkSyncService from './tasks/lightning/network-sync.service';
 import statisticsRoutes from './api/statistics/statistics.routes';
 import miningRoutes from './api/mining/mining-routes';
 import bisqRoutes from './api/bisq/bisq.routes';
@@ -136,8 +136,8 @@ class Server {
     }
 
     if (config.LIGHTNING.ENABLED) {
-      nodeSyncService.$startService()
-        .then(() => lightningStatsUpdater.$startService());
+      networkSyncService.$startService()
+      .then(() => lightningStatsUpdater.$startService());
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
