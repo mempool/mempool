@@ -10,7 +10,7 @@ import { $lookupNodeLocation } from './sync-tasks/node-locations';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import { convertChannelId } from '../../api/lightning/clightning/clightning-convert';
 
-class NodeSyncService {
+class NetworkSyncService {
   constructor() {}
 
   public async $startService() {
@@ -28,6 +28,11 @@ class NodeSyncService {
       logger.info(`Updating nodes and channels...`);
 
       const networkGraph = await lightningApi.$getNetworkGraph();
+      if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
+        logger.info(`LN Network graph is empty, retrying in 10 seconds`);
+        setTimeout(this.$runUpdater, 10000);
+        return;
+      }
 
       for (const node of networkGraph.nodes) {
         await this.$saveNode(node);
@@ -376,6 +381,10 @@ class NodeSyncService {
   }
 
   private async $setChannelsInactive(graphChannelsIds: string[]): Promise<void> {
+    if (graphChannelsIds.length === 0) {
+      return;
+    }
+
     try {
       await DB.query(`
         UPDATE channels
@@ -447,4 +456,4 @@ class NodeSyncService {
   }
 }
 
-export default new NodeSyncService();
+export default new NetworkSyncService();
