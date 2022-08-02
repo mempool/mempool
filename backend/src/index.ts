@@ -28,12 +28,13 @@ import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
 import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
-import nodeSyncService from './tasks/lightning/node-sync.service';
-import statisticsRoutes from "./api/statistics/statistics.routes";
-import miningRoutes from "./api/mining/mining-routes";
-import bisqRoutes from "./api/bisq/bisq.routes";
-import liquidRoutes from "./api/liquid/liquid.routes";
-import bitcoinRoutes from "./api/bitcoin/bitcoin.routes";
+import networkSyncService from './tasks/lightning/network-sync.service';
+import statisticsRoutes from './api/statistics/statistics.routes';
+import miningRoutes from './api/mining/mining-routes';
+import bisqRoutes from './api/bisq/bisq.routes';
+import liquidRoutes from './api/liquid/liquid.routes';
+import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
+import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -136,8 +137,9 @@ class Server {
     }
 
     if (config.LIGHTNING.ENABLED) {
-      nodeSyncService.$startService()
-        .then(() => lightningStatsUpdater.$startService());
+      fundingTxFetcher.$init()
+      .then(() => networkSyncService.$startService())
+      .then(() => lightningStatsUpdater.$startService());
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
