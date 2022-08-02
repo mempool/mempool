@@ -31,6 +31,7 @@ interface IConfig {
   LIGHTNING: {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
+    TOPOLOGY_FOLDER: string;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -177,7 +178,8 @@ const defaults: IConfig = {
   },
   'LIGHTNING': {
     'ENABLED': false,
-    'BACKEND': 'lnd'
+    'BACKEND': 'lnd',
+    'TOPOLOGY_FOLDER': '',
   },
   'LND': {
     'TLS_CERT_PATH': '',
