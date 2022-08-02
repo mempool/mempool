@@ -46,69 +46,9 @@ class LightningStatsImporter {
   }
 
   /**
-   * Parse the file content into XML, and return a list of nodes and channels
-   */
-  parseFile(fileContent): any {
-    const graph = this.parser.parse(fileContent);
-    if (Object.keys(graph).length === 0) {
-      return null;
-    }
-
-    const nodes: Node[] = [];
-    const channels: Channel[] = [];
-
-    // If there is only one entry, the parser does not return an array, so we override this
-    if (!Array.isArray(graph.graphml.graph.node)) {
-      graph.graphml.graph.node = [graph.graphml.graph.node];
-    }
-    if (!Array.isArray(graph.graphml.graph.edge)) {
-      graph.graphml.graph.edge = [graph.graphml.graph.edge];
-    }
-
-    for (const node of graph.graphml.graph.node) {
-      if (!node.data) {
-        continue;
-      }
-      nodes.push({
-        id: node.data[0],
-        timestamp: node.data[1],
-        features: node.data[2],
-        rgb_color: node.data[3],
-        alias: node.data[4],
-        addresses: node.data[5],
-        out_degree: node.data[6],
-        in_degree: node.data[7],
-      });
-    }
-
-    for (const channel of graph.graphml.graph.edge) {
-      if (!channel.data) {
-        continue;
-      }
-      channels.push({
-        scid: channel.data[0],
-        source: channel.data[1],
-        destination: channel.data[2],
-        timestamp: channel.data[3],
-        features: channel.data[4],
-        fee_base_msat: channel.data[5],
-        fee_proportional_millionths: channel.data[6],
-        htlc_minimim_msat: channel.data[7],
-        cltv_expiry_delta: channel.data[8],
-        htlc_maximum_msat: channel.data[9],
-      });
-    }
-
-    return {
-      nodes: nodes,
-      channels: channels,
-    };
-  }
-
-  /**
    * Generate LN network stats for one day
    */
-  public async computeNetworkStats(timestamp: number, networkGraph): Promise<void> {
+  public async computeNetworkStats(timestamp: number, networkGraph): Promise<unknown> {
     // Node counts and network shares
     let clearnetNodes = 0;
     let torNodes = 0;
@@ -183,10 +123,15 @@ class LightningStatsImporter {
         alreadyCountedChannels[short_id] = true;
       }
 
-      avgFeeRate += channel.fee_proportional_millionths;
-      avgBaseFee += channel.fee_base_msat;
-      feeRates.push(channel.fee_proportional_millionths);
-      baseFees.push(channel.fee_base_msat);
+      if (channel.fee_proportional_millionths < 5000) {
+        avgFeeRate += channel.fee_proportional_millionths;
+        feeRates.push(channel.fee_proportional_millionths);
+      }
+
+      if (channel.fee_base_msat < 5000) {
+        avgBaseFee += channel.fee_base_msat;      
+        baseFees.push(channel.fee_base_msat);
+      }
     }
     
     avgFeeRate /= networkGraph.channels.length;
@@ -247,6 +192,11 @@ class LightningStatsImporter {
         nodeStats[public_key].channels,
       ]);
     }
+
+    return {
+      added: timestamp,
+      node_count: networkGraph.nodes.length
+    };
   }
 
   async $importHistoricalLightningStats(): Promise<void> {
@@ -308,12 +258,72 @@ class LightningStatsImporter {
       await fundingTxFetcher.$fetchChannelsFundingTxs(graph.channels.map(channel => channel.scid.slice(0, -2)));
 
       logger.debug(`Generating LN network stats for ${datestr}`);
-      await this.computeNetworkStats(timestamp, graph);
+      const stat = await this.computeNetworkStats(timestamp, graph);
 
-      existingStatsTimestamps[timestamp] = true;
+      existingStatsTimestamps[timestamp] = stat;
     }
 
     logger.info(`Lightning network stats historical import completed`);
+  }
+
+  /**
+   * Parse the file content into XML, and return a list of nodes and channels
+   */
+  private parseFile(fileContent): any {
+    const graph = this.parser.parse(fileContent);
+    if (Object.keys(graph).length === 0) {
+      return null;
+    }
+
+    const nodes: Node[] = [];
+    const channels: Channel[] = [];
+
+    // If there is only one entry, the parser does not return an array, so we override this
+    if (!Array.isArray(graph.graphml.graph.node)) {
+      graph.graphml.graph.node = [graph.graphml.graph.node];
+    }
+    if (!Array.isArray(graph.graphml.graph.edge)) {
+      graph.graphml.graph.edge = [graph.graphml.graph.edge];
+    }
+
+    for (const node of graph.graphml.graph.node) {
+      if (!node.data) {
+        continue;
+      }
+      nodes.push({
+        id: node.data[0],
+        timestamp: node.data[1],
+        features: node.data[2],
+        rgb_color: node.data[3],
+        alias: node.data[4],
+        addresses: node.data[5],
+        out_degree: node.data[6],
+        in_degree: node.data[7],
+      });
+    }
+
+    for (const channel of graph.graphml.graph.edge) {
+      if (!channel.data) {
+        continue;
+      }
+      channels.push({
+        scid: channel.data[0],
+        source: channel.data[1],
+        destination: channel.data[2],
+        timestamp: channel.data[3],
+        features: channel.data[4],
+        fee_base_msat: channel.data[5],
+        fee_proportional_millionths: channel.data[6],
+        htlc_minimim_msat: channel.data[7],
+        cltv_expiry_delta: channel.data[8],
+        htlc_maximum_msat: channel.data[9],
+      });
+    }
+
+    return {
+      nodes: nodes,
+      channels: channels,
+    };
   }
 }
 
