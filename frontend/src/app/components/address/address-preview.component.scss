@@ -1,5 +1,5 @@
 h1 {
-  font-size: 42px;
+  font-size: 52px;
   margin: 0;
 }
 
@@ -11,23 +11,26 @@ h1 {
 }
 
 .qrcode-col {
-  width: 420px;
-  min-width: 420px;
+  width: 468px;
+  min-width: 468px;
   flex-grow: 0;
   flex-shrink: 0;
   text-align: center;
+  padding: 0;
+  margin-left: 2px;
+  margin-right: 15px;
 }
 
 .table {
-  font-size: 24px;
+  font-size: 32px;
 
   ::ng-deep .symbol {
-    font-size: 18px;
+    font-size: 24px;
   }
 }
 
 .address-link {
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 0.5em;
   display: flex;
   flex-direction: row;
@@ -35,7 +38,7 @@ h1 {
   .truncated-address {
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: calc(505px - 4em);
+    max-width: calc(640px - 4em);
     display: inline-block;
     white-space: nowrap;
   }
