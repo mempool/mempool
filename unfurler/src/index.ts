@@ -3,6 +3,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import config from './config';
 import { Cluster } from 'puppeteer-cluster';
+import ReusablePage from './concurrency/ReusablePage';
 const puppeteerConfig = require('../puppeteer.config.json');
 
 if (config.PUPPETEER.EXEC_PATH) {
@@ -32,7 +33,7 @@ class Server {
       ;
 
     this.cluster = await Cluster.launch({
-        concurrency: Cluster.CONCURRENCY_CONTEXT,
+        concurrency: ReusablePage,
         maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
         puppeteerOptions: puppeteerConfig,
     });
@@ -52,47 +53,40 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
   }
 
-  async clusterTask({ page, data: { url, action } }) {
-    await page.goto(url, { waitUntil: "networkidle0" });
-    switch (action) {
-      case 'screenshot': {
-        await page.evaluate(async () => {
-          // wait for all images to finish loading
-          const imgs = Array.from(document.querySelectorAll("img"));
-          await Promise.all([
-            document.fonts.ready,
-            ...imgs.map((img) => {
-              if (img.complete) {
-                if (img.naturalHeight !== 0) return;
-                throw new Error("Image failed to load");
-              }
-              return new Promise((resolve, reject) => {
-                img.addEventListener("load", resolve);
-                img.addEventListener("error", reject);
-              });
-            }),
-          ]);
-        });
-        const waitForReady = await page.$('meta[property="og:loading"]');
-        const alreadyReady = await page.$('meta[property="og:ready"]');
-        if (waitForReady != null && alreadyReady == null) {
-          try {
-            await page.waitForSelector('meta[property="og:ready]"', { timeout: 10000 });
-          } catch (e) {
-            // probably timed out
+  async clusterTask({ page, data: { url, path, action } }) {
+    try {
+      if (action === 'screenshot' || action === 'html') {
+        const loaded = await page.evaluate(async (path) => {
+          if (window['ogService']) {
+            window['ogService'].loadPage(path);
+            return true;
+          } else {
+            return false;
           }
+        }, path)
+
+        if (!loaded) {
+          throw new Error('failed to access open graph service');
         }
-        return page.screenshot();
-      } break;
-      default: {
-        try {
-          await page.waitForSelector('meta[property="og:title"]', { timeout: 10000 })
-          const tag = await page.$('meta[property="og:title"]');
-        } catch (e) {
-          // probably timed out
+
+        if (action === 'screenshot') {
+          const waitForReady = await page.$('meta[property="og:preview:loading"]');
+          const alreadyReady = await page.$('meta[property="og:preview:ready"]');
+          if (waitForReady != null && alreadyReady == null) {
+            await page.waitForSelector('meta[property="og:preview:ready"]', { timeout: 8000 });
+          }
+          return page.screenshot();
+        } else if (action === 'html') {
+          const alreadyReady = await page.$('meta[property="og:meta:ready"]');
+          if (alreadyReady == null) {
+            await page.waitForSelector('meta[property="og:meta:ready"]', { timeout: 8000 });
+          }
+          return page.content();
         }
-        return page.content();
       }
+    } catch (e) {
+      console.log(`failed to render page for ${action}`, e instanceof Error ? e.message : e);
+      page.repairRequested = true;
     }
   }
 
@@ -100,8 +94,11 @@ class Server {
     try {
       // strip default language code for compatibility
       const path = req.params[0].replace('/en/', '/');
-      const img = await this.cluster?.execute({ url: this.mempoolHost + path, action: 'screenshot' });
+      const img = await this.cluster?.execute({ url: this.mempoolHost + path, path: path, action: 'screenshot' });
 
+      if (!img) {
+        throw new Error('failed to render preview image');
+      }
       res.contentType('image/png');
       res.send(img);
     } catch (e) {
@@ -120,9 +117,14 @@ class Server {
     }
 
     try {
-      let html = await this.cluster?.execute({ url: this.mempoolHost + req.params[0], action: 'html' });
+      // strip default language code for compatibility
+      const path = req.params[0].replace('/en/', '/');
 
-      res.send(html)
+      let html = await this.cluster?.execute({ url: this.mempoolHost + req.params[0], path: req.params[0], action: 'html' });
+      if (!html) {
+        throw new Error('failed to render preview image');
+      }
+      res.send(html);
     } catch (e) {
       console.log(e);
       res.status(500).send(e instanceof Error ? e.message : e);

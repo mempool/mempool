@@ -12,6 +12,7 @@ interface IConfig {
   PUPPETEER: {
     CLUSTER_SIZE: number;
     EXEC_PATH?: string;
+    MAX_PAGE_AGE?: number;
   };
 }
 
