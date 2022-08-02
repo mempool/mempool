@@ -5,12 +5,13 @@ import { timeoutExecute } from 'puppeteer-cluster/dist/util';
 import config from '../config';
 const mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
 
-const BROWSER_TIMEOUT = 5000;
+const BROWSER_TIMEOUT = 8000;
 // maximum lifetime of a single page session
 const maxAgeMs = (config.PUPPETEER.MAX_PAGE_AGE || (24 * 60 * 60)) * 1000;
 
 interface repairablePage extends puppeteer.Page {
   repairRequested?: boolean;
+  language?: string | null;
 }
 
 export default class ReusablePage extends ConcurrencyImplementation {
@@ -68,6 +69,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
   protected async createResources(): Promise<ResourceData> {
     if (!this.currentPage) {
       this.currentPage = await (this.browser as puppeteer.Browser).newPage();
+      this.currentPage.language = null;
       this.pageCreatedAt = Date.now();
       const defaultUrl = mempoolHost + '/preview/block/1';
       this.currentPage.on('pageerror', (err) => {
@@ -85,10 +87,6 @@ export default class ReusablePage extends ConcurrencyImplementation {
 
     return {
       jobInstance: async () => {
-        if (this.repairRequested || this.currentPage?.repairRequested) {
-          await this.repair();
-        }
-
         await timeoutExecute(BROWSER_TIMEOUT, (async () => {
           resources = await this.createResources();
         })());

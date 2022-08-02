@@ -76,7 +76,7 @@ export class OpenGraphService {
     this.metaService.updateTag({ property: 'og:preview:loading', content: 'loading'});
   }
 
-  // signal that an event has resolved
+  // mark an event as resolved
   // if all registered events have resolved, signal we are ready for a screenshot
   waitOver(event) {
     if (this.previewLoadingEvents[event]) {
@@ -100,9 +100,11 @@ export class OpenGraphService {
   }
 
   loadPage(path) {
-    this.resetLoading();
-    this.ngZone.run(() => {
-      this.router.navigateByUrl(path);
-    })
+    if (path !== this.router.url) {
+      this.resetLoading();
+      this.ngZone.run(() => {
+        this.router.navigateByUrl(path);
+      })
+    }
   }
 }
