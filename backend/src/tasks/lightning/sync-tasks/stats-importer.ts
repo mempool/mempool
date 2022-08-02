@@ -255,10 +255,10 @@ class LightningStatsImporter {
     const fileList = await fsPromises.readdir(this.topologiesFolder);
     fileList.sort().reverse();
 
-    const [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(added) AS added FROM lightning_stats');
+    const [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(added) as added, node_count FROM lightning_stats');
     const existingStatsTimestamps = {};
     for (const row of rows) {
-      existingStatsTimestamps[row.added] = true;
+      existingStatsTimestamps[row.added] = rows[0];
     }
 
     for (const filename of fileList) {
@@ -266,6 +266,7 @@ class LightningStatsImporter {
 
       // Stats exist already, don't calculate/insert them
       if (existingStatsTimestamps[timestamp] !== undefined) {
+        latestNodeCount = existingStatsTimestamps[timestamp].node_count;
         continue;
       }
 
