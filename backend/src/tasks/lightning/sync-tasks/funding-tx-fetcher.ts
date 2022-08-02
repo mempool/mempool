@@ -1,4 +1,5 @@
 import { existsSync, promises } from 'fs';
+import bitcoinApiFactory from '../../../api/bitcoin/bitcoin-api-factory';
 import bitcoinClient from '../../../api/bitcoin/bitcoin-client';
 import config from '../../../config';
 import DB from '../../../database';
@@ -79,26 +80,10 @@ class FundingTxFetcher {
     const outputIdx = parts[2];
 
     let block = this.blocksCache[blockHeight];
-    // Check if we have the block in the `blocks_summaries` table to avoid calling core
-    if (!block) {
-      const [rows] = await DB.query(`
-        SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) AS time, blocks_summaries.transactions AS tx
-        FROM blocks_summaries
-        JOIN blocks ON blocks.hash = blocks_summaries.id
-        WHERE blocks_summaries.height = ${blockHeight}
-      `);
-      block = rows[0] ?? null;
-      if (block) {
-        block.tx = JSON.parse(block.tx);
-        if (block.tx.length === 0) {
-          block = null;
-        }
-      }
-    }
     // Fetch it from core
     if (!block) {
       const blockHash = await bitcoinClient.getBlockHash(parseInt(blockHeight, 10));
-      block = await bitcoinClient.getBlock(blockHash, 2);
+      block = await bitcoinClient.getBlock(blockHash, 1);
     }
     this.blocksCache[block.height] = block;
 
@@ -109,10 +94,14 @@ class FundingTxFetcher {
       }
     }
 
+    const txid = block.tx[txIdx];
+    const rawTx = await bitcoinClient.getRawTransaction(txid);
+    const tx = await bitcoinClient.decodeRawTransaction(rawTx);
+
     this.fundingTxCache[channelId] = {
       timestamp: block.time,
-      txid: block.tx[txIdx].txid,
-      value: block.tx[txIdx].value / 100000000 ?? block.tx[txIdx].vout[outputIdx].value,
+      txid: txid,
+      value: tx.vout[outputIdx].value,
     };
 
     ++this.channelNewlyProcessed;
