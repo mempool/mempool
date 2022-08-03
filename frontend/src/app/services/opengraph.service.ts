@@ -43,8 +43,10 @@ export class OpenGraphService {
       }
     });
 
-    // expose this service to global scope, so we can access it from the unfurler
-    window['ogService'] = this;
+    // expose routing method to global scope, so we can access it from the unfurler
+    window['ogService'] = {
+      loadPage: (path) => { return this.loadPage(path) }
+    };
   }
 
   setOgImage() {

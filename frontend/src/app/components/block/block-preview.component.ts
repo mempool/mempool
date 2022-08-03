@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise } from 'rxjs/operators';
+import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
 import { of, Subscription, asyncScheduler } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from 'src/app/services/seo.service';
@@ -54,6 +54,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         const blockHash: string = params.get('id') || '';
         this.block = undefined;
         this.error = undefined;
+        this.overviewError = undefined;
         this.fees = undefined;
 
         let isBlockHeight = false;
@@ -70,13 +71,24 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
           return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
             .pipe(
               switchMap((hash) => {
-                this.blockHash = hash;
-                return this.apiService.getBlock$(hash);
-              })
+                if (hash) {
+                  this.blockHash = hash;
+                  return this.apiService.getBlock$(hash);
+                } else {
+                  return null;
+                }
+              }),
+              catchError((err) => {
+                this.error = err;
+                this.openGraphService.waitOver('block-data');
+                this.openGraphService.waitOver('block-viz');
+                return of(null);
+              }),
             );
         }
         return this.apiService.getBlock$(blockHash);
       }),
+      filter((block: BlockExtended | void) => block != null),
       tap((block: BlockExtended) => {
         this.block = block;
         this.blockHeight = block.height;
@@ -104,6 +116,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         .pipe(
           catchError((err) => {
             this.overviewError = err;
+            this.openGraphService.waitOver('block-viz');
             return of([]);
           }),
           switchMap((transactions) => {
@@ -123,6 +136,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     (error) => {
       this.error = error;
       this.isLoadingOverview = false;
+      this.openGraphService.waitOver('block-viz');
+      this.openGraphService.waitOver('block-data');
       if (this.blockGraph) {
         this.blockGraph.destroy();
       }
