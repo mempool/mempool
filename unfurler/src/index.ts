@@ -193,11 +193,11 @@ class Server {
   getDefaultImageUrl() {
     switch (this.network) {
       case 'liquid':
-        return '/resources/liquid/liquid-network-preview.png';
+        return this.mempoolHost + '/resources/liquid/liquid-network-preview.png';
       case 'bisq':
-        return '/resources/bisq/bisq-markets-preview.png';
+        return this.mempoolHost + '/resources/bisq/bisq-markets-preview.png';
       default:
-        return '/resources/mempool-space-preview.png';
+        return this.mempoolHost + '/resources/mempool-space-preview.png';
     }
   }
 }
