@@ -53,8 +53,8 @@ export class OpenGraphService {
     this.metaService.updateTag({ property: 'og:image', content: ogImageUrl });
     this.metaService.updateTag({ property: 'twitter:image:src', content: ogImageUrl });
     this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
-    this.metaService.updateTag({ property: 'og:image:width', content: '1024' });
-    this.metaService.updateTag({ property: 'og:image:height', content: '512' });
+    this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
+    this.metaService.updateTag({ property: 'og:image:height', content: '600' });
   }
 
   clearOgImage() {
