@@ -8,11 +8,13 @@ interface IConfig {
   MEMPOOL: {
     HTTP_HOST: string;
     HTTP_PORT: number;
+    NETWORK?: string;
   };
   PUPPETEER: {
     CLUSTER_SIZE: number;
     EXEC_PATH?: string;
     MAX_PAGE_AGE?: number;
+    RENDER_TIMEOUT?: number;
   };
 }
 
