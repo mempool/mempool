@@ -137,9 +137,7 @@ class Server {
     }
 
     if (config.LIGHTNING.ENABLED) {
-      fundingTxFetcher.$init()
-      .then(() => networkSyncService.$startService())
-      .then(() => lightningStatsUpdater.$startService());
+      this.$runLightningBackend();
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
@@ -184,6 +182,18 @@ class Server {
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
+
+  async $runLightningBackend() {
+    try {
+      await fundingTxFetcher.$init();
+      await networkSyncService.$startService();
+      await lightningStatsUpdater.$startService();
+    } catch(e) {
+      logger.err(`Lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      await Common.sleep$(1000 * 60);
+      this.$runLightningBackend();
+    };
+}
 
   setUpWebsocketHandling() {
     if (this.wss) {
