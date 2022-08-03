@@ -66,16 +66,19 @@ class NodesApi {
 
   public async $getTopCapacityNodes(): Promise<any> {
     try {
+      let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
+      const latestDate = rows[0].maxAdded;
+
       const query = `
-        SELECT IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, nodes.public_key,
-          CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
-          CAST(COALESCE(node_stats.channels, 0) as INT) as channels
-        FROM nodes
-        LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key
-        ORDER BY node_stats.added DESC, node_stats.capacity DESC
-        LIMIT 10
+        SELECT nodes.public_key, nodes.alias, node_stats.capacity, node_stats.channels
+        FROM node_stats
+        JOIN nodes ON nodes.public_key = node_stats.public_key
+        WHERE added = FROM_UNIXTIME(${latestDate})
+        ORDER BY capacity DESC
+        LIMIT 10;
       `;
-      const [rows]: any = await DB.query(query);
+      [rows] = await DB.query(query);
+
       return rows;
     } catch (e) {
       logger.err('$getTopCapacityNodes error: ' + (e instanceof Error ? e.message : e));
@@ -85,16 +88,19 @@ class NodesApi {
 
   public async $getTopChannelsNodes(): Promise<any> {
     try {
+      let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
+      const latestDate = rows[0].maxAdded;
+
       const query = `
-        SELECT IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, nodes.public_key,
-          CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
-          CAST(COALESCE(node_stats.channels, 0) as INT) as channels
-        FROM nodes
-        LEFT JOIN node_stats
-        ON node_stats.public_key = nodes.public_key
-        ORDER BY node_stats.added DESC, node_stats.channels DESC
-        LIMIT 10`;
-      const [rows]: any = await DB.query(query);
+        SELECT nodes.public_key, nodes.alias, node_stats.capacity, node_stats.channels
+        FROM node_stats
+        JOIN nodes ON nodes.public_key = node_stats.public_key
+        WHERE added = FROM_UNIXTIME(${latestDate})
+        ORDER BY channels DESC
+        LIMIT 10;
+      `;
+      [rows] = await DB.query(query);
+
       return rows;
     } catch (e) {
       logger.err('$getTopChannelsNodes error: ' + (e instanceof Error ? e.message : e));
