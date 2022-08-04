@@ -1,5 +1,6 @@
 import logger from '../../logger';
 import DB from '../../database';
+import nodesApi from './nodes.api';
 
 class ChannelsApi {
   public async $getAllChannels(): Promise<any[]> {
@@ -181,15 +182,57 @@ class ChannelsApi {
 
   public async $getChannelsForNode(public_key: string, index: number, length: number, status: string): Promise<any[]> {
     try {
-      // Default active and inactive channels
-      let statusQuery = '< 2';
-      // Closed channels only
-      if (status === 'closed') {
-        statusQuery = '= 2';
+      let channelStatusFilter;
+      if (status === 'open') {
+        channelStatusFilter = '< 2';
+      } else if (status === 'closed') {
+        channelStatusFilter = '= 2';
       }
-      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*, ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key WHERE (ns1.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node1_public_key) AND ns2.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node2_public_key)) AND (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery} ORDER BY channels.capacity DESC LIMIT ?, ?`;
-      const [rows]: any = await DB.query(query, [public_key, public_key, index, length]);
-      const channels = rows.map((row) => this.convertChannel(row));
+
+      // Channels originating from node
+      let query = `
+        SELECT node2.alias, node2.public_key, channels.status, channels.node1_fee_rate,
+          channels.capacity, channels.short_id, channels.id
+        FROM channels
+        JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
+        WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
+      `;
+      const [channelsFromNode]: any = await DB.query(query, [public_key, index, length]);
+
+      // Channels incoming to node
+      query = `
+        SELECT node1.alias, node1.public_key, channels.status, channels.node2_fee_rate,
+          channels.capacity, channels.short_id, channels.id
+        FROM channels
+        JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
+        WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
+      `;
+      const [channelsToNode]: any = await DB.query(query, [public_key, index, length]);
+
+      let allChannels = channelsFromNode.concat(channelsToNode);
+      allChannels.sort((a, b) => {
+        return b.capacity - a.capacity;
+      });
+      allChannels = allChannels.slice(index, index + length);
+
+      const channels: any[] = []
+      for (const row of allChannels) {
+        const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
+        channels.push({
+          status: row.status,
+          capacity: row.capacity ?? 0,
+          short_id: row.short_id,
+          id: row.id,
+          fee_rate: row.node1_fee_rate ?? row.node2_fee_rate ?? 0,
+          node: {
+            alias: row.alias.length > 0 ? row.alias : row.public_key.slice(0, 20),
+            public_key: row.public_key,
+            channels: activeChannelsStats.active_channel_count ?? 0,
+            capacity: activeChannelsStats.capacity ?? 0,
+          }
+        });
+      }
+
       return channels;
     } catch (e) {
       logger.err('$getChannelsForNode error: ' + (e instanceof Error ? e.message : e));
@@ -205,7 +248,12 @@ class ChannelsApi {
       if (status === 'closed') {
         statusQuery = '= 2';
       }
-      const query = `SELECT COUNT(*) AS count FROM channels WHERE (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery}`;
+      const query = `
+        SELECT COUNT(*) AS count
+        FROM channels
+        WHERE (node1_public_key = ? OR node2_public_key = ?)
+        AND status ${statusQuery}
+      `;
       const [rows]: any = await DB.query(query, [public_key, public_key]);
       return rows[0]['count'];
     } catch (e) {

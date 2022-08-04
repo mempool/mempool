@@ -4,21 +4,13 @@ import DB from '../../database';
 class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
     try {
-      const query = `
-        SELECT nodes.*, geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
-        geo_names_country.names as country, geo_names_subdivision.names as subdivision,
-          (SELECT Count(*)
-          FROM channels
-          WHERE channels.status = 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_closed_count,
-          (SELECT Count(*)
-          FROM channels
-          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_active_count,
-          (SELECT Sum(capacity)
-          FROM channels
-          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS capacity,
-          (SELECT Avg(capacity)
-          FROM channels
-          WHERE status = 1 AND ( node1_public_key = ? OR node2_public_key = ? )) AS channels_capacity_avg
+      // General info
+      let query = `
+        SELECT public_key, alias, UNIX_TIMESTAMP(first_seen) AS first_seen,
+        UNIX_TIMESTAMP(updated_at) AS updated_at, color, sockets as sockets,
+        as_number, city_id, country_id, subdivision_id, longitude, latitude,
+        geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
+        geo_names_country.names as country, geo_names_subdivision.names as subdivision
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
@@ -27,18 +19,67 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         WHERE public_key = ?
       `;
-      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
-      if (rows.length > 0) {
-        rows[0].as_organization = JSON.parse(rows[0].as_organization);
-        rows[0].subdivision = JSON.parse(rows[0].subdivision);
-        rows[0].city = JSON.parse(rows[0].city);
-        rows[0].country = JSON.parse(rows[0].country);
-        return rows[0];
+      let [rows]: any[] = await DB.query(query, [public_key]);
+      if (rows.length === 0) {
+        throw new Error(`This node does not exist, or our node is not seeing it yet`);
       }
-      return null;
+
+      const node = rows[0];
+      node.as_organization = JSON.parse(node.as_organization);
+      node.subdivision = JSON.parse(node.subdivision);
+      node.city = JSON.parse(node.city);
+      node.country = JSON.parse(node.country);
+
+      // Active channels and capacity
+      const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);
+      node.active_channel_count = activeChannelsStats.active_channel_count ?? 0;
+      node.capacity = activeChannelsStats.capacity ?? 0;
+
+      // Opened channels count
+      query = `
+        SELECT count(short_id) as opened_channel_count
+        FROM channels
+        WHERE status != 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+      `;
+      [rows] = await DB.query(query, [public_key, public_key]);
+      node.opened_channel_count = 0;
+      if (rows.length > 0) {
+        node.opened_channel_count = rows[0].opened_channel_count;
+      }
+
+      // Closed channels count
+      query = `
+        SELECT count(short_id) as closed_channel_count
+        FROM channels
+        WHERE status = 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+      `;
+      [rows] = await DB.query(query, [public_key, public_key]);
+      node.closed_channel_count = 0;
+      if (rows.length > 0) {
+        node.closed_channel_count = rows[0].closed_channel_count;
+      }
+
+      return node;
     } catch (e) {
-      logger.err('$getNode error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get node information for ${public_key}. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
+    }
+  }
+
+  public async $getActiveChannelsStats(node_public_key: string): Promise<unknown> {
+    const query = `
+      SELECT count(short_id) as active_channel_count, sum(capacity) as capacity
+      FROM channels
+      WHERE status = 1 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+    `;
+    const [rows]: any[] = await DB.query(query, [node_public_key, node_public_key]);
+    if (rows.length > 0) {
+      return {
+        active_channel_count: rows[0].active_channel_count,
+        capacity: rows[0].capacity
+      };
+    } else {
+      return null;
     }
   }
 
@@ -55,7 +96,12 @@ class NodesApi {
 
   public async $getNodeStats(public_key: string): Promise<any> {
     try {
-      const query = `SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
+      const query = `
+        SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels
+        FROM node_stats
+        WHERE public_key = ?
+        ORDER BY added DESC
+      `;
       const [rows]: any = await DB.query(query, [public_key]);
       return rows;
     } catch (e) {
