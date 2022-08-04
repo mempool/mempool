@@ -9,6 +9,7 @@ import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import { convertChannelId } from '../../api/lightning/clightning/clightning-convert';
+import { Common } from '../../api/common';
 
 class NetworkSyncService {
   constructor() {}
@@ -23,14 +24,15 @@ class NetworkSyncService {
     }, 1000 * 60 * 60);
   }
 
-  private async $runUpdater() {
+  private async $runUpdater(): Promise<void> {
     try {
       logger.info(`Updating nodes and channels...`);
 
       const networkGraph = await lightningApi.$getNetworkGraph();
       if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
         logger.info(`LN Network graph is empty, retrying in 10 seconds`);
-        setTimeout(this.$runUpdater, 10000);
+        await Common.sleep$(10000);
+        this.$runUpdater();
         return;
       }
 
