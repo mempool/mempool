@@ -13,19 +13,19 @@ interface Node {
   features: string;
   rgb_color: string;
   alias: string;
-  addresses: string;
+  addresses: unknown[];
   out_degree: number;
   in_degree: number;
 }
 
 interface Channel {
-  scid: string;
-  source: string;
-  destination: string;
+  channel_id: string;
+  node1_pub: string;
+  node2_pub: string;
   timestamp: number;
   features: string;
   fee_base_msat: number;
-  fee_proportional_millionths: number;
+  fee_rate_milli_msat: number;
   htlc_minimim_msat: number;
   cltv_expiry_delta: number;
   htlc_maximum_msat: number;
@@ -41,7 +41,7 @@ class LightningStatsImporter {
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
-    
+
     await this.$importHistoricalLightningStats();
   }
 
@@ -60,10 +60,9 @@ class LightningStatsImporter {
       let hasClearnet = false;
       let isUnnanounced = true;
 
-      const sockets = node.addresses.split(',');
-      for (const socket of sockets) {
-        hasOnion = hasOnion || (socket.indexOf('torv3://') !== -1);
-        hasClearnet = hasClearnet || (socket.indexOf('ipv4://') !== -1 || socket.indexOf('ipv6://') !== -1);
+      for (const socket of (node.addresses ?? [])) {
+        hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network);
+        hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network);
       }
       if (hasOnion && hasClearnet) {
         clearnetTorNodes++;
@@ -90,8 +89,11 @@ class LightningStatsImporter {
     const baseFees: number[] = [];
     const alreadyCountedChannels = {};
     
-    for (const channel of networkGraph.channels) {
-      const short_id = channel.scid.slice(0, -2);
+    for (const channel of networkGraph.edges) {
+      let short_id = channel.channel_id;
+      if (short_id.indexOf('/') !== -1) {
+        short_id = short_id.slice(0, -2);
+      }
 
       const tx = await fundingTxFetcher.$fetchChannelOpenTx(short_id);
       if (!tx) {
@@ -99,67 +101,109 @@ class LightningStatsImporter {
         continue;
       }
 
-      if (!nodeStats[channel.source]) {
-        nodeStats[channel.source] = {
+      if (!nodeStats[channel.node1_pub]) {
+        nodeStats[channel.node1_pub] = {
           capacity: 0,
           channels: 0,
         };
       }
-      if (!nodeStats[channel.destination]) {
-        nodeStats[channel.destination] = {
+      if (!nodeStats[channel.node2_pub]) {
+        nodeStats[channel.node2_pub] = {
           capacity: 0,
           channels: 0,
         };
       }
       
-      nodeStats[channel.source].capacity += Math.round(tx.value * 100000000);
-      nodeStats[channel.source].channels++;
-      nodeStats[channel.destination].capacity += Math.round(tx.value * 100000000);
-      nodeStats[channel.destination].channels++;
-
       if (!alreadyCountedChannels[short_id]) {
         capacity += Math.round(tx.value * 100000000);
         capacities.push(Math.round(tx.value * 100000000));
         alreadyCountedChannels[short_id] = true;
+
+        nodeStats[channel.node1_pub].capacity += Math.round(tx.value * 100000000);
+        nodeStats[channel.node1_pub].channels++;
+        nodeStats[channel.node2_pub].capacity += Math.round(tx.value * 100000000);
+        nodeStats[channel.node2_pub].channels++;
       }
 
-      if (channel.fee_proportional_millionths < 5000) {
-        avgFeeRate += channel.fee_proportional_millionths;
-        feeRates.push(channel.fee_proportional_millionths);
-      }
-
-      if (channel.fee_base_msat < 5000) {
-        avgBaseFee += channel.fee_base_msat;      
-        baseFees.push(channel.fee_base_msat);
+      if (channel.node1_policy !== undefined) { // Coming from the node
+        for (const policy of [channel.node1_policy, channel.node2_policy]) {
+          if (policy && policy.fee_rate_milli_msat < 5000) {
+            avgFeeRate += policy.fee_rate_milli_msat;
+            feeRates.push(policy.fee_rate_milli_msat);
+          }  
+          if (policy && policy.fee_base_msat < 5000) {
+            avgBaseFee += policy.fee_base_msat;      
+            baseFees.push(policy.fee_base_msat);
+          }
+        }
+      } else { // Coming from the historical import
+        if (channel.fee_rate_milli_msat < 5000) {
+          avgFeeRate += channel.fee_rate_milli_msat;
+          feeRates.push(channel.fee_rate_milli_msat);
+        }  
+        if (channel.fee_base_msat < 5000) {
+          avgBaseFee += channel.fee_base_msat;      
+          baseFees.push(channel.fee_base_msat);
+        }
       }
     }
     
-    avgFeeRate /= networkGraph.channels.length;
-    avgBaseFee /= networkGraph.channels.length;
+    avgFeeRate /= networkGraph.edges.length;
+    avgBaseFee /= networkGraph.edges.length;
     const medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
     const medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
     const medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
     const avgCapacity = Math.round(capacity / capacities.length);
-    
+
     let query = `INSERT INTO lightning_stats(
-      added,
-      channel_count,
-      node_count,
-      total_capacity,
-      tor_nodes,
-      clearnet_nodes,
-      unannounced_nodes,
-      clearnet_tor_nodes,
-      avg_capacity,
-      avg_fee_rate,
-      avg_base_fee_mtokens,
-      med_capacity,
-      med_fee_rate,
-      med_base_fee_mtokens
-    )
-    VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        added,
+        channel_count,
+        node_count,
+        total_capacity,
+        tor_nodes,
+        clearnet_nodes,
+        unannounced_nodes,
+        clearnet_tor_nodes,
+        avg_capacity,
+        avg_fee_rate,
+        avg_base_fee_mtokens,
+        med_capacity,
+        med_fee_rate,
+        med_base_fee_mtokens
+      )
+      VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      added = FROM_UNIXTIME(?),
+      channel_count = ?,
+      node_count = ?,
+      total_capacity = ?,
+      tor_nodes = ?,
+      clearnet_nodes = ?,
+      unannounced_nodes = ?,
+      clearnet_tor_nodes = ?,
+      avg_capacity = ?,
+      avg_fee_rate = ?,
+      avg_base_fee_mtokens = ?,
+      med_capacity = ?,
+      med_fee_rate = ?,
+      med_base_fee_mtokens = ?
+    `;
 
     await DB.query(query, [
+      timestamp,
+      capacities.length,
+      networkGraph.nodes.length,
+      capacity,
+      torNodes,
+      clearnetNodes,
+      unannouncedNodes,
+      clearnetTorNodes,
+      avgCapacity,
+      avgFeeRate,
+      avgBaseFee,
+      medCapacity,
+      medFeeRate,
+      medBaseFee,
       timestamp,
       capacities.length,
       networkGraph.nodes.length,
@@ -178,15 +222,23 @@ class LightningStatsImporter {
 
     for (const public_key of Object.keys(nodeStats)) {
       query = `INSERT INTO node_stats(
-        public_key,
-        added,
-        capacity,
-        channels
-      )
-      VALUES (?, FROM_UNIXTIME(?), ?, ?)`;
-    
+          public_key,
+          added,
+          capacity,
+          channels
+        )
+        VALUES (?, FROM_UNIXTIME(?), ?, ?)
+        ON DUPLICATE KEY UPDATE
+        added = FROM_UNIXTIME(?),
+        capacity = ?,
+        channels = ?
+      `;
+
       await DB.query(query, [
         public_key,
+        timestamp,
+        nodeStats[public_key].capacity,
+        nodeStats[public_key].channels,
         timestamp,
         nodeStats[public_key].capacity,
         nodeStats[public_key].channels,
@@ -203,15 +255,28 @@ class LightningStatsImporter {
     let latestNodeCount = 1;
 
     const fileList = await fsPromises.readdir(this.topologiesFolder);
+    // Insert history from the most recent to the oldest
+    // This also put the .json cached files first
     fileList.sort().reverse();
 
-    const [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(added) as added, node_count FROM lightning_stats');
+    const [rows]: any[] = await DB.query(`
+      SELECT UNIX_TIMESTAMP(added) AS added, node_count
+      FROM lightning_stats
+      ORDER BY added DESC
+    `);
     const existingStatsTimestamps = {};
     for (const row of rows) {
-      existingStatsTimestamps[row.added] = rows[0];
+      existingStatsTimestamps[row.added] = row;
     }
 
+    // For logging purpose
+    let processed = 10;
+    let totalProcessed = -1;
+
     for (const filename of fileList) {
+      processed++;
+      totalProcessed++;
+
       const timestamp = parseInt(filename.split('_')[1], 10);
 
       // Stats exist already, don't calculate/insert them
@@ -220,7 +285,7 @@ class LightningStatsImporter {
         continue;
       }
 
-      logger.debug(`Processing ${this.topologiesFolder}/${filename}`);
+      logger.debug(`Reading ${this.topologiesFolder}/${filename}`);
       const fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
 
       let graph;
@@ -228,12 +293,13 @@ class LightningStatsImporter {
         try {
           graph = JSON.parse(fileContent);
         } catch (e) {
-          logger.debug(`Invalid topology file, cannot parse the content`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+          continue;
         }
       } else {
         graph = this.parseFile(fileContent);
         if (!graph) {
-          logger.debug(`Invalid topology file, cannot parse the content`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
           continue;
         }
         await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
@@ -245,19 +311,22 @@ class LightningStatsImporter {
         const diffRatio = graph.nodes.length / latestNodeCount;
         if (diffRatio < 0.9) {
           // Ignore drop of more than 90% of the node count as it's probably a missing data point
+          logger.debug(`Nodes count diff ratio threshold reached, ignore the data for this day ${graph.nodes.length} nodes vs ${latestNodeCount}`);
           continue;
         }
       }
       latestNodeCount = graph.nodes.length;
-      
+
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
-      logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.channels.length} channels`);
+      logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
 
-      // Cache funding txs
-      logger.debug(`Caching funding txs for ${datestr}`);
-      await fundingTxFetcher.$fetchChannelsFundingTxs(graph.channels.map(channel => channel.scid.slice(0, -2)));
-
-      logger.debug(`Generating LN network stats for ${datestr}`);
+      if (processed > 10) {
+        logger.info(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
+        processed = 0;
+      } else {
+        logger.debug(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
+      }
+      await fundingTxFetcher.$fetchChannelsFundingTxs(graph.edges.map(channel => channel.channel_id.slice(0, -2)));
       const stat = await this.computeNetworkStats(timestamp, graph);
 
       existingStatsTimestamps[timestamp] = stat;
@@ -290,13 +359,22 @@ class LightningStatsImporter {
       if (!node.data) {
         continue;
       }
+      const addresses: unknown[] = [];
+      const sockets = node.data[5].split(',');
+      for (const socket of sockets) {
+        const parts = socket.split('://');
+        addresses.push({
+          network: parts[0],
+          addr: parts[1],
+        });
+      }
       nodes.push({
         id: node.data[0],
         timestamp: node.data[1],
         features: node.data[2],
         rgb_color: node.data[3],
         alias: node.data[4],
-        addresses: node.data[5],
+        addresses: addresses,
         out_degree: node.data[6],
         in_degree: node.data[7],
       });
@@ -307,13 +385,13 @@ class LightningStatsImporter {
         continue;
       }
       channels.push({
-        scid: channel.data[0],
-        source: channel.data[1],
-        destination: channel.data[2],
+        channel_id: channel.data[0],
+        node1_pub: channel.data[1],
+        node2_pub: channel.data[2],
         timestamp: channel.data[3],
         features: channel.data[4],
         fee_base_msat: channel.data[5],
-        fee_proportional_millionths: channel.data[6],
+        fee_rate_milli_msat: channel.data[6],
         htlc_minimim_msat: channel.data[7],
         cltv_expiry_delta: channel.data[8],
         htlc_maximum_msat: channel.data[9],
@@ -322,7 +400,7 @@ class LightningStatsImporter {
 
     return {
       nodes: nodes,
-      channels: channels,
+      edges: channels,
     };
   }
 }
