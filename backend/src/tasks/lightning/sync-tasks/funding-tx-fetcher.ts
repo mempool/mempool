@@ -45,7 +45,7 @@ class FundingTxFetcher {
       let elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
       if (elapsedSeconds > 10) {
         elapsedSeconds = Math.round((new Date().getTime() / 1000) - globalTimer);
-        logger.debug(`Indexing channels funding tx ${channelProcessed + 1} of ${channelIds.length} ` +
+        logger.info(`Indexing channels funding tx ${channelProcessed + 1} of ${channelIds.length} ` +
           `(${Math.floor(channelProcessed / channelIds.length * 10000) / 100}%) | ` +
           `elapsed: ${elapsedSeconds} seconds`
         );

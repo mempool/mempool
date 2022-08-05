@@ -1,3 +1,4 @@
+import DB from '../../database';
 import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import LightningStatsImporter from './sync-tasks/stats-importer';
@@ -9,7 +10,7 @@ class LightningStatsUpdater {
     logger.info('Starting Lightning Stats service');
 
     LightningStatsImporter.$run();
-
+    
     setTimeout(() => {
       this.$runTasks();
     }, this.timeUntilMidnight());
@@ -42,9 +43,14 @@ class LightningStatsUpdater {
     this.setDateMidnight(date);
     date.setUTCHours(24);
 
+    const [rows] = await DB.query(`SELECT UNIX_TIMESTAMP(MAX(added)) as lastAdded from lightning_stats`);
+    if ((rows[0].lastAdded ?? 0) === date.getTime() / 1000) {
+      return;
+    }
+
     logger.info(`Running lightning daily stats log...`);
     const networkGraph = await lightningApi.$getNetworkGraph();
-    LightningStatsImporter.computeNetworkStats(date.getTime(), networkGraph);
+    LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
   }
 }
 
