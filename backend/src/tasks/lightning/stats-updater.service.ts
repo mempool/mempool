@@ -1,25 +1,15 @@
+import DB from '../../database';
 import logger from '../../logger';
 import lightningApi from '../../api/lightning/lightning-api-factory';
 import LightningStatsImporter from './sync-tasks/stats-importer';
+import config from '../../config';
 
 class LightningStatsUpdater {
-  hardCodedStartTime = '2018-01-12';
-
   public async $startService(): Promise<void> {
     logger.info('Starting Lightning Stats service');
 
-    LightningStatsImporter.$run();
-
-    setTimeout(() => {
-      this.$runTasks();
-    }, this.timeUntilMidnight());
-  }
-
-  private timeUntilMidnight(): number {
-    const date = new Date();
-    this.setDateMidnight(date);
-    date.setUTCHours(24);
-    return date.getTime() - new Date().getTime();
+    // LightningStatsImporter.$run();
+    this.$runTasks();
   }
 
   private setDateMidnight(date: Date): void {
@@ -34,17 +24,20 @@ class LightningStatsUpdater {
 
     setTimeout(() => {
       this.$runTasks();
-    }, this.timeUntilMidnight());
+    }, 1000 * config.LIGHTNING.NODE_STATS_REFRESH_INTERVAL);
   }
 
+  /**
+   * Update the latest entry for each node every config.LIGHTNING.NODE_STATS_REFRESH_INTERVAL seconds
+   */
   private async $logStatsDaily(): Promise<void> {
     const date = new Date();
     this.setDateMidnight(date);
     date.setUTCHours(24);
 
-    logger.info(`Running lightning daily stats log...`);
+    logger.info(`Updating latest node stats`);
     const networkGraph = await lightningApi.$getNetworkGraph();
-    LightningStatsImporter.computeNetworkStats(date.getTime(), networkGraph);
+    LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
   }
 }
 

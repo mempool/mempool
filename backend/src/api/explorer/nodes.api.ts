@@ -116,7 +116,7 @@ class NodesApi {
       const latestDate = rows[0].maxAdded;
 
       const query = `
-        SELECT nodes.public_key, nodes.alias, node_stats.capacity, node_stats.channels
+        SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, node_stats.capacity, node_stats.channels
         FROM node_stats
         JOIN nodes ON nodes.public_key = node_stats.public_key
         WHERE added = FROM_UNIXTIME(${latestDate})
@@ -138,7 +138,7 @@ class NodesApi {
       const latestDate = rows[0].maxAdded;
 
       const query = `
-        SELECT nodes.public_key, nodes.alias, node_stats.capacity, node_stats.channels
+        SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, node_stats.capacity, node_stats.channels
         FROM node_stats
         JOIN nodes ON nodes.public_key = node_stats.public_key
         WHERE added = FROM_UNIXTIME(${latestDate})
