@@ -41,7 +41,7 @@ class LightningStatsImporter {
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
-    
+
     await this.$importHistoricalLightningStats();
   }
 
@@ -114,15 +114,15 @@ class LightningStatsImporter {
         };
       }
       
-      nodeStats[channel.node1_pub].capacity += Math.round(tx.value * 100000000);
-      nodeStats[channel.node1_pub].channels++;
-      nodeStats[channel.node2_pub].capacity += Math.round(tx.value * 100000000);
-      nodeStats[channel.node2_pub].channels++;
-
       if (!alreadyCountedChannels[short_id]) {
         capacity += Math.round(tx.value * 100000000);
         capacities.push(Math.round(tx.value * 100000000));
         alreadyCountedChannels[short_id] = true;
+
+        nodeStats[channel.node1_pub].capacity += Math.round(tx.value * 100000000);
+        nodeStats[channel.node1_pub].channels++;
+        nodeStats[channel.node2_pub].capacity += Math.round(tx.value * 100000000);
+        nodeStats[channel.node2_pub].channels++;
       }
 
       if (channel.node1_policy !== undefined) { // Coming from the node
@@ -154,26 +154,56 @@ class LightningStatsImporter {
     const medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
     const medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
     const avgCapacity = Math.round(capacity / capacities.length);
-    
+
     let query = `INSERT INTO lightning_stats(
-      added,
-      channel_count,
-      node_count,
-      total_capacity,
-      tor_nodes,
-      clearnet_nodes,
-      unannounced_nodes,
-      clearnet_tor_nodes,
-      avg_capacity,
-      avg_fee_rate,
-      avg_base_fee_mtokens,
-      med_capacity,
-      med_fee_rate,
-      med_base_fee_mtokens
-    )
-    VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        added,
+        channel_count,
+        node_count,
+        total_capacity,
+        tor_nodes,
+        clearnet_nodes,
+        unannounced_nodes,
+        clearnet_tor_nodes,
+        avg_capacity,
+        avg_fee_rate,
+        avg_base_fee_mtokens,
+        med_capacity,
+        med_fee_rate,
+        med_base_fee_mtokens
+      )
+      VALUES (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      added = FROM_UNIXTIME(?),
+      channel_count = ?,
+      node_count = ?,
+      total_capacity = ?,
+      tor_nodes = ?,
+      clearnet_nodes = ?,
+      unannounced_nodes = ?,
+      clearnet_tor_nodes = ?,
+      avg_capacity = ?,
+      avg_fee_rate = ?,
+      avg_base_fee_mtokens = ?,
+      med_capacity = ?,
+      med_fee_rate = ?,
+      med_base_fee_mtokens = ?
+    `;
 
     await DB.query(query, [
+      timestamp,
+      capacities.length,
+      networkGraph.nodes.length,
+      capacity,
+      torNodes,
+      clearnetNodes,
+      unannouncedNodes,
+      clearnetTorNodes,
+      avgCapacity,
+      avgFeeRate,
+      avgBaseFee,
+      medCapacity,
+      medFeeRate,
+      medBaseFee,
       timestamp,
       capacities.length,
       networkGraph.nodes.length,
@@ -192,15 +222,23 @@ class LightningStatsImporter {
 
     for (const public_key of Object.keys(nodeStats)) {
       query = `INSERT INTO node_stats(
-        public_key,
-        added,
-        capacity,
-        channels
-      )
-      VALUES (?, FROM_UNIXTIME(?), ?, ?)`;
-    
+          public_key,
+          added,
+          capacity,
+          channels
+        )
+        VALUES (?, FROM_UNIXTIME(?), ?, ?)
+        ON DUPLICATE KEY UPDATE
+        added = FROM_UNIXTIME(?),
+        capacity = ?,
+        channels = ?
+      `;
+
       await DB.query(query, [
         public_key,
+        timestamp,
+        nodeStats[public_key].capacity,
+        nodeStats[public_key].channels,
         timestamp,
         nodeStats[public_key].capacity,
         nodeStats[public_key].channels,
@@ -278,7 +316,7 @@ class LightningStatsImporter {
         }
       }
       latestNodeCount = graph.nodes.length;
-      
+
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
 
