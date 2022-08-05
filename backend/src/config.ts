@@ -32,6 +32,7 @@ interface IConfig {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
     TOPOLOGY_FOLDER: string;
+    NODE_STATS_REFRESH_INTERVAL: number;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -183,6 +184,7 @@ const defaults: IConfig = {
     'ENABLED': false,
     'BACKEND': 'lnd',
     'TOPOLOGY_FOLDER': '',
+    'NODE_STATS_REFRESH_INTERVAL': 600,
   },
   'LND': {
     'TLS_CERT_PATH': '',
