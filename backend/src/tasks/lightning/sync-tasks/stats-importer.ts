@@ -289,20 +289,13 @@ class LightningStatsImporter {
       const fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
 
       let graph;
-      if (filename.indexOf('.json') !== -1) {
+      if (filename.indexOf('.topology') !== -1) {
         try {
           graph = JSON.parse(fileContent);
         } catch (e) {
           logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
           continue;
         }
-      } else {
-        graph = this.parseFile(fileContent);
-        if (!graph) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
-          continue;
-        }
-        await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
       }
 
       if (timestamp > 1556316000) {
