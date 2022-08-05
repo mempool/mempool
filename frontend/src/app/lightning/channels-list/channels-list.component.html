@@ -2,24 +2,24 @@
   <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
     <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
       <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'open'" fragment="open"> Open
+        <input ngbButton type="radio" [value]="'open'" fragment="open" i18n="open">Open
       </label>
       <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'closed'" fragment="closed"> Closed
+        <input ngbButton type="radio" [value]="'closed'" fragment="closed" i18n="closed">Closed
       </label>
     </div>
   </form>
 
-  <table class="table table-borderless" *ngIf="response.channels.length > 1">
+  <table class="table table-borderless" *ngIf="response.channels.length > 0">
     <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
     <tbody>
       <tr *ngFor="let channel of response.channels; let i = index;">
-        <ng-container *ngTemplateOutlet="tableTemplate; context: { $implicit: channel, node: channel.node_left.public_key === publicKey ? channel.node_right : channel.node_left }"></ng-container>
+        <ng-container *ngTemplateOutlet="tableTemplate; context: { $implicit: channel, node: channel.node }"></ng-container>
       </tr>
     </tbody>
   </table>
   
-  <ngb-pagination *ngIf="response.channels.length > 1" class="pagination-container float-right" [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+  <ngb-pagination *ngIf="response.channels.length > 0" class="pagination-container float-right" [size]="paginationSize" [collectionSize]="response.totalItems" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
 
   <table class="table table-borderless" *ngIf="response.channels.length === 0">
     <div class="d-flex justify-content-center" i18n="lightning.empty-channels-list">No channels to display</div>
@@ -30,7 +30,7 @@
   <thead>
     <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
     <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">&nbsp;</th>
-    <th class="alias text-left d-none d-md-table-cell" i18n="nodes.alias">Status</th>
+    <th class="alias text-left d-none d-md-table-cell" i18n="status">Status</th>
     <th class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
     <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
     <th class="capacity text-right" i18n="channels.id">Channel ID</th>
@@ -42,31 +42,41 @@
     <div>{{ node.alias || '?' }}</div>
     <div class="second-line">
       <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        <span>{{ node.public_key | shortenString : 10 }}</span>
+        <span>{{ node.public_key | shortenString : publicKeySize }}</span>
       </a>
       <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
     </div>
   </td>
   <td class="alias text-left d-none d-md-table-cell">
     <div class="second-line">{{ node.channels }} channels</div>
-    <div class="second-line"><app-amount [satoshis]="node.capacity" digitsInfo="1.2-2"></app-amount></div>
+    <div class="second-line">
+      <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+      <ng-template #smallnode>
+        {{ node.capacity | amountShortener: 1 }}
+        <span class="sats" i18n="shared.sats">sats</span>
+      </ng-template>
+    </div>
   </td>
   <td class="d-none d-md-table-cell">
-    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
-    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
+    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="lightning.inactive">Inactive</span>
+    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="lightning.active">Active</span>
     <ng-template [ngIf]="channel.status === 2">
-      <span class="badge rounded-pill badge-secondary" *ngIf="!channel.closing_reason; else closingReason">Closed</span>
+      <span class="badge rounded-pill badge-secondary" *ngIf="!channel.closing_reason; else closingReason" i18n="lightning.closed">Closed</span>
       <ng-template #closingReason>
         <app-closing-type [type]="channel.closing_reason"></app-closing-type>
       </ng-template>
     </ng-template>
   </td>
   <td class="capacity text-left d-none d-md-table-cell">
-    {{ node.fee_rate }} <span class="symbol">ppm ({{ node.fee_rate / 10000 | number }}%)</span>
+    {{ channel.fee_rate }} <span class="symbol">ppm ({{ channel.fee_rate / 10000 | number }}%)</span>
   </td>
   <td class="capacity text-right d-none d-md-table-cell">
-    <app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount>
-  </td>
+    <app-amount *ngIf="channel.capacity > 100000000; else smallchannel" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+    <ng-template #smallchannel>
+      {{ channel.capacity | amountShortener: 1 }}
+      <span class="sats" i18n="shared.sats">sats</span>
+    </ng-template>
+</td>
   <td class="capacity text-right">
     <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
    </td>
