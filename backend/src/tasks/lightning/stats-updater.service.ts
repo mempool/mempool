@@ -33,7 +33,6 @@ class LightningStatsUpdater {
   private async $logStatsDaily(): Promise<void> {
     const date = new Date();
     this.setDateMidnight(date);
-    date.setUTCHours(24);
 
     logger.info(`Updating latest node stats`);
     const networkGraph = await lightningApi.$getNetworkGraph();
