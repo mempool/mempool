@@ -3,7 +3,6 @@ import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
-import { download } from 'src/app/shared/graphs.utils';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
@@ -21,6 +20,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   @Input() publicKey: string | undefined;
 
   observable$: Observable<any>;
+  center: number[] | undefined = undefined;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -42,6 +42,8 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   ngOnInit(): void {
+    this.center = this.style === 'widget' ? [0, 0, -10] : undefined;
+
     if (this.style === 'graph') {
       this.seoService.setTitle($localize`Lightning nodes channels world map`);
     }
@@ -52,13 +54,21 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         return zip(
           this.assetsService.getWorldMapJson$,
           this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined),
+          [params.get('public_key') ?? undefined]
         ).pipe(tap((data) => {
           registerMap('world', data[0]);
 
           const channelsLoc = [];
           const nodes = [];
           const nodesPubkeys = {};
+          let thisNodeGPS: number[] | undefined = undefined;
           for (const channel of data[1]) {
+            if (!thisNodeGPS && data[2] === channel[0]) {
+              thisNodeGPS = [channel[2], channel[3]];
+            } else if (!thisNodeGPS && data[2] === channel[4]) {
+              thisNodeGPS = [channel[6], channel[7]];
+            }
+
             channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
             if (!nodesPubkeys[channel[0]]) {
               nodes.push({
@@ -77,6 +87,13 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
               nodesPubkeys[channel[4]] = true;  
             }
           }
+          if (this.style === 'nodepage' && thisNodeGPS) {
+            // 1ML 0217890e3aad8d35bc054f43acc00084b25229ecff0ab68debd82883ad65ee8266
+            // New York GPS [-74.0068, 40.7123]
+            // Map center [-20.55, 0, -9.85]
+            this.center = [thisNodeGPS[0] * -20.55 / -74.0068, 0, thisNodeGPS[1] * -9.85 / 40.7123];
+          }
+
           this.prepareChartOptions(nodes, channelsLoc);
         }));
       })
@@ -111,10 +128,10 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           }
         },
         viewControl: {
-          center: this.style === 'widget' ? [0, 0, -10] : undefined,
+          center: this.center,
           minDistance: 1,
           maxDistance: 60,
-          distance: this.style === 'widget' ? 22 : 60,
+          distance: this.style === 'widget' ? 22 : this.style === 'nodepage' ? 22 : 60,
           alpha: 90,
           rotateSensitivity: 0,
           panSensitivity: this.style === 'widget' ? 0 : 1,
@@ -203,23 +220,5 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  onSaveChart() {
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
-    const now = new Date();
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 30;
-    this.chartOptions.backgroundColor = '#11131f';
-    this.chartInstance.setOption(this.chartOptions);
-    download(this.chartInstance.getDataURL({
-      pixelRatio: 2,
-      excludeComponents: ['dataZoom'],
-    }), `lightning-nodes-heatmap-clearnet-${Math.round(now.getTime() / 1000)}.svg`);
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
   }
 }

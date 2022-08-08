@@ -19,7 +19,6 @@ export class NodeComponent implements OnInit {
   publicKey$: Observable<string>;
   selectedSocketIndex = 0;
   qrCodeVisible = false;
-  channelsListMode = 'list';
   channelsListStatus: string;
   error: Error;
   publicKey: string;
@@ -81,14 +80,6 @@ export class NodeComponent implements OnInit {
 
   changeSocket(index: number) {
     this.selectedSocketIndex = index;
-  }
-
-  channelsListModeChange(toggle) {
-    if (toggle === true) {
-      this.channelsListMode = 'map';
-    } else {
-      this.channelsListMode = 'list';
-    }
   }
 
   onChannelsListStatusChanged(e) {
