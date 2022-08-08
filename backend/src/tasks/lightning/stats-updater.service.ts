@@ -8,8 +8,8 @@ class LightningStatsUpdater {
   public async $startService(): Promise<void> {
     logger.info('Starting Lightning Stats service');
 
-    // LightningStatsImporter.$run();
-    this.$runTasks();
+    await this.$runTasks();
+    LightningStatsImporter.$run();
   }
 
   private setDateMidnight(date: Date): void {
@@ -34,7 +34,7 @@ class LightningStatsUpdater {
     const date = new Date();
     this.setDateMidnight(date);
 
-    logger.info(`Updating latest node stats`);
+    logger.info(`Updating latest networks stats`);
     const networkGraph = await lightningApi.$getNetworkGraph();
     LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
   }

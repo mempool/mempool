@@ -71,8 +71,11 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
 }
 
 export function convertChannelId(channelId): string {
-  const s = channelId.split('x').map(part => parseInt(part));
-  return BigInt((s[0] << 40) | (s[1] << 16) | s[2]).toString();
+  if (channelId.indexOf('/') !== -1) {
+    channelId = channelId.slice(0, -2);
+  }
+  const s = channelId.split('x').map(part => BigInt(part));
+  return ((s[0] << 40n) | (s[1] << 16n) | s[2]).toString();
 }
 
 /**
