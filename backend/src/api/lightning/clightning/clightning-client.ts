@@ -157,8 +157,18 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
 
     const _self = this;
 
-    this.client = createConnection(rpcPath);
-    this.rl = createInterface({ input: this.client })
+    this.client = createConnection(rpcPath).on(
+      'error', () => {
+        _self.increaseWaitTime();
+        _self.reconnect();
+      }
+    );
+    this.rl = createInterface({ input: this.client }).on(
+      'error', () => {
+        _self.increaseWaitTime();
+        _self.reconnect();
+      }
+    );
 
     this.clientConnectionPromise = new Promise<void>(resolve => {
       _self.client.on('connect', () => {
@@ -175,7 +185,6 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
 
       _self.client.on('error', error => {
         logger.err(`[CLightningClient] Lightning client connection error: ${error}`);
-        _self.emit('error', error);
         _self.increaseWaitTime();
         _self.reconnect();
       });
