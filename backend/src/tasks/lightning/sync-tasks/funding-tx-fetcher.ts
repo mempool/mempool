@@ -69,7 +69,7 @@ class FundingTxFetcher {
     this.running = false;
   }
   
-  public async $fetchChannelOpenTx(channelId: string): Promise<any> {
+  public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number}> {
     if (this.fundingTxCache[channelId]) {
       return this.fundingTxCache[channelId];
     }
