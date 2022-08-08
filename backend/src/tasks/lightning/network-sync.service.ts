@@ -430,10 +430,13 @@ class NetworkSyncService {
   }
 
   private toIntegerId(id: string): string {
-    if (config.LIGHTNING.BACKEND === 'lnd') {
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      return convertChannelId(id);
+    }
+    else if (config.LIGHTNING.BACKEND === 'lnd') {
       return id;
     }
-    return convertChannelId(id);
+    return '';
   }
 
   /** Decodes a channel id returned by lnd as uint64 to a short channel id */

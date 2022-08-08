@@ -102,9 +102,7 @@
 
   </div>
 
-  <br>
-
-  <div class="input-group mb-3" *ngIf="!error && node.socketsObject.length">
+  <div class="input-group mt-3" *ngIf="!error && node.socketsObject.length">
     <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown"
       *ngIf="node.socketsObject.length > 1; else noDropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor
@@ -133,22 +131,14 @@
     </button>
   </div>
 
-  <br>
-
+  <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
   <app-node-statistics-chart [publicKey]="node.public_key" *ngIf="!error"></app-node-statistics-chart>
 
-  <br>
-
   <div class="d-flex justify-content-between" *ngIf="!error">
-    <h2><span i18n="lightning.all-channels">All channels</span> ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
-    <div class="d-flex justify-content-end">
-      <app-toggle [textLeft]="'List'" [textRight]="'Map'" (toggleStatusChanged)="channelsListModeChange($event)"></app-toggle>
-    </div>
+    <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
   </div>
 
-  <app-nodes-channels-map *ngIf="channelsListMode === 'map' && !error" [style]="'nodepage'" [publicKey]="node.public_key">
-  </app-nodes-channels-map>
-  <app-channels-list *ngIf="channelsListMode === 'list' && !error" [publicKey]="node.public_key"
+  <app-channels-list *ngIf="!error" [publicKey]="node.public_key"
     (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
     
 </div>
