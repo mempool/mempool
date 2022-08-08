@@ -24,7 +24,6 @@ class LightningStatsUpdater {
   private async $logStatsDaily(): Promise<void> {
     const date = new Date();
     Common.setDateMidnight(date);
-
     const networkGraph = await lightningApi.$getNetworkGraph();
     LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
     
