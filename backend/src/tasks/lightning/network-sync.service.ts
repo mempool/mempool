@@ -111,59 +111,6 @@ class NetworkSyncService {
     setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
   }
 
-  /**
-   * Update the `nodes` table to reflect the current network graph state
-   */
-  private async $updateNodesList(nodes: ILightningApi.Node[]): Promise<void> {
-    let progress = 0;
-
-    const graphNodesPubkeys: string[] = [];
-    for (const node of nodes) {
-      await nodesApi.$saveNode(node);
-      graphNodesPubkeys.push(node.pub_key);
-      ++progress;
-
-      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-      if (elapsedSeconds > 10) {
-        logger.info(`Updating node ${progress}/${nodes.length}`);
-        this.loggerTimer = new Date().getTime() / 1000;
-      }
-    }
-    logger.info(`${progress} nodes updated`);
-
-    // If a channel if not present in the graph, mark it as inactive
-    // nodesApi.$setNodesInactive(graphNodesPubkeys);
-
-    if (config.MAXMIND.ENABLED) {
-      $lookupNodeLocation();
-    }
-  }
-
-  /**
-   * Update the `channels` table to reflect the current network graph state
-   */
-  private async $updateChannelsList(channels: ILightningApi.Channel[]): Promise<void> {
-    let progress = 0;
-
-    const graphChannelsIds: string[] = [];
-    for (const channel of channels) {
-      await channelsApi.$saveChannel(channel);
-      graphChannelsIds.push(channel.channel_id);
-      ++progress;
-
-      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-      if (elapsedSeconds > 10) {
-        logger.info(`Updating channel ${progress}/${channels.length}`);
-        this.loggerTimer = new Date().getTime() / 1000;
-      }
-    }
-
-    logger.info(`${progress} channels updated`);
-
-    // If a channel if not present in the graph, mark it as inactive
-    channelsApi.$setChannelsInactive(graphChannelsIds);
-  }
-
   // This method look up the creation date of the earliest channel of the node
   // and update the node to that date in order to get the earliest first seen date
   private async $updateNodeFirstSeen(): Promise<void> {
@@ -253,11 +200,13 @@ class NetworkSyncService {
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node1_public_key
+            AND nodes.status = 1
           ) = 0
         OR (
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node2_public_key
+            AND nodes.status = 1
           ) = 0)
         `);
 
