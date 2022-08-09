@@ -24,6 +24,8 @@ interface IConfig {
     USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     AUTOMATIC_BLOCK_REINDEXING: boolean;
+    POOLS_JSON_URL: string,
+    POOLS_JSON_TREE_URL: string,
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -135,6 +137,8 @@ const defaults: IConfig = {
     'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
     'AUTOMATIC_BLOCK_REINDEXING': false,
+    'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
+    'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
