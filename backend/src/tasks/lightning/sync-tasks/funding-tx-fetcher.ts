@@ -1,5 +1,6 @@
 import { existsSync, promises } from 'fs';
 import bitcoinClient from '../../../api/bitcoin/bitcoin-client';
+import { Common } from '../../../api/common';
 import config from '../../../config';
 import logger from '../../../logger';
 
@@ -70,6 +71,10 @@ class FundingTxFetcher {
   }
   
   public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number}> {
+    if (channelId.indexOf('x') === -1) {
+      channelId = Common.channelIntegerIdToShortId(channelId);
+    }
+
     if (this.fundingTxCache[channelId]) {
       return this.fundingTxCache[channelId];
     }
