@@ -25,9 +25,10 @@ class LightningStatsUpdater {
     const date = new Date();
     Common.setDateMidnight(date);
 
-    logger.info(`Updating latest network stats`);
     const networkGraph = await lightningApi.$getNetworkGraph();
     LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
+    
+    logger.info(`Updated latest network stats`);
   }
 }
 
