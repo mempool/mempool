@@ -49,7 +49,7 @@ class NetworkSyncService {
       logger.err('$runTasks() error: ' + (e instanceof Error ? e.message : e));
     }
 
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
+    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL);
   }
 
   /**
@@ -84,25 +84,29 @@ class NetworkSyncService {
    * Update the `channels` table to reflect the current network graph state
    */
   private async $updateChannelsList(channels: ILightningApi.Channel[]): Promise<void> {
-    let progress = 0;
+    try {
+      let progress = 0;
 
-    const graphChannelsIds: string[] = [];
-    for (const channel of channels) {
-      await channelsApi.$saveChannel(channel);
-      graphChannelsIds.push(channel.channel_id);
-      ++progress;
+      const graphChannelsIds: string[] = [];
+      for (const channel of channels) {
+        await channelsApi.$saveChannel(channel);
+        graphChannelsIds.push(channel.channel_id);
+        ++progress;
 
-      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-      if (elapsedSeconds > 10) {
-        logger.info(`Updating channel ${progress}/${channels.length}`);
-        this.loggerTimer = new Date().getTime() / 1000;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating channel ${progress}/${channels.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
+        }
       }
+
+      logger.info(`${progress} channels updated`);
+
+      // If a channel if not present in the graph, mark it as inactive
+      channelsApi.$setChannelsInactive(graphChannelsIds);
+    } catch (e) {
+      logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
-
-    logger.info(`${progress} channels updated`);
-
-    // If a channel if not present in the graph, mark it as inactive
-    channelsApi.$setChannelsInactive(graphChannelsIds);
   }
 
   // This method look up the creation date of the earliest channel of the node
