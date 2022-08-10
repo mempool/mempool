@@ -32,6 +32,9 @@ class ChannelsRoutes {
         res.status(404).send('Channel not found');
         return;
       }
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(channel);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
