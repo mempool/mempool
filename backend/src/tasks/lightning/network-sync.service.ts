@@ -1,53 +1,43 @@
-import { chanNumber } from 'bolt07';
 import DB from '../../database';
 import logger from '../../logger';
 import channelsApi from '../../api/explorer/channels.api';
-import bitcoinClient from '../../api/bitcoin/bitcoin-client';
 import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
 import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
-import lightningApi from '../../api/lightning/lightning-api-factory';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
+import lightningApi from '../../api/lightning/lightning-api-factory';
+import nodesApi from '../../api/explorer/nodes.api';
+import { ResultSetHeader } from 'mysql2';
+import fundingTxFetcher from './sync-tasks/funding-tx-fetcher';
 
-class NodeSyncService {
+class NetworkSyncService {
+  loggerTimer = 0;
+
   constructor() {}
 
-  public async $startService() {
-    logger.info('Starting node sync service');
+  public async $startService(): Promise<void> {
+    logger.info('Starting lightning network sync service');
 
-    await this.$runUpdater();
+    this.loggerTimer = new Date().getTime() / 1000;
 
-    setInterval(async () => {
-      await this.$runUpdater();
-    }, 1000 * 60 * 60);
+    await this.$runTasks();
   }
 
-  private async $runUpdater() {
+  private async $runTasks(): Promise<void> {
     try {
-      logger.info(`Updating nodes and channels...`);
+      logger.info(`Updating nodes and channels`);
 
       const networkGraph = await lightningApi.$getNetworkGraph();
-
-      for (const node of networkGraph.nodes) {
-        await this.$saveNode(node);
-      }
-      logger.info(`Nodes updated.`);
-
-      if (config.MAXMIND.ENABLED) {
-        await $lookupNodeLocation();
+      if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
+        logger.info(`LN Network graph is empty, retrying in 10 seconds`);
+        setTimeout(() => { this.$runTasks(); }, 10000);
+        return;
       }
 
-      const graphChannelsIds: string[] = [];
-      for (const channel of networkGraph.channels) {
-        await this.$saveChannel(channel);
-        graphChannelsIds.push(channel.id);
-      }
-      await this.$setChannelsInactive(graphChannelsIds);
-
-      logger.info(`Channels updated.`);
-
-      await this.$findInactiveNodesAndChannels();
+      await this.$updateNodesList(networkGraph.nodes);
+      await this.$updateChannelsList(networkGraph.edges);
+      await this.$deactivateChannelsWithoutActiveNodes();
       await this.$lookUpCreationDateFromChain();
       await this.$updateNodeFirstSeen();
       await this.$scanForClosedChannels();
@@ -56,85 +46,183 @@ class NodeSyncService {
       }
 
     } catch (e) {
-      logger.err('$updateNodes() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$runTasks() error: ' + (e instanceof Error ? e.message : e));
     }
+
+    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL);
+  }
+
+  /**
+   * Update the `nodes` table to reflect the current network graph state
+   */
+  private async $updateNodesList(nodes: ILightningApi.Node[]): Promise<void> {
+    let progress = 0;
+
+    const graphNodesPubkeys: string[] = [];
+    for (const node of nodes) {
+      await nodesApi.$saveNode(node);
+      graphNodesPubkeys.push(node.pub_key);
+      ++progress;
+
+      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+      if (elapsedSeconds > 10) {
+        logger.info(`Updating node ${progress}/${nodes.length}`);
+        this.loggerTimer = new Date().getTime() / 1000;
+      }
+    }
+    logger.info(`${progress} nodes updated`);
+
+    // If a channel if not present in the graph, mark it as inactive
+    nodesApi.$setNodesInactive(graphNodesPubkeys);
+
+    if (config.MAXMIND.ENABLED) {
+      $lookupNodeLocation();
+    }
+  }
+
+  /**
+   * Update the `channels` table to reflect the current network graph state
+   */
+  private async $updateChannelsList(channels: ILightningApi.Channel[]): Promise<void> {
+    try {
+      let progress = 0;
+
+      const graphChannelsIds: string[] = [];
+      for (const channel of channels) {
+        await channelsApi.$saveChannel(channel);
+        graphChannelsIds.push(channel.channel_id);
+        ++progress;
+
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating channel ${progress}/${channels.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
+        }
+      }
+
+      logger.info(`${progress} channels updated`);
+
+      // If a channel if not present in the graph, mark it as inactive
+      channelsApi.$setChannelsInactive(graphChannelsIds);
+    } catch (e) {
+      logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
+    }
+
+    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
   }
 
   // This method look up the creation date of the earliest channel of the node
   // and update the node to that date in order to get the earliest first seen date
-  private async $updateNodeFirstSeen() {
+  private async $updateNodeFirstSeen(): Promise<void> {
+    let progress = 0;
+    let updated = 0;
+
     try {
-      const [nodes]: any[] = await DB.query(`SELECT nodes.public_key, UNIX_TIMESTAMP(nodes.first_seen) AS first_seen, (SELECT UNIX_TIMESTAMP(created) FROM channels WHERE channels.node1_public_key = nodes.public_key ORDER BY created ASC LIMIT 1) AS created1, (SELECT UNIX_TIMESTAMP(created) FROM channels WHERE channels.node2_public_key = nodes.public_key ORDER BY created ASC LIMIT 1) AS created2 FROM nodes`);
+      const [nodes]: any[] = await DB.query(`
+        SELECT nodes.public_key, UNIX_TIMESTAMP(nodes.first_seen) AS first_seen,
+        (
+          SELECT MIN(UNIX_TIMESTAMP(created))
+          FROM channels
+          WHERE channels.node1_public_key = nodes.public_key
+        ) AS created1,
+        (
+          SELECT MIN(UNIX_TIMESTAMP(created))
+          FROM channels
+          WHERE channels.node2_public_key = nodes.public_key
+        ) AS created2
+        FROM nodes
+      `);
+
       for (const node of nodes) {
-        let lowest = 0;
-        if (node.created1) {
-          if (node.created2 && node.created2 < node.created1) {
-            lowest = node.created2;
-          } else {
-            lowest = node.created1;
-          }
-        } else if (node.created2) {
-          lowest = node.created2;
-        }
-        if (lowest && lowest < node.first_seen) {
+        const lowest = Math.min(
+          node.created1 ?? Number.MAX_SAFE_INTEGER,
+          node.created2 ?? Number.MAX_SAFE_INTEGER,
+          node.first_seen ?? Number.MAX_SAFE_INTEGER
+        );
+        if (lowest < node.first_seen) {
           const query = `UPDATE nodes SET first_seen = FROM_UNIXTIME(?) WHERE public_key = ?`;
           const params = [lowest, node.public_key];
           await DB.query(query, params);
         }
+        ++progress;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating node first seen date ${progress}/${nodes.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
+          ++updated;
+        }
       }
-      logger.info(`Node first seen dates scan complete.`);
+      logger.info(`Updated ${updated} node first seen dates`);
     } catch (e) {
       logger.err('$updateNodeFirstSeen() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
-  private async $lookUpCreationDateFromChain() {
-    logger.info(`Running channel creation date lookup...`);
+  private async $lookUpCreationDateFromChain(): Promise<void> {
+    let progress = 0;
+
+    logger.info(`Running channel creation date lookup`);
     try {
       const channels = await channelsApi.$getChannelsWithoutCreatedDate();
       for (const channel of channels) {
-        const transaction = await bitcoinClient.getRawTransaction(channel.transaction_id, 1);
-        await DB.query(`UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.id = ?`, [transaction.blocktime, channel.id]);
+        const transaction = await fundingTxFetcher.$fetchChannelOpenTx(channel.short_id);
+        await DB.query(`
+          UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.id = ?`,
+          [transaction.timestamp, channel.id]
+        );
+        ++progress;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating channel creation date ${progress}/${channels.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
+        }
       }
-      logger.info(`Channel creation dates scan complete.`);
+      logger.info(`Updated ${channels.length} channels' creation date`);
     } catch (e) {
-      logger.err('$setCreationDateFromChain() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$lookUpCreationDateFromChain() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
-  // Looking for channels whos nodes are inactive
-  private async $findInactiveNodesAndChannels(): Promise<void> {
-    logger.info(`Running inactive channels scan...`);
+  /**
+   * If a channel does not have any active node linked to it, then also
+   * mark that channel as inactive
+   */
+  private async $deactivateChannelsWithoutActiveNodes(): Promise<void> {
+    logger.info(`Find channels which nodes are offline`);
 
     try {
-      // @ts-ignore
-      const [channels]: [ILightningApi.Channel[]] = await DB.query(`
-        SELECT channels.id
-        FROM channels
+      const result = await DB.query<ResultSetHeader>(`
+        UPDATE channels
+        SET status = 0
         WHERE channels.status = 1
         AND (
           (
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node1_public_key
+            AND nodes.status = 1
           ) = 0
         OR (
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node2_public_key
+            AND nodes.status = 1
           ) = 0)
         `);
 
-      for (const channel of channels) {
-        await this.$updateChannelStatus(channel.id, 0);
+      if (result[0].changedRows ?? 0 > 0) {
+        logger.info(`Marked ${result[0].changedRows} channels as inactive because they are not linked to any active node`);
+      } else {
+        logger.debug(`Marked ${result[0].changedRows} channels as inactive because they are not linked to any active node`);
       }
-      logger.info(`Inactive channels scan complete.`);
     } catch (e) {
-      logger.err('$findInactiveNodesAndChannels() error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$deactivateChannelsWithoutActiveNodes() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 
   private async $scanForClosedChannels(): Promise<void> {
+    let progress = 0;
+
     try {
       logger.info(`Starting closed channels scan...`);
       const channels = await channelsApi.$getChannelsByStatus(0);
@@ -147,6 +235,13 @@ class NodeSyncService {
           if (spendingTx.txid && !channel.closing_transaction_id) {
             await DB.query(`UPDATE channels SET closing_transaction_id = ? WHERE id = ?`, [spendingTx.txid, channel.id]);
           }
+        }
+
+        ++progress;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Checking if channel has been closed ${progress}/${channels.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
         }
       }
       logger.info(`Closed channels scan complete.`);
@@ -165,6 +260,9 @@ class NodeSyncService {
     if (!config.ESPLORA.REST_API_URL) {
       return;
     }
+
+    let progress = 0;
+
     try {
       logger.info(`Started running closed channel forensics...`);
       const channels = await channelsApi.$getClosedChannelsWithoutReason();
@@ -209,6 +307,13 @@ class NodeSyncService {
         if (reason) {
           logger.debug('Setting closing reason ' + reason + ' for channel: ' + channel.id + '.');
           await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+        }
+
+        ++progress;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating channel closed channel forensics ${progress}/${channels.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
         }
       }
       logger.info(`Closed channels forensics scan complete.`);
@@ -264,164 +369,6 @@ class NodeSyncService {
       }
       return 1;
   }
-
-  private async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
-    const fromChannel = chanNumber({ channel: channel.id }).number;
-
-    try {
-      const query = `INSERT INTO channels
-        (
-          id,
-          short_id,
-          capacity,
-          transaction_id,
-          transaction_vout,
-          updated_at,
-          status,
-          node1_public_key,
-          node1_base_fee_mtokens,
-          node1_cltv_delta,
-          node1_fee_rate,
-          node1_is_disabled,
-          node1_max_htlc_mtokens,
-          node1_min_htlc_mtokens,
-          node1_updated_at,
-          node2_public_key,
-          node2_base_fee_mtokens,
-          node2_cltv_delta,
-          node2_fee_rate,
-          node2_is_disabled,
-          node2_max_htlc_mtokens,
-          node2_min_htlc_mtokens,
-          node2_updated_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          capacity = ?,
-          updated_at = ?,
-          status = 1,
-          node1_public_key = ?,
-          node1_base_fee_mtokens = ?,
-          node1_cltv_delta = ?,
-          node1_fee_rate = ?,
-          node1_is_disabled = ?,
-          node1_max_htlc_mtokens = ?,
-          node1_min_htlc_mtokens = ?,
-          node1_updated_at = ?,
-          node2_public_key = ?,
-          node2_base_fee_mtokens = ?,
-          node2_cltv_delta = ?,
-          node2_fee_rate = ?,
-          node2_is_disabled = ?,
-          node2_max_htlc_mtokens = ?,
-          node2_min_htlc_mtokens = ?,
-          node2_updated_at = ?
-        ;`;
-
-      await DB.query(query, [
-        fromChannel,
-        channel.id,
-        channel.capacity,
-        channel.transaction_id,
-        channel.transaction_vout,
-        channel.updated_at ? this.utcDateToMysql(channel.updated_at) : 0,
-        channel.policies[0].public_key,
-        channel.policies[0].base_fee_mtokens,
-        channel.policies[0].cltv_delta,
-        channel.policies[0].fee_rate,
-        channel.policies[0].is_disabled,
-        channel.policies[0].max_htlc_mtokens,
-        channel.policies[0].min_htlc_mtokens,
-        channel.policies[0].updated_at ? this.utcDateToMysql(channel.policies[0].updated_at) : 0,
-        channel.policies[1].public_key,
-        channel.policies[1].base_fee_mtokens,
-        channel.policies[1].cltv_delta,
-        channel.policies[1].fee_rate,
-        channel.policies[1].is_disabled,
-        channel.policies[1].max_htlc_mtokens,
-        channel.policies[1].min_htlc_mtokens,
-        channel.policies[1].updated_at ? this.utcDateToMysql(channel.policies[1].updated_at) : 0,
-        channel.capacity,
-        channel.updated_at ? this.utcDateToMysql(channel.updated_at) : 0,
-        channel.policies[0].public_key,
-        channel.policies[0].base_fee_mtokens,
-        channel.policies[0].cltv_delta,
-        channel.policies[0].fee_rate,
-        channel.policies[0].is_disabled,
-        channel.policies[0].max_htlc_mtokens,
-        channel.policies[0].min_htlc_mtokens,
-        channel.policies[0].updated_at ? this.utcDateToMysql(channel.policies[0].updated_at) : 0,
-        channel.policies[1].public_key,
-        channel.policies[1].base_fee_mtokens,
-        channel.policies[1].cltv_delta,
-        channel.policies[1].fee_rate,
-        channel.policies[1].is_disabled,
-        channel.policies[1].max_htlc_mtokens,
-        channel.policies[1].min_htlc_mtokens,
-        channel.policies[1].updated_at ? this.utcDateToMysql(channel.policies[1].updated_at) : 0,
-      ]);
-    } catch (e) {
-      logger.err('$saveChannel() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  private async $updateChannelStatus(channelShortId: string, status: number): Promise<void> {
-    try {
-      await DB.query(`UPDATE channels SET status = ? WHERE id = ?`, [status, channelShortId]);
-    } catch (e) {
-      logger.err('$updateChannelStatus() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  private async $setChannelsInactive(graphChannelsIds: string[]): Promise<void> {
-    try {
-      await DB.query(`
-        UPDATE channels
-        SET status = 0
-        WHERE short_id NOT IN (
-          ${graphChannelsIds.map(id => `"${id}"`).join(',')}
-        )
-        AND status != 2
-      `);
-    } catch (e) {
-      logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  private async $saveNode(node: ILightningApi.Node): Promise<void> {
-    try {
-      const updatedAt = node.updated_at ? this.utcDateToMysql(node.updated_at) : '0000-00-00 00:00:00';
-      const sockets = node.sockets.join(',');
-      const query = `INSERT INTO nodes(
-          public_key,
-          first_seen,
-          updated_at,
-          alias,
-          color,
-          sockets
-        )
-        VALUES (?, NOW(), ?, ?, ?, ?) ON DUPLICATE KEY UPDATE updated_at = ?, alias = ?, color = ?, sockets = ?;`;
-
-      await DB.query(query, [
-        node.public_key,
-        updatedAt,
-        node.alias,
-        node.color,
-        sockets,
-        updatedAt,
-        node.alias,
-        node.color,
-        sockets,
-      ]);
-    } catch (e) {
-      logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  private utcDateToMysql(dateString: string): string {
-    const d = new Date(Date.parse(dateString));
-    return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
-  }
 }
 
-export default new NodeSyncService();
+export default new NetworkSyncService();

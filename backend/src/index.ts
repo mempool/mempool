@@ -28,12 +28,13 @@ import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
 import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
-import nodeSyncService from './tasks/lightning/node-sync.service';
-import statisticsRoutes from "./api/statistics/statistics.routes";
-import miningRoutes from "./api/mining/mining-routes";
-import bisqRoutes from "./api/bisq/bisq.routes";
-import liquidRoutes from "./api/liquid/liquid.routes";
-import bitcoinRoutes from "./api/bitcoin/bitcoin.routes";
+import networkSyncService from './tasks/lightning/network-sync.service';
+import statisticsRoutes from './api/statistics/statistics.routes';
+import miningRoutes from './api/mining/mining-routes';
+import bisqRoutes from './api/bisq/bisq.routes';
+import liquidRoutes from './api/liquid/liquid.routes';
+import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
+import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -136,8 +137,7 @@ class Server {
     }
 
     if (config.LIGHTNING.ENABLED) {
-      nodeSyncService.$startService()
-        .then(() => lightningStatsUpdater.$startService());
+      this.$runLightningBackend();
     }
 
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
@@ -182,6 +182,18 @@ class Server {
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
+
+  async $runLightningBackend() {
+    try {
+      await fundingTxFetcher.$init();
+      await networkSyncService.$startService();
+      await lightningStatsUpdater.$startService();
+    } catch(e) {
+      logger.err(`Lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      await Common.sleep$(1000 * 60);
+      this.$runLightningBackend();
+    };
+}
 
   setUpWebsocketHandling() {
     if (this.wss) {

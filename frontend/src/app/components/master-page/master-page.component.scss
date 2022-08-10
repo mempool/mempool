@@ -9,6 +9,7 @@ fa-icon {
 .navbar {
   z-index: 100;
   min-height: 64px;
+  width: 100%;
 }
 
 li.nav-item {
@@ -84,6 +85,13 @@ li.nav-item {
 .navbar-brand {
   position: relative;
   height: 65px;
+}
+
+.navbar-brand.dual-logos {
+  justify-content: space-between;
+  @media (max-width: 767.98px) {
+    width: 100%;
+  }
 }
 
 nav {
