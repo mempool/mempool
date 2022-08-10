@@ -1,24 +1,18 @@
 import logger from '../../logger';
 import DB from '../../database';
+import { ResultSetHeader } from 'mysql2';
+import { ILightningApi } from '../lightning/lightning-api.interface';
 
 class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
     try {
-      const query = `
-        SELECT nodes.*, geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
-        geo_names_country.names as country, geo_names_subdivision.names as subdivision,
-          (SELECT Count(*)
-          FROM channels
-          WHERE channels.status = 2 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_closed_count,
-          (SELECT Count(*)
-          FROM channels
-          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS channel_active_count,
-          (SELECT Sum(capacity)
-          FROM channels
-          WHERE channels.status = 1 AND ( channels.node1_public_key = ? OR channels.node2_public_key = ? )) AS capacity,
-          (SELECT Avg(capacity)
-          FROM channels
-          WHERE status = 1 AND ( node1_public_key = ? OR node2_public_key = ? )) AS channels_capacity_avg
+      // General info
+      let query = `
+        SELECT public_key, alias, UNIX_TIMESTAMP(first_seen) AS first_seen,
+        UNIX_TIMESTAMP(updated_at) AS updated_at, color, sockets as sockets,
+        as_number, city_id, country_id, subdivision_id, longitude, latitude,
+        geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
+        geo_names_country.names as country, geo_names_subdivision.names as subdivision
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
@@ -27,18 +21,67 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         WHERE public_key = ?
       `;
-      const [rows]: any = await DB.query(query, [public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key, public_key]);
-      if (rows.length > 0) {
-        rows[0].as_organization = JSON.parse(rows[0].as_organization);
-        rows[0].subdivision = JSON.parse(rows[0].subdivision);
-        rows[0].city = JSON.parse(rows[0].city);
-        rows[0].country = JSON.parse(rows[0].country);
-        return rows[0];
+      let [rows]: any[] = await DB.query(query, [public_key]);
+      if (rows.length === 0) {
+        throw new Error(`This node does not exist, or our node is not seeing it yet`);
       }
-      return null;
+
+      const node = rows[0];
+      node.as_organization = JSON.parse(node.as_organization);
+      node.subdivision = JSON.parse(node.subdivision);
+      node.city = JSON.parse(node.city);
+      node.country = JSON.parse(node.country);
+
+      // Active channels and capacity
+      const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);
+      node.active_channel_count = activeChannelsStats.active_channel_count ?? 0;
+      node.capacity = activeChannelsStats.capacity ?? 0;
+
+      // Opened channels count
+      query = `
+        SELECT count(short_id) as opened_channel_count
+        FROM channels
+        WHERE status != 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+      `;
+      [rows] = await DB.query(query, [public_key, public_key]);
+      node.opened_channel_count = 0;
+      if (rows.length > 0) {
+        node.opened_channel_count = rows[0].opened_channel_count;
+      }
+
+      // Closed channels count
+      query = `
+        SELECT count(short_id) as closed_channel_count
+        FROM channels
+        WHERE status = 2 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+      `;
+      [rows] = await DB.query(query, [public_key, public_key]);
+      node.closed_channel_count = 0;
+      if (rows.length > 0) {
+        node.closed_channel_count = rows[0].closed_channel_count;
+      }
+
+      return node;
     } catch (e) {
-      logger.err('$getNode error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get node information for ${public_key}. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
+    }
+  }
+
+  public async $getActiveChannelsStats(node_public_key: string): Promise<unknown> {
+    const query = `
+      SELECT count(short_id) as active_channel_count, sum(capacity) as capacity
+      FROM channels
+      WHERE status = 1 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+    `;
+    const [rows]: any[] = await DB.query(query, [node_public_key, node_public_key]);
+    if (rows.length > 0) {
+      return {
+        active_channel_count: rows[0].active_channel_count,
+        capacity: rows[0].capacity
+      };
+    } else {
+      return null;
     }
   }
 
@@ -55,7 +98,12 @@ class NodesApi {
 
   public async $getNodeStats(public_key: string): Promise<any> {
     try {
-      const query = `SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels FROM node_stats WHERE public_key = ? ORDER BY added DESC`;
+      const query = `
+        SELECT UNIX_TIMESTAMP(added) AS added, capacity, channels
+        FROM node_stats
+        WHERE public_key = ?
+        ORDER BY added DESC
+      `;
       const [rows]: any = await DB.query(query, [public_key]);
       return rows;
     } catch (e) {
@@ -66,8 +114,19 @@ class NodesApi {
 
   public async $getTopCapacityNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.capacity DESC LIMIT 10`;
-      const [rows]: any = await DB.query(query);
+      let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
+      const latestDate = rows[0].maxAdded;
+
+      const query = `
+        SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, node_stats.capacity, node_stats.channels
+        FROM node_stats
+        JOIN nodes ON nodes.public_key = node_stats.public_key
+        WHERE added = FROM_UNIXTIME(${latestDate})
+        ORDER BY capacity DESC
+        LIMIT 10;
+      `;
+      [rows] = await DB.query(query);
+
       return rows;
     } catch (e) {
       logger.err('$getTopCapacityNodes error: ' + (e instanceof Error ? e.message : e));
@@ -77,8 +136,19 @@ class NodesApi {
 
   public async $getTopChannelsNodes(): Promise<any> {
     try {
-      const query = `SELECT nodes.*, node_stats.capacity, node_stats.channels FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key ORDER BY node_stats.added DESC, node_stats.channels DESC LIMIT 10`;
-      const [rows]: any = await DB.query(query);
+      let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
+      const latestDate = rows[0].maxAdded;
+
+      const query = `
+        SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias, node_stats.capacity, node_stats.channels
+        FROM node_stats
+        JOIN nodes ON nodes.public_key = node_stats.public_key
+        WHERE added = FROM_UNIXTIME(${latestDate})
+        ORDER BY channels DESC
+        LIMIT 10;
+      `;
+      [rows] = await DB.query(query);
+
       return rows;
     } catch (e) {
       logger.err('$getTopChannelsNodes error: ' + (e instanceof Error ? e.message : e));
@@ -163,8 +233,8 @@ class NodesApi {
   public async $getNodesPerCountry(countryId: string) {
     try {
       const query = `
-        SELECT node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
-          UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
+      SELECT nodes.public_key, CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity, CAST(COALESCE(node_stats.channels, 0) as INT) as channels,
+      nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city
         FROM node_stats
         JOIN (
@@ -172,7 +242,7 @@ class NodesApi {
           FROM node_stats
           GROUP BY public_key
         ) as b ON b.public_key = node_stats.public_key AND b.last_added = node_stats.added
-        JOIN nodes ON nodes.public_key = node_stats.public_key
+        RIGHT JOIN nodes ON nodes.public_key = node_stats.public_key
         JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
         LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
         WHERE geo_names_country.id = ?
@@ -193,8 +263,8 @@ class NodesApi {
   public async $getNodesPerISP(ISPId: string) {
     try {
       const query = `
-        SELECT node_stats.public_key, node_stats.capacity, node_stats.channels, nodes.alias,
-          UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
+        SELECT nodes.public_key, CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity, CAST(COALESCE(node_stats.channels, 0) as INT) as channels,
+          nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city, geo_names_country.names as country
         FROM node_stats
         JOIN (
@@ -251,6 +321,66 @@ class NodesApi {
     } catch (e) {
       logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
+    }
+  }
+
+  /**
+   * Save or update a node present in the graph
+   */
+  public async $saveNode(node: ILightningApi.Node): Promise<void> {
+    try {
+      const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
+      const query = `INSERT INTO nodes(
+          public_key,
+          first_seen,
+          updated_at,
+          alias,
+          color,
+          sockets,
+          status
+        )
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, 1)
+        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, color = ?, sockets = ?, status = 1`;
+
+      await DB.query(query, [
+        node.pub_key,
+        node.last_update,
+        node.alias,
+        node.color,
+        sockets,
+        node.last_update,
+        node.alias,
+        node.color,
+        sockets,
+      ]);
+    } catch (e) {
+      logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  /**
+   * Set all nodes not in `nodesPubkeys` as inactive (status = 0)
+   */
+   public async $setNodesInactive(graphNodesPubkeys: string[]): Promise<void> {
+    if (graphNodesPubkeys.length === 0) {
+      return;
+    }
+
+    try {
+      const result = await DB.query<ResultSetHeader>(`
+        UPDATE nodes
+        SET status = 0
+        WHERE public_key NOT IN (
+          ${graphNodesPubkeys.map(pubkey => `"${pubkey}"`).join(',')}
+        )
+      `);
+      if (result[0].changedRows ?? 0 > 0) {
+        logger.info(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+      } else {
+        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+      }
+    } catch (e) {
+      logger.err('$setNodesInactive() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 }

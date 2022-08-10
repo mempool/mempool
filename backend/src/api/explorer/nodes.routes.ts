@@ -35,6 +35,9 @@ class NodesRoutes {
         res.status(404).send('Node not found');
         return;
       }
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(node);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -44,6 +47,9 @@ class NodesRoutes {
   private async $getHistoricalNodeStats(req: Request, res: Response) {
     try {
       const statistics = await nodesApi.$getNodeStats(req.params.public_key);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

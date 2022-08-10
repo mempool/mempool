@@ -5,6 +5,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { getFlagEmoji } from 'src/app/shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-node',
@@ -18,16 +19,21 @@ export class NodeComponent implements OnInit {
   publicKey$: Observable<string>;
   selectedSocketIndex = 0;
   qrCodeVisible = false;
-  channelsListMode = 'list';
   channelsListStatus: string;
   error: Error;
   publicKey: string;
+
+  publicKeySize = 99;
 
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
-  ) { }
+  ) {
+    if (isMobile()) {
+      this.publicKeySize = 12;
+    }
+  }
 
   ngOnInit(): void {
     this.node$ = this.activatedRoute.paramMap
@@ -59,6 +65,7 @@ export class NodeComponent implements OnInit {
             });
           }
           node.socketsObject = socketsObject;
+          node.avgCapacity = node.capacity / Math.max(1, node.active_channel_count);
           return node;
         }),
         catchError(err => {
@@ -73,14 +80,6 @@ export class NodeComponent implements OnInit {
 
   changeSocket(index: number) {
     this.selectedSocketIndex = index;
-  }
-
-  channelsListModeChange(toggle) {
-    if (toggle === true) {
-      this.channelsListMode = 'map';
-    } else {
-      this.channelsListMode = 'list';
-    }
   }
 
   onChannelsListStatusChanged(e) {

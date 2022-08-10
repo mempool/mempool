@@ -1,5 +1,9 @@
 import logger from '../../logger';
 import DB from '../../database';
+import nodesApi from './nodes.api';
+import { ResultSetHeader } from 'mysql2';
+import { ILightningApi } from '../lightning/lightning-api.interface';
+import { Common } from '../common';
 
 class ChannelsApi {
   public async $getAllChannels(): Promise<any[]> {
@@ -181,15 +185,57 @@ class ChannelsApi {
 
   public async $getChannelsForNode(public_key: string, index: number, length: number, status: string): Promise<any[]> {
     try {
-      // Default active and inactive channels
-      let statusQuery = '< 2';
-      // Closed channels only
-      if (status === 'closed') {
-        statusQuery = '= 2';
+      let channelStatusFilter;
+      if (status === 'open') {
+        channelStatusFilter = '< 2';
+      } else if (status === 'closed') {
+        channelStatusFilter = '= 2';
       }
-      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*, ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key WHERE (ns1.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node1_public_key) AND ns2.id = (SELECT MAX(id) FROM node_stats WHERE public_key = channels.node2_public_key)) AND (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery} ORDER BY channels.capacity DESC LIMIT ?, ?`;
-      const [rows]: any = await DB.query(query, [public_key, public_key, index, length]);
-      const channels = rows.map((row) => this.convertChannel(row));
+
+      // Channels originating from node
+      let query = `
+        SELECT node2.alias, node2.public_key, channels.status, channels.node1_fee_rate,
+          channels.capacity, channels.short_id, channels.id
+        FROM channels
+        JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
+        WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
+      `;
+      const [channelsFromNode]: any = await DB.query(query, [public_key, index, length]);
+
+      // Channels incoming to node
+      query = `
+        SELECT node1.alias, node1.public_key, channels.status, channels.node2_fee_rate,
+          channels.capacity, channels.short_id, channels.id
+        FROM channels
+        JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
+        WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
+      `;
+      const [channelsToNode]: any = await DB.query(query, [public_key, index, length]);
+
+      let allChannels = channelsFromNode.concat(channelsToNode);
+      allChannels.sort((a, b) => {
+        return b.capacity - a.capacity;
+      });
+      allChannels = allChannels.slice(index, index + length);
+
+      const channels: any[] = []
+      for (const row of allChannels) {
+        const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
+        channels.push({
+          status: row.status,
+          capacity: row.capacity ?? 0,
+          short_id: row.short_id,
+          id: row.id,
+          fee_rate: row.node1_fee_rate ?? row.node2_fee_rate ?? 0,
+          node: {
+            alias: row.alias.length > 0 ? row.alias : row.public_key.slice(0, 20),
+            public_key: row.public_key,
+            channels: activeChannelsStats.active_channel_count ?? 0,
+            capacity: activeChannelsStats.capacity ?? 0,
+          }
+        });
+      }
+
       return channels;
     } catch (e) {
       logger.err('$getChannelsForNode error: ' + (e instanceof Error ? e.message : e));
@@ -205,7 +251,12 @@ class ChannelsApi {
       if (status === 'closed') {
         statusQuery = '= 2';
       }
-      const query = `SELECT COUNT(*) AS count FROM channels WHERE (node1_public_key = ? OR node2_public_key = ?) AND status ${statusQuery}`;
+      const query = `
+        SELECT COUNT(*) AS count
+        FROM channels
+        WHERE (node1_public_key = ? OR node2_public_key = ?)
+        AND status ${statusQuery}
+      `;
       const [rows]: any = await DB.query(query, [public_key, public_key]);
       return rows[0]['count'];
     } catch (e) {
@@ -253,6 +304,135 @@ class ChannelsApi {
         'updated_at': channel.node2_updated_at,
       },
     };
+  }
+
+  /**
+   * Save or update a channel present in the graph
+   */
+  public async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+    const [ txid, vout ] = channel.chan_point.split(':');
+
+    const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
+    const policy2: Partial<ILightningApi.RoutingPolicy> = channel.node2_policy || {};
+
+    const query = `INSERT INTO channels
+      (
+        id,
+        short_id,
+        capacity,
+        transaction_id,
+        transaction_vout,
+        updated_at,
+        status,
+        node1_public_key,
+        node1_base_fee_mtokens,
+        node1_cltv_delta,
+        node1_fee_rate,
+        node1_is_disabled,
+        node1_max_htlc_mtokens,
+        node1_min_htlc_mtokens,
+        node1_updated_at,
+        node2_public_key,
+        node2_base_fee_mtokens,
+        node2_cltv_delta,
+        node2_fee_rate,
+        node2_is_disabled,
+        node2_max_htlc_mtokens,
+        node2_min_htlc_mtokens,
+        node2_updated_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        capacity = ?,
+        updated_at = ?,
+        status = 1,
+        node1_public_key = ?,
+        node1_base_fee_mtokens = ?,
+        node1_cltv_delta = ?,
+        node1_fee_rate = ?,
+        node1_is_disabled = ?,
+        node1_max_htlc_mtokens = ?,
+        node1_min_htlc_mtokens = ?,
+        node1_updated_at = ?,
+        node2_public_key = ?,
+        node2_base_fee_mtokens = ?,
+        node2_cltv_delta = ?,
+        node2_fee_rate = ?,
+        node2_is_disabled = ?,
+        node2_max_htlc_mtokens = ?,
+        node2_min_htlc_mtokens = ?,
+        node2_updated_at = ?
+      ;`;
+
+    await DB.query(query, [
+      Common.channelShortIdToIntegerId(channel.channel_id),
+      Common.channelIntegerIdToShortId(channel.channel_id),
+      channel.capacity,
+      txid,
+      vout,
+      Common.utcDateToMysql(channel.last_update),
+      channel.node1_pub,
+      policy1.fee_base_msat,
+      policy1.time_lock_delta,
+      policy1.fee_rate_milli_msat,
+      policy1.disabled,
+      policy1.max_htlc_msat,
+      policy1.min_htlc,
+      Common.utcDateToMysql(policy1.last_update),
+      channel.node2_pub,
+      policy2.fee_base_msat,
+      policy2.time_lock_delta,
+      policy2.fee_rate_milli_msat,
+      policy2.disabled,
+      policy2.max_htlc_msat,
+      policy2.min_htlc,
+      Common.utcDateToMysql(policy2.last_update),
+      channel.capacity,
+      Common.utcDateToMysql(channel.last_update),
+      channel.node1_pub,
+      policy1.fee_base_msat,
+      policy1.time_lock_delta,
+      policy1.fee_rate_milli_msat,
+      policy1.disabled,
+      policy1.max_htlc_msat,
+      policy1.min_htlc,
+      Common.utcDateToMysql(policy1.last_update),
+      channel.node2_pub,
+      policy2.fee_base_msat,
+      policy2.time_lock_delta,
+      policy2.fee_rate_milli_msat,
+      policy2.disabled,
+      policy2.max_htlc_msat,
+      policy2.min_htlc,
+      Common.utcDateToMysql(policy2.last_update)
+    ]);
+  }
+
+  /**
+   * Set all channels not in `graphChannelsIds` as inactive (status = 0)
+   */
+  public async $setChannelsInactive(graphChannelsIds: string[]): Promise<void> {
+    if (graphChannelsIds.length === 0) {
+      return;
+    }
+
+    try {
+      const result = await DB.query<ResultSetHeader>(`
+        UPDATE channels
+        SET status = 0
+        WHERE short_id NOT IN (
+          ${graphChannelsIds.map(id => `"${id}"`).join(',')}
+        )
+        AND status != 2
+      `);
+      if (result[0].changedRows ?? 0 > 0) {
+        logger.info(`Marked ${result[0].changedRows} channels as inactive because they are not in the graph`);
+      } else {
+        logger.debug(`Marked ${result[0].changedRows} channels as inactive because they are not in the graph`);
+      }
+    } catch (e) {
+      logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
+    }
   }
 }
 
