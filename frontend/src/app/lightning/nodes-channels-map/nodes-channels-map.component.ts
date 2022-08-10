@@ -16,8 +16,9 @@ import 'echarts-gl';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit, OnDestroy {
-  @Input() style: 'graph' | 'nodepage' | 'widget' = 'graph';
+  @Input() style: 'graph' | 'nodepage' | 'widget' | 'channelpage' = 'graph';
   @Input() publicKey: string | undefined;
+  @Input() channel: any[] = [];
 
   observable$: Observable<any>;
   
@@ -25,6 +26,8 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   zoom: number | undefined;
   channelWidth = 0.6;
   channelOpacity = 0.1;
+  channelColor = '#466d9d';
+  channelCurve = 0;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -67,12 +70,28 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           const nodes = [];
           const nodesPubkeys = {};
           let thisNodeGPS: number[] | undefined = undefined;
-          for (const channel of data[1]) {
+
+          let geoloc = data[1];
+          if (this.style === 'channelpage') {
+            if (this.channel.length === 0) {
+              geoloc = [];
+            } else {
+              geoloc = [this.channel];
+            }
+          }
+          for (const channel of geoloc) {
             if (!thisNodeGPS && data[2] === channel[0]) {
               thisNodeGPS = [channel[2], channel[3]];
             } else if (!thisNodeGPS && data[2] === channel[4]) {
               thisNodeGPS = [channel[6], channel[7]];
             }
+
+            // 0 - node1 pubkey
+            // 1 - node1 alias
+            // 2,3 - node1 GPS
+            // 4 - node2 pubkey
+            // 5 - node2 alias
+            // 6,7 - node2 GPS
 
             // We add a bit of noise so nodes at the same location are not all
             // on top of each other
@@ -114,6 +133,22 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
             this.zoom = 10;
             this.channelWidth = 1;
             this.channelOpacity = 1;
+          }
+          if (this.style === 'channelpage' && this.channel.length > 0) {
+            this.channelWidth = 2;
+            this.channelOpacity = 1;
+            this.channelColor = '#bafcff';
+            this.channelCurve = 0.1;
+            this.center = [
+              (this.channel[2] + this.channel[6]) / 2,
+              (this.channel[3] + this.channel[7]) / 2
+            ];
+            const distance = Math.sqrt(
+              Math.pow(this.channel[7] - this.channel[3], 2) +
+              Math.pow(this.channel[6] - this.channel[2], 2)
+            );
+
+            this.zoom = -0.05 * distance + 8;
           }
 
           this.prepareChartOptions(nodes, channelsLoc);
@@ -202,8 +237,8 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           lineStyle: {
             opacity: this.channelOpacity,
             width: this.channelWidth,
-            curveness: 0,
-            color: '#466d9d',
+            curveness: this.channelCurve,
+            color: this.channelColor,
           },
           blendMode: 'lighter',
           tooltip: {
