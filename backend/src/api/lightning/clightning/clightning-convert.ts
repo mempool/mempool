@@ -90,7 +90,7 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
   const outputIdx = parts[2];
 
   return {
-    channel_id: clChannelA.short_channel_id,
+    channel_id: convertChannelId(clChannelA.short_channel_id),
     capacity: clChannelA.satoshis,
     last_update: lastUpdate,
     node1_policy: convertPolicy(clChannelA),
@@ -111,7 +111,7 @@ async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Cha
   const outputIdx = parts[2];
 
   return {
-    channel_id: clChannel.short_channel_id,
+    channel_id: convertChannelId(clChannel.short_channel_id),
     capacity: clChannel.satoshis,
     last_update: clChannel.last_update ?? 0,
     node1_policy: convertPolicy(clChannel),
