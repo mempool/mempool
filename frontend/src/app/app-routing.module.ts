@@ -4,8 +4,11 @@ import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
 import { BlockAuditComponent } from './components/block-audit/block-audit.component';
+import { BlockPreviewComponent } from './components/block/block-preview.component';
 import { AddressComponent } from './components/address/address.component';
+import { AddressPreviewComponent } from './components/address/address-preview.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
+import { MasterPagePreviewComponent } from './components/master-page-preview/master-page-preview.component';
 import { AboutComponent } from './components/about/about.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
@@ -23,7 +26,7 @@ import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 
 let routes: Routes = [
-  { 
+  {
     path: 'testnet',
     children: [
       {
@@ -67,7 +70,10 @@ let routes: Routes = [
           {
             path: 'address/:id',
             children: [],
-            component: AddressComponent
+            component: AddressComponent,
+            data: {
+              ogImage: true
+            }
           },
           {
             path: 'tx',
@@ -85,7 +91,10 @@ let routes: Routes = [
               children: [
               {
                 path: ':id',
-                component: BlockComponent
+                component: BlockComponent,
+                data: {
+                  ogImage: true
+                }
               },
             ],
           },
@@ -170,7 +179,10 @@ let routes: Routes = [
           {
             path: 'address/:id',
             children: [],
-            component: AddressComponent
+            component: AddressComponent,
+            data: {
+              ogImage: true
+            }
           },
           {
             path: 'tx',
@@ -188,7 +200,10 @@ let routes: Routes = [
             children: [
               {
                 path: ':id',
-                component: BlockComponent
+                component: BlockComponent,
+                data: {
+                  ogImage: true
+                }
               },
             ],
           },
@@ -270,7 +285,10 @@ let routes: Routes = [
       {
         path: 'address/:id',
         children: [],
-        component: AddressComponent
+        component: AddressComponent,
+        data: {
+          ogImage: true
+        }
       },
       {
         path: 'tx',
@@ -288,7 +306,10 @@ let routes: Routes = [
         children: [
           {
             path: ':id',
-            component: BlockComponent
+            component: BlockComponent,
+            data: {
+              ogImage: true
+            }
           },
         ],
       },
@@ -312,6 +333,39 @@ let routes: Routes = [
       {
         path: 'lightning',
         loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+      },
+    ],
+  },
+  {
+    path: 'preview',
+    component: MasterPagePreviewComponent,
+    children: [
+      {
+        path: 'block/:id',
+        component: BlockPreviewComponent
+      },
+      {
+        path: 'testnet/block/:id',
+        component: BlockPreviewComponent
+      },
+      {
+        path: 'signet/block/:id',
+        component: BlockPreviewComponent
+      },
+      {
+        path: 'address/:id',
+        children: [],
+        component: AddressPreviewComponent
+      },
+      {
+        path: 'testnet/address/:id',
+        children: [],
+        component: AddressPreviewComponent
+      },
+      {
+        path: 'signet/address/:id',
+        children: [],
+        component: AddressPreviewComponent
       },
     ],
   },
@@ -386,7 +440,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             {
               path: 'address/:id',
               children: [],
-              component: AddressComponent
+              component: AddressComponent,
+              data: {
+                ogImage: true
+              }
             },
             {
               path: 'tx',
@@ -404,7 +461,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               children: [
                 {
                   path: ':id',
-                  component: BlockComponent
+                  component: BlockComponent,
+                  data: {
+                    ogImage: true
+                  }
                 },
               ],
             },
@@ -490,7 +550,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: 'address/:id',
           children: [],
-          component: AddressComponent
+          component: AddressComponent,
+          data: {
+            ogImage: true
+          }
         },
         {
           path: 'tx',
@@ -508,7 +571,10 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           children: [
             {
               path: ':id',
-              component: BlockComponent
+              component: BlockComponent,
+              data: {
+                ogImage: true
+              }
             },
           ],
         },
@@ -549,6 +615,30 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       ],
     },
     {
+      path: 'preview',
+      component: MasterPagePreviewComponent,
+      children: [
+        {
+          path: 'block/:id',
+          component: BlockPreviewComponent
+        },
+        {
+          path: 'testnet/block/:id',
+          component: BlockPreviewComponent
+        },
+        {
+          path: 'address/:id',
+          children: [],
+          component: AddressPreviewComponent
+        },
+        {
+          path: 'testnet/address/:id',
+          children: [],
+          component: AddressPreviewComponent
+        },
+      ],
+    },
+    {
       path: 'status',
       component: StatusViewComponent
     },
@@ -576,4 +666,3 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
   })],
 })
 export class AppRoutingModule { }
-

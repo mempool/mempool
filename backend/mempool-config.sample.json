@@ -66,7 +66,8 @@
   "MAXMIND": {
     "ENABLED": false,
     "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
-    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb"
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
   },
   "BISQ": {
     "ENABLED": false,
@@ -78,8 +79,8 @@
   },
   "LND": {
     "TLS_CERT_PATH": "tls.cert",
-    "MACAROON_PATH": "admin.macaroon",
-    "SOCKET": "localhost:10009"
+    "MACAROON_PATH": "readonly.macaroon",
+    "REST_API_URL": "https://localhost:8080"
   },
   "SOCKS5PROXY": {
     "ENABLED": false,

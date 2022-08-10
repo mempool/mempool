@@ -79,3 +79,15 @@
     max-width: 100px;
   }
 }
+
+a {
+  text-decoration: none;
+}
+
+a:hover .link {
+  text-decoration: underline;
+}
+
+.flag {
+  font-size: 20px;
+}

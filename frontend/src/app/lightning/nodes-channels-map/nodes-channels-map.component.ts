@@ -1,15 +1,13 @@
-import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
-import { Observable, tap, zip } from 'rxjs';
+import { Observable, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
-import { download } from 'src/app/shared/graphs.utils';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
 import 'echarts-gl';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -18,13 +16,21 @@ import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit, OnDestroy {
+  @Input() style: 'graph' | 'nodepage' | 'widget' = 'graph';
+  @Input() publicKey: string | undefined;
+
   observable$: Observable<any>;
+  
+  center: number[] | undefined;
+  zoom: number | undefined;
+  channelWidth = 0.6;
+  channelOpacity = 0.1;
 
   chartInstance = undefined;
-  chartOptions: EChartsOption = {color: 'dark'};
+  chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'canvas',
-  };
+  }; 
 
   constructor(
     private seoService: SeoService,
@@ -33,38 +39,87 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 
   ngOnDestroy(): void {}
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes channels world map`);
+    this.center = this.style === 'widget' ? [0, 40] : [0, 5];
+    this.zoom = this.style === 'widget' ? 3.5 : 1.3;
 
-    this.observable$ = zip(
-      this.assetsService.getWorldMapJson$,
-      this.apiService.getChannelsGeo$(),
-    ).pipe(tap((data) => {
-      registerMap('world', data[0]);
+    if (this.style === 'graph') {
+      this.seoService.setTitle($localize`Lightning nodes channels world map`);
+    }
+    
+    this.observable$ = this.activatedRoute.paramMap
+     .pipe(
+       switchMap((params: ParamMap) => {
+        return zip(
+          this.assetsService.getWorldMapJson$,
+          this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined),
+          [params.get('public_key') ?? undefined]
+        ).pipe(tap((data) => {
+          registerMap('world', data[0]);
 
-      const channelsLoc = [];
-      const nodes = [];
-      for (const channel of data[1]) {
-        channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
-        nodes.push({
-          publicKey: channel[0],
-          name: channel[1],
-          value: [channel[2], channel[3]],
-        });
-        nodes.push({
-          publicKey: channel[4],
-          name: channel[5],
-          value: [channel[6], channel[7]],
-        });
-      }
+          const channelsLoc = [];
+          const nodes = [];
+          const nodesPubkeys = {};
+          let thisNodeGPS: number[] | undefined = undefined;
+          for (const channel of data[1]) {
+            if (!thisNodeGPS && data[2] === channel[0]) {
+              thisNodeGPS = [channel[2], channel[3]];
+            } else if (!thisNodeGPS && data[2] === channel[4]) {
+              thisNodeGPS = [channel[6], channel[7]];
+            }
 
-      this.prepareChartOptions(nodes, channelsLoc);
-    }));
+            // We add a bit of noise so nodes at the same location are not all
+            // on top of each other
+            let random = Math.random() * 2 * Math.PI;
+            let random2 = Math.random() * 0.01;
+            
+            if (!nodesPubkeys[channel[0]]) {
+              nodes.push([
+                channel[2] + random2 * Math.cos(random),
+                channel[3] + random2 * Math.sin(random),
+                1,
+                channel[0],
+                channel[1]
+              ]);
+              nodesPubkeys[channel[0]] = nodes[nodes.length - 1];
+            }
+
+            random = Math.random() * 2 * Math.PI;
+            random2 = Math.random() * 0.01;
+
+            if (!nodesPubkeys[channel[4]]) {
+              nodes.push([
+                channel[6] + random2 * Math.cos(random),
+                channel[7] + random2 * Math.sin(random),
+                1,
+                channel[4],
+                channel[5]
+              ]);
+              nodesPubkeys[channel[4]] = nodes[nodes.length - 1];
+            }
+
+            const channelLoc = [];
+            channelLoc.push(nodesPubkeys[channel[0]].slice(0, 2));            
+            channelLoc.push(nodesPubkeys[channel[4]].slice(0, 2));
+            channelsLoc.push(channelLoc);
+          }
+          if (this.style === 'nodepage' && thisNodeGPS) {
+            this.center = [thisNodeGPS[0], thisNodeGPS[1]];
+            this.zoom = 10;
+            this.channelWidth = 1;
+            this.channelOpacity = 1;
+          }
+
+          this.prepareChartOptions(nodes, channelsLoc);
+        }));
+      })
+     );
   }
 
   prepareChartOptions(nodes, channels) {
@@ -75,79 +130,87 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`No data to display yet`,
+        text: $localize`No geolocation data available`,
         left: 'center',
         top: 'center'
       };
     }
 
     this.chartOptions = {
-      geo3D: {
-        map: 'world',
-        shading: 'color',
+      silent: this.style === 'widget',
+      title: title ?? undefined,
+      tooltip: {},
+      geo: {
+        animation: false,
         silent: true,
-        postEffect: {
-          enable: true,
-          bloom: {
-            intensity: 0.01,
-          }
+        center: this.center,
+        zoom: this.zoom,
+        tooltip: {
+          show: true
         },
-        viewControl: {
-          minDistance: 1,
-          distance: 60,
-          alpha: 89,
-          panMouseButton: 'left',
-          rotateMouseButton: 'right',
-          zoomSensivity: 0.5,
-        },
+        map: 'world',
+        roam: this.style === 'widget' ? false : true,
         itemStyle: {
-          color: '#FFFFFF',
-          opacity: 0.02,
-          borderWidth: 1,
           borderColor: 'black',
+          color: '#ffffff44'
         },
-        regionHeight: 0.01,
+        scaleLimit: {
+          min: 1.3,
+          max: 100000,
+        }
       },
       series: [
         {
-          // @ts-ignore
-          type: 'lines3D',
-          coordinateSystem: 'geo3D',
-          blendMode: 'lighter',
-          lineStyle: {
-            width: 1,
-            opacity: 0.025,
+          large: true,
+          progressive: 200,
+          type: 'scatter',
+          data: nodes,
+          coordinateSystem: 'geo',
+          geoIndex: 0,
+          symbolSize: 4,
+          tooltip: {
+            backgroundColor: 'rgba(17, 19, 31, 1)',
+            borderRadius: 4,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            textStyle: {
+              color: '#b1b1b1',
+              align: 'left',
+            },
+            borderColor: '#000',
+            formatter: (value) => {
+              const data = value.data;
+              const alias = data[4].length > 0 ? data[4] : data[3].slice(0, 20);
+              return `<b style="color: white">${alias}</b>`;
+            }
           },
-          data: channels
+          itemStyle: {
+            color: 'white',
+            borderColor: 'black',
+            borderWidth: 2,
+            opacity: 1,
+          },
+          blendMode: 'lighter',
+          zlevel: 1,
         },
         {
-          // @ts-ignore
-          type: 'scatter3D',
-          symbol: 'circle',
-          blendMode: 'lighter',
-          coordinateSystem: 'geo3D',
-          symbolSize: 3,
-          itemStyle: {
-            color: '#BBFFFF',
-            opacity: 1,
-            borderColor: '#FFFFFF00',
+          large: true,
+          progressive: 200,
+          silent: true,
+          type: 'lines',
+          coordinateSystem: 'geo',
+          data: channels,
+          lineStyle: {
+            opacity: this.channelOpacity,
+            width: this.channelWidth,
+            curveness: 0,
+            color: '#466d9d',
           },
-          data: nodes,
-          emphasis: {
-            label: {
-              position: 'top',
-              // @ts-ignore
-              textStyle: {
-                color: 'white',
-                fontSize: 16,
-              },
-              formatter: function(value) {
-                return value.name;
-              },
-              show: true,
-            }
-          }
-        },
+          blendMode: 'lighter',
+          tooltip: {
+            show: false,
+          },
+          zlevel: 2,
+        }
       ]
     };
   }
@@ -159,31 +222,42 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
 
     this.chartInstance = ec;
 
-    this.chartInstance.on('click', (e) => {
-      if (e.data && e.data.publicKey) {
+    if (this.style === 'widget') {
+      this.chartInstance.getZr().on('click', (e) => {
         this.zone.run(() => {
-          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/node/${e.data.publicKey}`);
+          const url = new RelativeUrlPipe(this.stateService).transform(`/graphs/lightning/nodes-channels-map`);
+          this.router.navigate([url]);
+        });
+      });
+    }
+      
+    this.chartInstance.on('click', (e) => {
+      if (e.data) {
+        this.zone.run(() => {
+          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/node/${e.data[3]}`);
           this.router.navigate([url]);
         });
       }
     });
-  }
 
-  onSaveChart() {
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
-    const now = new Date();
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 30;
-    this.chartOptions.backgroundColor = '#11131f';
-    this.chartInstance.setOption(this.chartOptions);
-    download(this.chartInstance.getDataURL({
-      pixelRatio: 2,
-      excludeComponents: ['dataZoom'],
-    }), `lightning-nodes-heatmap-clearnet-${Math.round(now.getTime() / 1000)}.svg`);
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
+    this.chartInstance.on('georoam', (e) => {
+      if (!e.zoom || this.style === 'nodepage') {
+        return;
+      }
+
+      const speed = 0.005;
+      const chartOptions = {
+        series: this.chartOptions.series
+      };
+
+      chartOptions.series[1].lineStyle.opacity += e.zoom > 1 ? speed : -speed;
+      chartOptions.series[1].lineStyle.width += e.zoom > 1 ? speed : -speed;
+      chartOptions.series[0].symbolSize += e.zoom > 1 ? speed * 10 : -speed * 10;
+      chartOptions.series[1].lineStyle.opacity = Math.max(0.05, Math.min(0.5, chartOptions.series[1].lineStyle.opacity));
+      chartOptions.series[1].lineStyle.width = Math.max(0.5, Math.min(1, chartOptions.series[1].lineStyle.width));
+      chartOptions.series[0].symbolSize = Math.max(4, Math.min(5.5, chartOptions.series[0].symbolSize));
+
+      this.chartInstance.setOption(chartOptions);
+    });
   }
 }

@@ -24,8 +24,8 @@
     "ENABLED": true,
     "HOST": "127.0.0.1",
     "PORT": 3306,
-    "USERNAME": "mempool_signet",
-    "PASSWORD": "mempool_signet",
+    "USERNAME": "__MEMPOOL_SIGNET_USER__",
+    "PASSWORD": "__MEMPOOL_SIGNET_PASS__",
     "DATABASE": "mempool_signet"
   },
   "STATISTICS": {

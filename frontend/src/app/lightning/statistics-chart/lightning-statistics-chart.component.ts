@@ -58,7 +58,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     let firstRun = true;
 
     if (this.widget) {
-      this.miningWindowPreference = '1y';
+      this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`Channels and Capacity`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');

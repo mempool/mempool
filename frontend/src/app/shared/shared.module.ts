@@ -7,6 +7,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
+import { MasterPagePreviewComponent } from '../components/master-page-preview/master-page-preview.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
 import { AboutComponent } from '../components/about/about.component';
@@ -44,10 +45,12 @@ import { StartComponent } from '../components/start/start.component';
 import { TransactionComponent } from '../components/transaction/transaction.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockComponent } from '../components/block/block.component';
+import { BlockPreviewComponent } from '../components/block/block-preview.component';
 import { BlockAuditComponent } from '../components/block-audit/block-audit.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { AddressComponent } from '../components/address/address.component';
+import { AddressPreviewComponent } from '../components/address/address-preview.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -78,6 +81,7 @@ import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
+import { ToggleComponent } from './components/toggle/toggle.component';
 
 @NgModule({
   declarations: [
@@ -110,16 +114,19 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     AmountComponent,
     AboutComponent,
     MasterPageComponent,
+    MasterPagePreviewComponent,
     BisqMasterPageComponent,
     LiquidMasterPageComponent,
     StartComponent,
     TransactionComponent,
     BlockComponent,
+    BlockPreviewComponent,
     BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -150,6 +157,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     SatsComponent,
     SearchResultsComponent,
     TimestampComponent,
+    ToggleComponent,
   ],
   imports: [
     CommonModule,
@@ -215,11 +223,13 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     StartComponent,
     TransactionComponent,
     BlockComponent,
+    BlockPreviewComponent,
     BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -250,6 +260,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
     SatsComponent,
     SearchResultsComponent,
     TimestampComponent,
+    ToggleComponent,
   ]
 })
 export class SharedModule {
