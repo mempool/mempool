@@ -31,10 +31,16 @@ interface IConfig {
   LIGHTNING: {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
+    TOPOLOGY_FOLDER: string;
+    STATS_REFRESH_INTERVAL: number;
+    GRAPH_REFRESH_INTERVAL: number;
   };
   LND: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
+    REST_API_URL: string;
+  };
+  CLIGHTNING: {
     SOCKET: string;
   };
   ELECTRUM: {
@@ -102,6 +108,7 @@ interface IConfig {
     ENABLED: boolean;
     GEOLITE2_CITY: string;
     GEOLITE2_ASN: string;
+    GEOIP2_ISP: string;
   },
 }
 
@@ -176,12 +183,18 @@ const defaults: IConfig = {
   },
   'LIGHTNING': {
     'ENABLED': false,
-    'BACKEND': 'lnd'
+    'BACKEND': 'lnd',
+    'TOPOLOGY_FOLDER': '',
+    'STATS_REFRESH_INTERVAL': 600,
+    'GRAPH_REFRESH_INTERVAL': 600,
   },
   'LND': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
-    'SOCKET': 'localhost:10009',
+    'REST_API_URL': 'https://localhost:8080',
+  },
+  'CLIGHTNING': {
+    'SOCKET': '',
   },
   'SOCKS5PROXY': {
     'ENABLED': false,
@@ -206,7 +219,8 @@ const defaults: IConfig = {
   "MAXMIND": {
     'ENABLED': false,
     "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
-    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb"
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
   },
 };
 
@@ -222,6 +236,7 @@ class Config implements IConfig {
   BISQ: IConfig['BISQ'];
   LIGHTNING: IConfig['LIGHTNING'];
   LND: IConfig['LND'];
+  CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
@@ -240,6 +255,7 @@ class Config implements IConfig {
     this.BISQ = configs.BISQ;
     this.LIGHTNING = configs.LIGHTNING;
     this.LND = configs.LND;
+    this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;

@@ -24,7 +24,7 @@ export class EnterpriseService {
       this.subdomain = subdomain;
       this.fetchSubdomainInfo();
       this.disableSubnetworks();
-    } else {
+    } else if (document.location.hostname === 'mempool.space') {
       this.insertMatomo();
     }
   }
@@ -49,7 +49,7 @@ export class EnterpriseService {
     },
     (error) => {
       if (error.status === 404) {
-        window.location.href = 'https://mempool.space';
+        window.location.href = 'https://mempool.space' + window.location.pathname;
       }
     });
   }

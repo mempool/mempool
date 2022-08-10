@@ -6,14 +6,14 @@ class StatisticsApi {
   public async $getStatistics(interval: string | null = null): Promise<any> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, node_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes
+    let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes
       FROM lightning_stats`;
 
     if (interval) {
       query += ` WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
-    query += ` ORDER BY id DESC`;
+    query += ` ORDER BY added DESC`;
 
     try {
       const [rows]: any = await DB.query(query);
@@ -26,8 +26,8 @@ class StatisticsApi {
 
   public async $getLatestStatistics(): Promise<any> {
     try {
-      const [rows]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1`);
-      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY id DESC LIMIT 1 OFFSET 7`);
+      const [rows]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY added DESC LIMIT 1`);
+      const [rows2]: any = await DB.query(`SELECT * FROM lightning_stats ORDER BY added DESC LIMIT 1 OFFSET 7`);
       return {
         latest: rows[0],
         previous: rows2[0],

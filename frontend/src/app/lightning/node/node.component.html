@@ -1,114 +1,146 @@
 <div class="container-xl" *ngIf="(node$ | async) as node">
-  <div class="title-container mb-2">
+  <div class="title-container mb-2" *ngIf="!error">
     <h1 class="mb-0">{{ node.alias }}</h1>
     <span class="tx-link">
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.public_key | shortenString : 12 }}</a>
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
+        {{ node.public_key | shortenString : publicKeySize }}
+      </a>
       <app-clipboard [text]="node.public_key"></app-clipboard>
     </span>
   </div>
 
   <div class="clearfix"></div>
 
-    <div class="box">
+  <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
+    <span i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
+    <a [routerLink]="['/lightning' | relativeUrl]" i18n="lightning.back-to-lightning-dashboard">Back to the lightning dashboard</a>
+  </div>
 
-      <div class="row">
-        <div class="col-md">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td i18n="address.total-received">Total capacity</td>
-                <td>
-                  <app-sats [satoshis]="node.capacity"></app-sats><app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Total channels</td>
-                <td>
-                  {{ node.channel_count }}
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-received">Average channel size</td>
-                <td>
-                  <app-sats [satoshis]="node.channels_capacity_avg"></app-sats><app-fiat [value]="node.channels_capacity_avg" digitsInfo="1.0-0"></app-fiat>
-                </td>
-              </tr>
-              <tr *ngIf="node.country && node.city && node.subdivision">
-                <td i18n="location">Location</td>
-                <td>{{ node.city.en }}, {{ node.subdivision.en }}<br>{{ node.country.en }}</td>
-              </tr>
-              <tr *ngIf="node.country && !node.city">
-                <td i18n="location">Location</td>
-                <td>{{ node.country.en }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="w-100 d-block d-md-none"></div>
-        <div class="col-md">
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <tr>
-                <td i18n="address.total-received">First seen</td>
-                <td>
-                  <app-timestamp [dateString]="node.first_seen"></app-timestamp>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.total-sent">Last update</td>
-                <td>
-                  <app-timestamp [dateString]="node.updated_at"></app-timestamp>
-                </td>
-              </tr>
-              <tr>
-                <td i18n="address.balance">Color</td>
-                <td><div [ngStyle]="{'color': node.color}">{{ node.color }}</div></td>
-              </tr>
-              <tr *ngIf="node.country">
-                <td i18n="isp">ISP</td>
-                <td>
+  <div class="box" *ngIf="!error">
+
+    <div class="row">
+      <div class="col-md">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td i18n="lightning.active-capacity">Active capacity</td>
+              <td>
+                <app-sats [satoshis]="node.capacity"></app-sats>
+                <app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
+              </td>
+            </tr>
+            <tr>
+              <td i18n="lightning.active-channels">Active channels</td>
+              <td>
+                {{ node.active_channel_count }}
+              </td>
+            </tr>
+            <tr>
+              <td i18n="lightning.active-channels-avg">Average channel size</td>
+              <td>
+                <app-sats [satoshis]="node.avgCapacity"></app-sats>
+                <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
+              </td>
+            </tr>
+            <tr *ngIf="node.country && node.city && node.subdivision">
+              <td i18n="location">Location</td>
+              <td>
+                <span>{{ node.city.en }}, {{ node.subdivision.en }}</span>
+                <br>
+                <a class="d-flex align-items-center" [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
+                  <span class="link">{{ node.country.en }}</span>
+                  &nbsp;
+                  <span class="flag">{{ node.flag }}</span>
+                </a>
+              </td>
+            </tr>
+            <tr *ngIf="node.country && !node.city">
+              <td i18n="location">Location</td>
+              <td>
+                <a [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
+                  {{ node.country.en }} {{ node.flag }}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="w-100 d-block d-md-none"></div>
+      <div class="col-md">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td i18n="address.total-received">First seen</td>
+              <td>
+                <app-timestamp [unixTime]="node.first_seen"></app-timestamp>
+              </td>
+            </tr>
+            <tr>
+              <td i18n="address.total-sent">Last update</td>
+              <td>
+                <app-timestamp [unixTime]="node.updated_at"></app-timestamp>
+              </td>
+            </tr>
+            <tr>
+              <td i18n="address.balance">Color</td>
+              <td>
+                <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
+              </td>
+            </tr>
+            <tr *ngIf="node.country">
+              <td i18n="isp">ISP</td>
+              <td>
+                <a [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                </a>                
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
     </div>
 
-    <br>
+  </div>
 
-    <div class="input-group mb-3" *ngIf="node.socketsObject.length">
-      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown" *ngIf="node.socketsObject.length > 1; else noDropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor (focus)="myDrop.open()"><div class="dropdownLabel">{{ node.socketsObject[selectedSocketIndex].label }}</div></button>
-        <div ngbDropdownMenu aria-labelledby="dropdownManual">
-          <button *ngFor="let socket of node.socketsObject; let i = index;" ngbDropdownItem (click)="changeSocket(i)">{{ socket.label }}</button>
-        </div>
+  <div class="input-group mt-3" *ngIf="!error && node.socketsObject.length">
+    <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown"
+      *ngIf="node.socketsObject.length > 1; else noDropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" ngbDropdownAnchor
+        (focus)="myDrop.open()">
+        <div class="dropdownLabel">{{ node.socketsObject[selectedSocketIndex].label }}</div>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownManual">
+        <button *ngFor="let socket of node.socketsObject; let i = index;" ngbDropdownItem (click)="changeSocket(i)">{{
+          socket.label }}</button>
       </div>
-      <ng-template #noDropdown>
-        <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
-      </ng-template>
-      <input type="text" class="form-control" aria-label="Text input with dropdown button" [value]="node.socketsObject[selectedSocketIndex].socket">
-      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true" (mouseout)="qrCodeVisible = false">
-        <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
-        <div class="qr-wrapper" [hidden]="!qrCodeVisible">
-          <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
-        </div>
-      </button>
-      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
-        <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
-      </button>
     </div>
+    <ng-template #noDropdown>
+      <span class="input-group-text" id="basic-addon3">{{ node.socketsObject[selectedSocketIndex].label }}</span>
+    </ng-template>
+    <input type="text" class="form-control" aria-label="Text input with dropdown button"
+      [value]="node.socketsObject[selectedSocketIndex].socket">
+    <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible = true"
+      (mouseout)="qrCodeVisible = false">
+      <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+      <div class="qr-wrapper" [hidden]="!qrCodeVisible">
+        <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
+      </div>
+    </button>
+    <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
+      <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
+    </button>
+  </div>
 
-    <br>
+  <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
+  <app-node-statistics-chart [publicKey]="node.public_key" *ngIf="!error"></app-node-statistics-chart>
 
-    <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+  <div class="d-flex justify-content-between" *ngIf="!error">
+    <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
+  </div>
+
+  <app-channels-list *ngIf="!error" [publicKey]="node.public_key"
+    (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
     
-    <br>
-
-    <app-channels-list [publicKey]="node.public_key"></app-channels-list>
-
 </div>
 
 <br>

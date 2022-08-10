@@ -9,10 +9,10 @@ class NodesRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp', this.$getNodesISP)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp-ranking', this.$getISPRanking)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/countries', this.$getNodesCountries)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
@@ -35,6 +35,9 @@ class NodesRoutes {
         res.status(404).send('Node not found');
         return;
       }
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(node);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -44,6 +47,9 @@ class NodesRoutes {
   private async $getHistoricalNodeStats(req: Request, res: Response) {
     try {
       const statistics = await nodesApi.$getNodeStats(req.params.public_key);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(statistics);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -63,9 +69,18 @@ class NodesRoutes {
     }
   }
 
-  private async $getNodesISP(req: Request, res: Response) {
+  private async $getISPRanking(req: Request, res: Response): Promise<void> {
     try {
-      const nodesPerAs = await nodesApi.$getNodesISP();
+      const groupBy = req.query.groupBy as string;
+      const showTor = req.query.showTor as string === 'true' ? true : false;
+
+      if (!['capacity', 'node-count'].includes(groupBy)) {
+        res.status(400).send(`groupBy must be one of 'capacity' or 'node-count'`);
+        return;
+      }
+
+      const nodesPerAs = await nodesApi.$getNodesISP(groupBy, showTor);
+
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
