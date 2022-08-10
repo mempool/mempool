@@ -1,5 +1,6 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
+import { convertChannelId } from './lightning/clightning/clightning-convert';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -183,5 +184,38 @@ export class Common {
       Common.indexingEnabled() &&
       config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
     );
+  }
+
+  static setDateMidnight(date: Date): void {
+    date.setUTCHours(0);
+    date.setUTCMinutes(0);
+    date.setUTCSeconds(0);
+    date.setUTCMilliseconds(0);
+  }
+
+  static channelShortIdToIntegerId(id: string): string {
+    if (config.LIGHTNING.BACKEND === 'lnd') {
+      return id;
+    }
+    return convertChannelId(id);
+  }
+
+  /** Decodes a channel id returned by lnd as uint64 to a short channel id */
+  static channelIntegerIdToShortId(id: string): string {
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      return id;
+    }
+
+    const n = BigInt(id);
+    return [
+      n >> 40n, // nth block
+      (n >> 16n) & 0xffffffn, // nth tx of the block
+      n & 0xffffn // nth output of the tx
+    ].join('x');
+  }
+
+  static utcDateToMysql(date?: number): string {
+    const d = new Date((date || 0) * 1000);
+    return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
   }
 }
