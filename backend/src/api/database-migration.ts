@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 35;
+  private static currentVersion = 36;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -319,6 +319,10 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 35 && isBitcoin == true) {
       await this.$executeQuery('DELETE from `lightning_stats` WHERE added > "2021-09-19"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD CONSTRAINT added_unique UNIQUE (added);');
+    }
+
+    if (databaseSchemaVersion < 36 && isBitcoin == true) {
+      await this.$executeQuery('ALTER TABLE `nodes` ADD status TINYINT NOT NULL DEFAULT "1"');
     }
   }
 

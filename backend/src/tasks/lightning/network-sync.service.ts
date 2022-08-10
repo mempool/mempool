@@ -73,7 +73,7 @@ class NetworkSyncService {
     logger.info(`${progress} nodes updated`);
 
     // If a channel if not present in the graph, mark it as inactive
-    // nodesApi.$setNodesInactive(graphNodesPubkeys);
+    nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
       $lookupNodeLocation();
@@ -107,6 +107,8 @@ class NetworkSyncService {
     } catch (e) {
       logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
+
+    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
   }
 
   // This method look up the creation date of the earliest channel of the node
@@ -198,11 +200,13 @@ class NetworkSyncService {
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node1_public_key
+            AND nodes.status = 1
           ) = 0
         OR (
             SELECT COUNT(*)
             FROM nodes
             WHERE nodes.public_key = channels.node2_public_key
+            AND nodes.status = 1
           ) = 0)
         `);
 
