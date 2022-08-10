@@ -102,7 +102,9 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "PRICE_FEED_UPDATE_INTERVAL": 600,
     "USE_SECOND_NODE_FOR_MINFEE": false,
     "EXTERNAL_ASSETS": ["https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json"],
-    "STDOUT_LOG_MIN_PRIORITY": "info"
+    "STDOUT_LOG_MIN_PRIORITY": "info",
+    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json",
+    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master"
   },
 ```
 
@@ -126,6 +128,8 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_USE_SECOND_NODE_FOR_MINFEE: ""
       MEMPOOL_EXTERNAL_ASSETS: ""
       MEMPOOL_STDOUT_LOG_MIN_PRIORITY: ""
+      MEMPOOL_POOLS_JSON_URL: ""
+      MEMPOOL_POOLS_JSON_TREE_URL: ""
       ...
 ```
 
