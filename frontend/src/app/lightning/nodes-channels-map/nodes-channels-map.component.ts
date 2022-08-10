@@ -197,7 +197,6 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
       series: [
         {
           large: true,
-          progressive: 200,
           type: 'scatter',
           data: nodes,
           coordinateSystem: 'geo',
@@ -228,7 +227,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           zlevel: 1,
         },
         {
-          large: true,
+          large: false,
           progressive: 200,
           silent: true,
           type: 'lines',
