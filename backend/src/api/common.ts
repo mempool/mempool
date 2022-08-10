@@ -202,10 +202,6 @@ export class Common {
 
   /** Decodes a channel id returned by lnd as uint64 to a short channel id */
   static channelIntegerIdToShortId(id: string): string {
-    if (config.LIGHTNING.BACKEND === 'cln') {
-      return id;
-    }
-
     const n = BigInt(id);
     return [
       n >> 40n, // nth block
