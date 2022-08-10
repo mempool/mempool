@@ -34,10 +34,11 @@ esac
 TOR_INSTALL=ON
 CERTBOT_INSTALL=ON
 
-# install 3 network daemons
+# install 4 network daemons
 BITCOIN_INSTALL=ON
 BISQ_INSTALL=ON
 ELEMENTS_INSTALL=ON
+CLN_INSTALL=ON
 
 # install UNFURL
 UNFURL_INSTALL=ON
@@ -191,6 +192,7 @@ case $OS in
         NGINX_ETC_FOLDER=/usr/local/etc/nginx
         NGINX_CONFIGURATION=/usr/local/etc/nginx/nginx.conf
         CERTBOT_PKG=py39-certbot
+        CLN_PKG=c-lightning
     ;;
 
     Debian)
@@ -274,6 +276,12 @@ ELECTRS_LIQUID_DATA=${ELECTRS_DATA_ROOT}/liquid
 # liquid electrs data, needs about 5GB
 ELECTRS_LIQUIDTESTNET_ZPOOL=${ZPOOL}
 ELECTRS_LIQUIDTESTNET_DATA=${ELECTRS_DATA_ROOT}/liquidtestnet
+
+# Core Lightning user/group
+CLN_USER=cln
+CLN_GROUP=cln
+# Core Lightning home folder
+CLN_HOME=/cln
 
 # bisq user/group
 BISQ_USER=bisq
@@ -596,6 +604,10 @@ zfsCreateFilesystems()
         done
     fi
 
+    if [ "${CLN_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${CLN_HOME}" "${ZPOOL}/cln"
+    fi
+
     if [ "${BISQ_INSTALL}" = ON ];then
         zfs create -o "mountpoint=${BISQ_HOME}" "${ZPOOL}/bisq"
     fi
@@ -675,6 +687,10 @@ ext4CreateDir()
         done
     fi
 
+    if [ "${CLN_INSTALL}" = ON ];then
+        mkdir -p "${CLN_HOME}"
+    fi
+
     if [ "${BISQ_INSTALL}" = ON ];then
         mkdir -p "${BISQ_HOME}"
     fi
@@ -735,6 +751,7 @@ Testnet:Enable Bitcoin Testnet:ON
 Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
+CoreLN:Enable Core Lightning:ON
 Bisq:Enable Bisq:ON
 Unfurl:Enable Unfurl:ON
 EOF
@@ -809,6 +826,11 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON
 else
     ELEMENTS_INSTALL=OFF
 fi
+
+if grep CoreLN $tempfile >/dev/null 2>&1;then
+    CLN_INSTALL=ON
+else
+    CLN_INSTALL=OFF
 
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     BITCOIN_ELECTRS_INSTALL=ON
@@ -1234,6 +1256,33 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
 fi
     
+#####################################
+# Core Lightning for Bitcoin Mainnet #
+#####################################
+
+echo "[*] Installing Core Lightning"
+case $OS in
+    FreeBSD)
+        echo "[*] Creating Core Lightning user"
+        osGroupCreate "${CLN_GROUP}"
+        osUserCreate "${CLN_USER}" "${CLN_HOME}" "${CLN_GROUP}"
+        osSudo "${ROOT_USER}" chsh -s `which zsh` "${CLN_USER}"
+        osSudo "${CLN_USER}" touch "${CLN_HOME}/.zshrc"
+        osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
+
+        echo "[*] Installing Core Lightning package"
+        osPackageInstall ${CLN_PKG}
+
+        echo "[*] Installing Core Lightning mainnet Cronjob"
+        crontab_cln+='@reboot sleep 30 ; screen -dmS main lightningd --alias `hostname` --bitcoin-datadir /bitcoin\n'
+        crontab_cln+='@reboot sleep 60 ; screen -dmS sig lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network signet\n'
+        crontab_cln+='@reboot sleep 90 ; screen -dmS tes lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network testnet\n'
+        echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
+    ;;
+    Debian)
+    ;;
+esac
+
 #####################
 # Bisq installation #
 #####################

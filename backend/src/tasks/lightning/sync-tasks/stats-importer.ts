@@ -128,32 +128,32 @@ class LightningStatsImporter {
       if (channel.node1_policy !== undefined) { // Coming from the node
         for (const policy of [channel.node1_policy, channel.node2_policy]) {
           if (policy && policy.fee_rate_milli_msat < 5000) {
-            avgFeeRate += policy.fee_rate_milli_msat;
-            feeRates.push(policy.fee_rate_milli_msat);
+            avgFeeRate += parseInt(policy.fee_rate_milli_msat, 10);
+            feeRates.push(parseInt(policy.fee_rate_milli_msat, 10));
           }  
           if (policy && policy.fee_base_msat < 5000) {
-            avgBaseFee += policy.fee_base_msat;      
-            baseFees.push(policy.fee_base_msat);
+            avgBaseFee += parseInt(policy.fee_base_msat, 10);
+            baseFees.push(parseInt(policy.fee_base_msat, 10));
           }
         }
       } else { // Coming from the historical import
         if (channel.fee_rate_milli_msat < 5000) {
-          avgFeeRate += channel.fee_rate_milli_msat;
-          feeRates.push(channel.fee_rate_milli_msat);
+          avgFeeRate += parseInt(channel.fee_rate_milli_msat, 10);
+          feeRates.push(parseInt(channel.fee_rate_milli_msat), 10);
         }  
         if (channel.fee_base_msat < 5000) {
-          avgBaseFee += channel.fee_base_msat;      
-          baseFees.push(channel.fee_base_msat);
+          avgBaseFee += parseInt(channel.fee_base_msat, 10);
+          baseFees.push(parseInt(channel.fee_base_msat), 10);
         }
       }
     }
-    
-    avgFeeRate /= networkGraph.edges.length;
-    avgBaseFee /= networkGraph.edges.length;
+
+    avgFeeRate /= Math.max(networkGraph.edges.length, 1);
+    avgBaseFee /= Math.max(networkGraph.edges.length, 1);
     const medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
     const medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
     const medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
-    const avgCapacity = Math.round(capacity / capacities.length);
+    const avgCapacity = Math.round(capacity / Math.max(capacities.length, 1));
 
     let query = `INSERT INTO lightning_stats(
         added,
@@ -251,6 +251,9 @@ class LightningStatsImporter {
     };
   }
 
+  /**
+   * Import topology files LN historical data into the database
+   */
   async $importHistoricalLightningStats(): Promise<void> {
     let latestNodeCount = 1;
 
