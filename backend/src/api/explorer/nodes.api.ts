@@ -1,5 +1,7 @@
 import logger from '../../logger';
 import DB from '../../database';
+import { ResultSetHeader } from 'mysql2';
+import { ILightningApi } from '../lightning/lightning-api.interface';
 
 class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
@@ -319,6 +321,66 @@ class NodesApi {
     } catch (e) {
       logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
+    }
+  }
+
+  /**
+   * Save or update a node present in the graph
+   */
+  public async $saveNode(node: ILightningApi.Node): Promise<void> {
+    try {
+      const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
+      const query = `INSERT INTO nodes(
+          public_key,
+          first_seen,
+          updated_at,
+          alias,
+          color,
+          sockets,
+          status
+        )
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, 1)
+        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, color = ?, sockets = ?, status = 1`;
+
+      await DB.query(query, [
+        node.pub_key,
+        node.last_update,
+        node.alias,
+        node.color,
+        sockets,
+        node.last_update,
+        node.alias,
+        node.color,
+        sockets,
+      ]);
+    } catch (e) {
+      logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  /**
+   * Set all nodes not in `nodesPubkeys` as inactive (status = 0)
+   */
+   public async $setNodesInactive(graphNodesPubkeys: string[]): Promise<void> {
+    if (graphNodesPubkeys.length === 0) {
+      return;
+    }
+
+    try {
+      const result = await DB.query<ResultSetHeader>(`
+        UPDATE nodes
+        SET status = 0
+        WHERE public_key NOT IN (
+          ${graphNodesPubkeys.map(pubkey => `"${pubkey}"`).join(',')}
+        )
+      `);
+      if (result[0].changedRows ?? 0 > 0) {
+        logger.info(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+      } else {
+        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+      }
+    } catch (e) {
+      logger.err('$setNodesInactive() error: ' + (e instanceof Error ? e.message : e));
     }
   }
 }

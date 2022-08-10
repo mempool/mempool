@@ -1,6 +1,9 @@
 import logger from '../../logger';
 import DB from '../../database';
 import nodesApi from './nodes.api';
+import { ResultSetHeader } from 'mysql2';
+import { ILightningApi } from '../lightning/lightning-api.interface';
+import { Common } from '../common';
 
 class ChannelsApi {
   public async $getAllChannels(): Promise<any[]> {
@@ -301,6 +304,135 @@ class ChannelsApi {
         'updated_at': channel.node2_updated_at,
       },
     };
+  }
+
+  /**
+   * Save or update a channel present in the graph
+   */
+  public async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+    const [ txid, vout ] = channel.chan_point.split(':');
+
+    const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
+    const policy2: Partial<ILightningApi.RoutingPolicy> = channel.node2_policy || {};
+
+    const query = `INSERT INTO channels
+      (
+        id,
+        short_id,
+        capacity,
+        transaction_id,
+        transaction_vout,
+        updated_at,
+        status,
+        node1_public_key,
+        node1_base_fee_mtokens,
+        node1_cltv_delta,
+        node1_fee_rate,
+        node1_is_disabled,
+        node1_max_htlc_mtokens,
+        node1_min_htlc_mtokens,
+        node1_updated_at,
+        node2_public_key,
+        node2_base_fee_mtokens,
+        node2_cltv_delta,
+        node2_fee_rate,
+        node2_is_disabled,
+        node2_max_htlc_mtokens,
+        node2_min_htlc_mtokens,
+        node2_updated_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        capacity = ?,
+        updated_at = ?,
+        status = 1,
+        node1_public_key = ?,
+        node1_base_fee_mtokens = ?,
+        node1_cltv_delta = ?,
+        node1_fee_rate = ?,
+        node1_is_disabled = ?,
+        node1_max_htlc_mtokens = ?,
+        node1_min_htlc_mtokens = ?,
+        node1_updated_at = ?,
+        node2_public_key = ?,
+        node2_base_fee_mtokens = ?,
+        node2_cltv_delta = ?,
+        node2_fee_rate = ?,
+        node2_is_disabled = ?,
+        node2_max_htlc_mtokens = ?,
+        node2_min_htlc_mtokens = ?,
+        node2_updated_at = ?
+      ;`;
+
+    await DB.query(query, [
+      Common.channelShortIdToIntegerId(channel.channel_id),
+      Common.channelIntegerIdToShortId(channel.channel_id),
+      channel.capacity,
+      txid,
+      vout,
+      Common.utcDateToMysql(channel.last_update),
+      channel.node1_pub,
+      policy1.fee_base_msat,
+      policy1.time_lock_delta,
+      policy1.fee_rate_milli_msat,
+      policy1.disabled,
+      policy1.max_htlc_msat,
+      policy1.min_htlc,
+      Common.utcDateToMysql(policy1.last_update),
+      channel.node2_pub,
+      policy2.fee_base_msat,
+      policy2.time_lock_delta,
+      policy2.fee_rate_milli_msat,
+      policy2.disabled,
+      policy2.max_htlc_msat,
+      policy2.min_htlc,
+      Common.utcDateToMysql(policy2.last_update),
+      channel.capacity,
+      Common.utcDateToMysql(channel.last_update),
+      channel.node1_pub,
+      policy1.fee_base_msat,
+      policy1.time_lock_delta,
+      policy1.fee_rate_milli_msat,
+      policy1.disabled,
+      policy1.max_htlc_msat,
+      policy1.min_htlc,
+      Common.utcDateToMysql(policy1.last_update),
+      channel.node2_pub,
+      policy2.fee_base_msat,
+      policy2.time_lock_delta,
+      policy2.fee_rate_milli_msat,
+      policy2.disabled,
+      policy2.max_htlc_msat,
+      policy2.min_htlc,
+      Common.utcDateToMysql(policy2.last_update)
+    ]);
+  }
+
+  /**
+   * Set all channels not in `graphChannelsIds` as inactive (status = 0)
+   */
+  public async $setChannelsInactive(graphChannelsIds: string[]): Promise<void> {
+    if (graphChannelsIds.length === 0) {
+      return;
+    }
+
+    try {
+      const result = await DB.query<ResultSetHeader>(`
+        UPDATE channels
+        SET status = 0
+        WHERE short_id NOT IN (
+          ${graphChannelsIds.map(id => `"${id}"`).join(',')}
+        )
+        AND status != 2
+      `);
+      if (result[0].changedRows ?? 0 > 0) {
+        logger.info(`Marked ${result[0].changedRows} channels as inactive because they are not in the graph`);
+      } else {
+        logger.debug(`Marked ${result[0].changedRows} channels as inactive because they are not in the graph`);
+      }
+    } catch (e) {
+      logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
+    }
   }
 }
 
