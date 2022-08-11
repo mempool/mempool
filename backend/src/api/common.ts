@@ -1,6 +1,5 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
-import { convertChannelId } from './lightning/clightning/clightning-convert';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -193,16 +192,20 @@ export class Common {
     date.setUTCMilliseconds(0);
   }
 
-  static channelShortIdToIntegerId(id: string): string {
-    if (config.LIGHTNING.BACKEND === 'lnd') {
-      return id;
+  static channelShortIdToIntegerId(channelId: string): string {
+    if (channelId.indexOf('x') === -1) { // Already an integer id
+      return channelId;
     }
-    return convertChannelId(id);
+    if (channelId.indexOf('/') !== -1) { // Topology import
+      channelId = channelId.slice(0, -2);
+    }
+    const s = channelId.split('x').map(part => BigInt(part));
+    return ((s[0] << 40n) | (s[1] << 16n) | s[2]).toString();
   }
 
   /** Decodes a channel id returned by lnd as uint64 to a short channel id */
   static channelIntegerIdToShortId(id: string): string {
-    if (config.LIGHTNING.BACKEND === 'cln') {
+    if (id.indexOf('x') !== -1) { // Already a short id
       return id;
     }
 

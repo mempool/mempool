@@ -8,6 +8,7 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 import { StateService } from 'src/app/services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
 import 'echarts-gl';
+import { isMobile } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -50,8 +51,15 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.center = this.style === 'widget' ? [0, 40] : [0, 5];
-    this.zoom = this.style === 'widget' ? 3.5 : 1.3;
-
+    this.zoom = 1.3;
+    if (this.style === 'widget' && !isMobile()) {
+      this.zoom = 3.5;
+    }
+    if (this.style === 'widget' && isMobile()) {
+      this.zoom = 1.4;
+      this.center = [0, 10];
+    }
+    
     if (this.style === 'graph') {
       this.seoService.setTitle($localize`Lightning nodes channels world map`);
     }
@@ -197,7 +205,6 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
       series: [
         {
           large: true,
-          progressive: 200,
           type: 'scatter',
           data: nodes,
           coordinateSystem: 'geo',
@@ -228,7 +235,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           zlevel: 1,
         },
         {
-          large: true,
+          large: false,
           progressive: 200,
           silent: true,
           type: 'lines',

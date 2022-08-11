@@ -448,7 +448,7 @@ class ChannelsApi {
       const result = await DB.query<ResultSetHeader>(`
         UPDATE channels
         SET status = 0
-        WHERE short_id NOT IN (
+        WHERE id NOT IN (
           ${graphChannelsIds.map(id => `"${id}"`).join(',')}
         )
         AND status != 2
