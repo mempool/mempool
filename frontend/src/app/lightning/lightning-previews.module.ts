@@ -7,9 +7,11 @@ import { LightningModule } from './lightning.module';
 import { LightningApiService } from './lightning-api.service';
 import { NodePreviewComponent } from './node/node-preview.component';
 import { LightningPreviewsRoutingModule } from './lightning-previews.routing.module';
+import { ChannelPreviewComponent } from './channel/channel-preview.component';
 @NgModule({
   declarations: [
     NodePreviewComponent,
+    ChannelPreviewComponent,
   ],
   imports: [
     CommonModule,
