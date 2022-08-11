@@ -1,25 +1,41 @@
 .title {
   font-size: 52px;
-  margin-bottom: 48px;
+  margin-bottom: 0;
 }
 
 .table {
+  margin-top: 48px;
   font-size: 32px;
+}
+
+.badges {
+  font-size: 28px;
+
+  ::ng-deep .badge {
+    margin-left: 0.5em;
+  }
 }
 
 .map-col {
   flex-grow: 0;
   flex-shrink: 0;
   width: 470px;
+  height: 390px;
   min-width: 470px;
+  min-height: 390px;
+  max-height: 390px;
   padding: 0;
   background: #181b2d;
-  max-height: 470px;
   overflow: hidden;
+  margin-top: 18px;
 }
 
 .row {
   margin-right: 0;
+}
+
+.full-width-row {
+  padding-left: 15px;
 }
 
 ::ng-deep .symbol {

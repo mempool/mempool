@@ -23,6 +23,7 @@ export class NodePreviewComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
+  socketTypes: string[];
 
   publicKeySize = 99;
 
@@ -50,6 +51,7 @@ export class NodePreviewComponent implements OnInit {
           this.seoService.setTitle(`Node: ${node.alias}`);
 
           const socketsObject = [];
+          const socketTypesMap = {};
           for (const socket of node.sockets.split(',')) {
             if (socket === '') {
               continue;
@@ -67,8 +69,10 @@ export class NodePreviewComponent implements OnInit {
               label: label,
               socket: node.public_key + '@' + socket,
             });
+            socketTypesMap[label] = true
           }
           node.socketsObject = socketsObject;
+          this.socketTypes = Object.keys(socketTypesMap);
           node.avgCapacity = node.capacity / Math.max(1, node.active_channel_count);
 
           this.openGraphService.waitOver('node-data');

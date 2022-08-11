@@ -174,7 +174,7 @@ class Server {
     }
 
     if (previewSupported) {
-      ogImageUrl = `${config.SERVER.HOST}${config.SERVER.HTTP_PORT ? ':' + config.SERVER.HTTP_PORT : ''}/render/${lang || 'en'}/preview${path}`;
+      ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
       ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${mode !== 'mainnet' ? capitalize(mode) + ' ' : ''}${ogTitle}`;
     } else {
       ogTitle = 'The Mempool Open Source Project™';
