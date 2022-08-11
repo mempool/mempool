@@ -168,7 +168,7 @@ class NodesApi {
     }
   }
 
-  public async $getNodesISP(groupBy: string, showTor: boolean) {
+  public async $getNodesISPRanking(groupBy: string, showTor: boolean) {
     try {
       const orderBy = groupBy === 'capacity' ? `CAST(SUM(capacity) as INT)` : `COUNT(DISTINCT nodes.public_key)`;
       
