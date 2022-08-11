@@ -1,7 +1,7 @@
 name: Docker build on tag
 env:
   DOCKER_CLI_EXPERIMENTAL: enabled
-  TAG_FMT: '^refs/tags/(((.?[0-9]+){3,4}))$'
+  TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
   DOCKER_BUILDKIT: 0
   COMPOSE_DOCKER_CLI_BUILD: 0
 
@@ -21,16 +21,23 @@ jobs:
         service:
           - frontend
           - backend
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
     name: Build and push to DockerHub
     steps:
+      - name: Run Docker on tmpfs
+        uses: JonasAlfredsson/docker-on-tmpfs@v1.0.1
+        with:
+          tmpfs_size: 10
+          swap_size: 10
+
       - name: Set env variables
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
       - name: Show set environment variables
         run: |
           printf "      TAG: %s\n"  "$TAG"
-      
+
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
