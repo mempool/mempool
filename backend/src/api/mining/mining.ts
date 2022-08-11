@@ -473,7 +473,7 @@ class Mining {
 
       for (const block of blocksWithoutPrices) {
         // Quick optimisation, out mtgox feed only goes back to 2010-07-19 02:00:00, so skip the first 68951 blocks
-        if (block.height < 68951) {
+        if (['mainnet', 'testnet'].includes(config.MEMPOOL.NETWORK) && block.height < 68951) {
           blocksPrices.push({
             height: block.height,
             priceId: prices[0].id,
@@ -492,11 +492,11 @@ class Mining {
 
         if (blocksPrices.length >= 100000) {
           totalInserted += blocksPrices.length;
+          let logStr = `Linking ${blocksPrices.length} blocks to their closest price`;
           if (blocksWithoutPrices.length > 200000) {
-            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
-          } else {
-            logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+            logStr += ` | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`;
           }
+          logger.debug(logStr);
           await BlocksRepository.$saveBlockPrices(blocksPrices);
           blocksPrices.length = 0;
         }
@@ -504,11 +504,11 @@ class Mining {
 
       if (blocksPrices.length > 0) {
         totalInserted += blocksPrices.length;
+        let logStr = `Linking ${blocksPrices.length} blocks to their closest price`;
         if (blocksWithoutPrices.length > 200000) {
-          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`);
-        } else {
-          logger.debug(`Linking ${blocksPrices.length} newly indexed blocks to their closest price`);
+          logStr += ` | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`;
         }
+        logger.debug(logStr);
         await BlocksRepository.$saveBlockPrices(blocksPrices);
       }
     } catch (e) {
