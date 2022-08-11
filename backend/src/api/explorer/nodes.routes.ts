@@ -79,7 +79,7 @@ class NodesRoutes {
         return;
       }
 
-      const nodesPerAs = await nodesApi.$getNodesISP(groupBy, showTor);
+      const nodesPerAs = await nodesApi.$getNodesISPRanking(groupBy, showTor);
 
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
