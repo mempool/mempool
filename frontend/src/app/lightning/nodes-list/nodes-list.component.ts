@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class NodesListComponent implements OnInit {
   @Input() nodes$: Observable<any>;
+  @Input() show: string;
 
   constructor() { }
 
