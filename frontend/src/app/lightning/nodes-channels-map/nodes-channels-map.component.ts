@@ -189,7 +189,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         center: this.center,
         zoom: this.zoom,
         tooltip: {
-          show: true
+          show: false
         },
         map: 'world',
         roam: this.style === 'widget' ? false : true,
@@ -200,6 +200,9 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         scaleLimit: {
           min: 1.3,
           max: 100000,
+        },
+        emphasis: {
+          disabled: true,
         }
       },
       series: [
@@ -211,6 +214,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           geoIndex: 0,
           symbolSize: 4,
           tooltip: {
+            show: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',
             borderRadius: 4,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -227,12 +231,12 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           },
           itemStyle: {
             color: 'white',
-            borderColor: 'black',
-            borderWidth: 2,
             opacity: 1,
+            borderColor: 'black',
+            borderWidth: 0,
           },
           blendMode: 'lighter',
-          zlevel: 1,
+          zlevel: 2,
         },
         {
           large: false,
@@ -251,7 +255,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           tooltip: {
             show: false,
           },
-          zlevel: 2,
+          zlevel: 1,
         }
       ]
     };
@@ -292,12 +296,19 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         series: this.chartOptions.series
       };
 
+      let nodeBorder = 0;
+      if (this.chartInstance.getOption().geo[0].zoom > 5000) {
+        nodeBorder = 2;
+      }
+
+      chartOptions.series[0].itemStyle.borderWidth = nodeBorder;
+      chartOptions.series[0].symbolSize += e.zoom > 1 ? speed * 15 : -speed * 15;
+      chartOptions.series[0].symbolSize = Math.max(4, Math.min(7, chartOptions.series[0].symbolSize));
+
       chartOptions.series[1].lineStyle.opacity += e.zoom > 1 ? speed : -speed;
       chartOptions.series[1].lineStyle.width += e.zoom > 1 ? speed : -speed;
-      chartOptions.series[0].symbolSize += e.zoom > 1 ? speed * 10 : -speed * 10;
       chartOptions.series[1].lineStyle.opacity = Math.max(0.05, Math.min(0.5, chartOptions.series[1].lineStyle.opacity));
       chartOptions.series[1].lineStyle.width = Math.max(0.5, Math.min(1, chartOptions.series[1].lineStyle.width));
-      chartOptions.series[0].symbolSize = Math.max(4, Math.min(5.5, chartOptions.series[0].symbolSize));
 
       this.chartInstance.setOption(chartOptions);
     });
