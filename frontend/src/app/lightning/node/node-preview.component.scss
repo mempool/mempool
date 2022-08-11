@@ -1,0 +1,27 @@
+.title {
+  font-size: 52px;
+  margin-bottom: 48px;
+}
+
+.table {
+  font-size: 32px;
+}
+
+.map-col {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 470px;
+  min-width: 470px;
+  padding: 0;
+  background: #181b2d;
+  max-height: 470px;
+  overflow: hidden;
+}
+
+.row {
+  margin-right: 0;
+}
+
+::ng-deep .symbol {
+  font-size: 24px;
+}
