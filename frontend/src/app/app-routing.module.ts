@@ -15,7 +15,6 @@ import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
-import { SponsorComponent } from './components/sponsor/sponsor.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
@@ -374,10 +373,6 @@ let routes: Routes = [
     component: StatusViewComponent
   },
   {
-    path: 'sponsor',
-    component: SponsorComponent,
-  },
-  {
     path: '',
     loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
   },
@@ -641,10 +636,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     {
       path: 'status',
       component: StatusViewComponent
-    },
-    {
-      path: 'sponsor',
-      component: SponsorComponent,
     },
     {
       path: '',
