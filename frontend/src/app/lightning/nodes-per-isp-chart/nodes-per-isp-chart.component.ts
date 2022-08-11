@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { combineLatest, map, Observable, share, Subject, switchMap, tap } from 'rxjs';
+import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
 import { chartColors } from 'src/app/app.constants';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
+import { isMobile } from 'src/app/shared/common.utils';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
@@ -17,6 +18,8 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {
+  @Input() widget: boolean = false;
+
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -46,7 +49,11 @@ export class NodesPerISPChartComponent implements OnInit {
     this.seoService.setTitle($localize`Lightning nodes per ISP`);
 
     this.showTorObservable$ = this.showTorSubject.asObservable();
-    this.nodesPerAsObservable$ = combineLatest([this.groupBySubject, this.showTorSubject])
+
+    this.nodesPerAsObservable$ = combineLatest([
+      this.groupBySubject.pipe(startWith(false)),
+      this.showTorSubject.pipe(startWith(false)),
+    ])
       .pipe(
         switchMap((selectedFilters) => {
           return this.apiService.getNodesPerAs(
@@ -62,23 +69,41 @@ export class NodesPerISPChartComponent implements OnInit {
                 for (let i = 0; i < data.length; ++i) {
                   data[i].rank = i + 1;
                 }
-                return data.slice(0, 100);
+                return {
+                  taggedISP: data.length,
+                  taggedCapacity: data.reduce((partialSum, isp) => partialSum + isp.capacity, 0),
+                  taggedNodeCount: data.reduce((partialSum, isp) => partialSum + isp.count, 0),
+                  data: data.slice(0, 100),
+                };
               })
             );
         }),
         share()
       );
+
+    if (this.widget) {
+      this.showTorSubject.next(false);
+      this.groupBySubject.next(false);  
+    }
   }
 
   generateChartSerieData(as): PieSeriesOption[] {
-    const shareThreshold = this.isMobile() ? 2 : 0.5;
+    let shareThreshold = 0.5;
+    if (this.widget && isMobile() || isMobile()) {
+      shareThreshold = 1;
+    } else if (this.widget) {
+      shareThreshold = 0.75;
+    }
+    
     const data: object[] = [];
     let totalShareOther = 0;
     let totalNodeOther = 0;
 
     let edgeDistance: string | number = '10%';
-    if (this.isMobile()) {
+    if (isMobile() && this.widget) {
       edgeDistance = 0;
+    } else if (isMobile() && !this.widget || this.widget) {
+      edgeDistance = 10;
     }
 
     as.forEach((as) => {
@@ -92,15 +117,16 @@ export class NodesPerISPChartComponent implements OnInit {
           color: as.ispId === null ? '#7D4698' : undefined,
         },
         value: as.share,
-        name: as.name + (this.isMobile() ? `` : ` (${as.share}%)`),
+        name: as.name + (isMobile() || this.widget ? `` : ` (${as.share}%)`),
         label: {
           overflow: 'truncate',
+          width: isMobile() ? 75 : this.widget ? 125 : 250,
           color: '#b1b1b1',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
         tooltip: {
-          show: !this.isMobile(),
+          show: !isMobile(),
           backgroundColor: 'rgba(17, 19, 31, 1)',
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -125,7 +151,7 @@ export class NodesPerISPChartComponent implements OnInit {
         color: 'grey',
       },
       value: totalShareOther,
-      name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name: 'Other' + (isMobile() || this.widget ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'truncate',
         color: '#b1b1b1',
@@ -153,7 +179,7 @@ export class NodesPerISPChartComponent implements OnInit {
 
   prepareChartOptions(as): void {
     let pieSize = ['20%', '80%']; // Desktop
-    if (this.isMobile()) {
+    if (isMobile() && !this.widget) {
       pieSize = ['15%', '60%'];
     }
 
@@ -177,8 +203,8 @@ export class NodesPerISPChartComponent implements OnInit {
             lineStyle: {
               width: 2,
             },
-            length: this.isMobile() ? 1 : 20,
-            length2: this.isMobile() ? 1 : undefined,
+            length: isMobile() ? 1 : 20,
+            length2: isMobile() ? 1 : undefined,
           },
           label: {
             fontSize: 14,
@@ -202,10 +228,6 @@ export class NodesPerISPChartComponent implements OnInit {
         }
       ],
     };
-  }
-
-  isMobile(): boolean {
-    return (window.innerWidth <= 767.98);
   }
 
   onChartInit(ec): void {
@@ -243,6 +265,10 @@ export class NodesPerISPChartComponent implements OnInit {
 
   onGroupToggleStatusChanged(e): void {
     this.groupBySubject.next(e);
+  }
+
+  isEllipsisActive(e) {
+    return (e.offsetWidth < e.scrollWidth);
   }
 }
 

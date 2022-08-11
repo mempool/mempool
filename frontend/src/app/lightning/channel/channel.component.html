@@ -14,7 +14,9 @@
 
   <div class="clearfix"></div>
 
-    <div class="box">
+  <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo"></app-nodes-channels-map>
+
+  <div class="box">
 
       <div class="row">
         <div class="col-md">

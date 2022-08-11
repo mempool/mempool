@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { Common } from '../api/common';
 import config from '../config';
 import logger from '../logger';
 import PricesRepository from '../repositories/PricesRepository';
@@ -34,10 +35,10 @@ export interface Prices {
 }
 
 class PriceUpdater {
-  historyInserted: boolean = false;
-  lastRun: number = 0;
-  lastHistoricalRun: number = 0;
-  running: boolean = false;
+  public historyInserted = false;
+  lastRun = 0;
+  lastHistoricalRun = 0;
+  running = false;
   feeds: PriceFeed[] = [];
   currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
   latestPrices: Prices;
