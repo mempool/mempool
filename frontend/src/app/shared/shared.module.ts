@@ -64,7 +64,6 @@ import { DifficultyComponent } from '../components/difficulty/difficulty.compone
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
-import { SponsorComponent } from '../components/sponsor/sponsor.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -139,7 +138,6 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
-    SponsorComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -242,7 +240,6 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
-    SponsorComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
