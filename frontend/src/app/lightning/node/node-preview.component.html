@@ -1,7 +1,15 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
+  <div class="row d-flex justify-content-between full-width-row">
+    <h1 class="title">
+      <span i18n="lightning.node">Node</span>:
+      <a [routerLink]="['/lightning/node' | relativeUrl, node.id]"> {{ node.alias }}</a>
+    </h1>
+    <div class="badges mb-2">
+      <span class="badge rounded-pill badge-success" *ngFor="let socketType of socketTypes">{{ socketType }}</span>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md">
-      <h1 class="title">{{ node.alias }}</h1>
       <table class="table table-borderless table-striped">
         <tbody>
           <tr>
@@ -32,6 +40,12 @@
             <td i18n="country">Country</td>
             <td>
               {{ node.country.en }} {{ node.flag }}
+            </td>
+          </tr>
+          <tr *ngIf="!node.city && !node.country">
+            <td i18n="location">Location</td>
+            <td>
+              <span>unknown</span>
             </td>
           </tr>
         </tbody>

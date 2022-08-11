@@ -1,7 +1,7 @@
 <div class="box preview-box" *ngIf="(channel$ | async) as channel">
   <div class="row d-flex justify-content-between full-width-row">
     <h1 class="title">
-      <span i18n="lightning.channel">Channel</span>
+      <span i18n="lightning.channel">Channel</span>: 
       <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]"> {{ channel.short_id }}</a>
     </h1>
     <div class="badges mb-2">
