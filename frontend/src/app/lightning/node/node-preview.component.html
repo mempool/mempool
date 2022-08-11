@@ -1,0 +1,50 @@
+<div class="box preview-box" *ngIf="(node$ | async) as node">
+  <div class="row">
+    <div class="col-md">
+      <h1 class="title">{{ node.alias }}</h1>
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td i18n="lightning.active-capacity">Active capacity</td>
+            <td>
+              <app-amount [satoshis]="node.capacity" [noFiat]="true"></app-amount>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="lightning.active-channels">Active channels</td>
+            <td>
+              {{ node.active_channel_count }}
+            </td>
+          </tr>
+          <tr>
+            <td i18n="lightning.active-channels-avg">Average size</td>
+            <td>
+              <app-amount [satoshis]="node.avgCapacity" [noFiat]="true"></app-amount>
+            </td>
+          </tr>
+          <tr *ngIf="node.city">
+            <td i18n="location">Location</td>
+            <td>
+              <span>{{ node.city.en }}</span>
+            </td>
+          </tr>
+          <tr *ngIf="node.country">
+            <td i18n="country">Country</td>
+            <td>
+              {{ node.country.en }} {{ node.flag }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md map-col">
+      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+    </div>
+  </div>
+</div>
+
+<ng-template [ngIf]="error">
+  <div class="text-center">
+    <span i18n="error.general-loading-data">Error loading data.</span>
+  </div>
+</ng-template>

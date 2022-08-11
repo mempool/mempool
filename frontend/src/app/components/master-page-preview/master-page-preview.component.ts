@@ -10,6 +10,7 @@ import { LanguageService } from 'src/app/services/language.service';
 })
 export class MasterPagePreviewComponent implements OnInit {
   network$: Observable<string>;
+  lightning$: Observable<boolean>;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   urlLanguage: string;
 
@@ -20,6 +21,7 @@ export class MasterPagePreviewComponent implements OnInit {
 
   ngOnInit() {
     this.network$ = merge(of(''), this.stateService.networkChanged$);
+    this.lightning$ = this.stateService.lightningChanged$;
     this.urlLanguage = this.languageService.getLanguageForUrl();
   }
 }
