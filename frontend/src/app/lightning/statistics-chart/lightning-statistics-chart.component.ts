@@ -119,7 +119,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         },
         text: $localize`Channels & Capacity`,
         left: 'center',
-        top: 13,
+        top: 11,
         zlevel: 10,
       };
     }
