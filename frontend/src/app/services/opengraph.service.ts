@@ -93,11 +93,18 @@ export class OpenGraphService {
     }
   }
 
+  fail(event) {
+    if (this.previewLoadingEvents[event]) {
+      this.metaService.updateTag({ property: 'og:preview:fail', content: 'fail'});
+    }
+  }
+
   resetLoading() {
     this.previewLoadingEvents = {};
     this.previewLoadingCount = 0;
     this.metaService.removeTag("property='og:preview:loading'");
     this.metaService.removeTag("property='og:preview:ready'");
+    this.metaService.removeTag("property='og:preview:fail'");
     this.metaService.removeTag("property='og:meta:ready'");
   }
 

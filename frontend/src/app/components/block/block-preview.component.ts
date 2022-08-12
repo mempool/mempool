@@ -80,8 +80,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               }),
               catchError((err) => {
                 this.error = err;
-                this.openGraphService.waitOver('block-data');
-                this.openGraphService.waitOver('block-viz');
+                this.openGraphService.fail('block-data');
+                this.openGraphService.fail('block-viz');
                 return of(null);
               }),
             );
@@ -116,7 +116,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         .pipe(
           catchError((err) => {
             this.overviewError = err;
-            this.openGraphService.waitOver('block-viz');
+            this.openGraphService.fail('block-viz');
             return of([]);
           }),
           switchMap((transactions) => {
@@ -136,8 +136,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     (error) => {
       this.error = error;
       this.isLoadingOverview = false;
-      this.openGraphService.waitOver('block-viz');
-      this.openGraphService.waitOver('block-data');
+      this.openGraphService.fail('block-viz');
+      this.openGraphService.fail('block-data');
       if (this.blockGraph) {
         this.blockGraph.destroy();
       }
