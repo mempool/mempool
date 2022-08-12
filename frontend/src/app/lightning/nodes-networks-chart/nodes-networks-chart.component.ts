@@ -93,7 +93,7 @@ export class NodesNetworksChartComponent implements OnInit {
                 for (const day of data) {
                   maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes);
                 }
-                maxYAxis = Math.ceil(maxYAxis / 4000) * 4000;
+                maxYAxis = Math.ceil(maxYAxis / 3000) * 3000;
                 this.prepareChartOptions(chartData, maxYAxis);
                 this.isLoading = false;
               }),
@@ -128,7 +128,7 @@ export class NodesNetworksChartComponent implements OnInit {
         },
         text: $localize`Nodes per network`,
         left: 'center',
-        top: 13,
+        top: 11,
         zlevel: 10,
       };
     }
@@ -251,7 +251,7 @@ export class NodesNetworksChartComponent implements OnInit {
           },
           max: maxYAxis,
           min: 0,
-          interval: 4000,
+          interval: 3000,
         },
         {
           type: 'value',
@@ -275,7 +275,7 @@ export class NodesNetworksChartComponent implements OnInit {
           },
           max: maxYAxis,
           min: 0,
-          interval: 4000,
+          interval: 3000,
         }
       ],
       series: data.tor_nodes.length === 0 ? [] : [
