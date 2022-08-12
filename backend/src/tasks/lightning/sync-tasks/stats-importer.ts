@@ -4,6 +4,8 @@ import { XMLParser } from 'fast-xml-parser';
 import logger from '../../../logger';
 import fundingTxFetcher from './funding-tx-fetcher';
 import config from '../../../config';
+import { ILightningApi } from '../../../api/lightning/lightning-api.interface';
+import { isIP } from 'net';
 
 const fsPromises = promises;
 
@@ -48,7 +50,7 @@ class LightningStatsImporter {
   /**
    * Generate LN network stats for one day
    */
-  public async computeNetworkStats(timestamp: number, networkGraph): Promise<unknown> {
+  public async computeNetworkStats(timestamp: number, networkGraph: ILightningApi.NetworkGraph): Promise<unknown> {
     // Node counts and network shares
     let clearnetNodes = 0;
     let torNodes = 0;
@@ -61,8 +63,8 @@ class LightningStatsImporter {
       let isUnnanounced = true;
 
       for (const socket of (node.addresses ?? [])) {
-        hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network);
-        hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network);
+        hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network) || socket.addr.indexOf('onion') !== -1;
+        hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network) || [4, 6].includes(isIP(socket.addr.split(':')[0]));
       }
       if (hasOnion && hasClearnet) {
         clearnetTorNodes++;
@@ -127,22 +129,28 @@ class LightningStatsImporter {
 
       if (channel.node1_policy !== undefined) { // Coming from the node
         for (const policy of [channel.node1_policy, channel.node2_policy]) {
-          if (policy && policy.fee_rate_milli_msat < 5000) {
+          if (policy && parseInt(policy.fee_rate_milli_msat, 10) < 5000) {
             avgFeeRate += parseInt(policy.fee_rate_milli_msat, 10);
             feeRates.push(parseInt(policy.fee_rate_milli_msat, 10));
           }  
-          if (policy && policy.fee_base_msat < 5000) {
+          if (policy && parseInt(policy.fee_base_msat, 10) < 5000) {
             avgBaseFee += parseInt(policy.fee_base_msat, 10);
             baseFees.push(parseInt(policy.fee_base_msat, 10));
           }
         }
       } else { // Coming from the historical import
+        // @ts-ignore
         if (channel.fee_rate_milli_msat < 5000) {
+          // @ts-ignore
           avgFeeRate += parseInt(channel.fee_rate_milli_msat, 10);
+          // @ts-ignore
           feeRates.push(parseInt(channel.fee_rate_milli_msat), 10);
-        }  
+        }
+        // @ts-ignore
         if (channel.fee_base_msat < 5000) {
+          // @ts-ignore
           avgBaseFee += parseInt(channel.fee_base_msat, 10);
+          // @ts-ignore
           baseFees.push(parseInt(channel.fee_base_msat), 10);
         }
       }
