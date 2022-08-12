@@ -102,10 +102,20 @@ class Server {
       }
 
       const waitForReady = await page.$('meta[property="og:preview:loading"]');
+      let success = true;
       if (waitForReady != null) {
-        await page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 });
+        success = await Promise.race([
+          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+        ])
       }
-      return page.screenshot();
+      if (success) {
+        const screenshot = await page.screenshot();
+        return screenshot;
+      } else {
+        console.log(`failed to render page preview for ${action} due to client-side error. probably requested an invalid ID`);
+        page.repairRequested = true;
+      }
     } catch (e) {
       console.log(`failed to render page for ${action}`, e instanceof Error ? e.message : e);
       page.repairRequested = true;
@@ -118,11 +128,11 @@ class Server {
       const img = await this.cluster?.execute({ url: this.mempoolHost + path, path: path, action: 'screenshot' });
 
       if (!img) {
-        throw new Error('failed to render preview image');
+        res.status(500).send('failed to render page preview');
+      } else {
+        res.contentType('image/png');
+        res.send(img);
       }
-
-      res.contentType('image/png');
-      res.send(img);
     } catch (e) {
       console.log(e);
       res.status(500).send(e instanceof Error ? e.message : e);

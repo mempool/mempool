@@ -73,7 +73,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
                 this.isLoadingAddress = false;
                 this.error = err;
                 console.log(err);
-                this.openGraphService.waitOver('address-data');
+                this.openGraphService.fail('address-data');
                 return of(null);
               })
             );
@@ -99,7 +99,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           console.log(error);
           this.error = error;
           this.isLoadingAddress = false;
-          this.openGraphService.waitOver('address-data');
+          this.openGraphService.fail('address-data');
         }
       );
   }
