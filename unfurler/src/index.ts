@@ -51,8 +51,6 @@ class Server {
     this.server.listen(config.SERVER.HTTP_PORT, () => {
       console.log(`Mempool Unfurl Server is running on port ${config.SERVER.HTTP_PORT}`);
     });
-
-    this.initClusterPages();
   }
 
   async stopServer() {
@@ -70,16 +68,7 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
   }
 
-  async initClusterPages() {
-    for (let i = 0; i < config.PUPPETEER.CLUSTER_SIZE; i++) {
-      this.cluster?.execute({ action: 'init' });
-    }
-  }
-
   async clusterTask({ page, data: { url, path, action } }) {
-    if (action === 'init') {
-      return;
-    }
     try {
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
