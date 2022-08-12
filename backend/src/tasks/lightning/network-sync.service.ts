@@ -107,8 +107,6 @@ class NetworkSyncService {
     } catch (e) {
       logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
-
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.STATS_REFRESH_INTERVAL);
   }
 
   // This method look up the creation date of the earliest channel of the node
