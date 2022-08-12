@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AmountShortenerPipe implements PipeTransform {
   transform(num: number, ...args: any[]): unknown {
-    const digits = args[0] || 1;
+    const digits = args[0] ?? 1;
     const unit = args[1] || undefined;
 
     if (num < 1000) {
