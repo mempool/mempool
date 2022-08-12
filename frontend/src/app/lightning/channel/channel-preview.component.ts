@@ -52,8 +52,8 @@ export class ChannelPreviewComponent implements OnInit {
               }),
               catchError((err) => {
                 this.error = err;
-                this.openGraphService.waitOver('channel-map');
-                this.openGraphService.waitOver('channel-data');
+                this.openGraphService.fail('channel-map');
+                this.openGraphService.fail('channel-data');
                 return of(null);
               })
             );

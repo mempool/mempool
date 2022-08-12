@@ -81,8 +81,8 @@ export class NodePreviewComponent implements OnInit {
         }),
         catchError(err => {
           this.error = err;
-          this.openGraphService.waitOver('node-map');
-          this.openGraphService.waitOver('node-data');
+          this.openGraphService.fail('node-map');
+          this.openGraphService.fail('node-data');
           return [{
             alias: this.publicKey,
             public_key: this.publicKey,
