@@ -58,15 +58,33 @@ export class EnterpriseService {
     let statsUrl = '//stats.mempool.space/';
   
     if (!siteId) {
-      siteId = 5;
-      if (this.document.location.hostname === 'liquid.network') {
-        statsUrl = '//stats.liquid.network/';
-        siteId = 8;
-      } else if (this.document.location.hostname === 'bisq.markets') {
-        statsUrl = '//stats.bisq.markets/';
-        siteId = 7;
-      } else if (this.document.location.hostname !== 'mempool.space') {
-        return;
+      switch (this.document.location.hostname) {
+        case 'mempool.space':
+          statsUrl = '//stats.mempool.space/';
+          siteId = 5;
+          break;
+        case 'mempool.ninja':
+          statsUrl = '//stats.mempool.space/';
+          siteId = 4;
+          break;
+        case 'liquid.network':
+          siteId = 8;
+          statsUrl = '//stats.liquid.network/';
+          break;
+        case 'liquid.place':
+          siteId = 10;
+          statsUrl = '//stats.liquid.network/';
+          break;
+        case 'bisq.markets':
+          siteId = 7;
+          statsUrl = '//stats.bisq.markets/';
+          break;
+        case 'bisq.ninja':
+          statsUrl = '//stats.bisq.markets/';
+          siteId = 11;
+          break;
+        default:
+          return;
       }
     }
 
