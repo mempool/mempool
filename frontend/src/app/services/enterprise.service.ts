@@ -24,16 +24,16 @@ export class EnterpriseService {
       this.subdomain = subdomain;
       this.fetchSubdomainInfo();
       this.disableSubnetworks();
-    } else if (document.location.hostname === 'mempool.space') {
+    } else {
       this.insertMatomo();
     }
   }
 
-  getSubdomain() {
+  getSubdomain(): string {
     return this.subdomain;
   }
 
-  disableSubnetworks() {
+  disableSubnetworks(): void {
     this.stateService.env.TESTNET_ENABLED = false;
     this.stateService.env.LIQUID_ENABLED = false;
     this.stateService.env.LIQUID_TESTNET_ENABLED = false;
@@ -41,7 +41,7 @@ export class EnterpriseService {
     this.stateService.env.BISQ_ENABLED = false;
   }
 
-  fetchSubdomainInfo() {
+  fetchSubdomainInfo(): void {
     this.apiService.getEnterpriseInfo$(this.subdomain).subscribe((info) => {
       this.info = info;
       this.insertMatomo(info.site_id);
@@ -54,14 +54,20 @@ export class EnterpriseService {
     });
   }
 
-  insertMatomo(siteId = 5) {
+  insertMatomo(siteId?: number): void {
     let statsUrl = '//stats.mempool.space/';
-    if (this.document.location.hostname === 'liquid.network') {
-      statsUrl = '//stats.liquid.network/';
-      siteId = 8;
-    } else if (this.document.location.hostname === 'bisq.markets') {
-      statsUrl = '//stats.bisq.markets/';
-      siteId = 7;
+  
+    if (!siteId) {
+      siteId = 5;
+      if (this.document.location.hostname === 'liquid.network') {
+        statsUrl = '//stats.liquid.network/';
+        siteId = 8;
+      } else if (this.document.location.hostname === 'bisq.markets') {
+        statsUrl = '//stats.bisq.markets/';
+        siteId = 7;
+      } else if (this.document.location.hostname !== 'mempool.space') {
+        return;
+      }
     }
 
     // @ts-ignore
