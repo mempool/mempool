@@ -19,6 +19,7 @@ describe('Mempool Backend Config', () => {
         HTTP_PORT: 8999,
         SPAWN_CLUSTER_PROCS: 0,
         API_URL_PREFIX: '/api/v1/',
+        AUTOMATIC_BLOCK_REINDEXING: false,
         POLL_RATE_MS: 2000,
         CACHE_DIR: './cache',
         CLEAR_PROTECTION_MINUTES: 20,
