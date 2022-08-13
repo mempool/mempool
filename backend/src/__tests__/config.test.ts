@@ -34,7 +34,9 @@ describe('Mempool Backend Config', () => {
         EXTERNAL_MAX_RETRY: 1,
         EXTERNAL_RETRY_INTERVAL: 0,
         USER_AGENT: 'mempool',
-        STDOUT_LOG_MIN_PRIORITY: 'debug'
+        STDOUT_LOG_MIN_PRIORITY: 'debug',
+        POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
+        POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json'
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
