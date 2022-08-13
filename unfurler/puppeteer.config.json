@@ -1,11 +1,11 @@
 {
   "headless": true,
   "defaultViewport": {
-    "width": 1024,
-    "height": 512
+    "width": 1200,
+    "height": 600
   },
   "args": [
-    "--window-size=1024,512",
+    "--window-size=1200,600",
     "--autoplay-policy=user-gesture-required",
     "--disable-background-networking",
     "--disable-background-timer-throttling",

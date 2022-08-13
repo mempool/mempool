@@ -1,6 +1,6 @@
 {
   "name": "mempool-unfurl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Renderer for mempool open graph link preview images",
   "repository": {
     "type": "git",
