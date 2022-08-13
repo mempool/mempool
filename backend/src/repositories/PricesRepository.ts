@@ -27,6 +27,11 @@ class PricesRepository {
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
+  public async $getLatestPriceId(): Promise<number | null> {
+    const [oldestRow] = await DB.query(`SELECT id from prices WHERE USD != -1 ORDER BY time DESC LIMIT 1`);
+    return oldestRow[0] ? oldestRow[0].id : null;
+  }
+
   public async $getLatestPriceTime(): Promise<number> {
     const [oldestRow] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != -1 ORDER BY time DESC LIMIT 1`);
     return oldestRow[0] ? oldestRow[0].time : 0;

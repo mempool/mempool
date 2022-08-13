@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { isMobile } from 'src/app/shared/common.utils';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
@@ -18,11 +19,13 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   // @ts-ignore
   paginationSize: 'sm' | 'lg' = 'md';
   paginationMaxSize = 10;
-  itemsPerPage = 25;
+  itemsPerPage = 10;
   page = 1;
   channelsPage$ = new BehaviorSubject<number>(1);
   channelStatusForm: FormGroup;
   defaultStatus = 'open';
+  status = 'open';
+  publicKeySize = 25;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -31,9 +34,12 @@ export class ChannelsListComponent implements OnInit, OnChanges {
     this.channelStatusForm = this.formBuilder.group({
       status: [this.defaultStatus],
     });
+    if (isMobile()) {
+      this.publicKeySize = 12;
+    }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (document.body.clientWidth < 670) {
       this.paginationSize = 'sm';
       this.paginationMaxSize = 3;
@@ -41,28 +47,36 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false })
-    this.channelsStatusChangedEvent.emit(this.defaultStatus);
+    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false });
+    this.channelsPage$.next(1);
 
-    this.channels$ = combineLatest([
+    this.channels$ = merge(
       this.channelsPage$,
-      this.channelStatusForm.get('status').valueChanges.pipe(startWith(this.defaultStatus))
-    ])
+      this.channelStatusForm.get('status').valueChanges,
+    )
     .pipe(
-      switchMap(([page, status]) => {
-        this.channelsStatusChangedEvent.emit(status);
-        return this.lightningApiService.getChannelsByNodeId$(this.publicKey, (page -1) * this.itemsPerPage, status);
+      tap((val) => {
+        if (typeof val === 'string') {
+          this.status = val;
+          this.page = 1;
+        } else if (typeof val === 'number') {
+          this.page = val;
+        }
+      }),
+      switchMap(() => {
+          this.channelsStatusChangedEvent.emit(this.status);
+          return this.lightningApiService.getChannelsByNodeId$(this.publicKey, (this.page - 1) * this.itemsPerPage, this.status);
       }),
       map((response) => {
         return {
           channels: response.body,
-          totalItems: parseInt(response.headers.get('x-total-count'), 10)
+          totalItems: parseInt(response.headers.get('x-total-count'), 10) + 1 
         };
       }),
     );
   }
 
-  pageChange(page: number) {
+  pageChange(page: number): void {
     this.channelsPage$.next(page);
   }
 

@@ -1,5 +1,7 @@
 import { ILightningApi } from '../lightning-api.interface';
 import FundingTxFetcher from '../../../tasks/lightning/sync-tasks/funding-tx-fetcher';
+import logger from '../../../logger';
+import { Common } from '../../common';
 
 /**
  * Convert a clightning "listnode" entry to a lnd node entry
@@ -23,12 +25,17 @@ export function convertNode(clNode: any): ILightningApi.Node {
 /**
  * Convert clightning "listchannels" response to lnd "describegraph.edges" format
  */
- export async function convertAndmergeBidirectionalChannels(clChannels: any[]): Promise<ILightningApi.Channel[]> {
+export async function convertAndmergeBidirectionalChannels(clChannels: any[]): Promise<ILightningApi.Channel[]> {
+  logger.info('Converting clightning nodes and channels to lnd graph format');
+
+  let loggerTimer = new Date().getTime() / 1000;
+  let channelProcessed = 0;
+
   const consolidatedChannelList: ILightningApi.Channel[] = [];
   const clChannelsDict = {};
   const clChannelsDictCount = {};
 
-  for (const clChannel of clChannels) {    
+  for (const clChannel of clChannels) {
     if (!clChannelsDict[clChannel.short_channel_id]) {
       clChannelsDict[clChannel.short_channel_id] = clChannel;
       clChannelsDictCount[clChannel.short_channel_id] = 1;
@@ -39,17 +46,29 @@ export function convertNode(clNode: any): ILightningApi.Node {
       delete clChannelsDict[clChannel.short_channel_id];
       clChannelsDictCount[clChannel.short_channel_id]++;
     }
+
+    const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
+    if (elapsedSeconds > 10) {
+      logger.info(`Building complete channels from clightning output. Channels processed: ${channelProcessed + 1} of ${clChannels.length}`);
+      loggerTimer = new Date().getTime() / 1000;
+    }
+
+    ++channelProcessed;
   }
-  for (const short_channel_id of Object.keys(clChannelsDict)) {
+
+  channelProcessed = 0;
+  const keys = Object.keys(clChannelsDict);
+  for (const short_channel_id of keys) {
     consolidatedChannelList.push(await buildIncompleteChannel(clChannelsDict[short_channel_id]));
+
+    const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
+    if (elapsedSeconds > 10) {
+      logger.info(`Building partial channels from clightning output. Channels processed: ${channelProcessed + 1} of ${keys.length}`);
+      loggerTimer = new Date().getTime() / 1000;
+    }
   }
 
   return consolidatedChannelList;
-}
-
-export function convertChannelId(channelId): string {
-  const s = channelId.split('x').map(part => parseInt(part));
-  return BigInt((s[0] << 40) | (s[1] << 16) | s[2]).toString();
 }
 
 /**
@@ -64,7 +83,7 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
   const outputIdx = parts[2];
 
   return {
-    channel_id: clChannelA.short_channel_id,
+    channel_id: Common.channelShortIdToIntegerId(clChannelA.short_channel_id),
     capacity: clChannelA.satoshis,
     last_update: lastUpdate,
     node1_policy: convertPolicy(clChannelA),
@@ -79,13 +98,13 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
  * Convert one clightning "getchannels" entry into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy of only one node
  */
- async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Channel> {
+async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Channel> {
   const tx = await FundingTxFetcher.$fetchChannelOpenTx(clChannel.short_channel_id);
   const parts = clChannel.short_channel_id.split('x');
   const outputIdx = parts[2];
 
   return {
-    channel_id: clChannel.short_channel_id,
+    channel_id: Common.channelShortIdToIntegerId(clChannel.short_channel_id),
     capacity: clChannel.satoshis,
     last_update: clChannel.last_update ?? 0,
     node1_policy: convertPolicy(clChannel),
@@ -99,7 +118,7 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
 /**
  * Convert a clightning "listnode" response to a lnd channel policy format
  */
- function convertPolicy(clChannel: any): ILightningApi.RoutingPolicy {
+function convertPolicy(clChannel: any): ILightningApi.RoutingPolicy {
   return {
     time_lock_delta: 0, // TODO
     min_htlc: clChannel.htlc_minimum_msat.slice(0, -4),

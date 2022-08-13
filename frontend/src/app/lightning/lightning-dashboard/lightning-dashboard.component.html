@@ -4,6 +4,7 @@
 
   <div class="row row-cols-1 row-cols-md-2">
 
+    <!-- Network capacity/channels/nodes -->
     <div class="col">
       <div class="main-title">
         <span i18n="lightning.statistics-title">Network Statistics</span>&nbsp;
@@ -17,6 +18,7 @@
       </div>
     </div>
 
+    <!-- Channels stats -->
     <div class="col">
       <div class="main-title">
         <span i18n="lightning.statistics-title">Channels Statistics</span>&nbsp;
@@ -30,9 +32,21 @@
       </div>
     </div>
 
+    <!-- ISP pie chart -->
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card graph-card">
+        <div class="card-body pl-2 pr-2">
+          <app-nodes-per-isp-chart [widget]="true"></app-nodes-per-isp-chart>
+          <div class="mt-2"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/lightning/nodes-per-isp' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+        </div>
+      </div>
+    </div>
+
     <div class="col">
-      <div class="card">
-        <div class="card-body">
+      <div class="card graph-card">
+        <div class="card-body pl-2 pr-2 pt-1">
+          <h5 class="card-title mt-3" i18n="lightning.network-history">Lightning network history</h5>
+          <app-lightning-statistics-chart [widget]=true></app-lightning-statistics-chart>
           <app-nodes-networks-chart [widget]=true></app-nodes-networks-chart>
           <div class="mt-1"><a [routerLink]="['/graphs/lightning/nodes-networks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
@@ -42,17 +56,8 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <app-lightning-statistics-chart [widget]=true></app-lightning-statistics-chart>
-          <div class="mt-1"><a [routerLink]="['/graphs/lightning/capacity' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
           <h5 class="card-title">Top Capacity Nodes</h5>
-          <app-nodes-list [nodes$]="nodesByCapacity$"></app-nodes-list>
+          <app-nodes-list [nodes$]="nodesByCapacity$" [show]="'mobile-capacity'"></app-nodes-list>
           <!-- <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div> -->
         </div>
       </div>
@@ -62,7 +67,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Most Connected Nodes</h5>
-          <app-nodes-list [nodes$]="nodesByChannels$"></app-nodes-list>
+          <app-nodes-list [nodes$]="nodesByChannels$" [show]="'mobile-channels'"></app-nodes-list>
           <!-- <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div> -->
         </div>
       </div>

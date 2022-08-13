@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" [routerLink]="['/' | relativeUrl]">
+  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
       <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
