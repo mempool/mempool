@@ -46,12 +46,14 @@
                 </ng-container>
                 <ng-template #liquid_link_example>
                   <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_link_example">
-                    <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank" rel="nofollow">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                    <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                    <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
                   </ng-container>
                 </ng-template>
                 <ng-template #default_link_example>
                   <ng-container *ngIf="item.httpRequestMethod === 'GET'">
-                    <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                    <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                    <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
                   </ng-container>
                 </ng-template>
                 <div *ngIf="item.httpRequestMethod === 'POST'">{{ item.httpRequestMethod }} {{ item.urlString }}</div>
