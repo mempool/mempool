@@ -1,7 +1,7 @@
 name: Docker build on tag
 env:
   DOCKER_CLI_EXPERIMENTAL: enabled
-  TAG_FMT: '^refs/tags/(((.?[0-9]+){3,4}))$'
+  TAG_FMT: "^refs/tags/(((.?[0-9]+){3,4}))$"
   DOCKER_BUILDKIT: 0
   COMPOSE_DOCKER_CLI_BUILD: 0
 
@@ -21,16 +21,46 @@ jobs:
         service:
           - frontend
           - backend
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
     name: Build and push to DockerHub
     steps:
+      # Workaround based on JonasAlfredsson/docker-on-tmpfs@v1.0.1
+      - name: Replace the current swap file
+        shell: bash
+        run: |
+          sudo swapoff /mnt/swapfile
+          sudo rm -v /mnt/swapfile
+          sudo fallocate -l 10G /mnt/swapfile
+          sudo chmod 600 /mnt/swapfile
+          sudo mkswap /mnt/swapfile
+          sudo swapon /mnt/swapfile
+
+      - name: Show current memory and swap status
+        shell: bash
+        run: |
+          sudo free -h
+          echo
+          sudo swapon --show
+
+      - name: Mount a tmpfs over /var/lib/docker
+        shell: bash
+        run: |
+          if [ ! -d "/var/lib/docker" ]; then
+            echo "Directory '/var/lib/docker' not found"
+            exit 1
+          fi
+          sudo mount -t tmpfs -o size=10G tmpfs /var/lib/docker
+          sudo systemctl restart docker
+          sudo df -h | grep docker
+
       - name: Set env variables
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
       - name: Show set environment variables
         run: |
           printf "      TAG: %s\n"  "$TAG"
-      
+
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
