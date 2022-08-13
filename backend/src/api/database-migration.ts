@@ -757,7 +757,7 @@ class DatabaseMigration {
     return `CREATE TABLE IF NOT EXISTS nodes_sockets (
       public_key varchar(66) NOT NULL,
       socket varchar(100) NOT NULL,
-      type enum('ipv4', 'ipv6', 'torv2', 'torv3', 'i2p', 'dns') NULL,
+      type enum('ipv4', 'ipv6', 'torv2', 'torv3', 'i2p', 'dns', 'websocket') NULL,
       UNIQUE KEY public_key_socket (public_key, socket),
       INDEX (public_key)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
