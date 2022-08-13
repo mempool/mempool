@@ -1,0 +1,55 @@
+<div class="box preview-box" *ngIf="address && !error">
+  <div class="row">
+    <div class="col-md">
+      <div class="title-address">
+        <h1 i18n="shared.address">Address</h1>
+      </div>
+      <a [routerLink]="['/address/' | relativeUrl, addressString]" class="address-link" >
+        <span class="truncated-address">{{addressString.slice(0,-4)}}</span><span class="last-four">{{addressString.slice(-4)}}</span>
+      </a>
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr *ngIf="addressInfo && addressInfo.unconfidential">
+            <td i18n="address.unconfidential">Unconfidential</td>
+            <td><a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+              <span class="d-inline d-lg-none">{{ addressInfo.unconfidential | shortenString : 14 }}</span>
+              <span class="d-none d-lg-inline">{{ addressInfo.unconfidential }}</span>
+            </a> <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard></td>
+          </tr>
+          <ng-template [ngIf]="!address.electrum">
+            <tr>
+              <td i18n="address.total-received">Total received</td>
+              <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received" [noFiat]="true"></app-amount></td>
+            </tr>
+            <tr>
+              <td i18n="address.total-sent">Total sent</td>
+              <td *ngIf="address.chain_stats.spent_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="sent" [noFiat]="true"></app-amount></td>
+            </tr>
+          </ng-template>
+          <tr>
+            <td i18n="address.balance">Balance</td>
+            <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount></td>
+          </tr>
+          <tr>
+            <td i18n="address.transactions">Transactions</td>
+            <td>{{ txCount | number }}</td>
+          </tr>
+          <tr>
+            <td i18n="address.unspent_txos">Unspent TXOs</td>
+            <td>{{ totalUnspent | number }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="w-100 d-block d-md-none"></div>
+    <div class="col-md qrcode-col">
+      <div class="qr-wrapper">
+        <app-qrcode [data]="address.address" [size]="370"></app-qrcode>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #confidentialTd>
+  <td i18n="shared.confidential">Confidential</td>
+</ng-template>

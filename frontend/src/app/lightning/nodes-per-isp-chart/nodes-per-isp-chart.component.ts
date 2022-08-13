@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { map, Observable, share, tap } from 'rxjs';
+import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
 import { chartColors } from 'src/app/app.constants';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { StateService } from 'src/app/services/state.service';
+import { isMobile } from 'src/app/shared/common.utils';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
@@ -17,7 +18,7 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {
-  miningWindowPreference: string;
+  @Input() widget: boolean = false;
 
   isLoading = true;
   chartOptions: EChartsOption = {};
@@ -25,11 +26,14 @@ export class NodesPerISPChartComponent implements OnInit {
     renderer: 'svg',
   };
   timespan = '';
-  chartInstance: any = undefined;
+  chartInstance = undefined;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
   nodesPerAsObservable$: Observable<any>;
+  showTorObservable$: Observable<boolean>;
+  groupBySubject = new Subject<boolean>();
+  showTorSubject = new Subject<boolean>();
 
   constructor(
     private apiService: ApiService,
@@ -44,31 +48,62 @@ export class NodesPerISPChartComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes per ISP`);
 
-    this.nodesPerAsObservable$ = this.apiService.getNodesPerAs()
+    this.showTorObservable$ = this.showTorSubject.asObservable();
+
+    this.nodesPerAsObservable$ = combineLatest([
+      this.groupBySubject.pipe(startWith(false)),
+      this.showTorSubject.pipe(startWith(false)),
+    ])
       .pipe(
-        tap(data => {
-          this.isLoading = false;
-          this.prepareChartOptions(data);
-        }),
-        map(data => {
-          for (let i = 0; i < data.length; ++i) {
-            data[i].rank = i + 1;
-          }
-          return data.slice(0, 100);
+        switchMap((selectedFilters) => {
+          return this.apiService.getNodesPerAs(
+            selectedFilters[0] ? 'capacity' : 'node-count',
+            selectedFilters[1] // Show Tor nodes
+          )
+            .pipe(
+              tap(data => {
+                this.isLoading = false;
+                this.prepareChartOptions(data);
+              }),
+              map(data => {
+                for (let i = 0; i < data.length; ++i) {
+                  data[i].rank = i + 1;
+                }
+                return {
+                  taggedISP: data.length,
+                  taggedCapacity: data.reduce((partialSum, isp) => partialSum + isp.capacity, 0),
+                  taggedNodeCount: data.reduce((partialSum, isp) => partialSum + isp.count, 0),
+                  data: data.slice(0, 100),
+                };
+              })
+            );
         }),
         share()
       );
+
+    if (this.widget) {
+      this.showTorSubject.next(false);
+      this.groupBySubject.next(false);  
+    }
   }
 
-  generateChartSerieData(as) {
-    const shareThreshold = this.isMobile() ? 2 : 0.5;
+  generateChartSerieData(as): PieSeriesOption[] {
+    let shareThreshold = 0.5;
+    if (this.widget && isMobile() || isMobile()) {
+      shareThreshold = 1;
+    } else if (this.widget) {
+      shareThreshold = 0.75;
+    }
+    
     const data: object[] = [];
     let totalShareOther = 0;
     let totalNodeOther = 0;
 
     let edgeDistance: string | number = '10%';
-    if (this.isMobile()) {
+    if (isMobile() && this.widget) {
       edgeDistance = 0;
+    } else if (isMobile() && !this.widget || this.widget) {
+      edgeDistance = 10;
     }
 
     as.forEach((as) => {
@@ -78,16 +113,20 @@ export class NodesPerISPChartComponent implements OnInit {
         return;
       }
       data.push({
+        itemStyle: {
+          color: as.ispId === null ? '#7D4698' : undefined,
+        },
         value: as.share,
-        name: as.name + (this.isMobile() ? `` : ` (${as.share}%)`),
+        name: as.name + (isMobile() || this.widget ? `` : ` (${as.share}%)`),
         label: {
           overflow: 'truncate',
+          width: isMobile() ? 75 : this.widget ? 125 : 250,
           color: '#b1b1b1',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
         tooltip: {
-          show: !this.isMobile(),
+          show: !isMobile(),
           backgroundColor: 'rgba(17, 19, 31, 1)',
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -112,7 +151,7 @@ export class NodesPerISPChartComponent implements OnInit {
         color: 'grey',
       },
       value: totalShareOther,
-      name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name: 'Other' + (isMobile() || this.widget ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'truncate',
         color: '#b1b1b1',
@@ -138,14 +177,14 @@ export class NodesPerISPChartComponent implements OnInit {
     return data;
   }
 
-  prepareChartOptions(as) {
+  prepareChartOptions(as): void {
     let pieSize = ['20%', '80%']; // Desktop
-    if (this.isMobile()) {
+    if (isMobile() && !this.widget) {
       pieSize = ['15%', '60%'];
     }
 
     this.chartOptions = {
-      color: chartColors,
+      color: chartColors.slice(3),
       tooltip: {
         trigger: 'item',
         textStyle: {
@@ -164,8 +203,8 @@ export class NodesPerISPChartComponent implements OnInit {
             lineStyle: {
               width: 2,
             },
-            length: this.isMobile() ? 1 : 20,
-            length2: this.isMobile() ? 1 : undefined,
+            length: isMobile() ? 1 : 20,
+            length2: isMobile() ? 1 : undefined,
           },
           label: {
             fontSize: 14,
@@ -191,18 +230,14 @@ export class NodesPerISPChartComponent implements OnInit {
     };
   }
 
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
-
-  onChartInit(ec) {
+  onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
     }
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
-      if (e.data.data === 9999) { // "Other"
+      if (e.data.data === 9999 || e.data.data === null) { // "Other" or Tor
         return;
       }
       this.zone.run(() => {
@@ -212,7 +247,7 @@ export class NodesPerISPChartComponent implements OnInit {
     });
   }
 
-  onSaveChart() {
+  onSaveChart(): void {
     const now = new Date();
     this.chartOptions.backgroundColor = '#11131f';
     this.chartInstance.setOption(this.chartOptions);
@@ -222,6 +257,14 @@ export class NodesPerISPChartComponent implements OnInit {
     }), `ln-nodes-per-as-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  onTorToggleStatusChanged(e): void {
+    this.showTorSubject.next(e);
+  }
+
+  onGroupToggleStatusChanged(e): void {
+    this.groupBySubject.next(e);
   }
 
   isEllipsisActive(e) {

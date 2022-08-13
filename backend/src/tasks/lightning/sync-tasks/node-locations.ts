@@ -6,7 +6,10 @@ import DB from '../../../database';
 import logger from '../../../logger';
 
 export async function $lookupNodeLocation(): Promise<void> {
-  logger.info(`Running node location updater using Maxmind...`);
+  let loggerTimer = new Date().getTime() / 1000;
+  let progress = 0;
+
+  logger.info(`Running node location updater using Maxmind`);
   try {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
@@ -18,21 +21,24 @@ export async function $lookupNodeLocation(): Promise<void> {
       for (const socket of sockets) {
         const ip = socket.substring(0, socket.lastIndexOf(':')).replace('[', '').replace(']', '');
         const hasClearnet = [4, 6].includes(net.isIP(ip));
+
         if (hasClearnet && ip !== '127.0.1.1' && ip !== '127.0.0.1') {
           const city = lookupCity.get(ip);
           const asn = lookupAsn.get(ip);
           const isp = lookupIsp.get(ip);
 
           if (city && (asn || isp)) {
-            const query = `UPDATE nodes SET 
-              as_number = ?, 
-              city_id = ?, 
-              country_id = ?, 
-              subdivision_id = ?, 
-              longitude = ?, 
-              latitude = ?, 
-              accuracy_radius = ?
-            WHERE public_key = ?`;
+            const query = `
+              UPDATE nodes SET 
+                as_number = ?, 
+                city_id = ?, 
+                country_id = ?, 
+                subdivision_id = ?, 
+                longitude = ?, 
+                latitude = ?, 
+                accuracy_radius = ?
+              WHERE public_key = ?
+            `;
 
             const params = [
               isp?.autonomous_system_number ?? asn?.autonomous_system_number,
@@ -46,25 +52,25 @@ export async function $lookupNodeLocation(): Promise<void> {
             ];
             await DB.query(query, params);
 
-             // Store Continent
-             if (city.continent?.geoname_id) {
-               await DB.query(
+            // Store Continent
+            if (city.continent?.geoname_id) {
+              await DB.query(
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'continent', ?)`,
                 [city.continent?.geoname_id, JSON.stringify(city.continent?.names)]);
-             }
+            }
 
-             // Store Country
-             if (city.country?.geoname_id) {
-               await DB.query(
+            // Store Country
+            if (city.country?.geoname_id) {
+              await DB.query(
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'country', ?)`,
                 [city.country?.geoname_id, JSON.stringify(city.country?.names)]);
-             }
+            }
 
             // Store Country ISO code
             if (city.country?.iso_code) {
               await DB.query(
-               `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'country_iso_code', ?)`,
-               [city.country?.geoname_id, city.country?.iso_code]);
+                `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'country_iso_code', ?)`,
+                [city.country?.geoname_id, city.country?.iso_code]);
             }
 
             // Store Division
@@ -88,10 +94,17 @@ export async function $lookupNodeLocation(): Promise<void> {
                 [isp?.autonomous_system_number ?? asn?.autonomous_system_number, JSON.stringify(isp?.isp ?? asn?.autonomous_system_organization)]);
             }
           }
+
+          ++progress;
+          const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
+          if (elapsedSeconds > 10) {
+            logger.info(`Updating node location data ${progress}/${nodes.length}`);
+            loggerTimer = new Date().getTime() / 1000;
+          }
         }
       }
     }
-    logger.info(`Node location data updated.`);
+    logger.info(`${progress} nodes location data updated`);
   } catch (e) {
     logger.err('$lookupNodeLocation() error: ' + (e instanceof Error ? e.message : e));
   }

@@ -1,0 +1,13 @@
+{
+  "SERVER": {
+    "HOST": "https://mempool.space",
+    "HTTP_PORT": 8001
+  },
+  "MEMPOOL": {
+    "HTTP_HOST": "https://mempool.space",
+    "HTTP_PORT": 443
+  },
+  "PUPPETEER": {
+    "CLUSTER_SIZE": 8
+  }
+}

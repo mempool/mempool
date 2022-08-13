@@ -6,17 +6,38 @@ import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
+import PricesRepository from './repositories/PricesRepository';
 
 class Indexer {
   runIndexer = true;
   indexerRunning = false;
-
-  constructor() {
-  }
+  tasksRunning: string[] = [];
 
   public reindex() {
     if (Common.indexingEnabled()) {
       this.runIndexer = true;
+    }
+  }
+
+  public async runSingleTask(task: 'blocksPrices') {
+    if (!Common.indexingEnabled()) {
+      return;
+    }
+
+    if (task === 'blocksPrices' && !this.tasksRunning.includes(task)) {
+      this.tasksRunning.push(task);
+      const lastestPriceId = await PricesRepository.$getLatestPriceId();
+      if (priceUpdater.historyInserted === false || lastestPriceId === null) {
+        logger.debug(`Blocks prices indexer is waiting for the price updater to complete`)
+        setTimeout(() => {
+          this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask != task)
+          this.runSingleTask('blocksPrices');
+        }, 10000);
+      } else {
+        logger.debug(`Blocks prices indexer will run now`)
+        await mining.$indexBlockPrices();
+        this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask != task)
+      }
     }
   }
 
@@ -50,7 +71,7 @@ class Indexer {
         return;
       }
 
-      await mining.$indexBlockPrices();
+      this.runSingleTask('blocksPrices');
       await mining.$indexDifficultyAdjustments();
       await this.$resetHashratesIndexingState(); // TODO - Remove this as it's not efficient
       await mining.$generateNetworkHashrateHistory();
