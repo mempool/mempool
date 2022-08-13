@@ -11,6 +11,8 @@ class ChannelsRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/search/:search', this.$searchChannelsById)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/:short_id', this.$getChannel)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels', this.$getChannelsForNode)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels-geo', this.$getAllChannelsGeo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels-geo/:publicKey', this.$getAllChannelsGeo)
     ;
   }
 
@@ -30,6 +32,9 @@ class ChannelsRoutes {
         res.status(404).send('Channel not found');
         return;
       }
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(channel);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -44,9 +49,11 @@ class ChannelsRoutes {
       }
       const index = parseInt(typeof req.query.index === 'string' ? req.query.index : '0', 10) || 0;
       const status: string = typeof req.query.status === 'string' ? req.query.status : '';
-      const length = 25;
-      const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, length, status);
+      const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, 10, status);
       const channelsCount = await channelsApi.$getChannelsCountForNode(req.query.public_key, status);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.header('X-Total-Count', channelsCount.toString());
       res.json(channels);
     } catch (e) {
@@ -88,6 +95,15 @@ class ChannelsRoutes {
         inputs: inputs,
         outputs: outputs,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getAllChannelsGeo(req: Request, res: Response) {
+    try {
+      const channels = await channelsApi.$getAllChannelsGeo(req.params?.publicKey);
+      res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

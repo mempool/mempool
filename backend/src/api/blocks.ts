@@ -22,6 +22,8 @@ import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
+import PricesRepository from '../repositories/PricesRepository';
+import priceUpdater from '../tasks/price-updater';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -457,6 +459,19 @@ class Blocks {
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
 
+          const lastestPriceId = await PricesRepository.$getLatestPriceId();
+          if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
+            await blocksRepository.$saveBlockPrices([{
+              height: blockExtended.height,
+              priceId: lastestPriceId,
+            }]);
+          } else {
+            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`)
+            setTimeout(() => {
+              indexer.runSingleTask('blocksPrices');
+            }, 10000);
+          }
+
           // Save blocks summary for visualization if it's enabled
           if (Common.blocksSummariesIndexingEnabled() === true) {
             await this.$getStrippedBlockTransactions(blockExtended.id, true);
@@ -578,7 +593,7 @@ class Blocks {
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+      await BlocksSummariesRepository.$saveSummary({height: block.height, mined: summary});
     }
 
     return summary.transactions;

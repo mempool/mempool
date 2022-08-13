@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption} from 'echarts';
+import { EChartsOption, graphic} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
@@ -9,6 +9,7 @@ import { MiningService } from 'src/app/services/mining.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
+import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 
 @Component({
   selector: 'app-nodes-networks-chart',
@@ -26,7 +27,7 @@ import { LightningApiService } from '../lightning-api.service';
 })
 export class NodesNetworksChartComponent implements OnInit {
   @Input() right: number | string = 45;
-  @Input() left: number | string = 55;
+  @Input() left: number | string = 45;
   @Input() widget = false;
 
   miningWindowPreference: string;
@@ -51,7 +52,8 @@ export class NodesNetworksChartComponent implements OnInit {
     private lightningApiService: LightningApiService,
     private formBuilder: FormBuilder,
     private storageService: StorageService,
-    private miningService: MiningService
+    private miningService: MiningService,
+    private amountShortenerPipe: AmountShortenerPipe,
   ) {
   }
 
@@ -59,9 +61,9 @@ export class NodesNetworksChartComponent implements OnInit {
     let firstRun = true;
 
     if (this.widget) {
-      this.miningWindowPreference = '1y';
+      this.miningWindowPreference = '3y';
     } else {
-      this.seoService.setTitle($localize`Nodes per network`);
+      this.seoService.setTitle($localize`Lightning nodes per network`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -82,12 +84,17 @@ export class NodesNetworksChartComponent implements OnInit {
             .pipe(
               tap((response) => {
                 const data = response.body;
-                this.prepareChartOptions({
-                  node_count: data.map(val => [val.added * 1000, val.node_count]), 
+                const chartData = {
                   tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
                   clearnet_nodes: data.map(val => [val.added * 1000, val.clearnet_nodes]),
                   unannounced_nodes: data.map(val => [val.added * 1000, val.unannounced_nodes]),
-                });
+                };
+                let maxYAxis = 0;
+                for (const day of data) {
+                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes);
+                }
+                maxYAxis = Math.ceil(maxYAxis / 3000) * 3000;
+                this.prepareChartOptions(chartData, maxYAxis);
                 this.isLoading = false;
               }),
               map((response) => {
@@ -101,9 +108,9 @@ export class NodesNetworksChartComponent implements OnInit {
       );
   }
 
-  prepareChartOptions(data) {
+  prepareChartOptions(data, maxYAxis) {
     let title: object;
-    if (data.node_count.length === 0) {
+    if (data.tor_nodes.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -111,24 +118,30 @@ export class NodesNetworksChartComponent implements OnInit {
         },
         text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
-        top: 'center'
+        top: 'top',
+      };
+    } else if (this.widget) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 11
+        },
+        text: $localize`Nodes per network`,
+        left: 'center',
+        top: 11,
+        zlevel: 10,
       };
     }
 
     this.chartOptions = {
       title: title,
       animation: false,
-      color: [
-        '#D81B60',
-        '#039BE5',
-        '#7CB342',
-        '#FFB300',
-      ],
       grid: {
-        top: 40,
-        bottom: this.widget ? 30 : 70,
-        right: this.right,
-        left: this.left,
+        height: this.widget ? 100 : undefined,
+        top: this.widget ? 10 : 40,
+        bottom: this.widget ? 0 : 70,
+        right: (this.isMobile() && this.widget) ? 35 : this.right,
+        left: (this.isMobile() && this.widget) ? 40 :this.left,
       },
       tooltip: {
         show: !this.isMobile() || !this.widget,
@@ -145,33 +158,34 @@ export class NodesNetworksChartComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks) => {
+          let total = 0;
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
           let tooltip = `<b style="color: white; margin-left: 2px">${date}</b><br>`;
 
-          for (const tick of ticks) {
-            if (tick.seriesIndex === 0) { // Total
+          for (const tick of ticks.reverse()) {
+            if (tick.seriesIndex === 0) { // Tor
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
-            } else if (tick.seriesIndex === 1) { // Tor
+            } else if (tick.seriesIndex === 1) { // Clearnet
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
-            } else if (tick.seriesIndex === 2) { // Clearnet
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
-            } else if (tick.seriesIndex === 3) { // Unannounced
+            } else if (tick.seriesIndex === 2) { // Unannounced
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             }
             tooltip += `<br>`;
+            total += tick.data[1];
           }
+          tooltip += `<b>Total:</b> ${formatNumber(total, this.locale, '1.0-0')} nodes`;
 
           return tooltip;
         }
       },
-      xAxis: data.node_count.length === 0 ? undefined : {
+      xAxis: data.tor_nodes.length === 0 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      legend: data.node_count.length === 0 ? undefined : {
+      legend: this.widget || data.tor_nodes.length === 0 ? undefined : {
         padding: 10,
         data: [
           {
@@ -207,24 +221,25 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
         ],
-        selected: JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
+        selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
           'Total': true,
           'Tor': true,
           'Clearnet': true,
           'Unannounced': true,
         }
       },
-      yAxis: data.node_count.length === 0 ? undefined : [
+      yAxis: data.tor_nodes.length === 0 ? undefined : [
         {
           type: 'value',
           position: 'left',
-          min: (value) => {
-            return value.min * 0.9;
-          },
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
-              return `${formatNumber(Math.round(val * 100) / 100, this.locale, '1.0-0')}`;
+            formatter: (val: number): string => {
+              if (this.widget) {
+                return `${this.amountShortenerPipe.transform(val, 0)}`;
+              } else {
+                return `${formatNumber(Math.round(val), this.locale, '1.0-0')}`;
+              }
             }
           },
           splitLine: {
@@ -232,49 +247,59 @@ export class NodesNetworksChartComponent implements OnInit {
               type: 'dotted',
               color: '#ffffff66',
               opacity: 0.25,
-            }
-          },
-        }
-      ],
-      series: data.node_count.length === 0 ? [] : [
-        {
-          zlevel: 1,
-          name: $localize`Total`,
-          showSymbol: false,
-          symbol: 'none',
-          data: data.node_count,
-          type: 'line',
-          lineStyle: {
-            width: 2,
-          },
-          markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: {
-              type: 'solid',
-              color: '#ffffff66',
-              opacity: 1,
-              width: 1,
             },
           },
-          areaStyle: {
-            opacity: 0.25,
-          },
+          max: maxYAxis,
+          min: 0,
+          interval: 3000,
         },
+        {
+          type: 'value',
+          position: 'right',
+          axisLabel: {
+            color: 'rgb(110, 112, 121)',
+            formatter: (val: number): string => {
+              if (this.widget) {
+                return `${this.amountShortenerPipe.transform(val, 0)}`;
+              } else {
+                return `${formatNumber(Math.round(val), this.locale, '1.0-0')}`;
+              }
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dotted',
+              color: '#ffffff66',
+              opacity: 0.25,
+            },
+          },
+          max: maxYAxis,
+          min: 0,
+          interval: 3000,
+        }
+      ],
+      series: data.tor_nodes.length === 0 ? [] : [
         {
           zlevel: 1,
           yAxisIndex: 0,
-          name: $localize`Tor`,
+          name: $localize`Unannounced`,
           showSymbol: false,
           symbol: 'none',
-          data: data.tor_nodes,
+          data: data.unannounced_nodes,
           type: 'line',
           lineStyle: {
             width: 2,
           },
           areaStyle: {
-            opacity: 0.25,
+            opacity: 0.5,
           },
+          stack: 'Total',
+          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+            { offset: 0, color: '#D81B60' },
+            { offset: 1, color: '#D81B60AA' },
+          ]),
+
+          smooth: true,
         },
         {
           zlevel: 1,
@@ -288,24 +313,36 @@ export class NodesNetworksChartComponent implements OnInit {
             width: 2,
           },
           areaStyle: {
-            opacity: 0.25,
+            opacity: 0.5,
           },
+          stack: 'Total',
+          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+            { offset: 0, color: '#FFB300' },
+            { offset: 1, color: '#FFB300AA' },
+          ]),
+          smooth: true,
         },
         {
           zlevel: 1,
-          yAxisIndex: 0,
-          name: $localize`Unannounced`,
+          yAxisIndex: 1,
+          name: $localize`Tor`,
           showSymbol: false,
           symbol: 'none',
-          data: data.unannounced_nodes,
+          data: data.tor_nodes,
           type: 'line',
           lineStyle: {
             width: 2,
           },
           areaStyle: {
-            opacity: 0.25,
+            opacity: 0.5,
           },
-        } 
+          stack: 'Total',
+          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+            { offset: 0, color: '#7D4698' },
+            { offset: 1, color: '#7D4698AA' },
+          ]),
+          smooth: true,
+        },
       ],
       dataZoom: this.widget ? null : [{
         type: 'inside',

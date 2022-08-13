@@ -87,6 +87,11 @@ body {
   box-shadow: 0.125rem 0.125rem 0.25rem rgba(0,0,0,0.075);
 }
 
+.preview-box {
+  min-height: 512px;
+  padding: 2rem 3rem;
+}
+
 @media (max-width: 767.98px) {
   .box {
     padding: 0.75rem;

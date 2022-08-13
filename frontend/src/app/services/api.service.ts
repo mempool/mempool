@@ -228,8 +228,18 @@ export class ApiService {
     );
   }
 
+  getBlockAudit$(hash: string) : Observable<any> {
+    return this.httpClient.get<any>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/audit/` + hash, { observe: 'response' }
+    );
+  }
+
   getRewardStats$(blockCount: number = 144): Observable<RewardStats> {
     return this.httpClient.get<RewardStats>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/reward-stats/${blockCount}`);
+  }
+
+  getEnterpriseInfo$(name: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/enterprise/info/` + name);
   }
 
   getChannelByTxIds$(txIds: string[]): Observable<{ inputs: any[], outputs: any[] }> {
@@ -245,4 +255,27 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
+  getNodesPerAs(groupBy: 'capacity' | 'node-count', showTorNodes: boolean): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp-ranking'
+      + `?groupBy=${groupBy}&showTor=${showTorNodes}`);
+  }
+
+  getNodeForCountry$(country: string): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/country/' + country);
+  }
+
+  getNodeForISP$(isp: string): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp/' + isp);
+  }
+
+  getNodesPerCountry(): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/countries');
+  }
+
+  getChannelsGeo$(publicKey?: string): Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels-geo' +
+        (publicKey !== undefined ? `/${publicKey}` : '')
+    );
+  }
 }

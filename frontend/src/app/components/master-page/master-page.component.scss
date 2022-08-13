@@ -9,12 +9,18 @@ fa-icon {
 .navbar {
   z-index: 100;
   min-height: 64px;
+  width: 100%;
 }
 
 li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  @media (max-width: 992px) {
+    margin: auto 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -68,10 +74,6 @@ li.nav-item {
   }
 }
 
-.navbar-brand {
-  width: 60%;
-}
-
 .navbar {
   .dropdown {
     .dropdown-toggle {
@@ -80,9 +82,15 @@ li.nav-item {
   }
 }
 
-@media (min-width: 576px) {
-  .navbar-brand {
-    width: 140px;
+.navbar-brand {
+  position: relative;
+  height: 65px;
+}
+
+.navbar-brand.dual-logos {
+  justify-content: space-between;
+  @media (max-width: 767.98px) {
+    width: 100%;
   }
 }
 
@@ -92,9 +100,8 @@ nav {
 
 .connection-badge {
   position: absolute;
-  top: 13px;
-  left: 0px;
-  width: 140px;
+  top: 22px;
+  width: 100%;
 }
 
 .badge {
@@ -144,4 +151,34 @@ nav {
 }
 .navbar-dark .navbar-nav .nav-link {
   color: #f1f1f1;
+}
+
+.subdomain_logo {
+  max-height: 45px;
+  max-width: 140px;
+  margin: auto;
+  align-self: center;
+}
+
+.subdomain_container {
+  width: 140px;
+  margin-right: 15px;
+  text-align: center;
+  align-self: center;
+}
+
+.logo-holder {
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar-brand {
+  flex-direction: row;
+  display: flex;
+}
+
+.mempool-logo, app-svg-images {
+  align-self: center;
+  width: 140px;
+  height: 35px;
 }

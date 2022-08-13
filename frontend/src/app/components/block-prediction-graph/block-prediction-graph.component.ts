@@ -98,7 +98,21 @@ export class BlockPredictionGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    let title: object;
+    if (data.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: $localize`No data to display yet. Try again later.`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     this.chartOptions = {
+      title: data.length === 0 ? title : undefined,
       animation: false,
       grid: {
         top: 30,
@@ -133,17 +147,16 @@ export class BlockPredictionGraphComponent implements OnInit {
           return tooltip;
         }
       },
-      xAxis: {
+      xAxis: data.length === 0 ? undefined : {
         name: formatterXAxisLabel(this.locale, this.timespan),
         nameLocation: 'middle',
         nameTextStyle: {
           padding: [10, 0, 0, 0],
         },
         type: 'category',
-        boundaryGap: false,
         axisLine: { onZero: true },
         axisLabel: {
-          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10) * 1000),
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
@@ -152,7 +165,7 @@ export class BlockPredictionGraphComponent implements OnInit {
         },
         data: data.map(prediction => prediction[0])
       },
-      yAxis: [
+      yAxis: data.length === 0 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -170,7 +183,7 @@ export class BlockPredictionGraphComponent implements OnInit {
           },
         },
       ],
-      series: [
+      series: data.length === 0 ? undefined : [
         {
           zlevel: 0,
           name: $localize`Match rate`,
@@ -183,9 +196,10 @@ export class BlockPredictionGraphComponent implements OnInit {
           })),
           type: 'bar',
           barWidth: '90%',
+          barMaxWidth: 50,
         },
       ],
-      dataZoom: [{
+      dataZoom: data.length === 0 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,

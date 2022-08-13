@@ -1,0 +1,100 @@
+<div [class]="widget === false ? 'full-container' : ''">
+
+  <div *ngIf="widget">
+    <div class="pool-distribution" *ngIf="(nodesPerAsObservable$ | async) as stats; else loadingReward">
+      <div class="item">
+        <h5 class="card-title d-inline-block" i18n="lightning.tagged-isp">Tagged ISPs</h5>
+        <p class="card-text">
+          {{ stats.taggedISP }}
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title d-inline-block" i18n="lightning.tagged-nodes">Tagged nodes</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc">
+          {{ stats.taggedNodeCount }}
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title d-inline-block" i18n="lightning.tagged-capacity">Tagged capacity</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc">
+          <app-amount [satoshis]="stats.taggedCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-header" *ngIf="!widget">
+    <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
+      <span i18n="lightning.nodes-per-isp">Lightning nodes per ISP</span>
+      <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+    <small class="d-block" style="color: #ffffff66; min-height: 25px" i18n="lightning.tor-nodes-excluded">
+      <span *ngIf="!(showTorObservable$ | async)">(Tor nodes excluded)</span>
+    </small>
+  </div>
+
+  <div [class]="!widget ? 'bottom-padding' : 'pb-0'" class="container pb-lg-0">
+    <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)">
+    </div>
+
+    <div class="text-center loadingGraphs" *ngIf="isLoading">
+      <div class="spinner-border text-light"></div>
+    </div>
+
+    <div class="d-flex toggle" *ngIf="!widget">
+      <app-toggle [textLeft]="'Show Tor'" [textRight]="" (toggleStatusChanged)="onTorToggleStatusChanged($event)"></app-toggle>
+      <app-toggle [textLeft]="'Nodes'" [textRight]="'Capacity'" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
+    </div>
+
+    <table class="table table-borderless text-center m-auto" style="max-width: 900px"  *ngIf="!widget">
+      <thead>
+        <tr>
+          <th class="rank text-left pl-0" i18n="mining.rank">Rank</th>
+          <th class="name text-left" i18n="lightning.isp">ISP</th>
+          <th class="share text-right" i18n="lightning.share">Share</th>
+          <th class="nodes text-right" i18n="lightning.nodes-count">Nodes</th>
+          <th class="capacity text-right pr-0" i18n="lightning.capacity">Capacity</th>
+        </tr>
+      </thead>
+      <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
+        <tr *ngFor="let asEntry of asList.data">
+          <td class="rank text-left pl-0">{{ asEntry.rank }}</td>
+          <td class="name text-left text-truncate">
+            <a *ngIf="asEntry.ispId" [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
+            <span *ngIf="!asEntry.ispId">{{ asEntry.name }}</span>
+          </td>
+          <td class="share text-right">{{ asEntry.share }}%</td>
+          <td class="nodes text-right">{{ asEntry.count }}</td>
+          <td class="capacity text-right pr-0"><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<ng-template #loadingReward>
+  <div class="pool-distribution">
+    <div class="item">
+      <h5 class="card-title" i18n="lightning.tagged-isp">Tagged ISPs</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="lightning.tagged-capacity">Tagged capacity</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="lightning.tagged-nodes">Tagged nodes</h5>
+      <p class="card-text">
+        <span class="skeleton-loader skeleton-loader-big"></span>
+      </p>
+    </div>
+  </div>
+</ng-template>
