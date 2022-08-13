@@ -24,6 +24,8 @@ interface IConfig {
     USER_AGENT: string;
     STDOUT_LOG_MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     AUTOMATIC_BLOCK_REINDEXING: boolean;
+    POOLS_JSON_URL: string,
+    POOLS_JSON_TREE_URL: string,
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -32,7 +34,8 @@ interface IConfig {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
     TOPOLOGY_FOLDER: string;
-    NODE_STATS_REFRESH_INTERVAL: number;
+    STATS_REFRESH_INTERVAL: number;
+    GRAPH_REFRESH_INTERVAL: number;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -135,6 +138,8 @@ const defaults: IConfig = {
     'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
     'AUTOMATIC_BLOCK_REINDEXING': false,
+    'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
+    'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
@@ -184,7 +189,8 @@ const defaults: IConfig = {
     'ENABLED': false,
     'BACKEND': 'lnd',
     'TOPOLOGY_FOLDER': '',
-    'NODE_STATS_REFRESH_INTERVAL': 600,
+    'STATS_REFRESH_INTERVAL': 600,
+    'GRAPH_REFRESH_INTERVAL': 600,
   },
   'LND': {
     'TLS_CERT_PATH': '',

@@ -50,9 +50,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
           document.getElementById( this.route.snapshot.fragment ).scrollIntoView();
         }
       }
-      window.addEventListener('scroll', function() {
-        that.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
-      }, { passive: true} );
+      window.addEventListener('scroll', that.onDocScroll, { passive: true });
     }, 1 );
   }
 
@@ -85,6 +83,14 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.network$.subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
     });
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onDocScroll);
+  }
+
+  onDocScroll() {
+    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
   }
 
   anchorLinkClick( event: any ) {

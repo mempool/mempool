@@ -8,6 +8,7 @@ import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.
 import { StateService } from 'src/app/services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
 import 'echarts-gl';
+import { isMobile } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -16,11 +17,18 @@ import 'echarts-gl';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesChannelsMap implements OnInit, OnDestroy {
-  @Input() style: 'graph' | 'nodepage' | 'widget' = 'graph';
+  @Input() style: 'graph' | 'nodepage' | 'widget' | 'channelpage' = 'graph';
   @Input() publicKey: string | undefined;
+  @Input() channel: any[] = [];
 
   observable$: Observable<any>;
-  center: number[] | undefined = undefined;
+  
+  center: number[] | undefined;
+  zoom: number | undefined;
+  channelWidth = 0.6;
+  channelOpacity = 0.1;
+  channelColor = '#466d9d';
+  channelCurve = 0;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -42,8 +50,16 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   ngOnInit(): void {
-    this.center = this.style === 'widget' ? [0, 0, -10] : undefined;
-
+    this.center = this.style === 'widget' ? [0, 40] : [0, 5];
+    this.zoom = 1.3;
+    if (this.style === 'widget' && !isMobile()) {
+      this.zoom = 3.5;
+    }
+    if (this.style === 'widget' && isMobile()) {
+      this.zoom = 1.4;
+      this.center = [0, 10];
+    }
+    
     if (this.style === 'graph') {
       this.seoService.setTitle($localize`Lightning nodes channels world map`);
     }
@@ -62,36 +78,85 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
           const nodes = [];
           const nodesPubkeys = {};
           let thisNodeGPS: number[] | undefined = undefined;
-          for (const channel of data[1]) {
+
+          let geoloc = data[1];
+          if (this.style === 'channelpage') {
+            if (this.channel.length === 0) {
+              geoloc = [];
+            } else {
+              geoloc = [this.channel];
+            }
+          }
+          for (const channel of geoloc) {
             if (!thisNodeGPS && data[2] === channel[0]) {
               thisNodeGPS = [channel[2], channel[3]];
             } else if (!thisNodeGPS && data[2] === channel[4]) {
               thisNodeGPS = [channel[6], channel[7]];
             }
 
-            channelsLoc.push([[channel[2], channel[3]], [channel[6], channel[7]]]);
+            // 0 - node1 pubkey
+            // 1 - node1 alias
+            // 2,3 - node1 GPS
+            // 4 - node2 pubkey
+            // 5 - node2 alias
+            // 6,7 - node2 GPS
+
+            // We add a bit of noise so nodes at the same location are not all
+            // on top of each other
+            let random = Math.random() * 2 * Math.PI;
+            let random2 = Math.random() * 0.01;
+            
             if (!nodesPubkeys[channel[0]]) {
-              nodes.push({
-                publicKey: channel[0],
-                name: channel[1],
-                value: [channel[2], channel[3]],
-              });
-              nodesPubkeys[channel[0]] = true;
+              nodes.push([
+                channel[2] + random2 * Math.cos(random),
+                channel[3] + random2 * Math.sin(random),
+                1,
+                channel[0],
+                channel[1]
+              ]);
+              nodesPubkeys[channel[0]] = nodes[nodes.length - 1];
             }
+
+            random = Math.random() * 2 * Math.PI;
+            random2 = Math.random() * 0.01;
+
             if (!nodesPubkeys[channel[4]]) {
-              nodes.push({
-                publicKey: channel[4],
-                name: channel[5],
-                value: [channel[6], channel[7]],
-              });
-              nodesPubkeys[channel[4]] = true;  
+              nodes.push([
+                channel[6] + random2 * Math.cos(random),
+                channel[7] + random2 * Math.sin(random),
+                1,
+                channel[4],
+                channel[5]
+              ]);
+              nodesPubkeys[channel[4]] = nodes[nodes.length - 1];
             }
+
+            const channelLoc = [];
+            channelLoc.push(nodesPubkeys[channel[0]].slice(0, 2));            
+            channelLoc.push(nodesPubkeys[channel[4]].slice(0, 2));
+            channelsLoc.push(channelLoc);
           }
           if (this.style === 'nodepage' && thisNodeGPS) {
-            // 1ML 0217890e3aad8d35bc054f43acc00084b25229ecff0ab68debd82883ad65ee8266
-            // New York GPS [-74.0068, 40.7123]
-            // Map center [-20.55, 0, -9.85]
-            this.center = [thisNodeGPS[0] * -20.55 / -74.0068, 0, thisNodeGPS[1] * -9.85 / 40.7123];
+            this.center = [thisNodeGPS[0], thisNodeGPS[1]];
+            this.zoom = 10;
+            this.channelWidth = 1;
+            this.channelOpacity = 1;
+          }
+          if (this.style === 'channelpage' && this.channel.length > 0) {
+            this.channelWidth = 2;
+            this.channelOpacity = 1;
+            this.channelColor = '#bafcff';
+            this.channelCurve = 0.1;
+            this.center = [
+              (this.channel[2] + this.channel[6]) / 2,
+              (this.channel[3] + this.channel[7]) / 2
+            ];
+            const distance = Math.sqrt(
+              Math.pow(this.channel[7] - this.channel[3], 2) +
+              Math.pow(this.channel[6] - this.channel[2], 2)
+            );
+
+            this.zoom = -0.05 * distance + 8;
           }
 
           this.prepareChartOptions(nodes, channelsLoc);
@@ -115,85 +180,85 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
     }
 
     this.chartOptions = {
-      silent: this.style === 'widget' ? true : false,
+      silent: this.style === 'widget',
       title: title ?? undefined,
-      geo3D: {
-        map: 'world',
-        shading: 'color',
+      tooltip: {},
+      geo: {
+        animation: false,
         silent: true,
-        postEffect: {
-          enable: true,
-          bloom: {
-            intensity: 0.1,
-          }
+        center: this.center,
+        zoom: this.zoom,
+        tooltip: {
+          show: false
         },
-        viewControl: {
-          center: this.center,
-          minDistance: 1,
-          maxDistance: 60,
-          distance: this.style === 'widget' ? 22 : this.style === 'nodepage' ? 22 : 60,
-          alpha: 90,
-          rotateSensitivity: 0,
-          panSensitivity: this.style === 'widget' ? 0 : 1,
-          zoomSensitivity: this.style === 'widget' ? 0 : 0.5,
-          panMouseButton: this.style === 'widget' ? null : 'left',
-          rotateMouseButton: undefined,
-        },
+        map: 'world',
+        roam: this.style === 'widget' ? false : true,
         itemStyle: {
-          color: 'white',
-          opacity: 0.02,
-          borderWidth: 1,
           borderColor: 'black',
+          color: '#ffffff44'
         },
-        regionHeight: 0.01,
+        scaleLimit: {
+          min: 1.3,
+          max: 100000,
+        },
+        emphasis: {
+          disabled: true,
+        }
       },
       series: [
         {
-          // @ts-ignore
-          type: 'lines3D',
-          coordinateSystem: 'geo3D',
-          blendMode: 'lighter',
-          lineStyle: {
-            width: 1,
-            opacity: ['widget', 'graph'].includes(this.style) ? 0.025 : 1,
+          large: true,
+          type: 'scatter',
+          data: nodes,
+          coordinateSystem: 'geo',
+          geoIndex: 0,
+          symbolSize: 4,
+          tooltip: {
+            show: true,
+            backgroundColor: 'rgba(17, 19, 31, 1)',
+            borderRadius: 4,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            textStyle: {
+              color: '#b1b1b1',
+              align: 'left',
+            },
+            borderColor: '#000',
+            formatter: (value) => {
+              const data = value.data;
+              const alias = data[4].length > 0 ? data[4] : data[3].slice(0, 20);
+              return `<b style="color: white">${alias}</b>`;
+            }
           },
-          data: channels
+          itemStyle: {
+            color: 'white',
+            opacity: 1,
+            borderColor: 'black',
+            borderWidth: 0,
+          },
+          blendMode: 'lighter',
+          zlevel: 2,
         },
         {
-          // @ts-ignore
-          type: 'scatter3D',
-          symbol: 'circle',
-          blendMode: 'lighter',
-          coordinateSystem: 'geo3D',
-          symbolSize: 3,
-          itemStyle: {
-            color: '#BBFFFF',
-            opacity: 1,
-            borderColor: '#FFFFFF00',
+          large: false,
+          progressive: 200,
+          silent: true,
+          type: 'lines',
+          coordinateSystem: 'geo',
+          data: channels,
+          lineStyle: {
+            opacity: this.channelOpacity,
+            width: this.channelWidth,
+            curveness: this.channelCurve,
+            color: this.channelColor,
           },
-          data: nodes,
-          emphasis: {
-            label: {
-              position: 'top',
-              color: 'white',
-              fontSize: 16,
-              formatter: function(value) {
-                return value.name;
-              },
-              show: true,
-            }
-          }
-        },
+          blendMode: 'lighter',
+          tooltip: {
+            show: false,
+          },
+          zlevel: 1,
+        }
       ]
     };
-  }
-
-  @HostListener('window:wheel', ['$event'])
-  onWindowScroll(e): void {
-    // Not very smooth when using the mouse
-    if (this.style === 'widget' && e.target.tagName === 'CANVAS') {
-      window.scrollBy({left: 0, top: e.deltaY, behavior: 'auto'});
-    }
   }
 
   onChartInit(ec) {
@@ -211,14 +276,41 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
         });
       });
     }
-    
+      
     this.chartInstance.on('click', (e) => {
-      if (e.data && e.data.publicKey) {
+      if (e.data) {
         this.zone.run(() => {
-          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/node/${e.data.publicKey}`);
+          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/node/${e.data[3]}`);
           this.router.navigate([url]);
         });
       }
+    });
+
+    this.chartInstance.on('georoam', (e) => {
+      if (!e.zoom || this.style === 'nodepage') {
+        return;
+      }
+
+      const speed = 0.005;
+      const chartOptions = {
+        series: this.chartOptions.series
+      };
+
+      let nodeBorder = 0;
+      if (this.chartInstance.getOption().geo[0].zoom > 5000) {
+        nodeBorder = 2;
+      }
+
+      chartOptions.series[0].itemStyle.borderWidth = nodeBorder;
+      chartOptions.series[0].symbolSize += e.zoom > 1 ? speed * 15 : -speed * 15;
+      chartOptions.series[0].symbolSize = Math.max(4, Math.min(7, chartOptions.series[0].symbolSize));
+
+      chartOptions.series[1].lineStyle.opacity += e.zoom > 1 ? speed : -speed;
+      chartOptions.series[1].lineStyle.width += e.zoom > 1 ? speed : -speed;
+      chartOptions.series[1].lineStyle.opacity = Math.max(0.05, Math.min(0.5, chartOptions.series[1].lineStyle.opacity));
+      chartOptions.series[1].lineStyle.width = Math.max(0.5, Math.min(1, chartOptions.series[1].lineStyle.width));
+
+      this.chartInstance.setOption(chartOptions);
     });
   }
 }
