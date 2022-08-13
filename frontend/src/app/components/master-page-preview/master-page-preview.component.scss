@@ -2,28 +2,28 @@
   position: relative;
   display: block;
   margin: auto;
-  max-width: 1024px;
-  max-height: 512px;
-  padding-bottom: 64px;
+  max-width: 1200px;
+  max-height: 600px;
+  padding-top: 80px;
 
-  footer {
+  header {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 0;
     z-index: 100;
-    min-height: 64px;
-    padding: 0rem 2rem;
+    min-height: 80px;
+    padding: 0rem 3rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     background: #11131f;
     text-align: start;
-    font-size: 1.2em;
+    font-size: 1.8em;
   }
 
-  .footer-brand {
+  .header-brand {
     width: 60%;
   }
 
