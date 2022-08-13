@@ -1,5 +1,7 @@
 import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
+import { NodeSocket } from '../repositories/NodesSocketsRepository';
+import { isIP } from 'net';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -220,5 +222,36 @@ export class Common {
   static utcDateToMysql(date?: number): string {
     const d = new Date((date || 0) * 1000);
     return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
+  }
+
+  static formatSocket(publicKey: string, socket: {network: string, addr: string}): NodeSocket {
+    let network: string | null = null;
+
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      network = socket.network;
+    } else if (config.LIGHTNING.BACKEND === 'lnd') {
+      if (socket.addr.indexOf('onion') !== -1) {
+        if (socket.addr.split('.')[0].length >= 56) {
+          network = 'torv3';
+        } else {
+          network = 'torv2';
+        }
+      } else if (socket.addr.indexOf('i2p') !== -1) {
+        network = 'i2p';
+      } else {
+        const ipv = isIP(socket.addr.split(':')[0]);
+        if (ipv === 4) {
+          network = 'ipv4';
+        } else if (ipv === 6) {
+          network = 'ipv6';
+        }
+      }
+    }
+
+    return {
+      publicKey: publicKey,
+      network: network,
+      addr: socket.addr,
+    };
   }
 }
