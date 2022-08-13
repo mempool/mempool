@@ -1,4 +1,3 @@
-import transactionUtils from '../api/transaction-utils';
 import DB from '../database';
 import logger from '../logger';
 import { BlockAudit } from '../mempool.interfaces';
