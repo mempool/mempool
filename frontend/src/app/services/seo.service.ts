@@ -7,6 +7,7 @@ import { StateService } from './state.service';
 })
 export class SeoService {
   network = '';
+  baseTitle = 'mempool';
 
   constructor(
     private titleService: Title,
@@ -19,25 +20,32 @@ export class SeoService {
   setTitle(newTitle: string): void {
     this.titleService.setTitle(newTitle + ' - ' + this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: newTitle});
+    this.metaService.updateTag({ property: 'twitter:title', content: newTitle});
   }
 
   resetTitle(): void {
     this.titleService.setTitle(this.getTitle());
     this.metaService.updateTag({ property: 'og:title', content: this.getTitle()});
+    this.metaService.updateTag({ property: 'twitter:title', content: this.getTitle()});
+  }
+
+  setEnterpriseTitle(title: string) {
+    this.baseTitle = title + ' - ' + this.baseTitle;
+    this.resetTitle();
   }
 
   getTitle(): string {
     if (this.network === 'testnet')
-      return 'mempool - Bitcoin Testnet';
+      return this.baseTitle + ' - Bitcoin Testnet';
     if (this.network === 'signet')
-      return 'mempool - Bitcoin Signet';
+      return this.baseTitle + ' - Bitcoin Signet';
     if (this.network === 'liquid')
-      return 'mempool - Liquid Network';
+      return this.baseTitle + ' - Liquid Network';
     if (this.network === 'liquidtestnet')
-      return 'mempool - Liquid Testnet';
+      return this.baseTitle + ' - Liquid Testnet';
     if (this.network === 'bisq')
-      return 'mempool - Bisq Markets';
-    return 'mempool - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
+      return this.baseTitle + ' - Bisq Markets';
+    return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
   }
 
   ucfirst(str: string) {

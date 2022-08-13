@@ -82,7 +82,7 @@
 
          <div class="qr-wrapper">
             <a [href]="bypassSecurityTrustUrl('bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount)" target="_blank">
-               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount"></app-qrcode>
+               <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="'bitcoin:' + donationObj.addresses.BTC + '?amount=' + donationObj.amount"></app-qrcode>
             </a>
          </div>
          
@@ -100,7 +100,7 @@
 
          <div class="qr-wrapper">
             <a [href]="bypassSecurityTrustUrl('lightning:' + donationObj.addresses.BTC_LightningLike)" target="_blank">
-               <app-qrcode imageUrl="./resources/bitcoin-logo.png" [size]="200" [data]="donationObj.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
+               <app-qrcode imageUrl="/resources/bitcoin-logo.png" [size]="200" [data]="donationObj.addresses.BTC_LightningLike.toUpperCase()"></app-qrcode>
             </a>
          </div>
 
@@ -125,7 +125,7 @@
 
          <div class="qr-wrapper">
             <a [href]="bypassSecurityTrustUrl('liquidnetwork:' + donationObj.addresses.LBTC + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d')" target="_blank">
-               <app-qrcode imageUrl="./resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + donationObj.addresses.LBTC + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
+               <app-qrcode imageUrl="/resources/liquid-bitcoin.png" [size]="200" [data]="'liquidnetwork:' + donationObj.addresses.LBTC + '?amount=' + donationObj.amount + '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'"></app-qrcode>
             </a>
          </div>
          <br>

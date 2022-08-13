@@ -20,7 +20,8 @@
     "EXTERNAL_MAX_RETRY": 1,
     "EXTERNAL_RETRY_INTERVAL": 0,
     "USER_AGENT": "mempool",
-    "STDOUT_LOG_MIN_PRIORITY": "debug"
+    "STDOUT_LOG_MIN_PRIORITY": "debug",
+    "AUTOMATIC_BLOCK_REINDEXING": false
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -62,9 +63,24 @@
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
   },
+  "MAXMIND": {
+    "ENABLED": false,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+  },
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
+  },
+  "LIGHTNING": {
+    "ENABLED": false,
+    "BACKEND": "lnd"
+  },
+  "LND": {
+    "TLS_CERT_PATH": "tls.cert",
+    "MACAROON_PATH": "readonly.macaroon",
+    "REST_API_URL": "https://localhost:8080"
   },
   "SOCKS5PROXY": {
     "ENABLED": false,

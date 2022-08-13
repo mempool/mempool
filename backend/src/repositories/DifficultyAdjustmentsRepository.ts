@@ -46,9 +46,38 @@ class DifficultyAdjustmentsRepository {
     query += ` GROUP BY UNIX_TIMESTAMP(time) DIV ${86400}`;
 
     if (descOrder === true) {
-      query += ` ORDER BY time DESC`;
+      query += ` ORDER BY height DESC`;
     } else {
-      query += ` ORDER BY time`;
+      query += ` ORDER BY height`;
+    }
+
+    try {
+      const [rows] = await DB.query(query);
+      return rows as IndexedDifficultyAdjustment[];
+    } catch (e) {
+      logger.err(`Cannot get difficulty adjustments from the database. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getRawAdjustments(interval: string | null, descOrder: boolean = false): Promise<IndexedDifficultyAdjustment[]> {
+    interval = Common.getSqlInterval(interval);
+
+    let query = `SELECT 
+      UNIX_TIMESTAMP(time) as time,
+      height as height,
+      difficulty as difficulty,
+      adjustment as adjustment
+      FROM difficulty_adjustments`;
+
+    if (interval) {
+      query += ` WHERE time BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+    }
+
+    if (descOrder === true) {
+      query += ` ORDER BY height DESC`;
+    } else {
+      query += ` ORDER BY height`;
     }
 
     try {

@@ -1,0 +1,4 @@
+&lrm;{{ seconds * 1000 | date: customFormat ?? 'yyyy-MM-dd HH:mm' }}
+<div class="lg-inline">
+  <i class="symbol">(<app-time-since [time]="seconds" [fastRender]="true"></app-time-since>)</i>
+</div>

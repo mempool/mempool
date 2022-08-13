@@ -1,0 +1,40 @@
+.title-block {
+  border-top: none;
+}
+
+.table {
+  tr td {
+    &:last-child {
+      text-align: right;
+      @media (min-width: 768px) {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.block-tx-title {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  position: relative;
+  @media (min-width: 550px) {
+    flex-direction: row;
+  }
+  h2 {
+    line-height: 1;
+    margin: 0;
+    position: relative;
+    padding-bottom: 10px;
+    @media (min-width: 550px) {
+      padding-bottom: 0px;
+      align-self: end;
+    }
+  }
+}
+
+.menu-button {
+  @media (min-width: 768px) {
+    max-width: 150px;
+  }
+}

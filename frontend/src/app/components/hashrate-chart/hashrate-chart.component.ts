@@ -109,7 +109,7 @@ export class HashrateChartComponent implements OnInit {
                     while (hashIndex < data.hashrates.length) {
                       diffFixed.push({
                         timestamp: data.hashrates[hashIndex].timestamp,
-                        difficulty: data.difficulty[data.difficulty.length - 1].difficulty
+                        difficulty: data.difficulty.length > 0 ?  data.difficulty[data.difficulty.length - 1].difficulty : null
                       });
                       ++hashIndex;
                     }
@@ -231,11 +231,15 @@ export class HashrateChartComponent implements OnInit {
             } else if (tick.seriesIndex === 1) { // Difficulty
               let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
-              if (this.isMobile()) {
-                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
+              if (difficulty === null) {
+                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;  
+              } else {
+                if (this.isMobile()) {
+                  difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
+                  difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
+                }
+                difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
               }
-              difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
             } else if (tick.seriesIndex === 2) { // Hashrate MA
               let hashrate = tick.data[1];
               if (this.isMobile()) {
@@ -335,6 +339,9 @@ export class HashrateChartComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
+              if (this.stateService.network === 'signet') {
+                return val;
+              }
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}`;
@@ -348,6 +355,7 @@ export class HashrateChartComponent implements OnInit {
       series: data.hashrates.length === 0 ? [] : [
         {
           zlevel: 0,
+          yAxisIndex: 0,
           name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
           showSymbol: false,
           symbol: 'none',
