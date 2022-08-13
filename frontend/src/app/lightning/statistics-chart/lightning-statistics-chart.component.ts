@@ -9,6 +9,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { MiningService } from 'src/app/services/mining.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
+import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 
 @Component({
   selector: 'app-lightning-statistics-chart',
@@ -25,7 +26,7 @@ import { LightningApiService } from '../lightning-api.service';
 })
 export class LightningStatisticsChartComponent implements OnInit {
   @Input() right: number | string = 45;
-  @Input() left: number | string = 55;
+  @Input() left: number | string = 45;
   @Input() widget = false;
 
   miningWindowPreference: string;
@@ -51,6 +52,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     private formBuilder: FormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    private amountShortenerPipe: AmountShortenerPipe,
   ) {
   }
 
@@ -105,9 +107,20 @@ export class LightningStatisticsChartComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Indexing in progess`,
+        text: $localize`Indexing in progess`,
         left: 'center',
         top: 'center'
+      };
+    } else if (this.widget) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 11
+        },
+        text: $localize`Channels & Capacity`,
+        left: 'center',
+        top: 11,
+        zlevel: 10,
       };
     }
 
@@ -115,14 +128,18 @@ export class LightningStatisticsChartComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        '#FDD835',
-        '#D81B60',
+        '#FFB300',
+        new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#D81B60' },
+          { offset: 1, color: '#D81B60AA' },
+        ]),
       ],
       grid: {
-        top: 40,
-        bottom: this.widget ? 30 : 70,
-        right: this.right,
-        left: this.left,
+        height: this.widget ? 100 : undefined,
+        top: this.widget ? 10 : 40,
+        bottom: this.widget ? 0 : 70,
+        right: (this.isMobile() && this.widget) ? 35 : this.right,
+        left: (this.isMobile() && this.widget) ? 40 :this.left,
       },
       tooltip: {
         show: !this.isMobile(),
@@ -166,7 +183,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      legend: data.channel_count.length === 0 ? undefined : {
+      legend: this.widget || data.channel_count.length === 0 ? undefined : {
         padding: 10,
         data: [
           {
@@ -178,7 +195,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Capacity (BTC)',
+            name: 'Capacity',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -188,17 +205,20 @@ export class LightningStatisticsChartComponent implements OnInit {
         ],
         selected: JSON.parse(this.storageService.getValue('sizes_ln_legend'))  ?? {
           'Channels': true,
-          'Capacity (BTC)': true,
+          'Capacity': true,
         }
       },
       yAxis: data.channel_count.length === 0 ? undefined : [
         {
-          min: 0,
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
-              return `${formatNumber(Math.round(val), this.locale, '1.0-0')}`;
+            formatter: (val: number): string => {
+              if (this.widget) {
+                return `${this.amountShortenerPipe.transform(val, 0)}`;
+              } else {
+                return `${formatNumber(Math.round(val), this.locale, '1.0-0')}`;
+              }
             }
           },
           splitLine: {
@@ -208,6 +228,7 @@ export class LightningStatisticsChartComponent implements OnInit {
               opacity: 0.25,
             }
           },
+          minInterval: this.widget ? 20000 : undefined,
         },
         {
           min: 0,
@@ -215,8 +236,12 @@ export class LightningStatisticsChartComponent implements OnInit {
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
-              return `${formatNumber(Math.round(val / 100000000), this.locale, '1.0-0')}`;
+            formatter: (val: number): string => {
+              if (this.widget) {
+                return `${this.amountShortenerPipe.transform(Math.round(val / 100000000), 0)}`;
+              } else {
+                return `${formatNumber(Math.round(val / 100000000), this.locale, '1.0-0')}`;
+              }
             }
           },
           splitLine: {
@@ -244,20 +269,49 @@ export class LightningStatisticsChartComponent implements OnInit {
               opacity: 1,
               width: 1,
             },
-          }
+          },
+          smooth: true,
         },
         {
           zlevel: 0,
           yAxisIndex: 1,
-          name: 'Capacity (BTC)',
+          name: $localize`Capacity`,
           showSymbol: false,
           symbol: 'none',
           stack: 'Total',
           data: data.capacity,
-          areaStyle: {},
+          areaStyle: {
+            opacity: 0.5,
+          },
           type: 'line',
+          smooth: true,
         }
       ],
+      dataZoom: this.widget ? null : [{
+        type: 'inside',
+        realtime: true,
+        zoomLock: true,
+        maxSpan: 100,
+        minSpan: 5,
+        moveOnMouseMove: false,
+      }, {
+        showDetail: false,
+        show: true,
+        type: 'slider',
+        brushSelect: false,
+        realtime: true,
+        left: 20,
+        right: 15,
+        selectedDataBackground: {
+          lineStyle: {
+            color: '#fff',
+            opacity: 0.45,
+          },
+          areaStyle: {
+            opacity: 0,
+          }
+        },
+      }],
     };
   }
 
