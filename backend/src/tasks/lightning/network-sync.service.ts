@@ -10,6 +10,8 @@ import lightningApi from '../../api/lightning/lightning-api-factory';
 import nodesApi from '../../api/explorer/nodes.api';
 import { ResultSetHeader } from 'mysql2';
 import fundingTxFetcher from './sync-tasks/funding-tx-fetcher';
+import NodesSocketsRepository from '../../repositories/NodesSocketsRepository';
+import { Common } from '../../api/common';
 
 class NetworkSyncService {
   loggerTimer = 0;
@@ -58,6 +60,7 @@ class NetworkSyncService {
   private async $updateNodesList(nodes: ILightningApi.Node[]): Promise<void> {
     let progress = 0;
 
+    let deletedSockets = 0;
     const graphNodesPubkeys: string[] = [];
     for (const node of nodes) {
       await nodesApi.$saveNode(node);
@@ -69,8 +72,15 @@ class NetworkSyncService {
         logger.info(`Updating node ${progress}/${nodes.length}`);
         this.loggerTimer = new Date().getTime() / 1000;
       }
+
+      const addresses: string[] = [];
+      for (const socket of node.addresses) {
+        await NodesSocketsRepository.$saveSocket(Common.formatSocket(node.pub_key, socket));
+        addresses.push(socket.addr);
+      }
+      deletedSockets += await NodesSocketsRepository.$deleteUnusedSockets(node.pub_key, addresses);
     }
-    logger.info(`${progress} nodes updated`);
+    logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted`);
 
     // If a channel if not present in the graph, mark it as inactive
     nodesApi.$setNodesInactive(graphNodesPubkeys);
