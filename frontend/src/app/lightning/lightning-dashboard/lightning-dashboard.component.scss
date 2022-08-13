@@ -14,6 +14,13 @@
   background-color: #1d1f31;
 }
 
+.graph-card {
+  height: 100%;
+  @media (min-width: 992px) {
+    height: 385px;
+  }
+}
+
 .card-title {
   font-size: 1rem;
   color: #4a68b9;
@@ -22,9 +29,6 @@
   color: #4a68b9;
 }
 
-.card-body {
-  padding: 1.25rem 1rem 0.75rem 1rem;
-}
 .card-body.pool-ranking {
   padding: 1.25rem 0.25rem 0.75rem 0.25rem;
 }
@@ -32,6 +36,21 @@
   font-size: 22px;
 }
 
+#blockchain-container {
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#blockchain-container::-webkit-scrollbar {
+  display: none;
+}
+
+.fade-border {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%)
+}
 
 .main-title {
   position: relative;
@@ -45,7 +64,7 @@
 }
 
 .more-padding {
-  padding: 18px;
+  padding: 24px 20px !important;
 }
 
 .card-wrapper {
@@ -77,4 +96,11 @@
 
 .card-text {
   font-size: 22px;
+}
+
+.title-link, .title-link:hover, .title-link:focus, .title-link:active {
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
 }

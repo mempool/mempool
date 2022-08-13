@@ -12,14 +12,11 @@ import * as https from 'https';
  */
 class PoolsUpdater {
   lastRun: number = 0;
-  currentSha: any = undefined;
-  poolsUrl: string = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';
-  treeUrl: string = 'https://api.github.com/repos/mempool/mining-pools/git/trees/master';
+  currentSha: string | undefined = undefined;
+  poolsUrl: string = config.MEMPOOL.POOLS_JSON_URL;
+  treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
-  constructor() {
-  }
-
-  public async updatePoolsJson() {
+  public async updatePoolsJson(): Promise<void> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
@@ -77,7 +74,7 @@ class PoolsUpdater {
   /**
    * Fetch our latest pools.json sha from the db
    */
-  private async updateDBSha(githubSha: string) {
+  private async updateDBSha(githubSha: string): Promise<void> {
     this.currentSha = githubSha;
     if (config.DATABASE.ENABLED === true) {
       try {
