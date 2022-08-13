@@ -17,7 +17,7 @@ export function convertNode(clNode: any): ILightningApi.Node {
         network: addr.type,
         addr: `${addr.address}:${addr.port}`
       };
-    }),
+    }) ?? [],
     last_update: clNode?.last_timestamp ?? 0,
   };
 }
