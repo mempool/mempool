@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 36;
+  private static currentVersion = 37;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -323,6 +323,10 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 36 && isBitcoin == true) {
       await this.$executeQuery('ALTER TABLE `nodes` ADD status TINYINT NOT NULL DEFAULT "1"');
+    }
+
+    if (databaseSchemaVersion < 37 && isBitcoin == true) {
+      await this.$executeQuery(this.getCreateLNNodesSocketsTableQuery(), await this.$checkIfTableExists('nodes_sockets'));
     }
   }
 
@@ -737,7 +741,7 @@ class DatabaseMigration {
       names text DEFAULT NULL,
       UNIQUE KEY id (id,type),
       KEY id_2 (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
   private getCreateBlocksPricesTableQuery(): string {
@@ -746,6 +750,16 @@ class DatabaseMigration {
       price_id int(10) unsigned NOT NULL,
       PRIMARY KEY (height),
       INDEX (price_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateLNNodesSocketsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS nodes_sockets (
+      public_key varchar(66) NOT NULL,
+      socket varchar(100) NOT NULL,
+      type enum('ipv4', 'ipv6', 'torv2', 'torv3', 'i2p', 'dns') NULL,
+      UNIQUE KEY public_key_socket (public_key, socket),
+      INDEX (public_key)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
