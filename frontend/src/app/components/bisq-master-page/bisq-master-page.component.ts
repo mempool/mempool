@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 import { LanguageService } from 'src/app/services/language.service';
+import { EnterpriseService } from 'src/app/services/enterprise.service';
 
 @Component({
   selector: 'app-bisq-master-page',
@@ -18,6 +19,7 @@ export class BisqMasterPageComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private languageService: LanguageService,
+    private enterpriseService: EnterpriseService,
   ) { }
 
   ngOnInit() {

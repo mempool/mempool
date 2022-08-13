@@ -9,12 +9,18 @@ fa-icon {
 .navbar {
   z-index: 100;
   min-height: 64px;
+  width: 100%;
 }
 
 li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  @media (max-width: 992px) {
+    margin: auto 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -78,6 +84,14 @@ li.nav-item {
 
 .navbar-brand {
   position: relative;
+  height: 65px;
+}
+
+.navbar-brand.dual-logos {
+  justify-content: space-between;
+  @media (max-width: 767.98px) {
+    width: 100%;
+  }
 }
 
 nav {
@@ -86,7 +100,7 @@ nav {
 
 .connection-badge {
   position: absolute;
-  top: 13px;
+  top: 22px;
   width: 100%;
 }
 
@@ -150,6 +164,7 @@ nav {
   width: 140px;
   margin-right: 15px;
   text-align: center;
+  align-self: center;
 }
 
 .logo-holder {
@@ -160,4 +175,10 @@ nav {
 .navbar-brand {
   flex-direction: row;
   display: flex;
+}
+
+.mempool-logo, app-svg-images {
+  align-self: center;
+  width: 140px;
+  height: 35px;
 }

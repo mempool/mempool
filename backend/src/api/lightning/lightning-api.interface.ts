@@ -1,71 +1,85 @@
 export namespace ILightningApi {
   export interface NetworkInfo {
-    average_channel_size: number;
-    channel_count: number;
-    max_channel_size: number;
-    median_channel_size: number;
-    min_channel_size: number;
-    node_count: number;
-    not_recently_updated_policy_count: number;
-    total_capacity: number;
+    graph_diameter: number;
+    avg_out_degree: number;
+    max_out_degree: number;
+    num_nodes: number;
+    num_channels: number;
+    total_network_capacity: string;
+    avg_channel_size: number;
+    min_channel_size: string;
+    max_channel_size: string;
+    median_channel_size_sat: string;
+    num_zombie_chans: string;
   }
 
   export interface NetworkGraph {
-    channels: Channel[];
     nodes: Node[];
+    edges: Channel[];
   }
 
   export interface Channel {
-    id: string;
-    capacity: number;
-    policies: Policy[];
-    transaction_id: string;
-    transaction_vout: number;
-    updated_at?: string;
+    channel_id: string;
+    chan_point: string;
+    last_update: number;
+    node1_pub: string;
+    node2_pub: string;
+    capacity: string;
+    node1_policy: RoutingPolicy | null;
+    node2_policy: RoutingPolicy | null;
   }
 
-  interface Policy {
-    public_key: string;
-    base_fee_mtokens?: string;
-    cltv_delta?: number;
-    fee_rate?: number;
-    is_disabled?: boolean;
-    max_htlc_mtokens?: string;
-    min_htlc_mtokens?: string;
-    updated_at?: string;
+  export interface RoutingPolicy {
+    time_lock_delta: number;
+    min_htlc: string;
+    fee_base_msat: string;
+    fee_rate_milli_msat: string;
+    disabled: boolean;
+    max_htlc_msat: string;
+    last_update: number;
   }
 
   export interface Node {
+    last_update: number;
+    pub_key: string;
     alias: string;
+    addresses: {
+      network: string;
+      addr: string;
+    }[];
     color: string;
-    features: Feature[];
-    public_key: string;
-    sockets: string[];
-    updated_at?: string;
+    features: { [key: number]: Feature };
   }
 
   export interface Info {
-    chains: string[];
-    color: string;
-    active_channels_count: number;
+    identity_pubkey: string;
     alias: string;
-    current_block_hash: string;
-    current_block_height: number;
-    features: Feature[];
-    is_synced_to_chain: boolean;
-    is_synced_to_graph: boolean;
-    latest_block_at: string;
-    peers_count: number;
-    pending_channels_count: number;
-    public_key: string;
-    uris: any[];
+    num_pending_channels: number;
+    num_active_channels: number;
+    num_peers: number;
+    block_height: number;
+    block_hash: string;
+    synced_to_chain: boolean;
+    testnet: boolean;
+    uris: string[];
+    best_header_timestamp: string;
     version: string;
+    num_inactive_channels: number;
+    chains: {
+      chain: string;
+      network: string;
+    }[];
+    color: string;
+    synced_to_graph: boolean;
+    features: { [key: number]: Feature };
+    commit_hash: string;
+    /** Available on LND since v0.15.0-beta */
+    require_htlc_interceptor?: boolean;
   }
-  
+
   export interface Feature {
-    bit: number;
-    is_known: boolean;
+    name: string;
     is_required: boolean;
-    type?: string;
+    is_known: boolean;
   }
 }
