@@ -64,7 +64,7 @@ export class BlocksList implements OnInit {
                 if (this.indexingAvailable) {
                   for (const block of blocks) {
                     // @ts-ignore: Need to add an extra field for the template
-                    block.extras.pool.logo = `./resources/mining-pools/` +
+                    block.extras.pool.logo = `/resources/mining-pools/` +
                       block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
                   }
                 }
@@ -97,7 +97,7 @@ export class BlocksList implements OnInit {
           this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
           if (this.stateService.env.MINING_DASHBOARD) {
             // @ts-ignore: Need to add an extra field for the template
-            blocks[1][0].extras.pool.logo = `./resources/mining-pools/` +
+            blocks[1][0].extras.pool.logo = `/resources/mining-pools/` +
               blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
           }
           acc.unshift(blocks[1][0]);

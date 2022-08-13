@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { Vin, Vout } from '../../interfaces/electrs.interface';
 import { StateService } from 'src/app/services/state.service';
+import { parseMultisigScript } from 'src/app/bitcoin.utils';
 
 @Component({
   selector: 'app-address-labels',
@@ -8,11 +9,12 @@ import { StateService } from 'src/app/services/state.service';
   styleUrls: ['./address-labels.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressLabelsComponent implements OnInit {
+export class AddressLabelsComponent implements OnChanges {
   network = '';
 
   @Input() vin: Vin;
   @Input() vout: Vout;
+  @Input() channel: any;
 
   label?: string;
 
@@ -22,12 +24,19 @@ export class AddressLabelsComponent implements OnInit {
     this.network = stateService.network;
   }
 
-  ngOnInit() {
-    if (this.vin) {
+  ngOnChanges() {
+    if (this.channel) {
+      this.handleChannel();
+    } else if (this.vin) {
       this.handleVin();
     } else if (this.vout) {
       this.handleVout();
     }
+  }
+
+  handleChannel() {
+    const type = this.vout ? 'open' : 'close';
+    this.label = `Channel ${type}: ${this.channel.node_left.alias} <> ${this.channel.node_right.alias}`;
   }
 
   handleVin() {
@@ -90,41 +99,11 @@ export class AddressLabelsComponent implements OnInit {
   }
 
   detectMultisig(script: string) {
-    if (!script) {
-      return;
-    }
-    const ops = script.split(' ');
-    if (ops.length < 3 || ops.pop() !== 'OP_CHECKMULTISIG') {
-      return;
-    }
-    const opN = ops.pop();
-    if (!opN.startsWith('OP_PUSHNUM_')) {
-      return;
-    }
-    const n = parseInt(opN.match(/[0-9]+/)[0], 10);
-    if (ops.length < n * 2 + 1) {
-      return;
-    }
-    // pop n public keys
-    for (let i = 0; i < n; i++) {
-      if (!/^0((2|3)\w{64}|4\w{128})$/.test(ops.pop())) {
-        return;
-      }
-      if (!/^OP_PUSHBYTES_(33|65)$/.test(ops.pop())) {
-        return;
-      }
-    }
-    const opM = ops.pop();
-    if (!opM.startsWith('OP_PUSHNUM_')) {
-      return;
-    }
-    const m = parseInt(opM.match(/[0-9]+/)[0], 10);
+    const ms = parseMultisigScript(script);
 
-    if (ops.length) {
-      return;
+    if (ms) {
+      this.label = $localize`:@@address-label.multisig:Multisig ${ms.m}:multisigM: of ${ms.n}:multisigN:`;
     }
-
-    this.label = $localize`:@@address-label.multisig:Multisig ${m}:multisigM: of ${n}:multisigN:`;
   }
 
   handleVout() {

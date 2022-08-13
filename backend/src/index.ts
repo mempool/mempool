@@ -1,17 +1,14 @@
 import express from "express";
-import { Application, Request, Response, NextFunction, Express } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import cluster from 'cluster';
-import axios from 'axios';
-
 import DB from './database';
 import config from './config';
-import routes from './routes';
 import blocks from './api/blocks';
 import memPool from './api/mempool';
 import diskCache from './api/disk-cache';
-import statistics from './api/statistics';
+import statistics from './api/statistics/statistics';
 import websocketHandler from './api/websocket-handler';
 import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
@@ -27,8 +24,17 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
-import priceUpdater from './tasks/price-updater';
-import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
+import nodesRoutes from './api/explorer/nodes.routes';
+import channelsRoutes from './api/explorer/channels.routes';
+import generalLightningRoutes from './api/explorer/general.routes';
+import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
+import networkSyncService from './tasks/lightning/network-sync.service';
+import statisticsRoutes from './api/statistics/statistics.routes';
+import miningRoutes from './api/mining/mining-routes';
+import bisqRoutes from './api/bisq/bisq.routes';
+import liquidRoutes from './api/liquid/liquid.routes';
+import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
+import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -130,6 +136,10 @@ class Server {
       bisqMarkets.startBisqService();
     }
 
+    if (config.LIGHTNING.ENABLED) {
+      this.$runLightningBackend();
+    }
+
     this.server.listen(config.MEMPOOL.HTTP_PORT, () => {
       if (worker) {
         logger.info(`Mempool Server worker #${process.pid} started`);
@@ -155,7 +165,6 @@ class Server {
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
-      priceUpdater.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
@@ -173,6 +182,18 @@ class Server {
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
+
+  async $runLightningBackend() {
+    try {
+      await fundingTxFetcher.$init();
+      await networkSyncService.$startService();
+      await lightningStatsUpdater.$startService();
+    } catch(e) {
+      logger.err(`Lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      await Common.sleep$(1000 * 60);
+      this.$runLightningBackend();
+    };
+}
 
   setUpWebsocketHandling() {
     if (this.wss) {
@@ -196,171 +217,23 @@ class Server {
   }
 
   setUpHttpApiRoutes() {
-    this.app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', routes.getTransactionTimes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', routes.$getBatchedOutspends)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', routes.getCpfpInfo)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', routes.getDifficultyChange)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', routes.getRecommendedFees)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', routes.getMempoolBlocks)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', routes.getBackendInfo)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', routes.getInitData)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', routes.validateAddress)
-      .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', routes.$postTransactionForm)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/donations`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'donations/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/donations/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/contributors`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'contributors/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/contributors/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'translators', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/translators`, { responseType: 'stream', timeout: 10000 });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      .get(config.MEMPOOL.API_URL_PREFIX + 'translators/images/:id', async (req, res) => {
-        try {
-          const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.MEMPOOL_API}/translators/images/${req.params.id}`, {
-            responseType: 'stream', timeout: 10000
-          });
-          response.data.pipe(res);
-        } catch (e) {
-          res.status(500).end();
-        }
-      })
-      ;
-
+    bitcoinRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2h', routes.$getStatisticsByTime.bind(routes, '2h'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/24h', routes.$getStatisticsByTime.bind(routes, '24h'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1w', routes.$getStatisticsByTime.bind(routes, '1w'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1m', routes.$getStatisticsByTime.bind(routes, '1m'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3m', routes.$getStatisticsByTime.bind(routes, '3m'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/6m', routes.$getStatisticsByTime.bind(routes, '6m'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', routes.$getStatisticsByTime.bind(routes, '1y'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', routes.$getStatisticsByTime.bind(routes, '2y'))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', routes.$getStatisticsByTime.bind(routes, '3y'))
-        ;
+      statisticsRoutes.initRoutes(this.app);
     }
-
     if (Common.indexingEnabled()) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/:interval', routes.$getPools)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/hashrate', routes.$getPoolHistoricalHashrate)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/blocks', routes.$getPoolBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/blocks/:height', routes.$getPoolBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug', routes.$getPool)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/pools/:interval', routes.$getPoolsHistoricalHashrate)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/hashrate/:interval', routes.$getHistoricalHashrate)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments', routes.$getDifficultyAdjustments)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/reward-stats/:blockCount', routes.$getRewardStats)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees/:interval', routes.$getHistoricalBlockFees)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', routes.$getHistoricalBlockRewards)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', routes.$getHistoricalBlockFeeRates)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', routes.$getHistoricalBlockSizeAndWeight)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', routes.$getDifficultyAdjustments)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', routes.$getHistoricalBlockPrediction)
-        ;
+      miningRoutes.initRoutes(this.app);
     }
-
     if (config.BISQ.ENABLED) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/stats', routes.getBisqStats)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/tx/:txId', routes.getBisqTransaction)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/block/:hash', routes.getBisqBlock)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/blocks/tip/height', routes.getBisqTip)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/blocks/:index/:length', routes.getBisqBlocks)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/address/:address', routes.getBisqAddress)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/txs/:index/:length', routes.getBisqTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/currencies', routes.getBisqMarketCurrencies.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/depth', routes.getBisqMarketDepth.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/hloc', routes.getBisqMarketHloc.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/markets', routes.getBisqMarketMarkets.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/offers', routes.getBisqMarketOffers.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/ticker', routes.getBisqMarketTicker.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', routes.getBisqMarketTrades.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', routes.getBisqMarketVolumes.bind(routes))
-        .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes/7d', routes.getBisqMarketVolumes7d.bind(routes))
-        ;
+      bisqRoutes.initRoutes(this.app);
     }
-
-    this.app
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', routes.getBlocks.bind(routes))
-      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', routes.getBlocks.bind(routes))
-      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', routes.getBlock)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', routes.getStrippedBlockTransactions);
-
-    if (config.MEMPOOL.BACKEND !== 'esplora') {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', routes.getMempool)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', routes.getMempoolTxIds)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', routes.getRecentMempoolTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', routes.getTransaction)
-        .post(config.MEMPOOL.API_URL_PREFIX + 'tx', routes.$postTransaction)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', routes.getRawTransaction)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', routes.getTransactionStatus)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', routes.getTransactionOutspends)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', routes.getBlockHeader)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', routes.getBlockTipHeight)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', routes.getBlockTipHash)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs', routes.getBlockTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txs/:index', routes.getBlockTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', routes.getTxIdsForBlock)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', routes.getBlockHeight)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', routes.getAddress)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', routes.getAddressTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', routes.getAddressTransactions)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', routes.getAddressPrefix)
-        ;
-    }
-
     if (Common.isLiquid()) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/icons', routes.getAllLiquidIcon)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/featured', routes.$getAllFeaturedLiquidAssets)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'asset/:assetId/icon', routes.getLiquidIcon)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'assets/group/:id', routes.$getAssetGroup)
-        ;
+      liquidRoutes.initRoutes(this.app);
     }
-
-    if (Common.isLiquid() && config.DATABASE.ENABLED) {
-      this.app
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', routes.$getElementsPegsByMonth)
-        ;
+    if (config.LIGHTNING.ENABLED) {
+      generalLightningRoutes.initRoutes(this.app);
+      nodesRoutes.initRoutes(this.app);
+      channelsRoutes.initRoutes(this.app);
     }
   }
 }

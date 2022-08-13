@@ -35,21 +35,23 @@ const getRectangle = ($el) => $el[0].getBoundingClientRect();
 describe('Mainnet', () => {
   beforeEach(() => {
     //cy.intercept('/sockjs-node/info*').as('socket');
-    cy.intercept('/api/block-height/*').as('block-height');
-    cy.intercept('/api/block/*').as('block');
-    cy.intercept('/api/block/*/txs/0').as('block-txs');
-    cy.intercept('/api/tx/*/outspends').as('tx-outspends');
-    cy.intercept('/resources/pools.json').as('pools');
+    // cy.intercept('/api/block-height/*').as('block-height');
+    // cy.intercept('/api/v1/block/*').as('block');
+    // cy.intercept('/api/block/*/txs/0').as('block-txs');
+    // cy.intercept('/api/v1/block/*/summary').as('block-summary');
+    // cy.intercept('/api/v1/outspends/*').as('outspends');
+    // cy.intercept('/api/tx/*/outspends').as('tx-outspends');
+    // cy.intercept('/resources/pools.json').as('pools');
 
     // Search Auto Complete
     cy.intercept('/api/address-prefix/1wiz').as('search-1wiz');
     cy.intercept('/api/address-prefix/1wizS').as('search-1wizS');
     cy.intercept('/api/address-prefix/1wizSA').as('search-1wizSA');
 
-    Cypress.Commands.add('waitForBlockData', () => {
-      cy.wait('@tx-outspends');
-      cy.wait('@pools');
-    });
+    // Cypress.Commands.add('waitForBlockData', () => {
+    //   cy.wait('@tx-outspends');
+    //   cy.wait('@pools');
+    // });
   });
 
   if (baseModule === 'mempool') {
@@ -121,20 +123,20 @@ describe('Mainnet', () => {
         cy.visit('/');
         cy.get('.search-box-container > .form-control').type('1wiz').then(() => {
           cy.wait('@search-1wiz');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 10);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 10);
         });
 
         cy.get('.search-box-container > .form-control').type('S').then(() => {
           cy.wait('@search-1wizS');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 5);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 5);
         });
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
           cy.wait('@search-1wizSA');
-          cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1)
+          cy.get('app-search-results button.dropdown-item').should('have.length', 1)
         });
 
-        cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+        cy.get('app-search-results button.dropdown-item.active').click().then(() => {
           cy.url().should('include', '/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC');
           cy.waitForSkeletonGone();
           cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
@@ -145,8 +147,8 @@ describe('Mainnet', () => {
         it(`allows searching for partial case insensitive bech32m addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
-            cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
@@ -159,8 +161,8 @@ describe('Mainnet', () => {
         it(`allows searching for partial case insensitive bech32 addresses: ${searchTerm}`, () => {
           cy.visit('/');
           cy.get('.search-box-container > .form-control').type(searchTerm).then(() => {
-            cy.get('ngb-typeahead-window button.dropdown-item').should('have.length', 1);
-            cy.get('ngb-typeahead-window button.dropdown-item.active').click().then(() => {
+            cy.get('app-search-results button.dropdown-item').should('have.length', 1);
+            cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
               cy.waitForSkeletonGone();
               cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
@@ -409,7 +411,7 @@ describe('Mainnet', () => {
 
     it('loads the tv screen - desktop', () => {
       cy.viewport('macbook-16');
-      cy.visit('/');
+      cy.visit('/graphs/mempool');
       cy.waitForSkeletonGone();
       cy.get('#btn-tv').click().then(() => {
         cy.viewport('macbook-16');

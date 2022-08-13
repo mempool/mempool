@@ -17,11 +17,11 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
+import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
-import mining from './mining';
+import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
-import difficultyAdjustment from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -150,6 +150,7 @@ class Blocks {
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
     blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
+    blockExtended.extras.usd = fiatConversion.getConversionRates().USD;
 
     if (block.height === 0) {
       blockExtended.extras.medianFee = 0; // 50th percentiles
@@ -280,8 +281,7 @@ class Blocks {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
           const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
-          const timeLeft = Math.round((indexedBlocks.length - totalIndexed) / blockPerSeconds);
-          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
         }
@@ -293,7 +293,11 @@ class Blocks {
         totalIndexed++;
         newlyIndexed++;
       }
-      logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      if (newlyIndexed > 0) {
+        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      } else {
+        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+      }
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
@@ -348,8 +352,7 @@ class Blocks {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
-            const timeLeft = Math.round((indexingBlockAmount - totalIndexed) / blockPerSeconds);
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds | left: ~${timeLeft} seconds`);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
             loadingIndicators.setProgress('block-indexing', progress, false);
@@ -365,7 +368,11 @@ class Blocks {
 
         currentBlockHeight -= chunkSize;
       }
-      logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      if (newlyIndexed > 0) {
+        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      } else {
+        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+      }
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
       logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));
@@ -527,13 +534,12 @@ class Blocks {
       }
     }
 
-    let block = await bitcoinClient.getBlock(hash);
-
     // Not Bitcoin network, return the block as it
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return block;
+      return await bitcoinApi.$getBlock(hash);
     }
 
+    let block = await bitcoinClient.getBlock(hash);
     block = prepareBlock(block);
 
     // Bitcoin network, add our custom data on top
@@ -547,8 +553,8 @@ class Blocks {
     return blockExtended;
   }
 
-  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache: boolean = false,
-    skipDBLookup: boolean = false): Promise<TransactionStripped[]>
+  public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
+    skipDBLookup = false): Promise<TransactionStripped[]>
   {
     if (skipMemoryCache === false) {
       // Check the memory cache
@@ -572,22 +578,18 @@ class Blocks {
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveSummary(block.height, summary);
+      await BlocksSummariesRepository.$saveSummary({height: block.height, mined: summary});
     }
 
     return summary.transactions;
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    let currentHeight = fromHeight !== undefined ? fromHeight : this.getCurrentBlockHeight();
+    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
     const returnBlocks: BlockExtended[] = [];
 
     if (currentHeight < 0) {
       return returnBlocks;
-    }
-
-    if (currentHeight === 0 && Common.indexingEnabled()) {
-      currentHeight = await blocksRepository.$mostRecentBlockHeight();
     }
 
     // Check if block height exist in local cache to skip the hash lookup

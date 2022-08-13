@@ -1,0 +1,111 @@
+<div class="container-xl" (window:resize)="onResize($event)">
+
+  <div *ngIf="(auditObservable$ | async) as blockAudit; else skeleton">
+    <div class="title-block" id="block">
+      <h1>
+        <span class="next-previous-blocks">
+          <span i18n="shared.block-title">Block </span>
+          &nbsp;
+          <a [routerLink]="['/block/' | relativeUrl, blockAudit.id]">{{ blockAudit.height }}</a>
+          &nbsp;
+          <span i18n="shared.template-vs-mined">Template vs Mined</span>
+        </span>
+      </h1>
+
+      <div class="grow"></div>
+
+      <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="box mb-3">
+      <div class="row">
+        <!-- LEFT COLUMN -->
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td class="td-width" i18n="block.hash">Hash</td>
+                <td><a [routerLink]="['/block/' | relativeUrl, blockAudit.id]" title="{{ blockAudit.id }}">{{ blockAudit.id | shortenString : 13 }}</a>
+                  <app-clipboard class="d-none d-sm-inline-block" [text]="blockAudit.id"></app-clipboard>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="blockAudit.timestamp">Timestamp</td>
+                <td>
+                  &lrm;{{ blockAudit.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+                  <div class="lg-inline">
+                    <i class="symbol">(<app-time-since [time]="blockAudit.timestamp" [fastRender]="true">
+                      </app-time-since>)</i>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td i18n="blockAudit.size">Size</td>
+                <td [innerHTML]="'&lrm;' + (blockAudit.size | bytes: 2)"></td>
+              </tr>
+              <tr>
+                <td i18n="block.weight">Weight</td>
+                <td [innerHTML]="'&lrm;' + (blockAudit.weight | wuBytes: 2)"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="col-sm" *ngIf="blockAudit">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td class="td-width" i18n="shared.transaction-count">Transactions</td>
+                <td>{{ blockAudit.tx_count }}</td>
+              </tr>
+              <tr>
+                <td i18n="block.match-rate">Match rate</td>
+                <td>{{ blockAudit.matchRate }}%</td>
+              </tr>
+              <tr>
+                <td i18n="block.missing-txs">Missing txs</td>
+                <td>{{ blockAudit.missingTxs.length }}</td>
+              </tr>
+              <tr>
+                <td i18n="block.added-txs">Added txs</td>
+                <td>{{ blockAudit.addedTxs.length }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div> <!-- row -->
+    </div> <!-- box -->
+
+    <!-- ADDED vs MISSING button -->
+    <div class="d-flex justify-content-center menu mt-3" *ngIf="isMobile">
+      <a routerLinkActive="active" class="btn btn-primary w-50 mr-1 ml-1 menu-button" i18n="block.missing-txs"
+        fragment="missing" (click)="changeMode('missing')">Missing</a>
+      <a routerLinkActive="active" class="btn btn-primary w-50 mr-1 ml-1 menu-button" i18n="block.added-txs"
+        fragment="added" (click)="changeMode('added')">Added</a>
+    </div>
+  </div>
+
+  <!-- VISUALIZATIONS -->
+  <div class="box">
+    <div class="row">
+      <!-- MISSING TX RENDERING -->
+      <div class="col-sm" *ngIf="webGlEnabled">
+        <app-block-overview-graph #blockGraphTemplate [isLoading]="isLoading" [resolution]="75"
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
+          (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
+      </div>
+
+      <!-- ADDED TX RENDERING -->
+      <div class="col-sm" *ngIf="webGlEnabled && !isMobile">
+        <app-block-overview-graph #blockGraphMined [isLoading]="isLoading" [resolution]="75"
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
+          (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
+      </div>
+    </div> <!-- row -->
+  </div> <!-- box -->
+
+  <ng-template #skeleton></ng-template>
+
+</div>

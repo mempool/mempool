@@ -1,10 +1,11 @@
 import { Common } from './api/common';
 import blocks from './api/blocks';
 import mempool from './api/mempool';
-import mining from './api/mining';
+import mining from './api/mining/mining';
 import logger from './logger';
 import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
+import priceUpdater from './tasks/price-updater';
 
 class Indexer {
   runIndexer = true;
@@ -35,7 +36,11 @@ class Indexer {
     this.runIndexer = false;
     this.indexerRunning = true;
 
+    logger.debug(`Running mining indexer`);
+
     try {
+      await priceUpdater.$run();
+
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
@@ -45,8 +50,9 @@ class Indexer {
         return;
       }
 
+      await mining.$indexBlockPrices();
       await mining.$indexDifficultyAdjustments();
-      await this.$resetHashratesIndexingState();
+      await this.$resetHashratesIndexingState(); // TODO - Remove this as it's not efficient
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
@@ -54,9 +60,15 @@ class Indexer {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
       setTimeout(() => this.reindex(), 10000);
+      this.indexerRunning = false;
+      return;
     }
 
     this.indexerRunning = false;
+
+    const runEvery = 1000 * 3600; // 1 hour
+    logger.debug(`Indexing completed. Next run planned at ${new Date(new Date().getTime() + runEvery).toUTCString()}`);
+    setTimeout(() => this.reindex(), runEvery);
   }
 
   async $resetHashratesIndexingState() {

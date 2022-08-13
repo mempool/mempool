@@ -1,4 +1,4 @@
-import { BlockExtended } from '../mempool.interfaces';
+import { BlockExtended, BlockPrice } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -256,7 +256,7 @@ class BlocksRepository {
 
     const params: any[] = [];
     let query = ` SELECT
-      height,
+      blocks.height,
       hash as id,
       UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
       size,
@@ -308,7 +308,7 @@ class BlocksRepository {
   public async $getBlockByHeight(height: number): Promise<object | null> {
     try {
       const [rows]: any[] = await DB.query(`SELECT
-        height,
+        blocks.height,
         hash,
         hash as id,
         UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
@@ -336,7 +336,7 @@ class BlocksRepository {
         avg_fee_rate
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        WHERE height = ${height};
+        WHERE blocks.height = ${height}
       `);
 
       if (rows.length <= 0) {
@@ -357,15 +357,15 @@ class BlocksRepository {
   public async $getBlockByHash(hash: string): Promise<object | null> {
     try {
       const query = `
-        SELECT *, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
+        SELECT *, blocks.height, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
         pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
         pools.addresses as pool_addresses, pools.regexes as pool_regexes,
         previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
-        WHERE hash = '${hash}';
+        WHERE hash = ?;
       `;
-      const [rows]: any[] = await DB.query(query);
+      const [rows]: any[] = await DB.query(query, [hash]);
 
       if (rows.length <= 0) {
         return null;
@@ -387,7 +387,20 @@ class BlocksRepository {
       const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty FROM blocks`);
       return rows;
     } catch (e) {
-      logger.err('Cannot generate difficulty history. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot get blocks difficulty list from the db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Return blocks height
+   */
+   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -446,7 +459,7 @@ class BlocksRepository {
         ++idx;
       }
 
-      logger.info(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
+      logger.debug(`${idx} blocks hash validated in ${new Date().getTime() - start} ms`);
       return true;
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
@@ -473,10 +486,14 @@ class BlocksRepository {
   public async $getHistoricalBlockFees(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
+        CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees
-        FROM blocks`;
+        CAST(AVG(fees) as INT) as avgFees,
+        prices.USD
+        FROM blocks
+        JOIN blocks_prices on blocks_prices.height = blocks.height
+        JOIN prices on prices.id = blocks_prices.price_id
+      `;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
@@ -498,10 +515,14 @@ class BlocksRepository {
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
+        CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards
-        FROM blocks`;
+        CAST(AVG(reward) as INT) as avgRewards,
+        prices.USD
+        FROM blocks
+        JOIN blocks_prices on blocks_prices.height = blocks.height
+        JOIN prices on prices.id = blocks_prices.price_id
+      `;
 
       if (interval !== null) {
         query += ` WHERE blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
@@ -608,6 +629,64 @@ class BlocksRepository {
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
+    }
+  }
+
+  /**
+   * Return the oldest block  from a consecutive chain of block from the most recent one
+   */
+  public async $getOldestConsecutiveBlock(): Promise<any> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty FROM blocks ORDER BY height DESC`);
+      for (let i = 0; i < rows.length - 1; ++i) {
+        if (rows[i].height - rows[i + 1].height > 1) {
+          return rows[i];
+        }
+      }
+      return rows[rows.length - 1];
+    } catch (e) {
+      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get all blocks which have not be linked to a price yet
+   */
+   public async $getBlocksWithoutPrice(): Promise<object[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
+        FROM blocks
+        LEFT JOIN blocks_prices ON blocks.height = blocks_prices.height
+        WHERE blocks_prices.height IS NULL
+        ORDER BY blocks.height
+      `);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Save block price by batch
+   */
+   public async $saveBlockPrices(blockPrices: BlockPrice[]): Promise<void> {
+    try {
+      let query = `INSERT INTO blocks_prices(height, price_id) VALUES`;
+      for (const price of blockPrices) {
+        query += ` (${price.height}, ${price.priceId}),`
+      }
+      query = query.slice(0, -1);
+      await DB.query(query);
+    } catch (e: any) {
+      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
+        logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
+      } else {
+        logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
     }
   }
 }

@@ -1,0 +1,85 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+}
+
+.full-container {
+  padding: 0px 15px;
+  width: 100%;
+  height: calc(100% - 140px);
+  @media (max-width: 992px) {
+    height: calc(100% - 190px);
+  };
+  @media (max-width: 575px) {
+    height: calc(100% - 230px);
+  };
+}
+
+.chart {
+  max-height: 400px;
+  @media (max-width: 767.98px) {
+    max-height: 230px;
+    margin-top: -35px;
+  }
+}
+
+.bottom-padding {
+  @media (max-width: 992px) {
+    padding-bottom: 65px
+  };
+  @media (max-width: 576px) {
+    padding-bottom: 65px
+  };
+}
+
+.rank {
+  width: 15%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.name {
+  width: 25%;
+  @media (max-width: 576px) {
+    width: 70%;
+    max-width: 150px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.share {
+  width: 20%;
+  @media (max-width: 576px) {
+    display: none
+  }
+}
+
+.nodes {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 10%;
+  }
+}
+
+.capacity {
+  width: 20%;
+  @media (max-width: 576px) {
+    width: 20%;
+    max-width: 100px;
+  }
+}
+
+.toggle {
+  justify-content: space-between;
+  padding-top: 15px;
+  @media (min-width: 576px) {
+    padding-bottom: 15px;
+    padding-left: 105px;
+    padding-right: 105px;
+  }
+}

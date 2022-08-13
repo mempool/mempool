@@ -73,6 +73,9 @@ class Logger {
   }
 
   private getNetwork(): string {
+    if (config.LIGHTNING.ENABLED) {
+      return 'lightning';
+    }
     if (config.BISQ.ENABLED) {
       return 'bisq';
     }
