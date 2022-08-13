@@ -12,6 +12,7 @@ import { StateService } from '../../services/state.service';
 import { chartColors, poolsColor } from 'src/app/app.constants';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { download } from 'src/app/shared/graphs.utils';
+import { isMobile } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-pool-ranking',
@@ -108,21 +109,23 @@ export class PoolRankingComponent implements OnInit {
     return pool;
   }
 
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
-
   generatePoolsChartSerieData(miningStats) {
-    const poolShareThreshold = this.isMobile() ? 2 : 1; // Do not draw pools which hashrate share is lower than that
+    let poolShareThreshold = 0.5;
+    if (isMobile()) {
+      poolShareThreshold = 2;
+    } else if (this.widget) {
+      poolShareThreshold = 1;
+    }
+    
     const data: object[] = [];
     let totalShareOther = 0;
     let totalBlockOther = 0;
     let totalEstimatedHashrateOther = 0;
 
     let edgeDistance: any = '20%';
-    if (this.isMobile() && this.widget) {
+    if (isMobile() && this.widget) {
       edgeDistance = 0;
-    } else if (this.isMobile() && !this.widget || this.widget) {
+    } else if (isMobile() && !this.widget || this.widget) {
       edgeDistance = 10;
     }
 
@@ -138,7 +141,7 @@ export class PoolRankingComponent implements OnInit {
           color: poolsColor[pool.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
         },
         value: pool.share,
-        name: pool.name + ((this.isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
+        name: pool.name + ((isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
         label: {
           overflow: 'none',
           color: '#b1b1b1',
@@ -146,7 +149,7 @@ export class PoolRankingComponent implements OnInit {
           edgeDistance: edgeDistance,
         },
         tooltip: {
-          show: !this.isMobile() || !this.widget,
+          show: !isMobile() || !this.widget,
           backgroundColor: 'rgba(17, 19, 31, 1)',
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -176,7 +179,7 @@ export class PoolRankingComponent implements OnInit {
         color: 'grey',
       },
       value: totalShareOther,
-      name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name: 'Other' + (isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'none',
         color: '#b1b1b1',
@@ -210,7 +213,7 @@ export class PoolRankingComponent implements OnInit {
 
   prepareChartOptions(miningStats) {
     let pieSize = ['20%', '80%']; // Desktop
-    if (this.isMobile() && !this.widget) {
+    if (isMobile() && !this.widget) {
       pieSize = ['15%', '60%'];
     }
 
@@ -226,7 +229,7 @@ export class PoolRankingComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          minShowLabelAngle: 3.6,
+          minShowLabelAngle: 1.8,
           name: 'Mining pool',
           type: 'pie',
           radius: pieSize,
