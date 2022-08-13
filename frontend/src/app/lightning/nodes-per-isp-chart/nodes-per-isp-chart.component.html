@@ -9,15 +9,15 @@
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.tagged-capacity">Tagged capacity</h5>
-        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc">
-          <app-amount [satoshis]="stats.taggedCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
-        </p>
-      </div>
-      <div class="item">
         <h5 class="card-title d-inline-block" i18n="lightning.tagged-nodes">Tagged nodes</h5>
         <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc">
           {{ stats.taggedNodeCount }}
+        </p>
+      </div>
+      <div class="item">
+        <h5 class="card-title d-inline-block" i18n="lightning.tagged-capacity">Tagged capacity</h5>
+        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc">
+          <app-amount [satoshis]="stats.taggedCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
     </div>
