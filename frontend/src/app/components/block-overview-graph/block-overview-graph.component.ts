@@ -18,6 +18,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   @Input() orientation = 'left';
   @Input() flip = true;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
+  @Output() readyEvent = new EventEmitter();
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
@@ -36,6 +37,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   hoverTx: TxView | void;
   selectedTx: TxView | void;
   tooltipPosition: Position;
+
+  readyNextFrame = false;
 
   constructor(
     readonly ngZone: NgZone,
@@ -78,6 +81,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   setup(transactions: TransactionStripped[]): void {
     if (this.scene) {
       this.scene.setup(transactions);
+      this.readyNextFrame = true;
       this.start();
     }
   }
@@ -257,6 +261,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
         if (pointArray.length) {
           this.gl.drawArrays(this.gl.TRIANGLES, 0, pointArray.length / TxSprite.vertexSize);
         }
+      }
+
+      if (this.readyNextFrame) {
+        this.readyNextFrame = false;
+        this.readyEvent.emit();
       }
     }
 
