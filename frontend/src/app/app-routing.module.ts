@@ -366,6 +366,18 @@ let routes: Routes = [
         children: [],
         component: AddressPreviewComponent
       },
+      {
+        path: 'lightning',
+        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
+      },
+      {
+        path: 'testnet/lightning',
+        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
+      },
+      {
+        path: 'signet/lightning',
+        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
+      },
     ],
   },
   {

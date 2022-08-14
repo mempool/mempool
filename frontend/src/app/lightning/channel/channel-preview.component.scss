@@ -1,0 +1,76 @@
+.title {
+  font-size: 52px;
+  margin: 0;
+}
+
+.table {
+  font-size: 32px;
+  margin-top: 36px;
+}
+
+.badges {
+  font-size: 28px;
+
+  ::ng-deep .badge {
+    margin-left: 0.5em;
+  }
+}
+
+.row {
+  margin-right: 0;
+}
+
+.full-width-row {
+  padding-left: 15px;
+  padding-right: 15px;
+
+  &:nth-child(even) {
+    background: #181b2d;
+    margin: 15px 0;
+  }
+}
+
+.nodes {
+  font-size: 36px;
+  align-items: center;
+}
+
+.between-arrow {
+  font-size: 24px;
+}
+
+.map-col {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 470px;
+  min-width: 470px;
+  padding: 0;
+  background: #181b2d;
+  max-height: 470px;
+  overflow: hidden;
+}
+
+::ng-deep .symbol {
+  font-size: 24px;
+}
+
+.dual-cell {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+
+  & > * {
+    width: 0;
+    flex-grow: 1;
+
+    &:nth-child(2) {
+      text-align: center;
+      max-width: 1.5em;
+    }
+    &:nth-child(3) {
+      text-align: right;
+    }
+  }
+}

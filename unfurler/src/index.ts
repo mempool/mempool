@@ -150,12 +150,27 @@ class Server {
     }
 
     // handle supported preview routes
-    if (parts[0] === 'block') {
-      ogTitle = `Block: ${parts[1]}`;
-    } else if (parts[0] === 'address') {
-      ogTitle = `Address: ${parts[1]}`;
-    } else {
-      previewSupported = false;
+    switch (parts[0]) {
+      case 'block':
+        ogTitle = `Block: ${parts[1]}`;
+      break;
+      case 'address':
+        ogTitle = `Address: ${parts[1]}`;
+      break;
+      case 'lightning':
+        switch (parts[1]) {
+          case 'node':
+            ogTitle = `Lightning Node: ${parts[2]}`;
+          break;
+          case 'channel':
+            ogTitle = `Lightning Channel: ${parts[2]}`;
+          break;
+          default:
+            previewSupported = false;
+        }
+      break;
+      default:
+        previewSupported = false;
     }
 
     if (previewSupported) {
