@@ -4,7 +4,7 @@ import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } fro
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { MasterPagePreviewComponent } from '../components/master-page-preview/master-page-preview.component';
@@ -64,7 +64,6 @@ import { DifficultyComponent } from '../components/difficulty/difficulty.compone
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
-import { SponsorComponent } from '../components/sponsor/sponsor.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -139,7 +138,6 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
-    SponsorComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -242,7 +240,6 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
-    SponsorComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -300,5 +297,6 @@ export class SharedModule {
     library.addIcons(faListUl);
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
+    library.addIcons(faArrowRightArrowLeft);
   }
 }
