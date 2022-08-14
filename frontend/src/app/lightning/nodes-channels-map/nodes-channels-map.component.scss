@@ -29,6 +29,18 @@
   min-height: 250px;
 }
 
+.full-container.fit-container {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100px;
+
+  .chart {
+    padding: 0;
+    min-height: 100px;
+  }
+}
+
 .widget {
   width: 90vw;
   margin-left: auto;

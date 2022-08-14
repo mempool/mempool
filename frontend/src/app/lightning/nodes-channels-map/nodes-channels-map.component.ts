@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, Output, EventEmitter, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, switchMap, tap, zip } from 'rxjs';
@@ -20,9 +20,11 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   @Input() style: 'graph' | 'nodepage' | 'widget' | 'channelpage' = 'graph';
   @Input() publicKey: string | undefined;
   @Input() channel: any[] = [];
+  @Input() fitContainer = false;
+  @Output() readyEvent = new EventEmitter();
 
   observable$: Observable<any>;
-  
+
   center: number[] | undefined;
   zoom: number | undefined;
   channelWidth = 0.6;
@@ -312,5 +314,9 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
 
       this.chartInstance.setOption(chartOptions);
     });
+  }
+
+  onChartFinished(e) {
+    this.readyEvent.emit();
   }
 }
