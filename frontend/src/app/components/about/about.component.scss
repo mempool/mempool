@@ -53,7 +53,7 @@
     margin-bottom: 50px;
   }
 
-  .community-sponsor {
+  .community-sponsor, .project-translators {
     display: flex;
     flex-direction: column;
     .wrapper {
@@ -65,6 +65,9 @@
       height: 45px;
       width: 100%;
     }
+  }
+
+  .community-sponsor {
     img {
       width: 67px;
       height: 67px;
@@ -112,6 +115,7 @@
   .enterprise-sponsor,
   .contributors,
   .community-sponsor,
+  .project-translators,
   .community-integrations-sponsor,
   .selfhosted-integrations-sponsor,
   .maintainers {
@@ -136,7 +140,7 @@
     }
   }
 
-  .community-sponsor .wrapper {
+  .community-sponsor .wrapper, .project-translators .wrapper {
     margin: 10px auto 20px;
     a img {
       margin: 6px;
