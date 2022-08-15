@@ -43,6 +43,7 @@ import { RouterModule } from '@angular/router';
 import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 import { StartComponent } from '../components/start/start.component';
 import { TransactionComponent } from '../components/transaction/transaction.component';
+import { TransactionPreviewComponent } from '../components/transaction/transaction-preview.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockComponent } from '../components/block/block.component';
 import { BlockPreviewComponent } from '../components/block/block-preview.component';
@@ -118,6 +119,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     LiquidMasterPageComponent,
     StartComponent,
     TransactionComponent,
+    TransactionPreviewComponent,
     BlockComponent,
     BlockPreviewComponent,
     BlockAuditComponent,
@@ -220,6 +222,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     AmountComponent,
     StartComponent,
     TransactionComponent,
+    TransactionPreviewComponent,
     BlockComponent,
     BlockPreviewComponent,
     BlockAuditComponent,
