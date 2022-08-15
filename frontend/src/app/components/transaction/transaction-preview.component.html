@@ -1,0 +1,116 @@
+<div class="box preview-box" *ngIf="tx && !error">
+
+  <div class="page-title">
+    <h1 i18n="shared.transaction">Transaction</h1>
+    <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
+      <app-tx-features [tx]="tx"></app-tx-features>
+      <span *ngIf="cpfpInfo && cpfpInfo.bestDescendant" class="badge badge-primary mr-1">
+        CPFP
+      </span>
+      <span *ngIf="cpfpInfo && !cpfpInfo.bestDescendant && cpfpInfo.ancestors.length" class="badge badge-info mr-1">
+        CPFP
+      </span>
+    </div>
+  </div>
+
+  <a [routerLink]="['/tx/' | relativeUrl, txId]" class="tx-link">
+    {{ txId }}
+  </a>
+
+
+  <div class="row">
+    <div class="col-sm">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr *ngIf="tx.status.confirmed; else firstSeen">
+            <td i18n="block.timestamp">Timestamp</td>
+            <td>
+              &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
+            </td>
+          </tr>
+          <ng-template #firstSeen>
+            <tr>
+              <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
+              <td *ngIf="transactionTime > 0; else notSeen">
+                &lrm;{{ transactionTime * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              </td>
+              <ng-template #notSeen>
+                <td>?</td>
+              </ng-template>
+            </tr>
+          </ng-template>
+          <tr>
+            <td class="td-width" i18n="dashboard.latest-transactions.amount">Amount</td>
+            <td>
+              <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+              <ng-template #defaultAmount>
+                <app-amount [satoshis]="getTotalTxOutput(tx)"></app-amount>
+              </ng-template>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="block.size">Size</td>
+            <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
+          </tr>
+          <tr>
+            <td i18n="block.weight">Weight</td>
+            <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
+          </tr>
+          <tr>
+            <td i18n="transaction.inputs">Inputs</td>
+            <td *ngIf="!isCoinbase(tx); else coinbaseInputs">{{ tx.vin.length }}</td>
+            <ng-template #coinbaseInputs>
+              <td i18n="transactions-list.coinbase">Coinbase</td>
+            </ng-template>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-sm">
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <tr>
+            <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
+            <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
+          </tr>
+          <tr *ngIf="!cpfpInfo || (!cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length); else cpfpFee">
+            <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+            <td>
+              {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              <ng-template [ngIf]="tx.status.confirmed">
+                &nbsp;
+                <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
+              </ng-template>
+            </td>
+          </tr>
+          <ng-template #cpfpFee>
+            <tr>
+              <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+              <td>
+                <div class="effective-fee-container">
+                  {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+                  <ng-template [ngIf]="tx.status.confirmed">
+                    <app-tx-fee-rating class="d-none d-lg-inline ml-2" *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <tr>
+            <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
+            <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
+          </tr>
+          <tr>
+            <td i18n="transaction.locktime">Locktime</td>
+            <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
+          </tr>
+          <tr>
+            <td i18n="transaction.outputs">Outputs</td>
+            <td>{{ tx.vout.length }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
+import { TransactionPreviewComponent } from './components/transaction/transaction-preview.component';
 import { BlockComponent } from './components/block/block.component';
 import { BlockAuditComponent } from './components/block-audit/block-audit.component';
 import { BlockPreviewComponent } from './components/block/block-preview.component';
@@ -367,6 +368,21 @@ let routes: Routes = [
         component: AddressPreviewComponent
       },
       {
+        path: 'tx/:id',
+        children: [],
+        component: TransactionPreviewComponent
+      },
+      {
+        path: 'testnet/tx/:id',
+        children: [],
+        component: TransactionPreviewComponent
+      },
+      {
+        path: 'signet/tx/:id',
+        children: [],
+        component: TransactionPreviewComponent
+      },
+      {
         path: 'lightning',
         loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
       },
@@ -642,6 +658,16 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           path: 'testnet/address/:id',
           children: [],
           component: AddressPreviewComponent
+        },
+        {
+          path: 'tx/:id',
+          children: [],
+          component: TransactionPreviewComponent
+        },
+        {
+          path: 'testnet/tx/:id',
+          children: [],
+          component: TransactionPreviewComponent
         },
       ],
     },
