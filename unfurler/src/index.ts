@@ -157,6 +157,9 @@ class Server {
       case 'address':
         ogTitle = `Address: ${parts[1]}`;
       break;
+      case 'tx':
+        ogTitle = `Transaction: ${parts[1]}`;
+      break;
       case 'lightning':
         switch (parts[1]) {
           case 'node':
