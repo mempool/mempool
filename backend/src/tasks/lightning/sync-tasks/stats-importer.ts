@@ -63,6 +63,9 @@ class LightningStatsImporter {
       let isUnnanounced = true;
 
       for (const socket of (node.addresses ?? [])) {
+        if (!socket.network?.length || !socket.addr?.length) {
+          continue;
+        }
         hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network) || socket.addr.indexOf('onion') !== -1;
         hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network) || [4, 6].includes(isIP(socket.addr.split(':')[0]));
       }
@@ -263,8 +266,6 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
-    let latestNodeCount = 1;
-
     const fileList = await fsPromises.readdir(this.topologiesFolder);
     // Insert history from the most recent to the oldest
     // This also put the .json cached files first
@@ -292,12 +293,18 @@ class LightningStatsImporter {
 
       // Stats exist already, don't calculate/insert them
       if (existingStatsTimestamps[timestamp] !== undefined) {
-        latestNodeCount = existingStatsTimestamps[timestamp].node_count;
         continue;
       }
 
       logger.debug(`Reading ${this.topologiesFolder}/${filename}`);
-      const fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
+      let fileContent = '';
+      try {
+        fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
+      } catch (e: any) {
+        if (e.errno == -1) { // EISDIR - Ignore directorie
+          continue;
+        }
+      }
 
       let graph;
       if (filename.indexOf('.json') !== -1) {
@@ -315,18 +322,6 @@ class LightningStatsImporter {
         }
         await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
       }
-
-      if (timestamp > 1556316000) {
-        // "No, the reason most likely is just that I started collection in 2019,
-        // so what I had before that is just the survivors from before, which weren't that many"
-        const diffRatio = graph.nodes.length / latestNodeCount;
-        if (diffRatio < 0.9) {
-          // Ignore drop of more than 90% of the node count as it's probably a missing data point
-          logger.debug(`Nodes count diff ratio threshold reached, ignore the data for this day ${graph.nodes.length} nodes vs ${latestNodeCount}`);
-          continue;
-        }
-      }
-      latestNodeCount = graph.nodes.length;
 
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
