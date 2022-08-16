@@ -1,6 +1,5 @@
 import DB from '../../../database';
 import { promises } from 'fs';
-import { XMLParser } from 'fast-xml-parser';
 import logger from '../../../logger';
 import fundingTxFetcher from './funding-tx-fetcher';
 import config from '../../../config';
@@ -35,7 +34,6 @@ interface Channel {
 
 class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
-  parser = new XMLParser();
 
   async $run(): Promise<void> {
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
@@ -294,7 +292,7 @@ class LightningStatsImporter {
         continue;
       }
 
-      if (filename.indexOf('.json') === -1) {
+      if (filename.indexOf('.topology') === -1) {
         continue;
       }
 
@@ -341,75 +339,6 @@ class LightningStatsImporter {
     if (totalProcessed > 0) {
       logger.info(`Lightning network stats historical import completed`);
     }
-  }
-
-  /**
-   * Parse the file content into XML, and return a list of nodes and channels
-   */
-  private parseFile(fileContent): any {
-    const graph = this.parser.parse(fileContent);
-    if (Object.keys(graph).length === 0) {
-      return null;
-    }
-
-    const nodes: Node[] = [];
-    const channels: Channel[] = [];
-
-    // If there is only one entry, the parser does not return an array, so we override this
-    if (!Array.isArray(graph.graphml.graph.node)) {
-      graph.graphml.graph.node = [graph.graphml.graph.node];
-    }
-    if (!Array.isArray(graph.graphml.graph.edge)) {
-      graph.graphml.graph.edge = [graph.graphml.graph.edge];
-    }
-
-    for (const node of graph.graphml.graph.node) {
-      if (!node.data) {
-        continue;
-      }
-      const addresses: unknown[] = [];
-      const sockets = node.data[5].split(',');
-      for (const socket of sockets) {
-        const parts = socket.split('://');
-        addresses.push({
-          network: parts[0],
-          addr: parts[1],
-        });
-      }
-      nodes.push({
-        id: node.data[0],
-        timestamp: node.data[1],
-        features: node.data[2],
-        rgb_color: node.data[3],
-        alias: node.data[4],
-        addresses: addresses,
-        out_degree: node.data[6],
-        in_degree: node.data[7],
-      });
-    }
-
-    for (const channel of graph.graphml.graph.edge) {
-      if (!channel.data) {
-        continue;
-      }
-      channels.push({
-        channel_id: channel.data[0],
-        node1_pub: channel.data[1],
-        node2_pub: channel.data[2],
-        timestamp: channel.data[3],
-        features: channel.data[4],
-        fee_base_msat: channel.data[5],
-        fee_rate_milli_msat: channel.data[6],
-        htlc_minimim_msat: channel.data[7],
-        cltv_expiry_delta: channel.data[8],
-        htlc_maximum_msat: channel.data[9],
-      });
-    }
-
-    return {
-      nodes: nodes,
-      edges: channels,
-    };
   }
 }
 
