@@ -38,8 +38,6 @@ class LightningStatsImporter {
   parser = new XMLParser();
 
   async $run(): Promise<void> {
-    logger.info(`Importing historical lightning stats`);
-
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
@@ -283,16 +281,20 @@ class LightningStatsImporter {
 
     // For logging purpose
     let processed = 10;
-    let totalProcessed = -1;
+    let totalProcessed = 0;
+    let logStarted = false;
 
     for (const filename of fileList) {
       processed++;
-      totalProcessed++;
 
       const timestamp = parseInt(filename.split('_')[1], 10);
 
       // Stats exist already, don't calculate/insert them
       if (existingStatsTimestamps[timestamp] !== undefined) {
+        continue;
+      }
+
+      if (filename.indexOf('.json') === -1) {
         continue;
       }
 
@@ -307,24 +309,22 @@ class LightningStatsImporter {
       }
 
       let graph;
-      if (filename.indexOf('.json') !== -1) {
-        try {
-          graph = JSON.parse(fileContent);
-        } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
-          continue;
-        }
-      } else {
-        graph = this.parseFile(fileContent);
-        if (!graph) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
-          continue;
-        }
-        await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
+      try {
+        graph = JSON.parse(fileContent);
+      } catch (e) {
+        logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+        continue;
       }
-
+  
+      if (!logStarted) {
+        logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`);
+        logStarted = true;
+      }
+      
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
+
+      totalProcessed++;
 
       if (processed > 10) {
         logger.info(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
@@ -338,7 +338,9 @@ class LightningStatsImporter {
       existingStatsTimestamps[timestamp] = stat;
     }
 
-    logger.info(`Lightning network stats historical import completed`);
+    if (totalProcessed > 0) {
+      logger.info(`Lightning network stats historical import completed`);
+    }
   }
 
   /**
