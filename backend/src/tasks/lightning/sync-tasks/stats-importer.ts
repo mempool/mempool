@@ -1,6 +1,5 @@
 import DB from '../../../database';
 import { promises } from 'fs';
-import { XMLParser } from 'fast-xml-parser';
 import logger from '../../../logger';
 import fundingTxFetcher from './funding-tx-fetcher';
 import config from '../../../config';
@@ -35,11 +34,8 @@ interface Channel {
 
 class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
-  parser = new XMLParser();
 
   async $run(): Promise<void> {
-    logger.info(`Importing historical lightning stats`);
-
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
@@ -63,6 +59,9 @@ class LightningStatsImporter {
       let isUnnanounced = true;
 
       for (const socket of (node.addresses ?? [])) {
+        if (!socket.network?.length || !socket.addr?.length) {
+          continue;
+        }
         hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network) || socket.addr.indexOf('onion') !== -1;
         hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network) || [4, 6].includes(isIP(socket.addr.split(':')[0]));
       }
@@ -263,8 +262,6 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
-    let latestNodeCount = 1;
-
     const fileList = await fsPromises.readdir(this.topologiesFolder);
     // Insert history from the most recent to the oldest
     // This also put the .json cached files first
@@ -282,54 +279,50 @@ class LightningStatsImporter {
 
     // For logging purpose
     let processed = 10;
-    let totalProcessed = -1;
+    let totalProcessed = 0;
+    let logStarted = false;
 
     for (const filename of fileList) {
       processed++;
-      totalProcessed++;
 
       const timestamp = parseInt(filename.split('_')[1], 10);
 
       // Stats exist already, don't calculate/insert them
       if (existingStatsTimestamps[timestamp] !== undefined) {
-        latestNodeCount = existingStatsTimestamps[timestamp].node_count;
+        continue;
+      }
+
+      if (filename.indexOf('.topology') === -1) {
         continue;
       }
 
       logger.debug(`Reading ${this.topologiesFolder}/${filename}`);
-      const fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
+      let fileContent = '';
+      try {
+        fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
+      } catch (e: any) {
+        if (e.errno == -1) { // EISDIR - Ignore directorie
+          continue;
+        }
+      }
 
       let graph;
-      if (filename.indexOf('.json') !== -1) {
-        try {
-          graph = JSON.parse(fileContent);
-        } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
-          continue;
-        }
-      } else {
-        graph = this.parseFile(fileContent);
-        if (!graph) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
-          continue;
-        }
-        await fsPromises.writeFile(`${this.topologiesFolder}/${filename}.json`, JSON.stringify(graph));
+      try {
+        graph = JSON.parse(fileContent);
+      } catch (e) {
+        logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+        continue;
       }
-
-      if (timestamp > 1556316000) {
-        // "No, the reason most likely is just that I started collection in 2019,
-        // so what I had before that is just the survivors from before, which weren't that many"
-        const diffRatio = graph.nodes.length / latestNodeCount;
-        if (diffRatio < 0.9) {
-          // Ignore drop of more than 90% of the node count as it's probably a missing data point
-          logger.debug(`Nodes count diff ratio threshold reached, ignore the data for this day ${graph.nodes.length} nodes vs ${latestNodeCount}`);
-          continue;
-        }
+  
+      if (!logStarted) {
+        logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`);
+        logStarted = true;
       }
-      latestNodeCount = graph.nodes.length;
-
+      
       const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
       logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
+
+      totalProcessed++;
 
       if (processed > 10) {
         logger.info(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
@@ -343,76 +336,9 @@ class LightningStatsImporter {
       existingStatsTimestamps[timestamp] = stat;
     }
 
-    logger.info(`Lightning network stats historical import completed`);
-  }
-
-  /**
-   * Parse the file content into XML, and return a list of nodes and channels
-   */
-  private parseFile(fileContent): any {
-    const graph = this.parser.parse(fileContent);
-    if (Object.keys(graph).length === 0) {
-      return null;
+    if (totalProcessed > 0) {
+      logger.info(`Lightning network stats historical import completed`);
     }
-
-    const nodes: Node[] = [];
-    const channels: Channel[] = [];
-
-    // If there is only one entry, the parser does not return an array, so we override this
-    if (!Array.isArray(graph.graphml.graph.node)) {
-      graph.graphml.graph.node = [graph.graphml.graph.node];
-    }
-    if (!Array.isArray(graph.graphml.graph.edge)) {
-      graph.graphml.graph.edge = [graph.graphml.graph.edge];
-    }
-
-    for (const node of graph.graphml.graph.node) {
-      if (!node.data) {
-        continue;
-      }
-      const addresses: unknown[] = [];
-      const sockets = node.data[5].split(',');
-      for (const socket of sockets) {
-        const parts = socket.split('://');
-        addresses.push({
-          network: parts[0],
-          addr: parts[1],
-        });
-      }
-      nodes.push({
-        id: node.data[0],
-        timestamp: node.data[1],
-        features: node.data[2],
-        rgb_color: node.data[3],
-        alias: node.data[4],
-        addresses: addresses,
-        out_degree: node.data[6],
-        in_degree: node.data[7],
-      });
-    }
-
-    for (const channel of graph.graphml.graph.edge) {
-      if (!channel.data) {
-        continue;
-      }
-      channels.push({
-        channel_id: channel.data[0],
-        node1_pub: channel.data[1],
-        node2_pub: channel.data[2],
-        timestamp: channel.data[3],
-        features: channel.data[4],
-        fee_base_msat: channel.data[5],
-        fee_rate_milli_msat: channel.data[6],
-        htlc_minimim_msat: channel.data[7],
-        cltv_expiry_delta: channel.data[8],
-        htlc_maximum_msat: channel.data[9],
-      });
-    }
-
-    return {
-      nodes: nodes,
-      edges: channels,
-    };
   }
 }
 
