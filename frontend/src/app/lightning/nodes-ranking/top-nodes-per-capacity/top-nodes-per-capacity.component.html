@@ -51,6 +51,18 @@
             <td class="capacity text-right">
               <span class="skeleton-loader"></span>
             </td>
+            <td *ngIf="!widget" class="channels text-right">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td *ngIf="!widget" class="timestamp-first text-left">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td *ngIf="!widget" class="timestamp-update text-left">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td *ngIf="!widget" class="location text-right text-truncate">
+              <span class="skeleton-loader"></span>
+            </td>
           </tr>
         </tbody>
       </ng-template>

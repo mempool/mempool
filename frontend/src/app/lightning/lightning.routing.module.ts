@@ -41,6 +41,13 @@ const routes: Routes = [
           },
         },
         {
+          path: 'nodes/top-channels',
+          component: NodesRanking,
+          data: {
+            type: 'channels'
+          },
+        },
+        {
           path: '**',
           redirectTo: ''
         }

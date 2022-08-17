@@ -153,9 +153,14 @@ export interface RewardStats {
 }
 
 export interface ITopNodesPerChannels {
-  public_key: string,
+  publicKey: string,
   alias: string,
-  channels: number,
+  channels?: number,
+  capacity: number,
+  firstSeen?: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
 }
 
 export interface ITopNodesPerCapacity {
