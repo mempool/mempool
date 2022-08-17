@@ -1,0 +1,30 @@
+.table td, .table th {
+  padding: 0.5rem;
+}
+
+.rank {
+  @media (min-width: 767.98px) {
+    width: 13%;
+  }
+  @media (max-width: 767.98px) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+.alias {
+  width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+  @media (max-width: 767.98px) {
+    max-width: 175px;
+  }
+}
+.capacity {
+  width: 32%;
+  @media (max-width: 767.98px) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}

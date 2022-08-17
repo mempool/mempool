@@ -251,3 +251,20 @@ export interface RewardStats {
   totalFee: number;
   totalTx: number;
 }
+
+export interface TopNodesPerChannels {
+  public_key: string,
+  alias: string,
+  channels: number,
+}
+
+export interface TopNodesPerCapacity {
+  public_key: string,
+  alias: string,
+  capacity: number,
+}
+
+export interface INodesRanking {
+  topByCapacity: TopNodesPerCapacity[];
+  topByChannels: TopNodesPerChannels[];
+}
