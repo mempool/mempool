@@ -71,15 +71,7 @@ class NodesRoutes {
 
   private async $getISPRanking(req: Request, res: Response): Promise<void> {
     try {
-      const groupBy = req.query.groupBy as string;
-      const showTor = req.query.showTor as string === 'true' ? true : false;
-
-      if (!['capacity', 'node-count'].includes(groupBy)) {
-        res.status(400).send(`groupBy must be one of 'capacity' or 'node-count'`);
-        return;
-      }
-
-      const nodesPerAs = await nodesApi.$getNodesISPRanking(groupBy, showTor);
+      const nodesPerAs = await nodesApi.$getNodesISPRanking();
 
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');

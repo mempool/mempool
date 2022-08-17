@@ -168,64 +168,115 @@ class NodesApi {
     }
   }
 
-  public async $getNodesISPRanking(groupBy: string, showTor: boolean) {
+  public async $getNodesISPRanking() {
     try {
-      const orderBy = groupBy === 'capacity' ? `CAST(SUM(capacity) as INT)` : `COUNT(DISTINCT nodes.public_key)`;
-      
-      // Clearnet
-      let query = `SELECT GROUP_CONCAT(DISTINCT(nodes.as_number)) as ispId, geo_names.names as names,
-          COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
-        FROM nodes
-        JOIN geo_names ON geo_names.id = nodes.as_number
-        JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
-        GROUP BY geo_names.names
-        ORDER BY ${orderBy} DESC
-      `;      
-      const [nodesCountPerAS]: any = await DB.query(query);
+      let query = '';
 
-      let total = 0;
-      const nodesPerAs: any[] = [];
+      // List all channels and the two linked ISP
+      query = `
+        SELECT short_id, capacity,
+          channels.node1_public_key AS node1PublicKey, isp1.names AS isp1, isp1.id as isp1ID,
+          channels.node2_public_key AS node2PublicKey, isp2.names AS isp2, isp2.id as isp2ID
+        FROM channels
+        JOIN nodes node1 ON node1.public_key = channels.node1_public_key
+        JOIN nodes node2 ON node2.public_key = channels.node2_public_key
+        JOIN geo_names isp1 ON isp1.id = node1.as_number
+        JOIN geo_names isp2 ON isp2.id = node2.as_number
+        WHERE channels.status = 1
+        ORDER BY short_id DESC
+      `;
+      const [channelsIsp]: any = await DB.query(query);
 
-      for (const asGroup of nodesCountPerAS) {
-        if (groupBy === 'capacity') {
-          total += asGroup.capacity;
-        } else {
-          total += asGroup.nodesCount;
+      // Sum channels capacity and node count per ISP
+      const ispList = {};
+      for (const channel of channelsIsp) {
+        const isp1 = JSON.parse(channel.isp1);
+        const isp2 = JSON.parse(channel.isp2);
+
+        if (!ispList[isp1]) {
+          ispList[isp1] = {
+            id: channel.isp1ID,
+            capacity: 0,
+            channels: 0,
+            nodes: {},
+          };
         }
+        if (!ispList[isp2]) {
+          ispList[isp2] = {
+            id: channel.isp2ID,
+            capacity: 0,
+            channels: 0,
+            nodes: {},
+          };
+        }
+        
+        ispList[isp1].capacity += channel.capacity;
+        ispList[isp1].channels += 1;
+        ispList[isp1].nodes[channel.node1PublicKey] = true;
+        ispList[isp2].capacity += channel.capacity;
+        ispList[isp2].channels += 1;
+        ispList[isp2].nodes[channel.node2PublicKey] = true;
       }
 
-      // Tor
-      if (showTor) {
-        query = `SELECT COUNT(DISTINCT nodes.public_key) as nodesCount, CAST(SUM(capacity) as INT) as capacity
-          FROM nodes
-          JOIN channels ON channels.node1_public_key = nodes.public_key OR channels.node2_public_key = nodes.public_key
-          ORDER BY ${orderBy} DESC
-        `;      
-        const [nodesCountTor]: any = await DB.query(query);
-
-        total += groupBy === 'capacity' ? nodesCountTor[0].capacity : nodesCountTor[0].nodesCount;
-        nodesPerAs.push({
-          ispId: null,
-          name: 'Tor',
-          count: nodesCountTor[0].nodesCount,
-          share: Math.floor((groupBy === 'capacity' ? nodesCountTor[0].capacity : nodesCountTor[0].nodesCount) / total * 10000) / 100,
-          capacity: nodesCountTor[0].capacity,
-        });
+      const ispRanking: any[] = [];
+      for (const isp of Object.keys(ispList)) {
+        ispRanking.push([
+          ispList[isp].id,
+          isp,
+          ispList[isp].capacity,
+          ispList[isp].channels,
+          Object.keys(ispList[isp].nodes).length,
+        ]);
       }
 
-      for (const as of nodesCountPerAS) {
-        nodesPerAs.push({
-          ispId: as.ispId,
-          name: JSON.parse(as.names),
-          count: as.nodesCount,
-          share: Math.floor((groupBy === 'capacity' ? as.capacity : as.nodesCount) / total * 10000) / 100,
-          capacity: as.capacity,
-        });
-      }
+      // Total active channels capacity
+      query = `SELECT SUM(capacity) AS capacity FROM channels WHERE status = 1`;
+      const [totalCapacity]: any = await DB.query(query);
 
-      return nodesPerAs;
+      // Get the total capacity of all channels which have at least one node on clearnet
+      query = `
+        SELECT SUM(capacity) as capacity
+        FROM (
+          SELECT capacity, GROUP_CONCAT(socket1.type, socket2.type) as networks
+          FROM channels
+          JOIN nodes_sockets socket1 ON node1_public_key = socket1.public_key
+          JOIN nodes_sockets socket2 ON node2_public_key = socket2.public_key
+          AND channels.status = 1
+          GROUP BY short_id
+        ) channels_tmp
+        WHERE channels_tmp.networks LIKE '%ipv%'
+      `;
+      const [clearnetCapacity]: any = await DB.query(query);
+
+      // Get the total capacity of all channels which have both nodes on Tor 
+      query = `
+        SELECT SUM(capacity) as capacity
+        FROM (
+          SELECT capacity, GROUP_CONCAT(socket1.type, socket2.type) as networks
+          FROM channels
+          JOIN nodes_sockets socket1 ON node1_public_key = socket1.public_key
+          JOIN nodes_sockets socket2 ON node2_public_key = socket2.public_key
+          AND channels.status = 1
+          GROUP BY short_id
+        ) channels_tmp
+        WHERE channels_tmp.networks NOT LIKE '%ipv%' AND
+          channels_tmp.networks NOT LIKE '%dns%' AND
+          channels_tmp.networks NOT LIKE '%websocket%'
+      `;
+      const [torCapacity]: any = await DB.query(query);
+
+      const clearnetCapacityValue = parseInt(clearnetCapacity[0].capacity, 10);
+      const torCapacityValue = parseInt(torCapacity[0].capacity, 10);
+      const unknownCapacityValue = parseInt(totalCapacity[0].capacity) - clearnetCapacityValue - torCapacityValue;
+
+      return {
+        clearnetCapacity: clearnetCapacityValue,
+        torCapacity: torCapacityValue,
+        unknownCapacity: unknownCapacityValue,
+        ispRanking: ispRanking,
+      };
     } catch (e) {
-      logger.err(`Cannot get nodes grouped by AS. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot get LN ISP ranking. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }
