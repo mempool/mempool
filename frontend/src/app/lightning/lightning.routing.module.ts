@@ -34,8 +34,11 @@ const routes: Routes = [
           component: NodesPerISP,
         },
         {
-          path: 'nodes/ranking',
+          path: 'nodes/top-capacity',
           component: NodesRanking,
+          data: {
+            type: 'capacity'
+          },
         },
         {
           path: '**',
