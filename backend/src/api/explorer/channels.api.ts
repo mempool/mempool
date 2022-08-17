@@ -218,23 +218,25 @@ class ChannelsApi {
 
       // Channels originating from node
       let query = `
-        SELECT node2.alias, node2.public_key, channels.status, channels.node1_fee_rate,
+        SELECT COALESCE(node2.alias, SUBSTRING(node2_public_key, 0, 20)) AS alias, COALESCE(node2.public_key, node2_public_key) AS public_key,
+          channels.status, channels.node1_fee_rate,
           channels.capacity, channels.short_id, channels.id
         FROM channels
-        JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
+        LEFT JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
         WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsFromNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsFromNode]: any = await DB.query(query, [public_key]);
 
       // Channels incoming to node
       query = `
-        SELECT node1.alias, node1.public_key, channels.status, channels.node2_fee_rate,
+        SELECT COALESCE(node1.alias, SUBSTRING(node1_public_key, 0, 20)) AS alias, COALESCE(node1.public_key, node1_public_key) AS public_key,
+          channels.status, channels.node2_fee_rate,
           channels.capacity, channels.short_id, channels.id
         FROM channels
-        JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
         WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsToNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsToNode]: any = await DB.query(query, [public_key]);
 
       let allChannels = channelsFromNode.concat(channelsToNode);
       allChannels.sort((a, b) => {
