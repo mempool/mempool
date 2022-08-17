@@ -278,3 +278,14 @@ export interface INodesRanking {
   topByCapacity: ITopNodesPerCapacity[];
   topByChannels: ITopNodesPerChannels[];
 }
+
+export interface IOldestNodes {
+  publicKey: string,
+  alias: string,
+  firstSeen: number,
+  channels?: number,
+  capacity: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
+}
