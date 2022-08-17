@@ -2,6 +2,7 @@ import config from '../../config';
 import { Application, Request, Response } from 'express';
 import nodesApi from './nodes.api';
 import DB from '../../database';
+import { INodesRanking } from '../../mempool.interfaces';
 
 class NodesRoutes {
   constructor() { }
@@ -10,7 +11,7 @@ class NodesRoutes {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/top', this.$getTopNodes)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings', this.$getNodesRanking)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp-ranking', this.$getISPRanking)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/countries', this.$getNodesCountries)
@@ -56,11 +57,11 @@ class NodesRoutes {
     }
   }
 
-  private async $getTopNodes(req: Request, res: Response) {
+  private async $getNodesRanking(req: Request, res: Response): Promise<void> {
     try {
       const topCapacityNodes = await nodesApi.$getTopCapacityNodes();
       const topChannelsNodes = await nodesApi.$getTopChannelsNodes();
-      res.json({
+      res.json(<INodesRanking>{
         topByCapacity: topCapacityNodes,
         topByChannels: topChannelsNodes,
       });
