@@ -10,6 +10,7 @@ export class ToggleComponent implements AfterViewInit {
   @Output() toggleStatusChanged = new EventEmitter<boolean>();
   @Input() textLeft: string;
   @Input() textRight: string;
+  @Input() checked: boolean = false;
 
   ngAfterViewInit(): void {
     this.toggleStatusChanged.emit(false);
