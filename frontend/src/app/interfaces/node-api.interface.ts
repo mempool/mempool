@@ -159,9 +159,14 @@ export interface ITopNodesPerChannels {
 }
 
 export interface ITopNodesPerCapacity {
-  public_key: string,
+  publicKey: string,
   alias: string,
   capacity: number,
+  channels?: number,
+  firstSeen?: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
 }
 
 export interface INodesRanking {
