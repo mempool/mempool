@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-nodes-ranking',
@@ -7,9 +8,13 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesRanking implements OnInit {
+  type: string;
+
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    console.log('hi');
+    this.route.data.subscribe(data => {
+      this.type = data.type;
+    });
   }
-
 }

@@ -11,10 +11,11 @@ class NodesRoutes {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings', this.$getNodesRanking)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp-ranking', this.$getISPRanking)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/countries', this.$getNodesCountries)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings', this.$getNodesRanking)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/capacity', this.$getTopNodesByCapacity)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
     ;
@@ -59,12 +60,27 @@ class NodesRoutes {
 
   private async $getNodesRanking(req: Request, res: Response): Promise<void> {
     try {
-      const topCapacityNodes = await nodesApi.$getTopCapacityNodes();
+      const topCapacityNodes = await nodesApi.$getTopCapacityNodes(false);
       const topChannelsNodes = await nodesApi.$getTopChannelsNodes();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(<INodesRanking>{
         topByCapacity: topCapacityNodes,
         topByChannels: topChannelsNodes,
       });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getTopNodesByCapacity(req: Request, res: Response): Promise<void> {
+    try {
+      const topCapacityNodes = await nodesApi.$getTopCapacityNodes(true);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(topCapacityNodes);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
