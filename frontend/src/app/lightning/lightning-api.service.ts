@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StateService } from '../services/state.service';
-import { INodesRanking, ITopNodesPerCapacity } from '../interfaces/node-api.interface';
+import { INodesRanking, ITopNodesPerCapacity, ITopNodesPerChannels } from '../interfaces/node-api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -67,6 +67,12 @@ export class LightningApiService {
   getTopNodesByCapacity$(): Observable<ITopNodesPerCapacity[]> {
     return this.httpClient.get<ITopNodesPerCapacity[]>(
       this.apiBasePath + '/api/v1/lightning/nodes/rankings/capacity'
+    );
+  }
+
+  getTopNodesByChannels$(): Observable<ITopNodesPerChannels[]> {
+    return this.httpClient.get<ITopNodesPerChannels[]>(
+      this.apiBasePath + '/api/v1/lightning/nodes/rankings/channels'
     );
   }
 }

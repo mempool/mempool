@@ -2,7 +2,7 @@ import logger from '../../logger';
 import DB from '../../database';
 import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
-import { TopNodesPerCapacity, TopNodesPerChannels } from '../../mempool.interfaces';
+import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
 
 class NodesApi {
   public async $getNode(public_key: string): Promise<any> {
@@ -113,7 +113,7 @@ class NodesApi {
     }
   }
 
-  public async $getTopCapacityNodes(full: boolean): Promise<TopNodesPerCapacity[]> {
+  public async $getTopCapacityNodes(full: boolean): Promise<ITopNodesPerCapacity[]> {
     try {
       let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
       const latestDate = rows[0].maxAdded;
@@ -161,21 +161,46 @@ class NodesApi {
     }
   }
 
-  public async $getTopChannelsNodes(): Promise<TopNodesPerChannels[]> {
+  public async $getTopChannelsNodes(full: boolean): Promise<ITopNodesPerChannels[]> {
     try {
       let [rows]: any[] = await DB.query('SELECT UNIX_TIMESTAMP(MAX(added)) as maxAdded FROM node_stats');
       const latestDate = rows[0].maxAdded;
 
-      const query = `
-        SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
-          node_stats.channels
-        FROM node_stats
-        JOIN nodes ON nodes.public_key = node_stats.public_key
-        WHERE added = FROM_UNIXTIME(${latestDate})
-        ORDER BY channels DESC
-        LIMIT 100;
-      `;
-      [rows] = await DB.query(query);
+      let query: string;
+      if (full === false) {
+        query = `
+          SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+            node_stats.channels
+          FROM node_stats
+          JOIN nodes ON nodes.public_key = node_stats.public_key
+          WHERE added = FROM_UNIXTIME(${latestDate})
+          ORDER BY channels DESC
+          LIMIT 100;
+        `;
+
+        [rows] = await DB.query(query);
+      } else {
+        query = `
+          SELECT node_stats.public_key AS publicKey, IF(nodes.alias = '', SUBSTRING(node_stats.public_key, 1, 20), alias) as alias,
+            CAST(COALESCE(node_stats.channels, 0) as INT) as channels,
+            CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
+            UNIX_TIMESTAMP(nodes.first_seen) as firstSeen, UNIX_TIMESTAMP(nodes.updated_at) as updatedAt,
+            geo_names_city.names as city, geo_names_country.names as country
+          FROM node_stats
+          RIGHT JOIN nodes ON nodes.public_key = node_stats.public_key
+          LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+          LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          WHERE added = FROM_UNIXTIME(${latestDate})
+          ORDER BY channels DESC
+          LIMIT 100
+        `;
+
+        [rows] = await DB.query(query);
+        for (let i = 0; i < rows.length; ++i) {
+          rows[i].country = JSON.parse(rows[i].country);
+          rows[i].city = JSON.parse(rows[i].city);
+        }
+      }
 
       return rows;
     } catch (e) {
