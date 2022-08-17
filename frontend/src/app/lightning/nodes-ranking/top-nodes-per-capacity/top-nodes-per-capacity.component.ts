@@ -23,8 +23,6 @@ export class TopNodesPerCapacity implements OnInit {
       this.skeletonRows.push(i);
     }
 
-    console.log(this.widget);
-
     if (this.widget === false) {
       this.topNodesPerCapacity$ = this.apiService.getTopNodesByCapacity$();
     } else {
