@@ -53,6 +53,13 @@ const routes: Routes = [
           },
         },
         {
+          path: 'nodes/oldest',
+          component: NodesRanking,
+          data: {
+            type: 'oldest'
+          },
+        },
+        {
           path: '**',
           redirectTo: ''
         }
