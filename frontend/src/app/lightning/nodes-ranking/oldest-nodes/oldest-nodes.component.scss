@@ -45,9 +45,12 @@
 
 .full .capacity {
   width: 10%;
+  @media (max-width: 767.98px) {
+    display: none;
+  }
 }
 .widget .capacity {
-  width: 32%;
+  width: 10%;
   @media (max-width: 767.98px) {
     padding-left: 0px;
     padding-right: 0px;
@@ -63,14 +66,11 @@
 }
 
 .full .timestamp-first {
-  width: 50%;
-  @media (max-width: 767.98px) {
-    display: none;
-  }
+  width: 10%;
 }
 
 .full .timestamp-update {
-  width: 15%;
+  width: 20%;
   @media (max-width: 767.98px) {
     display: none;
   }
