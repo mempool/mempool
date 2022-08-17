@@ -248,7 +248,6 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 25 && isBitcoin === true) {
-      await this.$executeQuery(`INSERT INTO state VALUES('last_node_stats', 0, '1970-01-01');`);
       await this.$executeQuery(this.getCreateLightningStatisticsQuery(), await this.$checkIfTableExists('lightning_stats'));
       await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
       await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
