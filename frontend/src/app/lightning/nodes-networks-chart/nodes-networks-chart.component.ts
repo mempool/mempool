@@ -10,6 +10,7 @@ import { download } from 'src/app/shared/graphs.utils';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
+import { isMobile } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-networks-chart',
@@ -108,19 +109,19 @@ export class NodesNetworksChartComponent implements OnInit {
       );
   }
 
-  prepareChartOptions(data, maxYAxis) {
+  prepareChartOptions(data, maxYAxis): void {
     let title: object;
-    if (data.tor_nodes.length === 0) {
+    if (!this.widget && data.tor_nodes.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        text: $localize`Indexing in progess`,
         left: 'center',
-        top: 'top',
+        top: 'center',
       };
-    } else if (this.widget) {
+    } else if (data.tor_nodes.length > 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -140,11 +141,11 @@ export class NodesNetworksChartComponent implements OnInit {
         height: this.widget ? 100 : undefined,
         top: this.widget ? 10 : 40,
         bottom: this.widget ? 0 : 70,
-        right: (this.isMobile() && this.widget) ? 35 : this.right,
-        left: (this.isMobile() && this.widget) ? 40 :this.left,
+        right: (isMobile() && this.widget) ? 35 : this.right,
+        left: (isMobile() && this.widget) ? 40 :this.left,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !isMobile() || !this.widget,
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -157,7 +158,7 @@ export class NodesNetworksChartComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: (ticks) => {
+        formatter: (ticks): string => {
           let total = 0;
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
           let tooltip = `<b style="color: white; margin-left: 2px">${date}</b><br>`;
@@ -180,7 +181,7 @@ export class NodesNetworksChartComponent implements OnInit {
       },
       xAxis: data.tor_nodes.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        splitNumber: (isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -372,7 +373,7 @@ export class NodesNetworksChartComponent implements OnInit {
     };
   }
 
-  onChartInit(ec) {
+  onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
     }
@@ -384,11 +385,7 @@ export class NodesNetworksChartComponent implements OnInit {
     });
   }
 
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
-
-  onSaveChart() {
+  onSaveChart(): void {
     // @ts-ignore
     const prevBottom = this.chartOptions.grid.bottom;
     const now = new Date();

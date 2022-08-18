@@ -132,3 +132,12 @@
   max-width: 80px;
   margin: 15px auto 3px;
 }
+
+.indexing-message {
+  position: absolute;
+  font-size: 15px;
+  color: grey;
+  font-weight: bold;
+  margin-left: calc(50% - 85px);
+  margin-top: -10px;
+}
