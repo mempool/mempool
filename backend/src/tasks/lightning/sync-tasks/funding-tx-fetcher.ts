@@ -71,9 +71,7 @@ class FundingTxFetcher {
   }
   
   public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number}> {
-    if (channelId.indexOf('x') === -1) {
-      channelId = Common.channelIntegerIdToShortId(channelId);
-    }
+    channelId = Common.channelIntegerIdToShortId(channelId);
 
     if (this.fundingTxCache[channelId]) {
       return this.fundingTxCache[channelId];
