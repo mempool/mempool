@@ -239,7 +239,13 @@ class LightningStatsImporter {
    */
   async $importHistoricalLightningStats(): Promise<void> {
     try {
-      const fileList = await fsPromises.readdir(this.topologiesFolder);
+      let fileList: string[] = [];
+      try {
+        fileList = await fsPromises.readdir(this.topologiesFolder);
+      } catch (e) {
+        logger.err(`Unable to open topology folder at ${this.topologiesFolder}`);
+        throw e;
+      }
       // Insert history from the most recent to the oldest
       // This also put the .json cached files first
       fileList.sort().reverse();
@@ -281,6 +287,8 @@ class LightningStatsImporter {
           if (e.errno == -1) { // EISDIR - Ignore directorie
             continue;
           }
+          logger.err(`Unable to open ${this.topologiesFolder}/${filename}`);
+          continue;
         }
 
         let graph;
