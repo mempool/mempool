@@ -48,4 +48,10 @@
     <div class="spinner-border text-light"></div>
   </div>
 
+  <div *ngIf="widget && (capacityObservable$ | async) as stats">
+    <div *ngIf="stats.days === 0" class="indexing-message d-flex" i18n="lightning.indexing-in-progress">
+      Indexing in progress
+    </div>
+  </div>
+
 </div>
