@@ -17,6 +17,7 @@ class NodesRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings', this.$getNodesRanking)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/capacity', this.$getTopNodesByCapacity)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/channels', this.$getTopNodesByChannels)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/age', this.$getOldestNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
     ;
@@ -90,6 +91,18 @@ class NodesRoutes {
   private async $getTopNodesByChannels(req: Request, res: Response): Promise<void> {
     try {
       const topCapacityNodes = await nodesApi.$getTopChannelsNodes(true);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(topCapacityNodes);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getOldestNodes(req: Request, res: Response): Promise<void> {
+    try {
+      const topCapacityNodes = await nodesApi.$getOldestNodes(true);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());

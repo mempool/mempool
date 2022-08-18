@@ -7,6 +7,7 @@ import { ChannelComponent } from './channel/channel.component';
 import { NodesPerCountry } from './nodes-per-country/nodes-per-country.component';
 import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 import { NodesRanking } from './nodes-ranking/nodes-ranking.component';
+import { NodesRankingsDashboard } from './nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 
 const routes: Routes = [
     {
@@ -34,6 +35,10 @@ const routes: Routes = [
           component: NodesPerISP,
         },
         {
+          path: 'nodes/rankings',
+          component: NodesRankingsDashboard,
+        },
+        {
           path: 'nodes/top-capacity',
           component: NodesRanking,
           data: {
@@ -45,6 +50,13 @@ const routes: Routes = [
           component: NodesRanking,
           data: {
             type: 'channels'
+          },
+        },
+        {
+          path: 'nodes/oldest',
+          component: NodesRanking,
+          data: {
+            type: 'oldest'
           },
         },
         {
