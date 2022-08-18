@@ -1,0 +1,33 @@
+.main {
+  max-width: 90%;
+}
+
+.col {
+  padding-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.card {
+  background-color: #1d1f31;
+}
+
+.card-title {
+  font-size: 1rem;
+  color: #4a68b9;
+}
+.card-title > a {
+  color: #4a68b9;
+}
+
+.card-text {
+  font-size: 22px;
+}
+
+.title-link, .title-link:hover, .title-link:focus, .title-link:active {
+  text-align: center;
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+}

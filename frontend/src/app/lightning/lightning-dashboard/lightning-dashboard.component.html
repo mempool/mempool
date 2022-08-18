@@ -42,6 +42,7 @@
       </div>
     </div>
 
+    <!-- Network history -->
     <div class="col">
       <div class="card graph-card">
         <div class="card-body pl-2 pr-2 pt-1">
@@ -53,6 +54,7 @@
       </div>
     </div>
 
+    <!-- Top nodes per capacity -->
     <div class="col">
       <div class="card">
         <div class="card-body">
@@ -61,12 +63,12 @@
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
           </a>
-          <h5 class="card-title"></h5>
           <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-capacity>
         </div>
       </div>
     </div>
 
+    <!-- Top nodes per channels -->
     <div class="col">
       <div class="card">
         <div class="card-body">
