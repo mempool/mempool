@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { OpenGraphService } from 'src/app/services/opengraph.service';
-import { getFlagEmoji } from 'src/app/shared/graphs.utils';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { isMobile } from '../../shared/common.utils';
 

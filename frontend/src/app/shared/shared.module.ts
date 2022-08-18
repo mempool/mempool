@@ -82,6 +82,7 @@ import { SatsComponent } from './components/sats/sats.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
+import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 
 @NgModule({
   declarations: [
@@ -158,6 +159,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
+    GeolocationComponent,
   ],
   imports: [
     CommonModule,
@@ -261,6 +263,7 @@ import { ToggleComponent } from './components/toggle/toggle.component';
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
+    GeolocationComponent,
   ]
 })
 export class SharedModule {
