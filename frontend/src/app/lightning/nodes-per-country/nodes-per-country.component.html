@@ -36,7 +36,7 @@
             {{ node.channels }}
           </td>
           <td class="city text-right text-truncate">
-            {{ node?.city?.en ?? '-' }}
+            <app-geolocation [data]="node.geolocation" [type]="'list-country'"></app-geolocation>
           </td>
       </tbody>
     </table>
