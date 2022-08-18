@@ -8,30 +8,6 @@ import { isIP } from 'net';
 
 const fsPromises = promises;
 
-interface Node {
-  id: string;
-  timestamp: number;
-  features: string;
-  rgb_color: string;
-  alias: string;
-  addresses: unknown[];
-  out_degree: number;
-  in_degree: number;
-}
-
-interface Channel {
-  channel_id: string;
-  node1_pub: string;
-  node2_pub: string;
-  timestamp: number;
-  features: string;
-  fee_base_msat: number;
-  fee_rate_milli_msat: number;
-  htlc_minimim_msat: number;
-  cltv_expiry_delta: number;
-  htlc_maximum_msat: number;
-}
-
 class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
 
@@ -59,11 +35,11 @@ class LightningStatsImporter {
       let isUnnanounced = true;
 
       for (const socket of (node.addresses ?? [])) {
-        if (!socket.network?.length || !socket.addr?.length) {
+        if (!socket.network?.length && !socket.addr?.length) {
           continue;
         }
-        hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network) || socket.addr.indexOf('onion') !== -1;
-        hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network) || [4, 6].includes(isIP(socket.addr.split(':')[0]));
+        hasOnion = hasOnion || ['torv2', 'torv3'].includes(socket.network) || socket.addr.indexOf('onion') !== -1 || socket.addr.indexOf('torv2') !== -1 || socket.addr.indexOf('torv3') !== -1;
+        hasClearnet = hasClearnet || ['ipv4', 'ipv6'].includes(socket.network) || [4, 6].includes(isIP(socket.addr.split(':')[0])) || socket.addr.indexOf('ipv4') !== -1 || socket.addr.indexOf('ipv6') !== -1;;
       }
       if (hasOnion && hasClearnet) {
         clearnetTorNodes++;
@@ -293,7 +269,7 @@ class LightningStatsImporter {
           continue;
         }
 
-        if (filename.indexOf('.topology') === -1) {
+        if (filename.indexOf('topology_') === -1) {
           continue;
         }
 
@@ -310,6 +286,7 @@ class LightningStatsImporter {
         let graph;
         try {
           graph = JSON.parse(fileContent);
+          graph = await this.cleanupTopology(graph);
         } catch (e) {
           logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
           continue;
@@ -343,6 +320,62 @@ class LightningStatsImporter {
     } catch (e) {
       logger.err(`Lightning network stats historical failed. Reason: ${e instanceof Error ? e.message : e}`);
     }
+  }
+
+  async cleanupTopology(graph) {
+    const newGraph = {
+      nodes: <ILightningApi.Node[]>[],
+      edges: <ILightningApi.Channel[]>[],
+    };
+
+    for (const node of graph.nodes) {
+      const addressesParts = (node.addresses ?? '').split(',');
+      const addresses: any[] = [];
+      for (const address of addressesParts) {
+        addresses.push({
+          network: '',
+          addr: address
+        });
+      }
+
+      newGraph.nodes.push({
+        last_update: node.timestamp ?? 0,
+        pub_key: node.id ?? null,
+        alias: node.alias ?? null,
+        addresses: addresses,
+        color: node.rgb_color ?? null,
+        features: {},
+      });
+    }
+
+    for (const adjacency of graph.adjacency) {
+      if (adjacency.length === 0) {
+        continue;
+      } else {
+        for (const edge of adjacency) {
+          newGraph.edges.push({
+            channel_id: edge.scid,
+            chan_point: '',
+            last_update: edge.timestamp,
+            node1_pub: edge.source ?? null,
+            node2_pub: edge.destination ?? null,
+            capacity: '0', // Will be fetch later
+            node1_policy: {
+              time_lock_delta: edge.cltv_expiry_delta,
+              min_htlc: edge.htlc_minimim_msat,
+              fee_base_msat: edge.fee_base_msat,
+              fee_rate_milli_msat: edge.fee_proportional_millionths,
+              max_htlc_msat: edge.htlc_maximum_msat,
+              last_update: edge.timestamp,
+              disabled: false,          
+            },
+            node2_policy: null,
+          });
+        }
+      }
+    }
+
+    return newGraph;
   }
 }
 
