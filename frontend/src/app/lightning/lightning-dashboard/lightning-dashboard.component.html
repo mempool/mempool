@@ -56,9 +56,13 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Top Capacity Nodes</h5>
-          <app-nodes-list [nodes$]="nodesByCapacity$" [show]="'mobile-capacity'"></app-nodes-list>
-          <!-- <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div> -->
+          <a class="title-link" href="" [routerLink]="['/lightning/nodes/top-capacity' | relativeUrl]">
+            <h5 class="card-title d-inline" i18n="lightning.top-capacity-nodes">Top capacity nodes</h5>
+            <span>&nbsp;</span>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+          </a>
+          <h5 class="card-title"></h5>
+          <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-capacity>
         </div>
       </div>
     </div>
@@ -66,9 +70,12 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Most Connected Nodes</h5>
-          <app-nodes-list [nodes$]="nodesByChannels$" [show]="'mobile-channels'"></app-nodes-list>
-          <!-- <div><a [routerLink]="['/lightning/nodes' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div> -->
+          <a class="title-link" href="" [routerLink]="['/lightning/nodes/top-channels' | relativeUrl]">
+            <h5 class="card-title d-inline" i18n="lightning.top-channels-nodes">Most connected nodes</h5>
+            <span>&nbsp;</span>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+          </a>
+          <app-top-nodes-per-channels [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-channels>
         </div>
       </div>
     </div>
