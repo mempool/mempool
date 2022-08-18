@@ -195,19 +195,24 @@ class NodesApi {
 
         if (!ispList[isp1]) {
           ispList[isp1] = {
-            id: channel.isp1ID,
+            id: channel.isp1ID.toString(),
             capacity: 0,
             channels: 0,
             nodes: {},
           };
+        } else if (ispList[isp1].id.indexOf(channel.isp1ID) === -1) {
+          ispList[isp1].id += ',' + channel.isp1ID.toString();
         }
+
         if (!ispList[isp2]) {
           ispList[isp2] = {
-            id: channel.isp2ID,
+            id: channel.isp2ID.toString(),
             capacity: 0,
             channels: 0,
             nodes: {},
           };
+        } else if (ispList[isp2].id.indexOf(channel.isp2ID) === -1) {
+          ispList[isp2].id += ',' + channel.isp2ID.toString();
         }
         
         ispList[isp1].capacity += channel.capacity;
