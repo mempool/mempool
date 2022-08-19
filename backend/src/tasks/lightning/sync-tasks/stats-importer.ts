@@ -146,28 +146,40 @@ class LightningStatsImporter {
         }
       } else {
         // @ts-ignore
-        if (channel.fee_rate_milli_msat < 5000) {
+        if (channel.node1_policy.fee_rate_milli_msat < 5000) {
           // @ts-ignore
-          avgFeeRate += parseInt(channel.fee_rate_milli_msat, 10);
+          avgFeeRate += parseInt(channel.node1_policy.fee_rate_milli_msat, 10);
           // @ts-ignore
-          feeRates.push(parseInt(channel.fee_rate_milli_msat), 10);
+          feeRates.push(parseInt(channel.node1_policy.fee_rate_milli_msat), 10);
         }
         // @ts-ignore
-        if (channel.fee_base_msat < 5000) {
+        if (channel.node1_policy.fee_base_msat < 5000) {
           // @ts-ignore
-          avgBaseFee += parseInt(channel.fee_base_msat, 10);
+          avgBaseFee += parseInt(channel.node1_policy.fee_base_msat, 10);
           // @ts-ignore
-          baseFees.push(parseInt(channel.fee_base_msat), 10);
+          baseFees.push(parseInt(channel.node1_policy.fee_base_msat), 10);
         }
       }
     }
 
+    let medCapacity = 0;
+    let medFeeRate = 0;
+    let medBaseFee = 0;
+    let avgCapacity = 0;
+
     avgFeeRate /= Math.max(networkGraph.edges.length, 1);
     avgBaseFee /= Math.max(networkGraph.edges.length, 1);
-    const medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
-    const medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
-    const medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
-    const avgCapacity = Math.round(capacity / Math.max(capacities.length, 1));
+
+    if (capacities.length > 0) {
+      medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
+      avgCapacity = Math.round(capacity / Math.max(capacities.length, 1));
+    }
+    if (feeRates.length > 0) {
+      medFeeRate = feeRates.sort((a, b) => b - a)[Math.round(feeRates.length / 2 - 1)];
+    }
+    if (baseFees.length > 0) {
+      medBaseFee = baseFees.sort((a, b) => b - a)[Math.round(baseFees.length / 2 - 1)];
+    }
 
     let query = `INSERT INTO lightning_stats(
         added,
@@ -350,7 +362,7 @@ class LightningStatsImporter {
           logger.debug(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
         }
         await fundingTxFetcher.$fetchChannelsFundingTxs(graph.edges.map(channel => channel.channel_id.slice(0, -2)));
-        const stat = await this.computeNetworkStats(timestamp, graph);
+        const stat = await this.computeNetworkStats(timestamp, graph, true);
 
         existingStatsTimestamps[timestamp] = stat;
       }
