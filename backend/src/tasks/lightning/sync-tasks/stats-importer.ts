@@ -272,10 +272,12 @@ class LightningStatsImporter {
 
         // Stats exist already, don't calculate/insert them
         if (existingStatsTimestamps[timestamp] !== undefined) {
+          totalProcessed++;
           continue;
         }
 
         if (filename.indexOf('topology_') === -1) {
+          totalProcessed++;
           continue;
         }
 
