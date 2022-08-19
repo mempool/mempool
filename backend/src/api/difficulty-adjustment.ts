@@ -47,8 +47,8 @@ class DifficultyAdjustmentApi {
     }
 
     const timeAvg = timeAvgMins * 60 * 1000 ;
-    const remainingTime = remainingBlocks * timeAvg;
-    const estimatedRetargetDate = remainingTime + now * 1000;
+    const remainingTime = (remainingBlocks * timeAvg) + (now * 1000);
+    const estimatedRetargetDate = remainingTime + now;
 
     return {
       progressPercent,
