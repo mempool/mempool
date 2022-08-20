@@ -169,7 +169,7 @@ class NodesApi {
       let query: string;
       if (full === false) {
         query = `
-          SELECT nodes.public_key, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+          SELECT nodes.public_key as publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
             node_stats.channels
           FROM node_stats
           JOIN nodes ON nodes.public_key = node_stats.public_key
