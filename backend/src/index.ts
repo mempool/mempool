@@ -189,7 +189,7 @@ class Server {
       await networkSyncService.$startService();
       await lightningStatsUpdater.$startService();
     } catch(e) {
-      logger.err(`Lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);
       this.$runLightningBackend();
     };
