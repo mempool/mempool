@@ -225,7 +225,7 @@ class ChannelsApi {
       let query = `
         SELECT COALESCE(node2.alias, SUBSTRING(node2_public_key, 0, 20)) AS alias, COALESCE(node2.public_key, node2_public_key) AS public_key,
           channels.status, channels.node1_fee_rate,
-          channels.capacity, channels.short_id, channels.id
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason
         FROM channels
         LEFT JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
         WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
@@ -236,7 +236,7 @@ class ChannelsApi {
       query = `
         SELECT COALESCE(node1.alias, SUBSTRING(node1_public_key, 0, 20)) AS alias, COALESCE(node1.public_key, node1_public_key) AS public_key,
           channels.status, channels.node2_fee_rate,
-          channels.capacity, channels.short_id, channels.id
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason
         FROM channels
         LEFT JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
         WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
@@ -254,6 +254,7 @@ class ChannelsApi {
         const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
         channels.push({
           status: row.status,
+          closing_reason: row.closing_reason,
           capacity: row.capacity ?? 0,
           short_id: row.short_id,
           id: row.id,
