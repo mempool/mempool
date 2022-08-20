@@ -3,21 +3,24 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(nodesPerAsObservable$ | async) as stats; else loadingReward">
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.tagged-isp">Tagged ISPs</h5>
-        <p class="card-text">
-          {{ stats.taggedISP }}
+        <h5 class="card-title d-inline-block" i18n="lightning.clearnet-capacity">Clearnet capacity</h5>
+        <p class="card-text" i18n-ngbTooltip="lightning.clearnet-capacity-desc"
+          ngbTooltip="How much liquidity is running on nodes advertising at least one clearnet IP address" placement="bottom">
+          <app-amount [satoshis]="stats.clearnetCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.tagged-nodes">Tagged nodes</h5>
-        <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc">
-          {{ stats.taggedNodeCount }}
+        <h5 class="card-title d-inline-block">Unknown capacity</h5>
+        <p class="card-text" i18n-ngbTooltip="lightning.unknown-capacity-desc"
+        ngbTooltip="How much liquidity is running on nodes which ISP was not identifiable" placement="bottom">
+          <app-amount [satoshis]="stats.unknownCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.tagged-capacity">Tagged capacity</h5>
-        <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc">
-          <app-amount [satoshis]="stats.taggedCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+        <h5 class="card-title d-inline-block">Tor capacity</h5>
+        <p class="card-text" i18n-ngbTooltip="lightning.tor-capacity-desc"
+        ngbTooltip="How much liquidity is running on nodes advertising only Tor addresses" placement="bottom">
+          <app-amount [satoshis]="stats.torCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
     </div>
@@ -25,13 +28,13 @@
 
   <div class="card-header" *ngIf="!widget">
     <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
-      <span i18n="lightning.nodes-per-isp">Lightning nodes per ISP</span>
+      <span i18n="lightning.top-100-isp-ln">Top 100 ISP hosting LN nodes</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>
     <small class="d-block" style="color: #ffffff66; min-height: 25px" i18n="lightning.tor-nodes-excluded">
-      <span *ngIf="!(showTorObservable$ | async)">(Tor nodes excluded)</span>
+      <span>(Tor nodes excluded)</span>
     </small>
   </div>
 
@@ -44,9 +47,8 @@
       <div class="spinner-border text-light"></div>
     </div>
 
-    <div class="d-flex toggle" *ngIf="!widget">
-      <app-toggle [textLeft]="'Show Tor'" [textRight]="" (toggleStatusChanged)="onTorToggleStatusChanged($event)"></app-toggle>
-      <app-toggle [textLeft]="'Nodes'" [textRight]="'Capacity'" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
+    <div class="d-flex justify-content-md-end toggle" *ngIf="!widget">
+      <app-toggle [textLeft]="'Sort by nodes'" [textRight]="'capacity'" [checked]="true" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
     </div>
 
     <table class="table table-borderless text-center m-auto" style="max-width: 900px"  *ngIf="!widget">
@@ -59,16 +61,15 @@
           <th class="capacity text-right pr-0" i18n="lightning.capacity">Capacity</th>
         </tr>
       </thead>
-      <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as asList">
-        <tr *ngFor="let asEntry of asList.data">
-          <td class="rank text-left pl-0">{{ asEntry.rank }}</td>
+      <tbody [attr.data-cy]="'pools-table'" *ngIf="(nodesPerAsObservable$ | async) as result">
+        <tr *ngFor="let isp of result.ispRanking">
+          <td class="rank text-left pl-0">{{ isp[5] }}</td>
           <td class="name text-left text-truncate">
-            <a *ngIf="asEntry.ispId" [routerLink]="[('/lightning/nodes/isp/' + asEntry.ispId) | relativeUrl]">{{ asEntry.name }}</a>
-            <span *ngIf="!asEntry.ispId">{{ asEntry.name }}</span>
+            <a [routerLink]="[('/lightning/nodes/isp/' + isp[0]) | relativeUrl]">{{ isp[1] }}</a>
           </td>
-          <td class="share text-right">{{ asEntry.share }}%</td>
-          <td class="nodes text-right">{{ asEntry.count }}</td>
-          <td class="capacity text-right pr-0"><app-amount [satoshis]="asEntry.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
+          <td class="share text-right">{{ sortBy === 'capacity' ? isp[7] : isp[6] }}%</td>
+          <td class="nodes text-right">{{ isp[4] }}</td>
+          <td class="capacity text-right pr-0"><app-amount [satoshis]="isp[2]" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount></td>
         </tr>
       </tbody>
     </table>
