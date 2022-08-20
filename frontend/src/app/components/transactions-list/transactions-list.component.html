@@ -20,7 +20,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-sm table-tx-vin">
           <tbody>
-            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length>12)?tx.vin.slice(0, 10): tx.vin.slice(0, 12)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length > rowLimit) ? tx.vin.slice(0, rowLimit - 2) : tx.vin.slice(0, rowLimit)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded,
                 'highlight': vin.prevout?.scriptpubkey_address === this.address && this.address !== ''
@@ -146,9 +146,9 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vin.length > 12 && tx['@vinLimit']">
+            <tr *ngIf="tx.vin.length > rowLimit && tx['@vinLimit']">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreInputs(tx);"><span i18n="show-all">Show all</span> ({{ tx.vin.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreInputs(tx);"><span i18n="show-all">Show all</span> ({{ tx.vin.length }})</button>
               </td>
             </tr>
           </tbody>
@@ -158,7 +158,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-sm table-tx-vout">
           <tbody>
-            <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] && !outputIndex ? ((tx.vout.length > 12) ? tx.vout.slice(0, 10) : tx.vout.slice(0, 12)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] && !outputIndex ? ((tx.vout.length > rowLimit) ? tx.vout.slice(0, rowLimit - 2) : tx.vout.slice(0, rowLimit)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
                 'highlight': vout.scriptpubkey_address === this.address && this.address !== ''
@@ -257,9 +257,9 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vout.length > 12 && tx['@voutLimit'] && !outputIndex">
+            <tr *ngIf="tx.vout.length > rowLimit && tx['@voutLimit'] && !outputIndex">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vout.length - 10 }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vout.length }})</button>
               </td>
             </tr>
           </tbody>
