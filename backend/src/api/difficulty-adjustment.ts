@@ -25,6 +25,7 @@ export function calcDifficultyAdjustment(
   const ESTIMATE_LAG_BLOCKS = 146; // For first 7.2% of epoch, don't estimate.
   const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   const BLOCK_SECONDS_TARGET = 600; // Bitcoin mainnet
+  const TESTNET_MAX_BLOCK_SECONDS = 1200; // Bitcoin testnet
 
   const diffSeconds = nowSeconds - DATime;
   const blocksInEpoch = (blockHeight >= 0) ? blockHeight % EPOCH_BLOCK_LENGTH : 0;
@@ -33,12 +34,11 @@ export function calcDifficultyAdjustment(
   const nextRetargetHeight = (blockHeight >= 0) ? blockHeight + remainingBlocks : 0;
 
   let difficultyChange = 0;
-  let timeAvgMins = 10;
+  let timeAvgSecs = BLOCK_SECONDS_TARGET;
   // Only calculate the estimate once we have 7.2% of blocks in current epoch
   if (blocksInEpoch >= ESTIMATE_LAG_BLOCKS) {
-    const secondsPerBlock = diffSeconds / blocksInEpoch;
-    timeAvgMins = secondsPerBlock / 60;
-    difficultyChange = (BLOCK_SECONDS_TARGET / secondsPerBlock - 1) * 100;
+    timeAvgSecs = diffSeconds / blocksInEpoch;
+    difficultyChange = (BLOCK_SECONDS_TARGET / timeAvgSecs - 1) * 100;
     // Max increase is x4 (+300%)
     if (difficultyChange > 300) {
       difficultyChange = 300;
@@ -53,16 +53,17 @@ export function calcDifficultyAdjustment(
   // therefore the time between blocks will always be below 20 minutes (1200s).
   let timeOffset = 0;
   if (network === 'testnet') {
-    if (timeAvgMins > 20) {
-      timeAvgMins = 20;
+    if (timeAvgSecs > TESTNET_MAX_BLOCK_SECONDS) {
+      timeAvgSecs = TESTNET_MAX_BLOCK_SECONDS;
     }
 
-    if (nowSeconds - latestBlockTimestamp + timeAvgMins * 60 > 1200) {
-      timeOffset = -Math.min(nowSeconds - latestBlockTimestamp, 1200) * 1000;
+    const secondsSinceLastBlock = nowSeconds - latestBlockTimestamp;
+    if (secondsSinceLastBlock + timeAvgSecs > TESTNET_MAX_BLOCK_SECONDS) {
+      timeOffset = -Math.min(secondsSinceLastBlock, TESTNET_MAX_BLOCK_SECONDS) * 1000;
     }
   }
 
-  const timeAvg = Math.floor(timeAvgMins * 60 * 1000);
+  const timeAvg = Math.floor(timeAvgSecs * 1000);
   const remainingTime = remainingBlocks * timeAvg;
   const estimatedRetargetDate = remainingTime + nowSeconds * 1000;
 
