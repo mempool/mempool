@@ -10,6 +10,7 @@ import { ApiService } from '../../services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { AddressInformation } from '../../interfaces/node-api.interface';
+import { sortTransactions } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-address',
@@ -141,15 +142,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
-        this.tempTransactions.sort((a, b) => {
-          if (b.status.confirmed) {
-            if (b.status.block_height === a.status.block_height) {
-              return b.status.block_time - a.status.block_time;
-            }
-            return b.status.block_height - a.status.block_height;
-          }
-          return b.firstSeen - a.firstSeen;
-        });
+        sortTransactions(this.tempTransactions);
 
         this.transactions = this.tempTransactions;
         this.isLoadingTransactions = false;
@@ -194,6 +187,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         if (tx) {
           tx.status = transaction.status;
           this.transactions = this.transactions.slice();
+          sortTransactions(this.transactions);
           this.audioService.playSound('magic');
         }
         this.totalConfirmedTxCount++;
