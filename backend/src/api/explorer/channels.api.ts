@@ -61,9 +61,14 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelsByStatus(status: number): Promise<any[]> {
+  public async $getChannelsByStatus(status: number | number[]): Promise<any[]> {
     try {
-      const query = `SELECT * FROM channels WHERE status = ?`;
+      let query: string;
+      if (Array.isArray(status)) {
+        query = `SELECT * FROM channels WHERE status IN (${status.join(',')})`;
+      } else {
+        query = `SELECT * FROM channels WHERE status = ?`;
+      }
       const [rows]: any = await DB.query(query, [status]);
       return rows;
     } catch (e) {
@@ -339,7 +344,7 @@ class ChannelsApi {
   /**
    * Save or update a channel present in the graph
    */
-  public async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+  public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
     const [ txid, vout ] = channel.chan_point.split(':');
 
     const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
@@ -371,11 +376,11 @@ class ChannelsApi {
         node2_min_htlc_mtokens,
         node2_updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ${status}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         capacity = ?,
         updated_at = ?,
-        status = 1,
+        status = ${status},
         node1_public_key = ?,
         node1_base_fee_mtokens = ?,
         node1_cltv_delta = ?,
