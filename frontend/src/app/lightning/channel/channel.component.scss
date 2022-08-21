@@ -39,3 +39,16 @@ app-fiat {
     margin-left: 10px;
   }
 }
+
+.closing-header {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  h3 {
+    font-size: 1.4rem;
+  }
+}
