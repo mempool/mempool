@@ -350,3 +350,68 @@ Corresponding `docker-compose.yml` overrides:
       PRICE_DATA_SERVER_CLEARNET_URL: ""
       ...
 ```
+
+<br/>
+
+`mempool-config.json`:
+```
+  "LIGHTNING": {
+    "ENABLED": false
+    "BACKEND": "lnd"
+    "TOPOLOGY_FOLDER": ""
+    "STATS_REFRESH_INTERVAL": 600
+    "GRAPH_REFRESH_INTERVAL": 600
+    "LOGGER_UPDATE_INTERVAL": 30
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```
+  api:
+    environment:
+      LIGHTNING_ENABLED: false
+      LIGHTNING_BACKEND: "lnd"
+      LIGHTNING_TOPOLOGY_FOLDER: ""
+      LIGHTNING_STATS_REFRESH_INTERVAL: 600
+      LIGHTNING_GRAPH_REFRESH_INTERVAL: 600
+      LIGHTNING_LOGGER_UPDATE_INTERVAL: 30
+      ...
+```
+
+<br/>
+
+`mempool-config.json`:
+```
+  "LND": {
+    "TLS_CERT_PATH": ""
+    "MACAROON_PATH": ""
+    "REST_API_URL": "https://localhost:8080"
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```
+  api:
+    environment:
+      LND_TLS_CERT_PATH: ""
+      LND_MACAROON_PATH: ""
+      LND_REST_API_URL: "https://localhost:8080"
+      ...
+```
+
+<br/>
+
+`mempool-config.json`:
+```
+  "CLN": {
+    "SOCKET": ""
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```
+  api:
+    environment:
+      CLN_SOCKET: ""
+      ...
+```
