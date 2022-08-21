@@ -207,6 +207,10 @@ export class Common {
 
   /** Decodes a channel id returned by lnd as uint64 to a short channel id */
   static channelIntegerIdToShortId(id: string): string {
+    if (id.indexOf('/') !== -1) {
+      id = id.slice(0, -2);
+    }
+    
     if (id.indexOf('x') !== -1) { // Already a short id
       return id;
     }
