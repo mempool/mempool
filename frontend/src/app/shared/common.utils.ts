@@ -1,4 +1,4 @@
-import * as toposort from "toposort";
+import toposort from "./toposort.utils";
 import { Transaction } from "../interfaces/electrs.interface";
 
 export function isMobile(): boolean {
