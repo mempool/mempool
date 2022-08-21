@@ -42,24 +42,10 @@
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
-            <tr *ngIf="node.country && node.city && node.subdivision">
+            <tr *ngIf="node.geolocation">
               <td i18n="location">Location</td>
               <td>
-                <span>{{ node.city.en }}, {{ node.subdivision.en }}</span>
-                <br>
-                <a class="d-flex align-items-center" [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
-                  <span class="link">{{ node.country.en }}</span>
-                  &nbsp;
-                  <span class="flag">{{ node.flag }}</span>
-                </a>
-              </td>
-            </tr>
-            <tr *ngIf="node.country && !node.city">
-              <td i18n="location">Location</td>
-              <td>
-                <a [routerLink]="['/lightning/nodes/country' | relativeUrl, node.iso_code]">
-                  {{ node.country.en }} {{ node.flag }}
-                </a>
+                <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
               </td>
             </tr>
           </tbody>
