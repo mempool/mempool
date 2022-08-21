@@ -154,7 +154,7 @@ export class NodesPerISPChartComponent implements OnInit {
           },
           borderColor: '#000',
           formatter: () => {
-            return `<b style="color: white">${isp[1]} (${isp[6]}%)</b><br>` +
+            return `<b style="color: white">${isp[1]} (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)</b><br>` +
               $localize`${isp[4].toString()} nodes<br>` +
               $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BTC`
             ;
