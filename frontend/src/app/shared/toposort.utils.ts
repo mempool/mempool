@@ -79,7 +79,8 @@ function toposort(nodes, edges) {
     var outgoing = outgoingEdges.get(node) || new Set()
     outgoing = Array.from(outgoing)
 
-    if (i = outgoing.length) {
+    i = outgoing.length
+    if (i) {
       predecessors.add(node)
       do {
         var child = outgoing[--i]
