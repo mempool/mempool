@@ -77,12 +77,18 @@
   },
   "LIGHTNING": {
     "ENABLED": false,
-    "BACKEND": "lnd"
+    "BACKEND": "lnd",
+    "STATS_REFRESH_INTERVAL": 600,
+    "GRAPH_REFRESH_INTERVAL": 600,
+    "LOGGER_UPDATE_INTERVAL": 30
   },
   "LND": {
     "TLS_CERT_PATH": "tls.cert",
     "MACAROON_PATH": "readonly.macaroon",
     "REST_API_URL": "https://localhost:8080"
+  },
+  "CLIGHTNING": {
+    "SOCKET": "lightning-rpc"
   },
   "SOCKS5PROXY": {
     "ENABLED": false,
