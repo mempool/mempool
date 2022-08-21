@@ -3,7 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
-import { getFlagEmoji } from 'src/app/shared/graphs.utils';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
+import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-nodes-per-country',
@@ -29,6 +30,16 @@ export class NodesPerCountry implements OnInit {
             name: response.country.en,
             flag: getFlagEmoji(this.route.snapshot.params.country)
           };
+
+          for (const i in response.nodes) {
+            response.nodes[i].geolocation = <GeolocationData>{
+              country: response.nodes[i].country?.en,
+              city: response.nodes[i].city?.en,
+              subdivision: response.nodes[i].subdivision?.en,
+              iso: response.nodes[i].iso_code,
+            };
+          }
+
           this.seoService.setTitle($localize`Lightning nodes in ${this.country.name}`);
           return response.nodes;
         })
