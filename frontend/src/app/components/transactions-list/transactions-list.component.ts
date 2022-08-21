@@ -26,6 +26,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() paginated = false;
   @Input() outputIndex: number;
   @Input() address: string = '';
+  @Input() rowLimit = 12;
+  @Input() channels: { inputs: any[], outputs: any[] };
 
   @Output() loadMore = new EventEmitter();
 
@@ -36,7 +38,6 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showDetails$ = new BehaviorSubject<boolean>(false);
   outspends: Outspend[][] = [];
   assetsMinimal: any;
-  channels: { inputs: any[], outputs: any[] };
 
   constructor(
     public stateService: StateService,
@@ -127,7 +128,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     });
     const txIds = this.transactions.map((tx) => tx.txid);
     this.refreshOutspends$.next(txIds);
-    this.refreshChannels$.next(txIds);
+    if (!this.channels) {
+      this.refreshChannels$.next(txIds);
+    }
   }
 
   onScroll() {

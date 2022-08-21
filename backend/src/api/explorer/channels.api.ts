@@ -61,9 +61,14 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelsByStatus(status: number): Promise<any[]> {
+  public async $getChannelsByStatus(status: number | number[]): Promise<any[]> {
     try {
-      const query = `SELECT * FROM channels WHERE status = ?`;
+      let query: string;
+      if (Array.isArray(status)) {
+        query = `SELECT * FROM channels WHERE status IN (${status.join(',')})`;
+      } else {
+        query = `SELECT * FROM channels WHERE status = ?`;
+      }
       const [rows]: any = await DB.query(query, [status]);
       return rows;
     } catch (e) {
@@ -218,23 +223,25 @@ class ChannelsApi {
 
       // Channels originating from node
       let query = `
-        SELECT node2.alias, node2.public_key, channels.status, channels.node1_fee_rate,
+        SELECT COALESCE(node2.alias, SUBSTRING(node2_public_key, 0, 20)) AS alias, COALESCE(node2.public_key, node2_public_key) AS public_key,
+          channels.status, channels.node1_fee_rate,
           channels.capacity, channels.short_id, channels.id
         FROM channels
-        JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
+        LEFT JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
         WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsFromNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsFromNode]: any = await DB.query(query, [public_key]);
 
       // Channels incoming to node
       query = `
-        SELECT node1.alias, node1.public_key, channels.status, channels.node2_fee_rate,
+        SELECT COALESCE(node1.alias, SUBSTRING(node1_public_key, 0, 20)) AS alias, COALESCE(node1.public_key, node1_public_key) AS public_key,
+          channels.status, channels.node2_fee_rate,
           channels.capacity, channels.short_id, channels.id
         FROM channels
-        JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
         WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsToNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsToNode]: any = await DB.query(query, [public_key]);
 
       let allChannels = channelsFromNode.concat(channelsToNode);
       allChannels.sort((a, b) => {
@@ -337,7 +344,7 @@ class ChannelsApi {
   /**
    * Save or update a channel present in the graph
    */
-  public async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+  public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
     const [ txid, vout ] = channel.chan_point.split(':');
 
     const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
@@ -369,11 +376,11 @@ class ChannelsApi {
         node2_min_htlc_mtokens,
         node2_updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ${status}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         capacity = ?,
         updated_at = ?,
-        status = 1,
+        status = ${status},
         node1_public_key = ?,
         node1_base_fee_mtokens = ?,
         node1_cltv_delta = ?,
