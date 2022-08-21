@@ -95,11 +95,19 @@ class NetworkSyncService {
    */
   private async $updateChannelsList(channels: ILightningApi.Channel[]): Promise<void> {
     try {
+      const [closedChannelsRaw]: any[] = await DB.query(`SELECT id FROM channels WHERE status = 2`);
+      const closedChannels = {};
+      for (const closedChannel of closedChannelsRaw) {
+        closedChannels[Common.channelShortIdToIntegerId(closedChannel.id)] = true;
+      }
+
       let progress = 0;
 
       const graphChannelsIds: string[] = [];
       for (const channel of channels) {
-        await channelsApi.$saveChannel(channel);
+        if (!closedChannels[channel.channel_id]) {
+          await channelsApi.$saveChannel(channel);
+        }
         graphChannelsIds.push(channel.channel_id);
         ++progress;
 
@@ -232,8 +240,8 @@ class NetworkSyncService {
     let progress = 0;
 
     try {
-      logger.info(`Starting closed channels scan...`);
-      const channels = await channelsApi.$getChannelsByStatus(0);
+      logger.info(`Starting closed channels scan`);
+      const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
         if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
