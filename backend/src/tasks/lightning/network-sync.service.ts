@@ -240,8 +240,8 @@ class NetworkSyncService {
     let progress = 0;
 
     try {
-      logger.info(`Starting closed channels scan...`);
-      const channels = await channelsApi.$getChannelsByStatus(0);
+      logger.info(`Starting closed channels scan`);
+      const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
         if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {

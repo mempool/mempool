@@ -16,3 +16,9 @@
   color: #ffffff66;
   font-size: 12px;
 }
+
+@media (max-width: 768px) {
+  .box {
+    margin-bottom: 20px;
+  }
+}
