@@ -9,7 +9,7 @@ import { StateService } from 'src/app/services/state.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from 'src/app/shared/graphs.utils';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',

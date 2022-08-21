@@ -31,6 +31,7 @@ export class NodesChannelsMap implements OnInit {
   channelOpacity = 0.1;
   channelColor = '#466d9d';
   channelCurve = 0;
+  nodeSize = 4;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -62,6 +63,10 @@ export class NodesChannelsMap implements OnInit {
     
     if (this.style === 'graph') {
       this.seoService.setTitle($localize`Lightning nodes channels world map`);
+    }
+
+    if (['nodepage', 'channelpage'].includes(this.style)) {
+      this.nodeSize = 8;
     }
     
     this.channelsObservable = this.activatedRoute.paramMap
@@ -205,7 +210,7 @@ export class NodesChannelsMap implements OnInit {
           data: nodes,
           coordinateSystem: 'geo',
           geoIndex: 0,
-          symbolSize: 4,
+          symbolSize: this.nodeSize,
           tooltip: {
             show: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',

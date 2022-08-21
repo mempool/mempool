@@ -24,6 +24,12 @@ import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 import { NodesPerCountryChartComponent } from '../lightning/nodes-per-country-chart/nodes-per-country-chart.component';
 import { NodesMap } from '../lightning/nodes-map/nodes-map.component';
 import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels-map.component';
+import { NodesRanking } from '../lightning/nodes-ranking/nodes-ranking.component';
+import { TopNodesPerChannels } from '../lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component';
+import { TopNodesPerCapacity } from '../lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component';
+import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-nodes.component';
+import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
+
 @NgModule({
   declarations: [
     LightningDashboardComponent,
@@ -45,6 +51,11 @@ import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels
     NodesPerCountryChartComponent,
     NodesMap,
     NodesChannelsMap,
+    NodesRanking,
+    TopNodesPerChannels,
+    TopNodesPerCapacity,
+    OldestNodes,
+    NodesRankingsDashboard,
   ],
   imports: [
     CommonModule,
@@ -73,6 +84,11 @@ import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels
     NodesPerCountryChartComponent,
     NodesMap,
     NodesChannelsMap,
+    NodesRanking,
+    TopNodesPerChannels,
+    TopNodesPerCapacity,
+    OldestNodes,
+    NodesRankingsDashboard,
   ],
   providers: [
     LightningApiService,

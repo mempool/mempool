@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 37;
+  private static currentVersion = 38;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -248,7 +248,6 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 25 && isBitcoin === true) {
-      await this.$executeQuery(`INSERT INTO state VALUES('last_node_stats', 0, '1970-01-01');`);
       await this.$executeQuery(this.getCreateLightningStatisticsQuery(), await this.$checkIfTableExists('lightning_stats'));
       await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
       await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
@@ -327,6 +326,16 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 37 && isBitcoin == true) {
       await this.$executeQuery(this.getCreateLNNodesSocketsTableQuery(), await this.$checkIfTableExists('nodes_sockets'));
+    }
+
+    if (databaseSchemaVersion < 38 && isBitcoin == true) {
+      if (config.LIGHTNING.ENABLED) {
+        this.uniqueLog(logger.notice, `'lightning_stats' and 'node_stats' tables have been truncated.`);
+      }
+      await this.$executeQuery(`TRUNCATE lightning_stats`);
+      await this.$executeQuery(`TRUNCATE node_stats`);
+      await this.$executeQuery('ALTER TABLE `lightning_stats` CHANGE `added` `added` timestamp NULL');
+      await this.$executeQuery('ALTER TABLE `node_stats` CHANGE `added` `added` timestamp NULL');
     }
   }
 
