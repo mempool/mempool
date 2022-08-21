@@ -47,7 +47,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false });
+    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: true });
     this.channelsPage$.next(1);
 
     this.channels$ = merge(
@@ -70,7 +70,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
       map((response) => {
         return {
           channels: response.body,
-          totalItems: parseInt(response.headers.get('x-total-count'), 10) + 1 
+          totalItems: parseInt(response.headers.get('x-total-count'), 10)
         };
       }),
     );
