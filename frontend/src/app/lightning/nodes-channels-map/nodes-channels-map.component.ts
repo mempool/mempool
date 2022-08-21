@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, Input, Output, EventEmitter, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, switchMap, tap, zip } from 'rxjs';
@@ -16,14 +16,14 @@ import { isMobile } from 'src/app/shared/common.utils';
   styleUrls: ['./nodes-channels-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesChannelsMap implements OnInit, OnDestroy {
+export class NodesChannelsMap implements OnInit {
   @Input() style: 'graph' | 'nodepage' | 'widget' | 'channelpage' = 'graph';
   @Input() publicKey: string | undefined;
   @Input() channel: any[] = [];
   @Input() fitContainer = false;
   @Output() readyEvent = new EventEmitter();
 
-  observable$: Observable<any>;
+  channelsObservable: Observable<any>; 
 
   center: number[] | undefined;
   zoom: number | undefined;
@@ -50,8 +50,6 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnDestroy(): void {}
-
   ngOnInit(): void {
     this.center = this.style === 'widget' ? [0, 40] : [0, 5];
     this.zoom = 1.3;
@@ -71,7 +69,7 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
       this.nodeSize = 8;
     }
     
-    this.observable$ = this.activatedRoute.paramMap
+    this.channelsObservable = this.activatedRoute.paramMap
      .pipe(
        switchMap((params: ParamMap) => {
         return zip(
@@ -175,15 +173,8 @@ export class NodesChannelsMap implements OnInit, OnDestroy {
   prepareChartOptions(nodes, channels) {
     let title: object;
     if (channels.length === 0) {
-      title = {
-        textStyle: {
-          color: 'grey',
-          fontSize: 15
-        },
-        text: $localize`No geolocation data available`,
-        left: 'center',
-        top: 'center'
-      };
+      this.chartOptions = null;
+      return;
     }
 
     this.chartOptions = {
