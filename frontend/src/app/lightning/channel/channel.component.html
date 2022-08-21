@@ -14,7 +14,7 @@
 
   <div class="clearfix"></div>
 
-  <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo"></app-nodes-channels-map>
+  <app-nodes-channels-map *ngIf="!error && (channelGeo$ | async) as channelGeo" [style]="'channelpage'" [channel]="channelGeo"></app-nodes-channels-map>
 
   <div class="box">
 
@@ -30,32 +30,6 @@
                 <td i18n="address.total-sent">Last update</td>
                 <td><app-timestamp [dateString]="channel.updated_at"></app-timestamp></td>
               </tr>
-              <tr>
-                <td i18n="address.total-sent">Opening transaction</td>
-                <td>
-                  <a [routerLink]="['/tx' | relativeUrl, channel.transaction_id + ':' + channel.transaction_vout]" >
-                    <span>{{ channel.transaction_id | shortenString : 10 }}</span>
-                  </a>
-                  <app-clipboard [text]="channel.transaction_id"></app-clipboard>
-                </td>
-              </tr>
-              <ng-template [ngIf]="channel.closing_transaction_id">
-                <tr *ngIf="channel.closing_transaction_id">
-                  <td i18n="address.total-sent">Closing transaction</td>
-                  <td>
-                    <a [routerLink]="['/tx' | relativeUrl, channel.closing_transaction_id]" >
-                      <span>{{ channel.closing_transaction_id | shortenString : 10 }}</span>
-                    </a>
-                    <app-clipboard [text]="channel.closing_transaction_id"></app-clipboard>
-                  </td>
-                </tr>
-                <tr>
-                  <td i18n="address.total-sent">Closing type</td>
-                  <td>
-                    <app-closing-type [type]="channel.closing_reason"></app-closing-type>
-                  </td>
-                </tr>
-              </ng-template>
             </tbody>
           </table>
         </div>
@@ -82,8 +56,23 @@
       </div>
       <div class="col">
         <app-channel-box [channel]="channel.node_right"></app-channel-box>
+      </div>
     </div>
-  </div>
+    
+    <br>
+
+    <ng-container *ngIf="transactions$ | async as transactions">
+      <ng-template [ngIf]="transactions[0]">
+        <h3>Opening transaction</h3>
+        <app-transactions-list [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [], outputs: [channel] }"></app-transactions-list>
+      </ng-template>
+      <ng-template [ngIf]="transactions[1]">
+        <div class="closing-header">
+          <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason"></app-closing-type>
+        </div>
+        <app-transactions-list [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [channel], outputs: [] }"></app-transactions-list>
+      </ng-template>
+    </ng-container>
 
 </div>
 
