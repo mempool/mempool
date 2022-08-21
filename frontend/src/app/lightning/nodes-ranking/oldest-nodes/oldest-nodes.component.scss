@@ -1,0 +1,84 @@
+.container-xl {
+  max-width: 1400px;
+  padding-bottom: 100px;
+  @media (min-width: 767.98px) {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+.table td, .table th {
+  padding: 0.5rem;
+}
+
+.full .rank {
+  width: 5%;
+}
+.widget .rank {
+  @media (min-width: 767.98px) {
+    width: 13%;
+  }
+  @media (max-width: 767.98px) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+.full .alias {
+  width: 10%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+  @media (max-width: 767.98px) {
+    max-width: 175px;
+  }
+}
+.widget .alias {
+  width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  @media (max-width: 767.98px) {
+    max-width: 170px;
+  }
+}
+
+.full .capacity {
+  width: 10%;
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+.widget .capacity {
+  width: 10%;
+  @media (max-width: 767.98px) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+.full .channels {
+  width: 15%;
+  padding-right: 50px;
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+
+.full .timestamp-first {
+  width: 10%;
+}
+
+.full .timestamp-update {
+  width: 20%;
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+
+.full .location {
+  width: 10%;
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
