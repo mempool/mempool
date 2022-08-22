@@ -83,7 +83,7 @@ class NetworkSyncService {
     logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted`);
 
     // If a channel if not present in the graph, mark it as inactive
-    nodesApi.$setNodesInactive(graphNodesPubkeys);
+    await nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
       $lookupNodeLocation();
@@ -121,7 +121,7 @@ class NetworkSyncService {
       logger.info(`${progress} channels updated`);
 
       // If a channel if not present in the graph, mark it as inactive
-      channelsApi.$setChannelsInactive(graphChannelsIds);
+      await channelsApi.$setChannelsInactive(graphChannelsIds);
     } catch (e) {
       logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
