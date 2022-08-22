@@ -182,3 +182,14 @@ nav {
   width: 140px;
   height: 35px;
 }
+
+.beta {
+  display: inline;
+  position: absolute;
+  margin: 24px 0px 0px -15px;
+  font-size: 8px;
+  @media (max-width: 767.98px) {
+    margin: 33px 0px 0px -19px;
+    font-size: 7px;
+  }
+}
