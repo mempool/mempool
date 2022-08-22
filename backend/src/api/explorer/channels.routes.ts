@@ -102,7 +102,11 @@ class ChannelsRoutes {
 
   private async $getAllChannelsGeo(req: Request, res: Response) {
     try {
-      const channels = await channelsApi.$getAllChannelsGeo(req.params?.publicKey);
+      const style: string = typeof req.query.style === 'string' ? req.query.style : '';
+      const channels = await channelsApi.$getAllChannelsGeo(req.params?.publicKey, style);
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
