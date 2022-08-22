@@ -74,7 +74,7 @@ export class NodesChannelsMap implements OnInit {
        switchMap((params: ParamMap) => {
         return zip(
           this.assetsService.getWorldMapJson$,
-          this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined),
+          this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined) : [''],
           [params.get('public_key') ?? undefined]
         ).pipe(tap((data) => {
           registerMap('world', data[0]);
