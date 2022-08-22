@@ -37,7 +37,7 @@
       <div class="card graph-card">
         <div class="card-body pl-2 pr-2">
           <app-nodes-per-isp-chart [widget]="true"></app-nodes-per-isp-chart>
-          <div class="mt-2"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/lightning/nodes-per-isp' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+          <div style="margin-top: 5px"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/lightning/nodes-per-isp' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
@@ -49,17 +49,17 @@
           <h5 class="card-title mt-3" i18n="lightning.network-history">Lightning network history</h5>
           <app-lightning-statistics-chart [widget]=true></app-lightning-statistics-chart>
           <app-nodes-networks-chart [widget]=true></app-nodes-networks-chart>
-          <div class="mt-1"><a [routerLink]="['/graphs/lightning/nodes-networks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
+          <div><a [routerLink]="['/graphs/lightning/nodes-networks' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
     </div>
 
     <!-- Top nodes per capacity -->
     <div class="col">
-      <div class="card">
+      <div class="card" style="height: 409px">
         <div class="card-body">
-          <a class="title-link" href="" [routerLink]="['/lightning/nodes/top-capacity' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="lightning.top-capacity-nodes">Top capacity nodes</h5>
+          <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/liquidity' | relativeUrl]">
+            <h5 class="card-title d-inline" i18n="lightning.liquidity-ranking">Liquidity ranking</h5>
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
           </a>
@@ -70,10 +70,10 @@
 
     <!-- Top nodes per channels -->
     <div class="col">
-      <div class="card">
+      <div class="card" style="height: 409px">
         <div class="card-body">
-          <a class="title-link" href="" [routerLink]="['/lightning/nodes/top-channels' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="lightning.top-channels-nodes">Most connected nodes</h5>
+          <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/connectivity' | relativeUrl]">
+            <h5 class="card-title d-inline" i18n="lightning.connectivity-ranking">Connectivity ranking</h5>
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
           </a>

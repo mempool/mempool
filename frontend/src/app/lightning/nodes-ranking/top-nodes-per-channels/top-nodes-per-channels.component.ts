@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { INodesRanking, ITopNodesPerChannels } from 'src/app/interfaces/node-api.interface';
+import { isMobile } from 'src/app/shared/common.utils';
 import { LightningApiService } from '../../lightning-api.service';
 
 @Component({
@@ -19,7 +20,7 @@ export class TopNodesPerChannels implements OnInit {
   constructor(private apiService: LightningApiService) {}
 
   ngOnInit(): void {
-    for (let i = 1; i <= (this.widget ? 10 : 100); ++i) {
+    for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 7) : 100); ++i) {
       this.skeletonRows.push(i);
     }
 
@@ -28,7 +29,7 @@ export class TopNodesPerChannels implements OnInit {
     } else {
       this.topNodesPerChannels$ = this.nodes$.pipe(
         map((ranking) => {
-          return ranking.topByChannels.slice(0, 10);
+          return ranking.topByChannels.slice(0, isMobile() ? 8 : 7);
         })
       );
     }
