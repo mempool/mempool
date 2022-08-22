@@ -7,10 +7,9 @@ import {
   catchError,
   retryWhen,
   delay,
-  map
 } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { OpenGraphService } from 'src/app/services/opengraph.service';
 import { ApiService } from 'src/app/services/api.service';
@@ -30,13 +29,16 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
-  transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   liquidUnblinding = new LiquidUnblinding();
+  isLiquid = false;
+  totalValue: number;
+  opReturns: Vout[];
+  extraData: 'none' | 'coinbase' | 'opreturn';
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +51,12 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe(
-      (network) => (this.network = network)
+      (network) => {
+        this.network = network;
+        if (this.network === 'liquid' || this.network == 'liquidtestnet') {
+          this.isLiquid = true;
+        }
+      }
     );
 
     this.fetchCpfpSubscription = this.fetchCpfp$
@@ -152,12 +159,9 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
-
-          if (!tx.status.confirmed && tx.firstSeen) {
-            this.transactionTime = tx.firstSeen;
-          } else {
-            this.getTransactionTime();
-          }
+          this.totalValue = this.tx.vout.reduce((acc, v) => v.value + acc, 0);
+          this.opReturns = this.getOpReturns(this.tx);
+          this.extraData = this.chooseExtraData();
 
           if (!this.tx.status.confirmed) {
             if (tx.cpfpChecked) {
@@ -181,26 +185,10 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       );
   }
 
-  getTransactionTime() {
-    this.openGraphService.waitFor('tx-time');
-    this.apiService
-      .getTransactionTimes$([this.tx.txid])
-      .pipe(
-        catchError((err) => {
-          return of(0);
-        })
-      )
-      .subscribe((transactionTimes) => {
-        this.transactionTime = transactionTimes[0];
-        this.openGraphService.waitOver('tx-time');
-      });
-  }
-
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
     this.isLoadingTx = true;
-    this.transactionTime = -1;
     this.cpfpInfo = null;
     this.showCpfpDetails = false;
   }
@@ -215,6 +203,20 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
   getTotalTxOutput(tx: Transaction) {
     return tx.vout.map((v: Vout) => v.value || 0).reduce((a: number, b: number) => a + b);
+  }
+
+  getOpReturns(tx: Transaction): Vout[] {
+    return tx.vout.filter((v) => v.scriptpubkey_type === 'op_return' && v.scriptpubkey_asm !== 'OP_RETURN');
+  }
+
+  chooseExtraData(): 'none' | 'opreturn' | 'coinbase' {
+    if (this.isCoinbase(this.tx)) {
+      return 'coinbase';
+    } else if (this.opReturns?.length) {
+      return 'opreturn';
+    } else {
+      return 'none';
+    }
   }
 
   ngOnDestroy() {
