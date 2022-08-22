@@ -39,14 +39,14 @@ const routes: Routes = [
           component: NodesRankingsDashboard,
         },
         {
-          path: 'nodes/top-capacity',
+          path: 'nodes/rankings/liquidity',
           component: NodesRanking,
           data: {
             type: 'capacity'
           },
         },
         {
-          path: 'nodes/top-channels',
+          path: 'nodes/rankings/connectivity',
           component: NodesRanking,
           data: {
             type: 'channels'
