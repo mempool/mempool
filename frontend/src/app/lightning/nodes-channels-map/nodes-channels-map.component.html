@@ -8,7 +8,7 @@
         <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
       </div>
 
-      <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"
+      <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"
         (chartFinished)="onChartFinished($event)">
       </div>
     </div>

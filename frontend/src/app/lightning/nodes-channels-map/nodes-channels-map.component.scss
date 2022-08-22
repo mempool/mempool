@@ -10,7 +10,7 @@
 .full-container {
   padding: 0px 15px;
   width: 100%;
-  min-height: 500px;
+  min-height: 600px;
   height: calc(100% - 150px);
 
   @media (max-width: 992px) {
@@ -18,17 +18,20 @@
     padding-bottom: 100px;
   }
 }
-
 .full-container.nodepage {
+  min-height: 400px;
   margin-top: 25px;
   margin-bottom: 25px;
 }
-
+.full-container.channelpage {
+  min-height: 400px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
 .full-container.widget {
   height: 250px;
   min-height: 250px;
 }
-
 .full-container.fit-container {
   margin: 0;
   padding: 0;
@@ -38,25 +41,6 @@
   .chart {
     padding: 0;
     min-height: 100px;
-  }
-}
-
-.widget {
-  width: 90vw;
-  margin-left: auto;
-  margin-right: auto;
-  height: 250px;
-  -webkit-mask: linear-gradient(0deg, #11131f00 5%, #11131fff 25%);
-  @media (max-width: 767.98px) {
-    width: 100vw;
-  }
-}
-
-.widget > .chart {
-  min-height: 250px;
-  -webkit-mask: linear-gradient(180deg, #11131f00 0%, #11131fff 20%);
-  @media (max-width: 767.98px) {
-    padding-bottom: 0px;
   }
 }
 
@@ -78,6 +62,33 @@
   }
   @media (max-width: 567px) {
     padding-bottom: 55px;
+  }
+}
+.chart.graph {
+  min-height: 600px;
+}
+.chart.nodepage {
+  min-height: 400px;
+}
+.chart.channelpage {
+  min-height: 400px;
+}
+
+.widget {
+  width: 90vw;
+  margin-left: auto;
+  margin-right: auto;
+  height: 250px;
+  -webkit-mask: linear-gradient(0deg, #11131f00 5%, #11131fff 25%);
+  @media (max-width: 767.98px) {
+    width: 100vw;
+  }
+}
+.widget > .chart {
+  min-height: 250px;
+  -webkit-mask: linear-gradient(180deg, #11131f00 0%, #11131fff 20%);
+  @media (max-width: 767.98px) {
+    padding-bottom: 0px;
   }
 }
 
