@@ -153,7 +153,7 @@ export class StateService {
     if (this.env.BASE_MODULE !== 'mempool' && this.env.BASE_MODULE !== 'liquid') {
       return;
     }
-    const networkMatches = url.match(/\/(bisq|testnet|liquidtestnet|liquid|signet)/);
+    const networkMatches = url.match(/^\/(bisq|testnet|liquidtestnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
