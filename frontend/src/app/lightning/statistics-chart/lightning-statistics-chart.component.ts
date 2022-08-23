@@ -113,7 +113,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         left: 'center',
         top: 'center'
       };
-    } else if (data.channel_count.length > 0) {
+    } else if (this.widget && data.channel_count.length > 0) {
       title = {
         textStyle: {
           color: 'grey',
