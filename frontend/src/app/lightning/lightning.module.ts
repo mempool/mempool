@@ -29,6 +29,7 @@ import { TopNodesPerChannels } from '../lightning/nodes-ranking/top-nodes-per-ch
 import { TopNodesPerCapacity } from '../lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component';
 import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-nodes.component';
 import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
+import { NodeChannels } from '../lightning/nodes-channels/node-channels.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/no
     TopNodesPerCapacity,
     OldestNodes,
     NodesRankingsDashboard,
+    NodeChannels,
   ],
   imports: [
     CommonModule,
@@ -89,6 +91,7 @@ import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/no
     TopNodesPerCapacity,
     OldestNodes,
     NodesRankingsDashboard,
+    NodeChannels,
   ],
   providers: [
     LightningApiService,
