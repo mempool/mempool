@@ -98,7 +98,7 @@ class NetworkSyncService {
       const [closedChannelsRaw]: any[] = await DB.query(`SELECT id FROM channels WHERE status = 2`);
       const closedChannels = {};
       for (const closedChannel of closedChannelsRaw) {
-        closedChannels[Common.channelShortIdToIntegerId(closedChannel.id)] = true;
+        closedChannels[closedChannel.id] = true;
       }
 
       let progress = 0;
