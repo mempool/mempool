@@ -118,15 +118,26 @@
     </button>
   </div>
 
-  <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
-  <app-node-statistics-chart [publicKey]="node.public_key" *ngIf="!error"></app-node-statistics-chart>
+  <div *ngIf="!error">
+    <div class="row">
+      <div class="col-sm">
+        <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
+      </div>
+      <div class="col-sm">
+        <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+      </div>
+    </div>
 
-  <div class="d-flex justify-content-between" *ngIf="!error">
-    <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
+    <h2 i18n="lightning.active-channels-map">Active channels map</h2>
+    <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
+
+    <div class="d-flex justify-content-between">
+      <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
+    </div>
+
+    <app-channels-list [publicKey]="node.public_key"
+      (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
   </div>
-
-  <app-channels-list *ngIf="!error" [publicKey]="node.public_key"
-    (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
     
 </div>
 
