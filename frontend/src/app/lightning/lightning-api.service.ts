@@ -32,7 +32,7 @@ export class LightningApiService {
   }
 
   getChannelsByNodeId$(publicKey: string, index: number = 0, status = 'open'): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('public_key', publicKey)
       .set('index', index)
       .set('status', status)

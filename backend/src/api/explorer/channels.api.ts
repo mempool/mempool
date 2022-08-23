@@ -245,8 +245,12 @@ class ChannelsApi {
       let channelStatusFilter;
       if (status === 'open') {
         channelStatusFilter = '< 2';
+      } else if (status === 'active') {
+        channelStatusFilter = '= 1';
       } else if (status === 'closed') {
         channelStatusFilter = '= 2';
+      } else {
+        throw new Error('getChannelsForNode: Invalid status requested');
       }
 
       // Channels originating from node
@@ -275,7 +279,12 @@ class ChannelsApi {
       allChannels.sort((a, b) => {
         return b.capacity - a.capacity;
       });
-      allChannels = allChannels.slice(index, index + length);
+
+      if (index >= 0) {
+        allChannels = allChannels.slice(index, index + length);
+      } else if (index === -1) { // Node channels tree chart
+        allChannels = allChannels.slice(0, 1000);
+      }
 
       const channels: any[] = []
       for (const row of allChannels) {
