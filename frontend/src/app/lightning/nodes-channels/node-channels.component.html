@@ -1,0 +1,2 @@
+<div *ngIf="channelsObservable$ | async" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)">
+</div>
