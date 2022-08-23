@@ -121,7 +121,7 @@ export class NodesNetworksChartComponent implements OnInit {
         left: 'center',
         top: 'center',
       };
-    } else if (data.tor_nodes.length > 0) {
+    } else if (this.widget && data.tor_nodes.length > 0) {
       title = {
         textStyle: {
           color: 'grey',
