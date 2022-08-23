@@ -32,6 +32,7 @@ export class NodesChannelsMap implements OnInit {
   channelColor = '#466d9d';
   channelCurve = 0;
   nodeSize = 4;
+  isLoading = true;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -74,7 +75,7 @@ export class NodesChannelsMap implements OnInit {
        switchMap((params: ParamMap) => {
         return zip(
           this.assetsService.getWorldMapJson$,
-          this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined) : [''],
+          this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
           [params.get('public_key') ?? undefined]
         ).pipe(tap((data) => {
           registerMap('world', data[0]);
@@ -93,10 +94,12 @@ export class NodesChannelsMap implements OnInit {
             }
           }
           for (const channel of geoloc) {
-            if (!thisNodeGPS && data[2] === channel[0]) {
-              thisNodeGPS = [channel[2], channel[3]];
-            } else if (!thisNodeGPS && data[2] === channel[4]) {
-              thisNodeGPS = [channel[6], channel[7]];
+            if (this.style === 'nodepage' && !thisNodeGPS) {
+              if (data[2] === channel[0]) {
+                thisNodeGPS = [channel[2], channel[3]];
+              } else if (data[2] === channel[4]) {
+                thisNodeGPS = [channel[6], channel[7]];
+              }
             }
 
             // 0 - node1 pubkey
@@ -105,48 +108,68 @@ export class NodesChannelsMap implements OnInit {
             // 4 - node2 pubkey
             // 5 - node2 alias
             // 6,7 - node2 GPS
+            const node1PubKey = 0;
+            const node1Alias = 1;
+            let node1GpsLat = 2;
+            let node1GpsLgt = 3;
+            const node2PubKey = 4;
+            const node2Alias = 5;
+            let node2GpsLat = 6;
+            let node2GpsLgt = 7;
+            let node1UniqueId = channel[node1PubKey];
+            let node2UniqueId = channel[node2PubKey];
+            if (this.style === 'widget') {
+              node1GpsLat = 0;
+              node1GpsLgt = 1;
+              node2GpsLat = 2;
+              node2GpsLgt = 3;
+              node1UniqueId = channel[node1GpsLat].toString() + channel[node1GpsLgt].toString();
+              node2UniqueId = channel[node2GpsLat].toString() + channel[node2GpsLgt].toString();
+            }
 
             // We add a bit of noise so nodes at the same location are not all
             // on top of each other
             let random = Math.random() * 2 * Math.PI;
             let random2 = Math.random() * 0.01;
             
-            if (!nodesPubkeys[channel[0]]) {
+            if (!nodesPubkeys[node1UniqueId]) {
               nodes.push([
-                channel[2] + random2 * Math.cos(random),
-                channel[3] + random2 * Math.sin(random),
+                channel[node1GpsLat] + random2 * Math.cos(random),
+                channel[node1GpsLgt] + random2 * Math.sin(random),
                 1,
-                channel[0],
-                channel[1]
+                channel[node1PubKey],
+                channel[node1Alias]
               ]);
-              nodesPubkeys[channel[0]] = nodes[nodes.length - 1];
+              nodesPubkeys[node1UniqueId] = nodes[nodes.length - 1];
             }
 
             random = Math.random() * 2 * Math.PI;
             random2 = Math.random() * 0.01;
 
-            if (!nodesPubkeys[channel[4]]) {
+            if (!nodesPubkeys[node2UniqueId]) {
               nodes.push([
-                channel[6] + random2 * Math.cos(random),
-                channel[7] + random2 * Math.sin(random),
+                channel[node2GpsLat] + random2 * Math.cos(random),
+                channel[node2GpsLgt] + random2 * Math.sin(random),
                 1,
-                channel[4],
-                channel[5]
+                channel[node2PubKey],
+                channel[node2Alias]
               ]);
-              nodesPubkeys[channel[4]] = nodes[nodes.length - 1];
+              nodesPubkeys[node2UniqueId] = nodes[nodes.length - 1];
             }
 
             const channelLoc = [];
-            channelLoc.push(nodesPubkeys[channel[0]].slice(0, 2));            
-            channelLoc.push(nodesPubkeys[channel[4]].slice(0, 2));
+            channelLoc.push(nodesPubkeys[node1UniqueId].slice(0, 2));            
+            channelLoc.push(nodesPubkeys[node2UniqueId].slice(0, 2));
             channelsLoc.push(channelLoc);
           }
+
           if (this.style === 'nodepage' && thisNodeGPS) {
             this.center = [thisNodeGPS[0], thisNodeGPS[1]];
             this.zoom = 10;
             this.channelWidth = 1;
             this.channelOpacity = 1;
           }
+
           if (this.style === 'channelpage' && this.channel.length > 0) {
             this.channelWidth = 2;
             this.channelOpacity = 1;
@@ -238,7 +261,7 @@ export class NodesChannelsMap implements OnInit {
         },
         {
           large: false,
-          progressive: 200,
+          progressive: this.style === 'widget' ? 500 : 200,
           silent: true,
           type: 'lines',
           coordinateSystem: 'geo',
@@ -266,6 +289,10 @@ export class NodesChannelsMap implements OnInit {
 
     this.chartInstance = ec;
 
+    this.chartInstance.on('finished', () => {
+      this.isLoading = false;
+    });
+    
     if (this.style === 'widget') {
       this.chartInstance.getZr().on('click', (e) => {
         this.zone.run(() => {
