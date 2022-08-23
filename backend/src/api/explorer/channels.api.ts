@@ -17,32 +17,60 @@ class ChannelsApi {
     }
   }
 
-  public async $getAllChannelsGeo(publicKey?: string): Promise<any[]> {
+  public async $getAllChannelsGeo(publicKey?: string, style?: string): Promise<any[]> {
     try {
+      let select: string;
+      if (style === 'widget') {
+        select = `
+          nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
+          nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude
+        `;
+      } else {
+        select = `
+          nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
+          nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
+          nodes_2.public_key as node2_public_key, nodes_2.alias AS node2_alias,
+          nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude
+        `;
+      }
+
       const params: string[] = [];
-      let query = `SELECT nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
-        nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
-        nodes_2.public_key as node2_public_key, nodes_2.alias AS node2_alias,
-        nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude,
-        channels.capacity
-      FROM channels
-      JOIN nodes AS nodes_1 on nodes_1.public_key = channels.node1_public_key
-      JOIN nodes AS nodes_2 on nodes_2.public_key = channels.node2_public_key
-      WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
-        AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
+      let query = `SELECT ${select}
+        FROM channels
+        JOIN nodes AS nodes_1 on nodes_1.public_key = channels.node1_public_key
+        JOIN nodes AS nodes_2 on nodes_2.public_key = channels.node2_public_key
+        WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
+          AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
       `;
 
       if (publicKey !== undefined) {
         query += ' AND (nodes_1.public_key = ? OR nodes_2.public_key = ?)';
         params.push(publicKey);
         params.push(publicKey);
+      } else {
+        query += ` AND channels.capacity > 1000000
+          GROUP BY nodes_1.public_key, nodes_2.public_key
+          ORDER BY channels.capacity DESC
+          LIMIT 10000
+        `;        
       }
 
       const [rows]: any = await DB.query(query, params);
-      return rows.map((row) => [
-        row.node1_public_key, row.node1_alias, row.node1_longitude, row.node1_latitude,
-        row.node2_public_key, row.node2_alias, row.node2_longitude, row.node2_latitude,
-        row.capacity]);
+      return rows.map((row) => {
+        if (style === 'widget') {
+          return [
+            row.node1_longitude, row.node1_latitude,
+            row.node2_longitude, row.node2_latitude,
+          ];
+        } else {
+          return [
+            row.node1_public_key, row.node1_alias,
+            row.node1_longitude, row.node1_latitude,
+            row.node2_public_key, row.node2_alias,
+            row.node2_longitude, row.node2_latitude,
+          ];
+        }
+      });
     } catch (e) {
       logger.err('$getAllChannelsGeo error: ' + (e instanceof Error ? e.message : e));
       throw e;

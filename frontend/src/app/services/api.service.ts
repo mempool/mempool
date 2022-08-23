@@ -271,10 +271,11 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/countries');
   }
 
-  getChannelsGeo$(publicKey?: string): Observable<any> {
+  getChannelsGeo$(publicKey?: string, style?: 'graph' | 'nodepage' | 'widget' | 'channelpage'): Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels-geo' +
-        (publicKey !== undefined ? `/${publicKey}` : '')
+        (publicKey !== undefined ? `/${publicKey}`   : '') +
+        (style     !== undefined ? `?style=${style}` : '')
     );
   }
 }
