@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "ENABLED": true,
     "NETWORK": "__MEMPOOL_NETWORK__",
     "BACKEND": "__MEMPOOL_BACKEND__",
     "BLOCKS_SUMMARIES_INDEXING": true,
