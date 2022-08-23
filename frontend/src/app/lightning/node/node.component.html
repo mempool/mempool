@@ -119,10 +119,14 @@
   </div>
 
   <div *ngIf="!error">
-    <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
-
-    <h2 i18n="lightning.node-history">Node history</h2>
-    <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+    <div class="row">
+      <div class="col-sm">
+        <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
+      </div>
+      <div class="col-sm">
+        <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+      </div>
+    </div>
 
     <h2 i18n="lightning.active-channels-map">Active channels map</h2>
     <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
