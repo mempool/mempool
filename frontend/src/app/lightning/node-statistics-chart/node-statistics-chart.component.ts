@@ -25,7 +25,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 export class NodeStatisticsChartComponent implements OnInit {
   @Input() publicKey: string;
   @Input() right: number | string = 65;
-  @Input() left: number | string = 55;
+  @Input() left: number | string = 45;
   @Input() widget = false;
 
   miningWindowPreference: string;
@@ -96,7 +96,7 @@ export class NodeStatisticsChartComponent implements OnInit {
       ],
       grid: {
         top: 30,
-        bottom: 70,
+        bottom: 20,
         right: this.right,
         left: this.left,
       },
