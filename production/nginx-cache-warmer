@@ -77,6 +77,8 @@ do for url in / \
 	'/api/v1/mining/difficulty-adjustments/2y' \
 	'/api/v1/mining/difficulty-adjustments/3y' \
 	'/api/v1/mining/difficulty-adjustments/all' \
+	'/api/v1/lightning/channels-geo?style=widget' \
+	'/api/v1/lightning/channels-geo?style=graph' \
 
 	do
 		curl -s "https://${hostname}${url}" >/dev/null
