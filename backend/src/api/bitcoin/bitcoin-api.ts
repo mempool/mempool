@@ -404,7 +404,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       }
     }
 
-    if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
+    if ((vin.prevout.scriptpubkey_type === 'v0_p2wsh' || vin.prevout.scriptpubkey_type === 'v1_p2tr') && vin.witness) {
       const witnessScript = vin.witness[vin.witness.length - 1];
       vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
     }
