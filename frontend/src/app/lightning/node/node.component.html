@@ -119,13 +119,16 @@
   </div>
 
   <div *ngIf="!error">
-    <div class="row">
+    <div class="row" *ngIf="node.as_number">
       <div class="col-sm">
         <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
       </div>
       <div class="col-sm">
         <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
       </div>
+    </div>
+    <div *ngIf="!node.as_number">
+      <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
     </div>
 
     <h2 i18n="lightning.active-channels-map">Active channels map</h2>
