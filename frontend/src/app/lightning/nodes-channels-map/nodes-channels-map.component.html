@@ -1,5 +1,5 @@
-<div [style]="style === 'widget' ? 'height: 250px' : ''">
-  <div *ngIf="channelsObservable | async">
+<div class="map-wrapper" [class]="style">
+  <ng-container *ngIf="channelsObservable | async">
     <div *ngIf="chartOptions" [class]="'full-container ' + style + (fitContainer ? ' fit-container' : '')">
       <div *ngIf="style === 'graph'" class="card-header">
         <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
@@ -18,5 +18,5 @@
     <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading">
       <div class="spinner-border text-light"></div>
     </div>
-  </div>
+  </ng-container>
 </div>

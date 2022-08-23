@@ -1,3 +1,15 @@
+.map-wrapper {
+  height: 100%;
+
+  &.widget {
+    height: 250px;
+  }
+
+  &.graph {
+    height: auto;
+  }
+}
+
 .card-header {
   border-bottom: 0;
   font-size: 18px;
