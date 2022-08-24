@@ -8,14 +8,15 @@
         <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
       </div>
 
-    <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)"
-      (chartFinished)="onChartFinished($event)">
+      <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+        (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+      </div>
+
+      <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>
     </div>
 
-    <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>
-  </div>
-
-  <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading">
-    <div class="spinner-border text-light"></div>
+    <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading">
+      <div class="spinner-border text-light"></div>
+    </div>
   </div>
 </div>
