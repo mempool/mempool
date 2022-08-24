@@ -14,7 +14,7 @@ interface SvgLine {
 })
 export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;
-  @Input() isLiquid: boolean = false;
+  @Input() network: string;
   @Input() width = 1200;
   @Input() height = 600;
   @Input() combinedWeight = 100;
@@ -24,12 +24,32 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   inputs: SvgLine[];
   outputs: SvgLine[];
   middle: SvgLine;
+  isLiquid: boolean = false;
+
+  gradientColors = {
+    '': ['#9339f4', '#105fb0'],
+    bisq: ['#9339f4', '#105fb0'],
+    // liquid: ['#116761', '#183550'],
+    liquid: ['#09a197', '#0f62af'],
+    // 'liquidtestnet': ['#494a4a', '#272e46'],
+    'liquidtestnet': ['#d2d2d2', '#979797'],
+    // testnet: ['#1d486f', '#183550'],
+    testnet: ['#4edf77', '#10a0af'],
+    // signet: ['#6f1d5d', '#471850'],
+    signet: ['#d24fc8', '#a84fd2'],
+  };
+
+  gradient: string[] = ['#105fb0', '#105fb0'];
 
   ngOnInit(): void {
+    this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
+    this.gradient = this.gradientColors[this.network];
     this.initGraph();
   }
 
   ngOnChanges(): void {
+    this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
+    this.gradient = this.gradientColors[this.network];
     this.initGraph();
   }
 
@@ -46,7 +66,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
     this.middle = {
       path: `M ${(this.width / 2) - 50} ${(this.height / 2) + 0.5} L ${(this.width / 2) + 50} ${(this.height / 2) + 0.5}`,
-      style: `stroke-width: ${this.combinedWeight + 0.5}`
+      style: `stroke-width: ${this.combinedWeight + 0.5}; stroke: ${this.gradient[1]}`
     };
   }
 
@@ -132,6 +152,10 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     const start = side === 'in' ? (weight * 0.5) : this.width - (weight * 0.5);
     const center =  this.width / 2 + (side === 'in' ? -45 : 45 );
     const midpoint = (start + center) / 2;
+    // correct for svg horizontal gradient bug
+    if (Math.round(outer) === Math.round(inner)) {
+      outer -= 1;
+    }
     return `M ${start} ${outer} C ${midpoint} ${outer}, ${midpoint} ${inner}, ${center} ${inner}`;
   }
 

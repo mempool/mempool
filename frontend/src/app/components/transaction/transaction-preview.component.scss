@@ -10,24 +10,8 @@
 	font-size: 28px;
 }
 
-.btn-small-height {
-	line-height: 1.1;
-}
-
-.arrow-green {
-	color: #1a9436;
-}
-
-.arrow-red {
-	color: #dc3545;
-}
-
 .row {
 	flex-direction: row;
-}
-
-.effective-fee-container {
-	display: inline-block;
 }
 
 .title {
@@ -46,8 +30,9 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: baseline;
+  margin-bottom: 2px;
+  max-width: 100%;
 
   h1 {
     font-size: 52px;
@@ -58,6 +43,43 @@
   .features {
     font-size: 24px;
   }
+
+  & > * {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .tx-link {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+
+    .truncated {
+      flex-grow: 1;
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: -2px;
+    }
+
+    .last-four {
+      flex-shrink: 0;
+      flex-grow: 0;
+    }
+  }
+
+  .features {
+    align-self: center;
+  }
+}
+
+.top-data {
+  font-size: 28px;
 }
 
 .table {
@@ -65,6 +87,23 @@
 
   ::ng-deep .symbol {
     font-size: 24px;
+  }
+}
+
+.field {
+  font-size: 32px;
+  margin: 0;
+
+  ::ng-deep .symbol {
+    font-size: 24px;
+  }
+
+  .label {
+    color: #ffffff66;
+  }
+
+  &.pair > *:first-child {
+    margin-right: 1em;
   }
 }
 
@@ -87,15 +126,6 @@
     right: 0;
     margin: auto;
     text-align: center;
-
-    .field {
-      font-size: 32px;
-      margin: 0;
-
-      ::ng-deep .symbol {
-        font-size: 24px;
-      }
-    }
   }
 
   .overlaid {

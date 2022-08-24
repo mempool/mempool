@@ -2,6 +2,9 @@
 
   <div class="page-title">
     <h1 i18n="shared.transaction">Transaction</h1>
+    <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, txId]">
+      <span class="truncated">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span>
+    </a>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
       <span *ngIf="cpfpInfo && cpfpInfo.bestDescendant" class="badge badge-primary mr-1">
@@ -13,21 +16,24 @@
     </div>
   </div>
 
-  <p class="text-center mb-0">
-    <a [routerLink]="['/tx/' | relativeUrl, txId]" class="tx-link">
-      {{ txId }}
-    </a>
-  </p>
+  <div class="top-data row">
+    <span class="field col-sm-4 text-left">
+      <ng-template [ngIf]="isLiquid && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+      <ng-template #defaultAmount>
+        <app-amount [satoshis]="totalValue"></app-amount>
+      </ng-template>
+    </span>
+    <span class="field col-sm-4 text-center">&lrm;{{ (tx.status.confirmed ? tx.status.block_time : transactionTime) * 1000 | date:'yyyy-MM-dd HH:mm' }}</span>
+    <span class="field col-sm-4 text-right"><span class="label" i18n="transaction.fee|Transaction fee">Fee </span>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></span>
+  </div>
 
 
   <div class="row graph-wrapper">
-    <tx-bowtie-graph [tx]="tx" [width]="1112" [height]="346" [isLiquid]="isLiquid"></tx-bowtie-graph>
+    <tx-bowtie-graph [tx]="tx" [width]="1112" [height]="346" [network]="network"></tx-bowtie-graph>
     <div class="above-bow">
-      <p class="field">
-        <ng-template [ngIf]="isLiquid && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
-        <ng-template #defaultAmount>
-          <app-amount [satoshis]="totalValue"></app-amount>
-        </ng-template>
+      <p class="field pair">
+        <span [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></span>
+        <span [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></span>
       </p>
       <p class="field" *ngIf="!isCoinbase(tx)">
         {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
