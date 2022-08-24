@@ -17,32 +17,60 @@ class ChannelsApi {
     }
   }
 
-  public async $getAllChannelsGeo(publicKey?: string): Promise<any[]> {
+  public async $getAllChannelsGeo(publicKey?: string, style?: string): Promise<any[]> {
     try {
+      let select: string;
+      if (style === 'widget') {
+        select = `
+          nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
+          nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude
+        `;
+      } else {
+        select = `
+          nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
+          nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
+          nodes_2.public_key as node2_public_key, nodes_2.alias AS node2_alias,
+          nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude
+        `;
+      }
+
       const params: string[] = [];
-      let query = `SELECT nodes_1.public_key as node1_public_key, nodes_1.alias AS node1_alias,
-        nodes_1.latitude AS node1_latitude, nodes_1.longitude AS node1_longitude,
-        nodes_2.public_key as node2_public_key, nodes_2.alias AS node2_alias,
-        nodes_2.latitude AS node2_latitude, nodes_2.longitude AS node2_longitude,
-        channels.capacity
-      FROM channels
-      JOIN nodes AS nodes_1 on nodes_1.public_key = channels.node1_public_key
-      JOIN nodes AS nodes_2 on nodes_2.public_key = channels.node2_public_key
-      WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
-        AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
+      let query = `SELECT ${select}
+        FROM channels
+        JOIN nodes AS nodes_1 on nodes_1.public_key = channels.node1_public_key
+        JOIN nodes AS nodes_2 on nodes_2.public_key = channels.node2_public_key
+        WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
+          AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
       `;
 
       if (publicKey !== undefined) {
         query += ' AND (nodes_1.public_key = ? OR nodes_2.public_key = ?)';
         params.push(publicKey);
         params.push(publicKey);
+      } else {
+        query += ` AND channels.capacity > 1000000
+          GROUP BY nodes_1.public_key, nodes_2.public_key
+          ORDER BY channels.capacity DESC
+          LIMIT 10000
+        `;        
       }
 
       const [rows]: any = await DB.query(query, params);
-      return rows.map((row) => [
-        row.node1_public_key, row.node1_alias, row.node1_longitude, row.node1_latitude,
-        row.node2_public_key, row.node2_alias, row.node2_longitude, row.node2_latitude,
-        row.capacity]);
+      return rows.map((row) => {
+        if (style === 'widget') {
+          return [
+            row.node1_longitude, row.node1_latitude,
+            row.node2_longitude, row.node2_latitude,
+          ];
+        } else {
+          return [
+            row.node1_public_key, row.node1_alias,
+            row.node1_longitude, row.node1_latitude,
+            row.node2_public_key, row.node2_alias,
+            row.node2_longitude, row.node2_latitude,
+          ];
+        }
+      });
     } catch (e) {
       logger.err('$getAllChannelsGeo error: ' + (e instanceof Error ? e.message : e));
       throw e;
@@ -61,9 +89,14 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelsByStatus(status: number): Promise<any[]> {
+  public async $getChannelsByStatus(status: number | number[]): Promise<any[]> {
     try {
-      const query = `SELECT * FROM channels WHERE status = ?`;
+      let query: string;
+      if (Array.isArray(status)) {
+        query = `SELECT * FROM channels WHERE status IN (${status.join(',')})`;
+      } else {
+        query = `SELECT * FROM channels WHERE status = ?`;
+      }
       const [rows]: any = await DB.query(query, [status]);
       return rows;
     } catch (e) {
@@ -212,41 +245,53 @@ class ChannelsApi {
       let channelStatusFilter;
       if (status === 'open') {
         channelStatusFilter = '< 2';
+      } else if (status === 'active') {
+        channelStatusFilter = '= 1';
       } else if (status === 'closed') {
         channelStatusFilter = '= 2';
+      } else {
+        throw new Error('getChannelsForNode: Invalid status requested');
       }
 
       // Channels originating from node
       let query = `
-        SELECT node2.alias, node2.public_key, channels.status, channels.node1_fee_rate,
-          channels.capacity, channels.short_id, channels.id
+        SELECT COALESCE(node2.alias, SUBSTRING(node2_public_key, 0, 20)) AS alias, COALESCE(node2.public_key, node2_public_key) AS public_key,
+          channels.status, channels.node1_fee_rate,
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason
         FROM channels
-        JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
+        LEFT JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
         WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsFromNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsFromNode]: any = await DB.query(query, [public_key]);
 
       // Channels incoming to node
       query = `
-        SELECT node1.alias, node1.public_key, channels.status, channels.node2_fee_rate,
-          channels.capacity, channels.short_id, channels.id
+        SELECT COALESCE(node1.alias, SUBSTRING(node1_public_key, 0, 20)) AS alias, COALESCE(node1.public_key, node1_public_key) AS public_key,
+          channels.status, channels.node2_fee_rate,
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason
         FROM channels
-        JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
         WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
       `;
-      const [channelsToNode]: any = await DB.query(query, [public_key, index, length]);
+      const [channelsToNode]: any = await DB.query(query, [public_key]);
 
       let allChannels = channelsFromNode.concat(channelsToNode);
       allChannels.sort((a, b) => {
         return b.capacity - a.capacity;
       });
-      allChannels = allChannels.slice(index, index + length);
+
+      if (index >= 0) {
+        allChannels = allChannels.slice(index, index + length);
+      } else if (index === -1) { // Node channels tree chart
+        allChannels = allChannels.slice(0, 1000);
+      }
 
       const channels: any[] = []
       for (const row of allChannels) {
         const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
         channels.push({
           status: row.status,
+          closing_reason: row.closing_reason,
           capacity: row.capacity ?? 0,
           short_id: row.short_id,
           id: row.id,
@@ -337,7 +382,7 @@ class ChannelsApi {
   /**
    * Save or update a channel present in the graph
    */
-  public async $saveChannel(channel: ILightningApi.Channel): Promise<void> {
+  public async $saveChannel(channel: ILightningApi.Channel, status = 1): Promise<void> {
     const [ txid, vout ] = channel.chan_point.split(':');
 
     const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
@@ -369,11 +414,11 @@ class ChannelsApi {
         node2_min_htlc_mtokens,
         node2_updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ${status}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         capacity = ?,
         updated_at = ?,
-        status = 1,
+        status = ${status},
         node1_public_key = ?,
         node1_base_fee_mtokens = ?,
         node1_cltv_delta = ?,
