@@ -165,7 +165,7 @@ export class NodesChannelsMap implements OnInit {
 
           if (this.style === 'nodepage' && thisNodeGPS) {
             this.center = [thisNodeGPS[0], thisNodeGPS[1]];
-            this.zoom = 10;
+            this.zoom = 5;
             this.channelWidth = 1;
             this.channelOpacity = 1;
           }
