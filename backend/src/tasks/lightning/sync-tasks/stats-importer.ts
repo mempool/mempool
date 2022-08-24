@@ -367,6 +367,12 @@ class LightningStatsImporter {
           continue;
         }
     
+        if (this.isIncorrectSnapshot(timestamp, graph)) {
+          logger.debug(`Ignoring ${this.topologiesFolder}/${filename}, because we defined it as an incorrect snapshot`);
+          ++totalProcessed;
+          continue;
+        }
+
         if (!logStarted) {
           logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`);
           logStarted = true;
@@ -397,7 +403,7 @@ class LightningStatsImporter {
     }
   }
 
-  async cleanupTopology(graph) {
+  cleanupTopology(graph): ILightningApi.NetworkGraph {
     const newGraph = {
       nodes: <ILightningApi.Node[]>[],
       edges: <ILightningApi.Channel[]>[],
@@ -455,6 +461,29 @@ class LightningStatsImporter {
     }
 
     return newGraph;
+  }
+
+  private isIncorrectSnapshot(timestamp, graph): boolean {
+    if (timestamp >= 1549065600 /* 2019-02-02 */ && timestamp <= 1550620800 /* 2019-02-20 */ && graph.nodes.length < 2600) {
+        return true;
+    }
+    if (timestamp >= 1552953600 /* 2019-03-19 */ && timestamp <= 1556323200 /* 2019-05-27 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1557446400 /* 2019-05-10 */ && timestamp <= 1560470400 /* 2019-06-14 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1561680000 /* 2019-06-28 */ && timestamp <= 1563148800 /* 2019-07-15 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1574035200 /* 2019-11-18 */ && timestamp <= 1579305600 /* 2020-01-18 */ && graph.nodes.length < 3000) {
+      return true;
+    }
+    if (timestamp >= 1591142400 /* 2020-06-03 */ && timestamp <= 1592006400 /* 2020-06-13 */ && graph.nodes.length < 5500) {
+      return true;
+    }
+
+    return false;
   }
 }
 
