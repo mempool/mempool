@@ -29,6 +29,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
+  transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
   cpfpInfo: CpfpInfo | null;
@@ -163,6 +164,12 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.opReturns = this.getOpReturns(this.tx);
           this.extraData = this.chooseExtraData();
 
+          if (!tx.status.confirmed && tx.firstSeen) {
+            this.transactionTime = tx.firstSeen;
+          } else {
+            this.getTransactionTime();
+          }
+
           if (!this.tx.status.confirmed) {
             if (tx.cpfpChecked) {
               this.cpfpInfo = {
@@ -185,10 +192,26 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       );
   }
 
+  getTransactionTime() {
+    this.openGraphService.waitFor('tx-time');
+    this.apiService
+      .getTransactionTimes$([this.tx.txid])
+      .pipe(
+        catchError((err) => {
+          return of(0);
+        })
+      )
+      .subscribe((transactionTimes) => {
+        this.transactionTime = transactionTimes[0];
+        this.openGraphService.waitOver('tx-time');
+      });
+  }
+
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
     this.isLoadingTx = true;
+    this.transactionTime = -1;
     this.cpfpInfo = null;
     this.showCpfpDetails = false;
   }
