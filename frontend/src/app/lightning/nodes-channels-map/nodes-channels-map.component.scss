@@ -1,3 +1,15 @@
+.map-wrapper {
+  height: 100%;
+
+  &.widget {
+    height: 250px;
+  }
+
+  &.graph {
+    height: auto;
+  }
+}
+
 .card-header {
   border-bottom: 0;
   font-size: 18px;
@@ -93,6 +105,9 @@
   top: 50%;
   left: calc(50% - 15px);
   z-index: 100;
+  @media (max-width: 767.98px) {
+    top: 550px;
+  }
 }
 .loading-spinner.widget {
   position: absolute;
@@ -102,5 +117,23 @@
   left: 0;
   @media (max-width: 767.98px) {
     top: 250px;
+  }
+}
+.loading-spinner.nodepage {
+  position: absolute;
+  top: 200px;
+  z-index: 100;
+  width: 100%;
+  left: 0;
+}
+
+.loading-spinner.channelpage {
+  position: absolute;
+  top: 400px;
+  z-index: 100;
+  width: 100%;
+  left: 0;
+  @media (max-width: 767.98px) {
+    top: 450px;
   }
 }

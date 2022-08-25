@@ -121,7 +121,7 @@
   <div *ngIf="!error">
     <div class="row" *ngIf="node.as_number">
       <div class="col-sm">
-        <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
+        <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key" [hasLocation]="!!node.as_number"></app-nodes-channels-map>
       </div>
       <div class="col-sm">
         <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
@@ -135,7 +135,14 @@
     <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
 
     <div class="d-flex justify-content-between">
-      <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
+      <h2 *ngIf="channelsListStatus === 'open'">
+        <span i18n="lightning.open-channels">Open channels</span>
+        <span> ({{ node.opened_channel_count }})</span>
+      </h2>
+      <h2 *ngIf="channelsListStatus === 'closed'">
+        <span i18n="lightning.open-channels">Closed channels</span>
+        <span> ({{ node.closed_channel_count }})</span>
+      </h2>
     </div>
 
     <app-channels-list [publicKey]="node.public_key"
