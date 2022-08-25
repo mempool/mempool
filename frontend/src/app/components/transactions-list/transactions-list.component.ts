@@ -105,10 +105,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }, 10);
     }
 
-    this.transactions.forEach((tx, i) => {
+    this.transactions.forEach((tx) => {
       tx['@voutLimit'] = true;
       tx['@vinLimit'] = true;
-      if (this.outspends[i]) {
+      if (tx['addressValue'] !== undefined) {
         return;
       }
 
