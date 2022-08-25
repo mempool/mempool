@@ -260,7 +260,7 @@ class NodesApi {
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
       const publicKeySearch = search.replace('%', '') + '%';
-      const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
+      const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
       const query = `SELECT nodes.public_key, nodes.alias, node_stats.capacity FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key WHERE nodes.public_key LIKE ? OR MATCH nodes.alias_search AGAINST (? IN BOOLEAN MODE) GROUP BY nodes.public_key ORDER BY node_stats.capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [publicKeySearch, aliasSearch]);
       return rows;
@@ -555,7 +555,7 @@ class NodesApi {
   }
 
   private aliasToSearchText(str: string): string {
-    return str.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z ]/g, '');
+    return str.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '');
   }
 }
 
