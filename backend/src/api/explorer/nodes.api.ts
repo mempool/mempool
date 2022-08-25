@@ -261,7 +261,7 @@ class NodesApi {
     try {
       const publicKeySearch = search.replace('%', '') + '%';
       const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
-      const query = `SELECT nodes.public_key, nodes.alias, node_stats.capacity FROM nodes LEFT JOIN node_stats ON node_stats.public_key = nodes.public_key WHERE nodes.public_key LIKE ? OR MATCH nodes.alias_search AGAINST (? IN BOOLEAN MODE) GROUP BY nodes.public_key ORDER BY node_stats.capacity DESC LIMIT 10`;
+      const query = `SELECT public_key, alias, capacity, channels FROM nodes WHERE public_key LIKE ? OR MATCH alias_search AGAINST (? IN BOOLEAN MODE) ORDER BY capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [publicKeySearch, aliasSearch]);
       return rows;
     } catch (e) {
