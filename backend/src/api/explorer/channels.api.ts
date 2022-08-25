@@ -288,21 +288,36 @@ class ChannelsApi {
 
       const channels: any[] = []
       for (const row of allChannels) {
-        const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
-        channels.push({
-          status: row.status,
-          closing_reason: row.closing_reason,
-          capacity: row.capacity ?? 0,
-          short_id: row.short_id,
-          id: row.id,
-          fee_rate: row.node1_fee_rate ?? row.node2_fee_rate ?? 0,
-          node: {
-            alias: row.alias.length > 0 ? row.alias : row.public_key.slice(0, 20),
-            public_key: row.public_key,
-            channels: activeChannelsStats.active_channel_count ?? 0,
-            capacity: activeChannelsStats.capacity ?? 0,
-          }
-        });
+        let channel;
+        if (index >= 0) {
+          const activeChannelsStats: any = await nodesApi.$getActiveChannelsStats(row.public_key);
+          channel = {
+            status: row.status,
+            closing_reason: row.closing_reason,
+            capacity: row.capacity ?? 0,
+            short_id: row.short_id,
+            id: row.id,
+            fee_rate: row.node1_fee_rate ?? row.node2_fee_rate ?? 0,
+            node: {
+              alias: row.alias.length > 0 ? row.alias : row.public_key.slice(0, 20),
+              public_key: row.public_key,
+              channels: activeChannelsStats.active_channel_count ?? 0,
+              capacity: activeChannelsStats.capacity ?? 0,
+            }
+          };
+        } else if (index === -1) {
+          channel = {
+            capacity: row.capacity ?? 0,
+            short_id: row.short_id,
+            id: row.id,
+            node: {
+              alias: row.alias.length > 0 ? row.alias : row.public_key.slice(0, 20),
+              public_key: row.public_key,
+            }
+          };
+        }
+
+        channels.push(channel);
       }
 
       return channels;
