@@ -21,6 +21,7 @@ export class NodesChannelsMap implements OnInit {
   @Input() publicKey: string | undefined;
   @Input() channel: any[] = [];
   @Input() fitContainer = false;
+  @Input() hasLocation = true;
   @Output() readyEvent = new EventEmitter();
 
   channelsObservable: Observable<any>; 
@@ -32,7 +33,7 @@ export class NodesChannelsMap implements OnInit {
   channelColor = '#466d9d';
   channelCurve = 0;
   nodeSize = 4;
-  isLoading = true;
+  isLoading = false;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -73,6 +74,11 @@ export class NodesChannelsMap implements OnInit {
     this.channelsObservable = this.activatedRoute.paramMap
      .pipe(
        switchMap((params: ParamMap) => {
+        this.isLoading = true;
+        if (this.style === 'channelpage' && this.channel.length === 0 || !this.hasLocation) {
+          this.isLoading = false;
+        }
+            
         return zip(
           this.assetsService.getWorldMapJson$,
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],

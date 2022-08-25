@@ -385,7 +385,7 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
-FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
+FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py39-pip rust llvm90 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb105-server keybase)
@@ -1267,7 +1267,7 @@ case $OS in
         osGroupCreate "${CLN_GROUP}"
         osUserCreate "${CLN_USER}" "${CLN_HOME}" "${CLN_GROUP}"
         osSudo "${ROOT_USER}" chsh -s `which zsh` "${CLN_USER}"
-        osSudo "${CLN_USER}" touch "${CLN_HOME}/.zshrc"
+        echo "export PATH=$PATH:$HOME/.local/bin" >> "${CLN_HOME}/.zshrc"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
 
         echo "[*] Installing Core Lightning package"
