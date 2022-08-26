@@ -279,6 +279,17 @@ class LightningStatsImporter {
         nodeStats[public_key].capacity,
         nodeStats[public_key].channels,
       ]);
+
+      if (!isHistorical) {
+        await DB.query(
+          `UPDATE nodes SET capacity = ?, channels = ? WHERE public_key = ?`,
+          [
+            nodeStats[public_key].capacity,
+            nodeStats[public_key].channels,
+            public_key,
+          ]
+        );
+      }
     }
 
     return {
