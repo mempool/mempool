@@ -70,7 +70,7 @@ class ChannelsRoutes {
     }
   }
 
-  private async $getChannelsByTransactionIds(req: Request, res: Response) {
+  private async $getChannelsByTransactionIds(req: Request, res: Response): Promise<void> {
     try {
       if (!Array.isArray(req.query.txId)) {
         res.status(400).send('Not an array');
@@ -83,27 +83,26 @@ class ChannelsRoutes {
         }
       }
       const channels = await channelsApi.$getChannelsByTransactionId(txIds);
-      const inputs: any[] = [];
-      const outputs: any[] = [];
+      const result: any[] = [];
       for (const txid of txIds) {
-        const foundChannelInputs = channels.find((channel) => channel.closing_transaction_id === txid);
-        if (foundChannelInputs) {
-          inputs.push(foundChannelInputs);
-        } else {
-          inputs.push(null);
+        const inputs: any = {};
+        const outputs: any = {};
+        // Assuming that we only have one lightning close input in each transaction. This may not be true in the future
+        const foundChannelsFromInput = channels.find((channel) => channel.closing_transaction_id === txid);
+        if (foundChannelsFromInput) {
+          inputs[0] = foundChannelsFromInput;
         }
-        const foundChannelOutputs = channels.find((channel) => channel.transaction_id === txid);
-        if (foundChannelOutputs) {
-          outputs.push(foundChannelOutputs);
-        } else {
-          outputs.push(null);
+        const foundChannelsFromOutputs = channels.filter((channel) => channel.transaction_id === txid);
+        for (const output of foundChannelsFromOutputs) {
+          outputs[output.transaction_vout] = output;
         }
+        result.push({
+          inputs,
+          outputs,
+        });
       }
 
-      res.json({
-        inputs: inputs,
-        outputs: outputs,
-      });
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
