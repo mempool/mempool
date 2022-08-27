@@ -143,9 +143,21 @@
         <span i18n="lightning.open-channels">Closed channels</span>
         <span> ({{ node.closed_channel_count }})</span>
       </h2>
+
+      <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
+        <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
+          <label ngbButtonLabel class="btn-primary btn-sm">
+            <input ngbButton type="radio" [value]="'open'" fragment="open" i18n="open">Open
+          </label>
+          <label ngbButtonLabel class="btn-primary btn-sm">
+            <input ngbButton type="radio" [value]="'closed'" fragment="closed" i18n="closed">Closed
+          </label>
+        </div>
+      </form>
+    
     </div>
 
-    <app-channels-list [publicKey]="node.public_key"
+    <app-channels-list [publicKey]="node.public_key" [status$]="channelStatusForm.get('status').valueChanges"
       (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
   </div>
     

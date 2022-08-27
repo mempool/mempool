@@ -6,6 +6,7 @@ import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 import { isMobile } from '../../shared/common.utils';
 import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-node',
@@ -22,13 +23,16 @@ export class NodeComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
-
   publicKeySize = 99;
+
+  channelStatusForm: FormGroup;
+  defaultStatus = 'open';
 
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
+    private formBuilder: FormBuilder,
   ) {
     if (isMobile()) {
       this.publicKeySize = 12;
@@ -36,6 +40,10 @@ export class NodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.channelStatusForm = this.formBuilder.group({
+      status: [this.defaultStatus],
+    });
+
     this.node$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {

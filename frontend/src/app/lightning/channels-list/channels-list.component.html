@@ -1,15 +1,4 @@
 <div *ngIf="channels$ | async as response; else skeleton">
-  <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
-    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
-      <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'open'" fragment="open" i18n="open">Open
-      </label>
-      <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'closed'" fragment="closed" i18n="closed">Closed
-      </label>
-    </div>
-  </form>
-
   <table class="table table-borderless" *ngIf="response.channels.length > 0">
     <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
     <tbody>
