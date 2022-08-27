@@ -11,7 +11,7 @@ interface EpochProgress {
   newDifficultyHeight: number;
   colorAdjustments: string;
   colorPreviousAdjustments: string;
-  remainingTime: number;
+  estimatedRetargetDate: number;
   previousRetarget: number;
   blocksUntilHalving: number;
   timeUntilHalving: number;
@@ -74,7 +74,7 @@ export class DifficultyComponent implements OnInit {
           colorAdjustments,
           colorPreviousAdjustments,
           newDifficultyHeight: da.nextRetargetHeight,
-          remainingTime: da.remainingTime,
+          estimatedRetargetDate: da.estimatedRetargetDate,
           previousRetarget: da.previousRetarget,
           blocksUntilHalving,
           timeUntilHalving,
