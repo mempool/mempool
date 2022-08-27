@@ -47,8 +47,17 @@ class ChannelsRoutes {
         res.status(400).send('Missing parameter: public_key');
         return;
       }
+
       const index = parseInt(typeof req.query.index === 'string' ? req.query.index : '0', 10) || 0;
       const status: string = typeof req.query.status === 'string' ? req.query.status : '';
+
+      if (index < -1) {
+        res.status(400).send('Invalid index');
+      }
+      if (['open', 'active', 'closed'].includes(status) === false) {
+        res.status(400).send('Invalid status');
+      }
+
       const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, 10, status);
       const channelsCount = await channelsApi.$getChannelsCountForNode(req.query.public_key, status);
       res.header('Pragma', 'public');
