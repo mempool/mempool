@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
+import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { TransactionPreviewComponent } from './components/transaction/transaction-preview.component';
@@ -32,7 +33,8 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+        data: { preload: true },
       },
       {
         path: '',
@@ -117,7 +119,8 @@ let routes: Routes = [
           },
           {
             path: 'lightning',
-            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
+            data: { preload: true },
           },
         ],
       },
@@ -691,7 +694,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     initialNavigation: 'enabled',
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled',
-    preloadingStrategy: PreloadAllModules
+    preloadingStrategy: AppPreloadingStrategy
   })],
 })
 export class AppRoutingModule { }
