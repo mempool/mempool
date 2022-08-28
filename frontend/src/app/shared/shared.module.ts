@@ -63,6 +63,7 @@ import { StatusViewComponent } from '../components/status-view/status-view.compo
 import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
+import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
@@ -138,6 +139,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StatusViewComponent,
     FeesBoxComponent,
     DifficultyComponent,
+    TxBowtieGraphComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
@@ -242,6 +244,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StatusViewComponent,
     FeesBoxComponent,
     DifficultyComponent,
+    TxBowtieGraphComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
