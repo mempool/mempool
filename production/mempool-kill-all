@@ -1,2 +1,8 @@
 #!/usr/bin/env zsh
-killall sh node
+killall sh
+killall node
+killall chrome
+killall xinit
+for pid in `ps uaxww|grep warmer|grep zsh|awk '{print $2}'`;do
+    kill $pid
+done
