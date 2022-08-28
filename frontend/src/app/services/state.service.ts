@@ -153,7 +153,12 @@ export class StateService {
     if (this.env.BASE_MODULE !== 'mempool' && this.env.BASE_MODULE !== 'liquid') {
       return;
     }
-    const networkMatches = url.match(/^\/(bisq|testnet|liquidtestnet|liquid|signet)/);
+    // horrible network regex breakdown:
+    // /^\/                                         starts with a forward slash...
+    // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
+    // (?:preview\/)?                               optional "preview" prefix (non-capturing)
+    // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
