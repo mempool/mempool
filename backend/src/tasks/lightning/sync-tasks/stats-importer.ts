@@ -8,6 +8,7 @@ import { isIP } from 'net';
 import { Common } from '../../../api/common';
 import channelsApi from '../../../api/explorer/channels.api';
 import nodesApi from '../../../api/explorer/nodes.api';
+import { ResultSetHeader } from 'mysql2';
 
 const fsPromises = promises;
 
@@ -20,6 +21,7 @@ class LightningStatsImporter {
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
     await this.$importHistoricalLightningStats();
+    await this.$cleanupIncorrectSnapshot();
   }
 
   /**
@@ -476,14 +478,54 @@ class LightningStatsImporter {
     if (timestamp >= 1561680000 /* 2019-06-28 */ && timestamp <= 1563148800 /* 2019-07-15 */ && graph.nodes.length < 4000) {
       return true;
     }
-    if (timestamp >= 1574035200 /* 2019-11-18 */ && timestamp <= 1579305600 /* 2020-01-18 */ && graph.nodes.length < 3000) {
+    if (timestamp >= 1571270400 /* 2019-11-17 */ && timestamp <= 1580601600 /* 2020-02-02 */ && graph.nodes.length < 4500) {
       return true;
     }
     if (timestamp >= 1591142400 /* 2020-06-03 */ && timestamp <= 1592006400 /* 2020-06-13 */ && graph.nodes.length < 5500) {
       return true;
     }
+    if (timestamp >= 1632787200 /* 2021-09-28 */ && timestamp <= 1633564800 /* 2021-10-07 */ && graph.nodes.length < 13000) {
+      return true;
+    }
+    if (timestamp >= 1634256000 /* 2021-10-15 */ && timestamp <= 1645401600 /* 2022-02-21 */ && graph.nodes.length < 17000) {
+      return true;
+    }
+    if (timestamp >= 1654992000 /* 2022-06-12 */ && timestamp <= 1661472000 /* 2022-08-26 */ && graph.nodes.length < 14000) {
+      return true;
+    }
 
     return false;
+  }
+
+  private async $cleanupIncorrectSnapshot(): Promise<void> {
+    // We do not run this one automatically because those stats are not supposed to be inserted in the first
+    // place, but I write them here to remind us we manually run those queries
+
+    // DELETE FROM lightning_stats
+    // WHERE (
+    //   UNIX_TIMESTAMP(added) >= 1549065600 AND UNIX_TIMESTAMP(added) <= 1550620800 AND node_count < 2600 OR
+    //   UNIX_TIMESTAMP(added) >= 1552953600 AND UNIX_TIMESTAMP(added) <= 1556323200 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1557446400 AND UNIX_TIMESTAMP(added) <= 1560470400 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1561680000 AND UNIX_TIMESTAMP(added) <= 1563148800 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1571270400 AND UNIX_TIMESTAMP(added) <= 1580601600 AND node_count < 4500 OR
+    //   UNIX_TIMESTAMP(added) >= 1591142400 AND UNIX_TIMESTAMP(added) <= 1592006400 AND node_count < 5500 OR
+    //   UNIX_TIMESTAMP(added) >= 1632787200 AND UNIX_TIMESTAMP(added) <= 1633564800 AND node_count < 13000 OR
+    //   UNIX_TIMESTAMP(added) >= 1634256000 AND UNIX_TIMESTAMP(added) <= 1645401600 AND node_count < 17000 OR
+    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000 AND node_count < 14000
+    // )
+
+    // DELETE FROM node_stats
+    // WHERE (
+    //   UNIX_TIMESTAMP(added) >= 1549065600 AND UNIX_TIMESTAMP(added) <= 1550620800 OR
+    //   UNIX_TIMESTAMP(added) >= 1552953600 AND UNIX_TIMESTAMP(added) <= 1556323200 OR
+    //   UNIX_TIMESTAMP(added) >= 1557446400 AND UNIX_TIMESTAMP(added) <= 1560470400 OR
+    //   UNIX_TIMESTAMP(added) >= 1561680000 AND UNIX_TIMESTAMP(added) <= 1563148800 OR
+    //   UNIX_TIMESTAMP(added) >= 1571270400 AND UNIX_TIMESTAMP(added) <= 1580601600 OR
+    //   UNIX_TIMESTAMP(added) >= 1591142400 AND UNIX_TIMESTAMP(added) <= 1592006400 OR
+    //   UNIX_TIMESTAMP(added) >= 1632787200 AND UNIX_TIMESTAMP(added) <= 1633564800 OR
+    //   UNIX_TIMESTAMP(added) >= 1634256000 AND UNIX_TIMESTAMP(added) <= 1645401600 OR
+    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000 
+    // )
   }
 }
 
