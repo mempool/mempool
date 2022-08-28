@@ -41,6 +41,6 @@
     "--use-mock-keychain",
     "--ignore-gpu-blacklist",
     "--ignore-gpu-blocklist",
-    "--use-gl=swiftshader"
+    "--use-gl=egl"
   ]
 }
