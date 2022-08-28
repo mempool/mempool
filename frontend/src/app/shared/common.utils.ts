@@ -160,7 +160,12 @@ const ZERO_INDEX_NUMBER_CHARS = `(?:0|[1-9]\d*)`;
 // We should ignore formatting it with automated formatting tools like prettier.
 //
 // prettier-ignore
-const ADDRESS_CHARS = {
+const ADDRESS_CHARS: {
+  [k in Network]: {
+    base58: string;
+    bech32: string;
+  };
+} = {
   mainnet: {
     base58: `[13]` // Starts with a single 1 or 3
       + BASE58_CHARS
@@ -227,6 +232,28 @@ const ADDRESS_CHARS = {
         + `{6,100}`
       + `)`,
   },
+  liquidtestnet: {
+    base58: `[89]` // ???(TODO: find version) is P2PKH, 8|9 is P2SH
+      + BASE58_CHARS
+      + `{33}`, // P2PKH is ???(TODO: find size), P2SH is 34
+    bech32: `(?:`
+        + `(?:` // bech32 liquid testnet starts with tex or tlq
+          + `tex` // TODO: Why does mempool use this and not ert|el like in the elements source?
+          + `|`
+          + `tlq` // TODO: does this exist?
+        + `)`
+        + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
+        + `{6,100}`
+      + `|`
+        + `(?:` // Same as above but all upper case
+          + `TEX`
+          + `|`
+          + `TLQ`
+        + `)`
+        + BECH32_CHARS_UP
+        + `{6,100}`
+      + `)`,
+  },
   bisq: {
     base58: `B1` // bisq base58 addrs start with B1
       + BASE58_CHARS
@@ -245,10 +272,10 @@ const ADDRESS_CHARS = {
 type RegexTypeNoAddr = `blockhash` | `transaction` | `blockheight`;
 export type RegexType = `address` | RegexTypeNoAddr;
 
-export const NETWORKS = [`testnet`, `signet`, `liquid`, `bisq`, `mainnet`] as const;
+export const NETWORKS = [`testnet`, `signet`, `liquid`, `liquidtestnet`, `bisq`, `mainnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
-export const ADDRESS_REGEXES: [RegExp, string][] = NETWORKS
+export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
   .map(network => [getRegex('address', network), network])
 
 export function getRegex(type: RegexTypeNoAddr): RegExp;
@@ -305,6 +332,11 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           regex += ADDRESS_CHARS.liquid.base58;
           regex += `|`; // OR
           regex += ADDRESS_CHARS.liquid.bech32;
+          break;
+        case `liquidtestnet`:
+          regex += ADDRESS_CHARS.liquidtestnet.base58;
+          regex += `|`; // OR
+          regex += ADDRESS_CHARS.liquidtestnet.bech32;
           break;
         case `bisq`:
           regex += ADDRESS_CHARS.bisq.base58;
