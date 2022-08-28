@@ -15,7 +15,7 @@ ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2
 MYSQL_CRED_FILE=${HOME}/mempool/mysql_credentials
 if [ -f "${MYSQL_CRED_FILE}" ];then
     . ${MYSQL_CRED_FILE}
-}
+fi
 
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
