@@ -20,6 +20,10 @@ class LightningStatsImporter {
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
+    if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
+      return;
+    }
+
     await this.$importHistoricalLightningStats();
     await this.$cleanupIncorrectSnapshot();
   }
