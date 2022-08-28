@@ -7,10 +7,9 @@ import {
   catchError,
   retryWhen,
   delay,
-  map
 } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { OpenGraphService } from 'src/app/services/opengraph.service';
 import { ApiService } from 'src/app/services/api.service';
@@ -37,6 +36,10 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   liquidUnblinding = new LiquidUnblinding();
+  isLiquid = false;
+  totalValue: number;
+  opReturns: Vout[];
+  extraData: 'none' | 'coinbase' | 'opreturn';
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +52,12 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe(
-      (network) => (this.network = network)
+      (network) => {
+        this.network = network;
+        if (this.network === 'liquid' || this.network == 'liquidtestnet') {
+          this.isLiquid = true;
+        }
+      }
     );
 
     this.fetchCpfpSubscription = this.fetchCpfp$
@@ -152,6 +160,9 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
+          this.totalValue = this.tx.vout.reduce((acc, v) => v.value + acc, 0);
+          this.opReturns = this.getOpReturns(this.tx);
+          this.extraData = this.chooseExtraData();
 
           if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
@@ -215,6 +226,20 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
   getTotalTxOutput(tx: Transaction) {
     return tx.vout.map((v: Vout) => v.value || 0).reduce((a: number, b: number) => a + b);
+  }
+
+  getOpReturns(tx: Transaction): Vout[] {
+    return tx.vout.filter((v) => v.scriptpubkey_type === 'op_return' && v.scriptpubkey_asm !== 'OP_RETURN');
+  }
+
+  chooseExtraData(): 'none' | 'opreturn' | 'coinbase' {
+    if (this.isCoinbase(this.tx)) {
+      return 'coinbase';
+    } else if (this.opReturns?.length) {
+      return 'opreturn';
+    } else {
+      return 'none';
+    }
   }
 
   ngOnDestroy() {
