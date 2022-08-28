@@ -3,6 +3,7 @@
     "ENABLED": true,
     "NETWORK": "__MEMPOOL_NETWORK__",
     "BACKEND": "__MEMPOOL_BACKEND__",
+    "ENABLED": true,
     "BLOCKS_SUMMARIES_INDEXING": true,
     "HTTP_PORT": 1,
     "SPAWN_CLUSTER_PROCS": 2,
