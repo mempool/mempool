@@ -1,7 +1,7 @@
 <div class="container-xl" *ngIf="(node$ | async) as node">
   <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
   <div class="title-container mb-2" *ngIf="!error">
-    <h1 class="mb-0">{{ node.alias }}</h1>
+    <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
     <span class="tx-link">
       <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
         {{ node.public_key | shortenString : publicKeySize }}
@@ -131,7 +131,6 @@
       <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
     </div>
 
-    <h2 i18n="lightning.active-channels-map">Active channels map</h2>
     <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
 
     <div class="d-flex justify-content-between">
