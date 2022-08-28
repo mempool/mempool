@@ -149,12 +149,13 @@ const BECH32_CHARS_UP = `[AC-HJ-NP-Z02-9]`;
 const HEX_CHARS = `[a-fA-F0-9]`;
 
 // A regex to say "A single 0 OR any number with no leading zeroes"
-// (?:        // Start a non-capturing group
-//   0        // A single 0
-//   |        // OR
-//   [1-9]\d* // Any succession of numbers starting with 1-9
-// )          // End the non-capturing group.
-const ZERO_INDEX_NUMBER_CHARS = `(?:0|[1-9]\d*)`;
+// Capped at 13 digits so as to not be confused with lightning channel IDs (which are around 17 digits)
+// (?:             // Start a non-capturing group
+//   0             // A single 0
+//   |             // OR
+//   [1-9][0-9]{0,12} // Any succession of numbers up to 13 digits starting with 1-9
+// )               // End the non-capturing group.
+const ZERO_INDEX_NUMBER_CHARS = `(?:0|[1-9][0-9]{0,12})`;
 
 // Formatting of the address regex is for readability,
 // We should ignore formatting it with automated formatting tools like prettier.
