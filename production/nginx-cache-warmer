@@ -2,6 +2,12 @@
 hostname=$(hostname)
 slugs=(`curl -sSL https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json | jq -r '.slugs[]'`)
 
+warm()
+{
+	echo "$1"
+	curl -i -s "$1" | head -1
+}
+
 while true
 do for url in / \
 	'/api/v1/blocks' \
@@ -81,14 +87,14 @@ do for url in / \
 	'/api/v1/lightning/channels-geo?style=graph' \
 
 	do
-		curl -s "https://${hostname}${url}" >/dev/null
+		warm "https://${hostname}${url}"
 	done
 
 	for slug in $slugs
 	do
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/blocks" >/dev/null
+		warm "https://${hostname}/api/v1/mining/pool/${slug}"
+		warm "https://${hostname}/api/v1/mining/pool/${slug}/hashrate"
+		warm "https://${hostname}/api/v1/mining/pool/${slug}/blocks"
 	done
 
 	sleep 10

@@ -1,6 +1,0 @@
-#!/usr/bin/env zsh
-export NVM_DIR="$HOME/.nvm"
-source "$NVM_DIR/nvm.sh"
-
-cd "${HOME}/unfurl/unfurler/" && \
-screen -dmS "unfurl" sh -c 'while true;do npm run start-production;sleep 1;done'
