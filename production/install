@@ -1287,9 +1287,9 @@ case $OS in
         osPackageInstall ${CLN_PKG}
 
         echo "[*] Installing Core Lightning mainnet Cronjob"
-        crontab_cln+='@reboot sleep 30 ; screen -dmS main lightningd --alias `hostname` --bitcoin-datadir /bitcoin\n'
-        crontab_cln+='@reboot sleep 60 ; screen -dmS sig lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network signet\n'
+        crontab_cln+='@reboot sleep 60 ; screen -dmS main lightningd --alias `hostname` --bitcoin-datadir /bitcoin\n'
         crontab_cln+='@reboot sleep 90 ; screen -dmS tes lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network testnet\n'
+        crontab_cln+='@reboot sleep 120 ; screen -dmS sig lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network signet\n'
         echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
     ;;
     Debian)

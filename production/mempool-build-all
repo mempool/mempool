@@ -63,6 +63,19 @@ build_frontend()
     npm run build || exit 1
 }
 
+build_unfurler()
+{
+    local site="$1"
+    echo "[*] Building unfurler for ${site}"
+    [ -z "${HASH}" ] && exit 1
+    cd "$HOME/${site}/unfurler" || exit 1
+    if [ ! -e "config.json" ];then
+        cp "${HOME}/mempool/production/unfurler-config.${site}.json" "config.json"
+    fi
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install || exit 1
+    npm run build || exit 1
+}
+
 build_backend()
 {
     local site="$1"
@@ -126,6 +139,11 @@ done
 # update all repos
 for repo in $backend_repos;do
     update_repo "${repo}"
+done
+
+# build unfurlers
+for repo in mainnet liquid;do
+    build_unfurler "${repo}"
 done
 
 # build backends
