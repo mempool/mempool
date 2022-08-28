@@ -1,0 +1,44 @@
+<svg *ngIf="inputs && outputs" class="bowtie" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
+  <defs>
+    <marker id="input-arrow" viewBox="-5 -5 10 10"
+        refX="0" refY="0"
+        markerUnits="strokeWidth"
+        markerWidth="1.5" markerHeight="1"
+        orient="auto">
+      <path d="M -5 -5 L 0 0 L -5 5 L 1 5 L 1 -5 Z" stroke-width="0" [attr.fill]="gradient[0]"/>
+    </marker>
+    <marker id="output-arrow" viewBox="-5 -5 10 10"
+        refX="0" refY="0"
+        markerUnits="strokeWidth"
+        markerWidth="1.5" markerHeight="1"
+        orient="auto">
+      <path d="M 1 -5 L 0 -5 L -5 0 L 0 5 L 1 5 Z" stroke-width="0" [attr.fill]="gradient[0]"/>
+    </marker>
+    <marker id="fee-arrow" viewBox="-5 -5 10 10"
+        refX="0" refY="0"
+        markerUnits="strokeWidth"
+        markerWidth="1.5" markerHeight="1"
+        orient="auto">
+    </marker>
+    <linearGradient id="input-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" [attr.stop-color]="gradient[0]" />
+      <stop offset="100%" [attr.stop-color]="gradient[1]" />
+    </linearGradient>
+    <linearGradient id="output-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" [attr.stop-color]="gradient[1]" />
+      <stop offset="100%" [attr.stop-color]="gradient[0]" />
+    </linearGradient>
+    <linearGradient id="fee-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" [attr.stop-color]="gradient[1]" />
+      <stop offset="50%" [attr.stop-color]="gradient[1]" />
+      <stop offset="100%" stop-color="transparent" />
+    </linearGradient>
+  </defs>
+  <path [attr.d]="middle.path" class="line middle" [style]="middle.style"/>
+  <ng-container *ngFor="let input of inputs">
+    <path [attr.d]="input.path" class="line {{input.class}}" [style]="input.style" attr.marker-start="url(#{{input.class}}-arrow)"/>
+  </ng-container>
+  <ng-container *ngFor="let output of outputs">
+    <path [attr.d]="output.path" class="line {{output.class}}" [style]="output.style" attr.marker-start="url(#{{output.class}}-arrow)" />
+  </ng-container>
+</svg>

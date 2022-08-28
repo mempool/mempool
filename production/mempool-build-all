@@ -12,7 +12,10 @@ ELEMENTS_RPC_USER=$(grep '^rpcuser' /elements/elements.conf | cut -d '=' -f2)
 ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2)
 
 # get mysql credentials
-. /mempool/mysql_credentials
+MYSQL_CRED_FILE=${HOME}/mempool/mysql_credentials
+if [ -f "${MYSQL_CRED_FILE}" ];then
+    . ${MYSQL_CRED_FILE}
+fi
 
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
@@ -60,6 +63,19 @@ build_frontend()
         cp "${HOME}/mempool/production/mempool-frontend-config.${site}.json" "mempool-frontend-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1
+    npm run build || exit 1
+}
+
+build_unfurler()
+{
+    local site="$1"
+    echo "[*] Building unfurler for ${site}"
+    [ -z "${HASH}" ] && exit 1
+    cd "$HOME/${site}/unfurler" || exit 1
+    if [ ! -e "config.json" ];then
+        cp "${HOME}/mempool/production/unfurler-config.${site}.json" "config.json"
+    fi
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install || exit 1
     npm run build || exit 1
 }
 
@@ -126,6 +142,11 @@ done
 # update all repos
 for repo in $backend_repos;do
     update_repo "${repo}"
+done
+
+# build unfurlers
+for repo in mainnet liquid;do
+    build_unfurler "${repo}"
 done
 
 # build backends
