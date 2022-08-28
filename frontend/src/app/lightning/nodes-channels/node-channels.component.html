@@ -1,2 +1,9 @@
-<div *ngIf="channelsObservable$ | async" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)">
+<div *ngIf="channelsObservable$ | async" style="min-height: 455px">
+  <h2 i18n="lightning.active-channels-map">Active channels map</h2>
+  <div echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartInit)="onChartInit($event)">
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center loading-spinner">
+  <div class="spinner-border text-light"></div>
 </div>
