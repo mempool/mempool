@@ -7,6 +7,7 @@ import { ILightningApi } from '../../../api/lightning/lightning-api.interface';
 import { isIP } from 'net';
 import { Common } from '../../../api/common';
 import channelsApi from '../../../api/explorer/channels.api';
+import nodesApi from '../../../api/explorer/nodes.api';
 
 const fsPromises = promises;
 
@@ -32,7 +33,26 @@ class LightningStatsImporter {
     let clearnetTorNodes = 0;
     let unannouncedNodes = 0;
 
+    const [nodesInDbRaw]: any[] = await DB.query(`SELECT public_key FROM nodes`);
+    const nodesInDb = {};
+    for (const node of nodesInDbRaw) {
+      nodesInDb[node.public_key] = node;
+    }
+
     for (const node of networkGraph.nodes) {
+      // If we don't know about this node, insert it in db
+      if (isHistorical === true && !nodesInDb[node.pub_key]) {
+        await nodesApi.$saveNode({
+          last_update: node.last_update,
+          pub_key: node.pub_key,
+          alias: node.alias,
+          addresses: node.addresses,
+          color: node.color,
+          features: node.features,
+        });
+        nodesInDb[node.pub_key] = node;
+      }
+
       let hasOnion = false;
       let hasClearnet = false;
       let isUnnanounced = true;
@@ -69,7 +89,7 @@ class LightningStatsImporter {
     const baseFees: number[] = [];
     const alreadyCountedChannels = {};
     
-    const [channelsInDbRaw]: any[] = await DB.query(`SELECT short_id, created FROM channels`);
+    const [channelsInDbRaw]: any[] = await DB.query(`SELECT short_id FROM channels`);
     const channelsInDb = {};
     for (const channel of channelsInDbRaw) {
       channelsInDb[channel.short_id] = channel;
@@ -84,29 +104,19 @@ class LightningStatsImporter {
         continue;
       }
 
-      // Channel is already in db, check if we need to update 'created' field
-      if (isHistorical === true) {
-        //@ts-ignore
-        if (channelsInDb[short_id] && channel.timestamp < channel.created) {
-          await DB.query(`
-            UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.short_id = ?`,
-            //@ts-ignore
-            [channel.timestamp, short_id]
-          );
-        } else if (!channelsInDb[short_id]) {
-          await channelsApi.$saveChannel({
-            channel_id: short_id,
-            chan_point: `${tx.txid}:${short_id.split('x')[2]}`,
-            //@ts-ignore
-            last_update: channel.timestamp,
-            node1_pub: channel.node1_pub,
-            node2_pub: channel.node2_pub,
-            capacity: (tx.value * 100000000).toString(),
-            node1_policy: null,
-            node2_policy: null,
-          }, 0);
-          channelsInDb[channel.channel_id] = channel;
-        }
+      // If we don't know about this channel, insert it in db
+      if (isHistorical === true && !channelsInDb[short_id]) {
+        await channelsApi.$saveChannel({
+          channel_id: short_id,
+          chan_point: `${tx.txid}:${short_id.split('x')[2]}`,
+          last_update: channel.last_update,
+          node1_pub: channel.node1_pub,
+          node2_pub: channel.node2_pub,
+          capacity: (tx.value * 100000000).toString(),
+          node1_policy: null,
+          node2_policy: null,
+        }, 0);
+        channelsInDb[channel.channel_id] = channel;
       }
 
       if (!nodeStats[channel.node1_pub]) {
@@ -269,6 +279,17 @@ class LightningStatsImporter {
         nodeStats[public_key].capacity,
         nodeStats[public_key].channels,
       ]);
+
+      if (!isHistorical) {
+        await DB.query(
+          `UPDATE nodes SET capacity = ?, channels = ? WHERE public_key = ?`,
+          [
+            nodeStats[public_key].capacity,
+            nodeStats[public_key].channels,
+            public_key,
+          ]
+        );
+      }
     }
 
     return {
@@ -281,6 +302,7 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
+    logger.debug('Run the historical importer');
     try {
       let fileList: string[] = [];
       try {
@@ -294,7 +316,7 @@ class LightningStatsImporter {
       fileList.sort().reverse();
 
       const [rows]: any[] = await DB.query(`
-        SELECT UNIX_TIMESTAMP(added) AS added, node_count
+        SELECT UNIX_TIMESTAMP(added) AS added
         FROM lightning_stats
         ORDER BY added DESC
       `);
@@ -391,12 +413,16 @@ class LightningStatsImporter {
         });
       }
 
+      let rgb = node.rgb_color ?? '#000000';
+      if (rgb.indexOf('#') === -1) {
+        rgb = `#${rgb}`;
+      }
       newGraph.nodes.push({
         last_update: node.timestamp ?? 0,
         pub_key: node.id ?? null,
-        alias: node.alias ?? null,
+        alias: node.alias ?? node.id.slice(0, 20),
         addresses: addresses,
-        color: node.rgb_color ?? null,
+        color: rgb,
         features: {},
       });
     }

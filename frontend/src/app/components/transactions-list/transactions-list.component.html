@@ -20,7 +20,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-sm table-tx-vin">
           <tbody>
-            <ng-template ngFor let-vin [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length > rowLimit) ? tx.vin.slice(0, rowLimit - 2) : tx.vin.slice(0, rowLimit)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length > rowLimit) ? tx.vin.slice(0, rowLimit - 2) : tx.vin.slice(0, rowLimit)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded,
                 'highlight': vin.prevout?.scriptpubkey_address === this.address && this.address !== ''
@@ -77,7 +77,7 @@
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
                         <div>
-                          <app-address-labels [vin]="vin" [channel]="channels && channels.inputs[i] || null"></app-address-labels>
+                          <app-address-labels [vin]="vin" [channel]="tx._channels && tx._channels.inputs[vindex] || null"></app-address-labels>
                         </div>
                       </ng-template>
                     </ng-container>
@@ -172,7 +172,7 @@
                     </span>
                   </a>
                   <div>
-                    <app-address-labels [vout]="vout" [channel]="channels && channels.outputs[i] && channels.outputs[i].transaction_vout === vindex ? channels.outputs[i] : null"></app-address-labels>
+                    <app-address-labels [vout]="vout" [channel]="tx._channels && tx._channels.outputs[vindex] ? tx._channels.outputs[vindex] : null"></app-address-labels>
                   </div>
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
@@ -212,15 +212,15 @@
                   </ng-template>
                 </td>
                 <td class="arrow-td">
-                  <span *ngIf="!outspends[i] || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="grey">
+                  <span *ngIf="!tx._outspends || vout.scriptpubkey_type === 'op_return' || vout.scriptpubkey_type === 'fee' ; else outspend" class="grey">
                     <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                   </span>
                   <ng-template #outspend>
-                    <span *ngIf="!outspends[i][vindex] || !outspends[i][vindex].spent; else spent" class="green">
+                    <span *ngIf="!tx._outspends[vindex] || !tx._outspends[vindex].spent; else spent" class="green">
                       <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                     </span>
                     <ng-template #spent>
-                      <a *ngIf="outspends[i][vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, outspends[i][vindex].txid]" class="red">
+                      <a *ngIf="tx._outspends[vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, tx._outspends[vindex].txid]" class="red">
                         <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                       </a>
                       <ng-template #outputNoTxId>
