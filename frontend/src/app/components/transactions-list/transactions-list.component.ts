@@ -61,6 +61,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txIds) => this.apiService.getOutspendsBatched$(txIds)),
           tap((outspends: Outspend[][]) => {
+            if (!this.transactions) {
+              return;
+            }
             const transactions = this.transactions.filter((tx) => !tx._outspends);
             outspends.forEach((outspend, i) => {
               transactions[i]._outspends = outspend;
