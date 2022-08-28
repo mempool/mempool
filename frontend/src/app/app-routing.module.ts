@@ -26,6 +26,10 @@ import { AssetsComponent } from './components/assets/assets.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+
 let routes: Routes = [
   {
     path: 'testnet',
@@ -120,7 +124,7 @@ let routes: Routes = [
           {
             path: 'lightning',
             loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
-            data: { preload: true },
+            data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true },
           },
         ],
       },
@@ -412,10 +416,6 @@ let routes: Routes = [
     redirectTo: ''
   },
 ];
-
-const browserWindow = window || {};
-// @ts-ignore
-const browserWindowEnv = browserWindow.__env || {};
 
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
   routes = [{
