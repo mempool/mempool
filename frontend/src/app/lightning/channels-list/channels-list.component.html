@@ -1,5 +1,5 @@
-<div *ngIf="channels$ | async as response; else skeleton">
-  <form [formGroup]="channelStatusForm" class="formRadioGroup float-right">
+<div *ngIf="channels$ | async as response; else skeleton" style="position: relative;">
+  <form [formGroup]="channelStatusForm" class="formRadioGroup">
     <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
       <label ngbButtonLabel class="btn-primary btn-sm">
         <input ngbButton type="radio" [value]="'open'" fragment="open" i18n="open">Open
