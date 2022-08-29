@@ -504,6 +504,18 @@ class NodesApi {
   }
 
   /**
+   * Update node sockets
+   */
+  public async $updateNodeSockets(publicKey: string, sockets: {network: string; addr: string}[]): Promise<void> {
+    const formattedSockets = (sockets.map(a => a.addr).join(',')) ?? '';
+    try {
+      await DB.query(`UPDATE nodes SET sockets = ? WHERE public_key = ?`, [formattedSockets, publicKey]);
+    } catch (e) {
+      logger.err(`Cannot update node sockets for ${publicKey}. Reason: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  /**
    * Set all nodes not in `nodesPubkeys` as inactive (status = 0)
    */
    public async $setNodesInactive(graphNodesPubkeys: string[]): Promise<void> {

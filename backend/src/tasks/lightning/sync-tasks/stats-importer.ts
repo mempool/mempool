@@ -51,6 +51,8 @@ class LightningStatsImporter {
           features: node.features,
         });
         nodesInDb[node.pub_key] = node;
+      } else {
+        await nodesApi.$updateNodeSockets(node.pub_key, node.addresses);
       }
 
       let hasOnion = false;
