@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
+import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { TransactionPreviewComponent } from './components/transaction/transaction-preview.component';
@@ -25,6 +26,10 @@ import { AssetsComponent } from './components/assets/assets.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 
+const browserWindow = window || {};
+// @ts-ignore
+const browserWindowEnv = browserWindow.__env || {};
+
 let routes: Routes = [
   {
     path: 'testnet',
@@ -32,7 +37,8 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+        data: { preload: true },
       },
       {
         path: '',
@@ -109,7 +115,8 @@ let routes: Routes = [
           },
           {
             path: 'docs',
-            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule),
+            data: { preload: true },
           },
           {
             path: 'api',
@@ -117,7 +124,8 @@ let routes: Routes = [
           },
           {
             path: 'lightning',
-            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
+            data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true },
           },
         ],
       },
@@ -410,10 +418,6 @@ let routes: Routes = [
   },
 ];
 
-const browserWindow = window || {};
-// @ts-ignore
-const browserWindowEnv = browserWindow.__env || {};
-
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
   routes = [{
     path: '',
@@ -691,7 +695,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     initialNavigation: 'enabled',
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled',
-    preloadingStrategy: PreloadAllModules
+    preloadingStrategy: AppPreloadingStrategy
   })],
 })
 export class AppRoutingModule { }
