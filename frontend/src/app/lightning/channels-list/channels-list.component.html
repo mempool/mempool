@@ -1,4 +1,4 @@
-<div *ngIf="channels$ | async as response; else skeleton">
+<div *ngIf="channels$ | async as response; else skeleton" style="position: relative;">
   <form [formGroup]="channelStatusForm" class="formRadioGroup">
     <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
       <label ngbButtonLabel class="btn-primary btn-sm">

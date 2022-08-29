@@ -10,8 +10,8 @@
 
 .formRadioGroup {
   @media (min-width: 435px) {
-    float: right;
-    position: relative;
+    position: absolute;
+    right: 0;
     top: -46px;
   }
   @media (max-width: 435px) {
