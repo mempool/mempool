@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { forkJoin, Observable, of, share, zip } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { Observable, of, zip } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { IChannel } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
