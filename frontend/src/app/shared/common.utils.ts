@@ -124,21 +124,27 @@ export function convertRegion(input, to: 'name' | 'abbreviated'): string {
 
 /**
  * Sort an array of transactions in place.
- * @param transactions This array of transactions is sorted in place,
+ * @param {Transaction[]} transactions This array of transactions is sorted in place,
  * first unconfirmed by first seen timestamp. Then confirmed by block
  * height descending. If multiple transactions are in the same block,
  * topological sort is used to find a dependency ordering that does
  * not have ie. a deposit coming after the transaction that spends it.
+ * @param {boolean} [ascending=false] If true, sort from oldest to newest
  */
-export function sortTransactions(transactions: Transaction[]): void {
+export function sortTransactions(
+  transactions: Transaction[],
+  ascending: boolean = false
+): void {
   // Sort as usual, tx with same block will be possibly wrong order
   transactions.sort((a, b) => {
-    if (a.status.confirmed && b.status.confirmed) {
-      return b.status.block_height - a.status.block_height;
-    } else if (a.status.confirmed || b.status.confirmed) {
-      return b.status.confirmed ? -1 : 1;
+    const x = ascending ? a : b;
+    const y = ascending ? b : a;
+    if (x.status.confirmed && y.status.confirmed) {
+      return x.status.block_height - y.status.block_height;
+    } else if (x.status.confirmed || y.status.confirmed) {
+      return x.status.confirmed ? -1 : 1;
     } else {
-      return b.firstSeen - a.firstSeen;
+      return x.firstSeen - y.firstSeen;
     }
   });
 
@@ -147,15 +153,15 @@ export function sortTransactions(transactions: Transaction[]): void {
 
   // For each range of same-block ranges, topological sort
   for (const [start, end] of sameBlockRanges) {
-    sortSameBlockRange(transactions, start, end);
+    sortSameBlockRange(transactions, start, end, ascending);
   }
 }
 
 /**
  * Get an array of tuples with start and end (non-inclusive) ranges of same blocks.
  * This function assumes that all confirmed transactions are sorted by block height.
- * @param transactions List of transactions
- * @returns List of tuples [start, end)
+ * @param {Transaction[]} transactions List of transactions
+ * @returns {[number, number][]} List of tuples [start, end)
  */
 function getSameBlockRanges(transactions: Transaction[]): [number, number][] {
   const sameBlockRanges: [number, number][] = [[null, null]];
@@ -190,11 +196,17 @@ function getSameBlockRanges(transactions: Transaction[]): [number, number][] {
  * using topological sort. Note: transactions without any dependency on other items
  * in the same block can be in any order (ie. two deposits A and B arriving in the same block
  * might have order B A in one call and A B in another call)
- * @param transactions List of transactions modified in place
- * @param start start of the subarray we will sort (inclusive)
- * @param end end of the subarray we will sort (non-inclusive)
+ * @param {Transaction[]} transactions List of transactions modified in place
+ * @param {number} start start of the subarray we will sort (inclusive)
+ * @param {number} end end of the subarray we will sort (non-inclusive)
+ * @param {boolean} ascending if true, sort from oldest to newest (parent to child)
  */
-function sortSameBlockRange(transactions: Transaction[], start: number, end: number): void {
+function sortSameBlockRange(
+  transactions: Transaction[],
+  start: number,
+  end: number,
+  ascending: boolean
+): void {
   const txs = transactions.slice(start, end);
   const txids = txs.map((tx) => tx.txid);
   // We will get a sorted array of txids, this will make it easier
@@ -205,7 +217,12 @@ function sortSameBlockRange(transactions: Transaction[], start: number, end: num
   }, new Map<string, Transaction>());
   // Create an array of edges, direction child to parent (child will sort first)
   const edges = txs.reduce(
-    (acc, tx) => acc.concat(tx.vin.map((vin) => [tx.txid, vin.txid])),
+    (acc, tx) =>
+      acc.concat(
+        tx.vin.map((vin) =>
+          ascending ? [vin.txid, tx.txid] : [tx.txid, vin.txid]
+        )
+      ),
     [] as [string, string][]
   );
   // Topological sort the edges and give an order that does not conflict

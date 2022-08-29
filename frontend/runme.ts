@@ -32,7 +32,7 @@ function makeVector(txid: string, parentTxid: string, confirmed: boolean, bhOrFs
 }
 
 // txids only matter when same block, so xxx all others
-const unsorted = [
+const unsorted1 = [
   makeVector("xxx", "xxx", true, 1005),
   makeVector("xxx", "xxx", true, 1002),
   makeVector("xxx", "xxx", false, 1235),
@@ -52,6 +52,7 @@ const unsorted = [
   makeVector("xxx", "xxx", false, 1236),
   makeVector("xxx", "xxx", true, 1003),
 ];
+const unsorted2 = unsorted1.slice();
 
 const sorted = [
   makeVector("xxx", "xxx", false, 1236),
@@ -73,6 +74,30 @@ const sorted = [
   makeVector("txida_3", "firstdeposit2", true, 1001),
 ];
 
-sortTransactions(unsorted);
+const sortedBackwards = [
+  makeVector("txida_3", "firstdeposit2", true, 1001),
+  makeVector("txida_4", "txida_3", true, 1001),
+  makeVector("txida_1", "txida_4", true, 1001),
+  makeVector("txida_2", "txida_1", true, 1001),
 
-assert.deepStrictEqual(unsorted, sorted, "Not equal!!!");
+  makeVector("xxx", "xxx", true, 1002),
+  makeVector("xxx", "xxx", true, 1003),
+  
+  makeVector("txid_2", "firstdeposit1", true, 1004),
+  makeVector("txid_3", "txid_2", true, 1004),
+  makeVector("txid_1", "txid_3", true, 1004),
+  makeVector("txid_4", "txid_1", true, 1004),
+  
+  makeVector("xxx", "xxx", true, 1005),
+  makeVector("xxx", "xxx", false, 1234),
+  makeVector("xxx", "xxx", false, 1235),
+  makeVector("xxx", "xxx", false, 1236),
+];
+
+// Sort with descending order (default, newest transaction is index 0)
+sortTransactions(unsorted1);
+assert.deepStrictEqual(unsorted1, sorted, "Not equal!!!");
+
+// Sort with ascending order (oldest transaction is index 0)
+sortTransactions(unsorted2, true);
+assert.deepStrictEqual(unsorted2, sortedBackwards, "Not equal!!!");
