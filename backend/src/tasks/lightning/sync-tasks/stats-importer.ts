@@ -363,7 +363,7 @@ class LightningStatsImporter {
           graph = JSON.parse(fileContent);
           graph = await this.cleanupTopology(graph);
         } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`);
           continue;
         }
     
@@ -407,9 +407,10 @@ class LightningStatsImporter {
       const addressesParts = (node.addresses ?? '').split(',');
       const addresses: any[] = [];
       for (const address of addressesParts) {
+        const formatted = Common.findSocketNetwork(address);
         addresses.push({
-          network: '',
-          addr: address
+          network: formatted.network,
+          addr: formatted.url
         });
       }
 
