@@ -1,4 +1,4 @@
-<div class="container-xl" *ngIf="(node$ | async) as node">
+<div class="container-xl" *ngIf="(node$ | async) as node; else skeletonLoader">
   <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
   <div class="title-container mb-2" *ngIf="!error">
     <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
@@ -152,5 +152,94 @@
   </div>
     
 </div>
+
+<ng-template #skeletonLoader>
+  <div class="container-xl">
+    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
+    <div class="title-container mb-2">
+      <h1 class="mb-0"><span class="skeleton-loader" style="width: 250px; height: 25px;"></span></h1>
+      <span class="tx-link">
+        <span class="skeleton-loader" style="margin-bottom: 5px; width: 80%;"></span>
+      </span>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+    </div>
+
+    <div class="input-group mt-3" >
+    <span class="input-group-text" id="basic-addon3"><span class="skeleton-loader" style="width: 75px;"></span></span>
+      <input type="text" class="form-control" disabled>
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
+        <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+      </button>
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
+        <app-clipboard [text]="''"></app-clipboard>
+      </button>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col-sm">
+        <div style="height: 400px;"><span class="skeleton-loader" style="height: 400px;"></span></div>
+      </div>
+      <div class="col-sm">
+        <div style="height: 400px;"><span class="skeleton-loader" style="height: 400px;"></span></div>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
 
 <br>
