@@ -37,12 +37,14 @@ class Server {
       .use(express.text())
       ;
 
-    this.cluster = await Cluster.launch({
-        concurrency: ReusablePage,
-        maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
-        puppeteerOptions: puppeteerConfig,
-    });
-    await this.cluster?.task(async (args) => { return this.clusterTask(args) });
+    if (!config.PUPPETEER.DISABLE) {
+      this.cluster = await Cluster.launch({
+          concurrency: ReusablePage,
+          maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
+          puppeteerOptions: puppeteerConfig,
+      });
+      await this.cluster?.task(async (args) => { return this.clusterTask(args) });
+    }
 
     this.setUpRoutes();
 
@@ -64,7 +66,11 @@ class Server {
   }
 
   setUpRoutes() {
-    this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
+    if (!config.PUPPETEER.DISABLE) {
+      this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
+    } else {
+      this.app.get('/render*', async (req, res) => { return this.renderDisabled(req, res) })
+    }
     this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
   }
 
@@ -109,6 +115,10 @@ class Server {
       console.log(`failed to render page for ${action}`, e instanceof Error ? e.message : e);
       page.repairRequested = true;
     }
+  }
+
+  async renderDisabled(req, res) {
+    res.status(500).send("preview rendering disabled");
   }
 
   async renderPreview(req, res) {
