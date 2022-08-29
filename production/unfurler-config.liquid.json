@@ -1,0 +1,17 @@
+{
+  "SERVER": {
+    "HOST": "https://liquid.network",
+    "HTTP_PORT": 8002
+  },
+  "MEMPOOL": {
+    "HTTP_HOST": "https://liquid.network",
+    "HTTP_PORT": 443,
+    "NETWORK": "liquid"
+  },
+  "PUPPETEER": {
+    "CLUSTER_SIZE": 8,
+    "EXEC_PATH": "/usr/local/bin/chrome",
+    "MAX_PAGE_AGE": 86400,
+    "RENDER_TIMEOUT": 3000
+  }
+}

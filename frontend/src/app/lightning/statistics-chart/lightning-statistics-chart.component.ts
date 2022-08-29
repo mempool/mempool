@@ -274,7 +274,7 @@ export class LightningStatisticsChartComponent implements OnInit {
               width: 1,
             },
           },
-          smooth: true,
+          smooth: false,
         },
         {
           zlevel: 0,
@@ -288,7 +288,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             opacity: 0.5,
           },
           type: 'line',
-          smooth: true,
+          smooth: false,
         }
       ],
       dataZoom: this.widget ? null : [{
