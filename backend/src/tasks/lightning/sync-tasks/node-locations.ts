@@ -4,6 +4,7 @@ import nodesApi from '../../../api/explorer/nodes.api';
 import config from '../../../config';
 import DB from '../../../database';
 import logger from '../../../logger';
+import * as IPCheck from '../../../utils/ipcheck.js';
 
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
@@ -27,6 +28,11 @@ export async function $lookupNodeLocation(): Promise<void> {
           const asn = lookupAsn.get(ip);
           const isp = lookupIsp.get(ip);
 
+          let asOverwrite: number | null = null;
+          if (asn && (IPCheck.match(ip, '170.75.160.0/20') || IPCheck.match(ip, '172.81.176.0/21'))) {
+            asOverwrite = 394745;
+          }
+
           if (city && (asn || isp)) {
             const query = `
               UPDATE nodes SET 
@@ -41,7 +47,7 @@ export async function $lookupNodeLocation(): Promise<void> {
             `;
 
             const params = [
-              isp?.autonomous_system_number ?? asn?.autonomous_system_number,
+              asOverwrite ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number,
               city.city?.geoname_id,
               city.country?.geoname_id,
               city.subdivisions ? city.subdivisions[0].geoname_id : null,
@@ -91,7 +97,7 @@ export async function $lookupNodeLocation(): Promise<void> {
             if (isp?.autonomous_system_organization ?? asn?.autonomous_system_organization) {
               await DB.query(
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'as_organization', ?)`,
-                [isp?.autonomous_system_number ?? asn?.autonomous_system_number, JSON.stringify(isp?.isp ?? asn?.autonomous_system_organization)]);
+                [asOverwrite ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number, JSON.stringify(isp?.isp ?? asn?.autonomous_system_organization)]);
             }
           }
 
