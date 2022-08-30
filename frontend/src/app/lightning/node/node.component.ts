@@ -22,7 +22,7 @@ export class NodeComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
-
+  channelListLoading = false;
   publicKeySize = 99;
 
   constructor(
@@ -96,5 +96,9 @@ export class NodeComponent implements OnInit {
 
   onChannelsListStatusChanged(e) {
     this.channelsListStatus = e;
+  }
+
+  onLoadingEvent(e) {
+    this.channelListLoading = e;
   }
 }

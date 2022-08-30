@@ -145,7 +145,7 @@ for repo in $backend_repos;do
 done
 
 # build unfurlers
-for repo in mainnet liquid;do
+for repo in mainnet liquid bisq;do
     build_unfurler "${repo}"
 done
 
