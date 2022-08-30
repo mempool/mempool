@@ -11,7 +11,7 @@
           </div>  
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
-            [class]="stateService.env.MINING_DASHBOARD ? 'mining' : ''" (click)="saveGraphPreference()">
+            [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
             <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
               <label ngbButtonLabel class="btn-primary btn-sm mr-2">
                 <a [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
