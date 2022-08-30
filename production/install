@@ -48,6 +48,9 @@ BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
 BITCOIN_TESTNET_ENABLE=ON
 BITCOIN_SIGNET_ENABLE=ON
+LN_BITCOIN_MAINNET_ENABLE=ON
+LN_BITCOIN_TESTNET_ENABLE=ON
+LN_BITCOIN_SIGNET_ENABLE=ON
 BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
@@ -227,6 +230,9 @@ MYSQL_GROUP=mysql
 MEMPOOL_MAINNET_USER='mempool'
 MEMPOOL_TESTNET_USER='mempool_testnet'
 MEMPOOL_SIGNET_USER='mempool_signet'
+LN_MEMPOOL_MAINNET_USER='mempool_mainnet_lightning'
+LN_MEMPOOL_TESTNET_USER='mempool_testnet_lightning'
+LN_MEMPOOL_SIGNET_USER='mempool_signet_lightning'
 MEMPOOL_LIQUID_USER='mempool_liquid'
 MEMPOOL_LIQUIDTESTNET_USER='mempool_liquidtestnet'
 MEMPOOL_BISQ_USER='mempool_bisq'
@@ -234,6 +240,9 @@ MEMPOOL_BISQ_USER='mempool_bisq'
 MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUID_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUIDTESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_BISQ_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
@@ -747,6 +756,9 @@ $CUT >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
 Mainnet:Enable Bitcoin Mainnet:ON
 Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
+LN-Mainnet:Enable Bitcoin Mainnet Lightning:ON
+LN-Testnet:Enable Bitcoin Testnet Lightning:ON
+LN-Signet:Enable Bitcoin Signet Lightning:ON
 Testnet:Enable Bitcoin Testnet:ON
 Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
@@ -809,6 +821,24 @@ else
     BITCOIN_INSTALL=OFF
 fi
 
+if grep LN-Mainnet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_MAINNET_ENABLE=ON
+else
+    LN_BITCOIN_MAINNET_ENABLE=OFF
+fi
+
+if grep LN-Testnet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_TESTNET_ENABLE=ON
+else
+    LN_BITCOIN_TESTNET_ENABLE=OFF
+fi
+
+if grep LN-Signet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_SIGNET_ENABLE=ON
+else
+    LN_BITCOIN_SIGNET_ENABLE=OFF
+fi
+
 if grep Liquid $tempfile >/dev/null 2>&1;then
     ELEMENTS_LIQUID_ENABLE=ON
 else
@@ -831,6 +861,7 @@ if grep CoreLN $tempfile >/dev/null 2>&1;then
     CLN_INSTALL=ON
 else
     CLN_INSTALL=OFF
+fi
 
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     BITCOIN_ELECTRS_INSTALL=ON
@@ -1674,7 +1705,16 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Mainnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/mainnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_MAINNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/mainnet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
@@ -1683,7 +1723,16 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_TESTNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
@@ -1692,7 +1741,16 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Signet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/signet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_SIGNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/signet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
@@ -1701,7 +1759,7 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquid"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/liquid && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
@@ -1710,7 +1768,7 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquidtestnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid Testnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/liquidtestnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BISQ_INSTALL}" = ON ];then
@@ -1719,7 +1777,7 @@ if [ "${BISQ_INSTALL}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/bisq"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bisq"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/bisq && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 ##### mariadb
@@ -1745,6 +1803,15 @@ grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identifi
 create database mempool_signet;
 grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
+create database mempool_mainnet_lightning;
+grant all on mempool_mainnet_lightning.* to '${LN_MEMPOOL_MAINNET_USER}'@'%' identified by '${LN_MEMPOOL_MAINNET_PASS}';
+
+create database mempool_testnet_lightning;
+grant all on mempool_testnet_lightning.* to '${LN_MEMPOOL_TESTNET_USER}'@'%' identified by '${LN_MEMPOOL_TESTNET_PASS}';
+
+create database mempool_signet_lightning;
+grant all on mempool_signet_lightning.* to '${LN_MEMPOOL_SIGNET_USER}'@'%' identified by '${LN_MEMPOOL_SIGNET_PASS}';
+
 create database mempool_liquid;
 grant all on mempool_liquid.* to '${MEMPOOL_LIQUID_USER}'@'localhost' identified by '${MEMPOOL_LIQUID_PASS}';
 
@@ -1763,6 +1830,12 @@ declare -x MEMPOOL_TESTNET_USER="${MEMPOOL_TESTNET_USER}"
 declare -x MEMPOOL_TESTNET_PASS="${MEMPOOL_TESTNET_PASS}"
 declare -x MEMPOOL_SIGNET_USER="${MEMPOOL_SIGNET_USER}"
 declare -x MEMPOOL_SIGNET_PASS="${MEMPOOL_SIGNET_PASS}"
+declare -x LN_MEMPOOL_MAINNET_USER="${LN_MEMPOOL_MAINNET_USER}"
+declare -x LN_MEMPOOL_MAINNET_PASS="${LN_MEMPOOL_MAINNET_PASS}"
+declare -x LN_MEMPOOL_TESTNET_USER="${LN_MEMPOOL_TESTNET_USER}"
+declare -x LN_MEMPOOL_TESTNET_PASS="${LN_MEMPOOL_TESTNET_PASS}"
+declare -x LN_MEMPOOL_SIGNET_USER="${LN_MEMPOOL_SIGNET_USER}"
+declare -x LN_MEMPOOL_SIGNET_PASS="${LN_MEMPOOL_SIGNET_PASS}"
 declare -x MEMPOOL_LIQUID_USER="${MEMPOOL_LIQUID_USER}"
 declare -x MEMPOOL_LIQUID_PASS="${MEMPOOL_LIQUID_PASS}"
 declare -x MEMPOOL_LIQUIDTESTNET_USER="${MEMPOOL_LIQUIDTESTNET_USER}"
