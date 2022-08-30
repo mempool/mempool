@@ -9,6 +9,7 @@
     "NETWORK": "bitcoin" // "bitcoin" | "liquid" | "bisq" (optional - defaults to "bitcoin")
   },
   "PUPPETEER": {
+    "DISABLE": false, // optional, boolean, disables puppeteer and /render endpoints
     "CLUSTER_SIZE": 2,
     "EXEC_PATH": "/usr/local/bin/chrome", // optional
     "MAX_PAGE_AGE": 86400, // maximum lifetime of a page session (in seconds)

@@ -133,7 +133,7 @@
 
     <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
 
-    <div class="d-flex justify-content-between">
+    <div class="d-flex">
       <h2 *ngIf="channelsListStatus === 'open'">
         <span i18n="lightning.open-channels">Open channels</span>
         <span> ({{ node.opened_channel_count }})</span>
@@ -142,10 +142,13 @@
         <span i18n="lightning.open-channels">Closed channels</span>
         <span> ({{ node.closed_channel_count }})</span>
       </h2>
+      <div *ngIf="channelListLoading" class="spinner-border ml-3" role="status"></div>
     </div>
 
     <app-channels-list [publicKey]="node.public_key"
-      (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
+      (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"
+      (loadingEvent)="onLoadingEvent($event)"
+    ></app-channels-list>
   </div>
     
 </div>
