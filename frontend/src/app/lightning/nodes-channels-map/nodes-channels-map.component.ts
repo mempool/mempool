@@ -238,7 +238,7 @@ export class NodesChannelsMap implements OnInit {
         roam: this.style === 'widget' ? false : true,
         itemStyle: {
           borderColor: 'black',
-          color: '#ffffff44'
+          color: '#272b3f'
         },
         scaleLimit: {
           min: 1.3,

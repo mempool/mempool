@@ -9,17 +9,19 @@ for site in mainnet mainnet-lightning testnet testnet-lightning signet signet-li
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done
 
-# only start unfurler if GPU present
+# only start xorg if GPU present
 if pciconf -lv|grep -i nvidia >/dev/null 2>&1;then
     export DISPLAY=:0
     screen -dmS x startx
     sleep 3
-    for site in mainnet liquid;do
-        cd "$HOME/${site}/unfurler" && \
-        echo "starting mempool unfurler: ${site}" && \
-        screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'
-    done
 fi
+
+# start unfurlers for each frontend
+for site in mainnet liquid bisq;do
+    cd "$HOME/${site}/unfurler" && \
+    echo "starting mempool unfurler: ${site}" && \
+    screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'
+done
 
 # start nginx warm cacher
 for site in mainnet;do
