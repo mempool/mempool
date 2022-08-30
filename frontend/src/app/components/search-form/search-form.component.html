@@ -7,7 +7,13 @@
     
     </div>
     <div>
-      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-primary"><fa-icon [icon]="['fas', 'search']" [fixedWidth]="true" i18n-title="search-form.search-title" title="Search"></fa-icon></button>
+      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-primary">
+        <fa-icon *ngIf="!(isTypeaheading$ | async) else searchLoading" [icon]="['fas', 'search']" [fixedWidth]="true" i18n-title="search-form.search-title" title="Search"></fa-icon>
+      </button>
     </div>
   </div>
 </form>
+
+<ng-template #searchLoading>
+  <div class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></div>
+</ng-template>
