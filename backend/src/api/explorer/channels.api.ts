@@ -80,7 +80,7 @@ class ChannelsApi {
   public async $searchChannelsById(search: string): Promise<any[]> {
     try {
       const searchStripped = search.replace('%', '') + '%';
-      const query = `SELECT id, short_id, capacity FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
+      const query = `SELECT id, short_id, capacity, status FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
       const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
       return rows;
     } catch (e) {
