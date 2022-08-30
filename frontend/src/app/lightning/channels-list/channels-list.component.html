@@ -10,7 +10,7 @@
     </div>
   </form>
 
-  <table class="table table-borderless" *ngIf="response.channels.length > 0">
+  <table class="table table-borderless" *ngIf="response.channels.length > 0" [style]="isLoading ? 'opacity: 0.75' : ''">
     <ng-container *ngTemplateOutlet="tableHeader"></ng-container>
     <tbody>
       <tr *ngFor="let channel of response.channels; let i = index;">
