@@ -44,13 +44,13 @@ export class NodeChannels implements OnChanges {
         switchMap((response) => {
           this.isLoading = true;
           if ((response.body?.length ?? 0) <= 0) {
-            return [];
+            this.isLoading = false;
+            return [''];
           }
           return [response.body];
         }),
         tap((body: any[]) => {
-          if (body.length === 0) {
-            this.isLoading = false;
+          if (body.length === 0 || body[0].length === 0) {
             return;
           }
           const biggestCapacity = body[0].capacity;
@@ -130,10 +130,6 @@ export class NodeChannels implements OnChanges {
   }
 
   onChartInit(ec: ECharts): void {
-    if (this.chartInstance !== undefined) {
-      return;
-    }
-
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
