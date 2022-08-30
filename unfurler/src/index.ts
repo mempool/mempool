@@ -99,20 +99,15 @@ class Server {
           throw new Error('failed to access open graph service');
         }
       }
-      // wait for navigation to complete
-      await page.waitForFunction(
-        (path) => window.location.pathname.includes(path),
-        {},
-        path
-      );
-      // wait for preview component to initialize
-      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
 
+      const waitForReady = await page.$('meta[property="og:preview:loading"]');
       let success = true;
-      success = await Promise.race([
-        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-      ])
+      if (waitForReady != null) {
+        success = await Promise.race([
+          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+        ])
+      }
       if (success) {
         const screenshot = await page.screenshot();
         return screenshot;
