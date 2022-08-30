@@ -130,10 +130,6 @@ export class NodeChannels implements OnChanges {
   }
 
   onChartInit(ec: ECharts): void {
-    if (this.chartInstance !== undefined) {
-      return;
-    }
-
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
