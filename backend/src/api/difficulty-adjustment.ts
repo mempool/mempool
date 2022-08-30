@@ -81,14 +81,15 @@ export function calcDifficultyAdjustment(
 }
 
 class DifficultyAdjustmentApi {
-  constructor() { }
-
-  public getDifficultyAdjustment(): IDifficultyAdjustment {
+  public getDifficultyAdjustment(): IDifficultyAdjustment | null {
     const DATime = blocks.getLastDifficultyAdjustmentTime();
     const previousRetarget = blocks.getPreviousDifficultyRetarget();
     const blockHeight = blocks.getCurrentBlockHeight();
     const blocksCache = blocks.getBlocks();
     const latestBlock = blocksCache[blocksCache.length - 1];
+    if (!latestBlock) {
+      return null;
+    }
     const nowSeconds = Math.floor(new Date().getTime() / 1000);
 
     return calcDifficultyAdjustment(
