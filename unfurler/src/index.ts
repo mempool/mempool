@@ -13,6 +13,8 @@ if (config.PUPPETEER.EXEC_PATH) {
   puppeteerConfig.executablePath = config.PUPPETEER.EXEC_PATH;
 }
 
+const puppeteerEnabled = config.PUPPETEER.ENABLED && (config.PUPPETEER.CLUSTER_SIZE > 0);
+
 class Server {
   private server: http.Server | undefined;
   private app: Application;
@@ -24,7 +26,7 @@ class Server {
   constructor() {
     this.app = express();
     this.mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
-    this.secureHost = this.mempoolHost.startsWith('https');
+    this.secureHost = config.SERVER.HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
     this.startServer();
   }
@@ -39,7 +41,7 @@ class Server {
       .use(express.text())
       ;
 
-    if (!config.PUPPETEER.DISABLE) {
+    if (puppeteerEnabled) {
       this.cluster = await Cluster.launch({
           concurrency: ReusablePage,
           maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
@@ -68,7 +70,7 @@ class Server {
   }
 
   setUpRoutes() {
-    if (!config.PUPPETEER.DISABLE) {
+    if (puppeteerEnabled) {
       this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
     } else {
       this.app.get('/render*', async (req, res) => { return this.renderDisabled(req, res) })
