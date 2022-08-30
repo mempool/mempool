@@ -156,6 +156,7 @@ export class SearchFormComponent implements OnInit {
           this.navigate('/tx/', matches[0]);
         }
       } else {
+        this.searchResults.searchButtonClick();
         this.isSearching = false;
       }
     }
