@@ -22,6 +22,7 @@ export class NodesChannelsMap implements OnInit {
   @Input() channel: any[] = [];
   @Input() fitContainer = false;
   @Input() hasLocation = true;
+  @Input() placeholder = false;
   @Output() readyEvent = new EventEmitter();
 
   channelsObservable: Observable<any>; 
@@ -201,9 +202,24 @@ export class NodesChannelsMap implements OnInit {
 
   prepareChartOptions(nodes, channels) {
     let title: object;
-    if (channels.length === 0) {
+    if (channels.length === 0 && !this.placeholder) {
       this.chartOptions = null;
       return;
+    }
+
+    // empty map fallback
+    if (channels.length === 0 && this.placeholder) {
+      title = {
+        textStyle: {
+          color: 'white',
+          fontSize: 18
+        },
+        text: $localize`No geolocation data available`,
+        left: 'center',
+        top: 'center'
+      };
+      this.zoom = 1.5;
+      this.center = [0, 20];
     }
 
     this.chartOptions = {
@@ -222,7 +238,7 @@ export class NodesChannelsMap implements OnInit {
         roam: this.style === 'widget' ? false : true,
         itemStyle: {
           borderColor: 'black',
-          color: '#ffffff44'
+          color: '#272b3f'
         },
         scaleLimit: {
           min: 1.3,

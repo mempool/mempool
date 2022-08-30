@@ -57,3 +57,16 @@ app-fiat {
     margin-left: 10px;
   }
 }
+
+.spinner-border {
+  @media (min-width: 768px) {
+    margin-top: 6.5px;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  @media (max-width: 768px) {
+    margin-top: 2.3px;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

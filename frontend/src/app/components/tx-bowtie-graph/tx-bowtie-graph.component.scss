@@ -1,0 +1,15 @@
+.bowtie {
+  .line {
+    fill: none;
+
+    &.input {
+      stroke: url(#input-gradient);
+    }
+    &.output {
+      stroke: url(#output-gradient);
+    }
+    &.fee {
+      stroke: url(#fee-gradient);
+    }
+  }
+}

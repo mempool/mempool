@@ -1,8 +1,8 @@
 import { formatNumber } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { ECharts, EChartsOption, TreemapSeriesOption } from 'echarts';
-import { Observable, tap } from 'rxjs';
+import { Observable, share, switchMap, tap } from 'rxjs';
 import { lerpColor } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { LightningApiService } from '../lightning-api.service';
@@ -25,7 +25,7 @@ export class NodeChannels implements OnChanges {
   };
 
   channelsObservable$: Observable<any>;
-  isLoading: true;
+  isLoading = true;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -41,9 +41,20 @@ export class NodeChannels implements OnChanges {
 
     this.channelsObservable$ = this.lightningApiService.getChannelsByNodeId$(this.publicKey, -1, 'active')
       .pipe(
-        tap((response) => {
-          const biggestCapacity = response.body[0].capacity;
-          this.prepareChartOptions(response.body.map(channel => {
+        switchMap((response) => {
+          this.isLoading = true;
+          if ((response.body?.length ?? 0) <= 0) {
+            this.isLoading = false;
+            return [''];
+          }
+          return [response.body];
+        }),
+        tap((body: any[]) => {
+          if (body.length === 0 || body[0].length === 0) {
+            return;
+          }
+          const biggestCapacity = body[0].capacity;
+          this.prepareChartOptions(body.map(channel => {
             return {
               name: channel.node.alias,
               value: channel.capacity,
@@ -54,7 +65,9 @@ export class NodeChannels implements OnChanges {
               }
             };
           }));
-        })
+          this.isLoading = false;
+        }),
+        share(),
       );
   }
 
@@ -117,10 +130,6 @@ export class NodeChannels implements OnChanges {
   }
 
   onChartInit(ec: ECharts): void {
-    if (this.chartInstance !== undefined) {
-      return;
-    }
-
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {

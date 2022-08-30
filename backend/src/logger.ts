@@ -74,7 +74,7 @@ class Logger {
 
   private getNetwork(): string {
     if (config.LIGHTNING.ENABLED) {
-      return 'lightning';
+      return config.MEMPOOL.NETWORK === 'mainnet' ? 'lightning' : `${config.MEMPOOL.NETWORK}-lightning`; 
     }
     if (config.BISQ.ENABLED) {
       return 'bisq';

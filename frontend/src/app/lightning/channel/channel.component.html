@@ -11,6 +11,7 @@
     <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
     <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
     <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
+    <app-closing-type *ngIf="channel.closing_reason" [type]="channel.closing_reason"></app-closing-type>
   </div>
 
   <div class="clearfix"></div>
@@ -65,13 +66,13 @@
     <ng-container *ngIf="transactions$ | async as transactions">
       <ng-template [ngIf]="transactions[0]">
         <h3>Opening transaction</h3>
-        <app-transactions-list [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [], outputs: [channel] }"></app-transactions-list>
+        <app-transactions-list [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
       <ng-template [ngIf]="transactions[1]">
         <div class="closing-header">
           <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason"></app-closing-type>
         </div>
-        <app-transactions-list [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [channel], outputs: [] }"></app-transactions-list>
+        <app-transactions-list [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
     </ng-container>
 
