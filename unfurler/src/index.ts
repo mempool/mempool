@@ -189,7 +189,7 @@ class Server {
       <head>
         <meta charset="utf-8">
         <title>${ogTitle}</title>
-        <meta name="description" content="The Mempool Open Source Project™ - our self-hosted explorer for the ${capitalize(this.network)} community."/>
+        <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
         <meta property="og:image" content="${ogImageUrl}"/>
         <meta property="og:image:type" content="image/png"/>
         <meta property="og:image:width" content="${previewSupported ? 1200 : 1000}"/>
@@ -199,7 +199,7 @@ class Server {
         <meta property="twitter:site" content="@mempool">
         <meta property="twitter:creator" content="@mempool">
         <meta property="twitter:title" content="${ogTitle}">
-        <meta property="twitter:description" content="Our self-hosted mempool explorer for the ${capitalize(this.network)} community."/>
+        <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
         <meta property="twitter:image:src" content="${ogImageUrl}"/>
         <meta property="twitter:domain" content="mempool.space">
       <body></body>
