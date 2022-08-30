@@ -140,9 +140,9 @@ class Server {
       if (!img) {
         // proxy fallback image from the frontend
         if (this.secureHost) {
-          https.get(this.mempoolHost + matchedRoute.fallbackImg, (got) => got.pipe(res));
+          https.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
         } else {
-          http.get(this.mempoolHost + matchedRoute.fallbackImg, (got) => got.pipe(res));
+          http.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
         }
       } else {
         res.contentType('image/png');
@@ -165,7 +165,7 @@ class Server {
 
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path);
-    let ogImageUrl = this.mempoolHost + (matchedRoute.staticImg || matchedRoute.fallbackImg);
+    let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
     let ogTitle = 'The Mempool Open Source Project™';
 
     if (matchedRoute.render) {
