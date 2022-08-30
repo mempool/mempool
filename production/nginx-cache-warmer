@@ -99,7 +99,7 @@ do for url in / \
 	'/api/v1/lightning/nodes/isp/39572' `# DataWeb` \
 	'/api/v1/lightning/nodes/isp/14061' `# Digital Ocean` \
 	'/api/v1/lightning/nodes/isp/24940,213230' `# Hetzner` \
-	'/api/v1/lightning/nodes/isp/174' `# LunaNode` \
+	'/api/v1/lightning/nodes/isp/394745' `# LunaNode` \
 	'/api/v1/lightning/nodes/isp/45102' `# Alibaba` \
 	'/api/v1/lightning/nodes/isp/3209' `# Vodafone Germany` \
 	'/api/v1/lightning/nodes/isp/7922' `# Comcast Cable` \
