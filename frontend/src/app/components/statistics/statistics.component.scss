@@ -55,11 +55,17 @@
 .formRadioGroup.mining {
   @media (min-width: 991px) {
     position: relative;
-    top: -65px;
+    top: -100px;
   }
   @media (min-width: 830px) and (max-width: 991px) {
     position: relative;
     top: 0px;
+  }
+}
+.formRadioGroup.no-menu {
+  @media (min-width: 991px) {
+    position: relative;
+    top: -33px;
   }
 }
 

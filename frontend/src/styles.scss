@@ -705,6 +705,10 @@ th {
 .locktime { color: #ff8c00 }
 .reserved { color: #ff8c00 }
 
+.shortable-address {
+  font-family: monospace;
+}
+
 .rtl-layout {
 
   .navbar-brand {
@@ -881,6 +885,7 @@ th {
 
   .shortable-address {
     direction: ltr;
+    font-family: monospace;
   }
 
   .lastest-blocks-table {
