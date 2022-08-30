@@ -1,12 +1,12 @@
 {
   "SERVER": {
-    "HOST": "https://liquid.fra.mempool.space",
-    "HTTP_PORT": 8003
+    "HOST": "https://bisq.fra.mempool.space",
+    "HTTP_PORT": 8002
   },
   "MEMPOOL": {
     "HTTP_HOST": "http://127.0.0.1",
-    "HTTP_PORT": 83,
-    "NETWORK": "bitcoin"
+    "HTTP_PORT": 82,
+    "NETWORK": "bisq"
   },
   "PUPPETEER": {
     "CLUSTER_SIZE": 8,
