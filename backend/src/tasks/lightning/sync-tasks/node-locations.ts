@@ -28,9 +28,24 @@ export async function $lookupNodeLocation(): Promise<void> {
           const asn = lookupAsn.get(ip);
           const isp = lookupIsp.get(ip);
 
-          let asOverwrite: number | null = null;
+          let asOverwrite: any | undefined;
           if (asn && (IPCheck.match(ip, '170.75.160.0/20') || IPCheck.match(ip, '172.81.176.0/21'))) {
-            asOverwrite = 394745;
+            asOverwrite = {
+              asn: 394745,
+              name: 'Lunanode',
+            };
+          }
+          else if (asn && (IPCheck.match(ip, '50.7.0.0/16') || IPCheck.match(ip, '66.90.64.0/18'))) {
+            asOverwrite = {
+              asn: 30058,
+              name: 'FDCservers.net',
+            };
+          }
+          else if (asn && asn.autonomous_system_number === 174) {
+            asOverwrite = {
+              asn: 174,
+              name: 'Cogent Communications',
+            };
           }
 
           if (city && (asn || isp)) {
@@ -47,7 +62,7 @@ export async function $lookupNodeLocation(): Promise<void> {
             `;
 
             const params = [
-              asOverwrite ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number,
+              asOverwrite?.asn ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number,
               city.city?.geoname_id,
               city.country?.geoname_id,
               city.subdivisions ? city.subdivisions[0].geoname_id : null,
@@ -97,7 +112,10 @@ export async function $lookupNodeLocation(): Promise<void> {
             if (isp?.autonomous_system_organization ?? asn?.autonomous_system_organization) {
               await DB.query(
                 `INSERT IGNORE INTO geo_names (id, type, names) VALUES (?, 'as_organization', ?)`,
-                [asOverwrite ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number, JSON.stringify(isp?.isp ?? asn?.autonomous_system_organization)]);
+                [
+                  asOverwrite?.asn ?? isp?.autonomous_system_number ?? asn?.autonomous_system_number,
+                  JSON.stringify(asOverwrite?.name ?? isp?.isp ?? asn?.autonomous_system_organization)
+                ]);
             }
           }
 
