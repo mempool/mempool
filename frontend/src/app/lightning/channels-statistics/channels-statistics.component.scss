@@ -18,6 +18,10 @@
   }
 }
 
+.fee-estimation-wrapper {
+  min-height: 77px;
+}
+
 .fee-estimation-container {
   display: flex;
   justify-content: space-between;
@@ -30,7 +34,10 @@
     width: -webkit-fill-available;
     @media (min-width: 376px) {
       margin: 0 auto 0px;
-    }    
+    }
+    &.more-padding {
+      padding-top: 10px;
+    }  
     &:first-child{
       display: none;
       @media (min-width: 485px) {
@@ -57,6 +64,9 @@
       margin: auto;
       line-height: 1.45;
       padding: 0px 2px;
+      &.no-border {
+        border-bottom: none;
+      }
     }
     .fiat {
       display: block;
