@@ -1279,8 +1279,11 @@ case $OS in
         echo "[*] Creating Core Lightning user"
         osGroupCreate "${CLN_GROUP}"
         osUserCreate "${CLN_USER}" "${CLN_HOME}" "${CLN_GROUP}"
+        osSudo "${ROOT_USER}" pw usermod ${MEMPOOL_USER} -G "${CLN_GROUP}"
         osSudo "${ROOT_USER}" chsh -s `which zsh` "${CLN_USER}"
         echo "export PATH=$PATH:$HOME/.local/bin" >> "${CLN_HOME}/.zshrc"
+        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning" "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
 
         echo "[*] Installing Core Lightning package"
