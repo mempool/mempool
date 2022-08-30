@@ -4,7 +4,8 @@
     <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
     <span class="tx-link">
       <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        {{ node.public_key | shortenString : publicKeySize }}
+        <span class="d-inline d-lg-none">{{ node.public_key | shortenString : 24 }}</span>
+        <span class="d-none d-lg-inline">{{ node.public_key }}</span>
       </a>
       <app-clipboard [text]="node.public_key"></app-clipboard>
     </span>
@@ -157,7 +158,7 @@
   <div class="container-xl">
     <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
     <div class="title-container mb-2">
-      <h1 class="mb-0"><span class="skeleton-loader" style="width: 250px; height: 25px;"></span></h1>
+      <h1 class="mb-0"><span class="skeleton-loader" style="width: 250px; height: 36px;"></span></h1>
       <span class="tx-link">
         <span class="skeleton-loader" style="margin-bottom: 5px; width: 80%;"></span>
       </span>
@@ -219,7 +220,7 @@
 
     <div class="input-group mt-3" >
     <span class="input-group-text" id="basic-addon3"><span class="skeleton-loader" style="width: 75px;"></span></span>
-      <input type="text" class="form-control" disabled>
+      <input type="text" class="form-control" disabled style="opacity: 0.3;">
       <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
         <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
       </button>
@@ -232,10 +233,18 @@
 
     <div class="row">
       <div class="col-sm">
-        <div style="height: 400px;"><span class="skeleton-loader" style="height: 400px;"></span></div>
+        <div style="height: 400px;">
+          <div class="text-center loadingGraphs">
+            <div class="spinner-border text-light"></div>
+          </div>
+        </div>
       </div>
       <div class="col-sm">
-        <div style="height: 400px;"><span class="skeleton-loader" style="height: 400px;"></span></div>
+        <div style="height: 400px;">
+          <div class="text-center loadingGraphs">
+            <div class="spinner-border text-light"></div>
+          </div>
+        </div>
       </div>
     </div>
 
