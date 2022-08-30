@@ -43,8 +43,8 @@ class ChannelsRoutes {
 
   private async $getChannelsForNode(req: Request, res: Response) {
     try {
-      if (typeof req.query.public_key !== 'string') {
-        res.status(400).send('Missing parameter: public_key');
+      if (typeof req.query.publicKey !== 'string') {
+        res.status(400).send('Missing parameter: publicKey');
         return;
       }
 
@@ -58,8 +58,8 @@ class ChannelsRoutes {
         res.status(400).send('Invalid status');
       }
 
-      const channels = await channelsApi.$getChannelsForNode(req.query.public_key, index, 10, status);
-      const channelsCount = await channelsApi.$getChannelsCountForNode(req.query.public_key, status);
+      const channels = await channelsApi.$getChannelsForNode(req.query.publicKey, index, 10, status);
+      const channelsCount = await channelsApi.$getChannelsCountForNode(req.query.publicKey, status);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
