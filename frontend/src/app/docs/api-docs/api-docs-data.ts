@@ -5977,6 +5977,1429 @@ export const restApiDocsData = [
       }
     }
   },
+  {
+    type: "category",
+    category: "lightning",
+    fragment: "lightning",
+    title: "Lightning",
+    showConditions: bitcoinNetworks
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-lightning-network-stats",
+    title: "GET Network Stats",
+    description: {
+      default: "<p>Returns network-wide stats such as total number of channels and nodes, total capacity, and average/median fee figures.</p><p>Pass one of the following for <code>:interval</code>: <code>latest</code>, <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>.</p>"
+    },
+    urlString: "/v1/lightning/statistics/:interval",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/statistics/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`latest`],
+          response: `{
+  "latest": {
+    "id": 163,
+    "added": "2022-08-30T00:00:00.000Z",
+    "channel_count": 81690,
+    "node_count": 15851,
+    "total_capacity": 460820222344,
+    "tor_nodes": 11455,
+    "clearnet_nodes": 2305,
+    "unannounced_nodes": 974,
+    "avg_capacity": 5641085,
+    "avg_fee_rate": 497,
+    "avg_base_fee_mtokens": 915,
+    "med_capacity": 1500000,
+    "med_fee_rate": 40,
+    "med_base_fee_mtokens": 100,
+    "clearnet_tor_nodes": 1117
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-lightning-nodes-channels",
+    title: "GET Nodes/Channels",
+    description: {
+      default: "<p>Returns Lightning nodes and channels that match a full-text, case-insensitive search <code>:query</code> across node aliases, node pubkeys, channel IDs, and short channel IDs.</p>"
+    },
+    urlString: "/v1/lightning/search?searchText=:query",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/search?searchText=%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`ACINQ`],
+          response: `{
+  "nodes": [
+    {
+      "public_key": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+      "alias": "ACINQ",
+      "capacity": 35920090247,
+      "channels": 2907
+    },
+    {
+      "public_key": "03d3902b46d6ab9558a76cbf91b27d093c0a3c54e59f33c7eb4bd643dbb3b1b5b0",
+      "alias": "Acinq",
+      "capacity": null,
+      "channels": null
+    }
+  ],
+  "channels": []
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-lightning-nodes-country",
+    title: "GET Nodes in Country",
+    description: {
+      default: "<p>Returns a list of Lightning nodes running on clearnet in the requested <code>:country</code>, where <code>:country</code> is an ISO Alpha-2 country code.</p>"
+    },
+    urlString: "/v1/lightning/nodes/country/:country",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/country/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`ch`],
+          response: `{
+  "country": {
+    "de": "Schweiz",
+    "en": "Switzerland",
+    "es": "Suiza",
+    "fr": "Suisse",
+    "ja": "スイス連邦",
+    "pt-BR": "Suíça",
+    "ru": "Швейцария",
+    "zh-CN": "瑞士"
+  },
+  "nodes": [
+    {
+      "public_key": "033d8656219478701227199cbd6f670335c8d408a92ae88b962c49d4dc0e83e025",
+      "capacity": 54339697486,
+      "channels": 991,
+      "alias": "bfx-lnd0",
+      "first_seen": 1574813156,
+      "updated_at": 1661814056,
+      "city": {
+        "de": "Zürich",
+        "en": "Zurich",
+        "es": "Zúrich",
+        "fr": "Zurich",
+        "ja": "チューリッヒ",
+        "pt-BR": "Zurique",
+        "ru": "Цюрих",
+        "zh-CN": "苏黎世"
+      },
+      "country": {
+        "de": "Schweiz",
+        "en": "Switzerland",
+        "es": "Suiza",
+        "fr": "Suisse",
+        "ja": "スイス連邦",
+        "pt-BR": "Suíça",
+        "ru": "Швейцария",
+        "zh-CN": "瑞士"
+      },
+      "iso_code": "CH",
+      "subdivision": {
+        "de": "Zürich",
+        "en": "Zurich",
+        "fr": "Zurich"
+      }
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-country-node-stats",
+    title: "GET Node Stats Per Country",
+    description: {
+      default: "<p>Returns aggregate capacity and number of clearnet nodes per country. Capacity figures are in satoshis.</p>"
+    },
+    urlString: "/v1/lightning/nodes/countries",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/countries`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "name": {
+      "de": "Vereinigte Staaten",
+      "en": "United States",
+      "es": "Estados Unidos",
+      "fr": "États Unis",
+      "ja": "アメリカ",
+      "pt-BR": "EUA",
+      "ru": "США",
+      "zh-CN": "美国"
+    },
+    "iso": "US",
+    "count": 2775,
+    "share": 34.53,
+    "capacity": "372732844657"
+  },
+  {
+    "name": {
+      "de": "Frankreich",
+      "en": "France",
+      "es": "Francia",
+      "fr": "France",
+      "ja": "フランス共和国",
+      "pt-BR": "França",
+      "ru": "Франция",
+      "zh-CN": "法国"
+    },
+    "iso": "FR",
+    "count": 972,
+    "share": 12.09,
+    "capacity": "7740713270"
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-isp-nodes",
+    title: "GET ISP Nodes",
+    description: {
+      default: "<p>Returns a list of nodes hosted by a specified <code>:isp</code>, where <code>:isp</code> is an ISP's ASN.</p>"
+    },
+    urlString: "/v1/lightning/nodes/isp/:isp",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/isp/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`16509`],
+          response: `{
+  "isp": "Amazon.com",
+  "nodes": [
+    {
+      "public_key": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+      "capacity": 36010390247,
+      "channels": 2907,
+      "alias": "ACINQ",
+      "first_seen": 1522941222,
+      "updated_at": 1661274935,
+      "city": null,
+      "country": {
+        "de": "Vereinigte Staaten",
+        "en": "United States",
+        "es": "Estados Unidos",
+        "fr": "États Unis",
+        "ja": "アメリカ",
+        "pt-BR": "EUA",
+        "ru": "США",
+        "zh-CN": "美国"
+      },
+      "iso_code": "US",
+      "subdivision": null
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-isp-node-stats",
+    title: "GET Node Stats Per ISP",
+    description: {
+      default: "<p>Returns aggregate capacity, number of nodes, and number of channels per ISP. Capacity figures are in satoshis.</p>"
+    },
+    urlString: "/v1/lightning/nodes/isp-ranking",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/isp-ranking`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "clearnetCapacity": 417154330493,
+  "torCapacity": 36605381932,
+  "unknownCapacity": 6678700534,
+  "ispRanking": [
+    [
+      "14061",           //ASN
+      "DigitalOcean",    //ISP name
+      43681728521,       //aggregate capacity, in sats
+      5028,              //total number of channels
+      192                //number of nodes
+    ],
+    [
+      "701",
+      "Verizon Internet Services",
+      3047086363,
+      507,
+      55
+    ],
+    [
+      "396982,15169",
+      "Google Cloud",
+      139554933568,
+      2747,
+      78
+    ],
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-top-100-nodes",
+    title: "GET Top 100 Nodes",
+    description: {
+      default: "<p>Returns two lists of the top 100 nodes: one ordered by liquidity (aggregate channel capacity) and the other ordered by connectivity (number of open channels).</p>"
+    },
+    urlString: "/v1/lightning/nodes/rankings",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/rankings`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "topByCapacity": [
+    {
+      "publicKey": "033d8656219478701227199cbd6f670335c8d408a92ae88b962c49d4dc0e83e025",
+      "alias": "bfx-lnd0",
+      "capacity": 54361697486
+    },
+    {
+      "publicKey": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+      "alias": "ACINQ",
+      "capacity": 36010516297
+    },
+    ...
+  ],
+  "topByChannels": [
+    {
+      "publicKey": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+      "alias": "ACINQ",
+      "channels": 2908
+    },
+    {
+      "publicKey": "035e4ff418fc8b5554c5d9eea66396c227bd429a3251c8cbc711002ba215bfc226",
+      "alias": "WalletOfSatoshi.com",
+      "channels": 2771
+    },
+    ...
+  ]
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-top-100-nodes-liquidity",
+    title: "GET Top 100 Nodes by Liquidity",
+    description: {
+      default: "<p>Returns a list of the top 100 nodes by liquidity (aggregate channel capacity).</p>"
+    },
+    urlString: "/v1/lightning/nodes/rankings/liquidity",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/rankings/liquidity`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "publicKey": "033d8656219478701227199cbd6f670335c8d408a92ae88b962c49d4dc0e83e025",
+    "alias": "bfx-lnd0",
+    "capacity": 54361697486,
+    "channels": 993,
+    "firstSeen": 1574813156,
+    "updatedAt": 1661814056,
+    "city": {
+      "de": "Zürich",
+      "en": "Zurich",
+      "es": "Zúrich",
+      "fr": "Zurich",
+      "ja": "チューリッヒ",
+      "pt-BR": "Zurique",
+      "ru": "Цюрих",
+      "zh-CN": "苏黎世"
+    },
+    "country": {
+      "de": "Schweiz",
+      "en": "Switzerland",
+      "es": "Suiza",
+      "fr": "Suisse",
+      "ja": "スイス連邦",
+      "pt-BR": "Suíça",
+      "ru": "Швейцария",
+      "zh-CN": "瑞士"
+    }
+  },
+  {
+    "publicKey": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+    "alias": "ACINQ",
+    "capacity": 36010516297,
+    "channels": 2908,
+    "firstSeen": 1522941222,
+    "updatedAt": 1661274935,
+    "city": null,
+    "country": {
+      "de": "Vereinigte Staaten",
+      "en": "United States",
+      "es": "Estados Unidos",
+      "fr": "États Unis",
+      "ja": "アメリカ",
+      "pt-BR": "EUA",
+      "ru": "США",
+      "zh-CN": "美国"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-top-100-nodes-connectivity",
+    title: "GET Top 100 Nodes by Connectivity",
+    description: {
+      default: "<p>Returns a list of the top 100 nodes by connectivity (number of open channels).</p>"
+    },
+    urlString: "/v1/lightning/nodes/rankings/connectivity",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/rankings/connectivity`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "publicKey": "03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f",
+    "alias": "ACINQ",
+    "channels": 2908,
+    "capacity": 36010516297,
+    "firstSeen": 1522941222,
+    "updatedAt": 1661274935,
+    "city": null,
+    "country": {
+      "de": "Vereinigte Staaten",
+      "en": "United States",
+      "es": "Estados Unidos",
+      "fr": "États Unis",
+      "ja": "アメリカ",
+      "pt-BR": "EUA",
+      "ru": "США",
+      "zh-CN": "美国"
+    }
+  },
+  {
+    "publicKey": "035e4ff418fc8b5554c5d9eea66396c227bd429a3251c8cbc711002ba215bfc226",
+    "alias": "WalletOfSatoshi.com",
+    "channels": 2772,
+    "capacity": 15464503162,
+    "firstSeen": 1601429940,
+    "updatedAt": 1661812116,
+    "city": {
+      "de": "Vancouver",
+      "en": "Vancouver",
+      "es": "Vancouver",
+      "fr": "Vancouver",
+      "ja": "バンクーバー市",
+      "pt-BR": "Vancôver",
+      "ru": "Ванкувер"
+    },
+    "country": {
+      "de": "Kanada",
+      "en": "Canada",
+      "es": "Canadá",
+      "fr": "Canada",
+      "ja": "カナダ",
+      "pt-BR": "Canadá",
+      "ru": "Канада",
+      "zh-CN": "加拿大"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-top-100-oldest-nodes",
+    title: "GET Top 100 Oldest Nodes",
+    description: {
+      default: "<p>Returns a list of the top 100 oldest nodes.</p>"
+    },
+    urlString: "/v1/lightning/nodes/rankings/age",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/rankings/age`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  {
+    "publicKey": "02d4531a2f2e6e5a9033d37d548cff4834a3898e74c3abe1985b493c42ebbd707d",
+    "alias": "coinfinity.co",
+    "channels": 13,
+    "capacity": 35945717,
+    "firstSeen": 1518001533,
+    "updatedAt": 1661713804,
+    "city": {
+      "de": "Brüssel",
+      "en": "Brussels",
+      "es": "Bruselas",
+      "fr": "Bruxelles",
+      "ja": "ブリュッセル",
+      "pt-BR": "Bruxelas",
+      "ru": "Брюссель",
+      "zh-CN": "布鲁塞尔"
+    },
+    "country": {
+      "de": "Belgien",
+      "en": "Belgium",
+      "es": "Bélgica",
+      "fr": "Belgique",
+      "ja": "ベルギー王国",
+      "pt-BR": "Bélgica",
+      "ru": "Бельгия",
+      "zh-CN": "比利时"
+    }
+  },
+  {
+    "publicKey": "024bd94f0425590434538fd21d4e58982f7e9cfd8f339205a73deb9c0e0341f5bd",
+    "alias": "CL.rompert.com🔵 ",
+    "channels": 2,
+    "capacity": 600000,
+    "firstSeen": 1520596684,
+    "updatedAt": 1603261631,
+    "city": {
+      "de": "Clifton",
+      "en": "Clifton",
+      "ja": "クリフトン",
+      "pt-BR": "Clifton",
+      "ru": "Клифтон",
+      "zh-CN": "克利夫頓"
+    },
+    "country": {
+      "de": "Vereinigte Staaten",
+      "en": "United States",
+      "es": "Estados Unidos",
+      "fr": "États Unis",
+      "ja": "アメリカ",
+      "pt-BR": "EUA",
+      "ru": "США",
+      "zh-CN": "美国"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-node-stats",
+    title: "GET Node Stats",
+    description: {
+      default: "<p>Returns details about a node with the given <code>:pubKey</code>.</p>"
+    },
+    urlString: "/v1/lightning/nodes/:pubKey",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`033ac2f9f7ff643c235cc247c521663924aff73b26b38118a6c6821460afcde1b3`],
+          response: `{
+  "public_key": "033ac2f9f7ff643c235cc247c521663924aff73b26b38118a6c6821460afcde1b3",
+  "alias": "Red.de.Rayos",
+  "first_seen": 1521504055,
+  "updated_at": 1661869523,
+  "color": "#68f442",
+  "sockets": "84.44.203.181:9735",
+  "as_number": 8422,
+  "city_id": 2886242,
+  "country_id": 2921044,
+  "subdivision_id": 2861876,
+  "longitude": 6.9489,
+  "latitude": 50.9298,
+  "iso_code": "DE",
+  "as_organization": "NetCologne GmbH",
+  "city": {
+    "de": "Köln",
+    "en": "Cologne",
+    "es": "Colonia",
+    "fr": "Cologne",
+    "ja": "ケルン",
+    "pt-BR": "Colônia",
+    "ru": "Кёльн",
+    "zh-CN": "科隆"
+  },
+  "country": {
+    "de": "Deutschland",
+    "en": "Germany",
+    "es": "Alemania",
+    "fr": "Allemagne",
+    "ja": "ドイツ連邦共和国",
+    "pt-BR": "Alemanha",
+    "ru": "Германия",
+    "zh-CN": "德国"
+  },
+  "subdivision": {
+    "de": "Nordrhein-Westfalen",
+    "en": "North Rhine-Westphalia",
+    "es": "Renania del Norte-Westfalia",
+    "fr": "Rhénanie du Nord-Westphalie",
+    "ru": "Северный Рейн-Вестфалия"
+  },
+  "active_channel_count": 55,
+  "capacity": "31505027",
+  "opened_channel_count": 55,
+  "closed_channel_count": 111
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-historical-node-stats",
+    title: "GET Historical Node Stats",
+    description: {
+      default: "<p>Returns historical stats for a node with the given <code>:pubKey</code>.</p>"
+    },
+    urlString: "/v1/lightning/nodes/:pubKey/statistics",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/%{1}/statistics`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`033ac2f9f7ff643c235cc247c521663924aff73b26b38118a6c6821460afcde1b3`],
+          response: `[
+  {
+    "added": 1661817600,
+    "capacity": 31505027,
+    "channels": 55
+  },
+  {
+    "added": 1661731200,
+    "capacity": 31505027,
+    "channels": 55
+  },
+  {
+    "added": 1655078400,
+    "capacity": 26487523,
+    "channels": 43
+  },
+  {
+    "added": 1654992000,
+    "capacity": 32692287,
+    "channels": 57
+  },
+  {
+    "added": 1654905600,
+    "capacity": 32692287,
+    "channels": 57
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-channel",
+    title: "GET Channel",
+    description: {
+      default: "<p>Returns info about a Lightning channel with the given <code>:channelId</code>.</p>"
+    },
+    urlString: "/v1/lightning/channels/:channelId",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/channels/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`768457472831193088`],
+          response: `{
+  "id": "768457472831193088",
+  "short_id": "698908x1305x0",
+  "capacity": 16777215,
+  "transaction_id": "9f248ff82f6ff4c112c218438cfde8260623663bc85a360d09a13b9a9b083564",
+  "transaction_vout": 0,
+  "closing_transaction_id": null,
+  "closing_reason": null,
+  "updated_at": "2022-08-25T23:05:40.000Z",
+  "created": "2021-09-04T00:10:42.000Z",
+  "status": 1,
+  "node_left": {
+    "alias": "CoinGate",
+    "public_key": "0242a4ae0c5bef18048fbecf995094b74bfb0f7391418d71ed394784373f41e4f3",
+    "channels": 1,
+    "capacity": 20000,
+    "base_fee_mtokens": 1000,
+    "cltv_delta": 0,
+    "fee_rate": 1,
+    "is_disabled": 0,
+    "max_htlc_mtokens": 16609443000,
+    "min_htlc_mtokens": 1000,
+    "updated_at": "2022-08-25T23:05:40.000Z",
+    "longitude": 8.6843,
+    "latitude": 50.1188
+  },
+  "node_right": {
+    "alias": "Blixt Wallet 🟡",
+    "public_key": "0230a5bca558e6741460c13dd34e636da28e52afd91cf93db87ed1b0392a7466eb",
+    "channels": 3,
+    "capacity": 34754430,
+    "base_fee_mtokens": 1000,
+    "cltv_delta": 0,
+    "fee_rate": 180,
+    "is_disabled": 0,
+    "max_htlc_mtokens": 16609443000,
+    "min_htlc_mtokens": 1000,
+    "updated_at": "2022-08-25T18:44:00.000Z",
+    "longitude": 9.491,
+    "latitude": 51.2993
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-channels-from-txid",
+    title: "GET Channels from TXID",
+    description: {
+      default: "<p>Returns channels that correspond to the given <code>:txid</code> (multiple transaction IDs can be specified).</p>"
+    },
+    urlString: "/v1/lightning/channels/txids?txId[]=:txid",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/channels/txids?txId[]=%{1}&txId[]=%{2}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`c3173549f502ede6440d5c48ea74af5607d88484c7a912bbef73d430049f8af4`,`d78f0b41a263af3df91fa4171cc2f60c40196aaf8f4bde5d1c8ff4474cfe753b`],
+          response: `[
+  {
+    "inputs": {},
+    "outputs": {
+      "1": {
+        "id": "819296691409584129",
+        "short_id": "745146x287x1",
+        "capacity": 300000000,
+        "transaction_id": "c3173549f502ede6440d5c48ea74af5607d88484c7a912bbef73d430049f8af4",
+        "transaction_vout": 1,
+        "closing_transaction_id": null,
+        "closing_reason": null,
+        "updated_at": "2022-08-25T18:44:07.000Z",
+        "created": "2022-07-16T00:11:33.000Z",
+        "status": 1,
+        "node_left": {
+          "alias": "River Financial 1",
+          "public_key": "03037dc08e9ac63b82581f79b662a4d0ceca8a8ca162b1af3551595b8f2d97b70a",
+          "base_fee_mtokens": 0,
+          "cltv_delta": 0,
+          "fee_rate": 500,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 297000000000,
+          "min_htlc_mtokens": 1000,
+          "updated_at": "2022-08-23T17:53:43.000Z"
+        },
+        "node_right": {
+          "alias": "0204a91bb5802ad0a799",
+          "public_key": "0204a91bb5802ad0a799acfd86ef566da03d80cc9e13acb01e680634bf64188a0d",
+          "base_fee_mtokens": 0,
+          "cltv_delta": 0,
+          "fee_rate": 152,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 297000000000,
+          "min_htlc_mtokens": 1000,
+          "updated_at": "2022-08-25T18:44:07.000Z"
+        }
+      }
+    }
+  },
+  {
+    "inputs": {},
+    "outputs": {
+      "1": {
+        "id": "814662250034036737",
+        "short_id": "740931x2355x1",
+        "capacity": 300000000,
+        "transaction_id": "d78f0b41a263af3df91fa4171cc2f60c40196aaf8f4bde5d1c8ff4474cfe753b",
+        "transaction_vout": 1,
+        "closing_transaction_id": null,
+        "closing_reason": null,
+        "updated_at": "2022-08-28T18:54:40.000Z",
+        "created": "2022-06-15T16:18:33.000Z",
+        "status": 1,
+        "node_left": {
+          "alias": "bfx-lnd0",
+          "public_key": "033d8656219478701227199cbd6f670335c8d408a92ae88b962c49d4dc0e83e025",
+          "base_fee_mtokens": 1000,
+          "cltv_delta": 0,
+          "fee_rate": 1,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 297000000000,
+          "min_htlc_mtokens": 1000,
+          "updated_at": "2022-08-25T18:44:03.000Z"
+        },
+        "node_right": {
+          "alias": "River Financial 1",
+          "public_key": "03037dc08e9ac63b82581f79b662a4d0ceca8a8ca162b1af3551595b8f2d97b70a",
+          "base_fee_mtokens": 0,
+          "cltv_delta": 0,
+          "fee_rate": 750,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 297000000000,
+          "min_htlc_mtokens": 1000,
+          "updated_at": "2022-08-28T18:54:40.000Z"
+        }
+      }
+    }
+  }
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-channels-from-pubkey",
+    title: "GET Channels from Node Pubkey",
+    description: {
+      default: "<p>Returns a list of a node's channels given its <code>:pubKey</code>. Ten channels are returned at a time. Use <code>:index</code> for paging. <code>:channelStatus</code> can be <code>open</code>, <code>active</code>, or <code>closed</code>.</p>"
+    },
+    urlString: "/v1/lightning/channels?public_key=:pubKey&status=:channelStatus",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/channels?public_key=%{1}&status=%{2}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`026165850492521f4ac8abd9bd8088123446d126f648ca35e60f88177dc149ceb2`,`open`],
+          response: `[
+  {
+    "status": 1,
+    "closing_reason": null,
+    "capacity": 59200000,
+    "short_id": "751361x1324x1",
+    "id": "826130156244172801",
+    "fee_rate": 1,
+    "node": {
+      "alias": "ipayblue.com",
+      "public_key": "032fe854a231aeb2357523ee6ca263ae04ce53eee8a13767ecbb911b69fefd8ace",
+      "channels": 65,
+      "capacity": "856675361"
+    }
+  },
+  {
+    "status": 1,
+    "closing_reason": null,
+    "capacity": 51000000,
+    "short_id": "750792x1586x1",
+    "id": "825504534145138689",
+    "fee_rate": 1,
+    "node": {
+      "alias": "Escher",
+      "public_key": "02b515c74f334dee09821bee299fcbd9668182730c5719b25a8f262b28893198b0",
+      "channels": 50,
+      "capacity": "2202925844"
+    }
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-channel-geodata",
+    title: "GET Channel Geodata",
+    description: {
+      default: "<p>Returns a list of channels with corresponding node geodata.</p>"
+    },
+    urlString: "/v1/lightning/channels-geo",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/channels-geo`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `[
+  [
+    "03120ac28af913889cbc3cb86d7aff12bc0abe939f1fa9fb1980bdff8483197092",
+    "LIGHTNING2",
+    -77.2278,
+    38.9567,
+    "03baa70886d9200af0ffbd3f9e18d96008331c858456b16e3a9b41e735c6208fef",
+    "LIGHTNING",
+    -77.2278,
+    38.9567
+  ],
+  [
+    "033d8656219478701227199cbd6f670335c8d408a92ae88b962c49d4dc0e83e025",
+    "bfx-lnd0",
+    8.5671,
+    47.3682,
+    "028d98b9969fbed53784a36617eb489a59ab6dc9b9d77fcdca9ff55307cd98e3c4",
+    "OpenNode.com",
+    -83.0061,
+    39.9625
+  ],
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "lightning",
+    httpRequestMethod: "GET",
+    fragment: "get-channel-geodata-node",
+    title: "GET Channel Geodata for Node",
+    description: {
+      default: "<p>Returns a list of channels with corresponding geodata for a node with the given <code>:pubKey</code>.</p>"
+    },
+    urlString: "/v1/lightning/channels-geo/:pubKey",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/channels-geo/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`03d607f3e69fd032524a867b288216bfab263b6eaee4e07783799a6fe69bb84fac`],
+          response: `[
+  [
+    "03d607f3e69fd032524a867b288216bfab263b6eaee4e07783799a6fe69bb84fac",
+    "Bitrefill",
+    -77.4903,
+    39.0469,
+    "024a2e265cd66066b78a788ae615acdc84b5b0dec9efac36d7ac87513015eaf6ed",
+    "Bitrefill",
+    -6.2591,
+    53.3379
+  ],
+  [
+    "03d607f3e69fd032524a867b288216bfab263b6eaee4e07783799a6fe69bb84fac",
+    "Bitrefill",
+    -77.4903,
+    39.0469,
+    "030c3f19d742ca294a55c00376b3b355c3c90d61c6b6b39554dbc7ac19b141c14f",
+    "Bitrefill Routing",
+    -6.2591,
+    53.3379
+  ],
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`3y`],
+          response: `{
+
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  }
 ];
 
 export const faqData = [
