@@ -2,7 +2,31 @@
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
 
+# start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning signet signet-lightning bisq liquid liquidtestnet;do
     cd "${HOME}/${site}/backend/" && \
+    echo "starting mempool backend: ${site}" && \
     screen -dmS "${site}" sh -c 'while true;do npm run start-production;sleep 1;done'
 done
+
+# only start xorg if GPU present
+if pciconf -lv|grep -i nvidia >/dev/null 2>&1;then
+    export DISPLAY=:0
+    screen -dmS x startx
+    sleep 3
+fi
+
+# start unfurlers for each frontend
+for site in mainnet liquid bisq;do
+    cd "$HOME/${site}/unfurler" && \
+    echo "starting mempool unfurler: ${site}" && \
+    screen -dmS "unfurler-${site}" sh -c 'while true;do npm run unfurler;sleep 2;done'
+done
+
+# start nginx warm cacher
+for site in mainnet;do
+    echo "starting mempool cache warmer: ${site}"
+    screen -dmS "warmer-${site}" $HOME/mainnet/production/nginx-cache-warmer
+done
+
+exit 0
