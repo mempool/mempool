@@ -65,14 +65,18 @@
 
     <ng-container *ngIf="transactions$ | async as transactions">
       <ng-template [ngIf]="transactions[0]">
-        <h3>Opening transaction</h3>
-        <app-transactions-list [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
+        <div class="d-flex">
+          <h3>Opening transaction</h3>
+          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList1.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+        </div>
+        <app-transactions-list #txList1 [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
       <ng-template [ngIf]="transactions[1]">
-        <div class="closing-header">
+        <div class="closing-header d-flex">
           <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason"></app-closing-type>
+          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList2.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
         </div>
-        <app-transactions-list [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
+        <app-transactions-list #txList2 [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
     </ng-container>
 
