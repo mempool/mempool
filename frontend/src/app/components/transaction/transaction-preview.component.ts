@@ -165,7 +165,10 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.opReturns = this.getOpReturns(this.tx);
           this.extraData = this.chooseExtraData();
 
-          if (!tx.status.confirmed && tx.firstSeen) {
+          if (tx.status.confirmed) {
+            this.transactionTime = tx.status.block_time;
+            this.openGraphService.waitOver('tx-time-' + this.txId);
+          } else if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
             this.openGraphService.waitOver('tx-time-' + this.txId);
           } else {
