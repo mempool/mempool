@@ -2,7 +2,36 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <a class="navbar-brand" [routerLink]="['/' | relativeUrl]" style="position: relative;">
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <img src="/resources/bisq/bisq-markets-logo.png" height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
+    <div height="35" width="140" class="logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }">
+      <svg width="140" viewBox="0 0 280 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0)">
+        <path d="M68.137 62.1803C68.137 66.8789 64.3484 70.6717 59.6552 70.6717H8.48178C3.78853 70.6717 0 66.8789 0 62.1803V10.9485C0 6.24988 3.8168 2.45703 8.48178 2.45703H59.6552C64.3484 2.45703 68.137 6.24988 68.137 10.9485V62.1803Z" fill="#2E3349"/>
+        <path d="M0 36.6504V62.1814C0 66.88 3.8168 70.6728 8.51005 70.6728H59.6552C64.3484 70.6728 68.1652 66.88 68.1652 62.1814V36.6504H0Z" fill="url(#paint0_linear)"/>
+        <path opacity="0.3" d="M60.054 61.5586C60.054 62.6059 59.3472 63.455 58.4707 63.455H49.6497C48.7732 63.455 48.0664 62.6059 48.0664 61.5586V11.5722C48.0664 10.5249 48.7732 9.67578 49.6497 9.67578H58.4707C59.3472 9.67578 60.054 10.5249 60.054 11.5722V61.5586Z" fill="white"/>
+        <path d="M85.4102 33.8734H89.6242V30.6894H89.7179C91.3567 33.0774 94.447 34.4352 97.4437 34.4352C104.327 34.4352 108.728 29.3315 108.728 22.7763C108.728 16.1274 104.28 11.1173 97.4437 11.1173C94.2597 11.1173 91.2162 12.5688 89.7179 14.8632H89.6242V3.84819H85.4102V33.8734ZM96.9287 30.5021C92.4336 30.5021 89.6242 27.2713 89.6242 22.7763C89.6242 18.2812 92.4336 15.0504 96.9287 15.0504C101.424 15.0504 104.233 18.2812 104.233 22.7763C104.233 27.2713 101.424 30.5021 96.9287 30.5021Z" fill="white"/>
+        <path d="M112.059 33.8734H116.274V11.6792H112.059V33.8734ZM111.076 3.71923C111.076 5.40487 112.481 6.80957 114.167 6.80957C115.852 6.80957 117.257 5.40487 117.257 3.71923C117.257 2.0336 115.852 0.628906 114.167 0.628906C112.481 0.628906 111.076 2.0336 111.076 3.71923Z" fill="white"/>
+        <path d="M136.522 14.7695C134.93 12.1474 131.887 11.1173 128.937 11.1173C124.769 11.1173 120.509 13.318 120.509 17.9535C120.509 22.2144 123.693 23.385 127.298 24.2746C129.124 24.696 132.636 25.1643 132.636 27.6927C132.636 29.6125 130.295 30.5021 128.141 30.5021C125.706 30.5021 124.114 29.2379 122.756 27.88L119.572 30.5021C121.773 33.4988 124.489 34.4352 128.141 34.4352C132.542 34.4352 137.131 32.4687 137.131 27.4586C137.131 23.2913 134.321 21.8866 130.669 20.997C128.796 20.5756 125.004 20.201 125.004 17.5321C125.004 15.9401 126.736 15.0504 128.703 15.0504C130.81 15.0504 132.261 16.0337 133.244 17.2511L136.522 14.7695Z" fill="white"/>
+        <path d="M162.956 11.6792H158.742V14.8632H158.648C157.01 12.4752 153.919 11.1173 150.923 11.1173C144.04 11.1173 139.638 16.221 139.638 22.7763C139.638 29.4252 144.086 34.4352 150.923 34.4352C154.107 34.4352 157.15 32.9837 158.648 30.6894H158.742V39.9435H162.956V11.6792ZM151.438 15.0504C155.933 15.0504 158.742 18.2812 158.742 22.7763C158.742 27.2713 155.933 30.5021 151.438 30.5021C146.943 30.5021 144.133 27.2713 144.133 22.7763C144.133 18.2812 146.943 15.0504 151.438 15.0504Z" fill="white"/>
+        <path d="M84.8989 66.394C86.5846 66.394 87.9893 64.9893 87.9893 63.3037C87.9893 61.6181 86.5846 60.2134 84.8989 60.2134C83.2133 60.2134 81.8086 61.6181 81.8086 63.3037C81.8086 64.9893 83.2133 66.394 84.8989 66.394Z" fill="#25B135"/>
+        <path d="M94.6063 66.1131H98.8204V54.5946C98.8204 49.5845 101.536 47.2902 104.58 47.2902C108.653 47.2902 109.262 50.2869 109.262 54.5009V66.1131H113.476V53.9859C113.476 50.0527 115.068 47.2902 119.142 47.2902C123.215 47.2902 123.918 50.3805 123.918 53.7518V66.1131H128.132V53.1899C128.132 48.2266 126.54 43.357 119.704 43.357C117.035 43.357 114.132 44.7617 112.68 47.4775C111.275 44.7617 109.028 43.357 105.75 43.357C101.77 43.357 99.0545 46.0728 98.6331 47.3838H98.5395V43.9189H94.6063V66.1131Z" fill="#25B135"/>
+        <path d="M135.566 49.2567C137.111 48.0862 138.656 46.7283 141.887 46.7283C145.493 46.7283 147.178 49.1163 147.178 51.4106V52.3471H144.088C137.345 52.3471 131.867 54.3137 131.867 60.0261C131.867 64.3338 135.426 66.675 139.546 66.675C142.917 66.675 145.446 65.598 147.319 62.7418H147.412C147.412 63.8656 147.459 64.9893 147.553 66.1131H151.299C151.158 64.9425 151.111 63.6315 151.111 62.0863V50.7551C151.111 46.9156 148.396 43.357 141.84 43.357C138.75 43.357 135.379 44.434 133.038 46.6346L135.566 49.2567ZM147.178 55.4374V56.8421C147.178 59.8388 145.539 63.3037 140.857 63.3037C137.954 63.3037 136.081 62.2268 136.081 59.6983C136.081 56.1398 140.951 55.4374 144.931 55.4374H147.178Z" fill="#25B135"/>
+        <path d="M155.689 66.1131H159.903V54.9692C159.903 50.0996 162.151 47.8521 166.271 47.8521C166.927 47.8521 167.629 47.9925 168.331 48.1798L168.519 43.638C167.957 43.4507 167.301 43.357 166.646 43.357C163.883 43.357 161.074 44.9958 159.997 47.337H159.903V43.9189H155.689V66.1131Z" fill="#25B135"/>
+        <path d="M171.484 66.1131H175.698V54.5946L185.999 66.1131H191.993L180.755 54.0327L191.103 43.9657H185.25L175.698 53.5645V34.5527H171.484V66.1131Z" fill="#25B135"/>
+        <path d="M215.206 56.5612V55.0628C215.206 49.3504 212.209 43.357 204.39 43.357C197.741 43.357 192.918 48.3671 192.918 55.016C192.918 61.6181 197.32 66.675 204.343 66.675C208.604 66.675 211.835 65.1766 214.176 62.1331L210.992 59.6983C209.353 61.7117 207.48 63.0228 204.905 63.0228C201.019 63.0228 197.413 60.4475 197.413 56.5612H215.206ZM197.413 53.1899C197.413 50.24 200.129 46.7283 204.296 46.7283C208.557 46.7283 210.617 49.4909 210.711 53.1899H197.413Z" fill="#25B135"/>
+        <path d="M232.14 43.9189H226.1V37.6914H221.886V43.9189H217.016V47.5711H221.886V59.1364C221.886 62.695 221.98 66.675 228.488 66.675C229.331 66.675 231.297 66.4877 232.281 65.9258V62.0863C231.438 62.6014 230.267 62.7418 229.284 62.7418C226.1 62.7418 226.1 60.1197 226.1 57.6381V47.5711H232.14V43.9189Z" fill="#25B135"/>
+        <path d="M252.654 47.0092C251.062 44.3871 248.019 43.357 245.069 43.357C240.902 43.357 236.641 45.5577 236.641 50.1932C236.641 54.4541 239.825 55.6247 243.43 56.5143C245.256 56.9358 248.768 57.404 248.768 59.9324C248.768 61.8522 246.427 62.7418 244.273 62.7418C241.838 62.7418 240.246 61.4776 238.888 60.1197L235.704 62.7418C237.905 65.7385 240.621 66.675 244.273 66.675C248.674 66.675 253.263 64.7084 253.263 59.6983C253.263 55.5311 250.454 54.1264 246.801 53.2367C244.929 52.8153 241.136 52.4407 241.136 49.7718C241.136 48.1798 242.868 47.2902 244.835 47.2902C246.942 47.2902 248.393 48.2735 249.377 49.4909L252.654 47.0092Z" fill="#25B135"/>
+        </g>
+        <defs>
+        <linearGradient id="paint0_linear" x1="34.0826" y1="36.6504" x2="34.0826" y2="77.1139" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#25B135"/>
+        <stop offset="1" stop-color="#005209"/>
+        </linearGradient>
+        <clipPath id="clip0">
+        <rect width="280" height="70" fill="white" transform="translate(0 0.671875)"/>
+        </clipPath>
+        </defs>
+        </svg>
+      </div>
       <div class="connection-badge">
         <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
         <div class="badge badge-warning" *ngIf="connectionState.val === 1" i18n="master-page.reconnecting">Reconnecting...</div>
@@ -12,16 +41,16 @@
 
   <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <img src="/resources/bisq-logo.png" style="width: 25px; height: 25px;" class="mr-1">
+      <app-svg-images name="bisq" width="20" height="20" viewBox="0 0 75 75" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
-      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage" ngbDropdownItem class="mainnet"><img src="/resources/bitcoin-logo.png" style="width: 30px;" class="mr-1"> Mainnet</a>
-      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/signet'" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><img src="/resources/signet-logo.png" style="width: 30px;" class="mr-1"> Signet</a>
-      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><img src="/resources/testnet-logo.png" style="width: 30px;" class="mr-1"> Testnet</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage" ngbDropdownItem class="mainnet"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/signet'" ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
+      <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet</a>
       <h6 class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
-      <a ngbDropdownItem class="mainnet active" routerLink="/"><img src="/resources/bisq-logo.png" style="width: 30px;" class="mr-1"> Bisq</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid"><img src="/resources/liquid-logo.png" style="width: 30px;" class="mr-1"> Liquid</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet"><img src="/resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1"> Liquid Testnet</a>
+      <a ngbDropdownItem class="mainnet active" routerLink="/"><app-svg-images name="bisq" width="20" height="20" viewBox="0 0 75 75" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Bisq</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
     </div>
   </div>
 
