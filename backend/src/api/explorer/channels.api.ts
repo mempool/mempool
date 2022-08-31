@@ -229,9 +229,14 @@ class ChannelsApi {
 
   public async $getChannelsByTransactionId(transactionIds: string[]): Promise<any[]> {
     try {
-      transactionIds = transactionIds.map((id) => '\'' + id + '\'');
-      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.* FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key WHERE channels.transaction_id IN (${transactionIds.join(', ')}) OR channels.closing_transaction_id IN (${transactionIds.join(', ')})`;
-      const [rows]: any = await DB.query(query);
+      const query = `
+        SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*
+        FROM channels
+        LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
+        WHERE channels.transaction_id IN ? OR channels.closing_transaction_id IN ?
+      `;
+      const [rows]: any = await DB.query(query, [[transactionIds], [transactionIds]]);
       const channels = rows.map((row) => this.convertChannel(row));
       return channels;
     } catch (e) {
