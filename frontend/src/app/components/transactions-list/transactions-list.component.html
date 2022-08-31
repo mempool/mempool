@@ -18,7 +18,7 @@
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
     <div class="row">
       <div class="col">
-        <table class="table table-borderless smaller-text table-sm table-tx-vin">
+        <table class="table table-borderless smaller-text table-sm table-tx-vin table-fixed">
           <tbody>
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length > rowLimit) ? tx.vin.slice(0, rowLimit - 2) : tx.vin.slice(0, rowLimit)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
@@ -156,7 +156,7 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text table-sm table-tx-vout">
+        <table class="table table-borderless smaller-text table-sm table-tx-vout table-fixed">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] && !outputIndex ? ((tx.vout.length > rowLimit) ? tx.vout.slice(0, rowLimit - 2) : tx.vout.slice(0, rowLimit)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
