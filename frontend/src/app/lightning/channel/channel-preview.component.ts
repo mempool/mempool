@@ -16,6 +16,7 @@ export class ChannelPreviewComponent implements OnInit {
   channel$: Observable<any>;
   error: any = null;
   channelGeo: number[] = [];
+  shortId: string;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -28,8 +29,9 @@ export class ChannelPreviewComponent implements OnInit {
     this.channel$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          this.openGraphService.waitFor('channel-map');
-          this.openGraphService.waitFor('channel-data');
+          this.shortId = params.get('short_id') || '';
+          this.openGraphService.waitFor('channel-map-' + this.shortId);
+          this.openGraphService.waitFor('channel-data-' + this.shortId);
           this.error = null;
           this.seoService.setTitle(`Channel: ${params.get('short_id')}`);
           return this.lightningApiService.getChannel$(params.get('short_id'))
@@ -48,12 +50,12 @@ export class ChannelPreviewComponent implements OnInit {
                     data.node_right.longitude, data.node_right.latitude,
                   ];
                 }
-                this.openGraphService.waitOver('channel-data');
+                this.openGraphService.waitOver('channel-data-' + this.shortId);
               }),
               catchError((err) => {
                 this.error = err;
-                this.openGraphService.fail('channel-map');
-                this.openGraphService.fail('channel-data');
+                this.openGraphService.fail('channel-map-' + this.shortId);
+                this.openGraphService.fail('channel-data-' + this.shortId);
                 return of(null);
               })
             );
@@ -62,6 +64,6 @@ export class ChannelPreviewComponent implements OnInit {
   }
 
   onMapReady() {
-    this.openGraphService.waitOver('channel-map');
+    this.openGraphService.waitOver('channel-map-' + this.shortId);
   }
 }

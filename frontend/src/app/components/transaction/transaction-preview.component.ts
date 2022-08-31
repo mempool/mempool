@@ -92,15 +92,16 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           txFeePerVSize: this.tx.effectiveFeePerVsize,
         });
         this.cpfpInfo = cpfpInfo;
-        this.openGraphService.waitOver('cpfp-data');
+        this.openGraphService.waitOver('cpfp-data-' + this.txId);
       });
 
     this.subscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          this.openGraphService.waitFor('tx-data');
           const urlMatch = (params.get('id') || '').split(':');
           this.txId = urlMatch[0];
+          this.openGraphService.waitFor('tx-data-' + this.txId);
+          this.openGraphService.waitFor('tx-time-' + this.txId);
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -149,7 +150,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe((tx: Transaction) => {
           if (!tx) {
-            this.openGraphService.fail('tx-data');
+            this.openGraphService.fail('tx-data-' + this.txId);
             return;
           }
 
@@ -166,6 +167,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
 
           if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
+            this.openGraphService.waitOver('tx-time-' + this.txId);
           } else {
             this.getTransactionTime();
           }
@@ -177,15 +179,15 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
                 bestDescendant: tx.bestDescendant,
               };
             } else {
-              this.openGraphService.waitFor('cpfp-data');
+              this.openGraphService.waitFor('cpfp-data-' + this.txId);
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
 
-          this.openGraphService.waitOver('tx-data');
+          this.openGraphService.waitOver('tx-data-' + this.txId);
         },
         (error) => {
-          this.openGraphService.fail('tx-data');
+          this.openGraphService.fail('tx-data-' + this.txId);
           this.error = error;
           this.isLoadingTx = false;
         }
@@ -193,7 +195,6 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   }
 
   getTransactionTime() {
-    this.openGraphService.waitFor('tx-time');
     this.apiService
       .getTransactionTimes$([this.tx.txid])
       .pipe(
@@ -203,7 +204,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe((transactionTimes) => {
         this.transactionTime = transactionTimes[0];
-        this.openGraphService.waitOver('tx-time');
+        this.openGraphService.waitOver('tx-time-' + this.txId);
       });
   }
 
