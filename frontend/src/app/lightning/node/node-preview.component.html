@@ -1,9 +1,9 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
   <div class="row d-flex justify-content-between full-width-row">
-    <h1 class="title">
-      <span i18n="lightning.node">Node</span>:
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.id]"> {{ node.alias }}</a>
-    </h1>
+    <div class="title-container mb-0" *ngIf="!error">
+      <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
+      <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
+    </div>
     <div class="badges mb-2">
       <span class="badge rounded-pill badge-success" *ngFor="let socketType of socketTypes">{{ socketType }}</span>
     </div>
