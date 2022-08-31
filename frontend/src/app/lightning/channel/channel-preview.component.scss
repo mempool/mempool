@@ -1,11 +1,24 @@
-.title {
-  font-size: 52px;
-  margin: 0;
+.title-container {
+  width: 0;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+
+  h5 {
+    font-size: 28px;
+    margin-top: -4px;
+  }
+
+  h1 {
+    font-size: 52px;
+    margin-bottom: 0;
+    margin-top: -8px;
+  }
 }
 
 .table {
+  margin-top: 14px;
   font-size: 32px;
-  margin-top: 36px;
 }
 
 .badges {
@@ -23,6 +36,7 @@
 .full-width-row {
   padding-left: 15px;
   padding-right: 15px;
+  flex-wrap: nowrap;
 
   &:nth-child(even) {
     background: #181b2d;
@@ -33,6 +47,7 @@
 .nodes {
   font-size: 36px;
   align-items: center;
+  margin-top: 0px;
 }
 
 .between-arrow {
