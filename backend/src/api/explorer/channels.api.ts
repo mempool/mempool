@@ -533,6 +533,23 @@ class ChannelsApi {
       logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
     }
   }
+
+  public async $getLatestChannelUpdateForNode(publicKey: string): Promise<number> {
+    try {
+      const query = `
+        SELECT MAX(UNIX_TIMESTAMP(updated_at)) as updated_at
+        FROM channels
+        WHERE node1_public_key = ?
+      `;
+      const [rows]: any[] = await DB.query(query, [publicKey]);
+      if (rows.length > 0) {
+        return rows[0].updated_at;
+      }
+    } catch (e) {
+      logger.err(`Can't getLatestChannelUpdateForNode for ${publicKey}. Reason ${e instanceof Error ? e.message : e}`);
+    }
+    return 0;
+  }
 }
 
 export default new ChannelsApi();
