@@ -22,30 +22,30 @@
 
     <div class="row">
       <div class="col-md">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped table-fixed">
           <tbody>
             <tr>
-              <td i18n="lightning.active-capacity">Active capacity</td>
+              <td i18n="lightning.active-capacity" class="text-truncate label">Active capacity</td>
               <td>
                 <app-sats [satoshis]="node.capacity"></app-sats>
                 <app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
             <tr>
-              <td i18n="lightning.active-channels">Active channels</td>
+              <td i18n="lightning.active-channels" class="text-truncate label">Active channels</td>
               <td>
                 {{ node.active_channel_count }}
               </td>
             </tr>
             <tr>
-              <td i18n="lightning.active-channels-avg">Average channel size</td>
+              <td i18n="lightning.active-channels-avg" class="text-wrap label">Average channel size</td>
               <td>
                 <app-sats [satoshis]="node.avgCapacity"></app-sats>
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
             <tr *ngIf="node.geolocation">
-              <td i18n="location">Location</td>
+              <td i18n="location" class="text-truncate">Location</td>
               <td>
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
               </td>
@@ -55,30 +55,30 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col-md">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped table-fixed">
           <tbody>
             <tr>
-              <td i18n="address.total-received">First seen</td>
+              <td i18n="address.total-received" class="text-truncate label">First seen</td>
               <td>
                 <app-timestamp [unixTime]="node.first_seen"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.total-sent">Last update</td>
+              <td i18n="address.total-sent" class="text-truncate label">Last update</td>
               <td>
                 <app-timestamp [unixTime]="node.updated_at"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.balance">Color</td>
+              <td i18n="address.balance" class="text-truncate label">Color</td>
               <td>
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
             </tr>
             <tr *ngIf="node.country">
-              <td i18n="isp">ISP</td>
+              <td i18n="isp" class="text-truncate label">ISP</td>
               <td>
-                <a [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
+                <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
               </td>
