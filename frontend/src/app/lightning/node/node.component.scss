@@ -1,29 +1,11 @@
 .title-container {
   display: flex;
-  flex-direction: row;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  flex-direction: column;
 }
 
 .tx-link {
   display: flex;
-	flex-grow: 1;
-	@media (min-width: 650px) {
-    align-self: end;
-    margin-left: 15px;
-    margin-top: 0px;
-    margin-bottom: -3px;
-	}
-	@media (min-width: 768px) {
-    margin-bottom: 4px;
-    top: 1px;
-    position: relative;
-	}
-	@media (max-width: 768px) {
-	  order: 2;
-	}
+	flex-wrap: wrap;
 }
 
 .qr-wrapper {
@@ -83,4 +65,10 @@ app-fiat {
   @media (min-width: 576px) {
     width: 40%;
   }
+}
+
+@media (max-width: 767.98px) {
+  h1 > .skeleton-loader {
+    height: 28px !important;
+  };
 }
