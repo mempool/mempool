@@ -100,14 +100,13 @@ class Server {
         }
       }
 
-      const waitForReady = await page.$('meta[property="og:preview:loading"]');
-      let success = true;
-      if (waitForReady != null) {
-        success = await Promise.race([
-          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-        ])
-      }
+      // wait for preview component to initialize
+      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
+      let success = false;
+      success = await Promise.race([
+        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+      ])
       if (success) {
         const screenshot = await page.screenshot();
         return screenshot;
