@@ -70,8 +70,12 @@ export class NodesPerISPChartComponent implements OnInit {
                   data.ispRanking[i][5] = i;
                 }
                 for (let i = 0; i < data.ispRanking.length; ++i) {
-                  data.ispRanking[i][6] = Math.round(data.ispRanking[i][4] / nodeCount * 10000) / 100;
-                  data.ispRanking[i][7] = Math.round(data.ispRanking[i][2] / totalCapacity * 10000) / 100;
+                  let roundingFactor = 100;
+                  if (data.ispRanking[i][1] === 'wiz') {
+                    roundingFactor = 1000;
+                  }
+                  data.ispRanking[i][6] = Math.round(data.ispRanking[i][4] / nodeCount * 100 * roundingFactor) / roundingFactor;
+                  data.ispRanking[i][7] = Math.round(data.ispRanking[i][2] / totalCapacity * 100 * roundingFactor) / roundingFactor;
                 }
 
                 if (selectedFilters[0] === true) {
@@ -125,7 +129,7 @@ export class NodesPerISPChartComponent implements OnInit {
     }
 
     ispRanking.forEach((isp) => {
-      if ((this.sortBy === 'capacity' ? isp[7] : isp[6]) < shareThreshold) {
+      if ((this.sortBy === 'capacity' ? isp[7] : isp[6]) < shareThreshold && isp[1] !== 'wiz') {
         totalShareOther += this.sortBy === 'capacity' ? isp[7] : isp[6];
         nodeCountOther += isp[4];
         capacityOther += isp[2];
@@ -214,7 +218,6 @@ export class NodesPerISPChartComponent implements OnInit {
       series: [
         {
           zlevel: 0,
-          minShowLabelAngle: 0.9,
           name: 'Lightning nodes',
           type: 'pie',
           radius: pieSize,
