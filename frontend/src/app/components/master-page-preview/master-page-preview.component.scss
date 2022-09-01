@@ -33,4 +33,16 @@
     justify-content: flex-start;
     align-items: center;
   }
+
+  ::ng-deep .preview-header {
+    position: absolute;
+    top: -80px;
+    width: 100%;
+    padding: 0 220px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 101;
+    line-height: 80px;
+  }
 }
