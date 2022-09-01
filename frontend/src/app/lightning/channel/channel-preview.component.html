@@ -1,9 +1,7 @@
 <div class="box preview-box" *ngIf="(channel$ | async) as channel">
+  <h2 class="preview-header" i18n="lightning.channel">Lightning channel</h2>
   <div class="row d-flex justify-content-between full-width-row">
-    <div class="title-container mb-0" *ngIf="!error">
-      <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
-      <h1 class="mb-0 text-truncate">{{ channel.short_id }}</h1>
-    </div>
+    <h1 class="title">{{ channel.short_id }}</h1>
     <div class="badges mb-2">
       <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
       <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>

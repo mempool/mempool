@@ -1,28 +1,28 @@
-.title-container {
+.title {
+  font-size: 52px;
+  margin: 0;
   width: 0;
   flex-grow: 1;
   flex-shrink: 1;
   overflow: hidden;
-
-  h5 {
-    font-size: 28px;
-    margin-top: -4px;
-  }
-
-  h1 {
-    font-size: 52px;
-    margin-bottom: 0;
-    margin-top: -8px;
-  }
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .table {
-  margin-top: 14px;
   font-size: 32px;
+  margin-top: 36px;
 }
 
 .badges {
   font-size: 28px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: flex-end;
 
   ::ng-deep .badge {
     margin-left: 0.5em;
@@ -38,7 +38,7 @@
   padding-right: 15px;
   flex-wrap: nowrap;
 
-  &:nth-child(even) {
+  &:nth-child(odd) {
     background: #181b2d;
     margin: 15px 0;
   }
@@ -47,7 +47,6 @@
 .nodes {
   font-size: 36px;
   align-items: center;
-  margin-top: 0px;
 }
 
 .between-arrow {
