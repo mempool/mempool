@@ -87,6 +87,10 @@ export default class ReusablePage extends ConcurrencyImplementation {
       page.repairRequested = true;
     });
     await page.goto(defaultUrl, { waitUntil: "load" });
+    await Promise.race([
+      page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+      page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+    ])
     page.free = true;
     return page
   }
