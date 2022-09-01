@@ -1,16 +1,5 @@
-.title {
-  font-size: 52px;
-  margin: 0;
-  width: 0;
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .table {
-  margin-top: 48px;
+  margin-top: 6px;
   font-size: 32px;
 }
 
@@ -33,14 +22,14 @@
   flex-grow: 0;
   flex-shrink: 0;
   width: 470px;
-  height: 390px;
+  height: 408px;
   min-width: 470px;
-  min-height: 390px;
-  max-height: 390px;
+  min-height: 408px;
+  max-height: 408px;
   padding: 0;
   background: #181b2d;
   overflow: hidden;
-  margin-top: 18px;
+  margin-top: 6px;
 }
 
 .row {
