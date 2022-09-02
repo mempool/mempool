@@ -80,7 +80,7 @@ class ChannelsApi {
   public async $searchChannelsById(search: string): Promise<any[]> {
     try {
       const searchStripped = search.replace('%', '') + '%';
-      const query = `SELECT id, short_id, capacity FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
+      const query = `SELECT id, short_id, capacity, status FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
       const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
       return rows;
     } catch (e) {
@@ -229,9 +229,14 @@ class ChannelsApi {
 
   public async $getChannelsByTransactionId(transactionIds: string[]): Promise<any[]> {
     try {
-      transactionIds = transactionIds.map((id) => '\'' + id + '\'');
-      const query = `SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.* FROM channels LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key WHERE channels.transaction_id IN (${transactionIds.join(', ')}) OR channels.closing_transaction_id IN (${transactionIds.join(', ')})`;
-      const [rows]: any = await DB.query(query);
+      const query = `
+        SELECT n1.alias AS alias_left, n2.alias AS alias_right, channels.*
+        FROM channels
+        LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
+        WHERE channels.transaction_id IN ? OR channels.closing_transaction_id IN ?
+      `;
+      const [rows]: any = await DB.query(query, [[transactionIds], [transactionIds]]);
       const channels = rows.map((row) => this.convertChannel(row));
       return channels;
     } catch (e) {
@@ -257,7 +262,8 @@ class ChannelsApi {
       let query = `
         SELECT COALESCE(node2.alias, SUBSTRING(node2_public_key, 0, 20)) AS alias, COALESCE(node2.public_key, node2_public_key) AS public_key,
           channels.status, channels.node1_fee_rate,
-          channels.capacity, channels.short_id, channels.id, channels.closing_reason
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason,
+          UNIX_TIMESTAMP(closing_date) as closing_date, UNIX_TIMESTAMP(channels.updated_at) as updated_at
         FROM channels
         LEFT JOIN nodes AS node2 ON node2.public_key = channels.node2_public_key
         WHERE node1_public_key = ? AND channels.status ${channelStatusFilter}
@@ -268,7 +274,8 @@ class ChannelsApi {
       query = `
         SELECT COALESCE(node1.alias, SUBSTRING(node1_public_key, 0, 20)) AS alias, COALESCE(node1.public_key, node1_public_key) AS public_key,
           channels.status, channels.node2_fee_rate,
-          channels.capacity, channels.short_id, channels.id, channels.closing_reason
+          channels.capacity, channels.short_id, channels.id, channels.closing_reason,
+          UNIX_TIMESTAMP(closing_date) as closing_date, UNIX_TIMESTAMP(channels.updated_at) as updated_at
         FROM channels
         LEFT JOIN nodes AS node1 ON node1.public_key = channels.node1_public_key
         WHERE node2_public_key = ? AND channels.status ${channelStatusFilter}
@@ -277,7 +284,15 @@ class ChannelsApi {
 
       let allChannels = channelsFromNode.concat(channelsToNode);
       allChannels.sort((a, b) => {
-        return b.capacity - a.capacity;
+        if (status === 'closed') {
+          if (!b.closing_date && !a.closing_date) {
+            return (b.updated_at ?? 0) - (a.updated_at ?? 0);
+          } else {
+            return (b.closing_date ?? 0) - (a.closing_date ?? 0);
+          }
+        } else {
+          return b.capacity - a.capacity;
+        }
       });
 
       if (index >= 0) {
@@ -294,6 +309,7 @@ class ChannelsApi {
           channel = {
             status: row.status,
             closing_reason: row.closing_reason,
+            closing_date: row.closing_date,
             capacity: row.capacity ?? 0,
             short_id: row.short_id,
             id: row.id,
@@ -521,6 +537,23 @@ class ChannelsApi {
     } catch (e) {
       logger.err('$setChannelsInactive() error: ' + (e instanceof Error ? e.message : e));
     }
+  }
+
+  public async $getLatestChannelUpdateForNode(publicKey: string): Promise<number> {
+    try {
+      const query = `
+        SELECT MAX(UNIX_TIMESTAMP(updated_at)) as updated_at
+        FROM channels
+        WHERE node1_public_key = ?
+      `;
+      const [rows]: any[] = await DB.query(query, [publicKey]);
+      if (rows.length > 0) {
+        return rows[0].updated_at;
+      }
+    } catch (e) {
+      logger.err(`Can't getLatestChannelUpdateForNode for ${publicKey}. Reason ${e instanceof Error ? e.message : e}`);
+    }
+    return 0;
   }
 }
 

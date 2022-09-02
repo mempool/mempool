@@ -9,44 +9,44 @@
 <div class="fee-estimation-wrapper" *ngIf="statistics$ | async as statistics; else loadingReward">
 
   <div class="fee-estimation-container" *ngIf="mode === 'avg'">
-    <div class="item">
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.average-capacity">Avg Capacity</h5>
       <div class="card-text">
-        <div class="fee-text">
+        <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
           {{ statistics.latest?.avg_capacity || 0 | number: '1.0-0' }}
           <span i18n="shared.sat-vbyte|sat/vB">sats</span>
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest?.avg_capacity" [previous]="statistics.previous?.avg_capacity"></app-change>
         </span>
       </div>
     </div>
 
-    <div class="item">
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.average-feerate">Avg Fee Rate</h5>
       <div class="card-text" i18n-ngbTooltip="ln.average-feerate-desc"
         ngbTooltip="The average fee rate charged by routing nodes, ignoring fee rates > 0.5% or 5000ppm"
         placement="bottom">
-        <div class="fee-text">
+        <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
           {{ statistics.latest?.avg_fee_rate || 0 | number: '1.0-0' }}
           <span i18n="shared.sat-vbyte|sat/vB">ppm</span>
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest?.avg_fee_rate" [previous]="statistics.previous?.avg_fee_rate"></app-change>
         </span>
       </div>
     </div>
 
-    <div class="item">
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.average-basefee">Avg Base Fee</h5>
       <div class="card-text" i18n-ngbTooltip="ln.average-basefee-desc"
         ngbTooltip="The average base fee charged by routing nodes, ignoring base fees > 5000ppm" placement="bottom">
         <div class="card-text">
-          <div class="fee-text">
+          <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
             {{ statistics.latest?.avg_base_fee_mtokens || 0 | number: '1.0-0' }}
             <span i18n="shared.sat-vbyte|sat/vB">msats</span>
           </div>
-          <span class="fiat">
+          <span class="fiat" *ngIf="statistics.previous">
             <app-change [current]="statistics.latest?.avg_base_fee_mtokens" [previous]="statistics.previous?.avg_base_fee_mtokens"></app-change>
           </span>
         </div>
@@ -55,43 +55,45 @@
   </div>
 
   <div class="fee-estimation-container" *ngIf="mode === 'med'">
-    <div class="item">
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.median-capacity">Med Capacity</h5>
       <div class="card-text">
-        <div class="fee-text">
+        <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
           {{ statistics.latest?.med_capacity || 0 | number: '1.0-0' }}
           <span i18n="shared.sat-vbyte|sat/vB">sats</span>
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest?.med_capacity" [previous]="statistics.previous?.med_capacity"></app-change>
         </span>
       </div>
     </div>
-    <div class="item">
+
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.average-feerate">Med Fee Rate</h5>
       <div class="card-text" i18n-ngbTooltip="ln.median-feerate-desc"
-        ngbTooltip="The average fee rate charged by routing nodes, ignoring fee rates > 0.5% or 5000ppm"
+        ngbTooltip="The median fee rate charged by routing nodes, ignoring fee rates > 0.5% or 5000ppm"
         placement="bottom">
-        <div class="fee-text">
+        <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
           {{ statistics.latest?.med_fee_rate || 0 | number: '1.0-0' }}
           <span i18n="shared.sat-vbyte|sat/vB">ppm</span>
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest?.med_fee_rate" [previous]="statistics.previous?.med_fee_rate"></app-change>
         </span>
       </div>
     </div>
-    <div class="item">
+
+    <div class="item" [class]="!statistics.previous ? 'more-padding' : ''">
       <h5 class="card-title" i18n="ln.median-basefee">Med Base Fee</h5>
       <div class="card-text" i18n-ngbTooltip="ln.median-basefee-desc"
         ngbTooltip="The median base fee charged by routing nodes, ignoring base fees > 5000ppm" placement="bottom">
         <div class="card-text">
-          <div class="fee-text">
+          <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
             {{ statistics.latest?.med_base_fee_mtokens || 0 | number: '1.0-0' }}
             <span i18n="shared.sat-vbyte|sat/vB">msats</span>
           </div>
         </div>
-        <span class="fiat">
+        <span class="fiat" *ngIf="statistics.previous">
           <app-change [current]="statistics.latest?.med_base_fee_mtokens" [previous]="statistics.previous?.med_base_fee_mtokens"></app-change>
         </span>
       </div>
@@ -102,21 +104,21 @@
 <ng-template #loadingReward>
   <div class="fee-estimation-container loading-container">
     <div class="item">
-      <h5 class="card-title" i18n="mining.rewards">Nodes</h5>
+      <h5 class="card-title" i18n="ln.average-capacity">Avg Capacity</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="mining.rewards-per-tx">Channels</h5>
+      <h5 class="card-title" i18n="ln.average-feerate">Avg Fee Rate</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="mining.average-fee">Average Channel</h5>
+      <h5 class="card-title" i18n="ln.average-basefee">Avg Base Fee</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

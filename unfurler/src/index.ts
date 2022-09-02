@@ -1,15 +1,19 @@
 import express from "express";
 import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
+import * as https from 'https';
 import config from './config';
 import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
 import { parseLanguageUrl } from './language/lang';
+import { matchRoute } from './routes';
 const puppeteerConfig = require('../puppeteer.config.json');
 
 if (config.PUPPETEER.EXEC_PATH) {
   puppeteerConfig.executablePath = config.PUPPETEER.EXEC_PATH;
 }
+
+const puppeteerEnabled = config.PUPPETEER.ENABLED && (config.PUPPETEER.CLUSTER_SIZE > 0);
 
 class Server {
   private server: http.Server | undefined;
@@ -17,13 +21,13 @@ class Server {
   cluster?: Cluster;
   mempoolHost: string;
   network: string;
-  defaultImageUrl: string;
+  secureHost = true;
 
   constructor() {
     this.app = express();
     this.mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
+    this.secureHost = config.SERVER.HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
-    this.defaultImageUrl = this.getDefaultImageUrl();
     this.startServer();
   }
 
@@ -37,12 +41,14 @@ class Server {
       .use(express.text())
       ;
 
-    this.cluster = await Cluster.launch({
-        concurrency: ReusablePage,
-        maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
-        puppeteerOptions: puppeteerConfig,
-    });
-    await this.cluster?.task(async (args) => { return this.clusterTask(args) });
+    if (puppeteerEnabled) {
+      this.cluster = await Cluster.launch({
+          concurrency: ReusablePage,
+          maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
+          puppeteerOptions: puppeteerConfig,
+      });
+      await this.cluster?.task(async (args) => { return this.clusterTask(args) });
+    }
 
     this.setUpRoutes();
 
@@ -64,7 +70,11 @@ class Server {
   }
 
   setUpRoutes() {
-    this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
+    if (puppeteerEnabled) {
+      this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
+    } else {
+      this.app.get('/render*', async (req, res) => { return this.renderDisabled(req, res) })
+    }
     this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
   }
 
@@ -90,14 +100,13 @@ class Server {
         }
       }
 
-      const waitForReady = await page.$('meta[property="og:preview:loading"]');
-      let success = true;
-      if (waitForReady != null) {
-        success = await Promise.race([
-          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-        ])
-      }
+      // wait for preview component to initialize
+      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
+      let success = false;
+      success = await Promise.race([
+        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+      ])
       if (success) {
         const screenshot = await page.screenshot();
         return screenshot;
@@ -111,13 +120,31 @@ class Server {
     }
   }
 
+  async renderDisabled(req, res) {
+    res.status(500).send("preview rendering disabled");
+  }
+
   async renderPreview(req, res) {
     try {
-      const path = req.params[0]
-      const img = await this.cluster?.execute({ url: this.mempoolHost + path, path: path, action: 'screenshot' });
+      const rawPath = req.params[0];
+
+      let img = null;
+
+      const { lang, path } = parseLanguageUrl(rawPath);
+      const matchedRoute = matchRoute(this.network, path);
+
+      // don't bother unless the route is definitely renderable
+      if (rawPath.includes('/preview/') && matchedRoute.render) {
+        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot' });
+      }
 
       if (!img) {
-        res.status(500).send('failed to render page preview');
+        // proxy fallback image from the frontend
+        if (this.secureHost) {
+          https.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
+        } else {
+          http.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
+        }
       } else {
         res.contentType('image/png');
         res.send(img);
@@ -137,50 +164,14 @@ class Server {
       return;
     }
 
-    let previewSupported = true;
-    let mode = 'mainnet'
-    let ogImageUrl = this.defaultImageUrl;
-    let ogTitle;
     const { lang, path } = parseLanguageUrl(rawPath);
-    const parts = path.slice(1).split('/');
+    const matchedRoute = matchRoute(this.network, path);
+    let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
+    let ogTitle = 'The Mempool Open Source Project™';
 
-    // handle network mode modifiers
-    if (['testnet', 'signet'].includes(parts[0])) {
-      mode = parts.shift();
-    }
-
-    // handle supported preview routes
-    switch (parts[0]) {
-      case 'block':
-        ogTitle = `Block: ${parts[1]}`;
-      break;
-      case 'address':
-        ogTitle = `Address: ${parts[1]}`;
-      break;
-      case 'tx':
-        ogTitle = `Transaction: ${parts[1]}`;
-      break;
-      case 'lightning':
-        switch (parts[1]) {
-          case 'node':
-            ogTitle = `Lightning Node: ${parts[2]}`;
-          break;
-          case 'channel':
-            ogTitle = `Lightning Channel: ${parts[2]}`;
-          break;
-          default:
-            previewSupported = false;
-        }
-      break;
-      default:
-        previewSupported = false;
-    }
-
-    if (previewSupported) {
+    if (matchedRoute.render) {
       ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
-      ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${mode !== 'mainnet' ? capitalize(mode) + ' ' : ''}${ogTitle}`;
-    } else {
-      ogTitle = 'The Mempool Open Source Project™';
+      ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
     }
 
     res.send(`
@@ -189,33 +180,22 @@ class Server {
       <head>
         <meta charset="utf-8">
         <title>${ogTitle}</title>
-        <meta name="description" content="The Mempool Open Source Project™ - our self-hosted explorer for the ${capitalize(this.network)} community."/>
+        <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
         <meta property="og:image" content="${ogImageUrl}"/>
         <meta property="og:image:type" content="image/png"/>
-        <meta property="og:image:width" content="${previewSupported ? 1200 : 1000}"/>
-        <meta property="og:image:height" content="${previewSupported ? 600 : 500}"/>
+        <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>
+        <meta property="og:image:height" content="${matchedRoute.render ? 600 : 500}"/>
         <meta property="og:title" content="${ogTitle}">
         <meta property="twitter:card" content="summary_large_image">
         <meta property="twitter:site" content="@mempool">
         <meta property="twitter:creator" content="@mempool">
         <meta property="twitter:title" content="${ogTitle}">
-        <meta property="twitter:description" content="Our self-hosted mempool explorer for the ${capitalize(this.network)} community."/>
+        <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
         <meta property="twitter:image:src" content="${ogImageUrl}"/>
         <meta property="twitter:domain" content="mempool.space">
       <body></body>
       </html>
     `);
-  }
-
-  getDefaultImageUrl() {
-    switch (this.network) {
-      case 'liquid':
-        return this.mempoolHost + '/resources/liquid/liquid-network-preview.png';
-      case 'bisq':
-        return this.mempoolHost + '/resources/bisq/bisq-markets-preview.png';
-      default:
-        return this.mempoolHost + '/resources/mempool-space-preview.png';
-    }
   }
 }
 

@@ -42,9 +42,9 @@ export class NodePreviewComponent implements OnInit {
     this.node$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          this.openGraphService.waitFor('node-map');
-          this.openGraphService.waitFor('node-data');
-          this.publicKey = params.get('public_key');
+        this.publicKey = params.get('public_key');
+          this.openGraphService.waitFor('node-map-' + this.publicKey);
+          this.openGraphService.waitFor('node-data-' + this.publicKey);
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
@@ -75,14 +75,14 @@ export class NodePreviewComponent implements OnInit {
           this.socketTypes = Object.keys(socketTypesMap);
           node.avgCapacity = node.capacity / Math.max(1, node.active_channel_count);
 
-          this.openGraphService.waitOver('node-data');
+          this.openGraphService.waitOver('node-data-' + this.publicKey);
 
           return node;
         }),
         catchError(err => {
           this.error = err;
-          this.openGraphService.fail('node-map');
-          this.openGraphService.fail('node-data');
+          this.openGraphService.fail('node-map-' + this.publicKey);
+          this.openGraphService.fail('node-data-' + this.publicKey);
           return [{
             alias: this.publicKey,
             public_key: this.publicKey,
@@ -100,6 +100,6 @@ export class NodePreviewComponent implements OnInit {
   }
 
   onMapReady() {
-    this.openGraphService.waitOver('node-map');
+    this.openGraphService.waitOver('node-map-' + this.publicKey);
   }
 }

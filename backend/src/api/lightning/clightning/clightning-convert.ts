@@ -13,9 +13,13 @@ export function convertNode(clNode: any): ILightningApi.Node {
     features: [], // TODO parse and return clNode.feature
     pub_key: clNode.nodeid,
     addresses: clNode.addresses?.map((addr) => {
+      let address = addr.address;
+      if (addr.type === 'ipv6') {
+        address = `[${address}]`;
+      }
       return {
         network: addr.type,
-        addr: `${addr.address}:${addr.port}`
+        addr: `${address}:${addr.port}`
       };
     }) ?? [],
     last_update: clNode?.last_timestamp ?? 0,

@@ -25,6 +25,13 @@ export class SearchResultsComponent implements OnChanges {
     }
   }
 
+  searchButtonClick() {
+    if (this.resultsFlattened[this.activeIdx]) {
+      this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
+      this.results = null;
+    }
+  }
+
   handleKeyDown(event: KeyboardEvent) {
     switch (event.key) {
       case 'ArrowDown':
