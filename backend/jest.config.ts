@@ -7,11 +7,14 @@ const config: Config.InitialOptions = {
   automock: false,
   collectCoverage: true,
   collectCoverageFrom: ["./src/**/**.ts"],
-  coverageProvider: "v8",
+  coverageProvider: "babel",
   coverageThreshold: {
     global: {
       lines: 1
     }
-  }
+  },
+  setupFiles: [
+    "./testSetup.ts",
+  ],
 }
 export default config;

@@ -21,6 +21,8 @@ export class NodesChannelsMap implements OnInit {
   @Input() publicKey: string | undefined;
   @Input() channel: any[] = [];
   @Input() fitContainer = false;
+  @Input() hasLocation = true;
+  @Input() placeholder = false;
   @Output() readyEvent = new EventEmitter();
 
   channelsObservable: Observable<any>; 
@@ -32,7 +34,7 @@ export class NodesChannelsMap implements OnInit {
   channelColor = '#466d9d';
   channelCurve = 0;
   nodeSize = 4;
-  isLoading = true;
+  isLoading = false;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -73,6 +75,11 @@ export class NodesChannelsMap implements OnInit {
     this.channelsObservable = this.activatedRoute.paramMap
      .pipe(
        switchMap((params: ParamMap) => {
+        this.isLoading = true;
+        if (this.style === 'channelpage' && this.channel.length === 0 || !this.hasLocation) {
+          this.isLoading = false;
+        }
+            
         return zip(
           this.assetsService.getWorldMapJson$,
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
@@ -165,7 +172,7 @@ export class NodesChannelsMap implements OnInit {
 
           if (this.style === 'nodepage' && thisNodeGPS) {
             this.center = [thisNodeGPS[0], thisNodeGPS[1]];
-            this.zoom = 10;
+            this.zoom = 5;
             this.channelWidth = 1;
             this.channelOpacity = 1;
           }
@@ -195,9 +202,24 @@ export class NodesChannelsMap implements OnInit {
 
   prepareChartOptions(nodes, channels) {
     let title: object;
-    if (channels.length === 0) {
+    if (channels.length === 0 && !this.placeholder) {
       this.chartOptions = null;
       return;
+    }
+
+    // empty map fallback
+    if (channels.length === 0 && this.placeholder) {
+      title = {
+        textStyle: {
+          color: 'white',
+          fontSize: 18
+        },
+        text: $localize`No geolocation data available`,
+        left: 'center',
+        top: 'center'
+      };
+      this.zoom = 1.5;
+      this.center = [0, 20];
     }
 
     this.chartOptions = {
@@ -216,7 +238,7 @@ export class NodesChannelsMap implements OnInit {
         roam: this.style === 'widget' ? false : true,
         itemStyle: {
           borderColor: 'black',
-          color: '#ffffff44'
+          color: '#272b3f'
         },
         scaleLimit: {
           min: 1.3,

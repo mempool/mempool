@@ -13,7 +13,8 @@
       "node_modules/@types"
     ],
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowJs": true,
   },
   "include": [
     "src/**/*.ts"

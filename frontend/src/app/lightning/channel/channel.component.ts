@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { forkJoin, Observable, of, share, zip } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
+import { Observable, of, zip } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { IChannel } from 'src/app/interfaces/node-api.interface';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
@@ -62,10 +62,15 @@ export class ChannelComponent implements OnInit {
     );
 
     this.transactions$ = this.channel$.pipe(
-      switchMap((data) => {
+      switchMap((channel: IChannel) => {
         return zip([
-          data.transaction_id ? this.electrsApiService.getTransaction$(data.transaction_id) : of(null),
-          data.closing_transaction_id ? this.electrsApiService.getTransaction$(data.closing_transaction_id) : of(null),
+          channel.transaction_id ? this.electrsApiService.getTransaction$(channel.transaction_id) : of(null),
+          channel.closing_transaction_id ? this.electrsApiService.getTransaction$(channel.closing_transaction_id).pipe(
+            map((tx) => {
+              tx._channels = { inputs: {0: channel}, outputs: {}};
+              return tx;
+            })
+          ) : of(null),
         ]);
       }),
     );

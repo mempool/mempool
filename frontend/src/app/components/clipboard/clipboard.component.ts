@@ -13,6 +13,7 @@ export class ClipboardComponent implements AfterViewInit {
   @ViewChild('buttonWrapper') buttonWrapper: ElementRef;
   @Input() size: 'small' | 'normal' = 'normal';
   @Input() text: string;
+  @Input() leftPadding = true;
   copiedMessage: string = $localize`:@@clipboard.copied-message:Copied!`;
 
   clipboard: any;

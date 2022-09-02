@@ -121,7 +121,7 @@ export class NodesNetworksChartComponent implements OnInit {
         left: 'center',
         top: 'center',
       };
-    } else if (data.tor_nodes.length > 0) {
+    } else if (this.widget && data.tor_nodes.length > 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -300,7 +300,7 @@ export class NodesNetworksChartComponent implements OnInit {
             { offset: 1, color: '#D81B60AA' },
           ]),
 
-          smooth: true,
+          smooth: false,
         },
         {
           zlevel: 1,
@@ -321,7 +321,7 @@ export class NodesNetworksChartComponent implements OnInit {
             { offset: 0, color: '#FFB300' },
             { offset: 1, color: '#FFB300AA' },
           ]),
-          smooth: true,
+          smooth: false,
         },
         {
           zlevel: 1,
@@ -342,7 +342,7 @@ export class NodesNetworksChartComponent implements OnInit {
             { offset: 0, color: '#7D4698' },
             { offset: 1, color: '#7D4698AA' },
           ]),
-          smooth: true,
+          smooth: false,
         },
       ],
       dataZoom: this.widget ? null : [{

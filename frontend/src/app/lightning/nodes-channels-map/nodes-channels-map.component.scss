@@ -1,3 +1,15 @@
+.map-wrapper {
+  height: 100%;
+
+  &.widget {
+    height: 250px;
+  }
+
+  &.graph {
+    height: auto;
+  }
+}
+
 .card-header {
   border-bottom: 0;
   font-size: 18px;
@@ -12,11 +24,6 @@
   width: 100%;
   min-height: 600px;
   height: calc(100% - 150px);
-
-  @media (max-width: 992px) {
-    height: 100%;
-    padding-bottom: 100px;
-  }
 }
 .full-container.nodepage {
   min-height: 400px;
@@ -27,6 +34,7 @@
   min-height: 400px;
   margin-top: 25px;
   margin-bottom: 25px;
+  min-height: 100%;
 }
 .full-container.widget {
   height: 250px;
@@ -68,21 +76,21 @@
   min-height: 600px;
 }
 .chart.nodepage {
-  min-height: 400px;
+  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0px;
 }
 .chart.channelpage {
   min-height: 400px;
 }
 
 .widget {
-  width: 90vw;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   height: 250px;
   -webkit-mask: linear-gradient(0deg, #11131f00 5%, #11131fff 25%);
-  @media (max-width: 767.98px) {
-    width: 100vw;
-  }
 }
 .widget > .chart {
   min-height: 250px;
@@ -97,6 +105,9 @@
   top: 50%;
   left: calc(50% - 15px);
   z-index: 100;
+  @media (max-width: 767.98px) {
+    top: 550px;
+  }
 }
 .loading-spinner.widget {
   position: absolute;
@@ -106,5 +117,23 @@
   left: 0;
   @media (max-width: 767.98px) {
     top: 250px;
+  }
+}
+.loading-spinner.nodepage {
+  position: absolute;
+  top: 200px;
+  z-index: 100;
+  width: 100%;
+  left: 0;
+}
+
+.loading-spinner.channelpage {
+  position: absolute;
+  top: 400px;
+  z-index: 100;
+  width: 100%;
+  left: 0;
+  @media (max-width: 767.98px) {
+    top: 450px;
   }
 }

@@ -1,13 +1,19 @@
 <form [formGroup]="searchForm" (submit)="searchForm.valid && search()" novalidate>
   <div class="d-flex">
     <div class="search-box-container mr-2">
-      <input (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="search-form.searchbar-placeholder" placeholder="TXID, block height, hash or address">
+      <input (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="search-form.searchbar-placeholder" placeholder="Search the full Bitcoin ecosystem">
       
       <app-search-results #searchResults [results]="typeAhead$ | async" [searchTerm]="searchForm.get('searchText').value" (selectedResult)="selectedResult($event)"></app-search-results>
     
     </div>
     <div>
-      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-primary"><fa-icon [icon]="['fas', 'search']" [fixedWidth]="true" i18n-title="search-form.search-title" title="Search"></fa-icon></button>
+      <button [disabled]="isSearching" type="submit" class="btn btn-block btn-primary">
+        <fa-icon *ngIf="!(isTypeaheading$ | async) else searchLoading" [icon]="['fas', 'search']" [fixedWidth]="true" i18n-title="search-form.search-title" title="Search"></fa-icon>
+      </button>
     </div>
   </div>
 </form>
+
+<ng-template #searchLoading>
+  <div class="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true" (click)="searchForm.valid && search()"></div>
+</ng-template>

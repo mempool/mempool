@@ -12,7 +12,10 @@ ELEMENTS_RPC_USER=$(grep '^rpcuser' /elements/elements.conf | cut -d '=' -f2)
 ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2)
 
 # get mysql credentials
-. /mempool/mysql_credentials
+MYSQL_CRED_FILE=${HOME}/mempool/mysql_credentials
+if [ -f "${MYSQL_CRED_FILE}" ];then
+    . ${MYSQL_CRED_FILE}
+fi
 
 if [ -f "${LOCKFILE}" ];then
     echo "upgrade already running? check lockfile ${LOCKFILE}"
@@ -63,6 +66,19 @@ build_frontend()
     npm run build || exit 1
 }
 
+build_unfurler()
+{
+    local site="$1"
+    echo "[*] Building unfurler for ${site}"
+    [ -z "${HASH}" ] && exit 1
+    cd "$HOME/${site}/unfurler" || exit 1
+    if [ ! -e "config.json" ];then
+        cp "${HOME}/mempool/production/unfurler-config.${site}.json" "config.json"
+    fi
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install || exit 1
+    npm run build || exit 1
+}
+
 build_backend()
 {
     local site="$1"
@@ -82,6 +98,12 @@ build_backend()
         -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
         -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
         -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
+        -e "s!__LN_MEMPOOL_MAINNET_USER__!${LN_MEMPOOL_MAINNET_USER}!" \
+        -e "s!__LN_MEMPOOL_MAINNET_PASS__!${LN_MEMPOOL_MAINNET_PASS}!" \
+        -e "s!__LN_MEMPOOL_TESTNET_USER__!${LN_MEMPOOL_TESTNET_USER}!" \
+        -e "s!__LN_MEMPOOL_TESTNET_PASS__!${LN_MEMPOOL_TESTNET_PASS}!" \
+        -e "s!__LN_MEMPOOL_SIGNET_USER__!${LN_MEMPOOL_SIGNET_USER}!" \
+        -e "s!__LN_MEMPOOL_SIGNET_PASS__!${LN_MEMPOOL_SIGNET_PASS}!" \
         -e "s!__MEMPOOL_LIQUID_USER__!${MEMPOOL_LIQUID_USER}!" \
         -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${LIQUIDTESTNET_USER}!" \
@@ -126,6 +148,11 @@ done
 # update all repos
 for repo in $backend_repos;do
     update_repo "${repo}"
+done
+
+# build unfurlers
+for repo in mainnet liquid bisq;do
+    build_unfurler "${repo}"
 done
 
 # build backends

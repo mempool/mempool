@@ -228,34 +228,75 @@ export class Common {
     return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
   }
 
-  static formatSocket(publicKey: string, socket: {network: string, addr: string}): NodeSocket {
+  static findSocketNetwork(addr: string): {network: string | null, url: string} {
     let network: string | null = null;
+    let url = addr.split('://')[1];
 
-    if (config.LIGHTNING.BACKEND === 'cln') {
-      network = socket.network;
-    } else if (config.LIGHTNING.BACKEND === 'lnd') {
-      if (socket.addr.indexOf('onion') !== -1) {
-        if (socket.addr.split('.')[0].length >= 56) {
-          network = 'torv3';
-        } else {
-          network = 'torv2';
-        }
-      } else if (socket.addr.indexOf('i2p') !== -1) {
-        network = 'i2p';
+    if (!url) {
+      return {
+        network: null,
+        url: addr,
+      };
+    }
+
+    if (addr.indexOf('onion') !== -1) {
+      if (url.split('.')[0].length >= 56) {
+        network = 'torv3';
       } else {
-        const ipv = isIP(socket.addr.split(':')[0]);
-        if (ipv === 4) {
-          network = 'ipv4';
-        } else if (ipv === 6) {
-          network = 'ipv6';
-        }
+        network = 'torv2';
       }
+    } else if (addr.indexOf('i2p') !== -1) {
+      network = 'i2p';
+    } else if (addr.indexOf('ipv4') !== -1) {
+      const ipv = isIP(url.split(':')[0]);
+      if (ipv === 4) {
+        network = 'ipv4';
+      } else {
+        return {
+          network: null,
+          url: addr,
+        };
+      }
+    } else if (addr.indexOf('ipv6') !== -1) {
+      url = url.split('[')[1].split(']')[0];
+      const ipv = isIP(url);
+      if (ipv === 6) {
+        const parts = addr.split(':');
+        network = 'ipv6';
+        url = `[${url}]:${parts[parts.length - 1]}`;
+      } else {
+        return {
+          network: null,
+          url: addr,
+        };
+      }
+    } else {
+      return {
+        network: null,
+        url: addr,
+      };
     }
 
     return {
-      publicKey: publicKey,
       network: network,
-      addr: socket.addr,
+      url: url,
     };
+  }
+
+  static formatSocket(publicKey: string, socket: {network: string, addr: string}): NodeSocket {
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      return {
+        publicKey: publicKey,
+        network: socket.network,
+        addr: socket.addr,
+      };
+    } else /* if (config.LIGHTNING.BACKEND === 'lnd') */ {
+      const formatted = this.findSocketNetwork(socket.addr);
+      return {
+        publicKey: publicKey,
+        network: formatted.network,
+        addr: formatted.url,
+      };
+    }
   }
 }

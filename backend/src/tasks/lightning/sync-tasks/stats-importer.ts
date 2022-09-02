@@ -7,6 +7,8 @@ import { ILightningApi } from '../../../api/lightning/lightning-api.interface';
 import { isIP } from 'net';
 import { Common } from '../../../api/common';
 import channelsApi from '../../../api/explorer/channels.api';
+import nodesApi from '../../../api/explorer/nodes.api';
+import { ResultSetHeader } from 'mysql2';
 
 const fsPromises = promises;
 
@@ -18,7 +20,12 @@ class LightningStatsImporter {
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
+    if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
+      return;
+    }
+
     await this.$importHistoricalLightningStats();
+    await this.$cleanupIncorrectSnapshot();
   }
 
   /**
@@ -32,7 +39,28 @@ class LightningStatsImporter {
     let clearnetTorNodes = 0;
     let unannouncedNodes = 0;
 
+    const [nodesInDbRaw]: any[] = await DB.query(`SELECT public_key FROM nodes`);
+    const nodesInDb = {};
+    for (const node of nodesInDbRaw) {
+      nodesInDb[node.public_key] = node;
+    }
+
     for (const node of networkGraph.nodes) {
+      // If we don't know about this node, insert it in db
+      if (isHistorical === true && !nodesInDb[node.pub_key]) {
+        await nodesApi.$saveNode({
+          last_update: node.last_update,
+          pub_key: node.pub_key,
+          alias: node.alias,
+          addresses: node.addresses,
+          color: node.color,
+          features: node.features,
+        });
+        nodesInDb[node.pub_key] = node;
+      } else {
+        await nodesApi.$updateNodeSockets(node.pub_key, node.addresses);
+      }
+
       let hasOnion = false;
       let hasClearnet = false;
       let isUnnanounced = true;
@@ -69,7 +97,7 @@ class LightningStatsImporter {
     const baseFees: number[] = [];
     const alreadyCountedChannels = {};
     
-    const [channelsInDbRaw]: any[] = await DB.query(`SELECT short_id, created FROM channels`);
+    const [channelsInDbRaw]: any[] = await DB.query(`SELECT short_id FROM channels`);
     const channelsInDb = {};
     for (const channel of channelsInDbRaw) {
       channelsInDb[channel.short_id] = channel;
@@ -84,29 +112,19 @@ class LightningStatsImporter {
         continue;
       }
 
-      // Channel is already in db, check if we need to update 'created' field
-      if (isHistorical === true) {
-        //@ts-ignore
-        if (channelsInDb[short_id] && channel.timestamp < channel.created) {
-          await DB.query(`
-            UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.short_id = ?`,
-            //@ts-ignore
-            [channel.timestamp, short_id]
-          );
-        } else if (!channelsInDb[short_id]) {
-          await channelsApi.$saveChannel({
-            channel_id: short_id,
-            chan_point: `${tx.txid}:${short_id.split('x')[2]}`,
-            //@ts-ignore
-            last_update: channel.timestamp,
-            node1_pub: channel.node1_pub,
-            node2_pub: channel.node2_pub,
-            capacity: (tx.value * 100000000).toString(),
-            node1_policy: null,
-            node2_policy: null,
-          }, 0);
-          channelsInDb[channel.channel_id] = channel;
-        }
+      // If we don't know about this channel, insert it in db
+      if (isHistorical === true && !channelsInDb[short_id]) {
+        await channelsApi.$saveChannel({
+          channel_id: short_id,
+          chan_point: `${tx.txid}:${short_id.split('x')[2]}`,
+          last_update: channel.last_update,
+          node1_pub: channel.node1_pub,
+          node2_pub: channel.node2_pub,
+          capacity: (tx.value * 100000000).toString(),
+          node1_policy: null,
+          node2_policy: null,
+        }, 0);
+        channelsInDb[channel.channel_id] = channel;
       }
 
       if (!nodeStats[channel.node1_pub]) {
@@ -269,6 +287,17 @@ class LightningStatsImporter {
         nodeStats[public_key].capacity,
         nodeStats[public_key].channels,
       ]);
+
+      if (!isHistorical) {
+        await DB.query(
+          `UPDATE nodes SET capacity = ?, channels = ? WHERE public_key = ?`,
+          [
+            nodeStats[public_key].capacity,
+            nodeStats[public_key].channels,
+            public_key,
+          ]
+        );
+      }
     }
 
     return {
@@ -281,6 +310,7 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
+    logger.debug('Run the historical importer');
     try {
       let fileList: string[] = [];
       try {
@@ -294,7 +324,7 @@ class LightningStatsImporter {
       fileList.sort().reverse();
 
       const [rows]: any[] = await DB.query(`
-        SELECT UNIX_TIMESTAMP(added) AS added, node_count
+        SELECT UNIX_TIMESTAMP(added) AS added
         FROM lightning_stats
         ORDER BY added DESC
       `);
@@ -341,10 +371,16 @@ class LightningStatsImporter {
           graph = JSON.parse(fileContent);
           graph = await this.cleanupTopology(graph);
         } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`);
           continue;
         }
     
+        if (this.isIncorrectSnapshot(timestamp, graph)) {
+          logger.debug(`Ignoring ${this.topologiesFolder}/${filename}, because we defined it as an incorrect snapshot`);
+          ++totalProcessed;
+          continue;
+        }
+
         if (!logStarted) {
           logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`);
           logStarted = true;
@@ -375,7 +411,7 @@ class LightningStatsImporter {
     }
   }
 
-  async cleanupTopology(graph) {
+  cleanupTopology(graph): ILightningApi.NetworkGraph {
     const newGraph = {
       nodes: <ILightningApi.Node[]>[],
       edges: <ILightningApi.Channel[]>[],
@@ -385,18 +421,23 @@ class LightningStatsImporter {
       const addressesParts = (node.addresses ?? '').split(',');
       const addresses: any[] = [];
       for (const address of addressesParts) {
+        const formatted = Common.findSocketNetwork(address);
         addresses.push({
-          network: '',
-          addr: address
+          network: formatted.network,
+          addr: formatted.url
         });
       }
 
+      let rgb = node.rgb_color ?? '#000000';
+      if (rgb.indexOf('#') === -1) {
+        rgb = `#${rgb}`;
+      }
       newGraph.nodes.push({
         last_update: node.timestamp ?? 0,
         pub_key: node.id ?? null,
-        alias: node.alias ?? null,
+        alias: node.alias ?? node.id.slice(0, 20),
         addresses: addresses,
-        color: node.rgb_color ?? null,
+        color: rgb,
         features: {},
       });
     }
@@ -429,6 +470,69 @@ class LightningStatsImporter {
     }
 
     return newGraph;
+  }
+
+  private isIncorrectSnapshot(timestamp, graph): boolean {
+    if (timestamp >= 1549065600 /* 2019-02-02 */ && timestamp <= 1550620800 /* 2019-02-20 */ && graph.nodes.length < 2600) {
+        return true;
+    }
+    if (timestamp >= 1552953600 /* 2019-03-19 */ && timestamp <= 1556323200 /* 2019-05-27 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1557446400 /* 2019-05-10 */ && timestamp <= 1560470400 /* 2019-06-14 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1561680000 /* 2019-06-28 */ && timestamp <= 1563148800 /* 2019-07-15 */ && graph.nodes.length < 4000) {
+      return true;
+    }
+    if (timestamp >= 1571270400 /* 2019-11-17 */ && timestamp <= 1580601600 /* 2020-02-02 */ && graph.nodes.length < 4500) {
+      return true;
+    }
+    if (timestamp >= 1591142400 /* 2020-06-03 */ && timestamp <= 1592006400 /* 2020-06-13 */ && graph.nodes.length < 5500) {
+      return true;
+    }
+    if (timestamp >= 1632787200 /* 2021-09-28 */ && timestamp <= 1633564800 /* 2021-10-07 */ && graph.nodes.length < 13000) {
+      return true;
+    }
+    if (timestamp >= 1634256000 /* 2021-10-15 */ && timestamp <= 1645401600 /* 2022-02-21 */ && graph.nodes.length < 17000) {
+      return true;
+    }
+    if (timestamp >= 1654992000 /* 2022-06-12 */ && timestamp <= 1661472000 /* 2022-08-26 */ && graph.nodes.length < 14000) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private async $cleanupIncorrectSnapshot(): Promise<void> {
+    // We do not run this one automatically because those stats are not supposed to be inserted in the first
+    // place, but I write them here to remind us we manually run those queries
+
+    // DELETE FROM lightning_stats
+    // WHERE (
+    //   UNIX_TIMESTAMP(added) >= 1549065600 AND UNIX_TIMESTAMP(added) <= 1550620800 AND node_count < 2600 OR
+    //   UNIX_TIMESTAMP(added) >= 1552953600 AND UNIX_TIMESTAMP(added) <= 1556323200 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1557446400 AND UNIX_TIMESTAMP(added) <= 1560470400 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1561680000 AND UNIX_TIMESTAMP(added) <= 1563148800 AND node_count < 4000 OR
+    //   UNIX_TIMESTAMP(added) >= 1571270400 AND UNIX_TIMESTAMP(added) <= 1580601600 AND node_count < 4500 OR
+    //   UNIX_TIMESTAMP(added) >= 1591142400 AND UNIX_TIMESTAMP(added) <= 1592006400 AND node_count < 5500 OR
+    //   UNIX_TIMESTAMP(added) >= 1632787200 AND UNIX_TIMESTAMP(added) <= 1633564800 AND node_count < 13000 OR
+    //   UNIX_TIMESTAMP(added) >= 1634256000 AND UNIX_TIMESTAMP(added) <= 1645401600 AND node_count < 17000 OR
+    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000 AND node_count < 14000
+    // )
+
+    // DELETE FROM node_stats
+    // WHERE (
+    //   UNIX_TIMESTAMP(added) >= 1549065600 AND UNIX_TIMESTAMP(added) <= 1550620800 OR
+    //   UNIX_TIMESTAMP(added) >= 1552953600 AND UNIX_TIMESTAMP(added) <= 1556323200 OR
+    //   UNIX_TIMESTAMP(added) >= 1557446400 AND UNIX_TIMESTAMP(added) <= 1560470400 OR
+    //   UNIX_TIMESTAMP(added) >= 1561680000 AND UNIX_TIMESTAMP(added) <= 1563148800 OR
+    //   UNIX_TIMESTAMP(added) >= 1571270400 AND UNIX_TIMESTAMP(added) <= 1580601600 OR
+    //   UNIX_TIMESTAMP(added) >= 1591142400 AND UNIX_TIMESTAMP(added) <= 1592006400 OR
+    //   UNIX_TIMESTAMP(added) >= 1632787200 AND UNIX_TIMESTAMP(added) <= 1633564800 OR
+    //   UNIX_TIMESTAMP(added) >= 1634256000 AND UNIX_TIMESTAMP(added) <= 1645401600 OR
+    //   UNIX_TIMESTAMP(added) >= 1654992000 AND UNIX_TIMESTAMP(added) <= 1661472000 
+    // )
   }
 }
 
