@@ -12,7 +12,7 @@
         <th class="timestamp-update text-left" i18n="lightning.last_update">Last update</th>
         <th class="capacity text-right" i18n="lightning.capacity">Capacity</th>
         <th class="channels text-right" i18n="lightning.channels">Channels</th>
-        <th class="city text-right" i18n="lightning.city">City</th>
+        <th class="city text-right" i18n="lightning.location">Location</th>
       </thead>
       <tbody *ngIf="nodes$ | async as nodes">
         <tr *ngFor="let node of nodes; let i= index; trackBy: trackByPublicKey">
