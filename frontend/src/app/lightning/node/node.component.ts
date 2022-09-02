@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
-import { isMobile } from '../../shared/common.utils';
 import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
 
 @Component({
@@ -22,18 +21,13 @@ export class NodeComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
-
-  publicKeySize = 99;
+  channelListLoading = false;
 
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
-  ) {
-    if (isMobile()) {
-      this.publicKeySize = 12;
-    }
-  }
+  ) { }
 
   ngOnInit(): void {
     this.node$ = this.activatedRoute.paramMap
@@ -96,5 +90,9 @@ export class NodeComponent implements OnInit {
 
   onChannelsListStatusChanged(e) {
     this.channelsListStatus = e;
+  }
+
+  onLoadingEvent(e) {
+    this.channelListLoading = e;
   }
 }

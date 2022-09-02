@@ -1,2 +1,21 @@
 #!/usr/bin/env zsh
-killall sh node
+
+# kill "while true" loops
+killall sh
+
+# kill actual node backends
+killall node
+
+# kill unfurler chrome instances
+killall chrome
+
+# kill xorg
+killall xinit
+
+# kill nginx cache warmer scripts
+for pid in `ps uaxww|grep warmer|grep zsh|awk '{print $2}'`;do
+    kill $pid
+done
+
+# always exit successfully despite above errors
+exit 0

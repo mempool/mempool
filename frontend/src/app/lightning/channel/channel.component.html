@@ -1,4 +1,4 @@
-<div class="container-xl" *ngIf="(channel$ | async) as channel">
+<div class="container-xl" *ngIf="(channel$ | async) as channel; else skeletonLoader">
   <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
   <div class="title-container">
     <h1 class="mb-0">{{ channel.short_id }}</h1>
@@ -11,6 +11,7 @@
     <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
     <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
     <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
+    <app-closing-type *ngIf="channel.closing_reason" [type]="channel.closing_reason"></app-closing-type>
   </div>
 
   <div class="clearfix"></div>
@@ -64,14 +65,18 @@
 
     <ng-container *ngIf="transactions$ | async as transactions">
       <ng-template [ngIf]="transactions[0]">
-        <h3>Opening transaction</h3>
-        <app-transactions-list [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [], outputs: [channel] }"></app-transactions-list>
+        <div class="d-flex">
+          <h3>Opening transaction</h3>
+          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList1.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
+        </div>
+        <app-transactions-list #txList1 [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
       <ng-template [ngIf]="transactions[1]">
-        <div class="closing-header">
+        <div class="closing-header d-flex">
           <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason"></app-closing-type>
+          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList2.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
         </div>
-        <app-transactions-list [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5" [channels]="{ inputs: [channel], outputs: [] }"></app-transactions-list>
+        <app-transactions-list #txList2 [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
       </ng-template>
     </ng-container>
 
@@ -84,5 +89,63 @@
     <span i18n="error.general-loading-data">Error loading data.</span>
     <br><br>
     <i>{{ error.status }}: {{ error.error }}</i>
+  </div>
+</ng-template>
+
+<ng-template #skeletonLoader>
+  <div class="container-xl">
+    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
+    <div class="title-container">
+      <h1 class="mb-0"><span class="skeleton-loader" style="width: 275px; height: 25px;"></span></h1>
+      <span class="tx-link">
+        <span class="skeleton-loader" style="margin-bottom: 5px; width: 210px;"></span>
+      </span>
+    </div>
+    <div class="badges mb-2">
+      <span class="skeleton-loader" style="width: 50px; height: 22px; margin-top: 5px;"></span>
+    </div>
+  
+    <div class="clearfix"></div>
+
+    <div style="height: 413px;  padding: 15px;">
+      <div class="text-center loading-spinner">
+        <div class="spinner-border text-light"></div>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </ng-template>

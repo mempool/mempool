@@ -2,6 +2,12 @@
 hostname=$(hostname)
 slugs=(`curl -sSL https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json | jq -r '.slugs[]'`)
 
+warm()
+{
+	echo "$1"
+	curl -i -s "$1" | head -1
+}
+
 while true
 do for url in / \
 	'/api/v1/blocks' \
@@ -79,16 +85,48 @@ do for url in / \
 	'/api/v1/mining/difficulty-adjustments/all' \
 	'/api/v1/lightning/channels-geo?style=widget' \
 	'/api/v1/lightning/channels-geo?style=graph' \
+	'/api/v1/lightning/statistics/latest' \
+	'/api/v1/lightning/statistics/1m' \
+	'/api/v1/lightning/statistics/3m' \
+	'/api/v1/lightning/statistics/6m' \
+	'/api/v1/lightning/statistics/1y' \
+	'/api/v1/lightning/statistics/2y' \
+	'/api/v1/lightning/statistics/3y' \
+	'/api/v1/lightning/statistics/all' \
+	'/api/v1/lightning/nodes/isp-ranking' \
+	'/api/v1/lightning/nodes/isp/396982,15169' `# Google` \
+	'/api/v1/lightning/nodes/isp/14618,16509' `# Amazon` \
+	'/api/v1/lightning/nodes/isp/39572' `# DataWeb` \
+	'/api/v1/lightning/nodes/isp/14061' `# Digital Ocean` \
+	'/api/v1/lightning/nodes/isp/24940,213230' `# Hetzner` \
+	'/api/v1/lightning/nodes/isp/394745' `# LunaNode` \
+	'/api/v1/lightning/nodes/isp/45102' `# Alibaba` \
+	'/api/v1/lightning/nodes/isp/3209' `# Vodafone Germany` \
+	'/api/v1/lightning/nodes/isp/7922' `# Comcast Cable` \
+	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL` \
+	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU` \
+	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS` \
+	'/api/v1/lightning/nodes/isp/11426,11427,20001,20115,11351,10796,33363,12271' `# Spectrum` \
+	'/api/v1/lightning/nodes/isp/701' `# Verizon` \
+	'/api/v1/lightning/nodes/isp/12876' `# Scaleway` \
+	'/api/v1/lightning/nodes/isp/33915' `# Ziggo` \
+	'/api/v1/lightning/nodes/isp/3320' `# Deutsche Telekom AG` \
+	'/api/v1/lightning/nodes/isp/8075' `# Microsoft Azure` \
+	'/api/v1/lightning/nodes/countries' \
+	'/api/v1/lightning/nodes/rankings' \
+	'/api/v1/lightning/nodes/rankings/liquidity' \
+	'/api/v1/lightning/nodes/rankings/connectivity' \
+	'/api/v1/lightning/nodes/rankings/age' \
 
 	do
-		curl -s "https://${hostname}${url}" >/dev/null
+		warm "https://${hostname}${url}"
 	done
 
 	for slug in $slugs
 	do
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/hashrate" >/dev/null
-		curl -s "https://${hostname}/api/v1/mining/pool/${slug}/blocks" >/dev/null
+		warm "https://${hostname}/api/v1/mining/pool/${slug}"
+		warm "https://${hostname}/api/v1/mining/pool/${slug}/hashrate"
+		warm "https://${hostname}/api/v1/mining/pool/${slug}/blocks"
 	done
 
 	sleep 10

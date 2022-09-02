@@ -63,6 +63,9 @@ class NetworkSyncService {
     let deletedSockets = 0;
     const graphNodesPubkeys: string[] = [];
     for (const node of nodes) {
+      const latestUpdated = await channelsApi.$getLatestChannelUpdateForNode(node.pub_key);
+      node.last_update = Math.max(node.last_update, latestUpdated);
+
       await nodesApi.$saveNode(node);
       graphNodesPubkeys.push(node.pub_key);
       ++progress;
@@ -83,7 +86,7 @@ class NetworkSyncService {
     logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted`);
 
     // If a channel if not present in the graph, mark it as inactive
-    nodesApi.$setNodesInactive(graphNodesPubkeys);
+    await nodesApi.$setNodesInactive(graphNodesPubkeys);
 
     if (config.MAXMIND.ENABLED) {
       $lookupNodeLocation();
@@ -98,7 +101,7 @@ class NetworkSyncService {
       const [closedChannelsRaw]: any[] = await DB.query(`SELECT id FROM channels WHERE status = 2`);
       const closedChannels = {};
       for (const closedChannel of closedChannelsRaw) {
-        closedChannels[Common.channelShortIdToIntegerId(closedChannel.id)] = true;
+        closedChannels[closedChannel.id] = true;
       }
 
       let progress = 0;
@@ -121,7 +124,7 @@ class NetworkSyncService {
       logger.info(`${progress} channels updated`);
 
       // If a channel if not present in the graph, mark it as inactive
-      channelsApi.$setChannelsInactive(graphChannelsIds);
+      await channelsApi.$setChannelsInactive(graphChannelsIds);
     } catch (e) {
       logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
     }
@@ -285,44 +288,66 @@ class NetworkSyncService {
       for (const channel of channels) {
         let reason = 0;
         // Only Esplora backend can retrieve spent transaction outputs
-        const outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
-        const lightningScriptReasons: number[] = [];
-        for (const outspend of outspends) {
-          if (outspend.spent && outspend.txid) {
-            const spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
-            const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
-            lightningScriptReasons.push(lightningScript);
+        try {
+          let outspends: IEsploraApi.Outspend[] | undefined;
+          try {
+            outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
+          } catch (e) {
+            logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+            continue;
           }
-        }
-        if (lightningScriptReasons.length === outspends.length
-          && lightningScriptReasons.filter((r) => r === 1).length === outspends.length) {
-          reason = 1;
-        } else {
-          const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
-          if (filteredReasons.length) {
-            if (filteredReasons.some((r) => r === 2 || r === 4)) {
-              reason = 3;
-            } else {
-              reason = 2;
+          const lightningScriptReasons: number[] = [];
+          for (const outspend of outspends) {
+            if (outspend.spent && outspend.txid) {
+              let spendingTx: IEsploraApi.Transaction | undefined;
+              try {
+                spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
+              } catch (e) {
+                logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
+                continue;
+              }
+              const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
+              lightningScriptReasons.push(lightningScript);
             }
+          }
+          if (lightningScriptReasons.length === outspends.length
+            && lightningScriptReasons.filter((r) => r === 1).length === outspends.length) {
+            reason = 1;
           } else {
-            /*
-              We can detect a commitment transaction (force close) by reading Sequence and Locktime
-              https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
-            */
-            const closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
-            const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
-            const locktimeHex: string = closingTx.locktime.toString(16);
-            if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
-              reason = 2; // Here we can't be sure if it's a penalty or not
+            const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
+            if (filteredReasons.length) {
+              if (filteredReasons.some((r) => r === 2 || r === 4)) {
+                reason = 3;
+              } else {
+                reason = 2;
+              }
             } else {
-              reason = 1;
+              /*
+                We can detect a commitment transaction (force close) by reading Sequence and Locktime
+                https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
+              */
+              let closingTx: IEsploraApi.Transaction | undefined;
+              try {
+                closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
+              } catch (e) {
+                logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
+                continue;
+              }
+              const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
+              const locktimeHex: string = closingTx.locktime.toString(16);
+              if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
+                reason = 2; // Here we can't be sure if it's a penalty or not
+              } else {
+                reason = 1;
+              }
             }
           }
-        }
-        if (reason) {
-          logger.debug('Setting closing reason ' + reason + ' for channel: ' + channel.id + '.');
-          await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+          if (reason) {
+            logger.debug('Setting closing reason ' + reason + ' for channel: ' + channel.id + '.');
+            await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+          }
+        } catch (e) {
+          logger.err(`$runClosedChannelsForensics() failed for channel ${channel.short_id}. Reason: ${e instanceof Error ? e.message : e}`);
         }
 
         ++progress;

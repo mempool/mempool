@@ -11,6 +11,7 @@ interface IConfig {
     NETWORK?: string;
   };
   PUPPETEER: {
+    ENABLED: boolean;
     CLUSTER_SIZE: number;
     EXEC_PATH?: string;
     MAX_PAGE_AGE?: number;
@@ -28,6 +29,7 @@ const defaults: IConfig = {
     'HTTP_PORT': 4200,
   },
   'PUPPETEER': {
+    'ENABLED': true,
     'CLUSTER_SIZE': 1,
   },
 };

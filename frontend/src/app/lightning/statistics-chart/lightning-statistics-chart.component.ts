@@ -113,7 +113,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         left: 'center',
         top: 'center'
       };
-    } else if (data.channel_count.length > 0) {
+    } else if (this.widget && data.channel_count.length > 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -274,7 +274,7 @@ export class LightningStatisticsChartComponent implements OnInit {
               width: 1,
             },
           },
-          smooth: true,
+          smooth: false,
         },
         {
           zlevel: 0,
@@ -288,7 +288,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             opacity: 0.5,
           },
           type: 'line',
-          smooth: true,
+          smooth: false,
         }
       ],
       dataZoom: this.widget ? null : [{

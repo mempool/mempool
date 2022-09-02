@@ -114,11 +114,14 @@ export const restApiDocsData = [
           curl: [],
           response: `{
   progressPercent: 44.397234501112074,
-  difficultyChange: 0.9845932018381687,
-  estimatedRetargetDate: 1627762478.9111245,
+  difficultyChange: 98.45932018381687,
+  estimatedRetargetDate: 1627762478,
   remainingBlocks: 1121,
-  remainingTime: 665977.6261244365,
-  previousRetarget: -4.807005268478962
+  remainingTime: 665977,
+  previousRetarget: -4.807005268478962,
+  nextRetargetHeight: 741888,
+  timeAvg: 302328,
+  timeOffset: 0
 }`
         },
         codeSampleTestnet: {
@@ -127,11 +130,14 @@ export const restApiDocsData = [
           curl: [],
           response: `{
   progressPercent: 44.397234501112074,
-  difficultyChange: 0.9845932018381687,
-  estimatedRetargetDate: 1627762478.9111245,
+  difficultyChange: 98.45932018381687,
+  estimatedRetargetDate: 1627762478,
   remainingBlocks: 1121,
-  remainingTime: 665977.6261244365,
-  previousRetarget: -4.807005268478962
+  remainingTime: 665977,
+  previousRetarget: -4.807005268478962,
+  nextRetargetHeight: 741888,
+  timeAvg: 302328,
+  timeOffset: 0
 }`
         },
         codeSampleSignet: {
@@ -140,11 +146,14 @@ export const restApiDocsData = [
           curl: [],
           response: `{
   progressPercent: 44.397234501112074,
-  difficultyChange: 0.9845932018381687,
-  estimatedRetargetDate: 1627762478.9111245,
+  difficultyChange: 98.45932018381687,
+  estimatedRetargetDate: 1627762478,
   remainingBlocks: 1121,
-  remainingTime: 665977.6261244365,
-  previousRetarget: -4.807005268478962
+  remainingTime: 665977,
+  previousRetarget: -4.807005268478962,
+  nextRetargetHeight: 741888,
+  timeAvg: 302328,
+  timeOffset: 0
 }`
         },
         codeSampleLiquid: {
@@ -153,11 +162,14 @@ export const restApiDocsData = [
           curl: [],
           response: `{
   progressPercent: 44.397234501112074,
-  difficultyChange: 0.9845932018381687,
-  estimatedRetargetDate: 1627762478.9111245,
+  difficultyChange: 98.45932018381687,
+  estimatedRetargetDate: 1627762478,
   remainingBlocks: 1121,
-  remainingTime: 665977.6261244365,
-  previousRetarget: -4.807005268478962
+  remainingTime: 665977,
+  previousRetarget: -4.807005268478962,
+  nextRetargetHeight: 741888,
+  timeAvg: 302328,
+  timeOffset: 0
 }`
         }
       }

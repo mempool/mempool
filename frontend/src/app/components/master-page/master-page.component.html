@@ -8,7 +8,7 @@
     </div>
   </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
-      <img *ngIf="!officialMempoolSpace" src="/resources/mempool-logo.png" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }" alt="The Mempool Open Source Project logo">
+      <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126" class="mempool-logo" [ngStyle]="{'opacity': connectionState.val === 2 ? 1 : 0.5 }"></app-svg-images>
       <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
       <div class="connection-badge">
         <div class="badge badge-warning" *ngIf="connectionState.val === 0" i18n="master-page.offline">Offline</div>
@@ -19,16 +19,16 @@
 
   <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <img src="/resources/{{ network.val === '' ? 'bitcoin' : network.val }}-logo.png" style="width: 25px; height: 25px;" class="mr-1" [alt]="(network.val === '' ? 'bitcoin' : network.val) + ' logo'">
+      <app-svg-images [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65" style="width: 30px; height: 30px; margin-right: 5px;"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
-      <a ngbDropdownItem class="mainnet" routerLink="/"><img src="/resources/bitcoin-logo.png" style="width: 30px;" class="mainnet mr-1" alt="bitcoin logo"> Mainnet</a>
-      <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><img src="/resources/signet-logo.png" style="width: 30px;" class="signet mr-1" alt="logo"> Signet</a>
-      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><img src="/resources/testnet-logo.png" style="width: 30px;" class="mr-1" alt="testnet logo"> Testnet</a>
+      <a ngbDropdownItem class="mainnet" routerLink="/"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
+      <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" routerLink="/signet"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Signet</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" routerLink="/testnet"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Testnet</a>
       <h6 *ngIf="env.LIQUID_ENABLED || env.BISQ_ENABLED" class="dropdown-header" i18n="master-page.layer2-networks-header">Layer 2 Networks</h6>
-      <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><img src="/resources/bisq-logo.png" style="width: 30px;" class="mr-1" alt="bisq logo"> Bisq</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><img src="/resources/liquid-logo.png" style="width: 30px;" class="mr-1" alt="liquid mainnet logo"> Liquid</a>
-      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><img src="/resources/liquidtestnet-logo.png" style="width: 30px;" class="mr-1" alt="liquid testnet logo"> Liquid Testnet</a>
+      <a [href]="env.BISQ_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><app-svg-images name="bisq" width="20" height="20" viewBox="0 0 75 75" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Bisq</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
+      <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + '/testnet'" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
     </div>
   </div>
 

@@ -1,10 +1,11 @@
-<div class="container-xl" *ngIf="(node$ | async) as node">
+<div class="container-xl" *ngIf="(node$ | async) as node; else skeletonLoader">
   <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
   <div class="title-container mb-2" *ngIf="!error">
-    <h1 class="mb-0">{{ node.alias }}</h1>
+    <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
     <span class="tx-link">
       <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        {{ node.public_key | shortenString : publicKeySize }}
+        <span class="d-inline d-lg-none">{{ node.public_key | shortenString : 24 }}</span>
+        <span class="d-none d-lg-inline">{{ node.public_key }}</span>
       </a>
       <app-clipboard [text]="node.public_key"></app-clipboard>
     </span>
@@ -21,30 +22,30 @@
 
     <div class="row">
       <div class="col-md">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped table-fixed">
           <tbody>
             <tr>
-              <td i18n="lightning.active-capacity">Active capacity</td>
+              <td i18n="lightning.active-capacity" class="text-truncate label">Active capacity</td>
               <td>
                 <app-sats [satoshis]="node.capacity"></app-sats>
                 <app-fiat [value]="node.capacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
             <tr>
-              <td i18n="lightning.active-channels">Active channels</td>
+              <td i18n="lightning.active-channels" class="text-truncate label">Active channels</td>
               <td>
                 {{ node.active_channel_count }}
               </td>
             </tr>
             <tr>
-              <td i18n="lightning.active-channels-avg">Average channel size</td>
+              <td i18n="lightning.active-channels-avg" class="text-wrap label">Average channel size</td>
               <td>
                 <app-sats [satoshis]="node.avgCapacity"></app-sats>
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
             <tr *ngIf="node.geolocation">
-              <td i18n="location">Location</td>
+              <td i18n="location" class="text-truncate">Location</td>
               <td>
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
               </td>
@@ -54,30 +55,30 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col-md">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped table-fixed">
           <tbody>
             <tr>
-              <td i18n="address.total-received">First seen</td>
+              <td i18n="address.total-received" class="text-truncate label">First seen</td>
               <td>
                 <app-timestamp [unixTime]="node.first_seen"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.total-sent">Last update</td>
+              <td i18n="address.total-sent" class="text-truncate label">Last update</td>
               <td>
                 <app-timestamp [unixTime]="node.updated_at"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.balance">Color</td>
+              <td i18n="address.balance" class="text-truncate label">Color</td>
               <td>
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
             </tr>
             <tr *ngIf="node.country">
-              <td i18n="isp">ISP</td>
+              <td i18n="isp" class="text-truncate label">ISP</td>
               <td>
-                <a [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
+                <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
               </td>
@@ -114,20 +115,140 @@
       </div>
     </button>
     <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
-      <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket"></app-clipboard>
+      <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
     </button>
   </div>
 
-  <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key"></app-nodes-channels-map>
-  <app-node-statistics-chart [publicKey]="node.public_key" *ngIf="!error"></app-node-statistics-chart>
+  <div *ngIf="!error">
+    <div class="row" *ngIf="node.as_number">
+      <div class="col-sm">
+        <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key" [hasLocation]="!!node.as_number"></app-nodes-channels-map>
+      </div>
+      <div class="col-sm">
+        <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+      </div>
+    </div>
+    <div *ngIf="!node.as_number">
+      <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
+    </div>
 
-  <div class="d-flex justify-content-between" *ngIf="!error">
-    <h2>Channels ({{ channelsListStatus === 'open' ? node.opened_channel_count : node.closed_channel_count }})</h2>
+    <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
+
+    <div class="d-flex">
+      <h2 *ngIf="channelsListStatus === 'open'">
+        <span i18n="lightning.open-channels">Open channels</span>
+        <span> ({{ node.opened_channel_count }})</span>
+      </h2>
+      <h2 *ngIf="channelsListStatus === 'closed'">
+        <span i18n="lightning.open-channels">Closed channels</span>
+        <span> ({{ node.closed_channel_count }})</span>
+      </h2>
+      <div *ngIf="channelListLoading" class="spinner-border ml-3" role="status"></div>
+    </div>
+
+    <app-channels-list [publicKey]="node.public_key"
+      (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"
+      (loadingEvent)="onLoadingEvent($event)"
+    ></app-channels-list>
   </div>
-
-  <app-channels-list *ngIf="!error" [publicKey]="node.public_key"
-    (channelsStatusChangedEvent)="onChannelsListStatusChanged($event)"></app-channels-list>
     
 </div>
+
+<ng-template #skeletonLoader>
+  <div class="container-xl">
+    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
+    <div class="title-container mb-2">
+      <h1 class="mb-0"><span class="skeleton-loader" style="width: 250px; height: 36px; margin-top: 5px; margin-bottom: 5px;"></span></h1>
+      <span class="tx-link">
+        <span class="skeleton-loader" style="margin-bottom: 3px; width: 80%;"></span>
+      </span>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="box">
+
+      <div class="row">
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="w-100 d-block d-md-none"></div>
+        <div class="col-md">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+    </div>
+
+    <div class="input-group mt-3" >
+    <span class="input-group-text" id="basic-addon3"><span class="skeleton-loader" style="width: 75px;"></span></span>
+      <input type="text" class="form-control" disabled style="opacity: 0.3;">
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
+        <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
+      </button>
+      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
+        <app-clipboard [text]="''"></app-clipboard>
+      </button>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col-sm">
+        <div style="height: 400px;">
+          <div class="text-center loadingGraphs">
+            <div class="spinner-border text-light"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div style="height: 400px;">
+          <div class="text-center loadingGraphs">
+            <div class="spinner-border text-light"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
 
 <br>

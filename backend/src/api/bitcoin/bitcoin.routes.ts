@@ -510,7 +510,12 @@ class BitcoinRoutes {
 
   private getDifficultyChange(req: Request, res: Response) {
     try {
-      res.json(difficultyAdjustment.getDifficultyAdjustment());
+      const da = difficultyAdjustment.getDifficultyAdjustment();
+      if (da) {
+        res.json(da);
+      } else {
+        res.status(503).send(`Service Temporarily Unavailable`);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

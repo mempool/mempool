@@ -18,6 +18,7 @@ import { LanguageService } from './services/language.service';
 import { FiatShortenerPipe } from './shared/pipes/fiat-shortener.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
 import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe';
+import { AppPreloadingStrategy } from './app.preloading-strategy';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe
     ShortenStringPipe,
     FiatShortenerPipe,
     CapAddressPipe,
+    AppPreloadingStrategy,
     { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

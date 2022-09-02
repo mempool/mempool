@@ -242,12 +242,12 @@ export class ApiService {
     return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/enterprise/info/` + name);
   }
 
-  getChannelByTxIds$(txIds: string[]): Observable<{ inputs: any[], outputs: any[] }> {
+  getChannelByTxIds$(txIds: string[]): Observable<any[]> {
     let params = new HttpParams();
     txIds.forEach((txId: string) => {
       params = params.append('txId[]', txId);
     });
-    return this.httpClient.get<{ inputs: any[], outputs: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
   }
 
   lightningSearch$(searchText: string): Observable<any[]> {
