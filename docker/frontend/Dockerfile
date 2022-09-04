@@ -14,7 +14,7 @@ RUN apt-get install -y build-essential rsync
 RUN npm install --omit=dev --omit=optional
 RUN npm run build
 
-FROM nginx:1.17.8
+FROM nginx:1.17.8-alpine
 ARG UID
 ARG GID
 
@@ -37,7 +37,10 @@ RUN chown -R $UID:$GID /patch && chmod -R 755 /patch && \
 RUN touch /var/run/nginx.pid && \
         chown -R $UID:$GID /var/run/nginx.pid
 
-RUN usermod -u $UID -o nginx && groupmod -g $GID -o nginx
+RUN deluser nginx \
+    && addgroup -g $GID -S nginx \
+    && adduser -S -D -H -u $UID -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+
 USER $UID
 
 ENTRYPOINT ["/patch/entrypoint.sh"]
