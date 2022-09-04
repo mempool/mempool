@@ -374,6 +374,7 @@ class ChannelsApi {
       'transaction_vout': channel.transaction_vout,
       'closing_transaction_id': channel.closing_transaction_id,
       'closing_reason': channel.closing_reason,
+      'closing_date': channel.closing_date,
       'updated_at': channel.updated_at,
       'created': channel.created,
       'status': channel.status,
