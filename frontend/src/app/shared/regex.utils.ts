@@ -1,142 +1,3 @@
-export function isMobile(): boolean {
-  return (window.innerWidth <= 767.98);
-}
-
-export function getFlagEmoji(countryCode): string {
-  if (!countryCode) {
-    return '';
-  }
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
-}
-
-// https://gist.github.com/calebgrove/c285a9510948b633aa47
-export function convertRegion(input, to: 'name' | 'abbreviated'): string {
-  if (!input) {
-    return '';
-  }
-
-  const states = [
-    ['Alabama', 'AL'],
-    ['Alaska', 'AK'],
-    ['American Samoa', 'AS'],
-    ['Arizona', 'AZ'],
-    ['Arkansas', 'AR'],
-    ['Armed Forces Americas', 'AA'],
-    ['Armed Forces Europe', 'AE'],
-    ['Armed Forces Pacific', 'AP'],
-    ['California', 'CA'],
-    ['Colorado', 'CO'],
-    ['Connecticut', 'CT'],
-    ['Delaware', 'DE'],
-    ['District Of Columbia', 'DC'],
-    ['Florida', 'FL'],
-    ['Georgia', 'GA'],
-    ['Guam', 'GU'],
-    ['Hawaii', 'HI'],
-    ['Idaho', 'ID'],
-    ['Illinois', 'IL'],
-    ['Indiana', 'IN'],
-    ['Iowa', 'IA'],
-    ['Kansas', 'KS'],
-    ['Kentucky', 'KY'],
-    ['Louisiana', 'LA'],
-    ['Maine', 'ME'],
-    ['Marshall Islands', 'MH'],
-    ['Maryland', 'MD'],
-    ['Massachusetts', 'MA'],
-    ['Michigan', 'MI'],
-    ['Minnesota', 'MN'],
-    ['Mississippi', 'MS'],
-    ['Missouri', 'MO'],
-    ['Montana', 'MT'],
-    ['Nebraska', 'NE'],
-    ['Nevada', 'NV'],
-    ['New Hampshire', 'NH'],
-    ['New Jersey', 'NJ'],
-    ['New Mexico', 'NM'],
-    ['New York', 'NY'],
-    ['North Carolina', 'NC'],
-    ['North Dakota', 'ND'],
-    ['Northern Mariana Islands', 'NP'],
-    ['Ohio', 'OH'],
-    ['Oklahoma', 'OK'],
-    ['Oregon', 'OR'],
-    ['Pennsylvania', 'PA'],
-    ['Puerto Rico', 'PR'],
-    ['Rhode Island', 'RI'],
-    ['South Carolina', 'SC'],
-    ['South Dakota', 'SD'],
-    ['Tennessee', 'TN'],
-    ['Texas', 'TX'],
-    ['US Virgin Islands', 'VI'],
-    ['Utah', 'UT'],
-    ['Vermont', 'VT'],
-    ['Virginia', 'VA'],
-    ['Washington', 'WA'],
-    ['West Virginia', 'WV'],
-    ['Wisconsin', 'WI'],
-    ['Wyoming', 'WY'],
-  ];
-
-  // So happy that Canada and the US have distinct abbreviations
-  const provinces = [
-    ['Alberta', 'AB'],
-    ['British Columbia', 'BC'],
-    ['Manitoba', 'MB'],
-    ['New Brunswick', 'NB'],
-    ['Newfoundland', 'NF'],
-    ['Northwest Territory', 'NT'],
-    ['Nova Scotia', 'NS'],
-    ['Nunavut', 'NU'],
-    ['Ontario', 'ON'],
-    ['Prince Edward Island', 'PE'],
-    ['Quebec', 'QC'],
-    ['Saskatchewan', 'SK'],
-    ['Yukon', 'YT'],
-  ];
-
-  const regions = states.concat(provinces);
-
-  let i; // Reusable loop variable
-  if (to == 'abbreviated') {
-    input = input.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
-    for (i = 0; i < regions.length; i++) {
-      if (regions[i][0] == input) {
-        return (regions[i][1]);
-      }
-    }
-  } else if (to == 'name') {
-    input = input.toUpperCase();
-    for (i = 0; i < regions.length; i++) {
-      if (regions[i][1] == input) {
-        return (regions[i][0]);
-      }
-    }
-  }
-}
-
-export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const rlat1 = lat1 * Math.PI / 180;
-  const rlon1 = lon1 * Math.PI / 180;
-  const rlat2 = lat2 * Math.PI / 180;
-  const rlon2 = lon2 * Math.PI / 180;
-
-  const dlat = Math.sin((rlat2 - rlat1) / 2);
-  const dlon = Math.sin((rlon2 - rlon1) / 2);
-  const a = Math.min(1, Math.max(0, (dlat * dlat) + (Math.cos(rlat1) * Math.cos(rlat2) * dlon * dlon)));
-  const d = 2 * 6371 * Math.asin(Math.sqrt(a));
-
-  return d;
-}
-
-export function kmToMiles(km: number): number {
-  return km * 0.62137119;
-}
-
 // all base58 characters
 const BASE58_CHARS = `[a-km-zA-HJ-NP-Z1-9]`;
 
@@ -277,6 +138,13 @@ export type Network = typeof NETWORKS[number]; // Turn const array into union ty
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
   .map(network => [getRegex('address', network), network])
+
+export function findOtherNetworks(address: string, skipNetwork: Network): Network[] {
+  return ADDRESS_REGEXES.filter(([regex, network]) =>
+    network !== skipNetwork &&
+    regex.test(address)
+  ).map(([, network]) => network);
+}
 
 export function getRegex(type: RegexTypeNoAddr): RegExp;
 export function getRegex(type: 'address', network: Network): RegExp;

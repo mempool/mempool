@@ -9,7 +9,7 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { ApiService } from '../../services/api.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
-import { ADDRESS_REGEXES, getRegex } from '../../shared/common.utils';
+import { findOtherNetworks, getRegex } from '../../shared/regex.utils';
 
 @Component({
   selector: 'app-search-form',
@@ -208,22 +208,13 @@ export class SearchFormComponent implements OnInit {
     const searchText = result || this.searchForm.value.searchText.trim();
     if (searchText) {
       this.isSearching = true;
+
+      const otherNetworks = findOtherNetworks(searchText, this.network as any);
       if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
-      } else if (
-        // If the search text matches any other network besides this one
-        ADDRESS_REGEXES
-          .filter(([, network]) => network !== this.network)
-          .some(([regex]) => regex.test(searchText))
-      ) {
-        // Gather all network matches as string[]
-        const networks = ADDRESS_REGEXES.filter(([regex, network]) =>
-          network !== this.network &&
-          regex.test(searchText)
-        ).map(([, network]) => network);
-        // ###############################################
-        // TODO: Create the search items for the drop down
-        // ###############################################
+      } else if (otherNetworks.length > 0) {
+        // Change the network to the first match
+        this.navigate('/address/', searchText, undefined, otherNetworks[0]);
       } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
         this.navigate('/block/', searchText);
       } else if (this.regexTransaction.test(searchText)) {
@@ -252,8 +243,9 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  navigate(url: string, searchText: string, extras?: any): void {
-    this.router.navigate([this.relativeUrlPipe.transform(url), searchText], extras);
+
+  navigate(url: string, searchText: string, extras?: any, swapNetwork?: string) {
+    this.router.navigate([this.relativeUrlPipe.transform(url, swapNetwork), searchText], extras);
     this.searchTriggered.emit();
     this.searchForm.setValue({
       searchText: '',

@@ -10,8 +10,8 @@ export class RelativeUrlPipe implements PipeTransform {
     private stateService: StateService,
   ) { }
 
-  transform(value: string): string {
-    let network = this.stateService.network;
+  transform(value: string, swapNetwork?: string): string {
+    let network = swapNetwork || this.stateService.network;
     if (this.stateService.env.BASE_MODULE === 'liquid' && network === 'liquidtestnet') {
       network = 'testnet';
     } else if (this.stateService.env.BASE_MODULE !== 'mempool') {
