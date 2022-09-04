@@ -1,3 +1,6 @@
+ARG UID=1000
+ARG GID=1000
+
 FROM node:16.16.0-buster-slim AS builder
 
 ARG commitHash
@@ -11,7 +14,9 @@ RUN apt-get install -y build-essential rsync
 RUN npm install --omit=dev --omit=optional
 RUN npm run build
 
-FROM nginx:1.17.8-alpine
+FROM nginx:1.17.8
+ARG UID
+ARG GID
 
 WORKDIR /patch
 
@@ -24,15 +29,16 @@ COPY --from=builder /build/nginx-mempool.conf /etc/nginx/conf.d/
 RUN chmod +x /patch/entrypoint.sh
 RUN chmod +x /patch/wait-for
 
-RUN chown -R 1000:1000 /patch && chmod -R 755 /patch && \
-        chown -R 1000:1000 /var/cache/nginx && \
-        chown -R 1000:1000 /var/log/nginx && \
-        chown -R 1000:1000 /etc/nginx/nginx.conf && \
-        chown -R 1000:1000 /etc/nginx/conf.d
+RUN chown -R $UID:$GID /patch && chmod -R 755 /patch && \
+        chown -R $UID:$GID /var/cache/nginx && \
+        chown -R $UID:$GID /var/log/nginx && \
+        chown -R $UID:$GID /etc/nginx/nginx.conf && \
+        chown -R $UID:$GID /etc/nginx/conf.d
 RUN touch /var/run/nginx.pid && \
-        chown -R 1000:1000 /var/run/nginx.pid
+        chown -R $UID:$GID /var/run/nginx.pid
 
-USER 1000
+RUN usermod -u $UID -o nginx && groupmod -g $GID -o nginx
+USER $UID
 
 ENTRYPOINT ["/patch/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
