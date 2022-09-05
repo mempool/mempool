@@ -203,6 +203,6 @@ sed -i "s!__LND_MACAROON_PATH__!${__LND_MACAROON_PATH__}!g" mempool-config.json
 sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
 
 # CLN
-sed -i "s!__CLN_SOCKET__!${__CLN_SOCKET__}!g" mempool-config.json
+sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
 
 node /backend/dist/index.js
