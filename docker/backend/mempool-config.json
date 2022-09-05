@@ -81,7 +81,7 @@
     "REST_API_URL": "__LND_REST_API_URL__"
   },
   "CLIGHTNING": {
-    "SOCKET": "__CLN_SOCKET__"
+    "SOCKET": "__CLIGHTNING_SOCKET__"
   },
   "SOCKS5PROXY": {
     "ENABLED": __SOCKS5PROXY_ENABLED__,
