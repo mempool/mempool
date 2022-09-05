@@ -1,5 +1,6 @@
 import { Application, Request, Response } from 'express';
 import axios from 'axios';
+import * as bitcoinjs from 'bitcoinjs-lib';
 import config from '../../config';
 import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
@@ -95,6 +96,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', this.getMempool)
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', this.getMempoolTxIds)
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', this.getRecentMempoolTransactions)
+          .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', this.getTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'tx', this.$postTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
@@ -238,6 +240,48 @@ class BitcoinRoutes {
         statusCode = 404;
       }
       res.status(statusCode).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  /**
+   * Takes the PSBT as text/plain body, parses it, and adds the full
+   * parent transaction to each input that doesn't already have it.
+   * This is used for BTCPayServer / Trezor users which need access to
+   * the full parent transaction even with segwit inputs.
+   * It will respond with a text/plain PSBT in the same format (hex|base64).
+   */
+  private async postPsbtCompletion(req: Request, res: Response) {
+    res.setHeader('content-type', 'text/plain');
+    try {
+      let psbt: bitcoinjs.Psbt;
+      let format: 'hex' | 'base64';
+      try {
+        psbt = bitcoinjs.Psbt.fromBase64(req.body);
+        format = 'base64';
+      } catch(e1) {
+        try {
+          psbt = bitcoinjs.Psbt.fromHex(req.body);
+          format = 'hex';
+        } catch(e2) {
+          throw new Error(`Unable to parse PSBT`);
+        }
+      }
+      for (const [index, input] of psbt.data.inputs.entries()) {
+        if (!input.nonWitnessUtxo) {
+          // Buffer.from ensures it won't be modified in place by reverse()
+          const txid = Buffer.from(psbt.txInputs[index].hash).reverse().toString('hex');
+          const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txid, true);
+          if (!transaction.hex) {
+            throw new Error(`Couldn't get transaction hex for ${txid}`);
+          }
+          psbt.updateInput(index, {
+            nonWitnessUtxo: Buffer.from(transaction.hex, 'hex'),
+          });
+        }
+      }
+      res.send(format === 'hex' ? psbt.toHex() : psbt.toBase64());
+    } catch (e: any) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 
