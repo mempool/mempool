@@ -122,10 +122,13 @@ export class NodesMap implements OnInit {
             return 10 * Math.pow(params[2] / maxLiquidity, 0.2) + 3;
           },
           tooltip: {
+            position: function(point, params, dom, rect, size) {
+              return point;
+            },
             trigger: 'item',
             show: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',
-            borderRadius: 4,
+            borderRadius: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
               color: '#b1b1b1',
@@ -155,7 +158,6 @@ export class NodesMap implements OnInit {
             borderColor: 'black',
             borderWidth: 0,
           },
-          blendMode: 'lighter',
           zlevel: 2,
         },
       ]
