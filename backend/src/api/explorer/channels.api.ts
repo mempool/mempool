@@ -39,7 +39,8 @@ class ChannelsApi {
         FROM channels
         JOIN nodes AS nodes_1 on nodes_1.public_key = channels.node1_public_key
         JOIN nodes AS nodes_2 on nodes_2.public_key = channels.node2_public_key
-        WHERE nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
+        WHERE channels.status = 1
+          AND nodes_1.latitude IS NOT NULL AND nodes_1.longitude IS NOT NULL
           AND nodes_2.latitude IS NOT NULL AND nodes_2.longitude IS NOT NULL
       `;
 
