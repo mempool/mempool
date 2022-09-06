@@ -89,10 +89,11 @@ export class NodesNetworksChartComponent implements OnInit {
                   tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
                   clearnet_nodes: data.map(val => [val.added * 1000, val.clearnet_nodes]),
                   unannounced_nodes: data.map(val => [val.added * 1000, val.unannounced_nodes]),
+                  clearnet_tor_nodes: data.map(val => [val.added * 1000, val.clearnet_tor_nodes]),
                 };
                 let maxYAxis = 0;
                 for (const day of data) {
-                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes);
+                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes + day.clearnet_tor_nodes);
                 }
                 maxYAxis = Math.ceil(maxYAxis / 3000) * 3000;
                 this.prepareChartOptions(chartData, maxYAxis);
@@ -163,12 +164,15 @@ export class NodesNetworksChartComponent implements OnInit {
           const date = new Date(ticks[0].data[0]).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
           let tooltip = `<b style="color: white; margin-left: 2px">${date}</b><br>`;
 
-          for (const tick of ticks.reverse()) {
+          console.log(ticks);
+          for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Tor
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 1) { // Clearnet
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 2) { // Unannounced
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
+            } else if (tick.seriesIndex === 3) { // Tor + Clearnet
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             }
             tooltip += `<br>`;
@@ -189,14 +193,6 @@ export class NodesNetworksChartComponent implements OnInit {
       legend: this.widget || data.tor_nodes.length === 0 ? undefined : {
         padding: 10,
         data: [
-          {
-            name: $localize`Total`,
-            inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {
-              color: 'white',
-            },
-            icon: 'roundRect',
-          },
           {
             name: $localize`Tor`,
             inactiveColor: 'rgb(110, 112, 121)',
@@ -320,6 +316,27 @@ export class NodesNetworksChartComponent implements OnInit {
           color: new graphic.LinearGradient(0, 0.75, 0, 1, [
             { offset: 0, color: '#FFB300' },
             { offset: 1, color: '#FFB300AA' },
+          ]),
+          smooth: false,
+        },
+        {
+          zlevel: 1,
+          yAxisIndex: 1,
+          name: $localize`Clearnet & Tor`,
+          showSymbol: false,
+          symbol: 'none',
+          data: data.clearnet_tor_nodes,
+          type: 'line',
+          lineStyle: {
+            width: 2,
+          },
+          areaStyle: {
+            opacity: 0.5,
+          },
+          stack: 'Total',
+          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+            { offset: 0, color: '#be7d4c' },
+            { offset: 1, color: '#be7d4cAA' },
           ]),
           smooth: false,
         },
