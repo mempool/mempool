@@ -44,10 +44,13 @@
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
-            <tr *ngIf="node.geolocation">
+            <tr>
               <td i18n="location" class="text-truncate">Location</td>
-              <td>
+              <td *ngIf="node.geolocation">
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
+              </td>
+              <td *ngIf="!node.geolocation">
+                <span i18n="unknown">Unknown</span>
               </td>
             </tr>
           </tbody>
@@ -75,12 +78,15 @@
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
             </tr>
-            <tr *ngIf="node.country">
+            <tr>
               <td i18n="isp" class="text-truncate label">ISP</td>
-              <td>
+              <td *ngIf="node.as_number">
                 <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
+              </td>
+              <td *ngIf="!node.as_number">
+                <span class="badge badge-success" placement="bottom" i18n="tor">Running on Tor</span>
               </td>
             </tr>
           </tbody>
