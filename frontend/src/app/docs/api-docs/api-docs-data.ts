@@ -6054,9 +6054,25 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`latest`],
           response: `{
-
+  "latest": {
+    "id": 13,
+    "added": "2022-08-30T00:00:00.000Z",
+    "channel_count": 33,
+    "node_count": 24,
+    "total_capacity": 161821884,
+    "tor_nodes": 5,
+    "clearnet_nodes": 11,
+    "unannounced_nodes": 6,
+    "avg_capacity": 4903693,
+    "avg_fee_rate": 38,
+    "avg_base_fee_mtokens": 1061,
+    "med_capacity": 2000000,
+    "med_fee_rate": 1,
+    "med_base_fee_mtokens": 1000,
+    "clearnet_tor_nodes": 2
+  }
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6131,9 +6147,18 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`guggero`],
           response: `{
-
+  "nodes": [
+    {
+      "public_key": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+      "alias": "guggero",
+      "capacity": 66577093,
+      "channels": 12,
+      "status": 1
+    }
+  ],
+  "channels": []
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6272,9 +6297,91 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`us`],
           response: `{
-
+  "country": {
+    "de": "Vereinigte Staaten",
+    "en": "United States",
+    "es": "Estados Unidos",
+    "fr": "États Unis",
+    "ja": "アメリカ",
+    "pt-BR": "EUA",
+    "ru": "США",
+    "zh-CN": "美国"
+  },
+  "nodes": [
+    {
+      "public_key": "03f70ac4525c0014bbf380c069ce82d70946d37a56c027a2ed18609a3e60c3b353",
+      "capacity": 2000000,
+      "channels": 1,
+      "alias": "",
+      "first_seen": 1637708194,
+      "updated_at": 0,
+      "city": {
+        "en": "Oak Park",
+        "ru": "Оук-Парк"
+      },
+      "country": {
+        "de": "Vereinigte Staaten",
+        "en": "United States",
+        "es": "Estados Unidos",
+        "fr": "États Unis",
+        "ja": "アメリカ",
+        "pt-BR": "EUA",
+        "ru": "США",
+        "zh-CN": "美国"
+      },
+      "iso_code": "US",
+      "subdivision": {
+        "en": "Illinois",
+        "es": "Illinois",
+        "fr": "Illinois",
+        "ja": "イリノイ州",
+        "pt-BR": "Ilinóis",
+        "ru": "Иллинойс",
+        "zh-CN": "伊利诺伊州"
+      }
+    },
+    {
+      "public_key": "0397b15fd867541c53a3a5e27c021f7acad582684d05d120af572266c92c8a0313",
+      "capacity": 19802,
+      "channels": 1,
+      "alias": "pseudozach",
+      "first_seen": 1637620444,
+      "updated_at": 1637721257,
+      "city": {
+        "de": "Atlanta",
+        "en": "Atlanta",
+        "es": "Atlanta",
+        "fr": "Atlanta",
+        "ja": "アトランタ",
+        "pt-BR": "Atlanta",
+        "ru": "Атланта",
+        "zh-CN": "亚特兰大"
+      },
+      "country": {
+        "de": "Vereinigte Staaten",
+        "en": "United States",
+        "es": "Estados Unidos",
+        "fr": "États Unis",
+        "ja": "アメリカ",
+        "pt-BR": "EUA",
+        "ru": "США",
+        "zh-CN": "美国"
+      },
+      "iso_code": "US",
+      "subdivision": {
+        "en": "Georgia",
+        "es": "Georgia",
+        "fr": "Géorgie",
+        "ja": "ジョージア州",
+        "pt-BR": "Geórgia",
+        "ru": "Джорджия",
+        "zh-CN": "乔治亚"
+      }
+    },
+    ...
+  ]
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6385,10 +6492,42 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [],
+          response: `[
+  {
+    "name": {
+      "de": "Vereinigte Staaten",
+      "en": "United States",
+      "es": "Estados Unidos",
+      "fr": "États Unis",
+      "ja": "アメリカ",
+      "pt-BR": "EUA",
+      "ru": "США",
+      "zh-CN": "美国"
+    },
+    "iso": "US",
+    "count": 4,
+    "share": 36.36,
+    "capacity": "2059317"
+  },
+  {
+    "name": {
+      "de": "Japan",
+      "en": "Japan",
+      "es": "Japón",
+      "fr": "Japon",
+      "ja": "日本",
+      "pt-BR": "Japão",
+      "ru": "Япония",
+      "zh-CN": "日本"
+    },
+    "iso": "JP",
+    "count": 2,
+    "share": 18.18,
+    "capacity": "107710417"
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -6482,9 +6621,32 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`7684`],
           response: `{
-
+  "isp": "SAKURA Internet",
+  "nodes": [
+    {
+      "public_key": "02dadf6c28f3284d591cd2a4189d1530c1ff82c07059ebea150a33ab76e7364b4a",
+      "capacity": 51155987,
+      "channels": 15,
+      "alias": "珠美ノード⚡@wakiyamap",
+      "first_seen": 1612221581,
+      "updated_at": 1662382573,
+      "city": null,
+      "country": {
+        "de": "Japan",
+        "en": "Japan",
+        "es": "Japón",
+        "fr": "Japon",
+        "ja": "日本",
+        "pt-BR": "Japão",
+        "ru": "Япония",
+        "zh-CN": "日本"
+      },
+      "iso_code": "JP",
+      "subdivision": null
+    }
+  ]
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6576,9 +6738,28 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [],
           response: `{
-
+  "clearnetCapacity": 126914725,
+  "torCapacity": 1000000,
+  "unknownCapacity": 31150000,
+  "ispRanking": [
+    [
+      "1136",
+      "KPN",
+      99878,
+      1,
+      1
+    ],
+    [
+      "24940",
+      "Hetzner Online GmbH",
+      34877093,
+      6,
+      1
+    ],
+    ...
+  ]
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6675,9 +6856,34 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [],
           response: `{
-
+  "topByCapacity": [
+    {
+      "publicKey": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+      "alias": "guggero",
+      "capacity": 66577093
+    },
+    {
+      "publicKey": "0271cf3881e6eadad960f47125434342e57e65b98a78afa99f9b4191c02dd7ab3b",
+      "alias": "eclair@wakiyamap",
+      "capacity": 56554430
+    },
+    ...
+  ],
+  "topByChannels": [
+    {
+      "publicKey": "02dadf6c28f3284d591cd2a4189d1530c1ff82c07059ebea150a33ab76e7364b4a",
+      "alias": "珠美ノード⚡@wakiyamap",
+      "channels": 15
+    },
+    {
+      "publicKey": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+      "alias": "guggero",
+      "channels": 12
+    },
+    ...
+  ]
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -6827,10 +7033,56 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [],
+          response: `[
+  {
+    "publicKey": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "alias": "guggero",
+    "capacity": 66577093,
+    "channels": 12,
+    "firstSeen": 1608832520,
+    "updatedAt": 1662440260,
+    "city": null,
+    "country": {
+      "de": "Deutschland",
+      "en": "Germany",
+      "es": "Alemania",
+      "fr": "Allemagne",
+      "ja": "ドイツ連邦共和国",
+      "pt-BR": "Alemanha",
+      "ru": "Германия",
+      "zh-CN": "德国"
+    }
+  },
+  {
+    "publicKey": "0271cf3881e6eadad960f47125434342e57e65b98a78afa99f9b4191c02dd7ab3b",
+    "alias": "eclair@wakiyamap",
+    "capacity": 56554430,
+    "channels": 4,
+    "firstSeen": 1628031165,
+    "updatedAt": 1648064593,
+    "city": {
+      "de": "Ōsaka",
+      "en": "Osaka",
+      "es": "Osaka",
+      "fr": "Osaka",
+      "ja": "大阪市",
+      "pt-BR": "Osaka",
+      "ru": "Осака"
+    },
+    "country": {
+      "de": "Japan",
+      "en": "Japan",
+      "es": "Japón",
+      "fr": "Japon",
+      "ja": "日本",
+      "pt-BR": "Japão",
+      "ru": "Япония",
+      "zh-CN": "日本"
+    }
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -6986,10 +7238,48 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [],
+          response: `[
+  {
+    "publicKey": "02dadf6c28f3284d591cd2a4189d1530c1ff82c07059ebea150a33ab76e7364b4a",
+    "alias": "珠美ノード⚡@wakiyamap",
+    "channels": 15,
+    "capacity": 51155987,
+    "firstSeen": 1612221581,
+    "updatedAt": 1662382573,
+    "city": null,
+    "country": {
+      "de": "Japan",
+      "en": "Japan",
+      "es": "Japón",
+      "fr": "Japon",
+      "ja": "日本",
+      "pt-BR": "Japão",
+      "ru": "Япония",
+      "zh-CN": "日本"
+    }
+  },
+  {
+    "publicKey": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "alias": "guggero",
+    "channels": 12,
+    "capacity": 66577093,
+    "firstSeen": 1608832520,
+    "updatedAt": 1662440260,
+    "city": null,
+    "country": {
+      "de": "Deutschland",
+      "en": "Germany",
+      "es": "Alemania",
+      "fr": "Allemagne",
+      "ja": "ドイツ連邦共和国",
+      "pt-BR": "Alemanha",
+      "ru": "Германия",
+      "zh-CN": "德国"
+    }
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7145,10 +7435,39 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [],
+          response: `[
+  {
+    "publicKey": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "alias": "guggero",
+    "channels": 12,
+    "capacity": 66577093,
+    "firstSeen": 1608832520,
+    "updatedAt": 1662440260,
+    "city": null,
+    "country": {
+      "de": "Deutschland",
+      "en": "Germany",
+      "es": "Alemania",
+      "fr": "Allemagne",
+      "ja": "ドイツ連邦共和国",
+      "pt-BR": "Alemanha",
+      "ru": "Германия",
+      "zh-CN": "德国"
+    }
+  },
+  {
+    "publicKey": "03870a4c4c54a9b2e705023d706843ffbac5b0e95e2b80d4b02dc7a9efb5380322",
+    "alias": "03870a4c4c54a9b2e705",
+    "channels": 2,
+    "capacity": 30000000,
+    "firstSeen": 1608832520,
+    "updatedAt": 0,
+    "city": null,
+    "country": null
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7281,9 +7600,38 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120`],
           response: `{
-
+  "public_key": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+  "alias": "guggero",
+  "first_seen": 1608832520,
+  "updated_at": 1662440260,
+  "color": "#cccccc",
+  "sockets": "88.99.101.67:9735",
+  "as_number": 24940,
+  "city_id": null,
+  "country_id": 2921044,
+  "subdivision_id": null,
+  "longitude": 9.491,
+  "latitude": 51.2993,
+  "iso_code": "DE",
+  "as_organization": "Hetzner Online GmbH",
+  "city": null,
+  "country": {
+    "de": "Deutschland",
+    "en": "Germany",
+    "es": "Alemania",
+    "fr": "Allemagne",
+    "ja": "ドイツ連邦共和国",
+    "pt-BR": "Alemanha",
+    "ru": "Германия",
+    "zh-CN": "德国"
+  },
+  "subdivision": null,
+  "active_channel_count": 12,
+  "capacity": "66577093",
+  "opened_channel_count": 16,
+  "closed_channel_count": 0
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -7370,10 +7718,20 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [`02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120`],
+          response: `[
+  {
+    "added": 1662422400,
+    "capacity": 66577093,
+    "channels": 12
+  },
+  {
+    "added": 1662336000,
+    "capacity": 63477093,
+    "channels": 9
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7497,9 +7855,48 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
+          curl: [`58998694435160064`],
           response: `{
-
+  "id": "58998694435160064",
+  "short_id": "53659x5x0",
+  "capacity": 16777215,
+  "transaction_id": "cbb18e4b23c2a27736fa5be559fee7efcc855f2dfb1f16b125f686c307513ef3",
+  "transaction_vout": 0,
+  "closing_transaction_id": null,
+  "closing_reason": null,
+  "updated_at": "2022-09-04T10:15:51.000Z",
+  "created": "2021-09-02T07:08:40.000Z",
+  "status": 1,
+  "node_left": {
+    "alias": "STRANGESUCKER-v0.12.0-11-gea4143",
+    "public_key": "03b9e6c1dec203f47efc95d003314d22cbb12a1324de4b091fe7d68f321a56322f",
+    "channels": 4,
+    "capacity": 55778192,
+    "base_fee_mtokens": 0,
+    "cltv_delta": 0,
+    "fee_rate": 0,
+    "is_disabled": 0,
+    "max_htlc_mtokens": 16609443000,
+    "min_htlc_mtokens": 1,
+    "updated_at": "2022-09-04T10:15:51.000Z",
+    "longitude": 19.1477,
+    "latitude": 48.7386
+  },
+  "node_right": {
+    "alias": "guggero",
+    "public_key": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "channels": 12,
+    "capacity": 66577093,
+    "base_fee_mtokens": 1000,
+    "cltv_delta": 0,
+    "fee_rate": 1,
+    "is_disabled": 0,
+    "max_htlc_mtokens": 16777215000,
+    "min_htlc_mtokens": 1000,
+    "updated_at": "2022-09-01T22:57:40.000Z",
+    "longitude": 9.491,
+    "latitude": 51.2993
+  }
 }`
         },
         codeSampleLiquid: emptyCodeSample,
@@ -7661,10 +8058,48 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [`cbb18e4b23c2a27736fa5be559fee7efcc855f2dfb1f16b125f686c307513ef3`],
+          response: `[
+  {
+    "inputs": {},
+    "outputs": {
+      "0": {
+        "id": "58998694435160064",
+        "short_id": "53659x5x0",
+        "capacity": 16777215,
+        "transaction_id": "cbb18e4b23c2a27736fa5be559fee7efcc855f2dfb1f16b125f686c307513ef3",
+        "transaction_vout": 0,
+        "closing_transaction_id": null,
+        "closing_reason": null,
+        "updated_at": "2022-09-04T10:15:51.000Z",
+        "created": "2021-09-02T07:08:40.000Z",
+        "status": 1,
+        "node_left": {
+          "alias": "STRANGESUCKER-v0.12.0-11-gea4143",
+          "public_key": "03b9e6c1dec203f47efc95d003314d22cbb12a1324de4b091fe7d68f321a56322f",
+          "base_fee_mtokens": 0,
+          "cltv_delta": 0,
+          "fee_rate": 0,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 16609443000,
+          "min_htlc_mtokens": 1,
+          "updated_at": "2022-09-04T10:15:51.000Z"
+        },
+        "node_right": {
+          "alias": "guggero",
+          "public_key": "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+          "base_fee_mtokens": 1000,
+          "cltv_delta": 0,
+          "fee_rate": 1,
+          "is_disabled": 0,
+          "max_htlc_mtokens": 16777215000,
+          "min_htlc_mtokens": 1000,
+          "updated_at": "2022-09-01T22:57:40.000Z"
+        }
+      }
+    }
+  }
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7768,10 +8203,40 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [`02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120`, `open`],
+          response: `[
+  {
+    "status": 1,
+    "closing_reason": null,
+    "closing_date": null,
+    "capacity": 16777215,
+    "short_id": "53659x5x0",
+    "id": "58998694435160064",
+    "fee_rate": 1,
+    "node": {
+      "alias": "STRANGESUCKER-v0.12.0-11-gea4143",
+      "public_key": "03b9e6c1dec203f47efc95d003314d22cbb12a1324de4b091fe7d68f321a56322f",
+      "channels": 4,
+      "capacity": "55778192"
+    }
+  },
+  {
+    "status": 1,
+    "closing_reason": null,
+    "closing_date": null,
+    "capacity": 15000000,
+    "short_id": "17498x2x1",
+    "id": "19239254462955521",
+    "fee_rate": 1,
+    "node": {
+      "alias": "03870a4c4c54a9b2e705",
+      "public_key": "03870a4c4c54a9b2e705023d706843ffbac5b0e95e2b80d4b02dc7a9efb5380322",
+      "channels": 2,
+      "capacity": "30000000"
+    }
+  },
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7857,10 +8322,30 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [],
+          response: `[
+  [
+    "02dadf6c28f3284d591cd2a4189d1530c1ff82c07059ebea150a33ab76e7364b4a",
+    "珠美ノード⚡@wakiyamap",
+    139.6895,
+    35.6897,
+    "0271cf3881e6eadad960f47125434342e57e65b98a78afa99f9b4191c02dd7ab3b",
+    "eclair@wakiyamap",
+    135.4911,
+    34.7135
+  ],
+  [
+    "03b9e6c1dec203f47efc95d003314d22cbb12a1324de4b091fe7d68f321a56322f",
+    "STRANGESUCKER-v0.12.0-11-gea4143",
+    19.1477,
+    48.7386,
+    "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "guggero",
+    9.491,
+    51.2993
+  ],
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
@@ -7946,10 +8431,30 @@ export const restApiDocsData = [
         codeSampleSignet: {
           esModule: [],
           commonJS: [],
-          curl: [`3y`],
-          response: `{
-
-}`
+          curl: [`02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120`],
+          response: `[
+  [
+    "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "guggero",
+    9.491,
+    51.2993,
+    "0271cf3881e6eadad960f47125434342e57e65b98a78afa99f9b4191c02dd7ab3b",
+    "eclair@wakiyamap",
+    135.4911,
+    34.7135
+  ],
+  [
+    "02dadf6c28f3284d591cd2a4189d1530c1ff82c07059ebea150a33ab76e7364b4a",
+    "珠美ノード⚡@wakiyamap",
+    139.6895,
+    35.6897,
+    "02ad48db0d1a7f7c3d186ddc57f8e62c49a1234fb829af9ccd3be1a4596bc39120",
+    "guggero",
+    9.491,
+    51.2993
+  ],
+  ...
+]`
         },
         codeSampleLiquid: emptyCodeSample,
         codeSampleLiquidTestnet: emptyCodeSample,
