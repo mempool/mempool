@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 import { moveDec } from 'src/app/bitcoin.utils';
 import { AssetsService } from 'src/app/services/assets.service';
 import { ElectrsApiService } from 'src/app/services/electrs-api.service';
-import { formatNumber } from '@angular/common';
 import { environment } from 'src/environments/environment';
 
 @Component({
