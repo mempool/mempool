@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { SeoService } from 'src/app/services/seo.service';
 import { IOldestNodes } from '../../../interfaces/node-api.interface';
 import { LightningApiService } from '../../lightning-api.service';
 
@@ -16,9 +17,16 @@ export class OldestNodes implements OnInit {
   oldestNodes$: Observable<IOldestNodes[]>;
   skeletonRows: number[] = [];
 
-  constructor(private apiService: LightningApiService) {}
+  constructor(
+    private apiService: LightningApiService,
+    private seoService: SeoService
+  ) {}
 
   ngOnInit(): void {
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Oldest lightning nodes`);
+    }
+
     for (let i = 1; i <= (this.widget ? 10 : 100); ++i) {
       this.skeletonRows.push(i);
     }
