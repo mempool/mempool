@@ -210,6 +210,14 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
+            name: $localize`Clearnet & Tor`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
+          {
             name: $localize`Unannounced`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
@@ -219,10 +227,10 @@ export class NodesNetworksChartComponent implements OnInit {
           },
         ],
         selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
-          'Total': true,
-          'Tor': true,
-          'Clearnet': true,
-          'Unannounced': true,
+          '$localize`Tor`': true,
+          '$localize`Clearnet`': true,
+          '$localize`Clearnet & Tor`': true,
+          '$localize`Unannounced`': true,
         }
       },
       yAxis: data.tor_nodes.length === 0 ? undefined : [
