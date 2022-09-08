@@ -16,11 +16,17 @@ export class NodesPerCountry implements OnInit {
   nodes$: Observable<any>;
   country: {name: string, flag: string};
 
+  skeletonLines: number[] = [];
+
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
     private route: ActivatedRoute,
-  ) { }
+  ) {
+    for (let i = 0; i < 20; ++i) {
+      this.skeletonLines.push(i);
+    }
+  }
 
   ngOnInit(): void {
     this.nodes$ = this.apiService.getNodeForCountry$(this.route.snapshot.params.country)
