@@ -9,6 +9,7 @@ class NodesRoutes {
 
   public initRoutes(app: Application) {
     app
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/world', this.$getWorldNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp-ranking', this.$getISPRanking)
@@ -115,11 +116,22 @@ class NodesRoutes {
   private async $getISPRanking(req: Request, res: Response): Promise<void> {
     try {
       const nodesPerAs = await nodesApi.$getNodesISPRanking();
-
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
       res.json(nodesPerAs);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getWorldNodes(req: Request, res: Response) {
+    try {
+      const worldNodes = await nodesApi.$getWorldNodes();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(worldNodes);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

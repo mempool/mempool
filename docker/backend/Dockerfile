@@ -1,7 +1,7 @@
 FROM node:16.16.0-buster-slim AS builder
 
 ARG commitHash
-ENV DOCKER_COMMIT_HASH=${commitHash}
+ENV MEMPOOL_COMMIT_HASH=${commitHash}
 
 WORKDIR /build
 COPY . .
@@ -9,18 +9,15 @@ COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential python3 pkg-config
 RUN npm install --omit=dev --omit=optional
-RUN npm run build
+RUN npm run package
 
 FROM node:16.16.0-buster-slim
 
 WORKDIR /backend
 
-COPY --from=builder /build/ .
-
-RUN chmod +x /backend/start.sh
-RUN chmod +x /backend/wait-for-it.sh
-
-RUN chown -R 1000:1000 /backend && chmod -R 755 /backend
+RUN chown 1000:1000 ./
+COPY --from=builder --chown=1000:1000 /build/package ./package/
+COPY --from=builder --chown=1000:1000 /build/mempool-config.json /build/start.sh /build/wait-for-it.sh ./
 
 USER 1000
 
