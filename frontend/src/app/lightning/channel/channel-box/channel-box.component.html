@@ -11,44 +11,73 @@
     <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount></div>
   </div>
 </div>
-<div class="box">
 
-  <div class="col-md">
-    <table class="table table-borderless table-striped">
-      <tbody>
-        <tr>
-          <td i18n="address.total-sent">Fee rate</td>
-          <td>
-            {{ channel.fee_rate ?? '-' }} <span class="symbol">ppm ({{ channel.fee_rate / 10000 | number }}%)</span>
-          </td>
-        </tr>
-        <tr>
-          <td i18n="address.total-sent">Base fee</td>
-          <td>
-            <app-sats [valueOverride]="!channel.base_fee_mtokens ? '- ' : undefined" [satoshis]="channel.base_fee_mtokens / 1000" digitsInfo="1.0-2"></app-sats>
-          </td>
-        </tr>
-        <tr>
-          <td i18n="address.total-sent">Min HTLC</td>
-          <td>
-            <app-sats [valueOverride]="!channel.min_htlc_mtokens ? '- ' : undefined" [satoshis]="channel.min_htlc_mtokens / 1000"></app-sats>
-          </td>
-        </tr>
-        <tr>
-          <td i18n="address.total-sent">Max HTLC</td>
-          <td>
-            <app-sats [valueOverride]="!channel.max_htlc_mtokens ? '- ' : undefined" [satoshis]="channel.max_htlc_mtokens / 1000"></app-sats>
-          </td>
-        </tr>
-        <tr>
-          <td i18n="address.total-sent">Timelock delta</td>
-          <td>
-            <ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: channel.cltv_delta ?? '-' }"></ng-container>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="box">
+  <table class="table table-borderless table-striped">
+    <tbody>
+      <tr>
+        <td i18n="lightning.fee-rate">Fee rate</td>
+        <td>
+          <span class="d-inline-block d-md-none">
+            {{ channel.fee_rate !== null ? (channel.fee_rate | amountShortener : 2 : undefined : true) : '-' }} <span class="symbol">ppm ({{ channel.fee_rate !== null ? '(' + (channel.fee_rate / 10000 | amountShortener : 2 : undefined : true) + '%)' : '' }}</span>
+          </span>
+          <span class="d-none d-md-inline-block">
+            {{ channel.fee_rate !== null ? (channel.fee_rate | number) : '-' }} <span class="symbol">ppm {{ channel.fee_rate !== null ? '(' + (channel.fee_rate / 10000 | number) + '%)' : '' }}</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="lightning.base-fee">Base fee</td>
+        <td>
+          <div class="d-inline-block d-md-none w-100">
+            <span class="d-flex justify-content-between align-items-center">
+              <span>
+                {{ channel.base_fee_mtokens !== null ? (channel.base_fee_mtokens / 1000 | amountShortener : 2 : undefined : true) : '-' }}
+                <span class="symbol">sats</span>
+              </span>
+              <span *ngIf="channel.base_fee_mtokens !== null" class="badge" [class]="channel.base_fee_mtokens === 0 ? 'badge-success' : 'badge-danger'"
+                i18n-ngbTooltip="lightning.zero-base-fee"
+                [ngbTooltip]="channel.base_fee_mtokens === 0 ? 'This channel supports zero base fee routing' :
+                  'This channel does not support zero base fee routing'"
+                placement="bottom" i18n="lightning.zerobasefee">
+                Zero base fee
+              </span>
+            </span>
+          </div>
+          <div class="d-none d-md-inline-block w-100">
+            <span class="d-flex justify-content-between align-items-center">
+              <app-sats [valueOverride]="channel.min_htlc_mtokens === null ? '- ' : undefined" [satoshis]="channel.base_fee_mtokens / 1000" digitsInfo="1.0-0"></app-sats>
+              <span *ngIf="channel.base_fee_mtokens !== null" class="badge" [class]="channel.base_fee_mtokens === 0 ? 'badge-success' : 'badge-danger'"
+                i18n-ngbTooltip="lightning.zero-base-fee"
+                [ngbTooltip]="channel.base_fee_mtokens === 0 ? 'This channel supports zero base fee routing' :
+                  'This channel does not support zero base fee routing'"
+                placement="bottom" i18n="lightning.zerobasefee">
+                  Zero base fee
+              </span>
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="lightning.min-htlc">Min HTLC</td>
+        <td>
+          <app-sats [valueOverride]="channel.min_htlc_mtokens === null ? '- ' : undefined" [satoshis]="channel.min_htlc_mtokens / 1000"></app-sats>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="lightning.max-htlc">Max HTLC</td>
+        <td>
+          <app-sats [valueOverride]="channel.max_htlc_mtokens === null ? '- ' : undefined" [satoshis]="channel.max_htlc_mtokens / 1000"></app-sats>
+        </td>
+      </tr>
+      <tr>
+        <td i18n="lightning.timelock-detla">Timelock delta</td>
+        <td>
+          <ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: channel.cltv_delta ?? '-' }"></ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
