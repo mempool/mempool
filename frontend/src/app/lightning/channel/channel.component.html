@@ -25,12 +25,16 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td i18n="address.total-sent">Created</td>
+                <td i18n="lightning.created">Created</td>
                 <td><app-timestamp [dateString]="channel.created"></app-timestamp></td>
               </tr>
-              <tr>
-                <td i18n="address.total-sent">Last update</td>
+              <tr *ngIf="channel.status !== 2">
+                <td i18n="lightning.last-update">Last update</td>
                 <td><app-timestamp [dateString]="channel.updated_at"></app-timestamp></td>
+              </tr>
+              <tr *ngIf="channel.status === 2">
+                <td i18n="lightning.closing_date">Closing date</td>
+                <td><app-timestamp [dateString]="channel.closing_date"></app-timestamp></td>
               </tr>
             </tbody>
           </table>

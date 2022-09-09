@@ -35,7 +35,7 @@
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updatedAt"></app-timestamp>
           </td>
           <td *ngIf="!widget" class="location text-right text-truncate">
-            {{ node?.city?.en ?? '-' }}
+            <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
           </td>
         </tr>
       </tbody>
