@@ -43,7 +43,6 @@
   .alliances,
   .enterprise-sponsor,
   .community-integrations-sponsor,
-  .selfhosted-integrations-sponsor,
   .maintainers {
     margin-top: 68px;
     margin-bottom: 68px;
@@ -117,7 +116,6 @@
   .community-sponsor,
   .project-translators,
   .community-integrations-sponsor,
-  .selfhosted-integrations-sponsor,
   .maintainers {
     .wrapper {
       display: inline-block;
@@ -193,6 +191,6 @@
 }
 
 .community-integrations-sponsor {
-  max-width: 830px;
+  max-width: 970px;
   margin: auto;
 }
