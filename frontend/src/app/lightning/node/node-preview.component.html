@@ -1,5 +1,7 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
-  <h2 class="preview-header" i18n="lightning.node">lightning node</h2>
+  <app-preview-title>
+    <span i18n="lightning.node">lightning node</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <h1 class="title"></h1>
     <div class="title-wrapper">

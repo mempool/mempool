@@ -1,0 +1,11 @@
+<h2 class="preview-header">
+  <ng-container *ngIf="{ val: network$ | async } as network">
+    <ng-container [ngSwitch]="network.val">
+      <span *ngSwitchCase="'bisq'">Bisq </span>
+      <span *ngSwitchCase="'liquid'">Liquid </span>
+      <span *ngSwitchCase="'liquidtestnet'">Liquid </span>
+      <span *ngSwitchDefault>Bitcoin </span>
+    </ng-container>
+  </ng-container>
+  <ng-content></ng-content>
+</h2>
