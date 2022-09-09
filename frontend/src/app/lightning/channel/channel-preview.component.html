@@ -51,7 +51,7 @@
       </table>
     </div>
     <div class="col-md map-col">
-      <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo" [fitContainer]="true" [placeholder]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+      <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo" [fitContainer]="true" [placeholder]="true" [disableSpinner]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
     </div>
   </div>
   <div class="row d-flex justify-content-between full-width-row nodes">
