@@ -1,10 +1,7 @@
 #!/bin/sh
 
 #backend
-gitMaster="\.\.\/\.git\/refs\/heads\/master"
-git ls-remote https://github.com/mempool/mempool.git "$1^{}" | awk '{ print $1}' > ./backend/master
 cp ./docker/backend/* ./backend/
-sed -i "s/${gitMaster}/master/g" ./backend/src/api/backend-info.ts
 
 #frontend
 localhostIP="127.0.0.1"

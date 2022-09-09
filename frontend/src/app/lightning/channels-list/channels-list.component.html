@@ -35,7 +35,8 @@
     <th class="alias text-left" i18n="nodes.alias">Node Alias</th>
     <th class="alias text-left d-none d-md-table-cell" i18n="channels.transaction">&nbsp;</th>
     <th class="alias text-left d-none d-md-table-cell" i18n="status">Status</th>
-    <th class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
+    <th *ngIf="status !== 'closed'" class="channels text-left d-none d-md-table-cell" i18n="channels.rate">Fee Rate</th>
+    <th *ngIf="status === 'closed'" class="channels text-left d-none d-md-table-cell" i18n="channels.closing_date">Closing date</th>
     <th class="capacity text-right d-none d-md-table-cell" i18n="nodes.capacity">Capacity</th>
     <th class="capacity text-right" i18n="channels.id">Channel ID</th>
   </thead>
@@ -71,8 +72,11 @@
       </ng-template>
     </ng-template>
   </td>
-  <td class="capacity text-left d-none d-md-table-cell">
+  <td *ngIf="status !== 'closed'" class="capacity text-left d-none d-md-table-cell">
     {{ channel.fee_rate }} <span class="symbol">ppm ({{ channel.fee_rate / 10000 | number }}%)</span>
+  </td>
+  <td *ngIf="status === 'closed'" class="capacity text-left d-none d-md-table-cell">
+    <app-timestamp [unixTime]="channel.closing_date"></app-timestamp>
   </td>
   <td class="capacity text-right d-none d-md-table-cell">
     <app-amount *ngIf="channel.capacity > 100000000; else smallchannel" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>

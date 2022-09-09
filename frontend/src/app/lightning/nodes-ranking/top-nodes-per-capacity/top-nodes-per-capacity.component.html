@@ -8,7 +8,7 @@
       <thead>
         <th class="rank"></th>
         <th class="alias text-left" i18n="nodes.alias">Alias</th>
-        <th class="capacity text-right" i18n="node.capacity">Capacity</th>
+        <th class="capacity text-right" i18n="node.liquidity">Liquidity</th>
         <th *ngIf="!widget" class="channels text-right" i18n="lightning.channels">Channels</th>
         <th *ngIf="!widget" class="timestamp-first text-left" i18n="lightning.first_seen">First seen</th>
         <th *ngIf="!widget" class="timestamp-update text-left" i18n="lightning.last_update">Last update</th>
@@ -35,7 +35,7 @@
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updatedAt"></app-timestamp>
           </td>
           <td *ngIf="!widget" class="location text-right text-truncate">
-            {{ node?.city?.en ?? '-' }}
+            <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
           </td>
         </tr>
       </tbody>
