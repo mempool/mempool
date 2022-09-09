@@ -1,5 +1,7 @@
 <div class="box preview-box" *ngIf="(channel$ | async) as channel">
-  <h2 class="preview-header" i18n="lightning.channel">lightning channel</h2>
+  <app-preview-title>
+    <span i18n="lightning.channel">lightning channel</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <div class="title-wrapper">
       <h1 class="title">{{ channel.short_id }}</h1>
