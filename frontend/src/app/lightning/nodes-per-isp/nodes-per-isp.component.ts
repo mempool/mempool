@@ -15,11 +15,17 @@ export class NodesPerISP implements OnInit {
   nodes$: Observable<any>;
   isp: {name: string, id: number};
 
+  skeletonLines: number[] = [];
+
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
     private route: ActivatedRoute,
-  ) { }
+  ) {
+    for (let i = 0; i < 20; ++i) {
+      this.skeletonLines.push(i);
+    }
+  }
 
   ngOnInit(): void {
     this.nodes$ = this.apiService.getNodeForISP$(this.route.snapshot.params.isp)

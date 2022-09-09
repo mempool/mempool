@@ -47,7 +47,9 @@ export class NodesPerISPChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes per ISP`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Lightning nodes per ISP`);
+    }
 
     this.nodesPerAsObservable$ = combineLatest([
       this.sortBySubject.pipe(startWith(true)),
@@ -105,7 +107,7 @@ export class NodesPerISPChartComponent implements OnInit {
   }
 
   generateChartSerieData(ispRanking): PieSeriesOption[] {
-    let shareThreshold = 0.5;
+    let shareThreshold = 0.4;
     if (this.widget && isMobile() || isMobile()) {
       shareThreshold = 1;
     } else if (this.widget) {

@@ -5,6 +5,49 @@ import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
 
 class NodesApi {
+  public async $getWorldNodes(): Promise<any> {
+    try {
+      let query = `
+        SELECT nodes.public_key as publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+        CAST(COALESCE(nodes.capacity, 0) as INT) as capacity,
+        CAST(COALESCE(nodes.channels, 0) as INT) as channels,
+        nodes.longitude, nodes.latitude,
+        geo_names_country.names as country, geo_names_iso.names as isoCode
+        FROM nodes
+        LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+        LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        WHERE status = 1 AND nodes.as_number IS NOT NULL
+        ORDER BY capacity
+      `;
+
+      const [nodes]: any[] = await DB.query(query);
+
+      for (let i = 0; i < nodes.length; ++i) {
+        nodes[i].country = JSON.parse(nodes[i].country);
+      }
+
+      query = `
+        SELECT MAX(nodes.capacity) as maxLiquidity, MAX(nodes.channels) as maxChannels
+        FROM nodes
+        WHERE status = 1 AND nodes.as_number IS NOT NULL
+      `;
+
+      const [maximums]: any[] = await DB.query(query);
+      
+      return {
+        maxLiquidity: maximums[0].maxLiquidity,
+        maxChannels: maximums[0].maxChannels,
+        nodes: nodes.map(node => [
+          node.longitude, node.latitude,
+          node.publicKey, node.alias, node.capacity, node.channels,
+          node.country, node.isoCode
+        ])
+      };
+    } catch (e) {
+      logger.err(`Can't get world nodes list. Reason: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+
   public async $getNode(public_key: string): Promise<any> {
     try {
       // General info
@@ -133,10 +176,13 @@ class NodesApi {
             CAST(COALESCE(nodes.capacity, 0) as INT) as capacity,
             CAST(COALESCE(nodes.channels, 0) as INT) as channels,
             UNIX_TIMESTAMP(nodes.first_seen) as firstSeen, UNIX_TIMESTAMP(nodes.updated_at) as updatedAt,
-            geo_names_city.names as city, geo_names_country.names as country
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM nodes
           LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           ORDER BY capacity DESC
           LIMIT 100
         `;
@@ -175,10 +221,13 @@ class NodesApi {
             CAST(COALESCE(nodes.channels, 0) as INT) as channels,
             CAST(COALESCE(nodes.capacity, 0) as INT) as capacity,
             UNIX_TIMESTAMP(nodes.first_seen) as firstSeen, UNIX_TIMESTAMP(nodes.updated_at) as updatedAt,
-            geo_names_city.names as city, geo_names_country.names as country
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM nodes
           LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           ORDER BY channels DESC
           LIMIT 100
         `;
@@ -221,11 +270,14 @@ class NodesApi {
             CAST(COALESCE(node_stats.channels, 0) as INT) as channels,
             CAST(COALESCE(node_stats.capacity, 0) as INT) as capacity,
             UNIX_TIMESTAMP(nodes.first_seen) as firstSeen, UNIX_TIMESTAMP(nodes.updated_at) as updatedAt,
-            geo_names_city.names as city, geo_names_country.names as country
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM node_stats
           RIGHT JOIN nodes ON nodes.public_key = node_stats.public_key
           LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           WHERE added = FROM_UNIXTIME(${latestDate})
           ORDER BY first_seen
           LIMIT 100
