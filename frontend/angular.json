@@ -170,6 +170,10 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                "src/favicon.ico",
+                "src/robots.txt"
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

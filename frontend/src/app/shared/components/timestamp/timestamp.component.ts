@@ -11,15 +11,13 @@ export class TimestampComponent implements OnChanges {
   @Input() dateString: string;
   @Input() customFormat: string;
 
-  seconds: number;
-
-  constructor() { }
+  seconds: number | undefined = undefined;
 
   ngOnChanges(): void {
     if (this.unixTime) {
       this.seconds = this.unixTime;
     } else if (this.dateString) {
-      this.seconds  = new Date(this.dateString).getTime() / 1000
+      this.seconds = new Date(this.dateString).getTime() / 1000;
     }
   }
 

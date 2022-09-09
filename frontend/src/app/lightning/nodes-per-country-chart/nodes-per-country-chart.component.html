@@ -46,7 +46,7 @@
           <td class="text-right capacity">
             <app-amount *ngIf="country.capacity > 100000000; else smallchannel" [satoshis]="country.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <ng-template #smallchannel>
-              {{ country.capacity | amountShortener: 1 }}
+              {{ country.capacity ?? 0 | amountShortener: 1 }}
               <span class="sats" i18n="shared.sats">sats</span>
             </ng-template>
           </td>

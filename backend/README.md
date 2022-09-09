@@ -110,6 +110,11 @@ Run the Mempool backend:
 
 ```
 npm run start
+
+```
+You can also set env var `MEMPOOL_CONFIG_FILE` to specify a custom config file location:
+```
+MEMPOOL_CONFIG_FILE=/path/to/mempool-config.json npm run start
 ```
 
 When it's running, you should see output like this:
