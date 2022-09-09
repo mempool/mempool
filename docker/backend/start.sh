@@ -205,4 +205,4 @@ sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
 # CLN
 sed -i "s!__CLN_SOCKET__!${__CLN_SOCKET__}!g" mempool-config.json
 
-node /backend/dist/index.js
+node /backend/package/index.js
