@@ -26,56 +26,9 @@
 	margin-top: 0px;
 }
 
-.page-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 2px;
-  max-width: 100%;
-
-  h1 {
-    font-size: 52px;
-    margin: 0;
-    line-height: 1;
-  }
-
-  .features {
-    font-size: 24px;
-  }
-
-  & > * {
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-
-  .tx-link {
-    flex-grow: 1;
-    flex-shrink: 1;
-    margin: 0 1em;
-    overflow: hidden;
-    white-space: nowrap;
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-
-    .truncated {
-      flex-grow: 1;
-      flex-shrink: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-right: -2px;
-    }
-
-    .last-four {
-      flex-shrink: 0;
-      flex-grow: 0;
-    }
-  }
-
-  .features {
-    align-self: center;
-  }
+.features {
+  font-size: 24px;
+  margin-left: 1em;
 }
 
 .top-data {

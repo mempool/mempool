@@ -11,6 +11,7 @@ export class SatsComponent implements OnInit {
   @Input() satoshis: number;
   @Input() digitsInfo = '1.0-0';
   @Input() addPlus = false;
+  @Input() valueOverride: string | undefined = undefined;
 
   network = '';
   stateSubscription: Subscription;

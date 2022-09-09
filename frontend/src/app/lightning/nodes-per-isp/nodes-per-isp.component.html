@@ -1,18 +1,68 @@
 <div class="container-xl full-height" style="min-height: 335px">
-  <h1 class="float-left" i18n="lightning.nodes-for-isp">Lightning nodes on ISP: {{ isp?.name }} [AS {{isp?.id}}]</h1>
+  <h1 i18n="lightning.nodes-for-isp">Lightning nodes on ISP: {{ isp?.name }}</h1>
+
+  <div class="box">
+    <div class="row" *ngIf="nodes$ | async as ispNodes">
+      <div class="col-12 col-md-6">
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <tr>
+              <td i18n="lightning.asn">ASN</td>
+              <td>{{ isp?.id }}</td>
+            </tr>
+            <tr>
+              <td i18n="lightning.node-count">Nodes</td>
+              <td>{{ ispNodes.nodes.length }}</td>
+            </tr>
+            <tr>
+              <td i18n="lightning.liquidity">Liquidity</td>
+              <td>
+                <app-amount *ngIf="ispNodes.sumLiquidity > 100000000; else smallnode" [satoshis]="ispNodes.sumLiquidity" [digitsInfo]="'1.2-2'" [noFiat]="false"></app-amount>
+                <ng-template #smallnode>
+                  {{ ispNodes.sumLiquidity | amountShortener: 1 }}
+                  <span class="sats" i18n="shared.sats">sats</span>
+                </ng-template>
+                <span class="d-none d-md-inline-block">&nbsp;</span>
+                <span class="d-block d-md-none"></span>
+                <app-fiat [value]="ispNodes.sumLiquidity" digitsInfo="1.0-0"></app-fiat>
+              </td>
+            </tr>
+            <tr>
+              <td i18n="lightning.channels">Channels</td>
+              <td>{{ ispNodes.sumChannels }}</td>
+            </tr>
+            <tr>
+              <td i18n="lightning.top-country">Top country</td>
+              <td class="text-truncate">
+                <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/country' | relativeUrl, ispNodes.topCountry.iso]">
+                  <span class="">{{ ispNodes.topCountry.country }} {{ ispNodes.topCountry.flag }}</span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-12 col-md-6 p-3 p-md-0 pr-md-3">
+        <div style="background-color: #181b2d">
+          <app-nodes-map [widget]="true" [nodes]="ispNodes.nodes" type="isp"></app-nodes-map>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div style="min-height: 295px">
     <table class="table table-borderless">
+
       <thead>
         <th class="alias text-left" i18n="lightning.alias">Alias</th>
         <th class="timestamp-first text-left" i18n="lightning.first_seen">First seen</th>
         <th class="timestamp-update text-left" i18n="lightning.last_update">Last update</th>
         <th class="capacity text-right" i18n="lightning.capacity">Capacity</th>
         <th class="channels text-right" i18n="lightning.channels">Channels</th>
-        <th class="city text-right" i18n="lightning.city">City</th>
+        <th class="city text-right" i18n="lightning.location">Location</th>
       </thead>
-      <tbody *ngIf="nodes$ | async as nodes">
-        <tr *ngFor="let node of nodes; let i= index; trackBy: trackByPublicKey">
+      <tbody *ngIf="nodes$ | async as ispNodes; else skeleton">
+        <tr *ngFor="let node of ispNodes.nodes; let i= index; trackBy: trackByPublicKey">
           <td class="alias text-left text-truncate">
             <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
           </td>
@@ -36,6 +86,32 @@
             <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
           </td>
       </tbody>
+    
+      <ng-template #skeleton>
+        <tbody>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="alias text-left text-truncate">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="timestamp-first text-left">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="timestamp-update text-left">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="capacity text-right">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="channels text-right">
+              <span class="skeleton-loader"></span>
+            </td>
+            <td class="city text-right text-truncate">
+              <span class="skeleton-loader"></span>
+            </td>
+          </tr>
+        </tbody>
+      </ng-template>
+  
     </table>
   </div>
 

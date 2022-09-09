@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { mempoolFeeColors } from 'src/app/app.constants';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
-import { combineLatest, Observable, tap } from 'rxjs';
+import { Observable, tap, zip } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
 import { EChartsOption, registerMap } from 'echarts';
-import { download } from 'src/app/shared/graphs.utils';
+import { lerpColor } from 'src/app/shared/graphs.utils';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from 'src/app/services/state.service';
+import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-map',
@@ -16,7 +17,11 @@ import { StateService } from 'src/app/services/state.service';
   styleUrls: ['./nodes-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesMap implements OnInit, OnDestroy {
+export class NodesMap implements OnInit {
+  @Input() widget: boolean = false;
+  @Input() nodes: any[] | undefined = undefined;
+  @Input() type: 'none' | 'isp' | 'country' = 'none';
+  
   observable$: Observable<any>;
 
   chartInstance = undefined;
@@ -26,44 +31,88 @@ export class NodesMap implements OnInit, OnDestroy {
   };
 
   constructor(
+    @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
     private stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,
+    private amountShortenerPipe: AmountShortenerPipe
   ) {
   }
-
-  ngOnDestroy(): void {}
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes world map`);
 
-    this.observable$ = combineLatest([
+    this.observable$ = zip(
       this.assetsService.getWorldMapJson$,
-      this.apiService.getNodesPerCountry()
-    ]).pipe(tap((data) => {
+      this.nodes ? [this.nodes] : this.apiService.getWorldNodes$()
+    ).pipe(tap((data) => {
       registerMap('world', data[0]);
 
-      const countries = [];
-      let max = 0;
-      for (const country of data[1]) {
-        countries.push({
-          name: country.name.en,
-          value: country.count,
-          iso: country.iso.toLowerCase(),
-        });
-        max = Math.max(max, country.count);
+      let maxLiquidity = data[1].maxLiquidity;
+      let inputNodes: any[] = data[1].nodes;
+      let mapCenter: number[] = [0, 5];
+      if (this.type === 'country') {
+        mapCenter = [0, 0];
+      } else if (this.type === 'isp') {
+        mapCenter = [0, 10];
       }
 
-      this.prepareChartOptions(countries, max);
+      let mapZoom = 1.3;
+      if (!inputNodes) {
+        inputNodes = [];
+        for (const node of data[1]) {
+          if (this.type === 'country') {
+            mapCenter[0] += node.longitude;
+            mapCenter[1] += node.latitude;
+          }
+          inputNodes.push([
+            node.longitude,
+            node.latitude,
+            node.public_key,
+            node.alias,
+            node.capacity,
+            node.channels,
+            node.country,
+            node.iso_code,
+          ]);
+          maxLiquidity = Math.max(maxLiquidity ?? 0, node.capacity);
+        }
+        if (this.type === 'country') {
+          mapCenter[0] /= data[1].length;
+          mapCenter[1] /= data[1].length;
+          mapZoom = 6;
+        }
+      }
+
+      const nodes: any[] = [];
+      for (const node of inputNodes) {
+        // We add a bit of noise so nodes at the same location are not all
+        // on top of each other
+        const random = Math.random() * 2 * Math.PI;
+        const random2 = Math.random() * 0.01;
+        nodes.push([
+          node[0] + random2 * Math.cos(random),
+          node[1] + random2 * Math.sin(random),
+          node[4], // Liquidity
+          node[3], // Alias
+          node[2], // Public key
+          node[5], // Channels
+          node[6].en, // Country
+          node[7], // ISO Code
+        ]);
+      }
+
+      maxLiquidity = Math.max(1, maxLiquidity);
+      this.prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom);
     }));
   }
 
-  prepareChartOptions(countries, max) {
+  prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom) {
     let title: object;
-    if (countries.length === 0) {
+    if (nodes.length === 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -76,53 +125,82 @@ export class NodesMap implements OnInit, OnDestroy {
     }
 
     this.chartOptions = {
-      title: countries.length === 0 ? title : undefined,
-      tooltip: {
-        backgroundColor: 'rgba(17, 19, 31, 1)',
-        borderRadius: 4,
-        shadowColor: 'rgba(0, 0, 0, 0.5)',
-        textStyle: {
-          color: '#b1b1b1',
+      silent: false,
+      title: title ?? undefined,
+      tooltip: {},
+      geo: {
+        animation: false,
+        silent: true,
+        center: mapCenter,
+        zoom: mapZoom,
+        tooltip: {
+          show: false
         },
-        borderColor: '#000',
-        formatter: function(country) {
-          if (country.data === undefined) { 
-            return `<b style="color: white">${country.name}<br>0 nodes</b><br>`;
-          } else {
-            return `<b style="color: white">${country.data.name}<br>${country.data.value} nodes</b><br>`;
-          }
+        map: 'world',
+        roam: true,
+        itemStyle: {
+          borderColor: 'black',
+          color: '#272b3f'
+        },
+        scaleLimit: {
+          min: 1.3,
+          max: 100000,
+        },
+        emphasis: {
+          disabled: true,
         }
       },
-      visualMap: {
-        left: 'right',
-        show: true,
-        min: 1,
-        max: max,
-        text: ['High', 'Low'],
-        calculable: true,        
-        textStyle: {
-          color: 'white',
-        },
-        inRange: {
-          color: mempoolFeeColors.map(color => `#${color}`),
-        },
-      },
-      series: {
-        type: 'map',
-        map: 'world',
-        emphasis: {
-          label: {
-            show: false,
+      series: [
+        {
+          large: false,
+          type: 'scatter',
+          data: nodes,
+          coordinateSystem: 'geo',
+          geoIndex: 0,
+          progressive: 500,
+          symbolSize: function (params) {
+            return 10 * Math.pow(params[2] / maxLiquidity, 0.2) + 3;
+          },
+          tooltip: {
+            position: function(point, params, dom, rect, size) {
+              return point;
+            },
+            trigger: 'item',
+            show: true,
+            backgroundColor: 'rgba(17, 19, 31, 1)',
+            borderRadius: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            textStyle: {
+              color: '#b1b1b1',
+              align: 'left',
+            },
+            borderColor: '#000',
+            formatter: (value) => {
+              const data = value.data;
+              const alias = data[3].length > 0 ? data[3] : data[4].slice(0, 20);
+              const liquidity = data[2] >= 100000000 ?
+                `${this.amountShortenerPipe.transform(data[2] / 100000000)} BTC` :
+                `${this.amountShortenerPipe.transform(data[2], 2)} sats`;
+
+              return `
+                <b style="color: white">${alias}</b><br>
+                ${liquidity}<br>
+                ${data[5]} channels<br>
+                ${getFlagEmoji(data[7])} ${data[6]}
+              `;
+            }
           },
           itemStyle: {
-            areaColor: '#FDD835',
-          }
+            color: function (params) {
+              return `${lerpColor('#1E88E5', '#D81B60', Math.pow(params.data[2] / maxLiquidity, 0.2))}`;
+            },
+            opacity: 1,
+            borderColor: 'black',
+            borderWidth: 0,
+          },
+          zlevel: 2,
         },
-        data: countries,
-        itemStyle: {
-          areaColor: '#5A6A6D'
-        },
-      }
+      ]
     };
   }
 
@@ -134,30 +212,16 @@ export class NodesMap implements OnInit, OnDestroy {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
-      if (e.data && e.data.value > 0) {
+      if (e.data) {
         this.zone.run(() => {
-          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/nodes/country/${e.data.iso}`);
+          const url = new RelativeUrlPipe(this.stateService).transform(`/lightning/node/${e.data[4]}`);
           this.router.navigate([url]);
         });
       }
     });
-  }
 
-  onSaveChart() {
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
-    const now = new Date();
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 30;
-    this.chartOptions.backgroundColor = '#11131f';
-    this.chartInstance.setOption(this.chartOptions);
-    download(this.chartInstance.getDataURL({
-      pixelRatio: 2,
-      excludeComponents: ['dataZoom'],
-    }), `lightning-nodes-heatmap-clearnet-${Math.round(now.getTime() / 1000)}.svg`);
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
+    this.chartInstance.on('georoam', (e) => {
+      this.chartInstance.resize();
+    });
   }
 }
