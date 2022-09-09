@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
 import { Observable, tap, zip } from 'rxjs';
@@ -18,6 +18,10 @@ import { getFlagEmoji } from 'src/app/shared/common.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesMap implements OnInit {
+  @Input() widget: boolean = false;
+  @Input() nodes: any[] | undefined = undefined;
+  @Input() type: 'none' | 'isp' | 'country' = 'none';
+  
   observable$: Observable<any>;
 
   chartInstance = undefined;
@@ -43,13 +47,48 @@ export class NodesMap implements OnInit {
 
     this.observable$ = zip(
       this.assetsService.getWorldMapJson$,
-      this.apiService.getWorldNodes$()
+      this.nodes ? [this.nodes] : this.apiService.getWorldNodes$()
     ).pipe(tap((data) => {
       registerMap('world', data[0]);
 
+      let maxLiquidity = data[1].maxLiquidity;
+      let inputNodes: any[] = data[1].nodes;
+      let mapCenter: number[] = [0, 5];
+      if (this.type === 'country') {
+        mapCenter = [0, 0];
+      } else if (this.type === 'isp') {
+        mapCenter = [0, 10];
+      }
+
+      let mapZoom = 1.3;
+      if (!inputNodes) {
+        inputNodes = [];
+        for (const node of data[1]) {
+          if (this.type === 'country') {
+            mapCenter[0] += node.longitude;
+            mapCenter[1] += node.latitude;
+          }
+          inputNodes.push([
+            node.longitude,
+            node.latitude,
+            node.public_key,
+            node.alias,
+            node.capacity,
+            node.channels,
+            node.country,
+            node.iso_code,
+          ]);
+          maxLiquidity = Math.max(maxLiquidity ?? 0, node.capacity);
+        }
+        if (this.type === 'country') {
+          mapCenter[0] /= data[1].length;
+          mapCenter[1] /= data[1].length;
+          mapZoom = 6;
+        }
+      }
+
       const nodes: any[] = [];
-      console.log(data[1].nodes[0]);
-      for (const node of data[1].nodes) {
+      for (const node of inputNodes) {
         // We add a bit of noise so nodes at the same location are not all
         // on top of each other
         const random = Math.random() * 2 * Math.PI;
@@ -66,11 +105,12 @@ export class NodesMap implements OnInit {
         ]);
       }
 
-      this.prepareChartOptions(nodes, data[1].maxLiquidity);
+      maxLiquidity = Math.max(1, maxLiquidity);
+      this.prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom);
     }));
   }
 
-  prepareChartOptions(nodes, maxLiquidity) {
+  prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom) {
     let title: object;
     if (nodes.length === 0) {
       title = {
@@ -91,8 +131,8 @@ export class NodesMap implements OnInit {
       geo: {
         animation: false,
         silent: true,
-        center: [0, 5],
-        zoom: 1.3,
+        center: mapCenter,
+        zoom: mapZoom,
         tooltip: {
           show: false
         },
