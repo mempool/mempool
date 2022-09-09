@@ -1,15 +1,17 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
+  <h2 class="preview-header" i18n="lightning.node">lightning node</h2>
   <div class="row d-flex justify-content-between full-width-row">
-    <h1 class="title">
-      <span i18n="lightning.node">Node</span>:
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.id]"> {{ node.alias }}</a>
-    </h1>
+    <h1 class="title"></h1>
+    <div class="title-wrapper">
+      <h1 class="title">{{ node.alias }}</h1>
+    </div>
     <div class="badges mb-2">
       <span class="badge rounded-pill badge-success" *ngFor="let socketType of socketTypes">{{ socketType }}</span>
     </div>
   </div>
   <div class="row">
     <div class="col-md">
+      <a class="subtitle" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.public_key }}</a>
       <table class="table table-borderless table-striped">
         <tbody>
           <tr>

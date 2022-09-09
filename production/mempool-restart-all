@@ -1,8 +1,0 @@
-#!/usr/bin/env zsh
-HOSTNAME=$(hostname)
-
-echo restarting mempool backends | wall
-echo "${HOSTNAME} restarted mempool backends" | /usr/local/bin/keybase chat send --nonblock --channel general mempool.ops
-ps uaxw|grep 'dist/index'|grep -v grep|grep -v services|awk '{print $2}'|xargs -n 1 kill
-
-exit 0
