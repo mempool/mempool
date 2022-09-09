@@ -54,7 +54,7 @@
       </table>
     </div>
     <div class="col-md map-col">
-      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" [placeholder]="true" [hasLocation]="!!node.as_number" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" [placeholder]="true" [hasLocation]="!!node.as_number" [disableSpinner]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
     </div>
   </div>
 </div>
