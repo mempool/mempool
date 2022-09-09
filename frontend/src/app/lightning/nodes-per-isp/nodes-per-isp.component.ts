@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, share } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
 import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
 
 @Component({
@@ -33,7 +34,7 @@ export class NodesPerISP implements OnInit {
         map(response => {
           this.isp = {
             name: response.isp,
-            id: this.route.snapshot.params.isp
+            id: this.route.snapshot.params.isp.split(',').join(', ')
           };
           this.seoService.setTitle($localize`Lightning nodes on ISP: ${response.isp} [AS${this.route.snapshot.params.isp}]`);
 
@@ -46,12 +47,40 @@ export class NodesPerISP implements OnInit {
             };
           }
 
-          return response.nodes;
-        })
+          const sumLiquidity = response.nodes.reduce((partialSum, a) => partialSum + a.capacity, 0);
+          const sumChannels = response.nodes.reduce((partialSum, a) => partialSum + a.channels, 0);
+          const countries = {};
+          const topCountry = {
+            count: 0,
+            country: '',
+            iso: '',
+            flag: '',
+          };
+          for (const node of response.nodes) {
+            if (!node.geolocation.iso) {
+              continue;
+            }
+            countries[node.geolocation.iso] = countries[node.geolocation.iso] ?? 0 + 1;
+            if (countries[node.geolocation.iso] > topCountry.count) {
+              topCountry.count = countries[node.geolocation.iso];
+              topCountry.country = node.geolocation.country;
+              topCountry.iso = node.geolocation.iso;
+            }
+          }
+          topCountry.flag = getFlagEmoji(topCountry.iso);
+          
+          return {
+            nodes: response.nodes,
+            sumLiquidity: sumLiquidity,
+            sumChannels: sumChannels,
+            topCountry: topCountry,
+          };
+        }),
+        share()
       );
   }
 
-  trackByPublicKey(index: number, node: any) {
+  trackByPublicKey(index: number, node: any): string {
     return node.public_key;
   }
 }
