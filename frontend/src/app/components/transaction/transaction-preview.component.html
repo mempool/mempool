@@ -1,5 +1,7 @@
 <div class="box preview-box" *ngIf="tx && !error">
-  <h2 class="preview-header" i18n="shared.transaction">Transaction</h2>
+  <app-preview-title>
+    <span i18n="shared.transaction">Transaction</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <div class="title-wrapper">
       <h1 class="title truncated"><span class="first">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span></h1>
