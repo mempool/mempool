@@ -161,6 +161,9 @@ export interface ITopNodesPerChannels {
   updatedAt?: number,
   city?: any,
   country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
 }
 
 export interface ITopNodesPerCapacity {
@@ -172,6 +175,9 @@ export interface ITopNodesPerCapacity {
   updatedAt?: number,
   city?: any,
   country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
 }
 
 export interface INodesRanking {
@@ -188,6 +194,9 @@ export interface IOldestNodes {
   updatedAt?: number,
   city?: any,
   country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
 }
 
 export interface IChannel {

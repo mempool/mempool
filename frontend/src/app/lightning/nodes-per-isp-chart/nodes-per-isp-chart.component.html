@@ -10,14 +10,14 @@
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block">Unknown capacity</h5>
+        <h5 class="card-title d-inline-block" i18n="lightning.unknown-capacity">Unknown capacity</h5>
         <p class="card-text" i18n-ngbTooltip="lightning.unknown-capacity-desc"
         ngbTooltip="How much liquidity is running on nodes which ISP was not identifiable" placement="bottom">
           <app-amount [satoshis]="stats.unknownCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block">Tor capacity</h5>
+        <h5 class="card-title d-inline-block" i18n="lightning.tor-capacity">Tor capacity</h5>
         <p class="card-text" i18n-ngbTooltip="lightning.tor-capacity-desc"
         ngbTooltip="How much liquidity is running on nodes advertising only Tor addresses" placement="bottom">
           <app-amount [satoshis]="stats.torCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
@@ -80,19 +80,19 @@
 <ng-template #loadingReward>
   <div class="pool-distribution">
     <div class="item">
-      <h5 class="card-title" i18n="lightning.tagged-isp">Tagged ISPs</h5>
+      <h5 class="card-title d-inline-block" i18n="lightning.clearnet-capacity">Clearnet capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="lightning.tagged-capacity">Tagged capacity</h5>
+      <h5 class="card-title d-inline-block" i18n="lightning.unknown-capacity">Unknown capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="lightning.tagged-nodes">Tagged nodes</h5>
+      <h5 class="card-title d-inline-block" i18n="lightning.tor-capacity">Tor capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
