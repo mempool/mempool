@@ -6,7 +6,7 @@
   "MEMPOOL": {
     "HTTP_HOST": "http://127.0.0.1",
     "HTTP_PORT": 83,
-    "NETWORK": "bitcoin"
+    "NETWORK": "liquid"
   },
   "PUPPETEER": {
     "CLUSTER_SIZE": 8,

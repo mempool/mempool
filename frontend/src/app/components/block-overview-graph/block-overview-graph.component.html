@@ -1,6 +1,6 @@
 <div class="block-overview-graph">
   <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
-  <div class="loader-wrapper" [class.hidden]="!isLoading">
+  <div class="loader-wrapper" [class.hidden]="!isLoading || disableSpinner">
     <div class="spinner-border ml-3 loading" role="status"></div>
   </div>
 

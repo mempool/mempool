@@ -23,6 +23,7 @@ export class NodesChannelsMap implements OnInit {
   @Input() fitContainer = false;
   @Input() hasLocation = true;
   @Input() placeholder = false;
+  @Input() disableSpinner = false;
   @Output() readyEvent = new EventEmitter();
 
   channelsObservable: Observable<any>; 
