@@ -300,7 +300,7 @@ class BitcoinRoutes {
         // Not modified
         // 422 Unprocessable Entity
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422
-        res.status(422).send(`Psbt had no missing nonUtxoWitnesses.`);
+        res.status(422).send(`Psbt had no missing nonWitnessUtxos.`);
       }
     } catch (e: any) {
       if (e instanceof Error && new RegExp(notFoundError).test(e.message)) {
