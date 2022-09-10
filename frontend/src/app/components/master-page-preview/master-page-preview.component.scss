@@ -33,4 +33,67 @@
     justify-content: flex-start;
     align-items: center;
   }
+
+  ::ng-deep .preview-header {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 0 220px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 101;
+    line-height: 80px;
+    text-transform: capitalize;
+    font-size: 2.4rem;
+  }
+
+  ::ng-deep .title {
+    font-size: 52px;
+  }
+  ::ng-deep .subtitle {
+    font-size: 28px;
+  }
+
+  ::ng-deep .title, ::ng-deep .subtitle {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+    display: inline-block;
+
+    &.truncated {
+      text-overflow: unset;
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+
+      .first {
+        flex-grow: 1;
+        flex-shrink: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: -2px;
+      }
+
+      .last-four {
+        flex-shrink: 0;
+        flex-grow: 0;
+      }
+    }
+  }
+
+  ::ng-deep .title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+    width: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
 }

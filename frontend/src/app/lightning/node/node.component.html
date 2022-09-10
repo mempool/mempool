@@ -44,10 +44,13 @@
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
-            <tr *ngIf="node.geolocation">
+            <tr>
               <td i18n="location" class="text-truncate">Location</td>
-              <td>
+              <td *ngIf="node.geolocation">
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
+              </td>
+              <td *ngIf="!node.geolocation">
+                <span i18n="unknown">Unknown</span>
               </td>
             </tr>
           </tbody>
@@ -75,12 +78,15 @@
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
             </tr>
-            <tr *ngIf="node.country">
+            <tr>
               <td i18n="isp" class="text-truncate label">ISP</td>
-              <td>
+              <td *ngIf="node.as_number">
                 <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
+              </td>
+              <td *ngIf="!node.as_number">
+                <span class="badge badge-success" placement="bottom" i18n="tor">Exclusively on Tor</span>
               </td>
             </tr>
           </tbody>
@@ -120,7 +126,7 @@
   </div>
 
   <div *ngIf="!error">
-    <div class="row" *ngIf="node.as_number">
+    <div class="row" *ngIf="node.as_number && node.active_channel_count">
       <div class="col-sm">
         <app-nodes-channels-map [style]="'nodepage'" [publicKey]="node.public_key" [hasLocation]="!!node.as_number"></app-nodes-channels-map>
       </div>
@@ -128,7 +134,7 @@
         <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
       </div>
     </div>
-    <div *ngIf="!node.as_number">
+    <div *ngIf="!node.as_number || !node.active_channel_count">
       <app-node-statistics-chart [publicKey]="node.public_key"></app-node-statistics-chart>
     </div>
 

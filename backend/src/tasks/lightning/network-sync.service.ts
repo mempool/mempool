@@ -12,9 +12,11 @@ import { ResultSetHeader } from 'mysql2';
 import fundingTxFetcher from './sync-tasks/funding-tx-fetcher';
 import NodesSocketsRepository from '../../repositories/NodesSocketsRepository';
 import { Common } from '../../api/common';
+import blocks from '../../api/blocks';
 
 class NetworkSyncService {
   loggerTimer = 0;
+  closedChannelsScanBlock = 0;
 
   constructor() {}
 
@@ -240,10 +242,22 @@ class NetworkSyncService {
   }
 
   private async $scanForClosedChannels(): Promise<void> {
+    if (this.closedChannelsScanBlock === blocks.getCurrentBlockHeight()) {
+      logger.debug(`We've already scan closed channels for this block, skipping.`);
+      return;
+    }
+
     let progress = 0;
 
     try {
-      logger.info(`Starting closed channels scan`);
+      let log = `Starting closed channels scan`;
+      if (this.closedChannelsScanBlock > 0) {
+        log += `. Last scan was at block ${this.closedChannelsScanBlock}`;
+      } else {
+        log += ` for the first time`;
+      }
+      logger.info(log);
+
       const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
@@ -263,7 +277,9 @@ class NetworkSyncService {
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
-      logger.info(`Closed channels scan complete.`);
+
+      this.closedChannelsScanBlock = blocks.getCurrentBlockHeight();
+      logger.info(`Closed channels scan completed at block ${this.closedChannelsScanBlock}`);
     } catch (e) {
       logger.err('$scanForClosedChannels() error: ' + (e instanceof Error ? e.message : e));
     }

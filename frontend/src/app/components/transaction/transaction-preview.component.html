@@ -1,10 +1,11 @@
 <div class="box preview-box" *ngIf="tx && !error">
-
-  <div class="page-title">
-    <h1 i18n="shared.transaction">Transaction</h1>
-    <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, txId]">
-      <span class="truncated">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span>
-    </a>
+  <app-preview-title>
+    <span i18n="shared.transaction">Transaction</span>
+  </app-preview-title>
+  <div class="row d-flex justify-content-between full-width-row">
+    <div class="title-wrapper">
+      <h1 class="title truncated"><span class="first">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span></h1>
+    </div>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
       <span *ngIf="cpfpInfo && cpfpInfo.bestDescendant" class="badge badge-primary mr-1">
@@ -15,7 +16,6 @@
       </span>
     </div>
   </div>
-
   <div class="top-data row">
     <span class="field col-sm-4 text-left">
       <ng-template [ngIf]="isLiquid && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>

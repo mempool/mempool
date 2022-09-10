@@ -124,7 +124,7 @@ async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Cha
  */
 function convertPolicy(clChannel: any): ILightningApi.RoutingPolicy {
   return {
-    time_lock_delta: 0, // TODO
+    time_lock_delta: clChannel.delay,
     min_htlc: clChannel.htlc_minimum_msat.slice(0, -4),
     max_htlc_msat: clChannel.htlc_maximum_msat.slice(0, -4),
     fee_base_msat: clChannel.base_fee_millisatoshi,

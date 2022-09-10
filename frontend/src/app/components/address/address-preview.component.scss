@@ -1,6 +1,5 @@
-h1 {
-  font-size: 52px;
-  margin: 0;
+.title-wrapper {
+  padding: 0 15px;
 }
 
 .qr-wrapper {
@@ -23,27 +22,9 @@ h1 {
 
 .table {
   font-size: 32px;
+  margin-top: 48px;
 
   ::ng-deep .symbol {
     font-size: 24px;
-  }
-}
-
-.address-link {
-  font-size: 24px;
-  margin-bottom: 0.5em;
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  .truncated-address {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: calc(640px - 4em);
-    display: inline-block;
-    white-space: nowrap;
-  }
-  .last-four {
-    display: inline-block;
-    white-space: nowrap;
   }
 }

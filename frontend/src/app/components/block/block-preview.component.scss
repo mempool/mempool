@@ -1,14 +1,10 @@
-.block-title {
-  margin-bottom: 48px;
-  font-size: 52px;
-
-  ::ng-deep .next-previous-blocks {
-    font-size: 52px;
-  }
-}
-
 .table {
   font-size: 32px;
+  margin-top: 6px;
+}
+
+.title-wrapper {
+  padding-left: 15px;
 }
 
 .chart-container {
