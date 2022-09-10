@@ -1,4 +1,4 @@
-<div class="full-container" [class]="widget ? 'widget' : ''">
+<div class="full-container" [class]="widget ? 'widget' : ''" [class.fit-container]="fitContainer">
 
   <div *ngIf="!widget" class="card-header">
     <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
@@ -8,7 +8,7 @@
   </div>
 
   <div *ngIf="observable$ | async" class="chart" [class]="widget ? 'widget' : ''" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)">
+    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
   </div>
 
 </div>
