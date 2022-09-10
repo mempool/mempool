@@ -8,6 +8,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { MasterPagePreviewComponent } from '../components/master-page-preview/master-page-preview.component';
+import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
 import { AboutComponent } from '../components/about/about.component';
@@ -117,6 +118,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     AboutComponent,
     MasterPageComponent,
     MasterPagePreviewComponent,
+    PreviewTitleComponent,
     BisqMasterPageComponent,
     LiquidMasterPageComponent,
     StartComponent,
@@ -267,6 +269,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TimestampComponent,
     ToggleComponent,
     GeolocationComponent,
+    PreviewTitleComponent,
   ]
 })
 export class SharedModule {
