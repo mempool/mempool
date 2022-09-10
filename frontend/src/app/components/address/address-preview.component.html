@@ -1,12 +1,14 @@
 <div class="box preview-box" *ngIf="address && !error">
+  <app-preview-title>
+    <span i18n="shared.address">Address</span>
+  </app-preview-title>
   <div class="row">
     <div class="col-md">
-      <div class="title-address">
-        <h1 i18n="shared.address">Address</h1>
+      <div class="row d-flex justify-content-between">
+        <div class="title-wrapper">
+          <h1 class="title truncated"><span class="first">{{addressString.slice(0,-4)}}</span><span class="last-four">{{addressString.slice(-4)}}</span></h1>
+        </div>
       </div>
-      <a [routerLink]="['/address/' | relativeUrl, addressString]" class="address-link" >
-        <span class="truncated-address">{{addressString.slice(0,-4)}}</span><span class="last-four">{{addressString.slice(-4)}}</span>
-      </a>
       <table class="table table-borderless table-striped">
         <tbody>
           <tr *ngIf="addressInfo && addressInfo.unconfidential">

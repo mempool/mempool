@@ -15,7 +15,7 @@
       <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>
     </div>
 
-    <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading">
+    <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading && !disableSpinner">
       <div class="spinner-border text-light"></div>
     </div>
   </ng-container>
