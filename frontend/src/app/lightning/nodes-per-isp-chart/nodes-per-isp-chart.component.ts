@@ -47,7 +47,9 @@ export class NodesPerISPChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes per ISP`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Lightning nodes per ISP`);
+    }
 
     this.nodesPerAsObservable$ = combineLatest([
       this.sortBySubject.pipe(startWith(true)),
@@ -105,7 +107,7 @@ export class NodesPerISPChartComponent implements OnInit {
   }
 
   generateChartSerieData(ispRanking): PieSeriesOption[] {
-    let shareThreshold = 0.5;
+    let shareThreshold = 0.4;
     if (this.widget && isMobile() || isMobile()) {
       shareThreshold = 1;
     } else if (this.widget) {
@@ -132,9 +134,6 @@ export class NodesPerISPChartComponent implements OnInit {
         return;
       }
       data.push({
-        itemStyle: {
-          color: isp[0] === null ? '#7D4698' : undefined,
-        },
         value: this.sortBy === 'capacity' ? isp[7] : isp[6],
         name: isp[1].replace('&', '') + (isMobile() || this.widget ? `` : ` (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)`),
         label: {
@@ -204,7 +203,7 @@ export class NodesPerISPChartComponent implements OnInit {
     }
 
     this.chartOptions = {
-      color: chartColors.slice(3),
+      color: chartColors.filter((color) => color != '#5E35B1'), // Remove color that looks like Tor
       tooltip: {
         trigger: 'item',
         textStyle: {

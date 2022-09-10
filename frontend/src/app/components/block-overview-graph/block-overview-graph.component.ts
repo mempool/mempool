@@ -17,6 +17,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
+  @Input() disableSpinner = false;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
   @Output() readyEvent = new EventEmitter();
 
