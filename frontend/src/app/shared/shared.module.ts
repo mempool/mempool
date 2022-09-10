@@ -7,7 +7,6 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
-import { MasterPagePreviewComponent } from '../components/master-page-preview/master-page-preview.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
@@ -44,15 +43,12 @@ import { RouterModule } from '@angular/router';
 import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 import { StartComponent } from '../components/start/start.component';
 import { TransactionComponent } from '../components/transaction/transaction.component';
-import { TransactionPreviewComponent } from '../components/transaction/transaction-preview.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockComponent } from '../components/block/block.component';
-import { BlockPreviewComponent } from '../components/block/block-preview.component';
 import { BlockAuditComponent } from '../components/block-audit/block-audit.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { AddressComponent } from '../components/address/address.component';
-import { AddressPreviewComponent } from '../components/address/address-preview.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -117,21 +113,17 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     AmountComponent,
     AboutComponent,
     MasterPageComponent,
-    MasterPagePreviewComponent,
     PreviewTitleComponent,
     BisqMasterPageComponent,
     LiquidMasterPageComponent,
     StartComponent,
     TransactionComponent,
-    TransactionPreviewComponent,
     BlockComponent,
-    BlockPreviewComponent,
     BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
-    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
@@ -228,15 +220,12 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     AmountComponent,
     StartComponent,
     TransactionComponent,
-    TransactionPreviewComponent,
     BlockComponent,
-    BlockPreviewComponent,
     BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
     AddressComponent,
-    AddressPreviewComponent,
     SearchFormComponent,
     TimeSpanComponent,
     AddressLabelsComponent,
