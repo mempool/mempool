@@ -16,6 +16,11 @@
     padding-bottom: 100px;
   };
 }
+.full-container.widget {
+  min-height: 240px;
+  height: 240px;
+  padding: 0px;
+}
 
 .chart {
   width: 100%;
@@ -37,4 +42,7 @@
   @media (max-width: 567px) {
     padding-bottom: 55px;
   }
+}
+.chart.widget {
+  padding: 0px;
 }

@@ -1,4 +1,6 @@
-const configFile = require('../mempool-config.json');
+const configFromFile = require(
+    process.env.MEMPOOL_CONFIG_FILE ? process.env.MEMPOOL_CONFIG_FILE : '../mempool-config.json'
+);
 
 interface IConfig {
   MEMPOOL: {
@@ -249,7 +251,7 @@ class Config implements IConfig {
   MAXMIND: IConfig['MAXMIND'];
 
   constructor() {
-    const configs = this.merge(configFile, defaults);
+    const configs = this.merge(configFromFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;
