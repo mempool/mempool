@@ -252,36 +252,62 @@ class BitcoinRoutes {
    */
   private async postPsbtCompletion(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
+    const notFoundError = `Couldn't get transaction hex for parent of input`;
     try {
       let psbt: bitcoinjs.Psbt;
       let format: 'hex' | 'base64';
+      let isModified = false;
       try {
         psbt = bitcoinjs.Psbt.fromBase64(req.body);
         format = 'base64';
-      } catch(e1) {
+      } catch (e1) {
         try {
           psbt = bitcoinjs.Psbt.fromHex(req.body);
           format = 'hex';
-        } catch(e2) {
+        } catch (e2) {
           throw new Error(`Unable to parse PSBT`);
         }
       }
       for (const [index, input] of psbt.data.inputs.entries()) {
         if (!input.nonWitnessUtxo) {
           // Buffer.from ensures it won't be modified in place by reverse()
-          const txid = Buffer.from(psbt.txInputs[index].hash).reverse().toString('hex');
-          const transaction: IEsploraApi.Transaction = await bitcoinApi.$getRawTransaction(txid, true);
-          if (!transaction.hex) {
-            throw new Error(`Couldn't get transaction hex for ${txid}`);
+          const txid = Buffer.from(psbt.txInputs[index].hash)
+            .reverse()
+            .toString('hex');
+
+          let transaction: IEsploraApi.Transaction;
+          // If missing transaction, return 404 status error
+          try {
+            transaction = await bitcoinApi.$getRawTransaction(txid, true);
+            if (!transaction.hex) {
+              throw new Error('');
+            }
+          } catch (err) {
+            throw new Error(`${notFoundError} #${index} @ ${txid}`);
           }
+
           psbt.updateInput(index, {
             nonWitnessUtxo: Buffer.from(transaction.hex, 'hex'),
           });
+          if (!isModified) {
+            isModified = true;
+          }
         }
       }
-      res.send(format === 'hex' ? psbt.toHex() : psbt.toBase64());
+      if (isModified) {
+        res.send(format === 'hex' ? psbt.toHex() : psbt.toBase64());
+      } else {
+        // Not modified
+        // 422 Unprocessable Entity
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422
+        res.status(422).send(`Psbt had no missing nonUtxoWitnesses.`);
+      }
     } catch (e: any) {
-      res.status(500).send(e instanceof Error ? e.message : e);
+      if (e instanceof Error && new RegExp(notFoundError).test(e.message)) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
