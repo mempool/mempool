@@ -21,6 +21,17 @@
   height: 240px;
   padding: 0px;
 }
+.full-container.fit-container {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100px;
+
+  .chart {
+    padding: 0;
+    min-height: 100px;
+  }
+}
 
 .chart {
   width: 100%;
