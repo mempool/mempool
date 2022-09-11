@@ -10,11 +10,10 @@
             <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container></ng-template>
             <ng-template [ngIf]="blockHeight" i18n="shared.block-title">{{ blockHeight }}</ng-template>
           </h1>
-          <h2 class="subtitle" *ngIf="blockHash">
-            {{ blockHash.slice(0,20) }}
-            <br>
-            …{{ blockHash.slice(-19) }}
-          </h2>
+          <div class="blockhash" *ngIf="blockHash">
+            <h2 class="truncate right">{{ blockHash.slice(0,32) }}</h2>
+            <h2 class="truncate left">{{ blockHash.slice(32) }}</h2>
+          </div>
         </div>
       </div>
       <table class="table table-borderless table-striped">

@@ -18,16 +18,29 @@
   .title {
     flex-shrink: 0;
     flex-grow:  0;
-    margin-right: 8px;
-    font-size: 62px;
+    margin-right: 30px;
+    font-size: 64px;
   }
 
-  .subtitle {
+  .blockhash {
+    width: 0;
+    flex-grow: 1;
     flex-shrink: 1;
     font-family: Consolas,Liberation Mono,Courier New,monospace;
-    font-size: 31px;
-    overflow: hidden;
-    text-overflow: clip;
+    font-size: 32px;
+    text-align: right;
+
+    .truncate {
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin: 0;
+
+      &.left {
+        direction: rtl;
+      }
+    }
   }
 }
 
