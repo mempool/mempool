@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, Output, EventEmitter, LOCALE_ID, NgZone, OnDestroy, OnInit, OnChanges } from '@angular/core';
 import { SeoService } from 'src/app/services/seo.service';
 import { ApiService } from 'src/app/services/api.service';
-import { Observable, tap, zip } from 'rxjs';
+import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
 import { AssetsService } from 'src/app/services/assets.service';
 import { EChartsOption, registerMap } from 'echarts';
 import { lerpColor } from 'src/app/shared/graphs.utils';
@@ -17,11 +17,14 @@ import { getFlagEmoji } from 'src/app/shared/common.utils';
   styleUrls: ['./nodes-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesMap implements OnInit {
+export class NodesMap implements OnInit, OnChanges {
   @Input() widget: boolean = false;
   @Input() nodes: any[] | undefined = undefined;
   @Input() type: 'none' | 'isp' | 'country' = 'none';
-  
+  @Input() fitContainer = false;
+  @Output() readyEvent = new EventEmitter();
+  inputNodes$: BehaviorSubject<any>;
+  nodes$: Observable<any>;
   observable$: Observable<any>;
 
   chartInstance = undefined;
@@ -45,9 +48,17 @@ export class NodesMap implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes world map`);
 
-    this.observable$ = zip(
+    if (!this.inputNodes$) {
+      this.inputNodes$ = new BehaviorSubject(this.nodes);
+    }
+
+    this.nodes$ = this.inputNodes$.pipe(
+      switchMap((nodes) =>  nodes ? [nodes] : this.apiService.getWorldNodes$())
+    );
+
+    this.observable$ = combineLatest(
       this.assetsService.getWorldMapJson$,
-      this.nodes ? [this.nodes] : this.apiService.getWorldNodes$()
+      this.nodes$
     ).pipe(tap((data) => {
       registerMap('world', data[0]);
 
@@ -108,6 +119,16 @@ export class NodesMap implements OnInit {
       maxLiquidity = Math.max(1, maxLiquidity);
       this.prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom);
     }));
+  }
+
+  ngOnChanges(changes): void {
+    if (changes.nodes) {
+      if (!this.inputNodes$) {
+        this.inputNodes$ = new BehaviorSubject(changes.nodes.currentValue);
+      } else {
+        this.inputNodes$.next(changes.nodes.currentValue);
+      }
+    }
   }
 
   prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom) {
@@ -223,5 +244,9 @@ export class NodesMap implements OnInit {
     this.chartInstance.on('georoam', (e) => {
       this.chartInstance.resize();
     });
+  }
+
+  onChartFinished(e) {
+    this.readyEvent.emit();
   }
 }
