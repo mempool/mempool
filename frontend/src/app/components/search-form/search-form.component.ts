@@ -74,6 +74,7 @@ export class SearchFormComponent implements OnInit {
         switchMap((text) => {
           if (!text.length) {
             return of([
+              '',
               [],
               {
                 nodes: [],
@@ -84,11 +85,14 @@ export class SearchFormComponent implements OnInit {
           this.isTypeaheading$.next(true);
           if (!this.stateService.env.LIGHTNING) {
             return zip(
+              of(text),
               this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
-              [{ nodes: [], channels: [] }]
+              [{ nodes: [], channels: [] }],
+              of(this.regexBlockheight.test(text)),
             );
           }
           return zip(
+            of(text),
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
             this.apiService.lightningSearch$(text).pipe(catchError(() => of({
               nodes: [],
@@ -102,10 +106,12 @@ export class SearchFormComponent implements OnInit {
             return result[0].map((address: string) => 'B' + address);
           }
           return {
-            addresses: result[0],
-            nodes: result[1].nodes,
-            channels: result[1].channels,
-            totalResults: result[0].length + result[1].nodes.length + result[1].channels.length,
+            searchText: result[0],
+            blockHeight: this.regexBlockheight.test(result[0]) ? [parseInt(result[0], 10)] : [],
+            addresses: result[1],
+            nodes: result[2].nodes,
+            channels: result[2].channels,
+            totalResults: result[1].length + result[2].nodes.length + result[2].channels.length,
           };
         })
       );
@@ -121,6 +127,8 @@ export class SearchFormComponent implements OnInit {
   selectedResult(result: any) {
     if (typeof result === 'string') {
       this.search(result);
+    } else if (typeof result === 'number') {
+      this.navigate('/block/', result.toString());
     } else if (result.alias) {
       this.navigate('/lightning/node/', result.public_key);
     } else if (result.short_id) {
