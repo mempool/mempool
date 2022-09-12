@@ -87,29 +87,37 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         // assume confidential inputs/outputs have the same average value as the known ones
         const adjustedTotalInput = totalInput + ((totalInput / knownInputCount) * confidentialInputCount);
         const adjustedTotalOutput = totalOutput + ((totalOutput / knownOutputCount) * confidentialOutputCount);
-        return Math.max(adjustedTotalInput, adjustedTotalOutput) || 1;
+        return Math.max(adjustedTotalInput, adjustedTotalOutput);
       } else {
         // otherwise knowing the actual total of one side suffices
-        return Math.max(totalInput, totalOutput) || 1;
+        return Math.max(totalInput, totalOutput);
       }
     }
   }
 
   initLines(side: 'in' | 'out', xputs: { type: string, value: number | void }[], total: number, maxVisibleStrands: number): SvgLine[] {
-    const lines = [];
-    let unknownCount = 0;
-    let unknownTotal = total == null ? this.combinedWeight : total;
-    xputs.forEach(put => {
-      if (put.value == null) {
-        unknownCount++;
-      } else {
-        unknownTotal -= put.value as number;
-      }
-    });
-    const unknownShare = unknownTotal / unknownCount;
+    if (!total) {
+      const weights = xputs.map((put): number => this.combinedWeight / xputs.length);
+      return this.linesFromWeights(side, xputs, weights, maxVisibleStrands);
+    } else {
+      let unknownCount = 0;
+      let unknownTotal = total;
+      xputs.forEach(put => {
+        if (put.value == null) {
+          unknownCount++;
+        } else {
+          unknownTotal -= put.value as number;
+        }
+      });
+      const unknownShare = unknownTotal / unknownCount;
+      // conceptual weights
+      const weights = xputs.map((put): number => this.combinedWeight * (put.value == null ? unknownShare : put.value as number) / total);
+      return this.linesFromWeights(side, xputs, weights, maxVisibleStrands);
+    }
+  }
 
-    // conceptual weights
-    const weights = xputs.map((put): number => this.combinedWeight * (put.value == null ? unknownShare : put.value as number) / total);
+  linesFromWeights(side: 'in' | 'out', xputs: { type: string, value: number | void }[], weights: number[], maxVisibleStrands: number) {
+    const lines = [];
     // actual displayed line thicknesses
     const minWeights = weights.map((w) => Math.max(this.minWeight - 1, w) + 1);
     const visibleStrands = Math.min(maxVisibleStrands, xputs.length);

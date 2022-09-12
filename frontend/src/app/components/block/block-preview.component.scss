@@ -1,14 +1,47 @@
-.block-title {
-  margin-bottom: 48px;
-  font-size: 52px;
-
-  ::ng-deep .next-previous-blocks {
-    font-size: 52px;
-  }
-}
-
 .table {
   font-size: 32px;
+  margin-top: 36px;
+}
+
+.block-titles {
+  margin: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-grow: 1;
+
+  .title {
+    flex-shrink: 0;
+    flex-grow:  0;
+    margin-right: 30px;
+    font-size: 64px;
+  }
+
+  .blockhash {
+    width: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-family: Consolas,Liberation Mono,Courier New,monospace;
+    font-size: 32px;
+    text-align: right;
+
+    .truncate {
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin: 0;
+
+      &.left {
+        direction: rtl;
+      }
+    }
+  }
 }
 
 .chart-container {

@@ -1,19 +1,21 @@
 <div class="box preview-box" *ngIf="!error">
+  <app-preview-title>
+    <span i18n="shared.block-title">Block</span>
+  </app-preview-title>
   <div class="row">
     <div class="col-sm">
-      <h1 class="block-title">
-        <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container>
-          <span class="next-previous-blocks">
-            <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
-          </span>
-        </ng-template>
-        <ng-template [ngIf]="blockHeight" i18n="shared.block-title">Block <ng-container *ngTemplateOutlet="blockTemplateContent"></ng-container></ng-template>
-        <ng-template #blockTemplateContent>
-          <span class="next-previous-blocks">
-            <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
-          </span>
-        </ng-template>
-      </h1>
+      <div class="row">
+        <div class="block-titles">
+          <h1 class="title">
+            <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container></ng-template>
+            <ng-template [ngIf]="blockHeight" i18n="shared.block-title">{{ blockHeight }}</ng-template>
+          </h1>
+          <div class="blockhash" *ngIf="blockHash">
+            <h2 class="truncate right">{{ blockHash.slice(0,32) }}</h2>
+            <h2 class="truncate left">{{ blockHash.slice(32) }}</h2>
+          </div>
+        </div>
+      </div>
       <table class="table table-borderless table-striped">
         <tbody>
           <!-- <tr>
@@ -73,6 +75,7 @@
         [blockLimit]="stateService.blockVSize"
         [orientation]="'top'"
         [flip]="false"
+        [disableSpinner]="true"
         (readyEvent)="onGraphReady()"
       ></app-block-overview-graph>
     </div>

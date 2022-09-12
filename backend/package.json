@@ -22,7 +22,10 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "npm run tsc",
+    "build": "npm run tsc && npm run create-resources",
+    "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
+    "package": "npm run build && rm -rf package && mv dist package && mv node_modules package && npm run package-rm-build-deps",
+    "package-rm-build-deps": "(cd package/node_modules; rm -r typescript @typescript-eslint)",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=4096 dist/index.js",
     "test": "./node_modules/.bin/jest --coverage",

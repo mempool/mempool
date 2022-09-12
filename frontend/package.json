@@ -34,7 +34,7 @@
     "start:local-staging": "npm run generate-config && npm run sync-assets-dev && npm run ng -- serve -c local-staging",
     "start:mixed": "npm run generate-config && npm run sync-assets-dev && npm run ng -- serve -c mixed",
     "build": "npm run generate-config && npm run ng -- build --configuration production --localize && npm run sync-assets && npm run build-mempool.js",
-    "sync-assets": "node sync-assets.js && rsync -av ./dist/mempool/browser/en-US/resources ./dist/mempool/browser/resources",
+    "sync-assets": "rsync -av ./src/resources ./dist/mempool/browser && node sync-assets.js",
     "sync-assets-dev": "node sync-assets.js dev",
     "generate-config": "node generate-config.js",
     "build-mempool.js": "npm run build-mempool-js && npm run build-mempool-liquid-js && npm run build-mempool-bisq-js",
