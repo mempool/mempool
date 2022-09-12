@@ -1,36 +1,41 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { map, Observable, share } from 'rxjs';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { catchError, map, switchMap, Observable, share, of } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { SeoService } from 'src/app/services/seo.service';
+import { OpenGraphService } from 'src/app/services/opengraph.service';
 import { getFlagEmoji } from 'src/app/shared/common.utils';
 import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
 
 @Component({
-  selector: 'app-nodes-per-isp',
-  templateUrl: './nodes-per-isp.component.html',
-  styleUrls: ['./nodes-per-isp.component.scss'],
+  selector: 'app-nodes-per-isp-preview',
+  templateUrl: './nodes-per-isp-preview.component.html',
+  styleUrls: ['./nodes-per-isp-preview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesPerISP implements OnInit {
+export class NodesPerISPPreview implements OnInit {
   nodes$: Observable<any>;
   isp: {name: string, id: number};
-
-  skeletonLines: number[] = [];
+  id: string;
+  error: Error;
 
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
+    private openGraphService: OpenGraphService,
     private route: ActivatedRoute,
-  ) {
-    for (let i = 0; i < 20; ++i) {
-      this.skeletonLines.push(i);
-    }
-  }
+  ) { }
 
   ngOnInit(): void {
-    this.nodes$ = this.apiService.getNodeForISP$(this.route.snapshot.params.isp)
+    this.nodes$ = this.route.paramMap
       .pipe(
+        switchMap((params: ParamMap) => {
+          this.id = params.get('isp');
+          this.isp = null;
+          this.openGraphService.waitFor('isp-map-' + this.id);
+          this.openGraphService.waitFor('isp-data-' + this.id);
+          return this.apiService.getNodeForISP$(params.get('isp'));
+        }),
         map(response => {
           this.isp = {
             name: response.isp,
@@ -68,7 +73,9 @@ export class NodesPerISP implements OnInit {
             }
           }
           topCountry.flag = getFlagEmoji(topCountry.iso);
-          
+
+          this.openGraphService.waitOver('isp-data-' + this.id);
+
           return {
             nodes: response.nodes,
             sumLiquidity: sumLiquidity,
@@ -76,11 +83,21 @@ export class NodesPerISP implements OnInit {
             topCountry: topCountry,
           };
         }),
-        share()
+        catchError(err => {
+          this.error = err;
+          this.openGraphService.fail('isp-map-' + this.id);
+          this.openGraphService.fail('isp-data-' + this.id);
+          return of({
+            nodes: [],
+            sumLiquidity: 0,
+            sumChannels: 0,
+            topCountry: {},
+          });
+        })
       );
   }
 
-  trackByPublicKey(index: number, node: any): string {
-    return node.public_key;
+  onMapReady() {
+    this.openGraphService.waitOver('isp-map-' + this.id);
   }
 }

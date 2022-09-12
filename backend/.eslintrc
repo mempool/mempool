@@ -31,6 +31,7 @@
     "prefer-const": 1,
     "prefer-rest-params": 1,
     "quotes": [1, "single", { "allowTemplateLiterals": true }],
-    "semi": 1
+    "semi": 1,
+    "eqeqeq": 1
   }
 }

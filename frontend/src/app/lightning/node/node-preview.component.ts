@@ -42,7 +42,7 @@ export class NodePreviewComponent implements OnInit {
     this.node$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-        this.publicKey = params.get('public_key');
+          this.publicKey = params.get('public_key');
           this.openGraphService.waitFor('node-map-' + this.publicKey);
           this.openGraphService.waitFor('node-data-' + this.publicKey);
           return this.lightningApiService.getNode$(params.get('public_key'));
