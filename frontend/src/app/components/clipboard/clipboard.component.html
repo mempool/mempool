@@ -1,5 +1,5 @@
 <span #buttonWrapper [attr.data-tlite]="copiedMessage" style="position: relative;">
-  <button #btn class="btn btn-sm btn-link pt-0" [style]="{'line-height': size === 'small' ? '0.2' : '0.8'}" [attr.data-clipboard-text]="text"> 
-    <img src="/resources/clippy.svg" [width]="size === 'small' ? 10 : 13">
+  <button #btn class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" [attr.data-clipboard-text]="text"> 
+    <app-svg-images name="clippy" [width]="size === 'small' ? '10' : '13'" viewBox="0 0 1000 1000"></app-svg-images>
   </button>
 </span>

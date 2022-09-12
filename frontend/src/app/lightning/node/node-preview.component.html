@@ -1,15 +1,19 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
+  <app-preview-title>
+    <span i18n="lightning.node">lightning node</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
-    <h1 class="title">
-      <span i18n="lightning.node">Node</span>:
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.id]"> {{ node.alias }}</a>
-    </h1>
+    <h1 class="title"></h1>
+    <div class="title-wrapper">
+      <h1 class="title">{{ node.alias }}</h1>
+    </div>
     <div class="badges mb-2">
       <span class="badge rounded-pill badge-success" *ngFor="let socketType of socketTypes">{{ socketType }}</span>
     </div>
   </div>
   <div class="row">
     <div class="col-md">
+      <a class="subtitle" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.public_key }}</a>
       <table class="table table-borderless table-striped">
         <tbody>
           <tr>
@@ -52,7 +56,7 @@
       </table>
     </div>
     <div class="col-md map-col">
-      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" [placeholder]="true" [hasLocation]="!!node.as_number" [disableSpinner]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
     </div>
   </div>
 </div>

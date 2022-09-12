@@ -91,6 +91,22 @@ __EXTERNAL_DATA_SERVER_LIQUID_ONION__=${EXTERNAL_DATA_SERVER_LIQUID_ONION:=http:
 __EXTERNAL_DATA_SERVER_BISQ_URL__=${EXTERNAL_DATA_SERVER_BISQ_URL:=https://bisq.markets/api}
 __EXTERNAL_DATA_SERVER_BISQ_ONION__=${EXTERNAL_DATA_SERVER_BISQ_ONION:=http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api}
 
+# LIGHTNING
+__LIGHTNING_ENABLED__=${LIGHTNING_ENABLED:=false}
+__LIGHTNING_BACKEND__=${LIGHTNING_BACKEND:="lnd"}
+__LIGHTNING_TOPOLOGY_FOLDER__=${LIGHTNING_TOPOLOGY_FOLDER:=""}
+__LIGHTNING_STATS_REFRESH_INTERVAL__=${LIGHTNING_STATS_REFRESH_INTERVAL:=600}
+__LIGHTNING_GRAPH_REFRESH_INTERVAL__=${LIGHTNING_GRAPH_REFRESH_INTERVAL:=600}
+__LIGHTNING_LOGGER_UPDATE_INTERVAL__=${LIGHTNING_LOGGER_UPDATE_INTERVAL:=30}
+
+# LND
+__LND_TLS_CERT_PATH__=${LND_TLS_CERT_PATH:=""}
+__LND_MACAROON_PATH__=${LND_MACAROON_PATH:=""}
+__LND_REST_API_URL__=${LND_REST_API_URL:="https://localhost:8080"}
+
+# CLN
+__CLIGHTNING_SOCKET__=${CLIGHTNING_SOCKET:=""}
+
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
@@ -116,8 +132,8 @@ sed -i "s!__MEMPOOL_USER_AGENT__!${__MEMPOOL_USER_AGENT__}!g" mempool-config.jso
 sed -i "s/__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__/${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_INDEXING_BLOCKS_AMOUNT__/${__MEMPOOL_INDEXING_BLOCKS_AMOUNT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__}/g" mempool-config.json
-sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}/g" mempool-config.json
-sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
@@ -173,4 +189,20 @@ sed -i "s!__EXTERNAL_DATA_SERVER_LIQUID_ONION__!${__EXTERNAL_DATA_SERVER_LIQUID_
 sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_URL__!${__EXTERNAL_DATA_SERVER_BISQ_URL__}!g" mempool-config.json
 sed -i "s!__EXTERNAL_DATA_SERVER_BISQ_ONION__!${__EXTERNAL_DATA_SERVER_BISQ_ONION__}!g" mempool-config.json
 
-node /backend/dist/index.js
+# LIGHTNING
+sed -i "s!__LIGHTNING_ENABLED__!${__LIGHTNING_ENABLED__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_BACKEND__!${__LIGHTNING_BACKEND__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_TOPOLOGY_FOLDER__!${__LIGHTNING_TOPOLOGY_FOLDER__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_STATS_REFRESH_INTERVAL__!${__LIGHTNING_STATS_REFRESH_INTERVAL__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_GRAPH_REFRESH_INTERVAL__!${__LIGHTNING_GRAPH_REFRESH_INTERVAL__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_LOGGER_UPDATE_INTERVAL__!${__LIGHTNING_LOGGER_UPDATE_INTERVAL__}!g" mempool-config.json
+
+# LND
+sed -i "s!__LND_TLS_CERT_PATH__!${__LND_TLS_CERT_PATH__}!g" mempool-config.json
+sed -i "s!__LND_MACAROON_PATH__!${__LND_MACAROON_PATH__}!g" mempool-config.json
+sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
+
+# CLN
+sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
+
+node /backend/package/index.js

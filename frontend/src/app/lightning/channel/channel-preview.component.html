@@ -1,9 +1,11 @@
 <div class="box preview-box" *ngIf="(channel$ | async) as channel">
+  <app-preview-title>
+    <span i18n="lightning.channel">lightning channel</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
-    <h1 class="title">
-      <span i18n="lightning.channel">Channel</span>: 
-      <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]"> {{ channel.short_id }}</a>
-    </h1>
+    <div class="title-wrapper">
+      <h1 class="title">{{ channel.short_id }}</h1>
+    </div>
     <div class="badges mb-2">
       <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
       <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
@@ -12,20 +14,11 @@
       <app-closing-type [type]="channel.closing_reason" *ngIf="channel.status === 2"></app-closing-type>
     </div>
   </div>
-  <div class="row d-flex justify-content-between full-width-row nodes">
-    <span class="node left">
-      {{ channel.node_left.alias || '?' }}
-    </span>
-    <fa-icon class="between-arrow" [icon]="['fas', 'arrow-right-arrow-left']" [fixedWidth]="true" title="channel between"></fa-icon>
-    <span class="node right">
-      {{ channel.node_right.alias || '?' }}
-    </span>
-  </div>
   <div class="row">
     <div class="col-md">
+      <a class="subtitle" [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
       <table class="table table-borderless table-striped">
         <tbody>
-          <tr></tr>
           <tr>
             <td i18n="channel.created">Created</td>
             <td>{{ channel.created | date:'yyyy-MM-dd HH:mm' }}</td>
@@ -58,8 +51,17 @@
       </table>
     </div>
     <div class="col-md map-col">
-      <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo" [fitContainer]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+      <app-nodes-channels-map *ngIf="!error" [style]="'channelpage'" [channel]="channelGeo" [fitContainer]="true" [placeholder]="true" [disableSpinner]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
     </div>
+  </div>
+  <div class="row d-flex justify-content-between full-width-row nodes">
+    <span class="node left">
+      {{ channel.node_left.alias || '?' }}
+    </span>
+    <fa-icon class="between-arrow" [icon]="['fas', 'arrow-right-arrow-left']" [fixedWidth]="true" title="channel between"></fa-icon>
+    <span class="node right">
+      {{ channel.node_right.alias || '?' }}
+    </span>
   </div>
 </div>
 

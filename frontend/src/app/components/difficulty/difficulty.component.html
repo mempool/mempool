@@ -10,7 +10,7 @@
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
           </div>
-          <div class="symbol"><app-time-until [time]="epochData.remainingTime" [fastRender]="true"></app-time-until></div>
+          <div class="symbol"><app-time-until [time]="epochData.estimatedRetargetDate" [fastRender]="true"></app-time-until></div>
         </div>
         <div class="item">
           <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>

@@ -1,0 +1,44 @@
+{
+  "MEMPOOL": {
+    "NETWORK": "testnet",
+    "BACKEND": "esplora",
+    "HTTP_PORT": 8992,
+    "INDEXING_BLOCKS_AMOUNT": 0,
+    "API_URL_PREFIX": "/api/v1/"
+  },
+  "SYSLOG": {
+    "MIN_PRIORITY": "debug"
+  },
+  "CORE_RPC": {
+    "PORT": 18332,
+    "USERNAME": "__BITCOIN_RPC_USER__",
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
+  },
+  "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:4002"
+  },
+  "LIGHTNING": {
+    "ENABLED": true,
+    "BACKEND": "cln",
+    "GRAPH_REFRESH_INTERVAL": 60,
+    "TOPOLOGY_FOLDER": ""
+  },
+  "CLIGHTNING": {
+    "SOCKET": "/cln/.lightning/testnet/lightning-rpc"
+  },
+  "MAXMIND": {
+    "ENABLED": true,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoIP2-City.mmdb"
+  },
+  "STATISTICS": {
+    "ENABLED": false
+  },
+  "DATABASE": {
+    "ENABLED": true,
+    "HOST": "127.0.0.1",
+    "PORT": 3306,
+    "USERNAME": "mempool_testnet_lightning",
+    "PASSWORD": "mempool_testnet_lightning",
+    "DATABASE": "mempool_testnet_lightning"
+  }
+}

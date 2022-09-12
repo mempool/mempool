@@ -48,6 +48,9 @@ BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
 BITCOIN_TESTNET_ENABLE=ON
 BITCOIN_SIGNET_ENABLE=ON
+LN_BITCOIN_MAINNET_ENABLE=ON
+LN_BITCOIN_TESTNET_ENABLE=ON
+LN_BITCOIN_SIGNET_ENABLE=ON
 BISQ_MAINNET_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
@@ -227,6 +230,9 @@ MYSQL_GROUP=mysql
 MEMPOOL_MAINNET_USER='mempool'
 MEMPOOL_TESTNET_USER='mempool_testnet'
 MEMPOOL_SIGNET_USER='mempool_signet'
+LN_MEMPOOL_MAINNET_USER='mempool_mainnet_lightning'
+LN_MEMPOOL_TESTNET_USER='mempool_testnet_lightning'
+LN_MEMPOOL_SIGNET_USER='mempool_signet_lightning'
 MEMPOOL_LIQUID_USER='mempool_liquid'
 MEMPOOL_LIQUIDTESTNET_USER='mempool_liquidtestnet'
 MEMPOOL_BISQ_USER='mempool_bisq'
@@ -234,6 +240,9 @@ MEMPOOL_BISQ_USER='mempool_bisq'
 MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+LN_MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUID_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_LIQUIDTESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_BISQ_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
@@ -385,11 +394,15 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
-FREEBSD_PKG+=(zsh sudo git screen curl wget calc neovim)
+FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
 FREEBSD_PKG+=(openssh-portable py39-pip rust llvm90 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb105-server keybase)
 FREEBSD_PKG+=(geoipupdate)
+
+FREEBSD_UNFURL_PKG=()
+FREEBSD_UNFURL_PKG+=(nvidia-driver-470-470.129.06 chromium xinit xterm twm ja-sourcehansans-otf)
+FREEBSD_UNFURL_PKG+=(zh-sourcehansans-sc-otf ko-aleefonts-ttf lohit tlwg-ttf)
 
 #############################
 ##### utility functions #####
@@ -747,6 +760,9 @@ $CUT >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
 Mainnet:Enable Bitcoin Mainnet:ON
 Mainnet-Minfee:Enable Bitcoin Mainnet Minfee:ON
+LN-Mainnet:Enable Bitcoin Mainnet Lightning:ON
+LN-Testnet:Enable Bitcoin Testnet Lightning:ON
+LN-Signet:Enable Bitcoin Signet Lightning:ON
 Testnet:Enable Bitcoin Testnet:ON
 Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
@@ -809,6 +825,24 @@ else
     BITCOIN_INSTALL=OFF
 fi
 
+if grep LN-Mainnet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_MAINNET_ENABLE=ON
+else
+    LN_BITCOIN_MAINNET_ENABLE=OFF
+fi
+
+if grep LN-Testnet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_TESTNET_ENABLE=ON
+else
+    LN_BITCOIN_TESTNET_ENABLE=OFF
+fi
+
+if grep LN-Signet $tempfile >/dev/null 2>&1;then
+    LN_BITCOIN_SIGNET_ENABLE=ON
+else
+    LN_BITCOIN_SIGNET_ENABLE=OFF
+fi
+
 if grep Liquid $tempfile >/dev/null 2>&1;then
     ELEMENTS_LIQUID_ENABLE=ON
 else
@@ -831,6 +865,7 @@ if grep CoreLN $tempfile >/dev/null 2>&1;then
     CLN_INSTALL=ON
 else
     CLN_INSTALL=OFF
+fi
 
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     BITCOIN_ELECTRS_INSTALL=ON
@@ -974,17 +1009,29 @@ osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-build-all upgrade
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
-osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-restart-all restart
 
-echo "[*] Installing syslog configuration"
-osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/syslog.d
-osSudo "${ROOT_USER}" install -c -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool-logger" /usr/local/bin/mempool-logger
-osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/syslog.conf" /usr/local/etc/syslog.d/mempool.conf
 
-echo "[*] Installing newsyslog configuration"
-osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
-osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-backend.conf" /usr/local/etc/syslog.d/newsyslog-mempool-backend.conf
-osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-nginx.conf" /usr/local/etc/syslog.d/newsyslog-mempool-nginx.conf
+case $OS in
+    FreeBSD)
+        echo "[*] Installing syslog configuration"
+        osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/syslog.d
+        osSudo "${ROOT_USER}" install -c -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool-logger" /usr/local/bin/mempool-logger
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/syslog.conf" /usr/local/etc/syslog.d/mempool.conf
+        
+        echo "[*] Installing newsyslog configuration"
+        osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-backend.conf" /usr/local/etc/newsyslog.conf.d/newsyslog-mempool-backend.conf
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-nginx.conf" /usr/local/etc/newsyslog.conf.d/newsyslog-mempool-nginx.conf
+
+        echo "[*] Creating log files"
+        osSudo "${ROOT_USER}" newsyslog -C
+    ;;
+    Debian)
+        echo "[*] Installing syslog configuration"
+        osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/rsyslog.conf" /etc/rsyslog.d/10-mempool.conf
+        osSudo "${ROOT_USER}" sed -i.orig -e 's/^\*\.\*;auth,authpriv\.none/*\.*;auth,authpriv\.none,local7\.none/' /etc/rsyslog.d/50-default.conf
+    ;;
+esac
 
 echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
@@ -1266,17 +1313,20 @@ case $OS in
         echo "[*] Creating Core Lightning user"
         osGroupCreate "${CLN_GROUP}"
         osUserCreate "${CLN_USER}" "${CLN_HOME}" "${CLN_GROUP}"
+        osSudo "${ROOT_USER}" pw usermod ${MEMPOOL_USER} -G "${CLN_GROUP}"
         osSudo "${ROOT_USER}" chsh -s `which zsh` "${CLN_USER}"
-        osSudo "${CLN_USER}" touch "${CLN_HOME}/.zshrc"
+        echo "export PATH=$PATH:$HOME/.local/bin" >> "${CLN_HOME}/.zshrc"
+        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning" "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
 
         echo "[*] Installing Core Lightning package"
         osPackageInstall ${CLN_PKG}
 
         echo "[*] Installing Core Lightning mainnet Cronjob"
-        crontab_cln+='@reboot sleep 30 ; screen -dmS main lightningd --alias `hostname` --bitcoin-datadir /bitcoin\n'
-        crontab_cln+='@reboot sleep 60 ; screen -dmS sig lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network signet\n'
+        crontab_cln+='@reboot sleep 60 ; screen -dmS main lightningd --alias `hostname` --bitcoin-datadir /bitcoin\n'
         crontab_cln+='@reboot sleep 90 ; screen -dmS tes lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network testnet\n'
+        crontab_cln+='@reboot sleep 120 ; screen -dmS sig lightningd --alias `hostname` --bitcoin-datadir /bitcoin --network signet\n'
         echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
     ;;
     Debian)
@@ -1384,7 +1434,42 @@ if [ "${UNFURL_INSTALL}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Unfurl must be installed manually on FreeBSD"
+
+            if pciconf -lv|grep -i nvidia >/dev/null 2>&1;then
+                echo "[*] GPU detected: Installing packages for Unfurl"
+                osPackageInstall ${FREEBSD_UNFURL_PKG[@]}
+
+                echo 'allowed_users = anybody' >> /usr/local/etc/X11/Xwrapper.config
+                echo 'kld_list="nvidia"' >> /etc/rc.conf
+                echo 'nvidia_xorg_enable="YES"' >> /etc/rc.conf
+
+                echo "[*] Installing color emoji"
+                osSudo "${ROOT_USER}" curl "https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf" -o /usr/local/share/fonts/TTF/AppleColorEmoji.ttf
+                cat >> /usr/local/etc/fonts/conf.d/01-emoji.conf <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+<match>
+<test name="family"><string>sans-serif</string></test>
+<edit name="family" mode="prepend" binding="strong">
+<string>Apple Color Emoji</string>
+</edit>
+</match>
+<match>
+<test name="family"><string>serif</string></test>
+<edit name="family" mode="prepend" binding="strong">
+<string>Apple Color Emoji</string>
+</edit>
+</match>
+<match>
+<test name="family"><string>Apple Color Emoji</string></test>
+<edit name="family" mode="prepend" binding="strong">
+<string>Apple Color Emoji</string>
+</edit>
+</match>
+</fontconfig>
+EOF
+            fi
         ;;
 
         Debian)
@@ -1658,7 +1743,16 @@ if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Mainnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/mainnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_MAINNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Mainnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/mainnet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
@@ -1667,7 +1761,16 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_TESTNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Testnet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
@@ -1676,7 +1779,16 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Signet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/signet && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${LN_BITCOIN_SIGNET_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Lightning Network on Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/signet-lightning"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Lightning Network on Bitcoin Signet"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/signet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
@@ -1685,7 +1797,7 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquid"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/liquid && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
@@ -1694,7 +1806,7 @@ if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquidtestnet"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Liquid Testnet"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/liquidtestnet && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BISQ_INSTALL}" = ON ];then
@@ -1703,7 +1815,7 @@ if [ "${BISQ_INSTALL}" = ON ];then
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/bisq"
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bisq"
-    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME} && git checkout ${MEMPOOL_LATEST_RELEASE}"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/bisq && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 ##### mariadb
@@ -1729,6 +1841,15 @@ grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identifi
 create database mempool_signet;
 grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
+create database mempool_mainnet_lightning;
+grant all on mempool_mainnet_lightning.* to '${LN_MEMPOOL_MAINNET_USER}'@'%' identified by '${LN_MEMPOOL_MAINNET_PASS}';
+
+create database mempool_testnet_lightning;
+grant all on mempool_testnet_lightning.* to '${LN_MEMPOOL_TESTNET_USER}'@'%' identified by '${LN_MEMPOOL_TESTNET_PASS}';
+
+create database mempool_signet_lightning;
+grant all on mempool_signet_lightning.* to '${LN_MEMPOOL_SIGNET_USER}'@'%' identified by '${LN_MEMPOOL_SIGNET_PASS}';
+
 create database mempool_liquid;
 grant all on mempool_liquid.* to '${MEMPOOL_LIQUID_USER}'@'localhost' identified by '${MEMPOOL_LIQUID_PASS}';
 
@@ -1747,6 +1868,12 @@ declare -x MEMPOOL_TESTNET_USER="${MEMPOOL_TESTNET_USER}"
 declare -x MEMPOOL_TESTNET_PASS="${MEMPOOL_TESTNET_PASS}"
 declare -x MEMPOOL_SIGNET_USER="${MEMPOOL_SIGNET_USER}"
 declare -x MEMPOOL_SIGNET_PASS="${MEMPOOL_SIGNET_PASS}"
+declare -x LN_MEMPOOL_MAINNET_USER="${LN_MEMPOOL_MAINNET_USER}"
+declare -x LN_MEMPOOL_MAINNET_PASS="${LN_MEMPOOL_MAINNET_PASS}"
+declare -x LN_MEMPOOL_TESTNET_USER="${LN_MEMPOOL_TESTNET_USER}"
+declare -x LN_MEMPOOL_TESTNET_PASS="${LN_MEMPOOL_TESTNET_PASS}"
+declare -x LN_MEMPOOL_SIGNET_USER="${LN_MEMPOOL_SIGNET_USER}"
+declare -x LN_MEMPOOL_SIGNET_PASS="${LN_MEMPOOL_SIGNET_PASS}"
 declare -x MEMPOOL_LIQUID_USER="${MEMPOOL_LIQUID_USER}"
 declare -x MEMPOOL_LIQUID_PASS="${MEMPOOL_LIQUID_PASS}"
 declare -x MEMPOOL_LIQUIDTESTNET_USER="${MEMPOOL_LIQUIDTESTNET_USER}"
@@ -1757,24 +1884,32 @@ _EOF_
 
 ##### nginx
 
-echo "[*] Adding Nginx configuration"
-osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-mkdir -p /var/cache/nginx/services /var/cache/nginx/api
-chown ${NGINX_USER}: /var/cache/nginx/services /var/cache/nginx/api
-ln -s /mempool/mempool /etc/nginx/mempool
-osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
-osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
-if [ "${TOR_INSTALL}" = ON ];then
-echo "[*] Read tor v3 onion hostnames"
-    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
-    NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
-    NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
-    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-fi
-echo "[*] Restarting Nginx"
-osSudo "${ROOT_USER}" service nginx restart
+case $OS in
+
+    FreeBSD)
+    ;;
+
+Debian)
+        echo "[*] Adding Nginx configuration"
+        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
+        mkdir -p /var/cache/nginx/services /var/cache/nginx/api
+        chown ${NGINX_USER}: /var/cache/nginx/services /var/cache/nginx/api
+        ln -s /mempool/mempool /etc/nginx/mempool
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
+        if [ "${TOR_INSTALL}" = ON ];then
+        echo "[*] Read tor v3 onion hostnames"
+            NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
+            NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
+            NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
+            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+        fi
+        echo "[*] Restarting Nginx"
+        osSudo "${ROOT_USER}" service nginx restart
+    ;;
+esac
 
 ##### OS systemd
 

@@ -242,12 +242,12 @@ export class ApiService {
     return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/enterprise/info/` + name);
   }
 
-  getChannelByTxIds$(txIds: string[]): Observable<{ inputs: any[], outputs: any[] }> {
+  getChannelByTxIds$(txIds: string[]): Observable<any[]> {
     let params = new HttpParams();
     txIds.forEach((txId: string) => {
       params = params.append('txId[]', txId);
     });
-    return this.httpClient.get<{ inputs: any[], outputs: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels/txids/', { params });
   }
 
   lightningSearch$(searchText: string): Observable<any[]> {
@@ -255,9 +255,8 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
-  getNodesPerAs(groupBy: 'capacity' | 'node-count', showTorNodes: boolean): Observable<any> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp-ranking'
-      + `?groupBy=${groupBy}&showTor=${showTorNodes}`);
+  getNodesPerIsp(): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp-ranking');
   }
 
   getNodeForCountry$(country: string): Observable<any> {
@@ -268,14 +267,19 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp/' + isp);
   }
 
-  getNodesPerCountry(): Observable<any> {
+  getNodesPerCountry$(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/countries');
   }
 
-  getChannelsGeo$(publicKey?: string): Observable<any> {
+  getWorldNodes$(): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/world');
+  }
+
+  getChannelsGeo$(publicKey?: string, style?: 'graph' | 'nodepage' | 'widget' | 'channelpage'): Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels-geo' +
-        (publicKey !== undefined ? `/${publicKey}` : '')
+        (publicKey !== undefined ? `/${publicKey}`   : '') +
+        (style     !== undefined ? `?style=${style}` : '')
     );
   }
 }

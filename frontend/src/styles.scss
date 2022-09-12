@@ -89,7 +89,7 @@ body {
 
 .preview-box {
   min-height: 520px;
-  padding: 1.5rem 3rem;
+  padding: 1rem 3rem 1.5rem;
 }
 
 @media (max-width: 767.98px) {
@@ -705,6 +705,10 @@ th {
 .locktime { color: #ff8c00 }
 .reserved { color: #ff8c00 }
 
+.shortable-address {
+  font-family: monospace;
+}
+
 .rtl-layout {
 
   .navbar-brand {
@@ -881,6 +885,7 @@ th {
 
   .shortable-address {
     direction: ltr;
+    font-family: monospace;
   }
 
   .lastest-blocks-table {
@@ -1054,4 +1059,8 @@ th {
 
 .page-item {
   font-family: monospace;
+}
+
+#divider {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='104%25' height='100%25' fill='none' stroke='white' stroke-width='4' stroke-dasharray='10%2c17' stroke-dashoffset='18' stroke-linecap='square'/%3e%3c/svg%3e");
 }

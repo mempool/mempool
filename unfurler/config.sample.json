@@ -9,7 +9,8 @@
     "NETWORK": "bitcoin" // "bitcoin" | "liquid" | "bisq" (optional - defaults to "bitcoin")
   },
   "PUPPETEER": {
-    "CLUSTER_SIZE": 2,
+    "ENABLED": false, // optional, boolean, enables puppeteer and /render endpoints (default true)
+    "CLUSTER_SIZE": 2, // maximum number of parallel chromium pages. CLUSTER_SIZE=0 implies ENABLED=false
     "EXEC_PATH": "/usr/local/bin/chrome", // optional
     "MAX_PAGE_AGE": 86400, // maximum lifetime of a page session (in seconds)
     "RENDER_TIMEOUT": 3000, // timeout for preview image rendering (in ms) (optional)

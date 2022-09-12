@@ -8,11 +8,17 @@
 
 .box-right {
   text-align: right;
-  width: 50%;
-  margin-top: auto;
+  margin: auto;
+  white-space: nowrap;
 }
 
 .shared-block {
   color: #ffffff66;
   font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .box {
+    margin-bottom: 20px;
+  }
 }

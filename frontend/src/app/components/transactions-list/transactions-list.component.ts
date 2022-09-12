@@ -26,6 +26,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() paginated = false;
   @Input() outputIndex: number;
   @Input() address: string = '';
+  @Input() rowLimit = 12;
 
   @Output() loadMore = new EventEmitter();
 
@@ -34,9 +35,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
-  outspends: Outspend[][] = [];
   assetsMinimal: any;
-  channels: { inputs: any[], outputs: any[] };
+  transactionsLength: number = 0;
 
   constructor(
     public stateService: StateService,
@@ -46,7 +46,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private ref: ChangeDetectorRef,
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
@@ -61,14 +61,20 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txIds) => this.apiService.getOutspendsBatched$(txIds)),
           tap((outspends: Outspend[][]) => {
-            this.outspends = this.outspends.concat(outspends);
+            if (!this.transactions) {
+              return;
+            }
+            const transactions = this.transactions.filter((tx) => !tx._outspends);
+            outspends.forEach((outspend, i) => {
+              transactions[i]._outspends = outspend;
+            });
           }),
         ),
       this.stateService.utxoSpent$
         .pipe(
           tap((utxoSpent) => {
             for (const i in utxoSpent) {
-              this.outspends[0][i] = {
+              this.transactions[0]._outspends[i] = {
                 spent: true,
                 txid: utxoSpent[i].txid,
                 vin: utxoSpent[i].vin,
@@ -80,21 +86,23 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           .pipe(
             filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
-            map((channels) => {
-              this.channels = channels;
+            tap((channels) => {
+              const transactions = this.transactions.filter((tx) => !tx._channels);
+              channels.forEach((channel, i) => {
+                transactions[i]._channels = channel;
+              });
             }),
           )
         ,
     ).subscribe(() => this.ref.markForCheck());
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (!this.transactions || !this.transactions.length) {
       return;
     }
-    if (this.paginated) {
-      this.outspends = [];
-    }
+
+    this.transactionsLength = this.transactions.length;
     if (this.outputIndex) {
       setTimeout(() => {
         const assetBoxElements = document.getElementsByClassName('assetBox');
@@ -104,10 +112,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }, 10);
     }
 
-    this.transactions.forEach((tx, i) => {
+    this.transactions.forEach((tx) => {
       tx['@voutLimit'] = true;
       tx['@vinLimit'] = true;
-      if (this.outspends[i]) {
+      if (tx['addressValue'] !== undefined) {
         return;
       }
 
@@ -125,12 +133,19 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         tx['addressValue'] = addressIn - addressOut;
       }
     });
-    const txIds = this.transactions.map((tx) => tx.txid);
-    this.refreshOutspends$.next(txIds);
-    this.refreshChannels$.next(txIds);
+    const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
+    if (txIds.length) {
+      this.refreshOutspends$.next(txIds);
+    }
+    if (this.stateService.env.LIGHTNING) {
+      const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
+      if (txIds.length) {
+        this.refreshChannels$.next(txIds);
+      }
+    }
   }
 
-  onScroll() {
+  onScroll(): void {
     const scrollHeight = document.body.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     if (scrollHeight > 0){
@@ -145,11 +160,11 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     return tx.vout.some((v: any) => v.value === undefined);
   }
 
-  getTotalTxOutput(tx: Transaction) {
+  getTotalTxOutput(tx: Transaction): number {
     return tx.vout.map((v: Vout) => v.value || 0).reduce((a: number, b: number) => a + b);
   }
 
-  switchCurrency() {
+  switchCurrency(): void {
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
       return;
     }
@@ -161,7 +176,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     return tx.txid + tx.status.confirmed;
   }
 
-  trackByIndexFn(index: number) {
+  trackByIndexFn(index: number): number {
     return index;
   }
 
@@ -174,7 +189,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     return Math.pow(base, exponent);
   }
 
-  toggleDetails() {
+  toggleDetails(): void {
     if (this.showDetails$.value === true) {
       this.showDetails$.next(false);
     } else {
@@ -182,7 +197,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     }
   }
 
-  loadMoreInputs(tx: Transaction) {
+  loadMoreInputs(tx: Transaction): void {
     tx['@vinLimit'] = false;
 
     this.electrsApiService.getTransaction$(tx.txid)
@@ -193,7 +208,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.outspendsSubscription.unsubscribe();
   }
 }
