@@ -9,7 +9,7 @@ import { StateService } from 'src/app/services/state.service';
 import { download } from 'src/app/shared/graphs.utils';
 import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from 'src/app/shared/graphs.utils';
+import { getFlagEmoji } from 'src/app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',
@@ -45,7 +45,7 @@ export class NodesPerCountryChartComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setTitle($localize`Lightning nodes per country`);
 
-    this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry()
+    this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
         map(data => {
           for (let i = 0; i < data.length; ++i) {

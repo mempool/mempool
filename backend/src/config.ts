@@ -1,4 +1,6 @@
-const configFile = require('../mempool-config.json');
+const configFromFile = require(
+    process.env.MEMPOOL_CONFIG_FILE ? process.env.MEMPOOL_CONFIG_FILE : '../mempool-config.json'
+);
 
 interface IConfig {
   MEMPOOL: {
@@ -36,6 +38,7 @@ interface IConfig {
     TOPOLOGY_FOLDER: string;
     STATS_REFRESH_INTERVAL: number;
     GRAPH_REFRESH_INTERVAL: number;
+    LOGGER_UPDATE_INTERVAL: number;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -191,6 +194,7 @@ const defaults: IConfig = {
     'TOPOLOGY_FOLDER': '',
     'STATS_REFRESH_INTERVAL': 600,
     'GRAPH_REFRESH_INTERVAL': 600,
+    'LOGGER_UPDATE_INTERVAL': 30,
   },
   'LND': {
     'TLS_CERT_PATH': '',
@@ -247,7 +251,7 @@ class Config implements IConfig {
   MAXMIND: IConfig['MAXMIND'];
 
   constructor() {
-    const configs = this.merge(configFile, defaults);
+    const configs = this.merge(configFromFile, defaults);
     this.MEMPOOL = configs.MEMPOOL;
     this.ESPLORA = configs.ESPLORA;
     this.ELECTRUM = configs.ELECTRUM;

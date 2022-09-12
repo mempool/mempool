@@ -8,10 +8,14 @@ interface IConfig {
   MEMPOOL: {
     HTTP_HOST: string;
     HTTP_PORT: number;
+    NETWORK?: string;
   };
   PUPPETEER: {
+    ENABLED: boolean;
     CLUSTER_SIZE: number;
     EXEC_PATH?: string;
+    MAX_PAGE_AGE?: number;
+    RENDER_TIMEOUT?: number;
   };
 }
 
@@ -25,6 +29,7 @@ const defaults: IConfig = {
     'HTTP_PORT': 4200,
   },
   'PUPPETEER': {
+    'ENABLED': true,
     'CLUSTER_SIZE': 1,
   },
 };

@@ -1,0 +1,17 @@
+{
+  "SERVER": {
+    "HOST": "https://liquid.fra.mempool.space",
+    "HTTP_PORT": 8003
+  },
+  "MEMPOOL": {
+    "HTTP_HOST": "http://127.0.0.1",
+    "HTTP_PORT": 83,
+    "NETWORK": "liquid"
+  },
+  "PUPPETEER": {
+    "CLUSTER_SIZE": 8,
+    "EXEC_PATH": "/usr/local/bin/chrome",
+    "MAX_PAGE_AGE": 86400,
+    "RENDER_TIMEOUT": 3000
+  }
+}

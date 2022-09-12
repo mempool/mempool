@@ -151,3 +151,82 @@ export interface RewardStats {
   totalFee: number;
   totalTx: number;
 }
+
+export interface ITopNodesPerChannels {
+  publicKey: string,
+  alias: string,
+  channels?: number,
+  capacity: number,
+  firstSeen?: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
+}
+
+export interface ITopNodesPerCapacity {
+  publicKey: string,
+  alias: string,
+  capacity: number,
+  channels?: number,
+  firstSeen?: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
+}
+
+export interface INodesRanking {
+  topByCapacity: ITopNodesPerCapacity[];
+  topByChannels: ITopNodesPerChannels[];
+}
+
+export interface IOldestNodes {
+  publicKey: string,
+  alias: string,
+  firstSeen: number,
+  channels?: number,
+  capacity: number,
+  updatedAt?: number,
+  city?: any,
+  country?: any,
+  subdivision?: any,
+  iso_code?: string,
+  geolocation?: any;
+}
+
+export interface IChannel {
+  id: number;
+  short_id: string;
+  capacity: number;
+  transaction_id: string;
+  transaction_vout: number;
+  closing_transaction_id: string;
+  closing_reason: string;
+  updated_at: string;
+  created: string;
+  status: number;
+  node_left: Node,
+  node_right: Node,
+}
+
+
+export interface INode {
+  alias: string;
+  public_key: string;
+  channels: number;
+  capacity: number;
+  base_fee_mtokens: number;
+  cltv_delta: number;
+  fee_rate: number;
+  is_disabled: boolean;
+  max_htlc_mtokens: number;
+  min_htlc_mtokens: number;
+  updated_at: string;
+  longitude: number;
+  latitude: number;
+}

@@ -14,6 +14,7 @@ import { LightningApiService } from '../lightning-api.service';
 export class ChannelsListComponent implements OnInit, OnChanges {
   @Input() publicKey: string;
   @Output() channelsStatusChangedEvent = new EventEmitter<string>();
+  @Output() loadingEvent = new EventEmitter<boolean>(false);
   channels$: Observable<any>;
 
   // @ts-ignore
@@ -26,6 +27,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   defaultStatus = 'open';
   status = 'open';
   publicKeySize = 25;
+  isLoading = false;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -47,7 +49,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: false });
+    this.channelStatusForm.get('status').setValue(this.defaultStatus, { emitEvent: true });
     this.channelsPage$.next(1);
 
     this.channels$ = merge(
@@ -56,6 +58,8 @@ export class ChannelsListComponent implements OnInit, OnChanges {
     )
     .pipe(
       tap((val) => {
+        this.isLoading = true;
+        this.loadingEvent.emit(true);
         if (typeof val === 'string') {
           this.status = val;
           this.page = 1;
@@ -64,13 +68,15 @@ export class ChannelsListComponent implements OnInit, OnChanges {
         }
       }),
       switchMap(() => {
-          this.channelsStatusChangedEvent.emit(this.status);
-          return this.lightningApiService.getChannelsByNodeId$(this.publicKey, (this.page - 1) * this.itemsPerPage, this.status);
+        this.channelsStatusChangedEvent.emit(this.status);
+        return this.lightningApiService.getChannelsByNodeId$(this.publicKey, (this.page - 1) * this.itemsPerPage, this.status);
       }),
       map((response) => {
+        this.isLoading = false;
+        this.loadingEvent.emit(false);
         return {
           channels: response.body,
-          totalItems: parseInt(response.headers.get('x-total-count'), 10) + 1 
+          totalItems: parseInt(response.headers.get('x-total-count'), 10)
         };
       }),
     );

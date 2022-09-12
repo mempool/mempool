@@ -1,0 +1,65 @@
+<div class="box preview-box" *ngIf="tx && !error">
+  <app-preview-title>
+    <span i18n="shared.transaction">Transaction</span>
+  </app-preview-title>
+  <div class="row d-flex justify-content-between full-width-row">
+    <div class="title-wrapper">
+      <h1 class="title truncated"><span class="first">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span></h1>
+    </div>
+    <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
+      <app-tx-features [tx]="tx"></app-tx-features>
+      <span *ngIf="cpfpInfo && cpfpInfo.bestDescendant" class="badge badge-primary mr-1">
+        CPFP
+      </span>
+      <span *ngIf="cpfpInfo && !cpfpInfo.bestDescendant && cpfpInfo.ancestors.length" class="badge badge-info mr-1">
+        CPFP
+      </span>
+    </div>
+  </div>
+  <div class="top-data row">
+    <span class="field col-sm-4 text-left">
+      <ng-template [ngIf]="isLiquid && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>
+      <ng-template #defaultAmount>
+        <app-amount [satoshis]="totalValue"></app-amount>
+      </ng-template>
+    </span>
+    <span class="field col-sm-4 text-center"><ng-container *ngIf="transactionTime > 0">&lrm;{{ transactionTime * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-container></span>
+    <span class="field col-sm-4 text-right"><span class="label" i18n="transaction.fee|Transaction fee">Fee </span>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></span>
+  </div>
+
+
+  <div class="row graph-wrapper">
+    <tx-bowtie-graph [tx]="tx" [width]="1112" [height]="346" [network]="network"></tx-bowtie-graph>
+    <div class="above-bow">
+      <p class="field pair">
+        <span [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></span>
+        <span [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></span>
+      </p>
+      <p class="field" *ngIf="!isCoinbase(tx)">
+        {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+      </p>
+    </div>
+    <div class="overlaid">
+      <ng-container [ngSwitch]="extraData">
+        <table class="opreturns" *ngSwitchCase="'coinbase'">
+          <tbody>
+            <tr>
+              <td class="label">Coinbase</td>
+              <td class="message">{{ tx.vin[0].scriptsig | hex2ascii }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="opreturns" *ngSwitchCase="'opreturn'">
+          <tbody>
+            <ng-container *ngFor="let vout of opReturns.slice(0,3)">
+              <tr>
+                <td class="label">OP_RETURN</td>
+                <td *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="message">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </ng-container>
+    </div>
+  </div>
+</div>

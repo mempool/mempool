@@ -43,7 +43,6 @@
   .alliances,
   .enterprise-sponsor,
   .community-integrations-sponsor,
-  .selfhosted-integrations-sponsor,
   .maintainers {
     margin-top: 68px;
     margin-bottom: 68px;
@@ -53,7 +52,7 @@
     margin-bottom: 50px;
   }
 
-  .community-sponsor {
+  .community-sponsor, .project-translators {
     display: flex;
     flex-direction: column;
     .wrapper {
@@ -64,6 +63,13 @@
       margin: auto;
       height: 45px;
       width: 100%;
+    }
+  }
+
+  .community-sponsor {
+    img {
+      width: 67px;
+      height: 67px;
     }
   }
 
@@ -108,8 +114,8 @@
   .enterprise-sponsor,
   .contributors,
   .community-sponsor,
+  .project-translators,
   .community-integrations-sponsor,
-  .selfhosted-integrations-sponsor,
   .maintainers {
     .wrapper {
       display: inline-block;
@@ -132,7 +138,7 @@
     }
   }
 
-  .community-sponsor .wrapper {
+  .community-sponsor .wrapper, .project-translators .wrapper {
     margin: 10px auto 20px;
     a img {
       margin: 6px;
@@ -185,6 +191,6 @@
 }
 
 .community-integrations-sponsor {
-  max-width: 830px;
+  max-width: 970px;
   margin: auto;
 }

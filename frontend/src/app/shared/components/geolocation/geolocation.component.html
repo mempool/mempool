@@ -1,0 +1,8 @@
+<ng-template #formattedLocationHtml>
+  <span [innerHTML]="formattedLocation"></span>
+</ng-template>
+
+<span class="d-block text-truncate" [ngbTooltip]="formattedLocationHtml"
+  #formattedLocationEl [disableTooltip]="!isEllipsisActive(formattedLocationEl)">
+  <ng-template [ngTemplateOutlet]="formattedLocationHtml"></ng-template>
+</span>

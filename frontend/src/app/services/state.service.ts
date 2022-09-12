@@ -71,11 +71,13 @@ const defaultEnv: Env = {
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
   network = '';
+  lightning = false;
   blockVSize: number;
   env: Env;
   latestBlockHeight = -1;
 
   networkChanged$ = new ReplaySubject<string>(1);
+  lightningChanged$ = new ReplaySubject<boolean>(1);
   blocks$: ReplaySubject<[BlockExtended, boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
@@ -122,15 +124,18 @@ export class StateService {
 
     if (this.isBrowser) {
       this.setNetworkBasedonUrl(window.location.pathname);
+      this.setLightningBasedonUrl(window.location.pathname);
       this.isTabHidden$ = fromEvent(document, 'visibilitychange').pipe(map(() => this.isHidden()), shareReplay());
     } else {
       this.setNetworkBasedonUrl('/');
+      this.setLightningBasedonUrl('/');
       this.isTabHidden$ = new BehaviorSubject(false);
     }
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.setNetworkBasedonUrl(event.url);
+        this.setLightningBasedonUrl(event.url);
       }
     });
 
@@ -148,7 +153,12 @@ export class StateService {
     if (this.env.BASE_MODULE !== 'mempool' && this.env.BASE_MODULE !== 'liquid') {
       return;
     }
-    const networkMatches = url.match(/\/(bisq|testnet|liquidtestnet|liquid|signet)/);
+    // horrible network regex breakdown:
+    // /^\/                                         starts with a forward slash...
+    // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
+    // (?:preview\/)?                               optional "preview" prefix (non-capturing)
+    // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {
@@ -196,6 +206,15 @@ export class StateService {
           this.networkChanged$.next('');
         }
     }
+  }
+
+  setLightningBasedonUrl(url: string) {
+    if (this.env.BASE_MODULE !== 'mempool') {
+      return;
+    }
+    const networkMatches = url.match(/\/lightning\//);
+    this.lightning = !!networkMatches;
+    this.lightningChanged$.next(this.lightning);
   }
 
   getHiddenProp(){

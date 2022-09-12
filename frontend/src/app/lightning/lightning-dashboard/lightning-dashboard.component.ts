@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, share } from 'rxjs/operators';
+import { share } from 'rxjs/operators';
+import { INodesRanking } from 'src/app/interfaces/node-api.interface';
 import { SeoService } from 'src/app/services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
@@ -11,9 +12,8 @@ import { LightningApiService } from '../lightning-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightningDashboardComponent implements OnInit {
-  nodesByCapacity$: Observable<any>;
-  nodesByChannels$: Observable<any>;
   statistics$: Observable<any>;
+  nodesRanking$: Observable<INodesRanking>;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -21,20 +21,9 @@ export class LightningDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning Dashboard`);
+    this.seoService.setTitle($localize`Lightning Network`);
 
-    const sharedObservable = this.lightningApiService.listTopNodes$().pipe(share());
-
-    this.nodesByCapacity$ = sharedObservable
-      .pipe(
-        map((object) => object.topByCapacity),
-      );
-
-    this.nodesByChannels$ = sharedObservable
-      .pipe(
-        map((object) => object.topByChannels),
-      );
-
+    this.nodesRanking$ = this.lightningApiService.getNodesRanking$().pipe(share());
     this.statistics$ = this.lightningApiService.getLatestStatistics$().pipe(share());
   }
 

@@ -3,9 +3,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { SeoService } from 'src/app/services/seo.service';
-import { getFlagEmoji } from 'src/app/shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
-import { isMobile } from '../../shared/common.utils';
+import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-node',
@@ -22,18 +21,13 @@ export class NodeComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
-
-  publicKeySize = 99;
+  channelListLoading = false;
 
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
-  ) {
-    if (isMobile()) {
-      this.publicKeySize = 12;
-    }
-  }
+  ) { }
 
   ngOnInit(): void {
     this.node$ = this.activatedRoute.paramMap
@@ -58,7 +52,6 @@ export class NodeComponent implements OnInit {
             } else if (socket.indexOf('onion') > -1) {
               label = 'Tor';
             }
-            node.flag = getFlagEmoji(node.iso_code);
             socketsObject.push({
               label: label,
               socket: node.public_key + '@' + socket,
@@ -66,6 +59,19 @@ export class NodeComponent implements OnInit {
           }
           node.socketsObject = socketsObject;
           node.avgCapacity = node.capacity / Math.max(1, node.active_channel_count);
+
+          if (!node?.country && !node?.city &&
+            !node?.subdivision && !node?.iso) {
+              node.geolocation = null;
+          } else {
+            node.geolocation = <GeolocationData>{
+              country: node.country?.en,
+              city: node.city?.en,
+              subdivision: node.subdivision?.en,
+              iso: node.iso_code,
+            };
+          }
+
           return node;
         }),
         catchError(err => {
@@ -84,5 +90,9 @@ export class NodeComponent implements OnInit {
 
   onChannelsListStatusChanged(e) {
     this.channelsListStatus = e;
+  }
+
+  onLoadingEvent(e) {
+    this.channelListLoading = e;
   }
 }

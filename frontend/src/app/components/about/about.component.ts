@@ -61,9 +61,9 @@ export class AboutComponent implements OnInit {
     );
   }
 
-  sponsor() {
+  sponsor(): void {
     if (this.officialMempoolSpace && this.stateService.env.BASE_MODULE === 'mempool') {
-      this.router.navigateByUrl('/sponsor');
+      this.router.navigateByUrl('/enterprise');
     } else {
       this.showNavigateToSponsor = true;
     }
