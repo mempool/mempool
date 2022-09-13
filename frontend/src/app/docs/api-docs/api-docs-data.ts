@@ -40,27 +40,27 @@ export const wsApiDocsData = {
         });
   `,
     esModule: `
-const { %{0}: { websocket } } = mempoolJS();
+  const { %{0}: { websocket } } = mempoolJS();
 
-const ws = websocket.initServer({
-options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
-});
+  const ws = websocket.initServer({
+    options: ["blocks", "stats", "mempool-blocks", "live-2h-chart"],
+  });
 
-ws.on("message", function incoming(data) {
-const res = JSON.parse(data.toString());
-if (res.block) {
-console.log(res.block);
-}
-if (res.mempoolInfo) {
-console.log(res.mempoolInfo);
-}
-if (res.transactions) {
-console.log(res.transactions);
-}
-if (res["mempool-blocks"]) {
-console.log(res["mempool-blocks"]);
-}
-});
+  ws.on("message", function incoming(data) {
+    const res = JSON.parse(data.toString());
+    if (res.block) {
+      console.log(res.block);
+    }
+    if (res.mempoolInfo) {
+      console.log(res.mempoolInfo);
+    }
+    if (res.transactions) {
+      console.log(res.transactions);
+    }
+    if (res["mempool-blocks"]) {
+      console.log(res["mempool-blocks"]);
+    }
+  });
     `,
   },
   codeSampleMainnet: emptyCodeSample,
