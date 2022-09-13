@@ -17,27 +17,27 @@ export const wsApiDocsData = {
   codeTemplate: {
     curl: `/api/v1/ws`,
     commonJS: `
-  const { %{0}: { websocket } } = mempoolJS();
+        const { %{0}: { websocket } } = mempoolJS();
 
-  const ws = websocket.initClient({
-    options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
-  });
+        const ws = websocket.initClient({
+          options: ['blocks', 'stats', 'mempool-blocks', 'live-2h-chart'],
+        });
 
-  ws.addEventListener('message', function incoming({data}) {
-    const res = JSON.parse(data.toString());
-    if (res.block) {
-      document.getElementById("result-blocks").textContent = JSON.stringify(res.block, undefined, 2);
-    }
-    if (res.mempoolInfo) {
-      document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
-    }
-    if (res.transactions) {
-      document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
-    }
-    if (res["mempool-blocks"]) {
-      document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res["mempool-blocks"], undefined, 2);
-    }
-  });
+        ws.addEventListener('message', function incoming({data}) {
+          const res = JSON.parse(data.toString());
+          if (res.block) {
+            document.getElementById("result-blocks").textContent = JSON.stringify(res.block, undefined, 2);
+          }
+          if (res.mempoolInfo) {
+            document.getElementById("result-mempool-info").textContent = JSON.stringify(res.mempoolInfo, undefined, 2);
+          }
+          if (res.transactions) {
+            document.getElementById("result-transactions").textContent = JSON.stringify(res.transactions, undefined, 2);
+          }
+          if (res["mempool-blocks"]) {
+            document.getElementById("result-mempool-blocks").textContent = JSON.stringify(res["mempool-blocks"], undefined, 2);
+          }
+        });
   `,
     esModule: `
 const { %{0}: { websocket } } = mempoolJS();
