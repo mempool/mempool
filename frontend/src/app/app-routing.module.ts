@@ -3,14 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
-import { TransactionPreviewComponent } from './components/transaction/transaction-preview.component';
 import { BlockComponent } from './components/block/block.component';
 import { BlockAuditComponent } from './components/block-audit/block-audit.component';
-import { BlockPreviewComponent } from './components/block/block-preview.component';
 import { AddressComponent } from './components/address/address.component';
-import { AddressPreviewComponent } from './components/address/address-preview.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
-import { MasterPagePreviewComponent } from './components/master-page-preview/master-page-preview.component';
 import { AboutComponent } from './components/about/about.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
@@ -346,61 +342,18 @@ let routes: Routes = [
   },
   {
     path: 'preview',
-    component: MasterPagePreviewComponent,
     children: [
       {
-        path: 'block/:id',
-        component: BlockPreviewComponent
+        path: '',
+        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
       {
-        path: 'testnet/block/:id',
-        component: BlockPreviewComponent
+        path: 'testnet',
+        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
       {
-        path: 'signet/block/:id',
-        component: BlockPreviewComponent
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressPreviewComponent
-      },
-      {
-        path: 'testnet/address/:id',
-        children: [],
-        component: AddressPreviewComponent
-      },
-      {
-        path: 'signet/address/:id',
-        children: [],
-        component: AddressPreviewComponent
-      },
-      {
-        path: 'tx/:id',
-        children: [],
-        component: TransactionPreviewComponent
-      },
-      {
-        path: 'testnet/tx/:id',
-        children: [],
-        component: TransactionPreviewComponent
-      },
-      {
-        path: 'signet/tx/:id',
-        children: [],
-        component: TransactionPreviewComponent
-      },
-      {
-        path: 'lightning',
-        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
-      },
-      {
-        path: 'testnet/lightning',
-        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
-      },
-      {
-        path: 'signet/lightning',
-        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
+        path: 'signet',
+        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
     ],
   },
@@ -643,35 +596,14 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     },
     {
       path: 'preview',
-      component: MasterPagePreviewComponent,
       children: [
         {
-          path: 'block/:id',
-          component: BlockPreviewComponent
+          path: '',
+          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
         },
         {
-          path: 'testnet/block/:id',
-          component: BlockPreviewComponent
-        },
-        {
-          path: 'address/:id',
-          children: [],
-          component: AddressPreviewComponent
-        },
-        {
-          path: 'testnet/address/:id',
-          children: [],
-          component: AddressPreviewComponent
-        },
-        {
-          path: 'tx/:id',
-          children: [],
-          component: TransactionPreviewComponent
-        },
-        {
-          path: 'testnet/tx/:id',
-          children: [],
-          component: TransactionPreviewComponent
+          path: 'testnet',
+          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
         },
       ],
     },
