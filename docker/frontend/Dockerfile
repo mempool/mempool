@@ -1,5 +1,5 @@
-ARG UID=1000
-ARG GID=1000
+ARG UID=101
+ARG GID=101
 
 FROM node:16.16.0-buster-slim AS builder
 
