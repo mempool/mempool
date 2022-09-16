@@ -1,6 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import ConcurrencyImplementation from 'puppeteer-cluster/dist/concurrency/ConcurrencyImplementation';
 import { timeoutExecute } from 'puppeteer-cluster/dist/util';
+import logger from '../logger';
 
 import config from '../config';
 const mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
@@ -43,13 +44,13 @@ export default class ReusablePage extends ConcurrencyImplementation {
     }
 
     this.repairing = true;
-    console.log('Starting repair');
+    logger.info('Starting repair');
 
     try {
       // will probably fail, but just in case the repair was not necessary
       await (<puppeteer.Browser>this.browser).close();
     } catch (e) {
-      console.log('Unable to close browser.');
+      logger.warn('Unable to close browser.');
     }
 
     try {
@@ -65,11 +66,17 @@ export default class ReusablePage extends ConcurrencyImplementation {
 
   public async init() {
     this.browser = await this.puppeteer.launch(this.options);
+    if (this.browser != null) {
+      const proc = this.browser.process();
+      if (proc) {
+        initBrowserLogging(proc);
+      }
+    }
     const promises = []
     for (let i = 0; i < maxConcurrency; i++) {
       const newPage = await this.initPage();
       newPage.index = this.pages.length;
-      console.log('initialized page ', newPage.index);
+      logger.info(`initialized page ${newPage.index}`);
       this.pages.push(newPage);
     }
   }
@@ -82,15 +89,29 @@ export default class ReusablePage extends ConcurrencyImplementation {
     const page = await (this.browser as puppeteer.Browser).newPage() as RepairablePage;
     page.language = null;
     page.createdAt = Date.now();
-    const defaultUrl = mempoolHost + '/preview/block/1';
+    let defaultUrl
+    if (config.MEMPOOL.NETWORK !== 'bisq') {
+      // preload the preview module
+      defaultUrl = mempoolHost + '/preview/block/1';
+    } else {
+      // no preview module implemented yet for bisq
+      defaultUrl = mempoolHost;
+    }
     page.on('pageerror', (err) => {
       page.repairRequested = true;
     });
-    await page.goto(defaultUrl, { waitUntil: "load" });
-    await Promise.race([
-      page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-      page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-    ])
+    if (config.MEMPOOL.NETWORK !== 'bisq') {
+      try {
+        await page.goto(defaultUrl, { waitUntil: "load" });
+        await Promise.race([
+          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+        ])
+      } catch (e) {
+        logger.err(`failed to load frontend during page initialization: ` + (e instanceof Error ? e.message : `${e}`));
+        page.repairRequested = true;
+      }
+    }
     page.free = true;
     return page
   }
@@ -98,7 +119,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
   protected async createResources(): Promise<ResourceData> {
     const page = this.pages.find(p => p.free);
     if (!page) {
-      console.log('no free pages!')
+      logger.err('no free pages!')
       throw new Error('no pages available');
     } else {
       page.free = false;
@@ -117,7 +138,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
     try {
       await page.goto('about:blank', {timeout: 200}); // prevents memory leak (maybe?)
     } catch (e) {
-      console.log('unexpected page repair error');
+      logger.err('unexpected page repair error');
     }
     await page.close();
     return newPage;
@@ -159,5 +180,28 @@ export default class ReusablePage extends ConcurrencyImplementation {
         await this.repairPage(resources.page);
       },
     };
+  }
+}
+
+function initBrowserLogging(proc) {
+  if (proc.stderr && proc.stdout) {
+    proc.on('error', msg => {
+      logger.err('BROWSER ERROR ' + msg);
+    })
+    proc.stderr.on('data', buf => {
+      const msg = String(buf);
+      // For some reason everything (including js console logs) is piped to stderr
+      // so this kludge splits logs back into their priority levels
+      if (msg.includes(':INFO:')) {
+        logger.info('BROWSER' + msg, true);
+      } else if (msg.includes(':WARNING:')) {
+        logger.warn('BROWSER' + msg, true);
+      } else {
+        logger.err('BROWSER' + msg, true);
+      }
+    })
+    proc.stdout.on('data', buf => {
+      logger.info('BROWSER' + String(buf));
+    })
   }
 }
