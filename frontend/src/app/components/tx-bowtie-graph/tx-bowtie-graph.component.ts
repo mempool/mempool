@@ -7,6 +7,13 @@ interface SvgLine {
   class?: string;
 }
 
+interface Xput {
+  type: 'input' | 'output' | 'fee';
+  value?: number;
+}
+
+const lineLimit = 250;
+
 @Component({
   selector: 'tx-bowtie-graph',
   templateUrl: './tx-bowtie-graph.component.html',
@@ -24,6 +31,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   inputs: SvgLine[];
   outputs: SvgLine[];
   middle: SvgLine;
+  midWidth: number;
   isLiquid: boolean = false;
 
   gradientColors = {
@@ -44,6 +52,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
     this.gradient = this.gradientColors[this.network];
+    this.midWidth = Math.min(50, Math.ceil(this.width / 20));
     this.initGraph();
   }
 
@@ -55,17 +64,34 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   initGraph(): void {
     const totalValue = this.calcTotalValue(this.tx);
-    const voutWithFee = this.tx.vout.map(v => { return { type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output', value: v?.value }; });
+    let voutWithFee = this.tx.vout.map(v => { return { type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output', value: v?.value } as Xput; });
 
     if (this.tx.fee && !this.isLiquid) {
       voutWithFee.unshift({ type: 'fee', value: this.tx.fee });
     }
 
-    this.inputs = this.initLines('in', this.tx.vin.map(v => { return {type: 'input', value: v?.prevout?.value }; }), totalValue, this.maxStrands);
+    let truncatedInputs = this.tx.vin.map(v => { return {type: 'input', value: v?.prevout?.value } as Xput; });
+
+    if (truncatedInputs.length > lineLimit) {
+      const valueOfRest = truncatedInputs.slice(lineLimit).reduce((r, v) => {
+        return r + (v.value || 0);
+      }, 0);
+      truncatedInputs = truncatedInputs.slice(0, lineLimit);
+      truncatedInputs.push({ type: 'input', value: valueOfRest });
+    }
+    if (voutWithFee.length > lineLimit) {
+      const valueOfRest = voutWithFee.slice(lineLimit).reduce((r, v) => {
+        return r + (v.value || 0);
+      }, 0);
+      voutWithFee = voutWithFee.slice(0, lineLimit);
+      voutWithFee.push({ type: 'output', value: valueOfRest });
+    }
+
+    this.inputs = this.initLines('in', truncatedInputs, totalValue, this.maxStrands);
     this.outputs = this.initLines('out', voutWithFee, totalValue, this.maxStrands);
 
     this.middle = {
-      path: `M ${(this.width / 2) - 50} ${(this.height / 2) + 0.5} L ${(this.width / 2) + 50} ${(this.height / 2) + 0.5}`,
+      path: `M ${(this.width / 2) - this.midWidth} ${(this.height / 2) + 0.5} L ${(this.width / 2) + this.midWidth} ${(this.height / 2) + 0.5}`,
       style: `stroke-width: ${this.combinedWeight + 0.5}; stroke: ${this.gradient[1]}`
     };
   }
@@ -95,7 +121,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     }
   }
 
-  initLines(side: 'in' | 'out', xputs: { type: string, value: number | void }[], total: number, maxVisibleStrands: number): SvgLine[] {
+  initLines(side: 'in' | 'out', xputs: Xput[], total: number, maxVisibleStrands: number): SvgLine[] {
     if (!total) {
       const weights = xputs.map((put): number => this.combinedWeight / xputs.length);
       return this.linesFromWeights(side, xputs, weights, maxVisibleStrands);
@@ -116,7 +142,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     }
   }
 
-  linesFromWeights(side: 'in' | 'out', xputs: { type: string, value: number | void }[], weights: number[], maxVisibleStrands: number) {
+  linesFromWeights(side: 'in' | 'out', xputs: Xput[], weights: number[], maxVisibleStrands: number) {
     const lines = [];
     // actual displayed line thicknesses
     const minWeights = weights.map((w) => Math.max(this.minWeight - 1, w) + 1);
@@ -158,7 +184,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number): string {
     const start = side === 'in' ? (weight * 0.5) : this.width - (weight * 0.5);
-    const center =  this.width / 2 + (side === 'in' ? -45 : 45 );
+    const center =  this.width / 2 + (side === 'in' ? -(this.midWidth * 0.9) : (this.midWidth * 0.9) );
     const midpoint = (start + center) / 2;
     // correct for svg horizontal gradient bug
     if (Math.round(outer) === Math.round(inner)) {
