@@ -30,6 +30,7 @@ import { TopNodesPerCapacity } from '../lightning/nodes-ranking/top-nodes-per-ca
 import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-nodes.component';
 import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 import { NodeChannels } from '../lightning/nodes-channels/node-channels.component';
+import { GroupComponent } from './group/group.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { NodeChannels } from '../lightning/nodes-channels/node-channels.componen
     OldestNodes,
     NodesRankingsDashboard,
     NodeChannels,
+    GroupComponent,
   ],
   imports: [
     CommonModule,
