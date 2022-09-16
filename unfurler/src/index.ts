@@ -7,6 +7,7 @@ import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute } from './routes';
+import logger from './logger';
 const puppeteerConfig = require('../puppeteer.config.json');
 
 if (config.PUPPETEER.EXEC_PATH) {
@@ -55,7 +56,7 @@ class Server {
     this.server = http.createServer(this.app);
 
     this.server.listen(config.SERVER.HTTP_PORT, () => {
-      console.log(`Mempool Unfurl Server is running on port ${config.SERVER.HTTP_PORT}`);
+      logger.info(`Mempool Unfurl Server is running on port ${config.SERVER.HTTP_PORT}`);
     });
   }
 
@@ -102,20 +103,23 @@ class Server {
 
       // wait for preview component to initialize
       await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
-      let success = false;
+      let success;
       success = await Promise.race([
         page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
         page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
       ])
-      if (success) {
+      if (success === true) {
         const screenshot = await page.screenshot();
         return screenshot;
+      } else if (success === false) {
+        logger.warn(`failed to render page preview for ${action} due to client-side error, e.g. requested an invalid txid`);
+        page.repairRequested = true;
       } else {
-        console.log(`failed to render page preview for ${action} due to client-side error. probably requested an invalid ID`);
+        logger.warn(`failed to render page preview for ${action} due to puppeteer timeout`);
         page.repairRequested = true;
       }
     } catch (e) {
-      console.log(`failed to render page for ${action}`, e instanceof Error ? e.message : e);
+      logger.err(`failed to render page for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
   }
@@ -150,7 +154,7 @@ class Server {
         res.send(img);
       }
     } catch (e) {
-      console.log(e);
+      logger.err(e instanceof Error ? e.message : `${e}`);
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
@@ -202,7 +206,7 @@ class Server {
 const server = new Server();
 
 process.on('SIGTERM', async () => {
-  console.info('Shutting down Mempool Unfurl Server');
+  logger.info('Shutting down Mempool Unfurl Server');
   await server.stopServer();
   process.exit(0);
 });
