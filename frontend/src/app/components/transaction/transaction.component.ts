@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
@@ -24,7 +24,7 @@ import { LiquidUnblinding } from './liquid-ublinding';
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss'],
 })
-export class TransactionComponent implements OnInit, OnDestroy {
+export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   network = '';
   tx: Transaction;
   txId: string;
@@ -47,6 +47,12 @@ export class TransactionComponent implements OnInit, OnDestroy {
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
   outputIndex: number;
+  graphExpanded: boolean = false;
+  graphWidth: number = 1000;
+  maxInOut: number = 0;
+
+  @ViewChild('graphContainer')
+  graphContainer: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -167,6 +173,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           this.waitingForTransaction = false;
           this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
+          this.setupGraph();
 
           if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
@@ -220,6 +227,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.setGraphSize();
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -282,6 +293,26 @@ export class TransactionComponent implements OnInit, OnDestroy {
 
   roundToOneDecimal(cpfpTx: any): number {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
+  }
+
+  setupGraph() {
+    this.maxInOut = Math.min(250, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length || 1));
+  }
+
+  expandGraph() {
+    this.graphExpanded = true;
+  }
+
+  collapseGraph() {
+    this.graphExpanded = false;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  setGraphSize(): void {
+    console.log('resize', this.graphContainer);
+    if (this.graphContainer) {
+      this.graphWidth = this.graphContainer.nativeElement.clientWidth - 24;
+    }
   }
 
   ngOnDestroy() {
