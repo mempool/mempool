@@ -101,11 +101,16 @@ export default class ReusablePage extends ConcurrencyImplementation {
       page.repairRequested = true;
     });
     if (config.MEMPOOL.NETWORK !== 'bisq') {
-      await page.goto(defaultUrl, { waitUntil: "load" });
-      await Promise.race([
-        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-      ])
+      try {
+        await page.goto(defaultUrl, { waitUntil: "load" });
+        await Promise.race([
+          page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+          page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+        ])
+      } catch (e) {
+        logger.err(`failed to load frontend during page initialization: ` + (e instanceof Error ? e.message : `${e}`));
+        page.repairRequested = true;
+      }
     }
     page.free = true;
     return page

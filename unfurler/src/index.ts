@@ -119,7 +119,7 @@ class Server {
         page.repairRequested = true;
       }
     } catch (e) {
-      logger.err(`failed to render page for ${action}` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to render page for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
   }
