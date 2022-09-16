@@ -89,15 +89,24 @@ export default class ReusablePage extends ConcurrencyImplementation {
     const page = await (this.browser as puppeteer.Browser).newPage() as RepairablePage;
     page.language = null;
     page.createdAt = Date.now();
-    const defaultUrl = mempoolHost + '/preview/block/1';
+    let defaultUrl
+    if (config.MEMPOOL.NETWORK !== 'bisq') {
+      // preload the preview module
+      defaultUrl = mempoolHost + '/preview/block/1';
+    } else {
+      // no preview module implemented yet for bisq
+      defaultUrl = mempoolHost;
+    }
     page.on('pageerror', (err) => {
       page.repairRequested = true;
     });
-    await page.goto(defaultUrl, { waitUntil: "load" });
-    await Promise.race([
-      page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
-      page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
-    ])
+    if (config.MEMPOOL.NETWORK !== 'bisq') {
+      await page.goto(defaultUrl, { waitUntil: "load" });
+      await Promise.race([
+        page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
+        page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
+      ])
+    }
     page.free = true;
     return page
   }

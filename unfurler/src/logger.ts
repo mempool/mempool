@@ -83,7 +83,7 @@ class Logger {
         msg = msg.slice(0, msg.length - 1);
       }
     }
-    const network = this.network ? ' <' + this.network + ' unfurler>' : '';
+    const network = this.network ? ' <' + this.network + '-unfurler>' : '';
     prionum = Logger.priorities[priority] || Logger.priorities.info;
     consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
 
