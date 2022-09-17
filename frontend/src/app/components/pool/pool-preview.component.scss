@@ -1,0 +1,78 @@
+.stats {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  margin: 15px 0;
+  font-size: 32px;
+  overflow: hidden;
+
+  .stat-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 15px;
+    background: #181b2d;
+    padding: 0.75rem;
+    width: 0;
+    flex-grow: 1;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    .label {
+      flex-shrink: 0;
+      flex-grow: 0;
+      margin-right: 1em;
+    }
+    .data {
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.chart {
+  width: 100%;
+  height: 315px;
+  background: #181b2d;
+}
+
+.row {
+  margin-right: 0;
+}
+
+.full-width-row {
+  padding-left: 15px;
+  flex-wrap: nowrap;
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  margin-left: 1em;
+
+  img {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #24273e;
+
+    &.noimg {
+      opacity: 0;
+    }
+  }
+}
+
+::ng-deep .symbol {
+  font-size: 24px;
+}
