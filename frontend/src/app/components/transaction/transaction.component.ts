@@ -49,7 +49,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   outputIndex: number;
   graphExpanded: boolean = false;
   graphWidth: number = 1000;
+  graphHeight: number = 360;
   maxInOut: number = 0;
+  tooltipPosition: { x: number, y: number };
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -296,7 +298,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setupGraph() {
-    this.maxInOut = Math.min(250, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length || 1));
+    this.maxInOut = Math.min(250, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
+    this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
   expandGraph() {
@@ -309,7 +312,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
-    console.log('resize', this.graphContainer);
     if (this.graphContainer) {
       this.graphWidth = this.graphContainer.nativeElement.clientWidth - 24;
     }
