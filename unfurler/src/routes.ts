@@ -61,7 +61,16 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/previews/mining.png'
+    fallbackImg: '/resources/previews/mining.png',
+    routes: {
+      pool: {
+        render: true,
+        params: 1,
+        getTitle(path) {
+          return `Mining Pool: ${path[0]}`;
+        }
+      }
+    }
   }
 };
 
