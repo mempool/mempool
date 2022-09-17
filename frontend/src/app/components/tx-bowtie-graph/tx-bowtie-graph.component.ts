@@ -13,6 +13,10 @@ interface Xput {
   index?: number;
   address?: string;
   rest?: number;
+  coinbase?: boolean;
+  pegin?: boolean;
+  pegout?: string;
+  confidential?: boolean;
 }
 
 const lineLimit = 250;
@@ -78,6 +82,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output',
         value: v?.value,
         address: v?.scriptpubkey_address || v?.scriptpubkey_type?.toUpperCase(),
+        pegout: v?.pegout?.scriptpubkey_address,
+        confidential: (this.isLiquid && v?.value === undefined),
       } as Xput;
     });
 
@@ -91,6 +97,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         type: 'input',
         value: v?.prevout?.value,
         address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
+        coinbase: v?.is_coinbase,
+        pegin: v?.is_pegin,
+        confidential: (this.isLiquid && v?.prevout?.value === undefined),
       } as Xput;
     });
 

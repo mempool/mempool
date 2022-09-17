@@ -6,28 +6,51 @@
   [style.left]="tooltipPosition.x + 'px'"
   [style.top]="tooltipPosition.y + 'px'"
 >
-  <ng-container *ngIf="!line.rest; else restMsg">
-    <p>
-      <ng-container [ngSwitch]="line.type">
-        <span *ngSwitchCase="'input'" i18n="transaction.input">Input</span>
-        <span *ngSwitchCase="'output'" i18n="transaction.output">Output</span>
-        <span *ngSwitchCase="'fee'" i18n="transaction.fee">Fee</span>
-      </ng-container>
-      <span *ngIf="line.type !== 'fee'"> #{{ line.index }}</span>
-    </p>
-    <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
-  </ng-container>
-
-  <ng-template #restMsg>
+  <ng-container *ngIf="line.rest; else coinbase">
     <span>{{ line.rest }} </span>
     <ng-container [ngSwitch]="line.type">
       <span *ngSwitchCase="'input'" i18n="transaction.other-inputs">other inputs</span>
       <span *ngSwitchCase="'output'" i18n="transaction.other-outputs">other outputs</span>
     </ng-container>
+  </ng-container>
+
+  <ng-template #coinbase>
+    <ng-container *ngIf="line.coinbase; else pegin">
+      <p>Coinbase</p>
+    </ng-container>
   </ng-template>
 
-  <p *ngIf="line.type !== 'fee' && line.address" class="address">
-    <span class="first">{{ line.address.slice(0, -4) }}</span>
-    <span class="last-four">{{ line.address.slice(-4) }}</span>
-  </p>
+  <ng-template #pegin>
+    <ng-container *ngIf="line.pegin; else pegout">
+      <p>Peg In</p>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #pegout>
+    <ng-container *ngIf="line.pegout; else normal">
+      <p>Peg Out</p>
+      <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
+      <p class="address">
+        <span class="first">{{ line.pegout.slice(0, -4) }}</span>
+        <span class="last-four">{{ line.pegout.slice(-4) }}</span>
+      </p>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #normal>
+      <p>
+        <ng-container [ngSwitch]="line.type">
+          <span *ngSwitchCase="'input'" i18n="transaction.input">Input</span>
+          <span *ngSwitchCase="'output'" i18n="transaction.output">Output</span>
+          <span *ngSwitchCase="'fee'" i18n="transaction.fee">Fee</span>
+        </ng-container>
+        <span *ngIf="line.type !== 'fee'"> #{{ line.index }}</span>
+      </p>
+      <p *ngIf="line.value == null && line.confidential" i18n="shared.confidential">Confidential</p>
+      <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
+      <p *ngIf="line.type !== 'fee' && line.address" class="address">
+        <span class="first">{{ line.address.slice(0, -4) }}</span>
+        <span class="last-four">{{ line.address.slice(-4) }}</span>
+      </p>
+  </ng-template>
 </div>

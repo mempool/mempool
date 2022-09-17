@@ -1,13 +1,25 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
 
+interface Xput {
+  type: 'input' | 'output' | 'fee';
+  value?: number;
+  index?: number;
+  address?: string;
+  rest?: number;
+  coinbase?: boolean;
+  pegin?: boolean;
+  pegout?: string;
+  confidential?: boolean;
+}
+
 @Component({
   selector: 'app-tx-bowtie-graph-tooltip',
   templateUrl: './tx-bowtie-graph-tooltip.component.html',
   styleUrls: ['./tx-bowtie-graph-tooltip.component.scss'],
 })
 export class TxBowtieGraphTooltipComponent implements OnChanges {
-  @Input() line: { type: string, value?: number, index?: number, address?: string, rest?: number } | void;
+  @Input() line: Xput | void;
   @Input() cursorPosition: { x: number, y: number };
 
   tooltipPosition = { x: 0, y: 0 };
