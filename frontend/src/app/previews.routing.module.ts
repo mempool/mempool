@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TransactionPreviewComponent } from './components/transaction/transaction-preview.component';
 import { BlockPreviewComponent } from './components/block/block-preview.component';
 import { AddressPreviewComponent } from './components/address/address-preview.component';
+import { PoolPreviewComponent } from './components/pool/pool-preview.component';
 import { MasterPagePreviewComponent } from './components/master-page-preview/master-page-preview.component';
 
 const routes: Routes = [
@@ -23,6 +24,10 @@ const routes: Routes = [
         path: 'tx/:id',
         children: [],
         component: TransactionPreviewComponent
+      },
+      {
+        path: 'mining/pool/:slug',
+        component: PoolPreviewComponent
       },
       {
         path: 'lightning',
