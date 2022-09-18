@@ -1,10 +1,14 @@
 .logo-container {
-  width: 250px;
-  margin: auto;
+  width: 50px;
 }
 
 .header {
   text-align: center;
+  display: flex;
+}
+
+h1 {
+  margin-left: 15px;
 }
 
 .qr-wrapper {
@@ -50,3 +54,6 @@
   font-size: 12px;
 }
 
+.description-text {
+  white-space: break-spaces;
+}
