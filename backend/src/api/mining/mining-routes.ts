@@ -27,6 +27,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
     ;
   }
 
@@ -242,6 +243,25 @@ class MiningRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getHeightFromTimestamp(req: Request, res: Response) {
+    try {
+      const timestamp = parseInt(req.params.timestamp, 10);
+      // Prevent non-integers that are not seconds
+      if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp >= 2 ** 32) {
+        throw new Error(`Invalid timestamp, value must be Unix seconds`);
+      }
+      const result = await BlocksRepository.$getBlockHeightFromTimestamp(
+        timestamp,
+      );
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
