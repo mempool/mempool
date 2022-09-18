@@ -46,7 +46,9 @@ export class NodesMap implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes world map`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Lightning nodes world map`);
+    }
 
     if (!this.inputNodes$) {
       this.inputNodes$ = new BehaviorSubject(this.nodes);
