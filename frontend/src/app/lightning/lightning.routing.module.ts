@@ -36,7 +36,7 @@ const routes: Routes = [
           component: NodesPerISP,
         },
         {
-          path: 'group/mempool.space',
+          path: 'group/the-mempool-open-source-project',
           component: GroupComponent,
         },
         {

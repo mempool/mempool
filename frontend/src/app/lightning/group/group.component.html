@@ -1,17 +1,24 @@
 <div class="container-xl full-height" style="min-height: 335px">
+  <h5 class="mb-1" style="color: #ffffff66" i18n="lightning.node">Lightning node group</h5>
+
   <div class="header">
     <div class="logo-container">
-      <app-svg-images name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+      <app-svg-images name="officialMempoolSpace" viewBox="0 0 125 126"></app-svg-images>
     </div>
+    <h1>The Mempool Open Source Project</h1>
   </div>
-
-  <br>
 
   <div class="box">
     <div class="row" *ngIf="nodes$ | async as nodes">
       <div class="col-12 col-md-6">
         <table class="table table-borderless table-striped">
           <tbody>
+            <tr>
+              <td>Description</td>
+              <td><div class="description-text">These are the Lightning nodes operated by The Mempool Open Source Project that provide data for the mempool.space website. Connect to us!
+                </div>
+              </td>
+            </tr>
             <tr>
               <td i18n="lightning.node-count">Nodes</td>
               <td>{{ nodes.nodes.length }}</td>
@@ -45,6 +52,7 @@
   </div>
 
   <br>
+
   <div class="toggle-holder">
     <form [formGroup]="socketToggleForm" class="formRadioGroup">
       <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="socket">
