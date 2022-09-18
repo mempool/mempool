@@ -393,6 +393,36 @@ class BlocksRepository {
   }
 
   /**
+   * Get the first block at or directly after a given timestamp
+   * @param timestamp number unix time in seconds
+   * @returns The height and timestamp of a block (timestamp might vary from given timestamp)
+   */
+  public async $getBlockHeightFromTimestamp(
+    timestamp: number,
+  ): Promise<{ height: number; timestamp: number }> {
+    try {
+      // Get first block at or after the given timestamp
+      const query = `SELECT height, blockTimestamp as timestamp FROM blocks
+        WHERE blockTimestamp >= FROM_UNIXTIME(?)
+        ORDER BY blockTimestamp ASC
+        LIMIT 1`;
+      const params = [timestamp];
+      const [rows]: any[][] = await DB.query(query, params);
+      if (rows.length === 0) {
+        throw new Error(`No block was found after timestamp ${timestamp}`);
+      }
+
+      return rows[0];
+    } catch (e) {
+      logger.err(
+        'Cannot get block height from timestamp from the db. Reason: ' +
+          (e instanceof Error ? e.message : e),
+      );
+      throw e;
+    }
+  }
+
+  /**
    * Return blocks height
    */
    public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
