@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
 import { Transaction } from '../../interfaces/electrs.interface';
 
 interface SvgLine {
@@ -10,6 +10,13 @@ interface SvgLine {
 interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
+  index?: number;
+  address?: string;
+  rest?: number;
+  coinbase?: boolean;
+  pegin?: boolean;
+  pegout?: string;
+  confidential?: boolean;
 }
 
 const lineLimit = 250;
@@ -27,12 +34,17 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() combinedWeight = 100;
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
+  @Input() tooltip = false;
 
+  inputData: Xput[];
+  outputData: Xput[];
   inputs: SvgLine[];
   outputs: SvgLine[];
   middle: SvgLine;
   midWidth: number;
   isLiquid: boolean = false;
+  hoverLine: Xput | void = null;
+  tooltipPosition = { x: 0, y: 0 };
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -59,33 +71,55 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   ngOnChanges(): void {
     this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
     this.gradient = this.gradientColors[this.network];
+    this.midWidth = Math.min(50, Math.ceil(this.width / 20));
     this.initGraph();
   }
 
   initGraph(): void {
     const totalValue = this.calcTotalValue(this.tx);
-    let voutWithFee = this.tx.vout.map(v => { return { type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output', value: v?.value } as Xput; });
+    let voutWithFee = this.tx.vout.map(v => {
+      return {
+        type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output',
+        value: v?.value,
+        address: v?.scriptpubkey_address || v?.scriptpubkey_type?.toUpperCase(),
+        pegout: v?.pegout?.scriptpubkey_address,
+        confidential: (this.isLiquid && v?.value === undefined),
+      } as Xput;
+    });
 
     if (this.tx.fee && !this.isLiquid) {
       voutWithFee.unshift({ type: 'fee', value: this.tx.fee });
     }
+    const outputCount = voutWithFee.length;
 
-    let truncatedInputs = this.tx.vin.map(v => { return {type: 'input', value: v?.prevout?.value } as Xput; });
+    let truncatedInputs = this.tx.vin.map(v => {
+      return {
+        type: 'input',
+        value: v?.prevout?.value,
+        address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
+        coinbase: v?.is_coinbase,
+        pegin: v?.is_pegin,
+        confidential: (this.isLiquid && v?.prevout?.value === undefined),
+      } as Xput;
+    });
 
     if (truncatedInputs.length > lineLimit) {
       const valueOfRest = truncatedInputs.slice(lineLimit).reduce((r, v) => {
         return r + (v.value || 0);
       }, 0);
       truncatedInputs = truncatedInputs.slice(0, lineLimit);
-      truncatedInputs.push({ type: 'input', value: valueOfRest });
+      truncatedInputs.push({ type: 'input', value: valueOfRest, rest: this.tx.vin.length - lineLimit });
     }
     if (voutWithFee.length > lineLimit) {
       const valueOfRest = voutWithFee.slice(lineLimit).reduce((r, v) => {
         return r + (v.value || 0);
       }, 0);
       voutWithFee = voutWithFee.slice(0, lineLimit);
-      voutWithFee.push({ type: 'output', value: valueOfRest });
+      voutWithFee.push({ type: 'output', value: valueOfRest, rest: outputCount - lineLimit });
     }
+
+    this.inputData = truncatedInputs;
+    this.outputData = voutWithFee;
 
     this.inputs = this.initLines('in', truncatedInputs, totalValue, this.maxStrands);
     this.outputs = this.initLines('out', voutWithFee, totalValue, this.maxStrands);
@@ -195,9 +229,32 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makeStyle(minWeight, type): string {
     if (type === 'fee') {
-      return `stroke-width: ${minWeight}; stroke: url(#fee-gradient)`;
+      return `stroke-width: ${minWeight}`;
     } else {
       return `stroke-width: ${minWeight}`;
     }
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+  }
+
+  onHover(event, side, index): void {
+    if (side === 'input') {
+      this.hoverLine = {
+        ...this.inputData[index],
+        index
+      };
+    } else {
+      this.hoverLine = {
+        ...this.outputData[index],
+        index
+      };
+    }
+  }
+
+  onBlur(event, side, index): void {
+    this.hoverLine = null;
   }
 }
