@@ -3,7 +3,7 @@
     <div class="search-box-container mr-2">
       <input (focus)="focus$.next($any($event).target.value)" (click)="click$.next($any($event).target.value)" formControlName="searchText" type="text" class="form-control" i18n-placeholder="search-form.searchbar-placeholder" placeholder="Search the full Bitcoin ecosystem">
       
-      <app-search-results #searchResults [results]="typeAhead$ | async" [searchTerm]="searchForm.get('searchText').value" (selectedResult)="selectedResult($event)"></app-search-results>
+      <app-search-results #searchResults [results]="typeAhead$ | async" (selectedResult)="selectedResult($event)"></app-search-results>
     
     </div>
     <div>
