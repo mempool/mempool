@@ -27,6 +27,10 @@ export class LightningApiService {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/nodes/' + publicKey);
   }
 
+  getNodGroupNodes$(name: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBasePath + '/api/v1/lightning/nodes/group/' + name);
+  }
+
   getChannel$(shortId: string): Observable<any> {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/channels/' + shortId);
   }
