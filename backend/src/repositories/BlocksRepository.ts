@@ -399,17 +399,17 @@ class BlocksRepository {
    */
   public async $getBlockHeightFromTimestamp(
     timestamp: number,
-  ): Promise<{ height: number; timestamp: number }> {
+  ): Promise<{ height: number; hash: string; timestamp: number }> {
     try {
       // Get first block at or after the given timestamp
-      const query = `SELECT height, blockTimestamp as timestamp FROM blocks
-        WHERE blockTimestamp >= FROM_UNIXTIME(?)
-        ORDER BY blockTimestamp ASC
+      const query = `SELECT height, hash, blockTimestamp as timestamp FROM blocks
+        WHERE blockTimestamp <= FROM_UNIXTIME(?)
+        ORDER BY blockTimestamp DESC
         LIMIT 1`;
       const params = [timestamp];
       const [rows]: any[][] = await DB.query(query, params);
       if (rows.length === 0) {
-        throw new Error(`No block was found after timestamp ${timestamp}`);
+        throw new Error(`No block was found before timestamp ${timestamp}`);
       }
 
       return rows[0];

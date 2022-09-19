@@ -251,8 +251,12 @@ class MiningRoutes {
   private async $getHeightFromTimestamp(req: Request, res: Response) {
     try {
       const timestamp = parseInt(req.params.timestamp, 10);
+      // This will prevent people from entering milliseconds etc.
+      // Block timestamps are allowed to be up to 2 hours off, so 24 hours
+      // will never put the maximum value before the most recent block
+      const nowPlus1day = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
       // Prevent non-integers that are not seconds
-      if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp >= 2 ** 32) {
+      if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp > nowPlus1day) {
         throw new Error(`Invalid timestamp, value must be Unix seconds`);
       }
       const result = await BlocksRepository.$getBlockHeightFromTimestamp(
