@@ -4,15 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { concat, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { SinglePoolStats } from 'src/app/interfaces/node-api.interface';
-import { SeoService } from 'src/app/services/seo.service';
+import { SinglePoolStats } from '../../interfaces/node-api.interface';
+import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
 import { StateService } from '../../services/state.service';
-import { chartColors, poolsColor } from 'src/app/app.constants';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { download } from 'src/app/shared/graphs.utils';
-import { isMobile } from 'src/app/shared/common.utils';
+import { chartColors, poolsColor } from '../../app.constants';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { download } from '../../shared/graphs.utils';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-pool-ranking',

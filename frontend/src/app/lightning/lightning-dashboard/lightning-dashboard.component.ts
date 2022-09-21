@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { INodesRanking } from 'src/app/interfaces/node-api.interface';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
+import { INodesRanking } from '../../interfaces/node-api.interface';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
