@@ -1,10 +1,10 @@
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
+import { ApiService } from '../../services/api.service';
 import { formatNumber } from '@angular/common';
-import { selectPowerOfTen } from 'src/app/bitcoin.utils';
-import { StateService } from 'src/app/services/state.service';
+import { selectPowerOfTen } from '../../bitcoin.utils';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-difficulty-adjustments-table',

@@ -3,9 +3,9 @@ import { BisqApiService } from '../bisq-api.service';
 import { switchMap, map, take, mergeMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { BisqBlock, BisqOutput, BisqTransaction } from '../bisq.interfaces';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-blocks',

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { StateService } from 'src/app/services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-loading-indicator',
