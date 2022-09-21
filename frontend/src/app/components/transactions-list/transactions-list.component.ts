@@ -4,10 +4,10 @@ import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
-import { AssetsService } from 'src/app/services/assets.service';
+import { AssetsService } from '../../services/assets.service';
 import { filter, map, tap, switchMap } from 'rxjs/operators';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
+import { BlockExtended } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-transactions-list',

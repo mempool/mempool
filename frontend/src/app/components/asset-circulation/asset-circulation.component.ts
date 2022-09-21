@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { moveDec } from 'src/app/bitcoin.utils';
-import { AssetsService } from 'src/app/services/assets.service';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
+import { moveDec } from '../../bitcoin.utils';
+import { AssetsService } from '../../services/assets.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
 
 @Component({

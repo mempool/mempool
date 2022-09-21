@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AssetsService } from 'src/app/services/assets.service';
-import { StateService } from 'src/app/services/state.service';
+import { AssetsService } from '../../services/assets.service';
+import { StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { ApiService } from 'src/app/services/api.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { ApiService } from '../../services/api.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
 
 @Component({

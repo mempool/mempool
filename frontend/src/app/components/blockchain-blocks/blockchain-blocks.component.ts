@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { StateService } from 'src/app/services/state.service';
-import { specialBlocks } from 'src/app/app.constants';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { StateService } from '../../services/state.service';
+import { specialBlocks } from '../../app.constants';
+import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { config } from 'process';
 
