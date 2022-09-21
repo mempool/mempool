@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
-import { MempoolBlock, TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { MempoolBlock, TransactionStripped } from '../../interfaces/websocket.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { SeoService } from 'src/app/services/seo.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-mempool-block',

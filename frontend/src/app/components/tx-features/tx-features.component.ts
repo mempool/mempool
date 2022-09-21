@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, OnChanges, Input } from '@angular/core';
-import { calcSegwitFeeGains } from 'src/app/bitcoin.utils';
-import { Transaction } from 'src/app/interfaces/electrs.interface';
+import { calcSegwitFeeGains } from '../../bitcoin.utils';
+import { Transaction } from '../../interfaces/electrs.interface';
 
 @Component({
   selector: 'app-tx-features',

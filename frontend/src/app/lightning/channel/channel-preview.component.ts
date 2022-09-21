@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
-import { OpenGraphService } from 'src/app/services/opengraph.service';
+import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
