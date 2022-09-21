@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { map, Observable, share } from 'rxjs';
-import { SeoService } from 'src/app/services/seo.service';
-import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { SeoService } from '../../services/seo.service';
+import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({

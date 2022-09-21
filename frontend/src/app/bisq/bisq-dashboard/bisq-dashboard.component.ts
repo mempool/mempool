@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject, of } from 'rxjs';
 import { map, share, switchMap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 import { BisqApiService } from '../bisq-api.service';
 import { Trade } from '../bisq.interfaces';
 

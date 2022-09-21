@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { BehaviorSubject, combineLatest, concat, Observable, timer } from 'rxjs';
 import { delayWhen, map, retryWhen, scan, skip, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { StateService } from 'src/app/services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { BlockExtended } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
+import { StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-blocks-list',

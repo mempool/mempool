@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
-import { specialBlocks } from 'src/app/app.constants';
+import { StateService } from '../../services/state.service';
+import { specialBlocks } from '../../app.constants';
 
 @Component({
   selector: 'app-start',
