@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
-import { AssetExtended } from 'src/app/interfaces/electrs.interface';
-import { AssetsService } from 'src/app/services/assets.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { AssetExtended } from '../../../interfaces/electrs.interface';
+import { AssetsService } from '../../../services/assets.service';
+import { SeoService } from '../../../services/seo.service';
+import { StateService } from '../../../services/state.service';
+import { RelativeUrlPipe } from '../../../shared/pipes/relative-url/relative-url.pipe';
 import { environment } from 'src/environments/environment';
 
 @Component({

@@ -4,11 +4,11 @@ import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
 import { of, Subscription, asyncScheduler } from 'rxjs';
 import { StateService } from '../../services/state.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { OpenGraphService } from 'src/app/services/opengraph.service';
-import { BlockExtended, TransactionStripped } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
+import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
+import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
+import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 
 @Component({
   selector: 'app-block-preview',
