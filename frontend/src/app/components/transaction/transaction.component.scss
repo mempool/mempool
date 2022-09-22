@@ -73,6 +73,24 @@
 	}
 }
 
+.graph-container {
+  position: relative;
+  width: 100%;
+  background: #181b2d;
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+.toggle-wrapper {
+  width: 100%;
+  text-align: center;
+  margin: 1.25em 0 0;
+}
+
+.graph-toggle {
+  margin: auto;
+}
+
 @media (max-width: 767.98px) {
 	.mobile-bottomcol {
 		margin-top: 15px;

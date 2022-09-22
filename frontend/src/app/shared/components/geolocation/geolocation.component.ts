@@ -80,4 +80,8 @@ export class GeolocationComponent implements OnChanges {
       return;
     }
   }
+
+  isEllipsisActive(e): boolean {
+    return (e.offsetWidth < e.scrollWidth);
+  }
 }

@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { BisqTransaction } from 'src/app/bisq/bisq.interfaces';
+import { BisqTransaction } from '../../bisq/bisq.interfaces';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { of, Observable, Subscription } from 'rxjs';
-import { StateService } from 'src/app/services/state.service';
-import { Block, Transaction } from 'src/app/interfaces/electrs.interface';
+import { StateService } from '../../services/state.service';
+import { Block, Transaction } from '../../interfaces/electrs.interface';
 import { BisqApiService } from '../bisq-api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
+import { SeoService } from '../../services/seo.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-transaction',

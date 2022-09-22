@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } from 'rxjs';
-import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
-import { StateService } from 'src/app/services/state.service';
+import { MempoolBlock } from '../../interfaces/websocket.interface';
+import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
-import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
-import { specialBlocks } from 'src/app/app.constants';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { specialBlocks } from '../../app.constants';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment } from 'src/app/interfaces/node-api.interface';
+import { DifficultyAdjustment } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-mempool-blocks',

@@ -434,12 +434,14 @@ class NodesApi {
         SELECT nodes.public_key, CAST(COALESCE(nodes.capacity, 0) as INT) as capacity, CAST(COALESCE(nodes.channels, 0) as INT) as channels,
           nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city, geo_names_country.names as country,
-          geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
+          geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision,
+          nodes.longitude, nodes.latitude, nodes.as_number, geo_names_isp.names as isp
         FROM nodes
         LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
         LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
+        LEFT JOIN geo_names geo_names_isp on geo_names_isp.id = nodes.as_number AND geo_names_isp.type = 'as_organization'
         WHERE geo_names_country.id = ?
         ORDER BY capacity DESC
       `;
@@ -449,6 +451,7 @@ class NodesApi {
         rows[i].country = JSON.parse(rows[i].country);
         rows[i].city = JSON.parse(rows[i].city);
         rows[i].subdivision = JSON.parse(rows[i].subdivision);
+        rows[i].isp = JSON.parse(rows[i].isp);
       }
       return rows;
     } catch (e) {
@@ -463,7 +466,8 @@ class NodesApi {
         SELECT nodes.public_key, CAST(COALESCE(nodes.capacity, 0) as INT) as capacity, CAST(COALESCE(nodes.channels, 0) as INT) as channels,
           nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city, geo_names_country.names as country,
-          geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
+          geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision,
+          nodes.longitude, nodes.latitude
         FROM nodes
         LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
         LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
