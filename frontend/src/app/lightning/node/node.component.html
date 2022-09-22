@@ -85,8 +85,11 @@
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
               </td>
-              <td *ngIf="!node.as_number">
+              <td *ngIf="clearnetSocketCount === 0 && torSocketCount > 0">
                 <span class="badge badge-success" placement="bottom" i18n="tor">Exclusively on Tor</span>
+              </td>
+              <td *ngIf="node.sockets.length === 0">
+                <span i18n="unknown">Unknown</span>
               </td>
             </tr>
           </tbody>
