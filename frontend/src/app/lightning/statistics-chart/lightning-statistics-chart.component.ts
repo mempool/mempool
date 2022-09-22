@@ -2,15 +2,15 @@ import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angul
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
-import { download } from 'src/app/shared/graphs.utils';
+import { StorageService } from '../../services/storage.service';
+import { MiningService } from '../../services/mining.service';
+import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { isMobile } from 'src/app/shared/common.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-lightning-statistics-chart',

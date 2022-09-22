@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
 import { Transaction } from '../../interfaces/electrs.interface';
 
 interface SvgLine {
@@ -6,6 +6,20 @@ interface SvgLine {
   style: string;
   class?: string;
 }
+
+interface Xput {
+  type: 'input' | 'output' | 'fee';
+  value?: number;
+  index?: number;
+  address?: string;
+  rest?: number;
+  coinbase?: boolean;
+  pegin?: boolean;
+  pegout?: string;
+  confidential?: boolean;
+}
+
+const lineLimit = 250;
 
 @Component({
   selector: 'tx-bowtie-graph',
@@ -20,11 +34,17 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() combinedWeight = 100;
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
+  @Input() tooltip = false;
 
+  inputData: Xput[];
+  outputData: Xput[];
   inputs: SvgLine[];
   outputs: SvgLine[];
   middle: SvgLine;
+  midWidth: number;
   isLiquid: boolean = false;
+  hoverLine: Xput | void = null;
+  tooltipPosition = { x: 0, y: 0 };
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -44,28 +64,68 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
     this.gradient = this.gradientColors[this.network];
+    this.midWidth = Math.min(50, Math.ceil(this.width / 20));
     this.initGraph();
   }
 
   ngOnChanges(): void {
     this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
     this.gradient = this.gradientColors[this.network];
+    this.midWidth = Math.min(50, Math.ceil(this.width / 20));
     this.initGraph();
   }
 
   initGraph(): void {
     const totalValue = this.calcTotalValue(this.tx);
-    const voutWithFee = this.tx.vout.map(v => { return { type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output', value: v?.value }; });
+    let voutWithFee = this.tx.vout.map(v => {
+      return {
+        type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output',
+        value: v?.value,
+        address: v?.scriptpubkey_address || v?.scriptpubkey_type?.toUpperCase(),
+        pegout: v?.pegout?.scriptpubkey_address,
+        confidential: (this.isLiquid && v?.value === undefined),
+      } as Xput;
+    });
 
     if (this.tx.fee && !this.isLiquid) {
       voutWithFee.unshift({ type: 'fee', value: this.tx.fee });
     }
+    const outputCount = voutWithFee.length;
 
-    this.inputs = this.initLines('in', this.tx.vin.map(v => { return {type: 'input', value: v?.prevout?.value }; }), totalValue, this.maxStrands);
+    let truncatedInputs = this.tx.vin.map(v => {
+      return {
+        type: 'input',
+        value: v?.prevout?.value,
+        address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
+        coinbase: v?.is_coinbase,
+        pegin: v?.is_pegin,
+        confidential: (this.isLiquid && v?.prevout?.value === undefined),
+      } as Xput;
+    });
+
+    if (truncatedInputs.length > lineLimit) {
+      const valueOfRest = truncatedInputs.slice(lineLimit).reduce((r, v) => {
+        return r + (v.value || 0);
+      }, 0);
+      truncatedInputs = truncatedInputs.slice(0, lineLimit);
+      truncatedInputs.push({ type: 'input', value: valueOfRest, rest: this.tx.vin.length - lineLimit });
+    }
+    if (voutWithFee.length > lineLimit) {
+      const valueOfRest = voutWithFee.slice(lineLimit).reduce((r, v) => {
+        return r + (v.value || 0);
+      }, 0);
+      voutWithFee = voutWithFee.slice(0, lineLimit);
+      voutWithFee.push({ type: 'output', value: valueOfRest, rest: outputCount - lineLimit });
+    }
+
+    this.inputData = truncatedInputs;
+    this.outputData = voutWithFee;
+
+    this.inputs = this.initLines('in', truncatedInputs, totalValue, this.maxStrands);
     this.outputs = this.initLines('out', voutWithFee, totalValue, this.maxStrands);
 
     this.middle = {
-      path: `M ${(this.width / 2) - 50} ${(this.height / 2) + 0.5} L ${(this.width / 2) + 50} ${(this.height / 2) + 0.5}`,
+      path: `M ${(this.width / 2) - this.midWidth} ${(this.height / 2) + 0.5} L ${(this.width / 2) + this.midWidth} ${(this.height / 2) + 0.5}`,
       style: `stroke-width: ${this.combinedWeight + 0.5}; stroke: ${this.gradient[1]}`
     };
   }
@@ -87,29 +147,37 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         // assume confidential inputs/outputs have the same average value as the known ones
         const adjustedTotalInput = totalInput + ((totalInput / knownInputCount) * confidentialInputCount);
         const adjustedTotalOutput = totalOutput + ((totalOutput / knownOutputCount) * confidentialOutputCount);
-        return Math.max(adjustedTotalInput, adjustedTotalOutput) || 1;
+        return Math.max(adjustedTotalInput, adjustedTotalOutput);
       } else {
         // otherwise knowing the actual total of one side suffices
-        return Math.max(totalInput, totalOutput) || 1;
+        return Math.max(totalInput, totalOutput);
       }
     }
   }
 
-  initLines(side: 'in' | 'out', xputs: { type: string, value: number | void }[], total: number, maxVisibleStrands: number): SvgLine[] {
-    const lines = [];
-    let unknownCount = 0;
-    let unknownTotal = total == null ? this.combinedWeight : total;
-    xputs.forEach(put => {
-      if (put.value == null) {
-        unknownCount++;
-      } else {
-        unknownTotal -= put.value as number;
-      }
-    });
-    const unknownShare = unknownTotal / unknownCount;
+  initLines(side: 'in' | 'out', xputs: Xput[], total: number, maxVisibleStrands: number): SvgLine[] {
+    if (!total) {
+      const weights = xputs.map((put): number => this.combinedWeight / xputs.length);
+      return this.linesFromWeights(side, xputs, weights, maxVisibleStrands);
+    } else {
+      let unknownCount = 0;
+      let unknownTotal = total;
+      xputs.forEach(put => {
+        if (put.value == null) {
+          unknownCount++;
+        } else {
+          unknownTotal -= put.value as number;
+        }
+      });
+      const unknownShare = unknownTotal / unknownCount;
+      // conceptual weights
+      const weights = xputs.map((put): number => this.combinedWeight * (put.value == null ? unknownShare : put.value as number) / total);
+      return this.linesFromWeights(side, xputs, weights, maxVisibleStrands);
+    }
+  }
 
-    // conceptual weights
-    const weights = xputs.map((put): number => this.combinedWeight * (put.value == null ? unknownShare : put.value as number) / total);
+  linesFromWeights(side: 'in' | 'out', xputs: Xput[], weights: number[], maxVisibleStrands: number) {
+    const lines = [];
     // actual displayed line thicknesses
     const minWeights = weights.map((w) => Math.max(this.minWeight - 1, w) + 1);
     const visibleStrands = Math.min(maxVisibleStrands, xputs.length);
@@ -150,7 +218,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number): string {
     const start = side === 'in' ? (weight * 0.5) : this.width - (weight * 0.5);
-    const center =  this.width / 2 + (side === 'in' ? -45 : 45 );
+    const center =  this.width / 2 + (side === 'in' ? -(this.midWidth * 0.9) : (this.midWidth * 0.9) );
     const midpoint = (start + center) / 2;
     // correct for svg horizontal gradient bug
     if (Math.round(outer) === Math.round(inner)) {
@@ -161,9 +229,32 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makeStyle(minWeight, type): string {
     if (type === 'fee') {
-      return `stroke-width: ${minWeight}; stroke: url(#fee-gradient)`;
+      return `stroke-width: ${minWeight}`;
     } else {
       return `stroke-width: ${minWeight}`;
     }
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+  }
+
+  onHover(event, side, index): void {
+    if (side === 'input') {
+      this.hoverLine = {
+        ...this.inputData[index],
+        index
+      };
+    } else {
+      this.hoverLine = {
+        ...this.outputData[index],
+        index
+      };
+    }
+  }
+
+  onBlur(event, side, index): void {
+    this.hoverLine = null;
   }
 }

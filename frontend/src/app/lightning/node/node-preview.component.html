@@ -1,5 +1,7 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
-  <h2 class="preview-header" i18n="lightning.node">lightning node</h2>
+  <app-preview-title>
+    <span i18n="lightning.node">lightning node</span>
+  </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <h1 class="title"></h1>
     <div class="title-wrapper">
@@ -54,7 +56,7 @@
       </table>
     </div>
     <div class="col-md map-col">
-      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" [placeholder]="true" [hasLocation]="!!node.as_number" (readyEvent)="onMapReady()"></app-nodes-channels-map>
+      <app-nodes-channels-map *ngIf="!error" [style]="'nodepage'" [publicKey]="node.public_key" [fitContainer]="true" [placeholder]="true" [hasLocation]="!!node.as_number" [disableSpinner]="true" (readyEvent)="onMapReady()"></app-nodes-channels-map>
     </div>
   </div>
 </div>

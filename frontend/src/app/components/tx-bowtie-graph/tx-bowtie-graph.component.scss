@@ -11,5 +11,19 @@
     &.fee {
       stroke: url(#fee-gradient);
     }
+
+    &:hover {
+      z-index: 10;
+      cursor: pointer;
+      &.input {
+        stroke: url(#input-hover-gradient);
+      }
+      &.output {
+        stroke: url(#output-hover-gradient);
+      }
+      &.fee {
+        stroke: url(#fee-hover-gradient);
+      }
+    }
   }
 }

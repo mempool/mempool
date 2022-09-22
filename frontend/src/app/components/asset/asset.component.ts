@@ -3,15 +3,15 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, take } from 'rxjs/operators';
 import { Asset, Transaction } from '../../interfaces/electrs.interface';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { StateService } from 'src/app/services/state.service';
-import { AudioService } from 'src/app/services/audio.service';
-import { ApiService } from 'src/app/services/api.service';
+import { WebsocketService } from '../../services/websocket.service';
+import { StateService } from '../../services/state.service';
+import { AudioService } from '../../services/audio.service';
+import { ApiService } from '../../services/api.service';
 import { of, merge, Subscription, combineLatest } from 'rxjs';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { environment } from 'src/environments/environment';
-import { AssetsService } from 'src/app/services/assets.service';
-import { moveDec } from 'src/app/bitcoin.utils';
+import { AssetsService } from '../../services/assets.service';
+import { moveDec } from '../../bitcoin.utils';
 
 @Component({
   selector: 'app-asset',

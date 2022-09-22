@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AssetsService } from 'src/app/services/assets.service';
-import { StateService } from 'src/app/services/state.service';
+import { AssetsService } from '../../services/assets.service';
+import { StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { ApiService } from 'src/app/services/api.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { ApiService } from '../../services/api.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
 
 @Component({
@@ -74,6 +74,7 @@ export class SearchFormComponent implements OnInit {
         switchMap((text) => {
           if (!text.length) {
             return of([
+              '',
               [],
               {
                 nodes: [],
@@ -84,11 +85,14 @@ export class SearchFormComponent implements OnInit {
           this.isTypeaheading$.next(true);
           if (!this.stateService.env.LIGHTNING) {
             return zip(
+              of(text),
               this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
-              [{ nodes: [], channels: [] }]
+              [{ nodes: [], channels: [] }],
+              of(this.regexBlockheight.test(text)),
             );
           }
           return zip(
+            of(text),
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
             this.apiService.lightningSearch$(text).pipe(catchError(() => of({
               nodes: [],
@@ -102,10 +106,12 @@ export class SearchFormComponent implements OnInit {
             return result[0].map((address: string) => 'B' + address);
           }
           return {
-            addresses: result[0],
-            nodes: result[1].nodes,
-            channels: result[1].channels,
-            totalResults: result[0].length + result[1].nodes.length + result[1].channels.length,
+            searchText: result[0],
+            blockHeight: this.regexBlockheight.test(result[0]) ? [parseInt(result[0], 10)] : [],
+            addresses: result[1],
+            nodes: result[2].nodes,
+            channels: result[2].channels,
+            totalResults: result[1].length + result[2].nodes.length + result[2].channels.length,
           };
         })
       );
@@ -121,6 +127,8 @@ export class SearchFormComponent implements OnInit {
   selectedResult(result: any) {
     if (typeof result === 'string') {
       this.search(result);
+    } else if (typeof result === 'number') {
+      this.navigate('/block/', result.toString());
     } else if (result.alias) {
       this.navigate('/lightning/node/', result.public_key);
     } else if (result.short_id) {
