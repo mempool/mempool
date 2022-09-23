@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
-import { download } from 'src/app/shared/graphs.utils';
-import { SeoService } from 'src/app/services/seo.service';
+import { StorageService } from '../../services/storage.service';
+import { MiningService } from '../../services/mining.service';
+import { download } from '../../shared/graphs.utils';
+import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { isMobile } from 'src/app/shared/common.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-nodes-networks-chart',
