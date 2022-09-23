@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 
 @Component({

@@ -13,10 +13,10 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { AudioService } from 'src/app/services/audio.service';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { BlockExtended, CpfpInfo } from 'src/app/interfaces/node-api.interface';
+import { AudioService } from '../../services/audio.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 
 @Component({

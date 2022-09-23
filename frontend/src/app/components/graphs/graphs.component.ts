@@ -1,6 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import { StateService } from "src/app/services/state.service";
-import { WebsocketService } from "src/app/services/websocket.service";
+import { Component, OnInit } from '@angular/core';
+import { StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-graphs',

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges } from '@angular/core';
 import { Vin, Vout } from '../../interfaces/electrs.interface';
-import { StateService } from 'src/app/services/state.service';
-import { parseMultisigScript } from 'src/app/bitcoin.utils';
+import { StateService } from '../../services/state.service';
+import { parseMultisigScript } from '../../bitcoin.utils';
 
 @Component({
   selector: 'app-address-labels',
