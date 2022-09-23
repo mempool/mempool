@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
-import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-node',

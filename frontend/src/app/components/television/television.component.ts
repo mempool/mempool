@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
-import { StateService } from 'src/app/services/state.service';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { StateService } from '../../services/state.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, scan, startWith, switchMap, tap } from 'rxjs/operators';
 import { interval, merge, Observable } from 'rxjs';

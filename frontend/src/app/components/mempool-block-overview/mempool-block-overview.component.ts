@@ -1,12 +1,12 @@
 import { Component, ComponentRef, ViewChild, HostListener, Input, Output, EventEmitter,
   OnDestroy, OnChanges, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
-import { MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
+import { StateService } from '../../services/state.service';
+import { MempoolBlockDelta, TransactionStripped } from '../../interfaces/websocket.interface';
+import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { Subscription, BehaviorSubject, merge, of } from 'rxjs';
 import { switchMap, filter } from 'rxjs/operators';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { WebsocketService } from '../../services/websocket.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Router } from '@angular/router';
 
 @Component({
