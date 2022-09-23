@@ -4,11 +4,11 @@ import { BisqTransaction, BisqOutput } from '../bisq.interfaces';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from 'src/app/components/ngx-bootstrap-multiselect/types'
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from '../../components/ngx-bootstrap-multiselect/types'
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-transactions',

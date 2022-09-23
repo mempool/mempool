@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
 import { FormGroup } from '@angular/forms';
-import { StorageService } from 'src/app/services/storage.service';
-import { download } from 'src/app/shared/graphs.utils';
+import { StorageService } from '../../services/storage.service';
+import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 

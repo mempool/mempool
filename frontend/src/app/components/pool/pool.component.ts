@@ -3,12 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
 import { BehaviorSubject, Observable, timer } from 'rxjs';
 import { distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, PoolStat } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { StateService } from 'src/app/services/state.service';
-import { selectPowerOfTen } from 'src/app/bitcoin.utils';
+import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
+import { StateService } from '../../services/state.service';
+import { selectPowerOfTen } from '../../bitcoin.utils';
 import { formatNumber } from '@angular/common';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-pool',
