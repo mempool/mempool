@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
-import { Recommendedfees } from 'src/app/interfaces/websocket.interface';
-import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
+import { Recommendedfees } from '../../interfaces/websocket.interface';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { tap } from 'rxjs/operators';
 
 @Component({

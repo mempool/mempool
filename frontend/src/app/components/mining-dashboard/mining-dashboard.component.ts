@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SeoService } from 'src/app/services/seo.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-mining-dashboard',

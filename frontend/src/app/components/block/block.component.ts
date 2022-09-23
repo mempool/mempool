@@ -6,13 +6,13 @@ import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, 
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription, asyncScheduler, EMPTY } from 'rxjs';
 import { StateService } from '../../services/state.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { BlockExtended, TransactionStripped } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
-import { detectWebGL } from 'src/app/shared/graphs.utils';
+import { SeoService } from '../../services/seo.service';
+import { WebsocketService } from '../../services/websocket.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
+import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from '../../shared/graphs.utils';
 
 @Component({
   selector: 'app-block',
