@@ -1,0 +1,59 @@
+.logo-container {
+  width: 50px;
+}
+
+.header {
+  text-align: center;
+  display: flex;
+}
+
+h1 {
+  margin-left: 15px;
+}
+
+.qr-wrapper {
+  background-color: #FFF;
+  padding: 10px;
+  padding-bottom: 5px;
+  display: inline-block;
+
+  
+  position: absolute;
+  bottom: 50px;
+  left: -175px;
+  z-index: 100;
+}
+
+.dropdownLabel {
+  min-width: 50px;
+  display: inline-block;
+}
+
+#inputGroupFileAddon04 {
+  position: relative;
+}
+
+.toggle-holder {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+@media (max-width: 767.98px) {
+  .text-truncate {
+    width: 120px;
+  }
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+  }
+}
+
+.second-line {
+  font-size: 12px;
+}
+
+.description-text {
+  white-space: break-spaces;
+}

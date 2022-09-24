@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
-import { chartColors } from 'src/app/app.constants';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { isMobile } from 'src/app/shared/common.utils';
-import { download } from 'src/app/shared/graphs.utils';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { chartColors } from '../../app.constants';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
+import { isMobile } from '../../shared/common.utils';
+import { download } from '../../shared/graphs.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-nodes-per-isp-chart',

@@ -1,5 +1,6 @@
 {
   "headless": true,
+  "dumpio": true,
   "defaultViewport": {
     "width": 1200,
     "height": 600

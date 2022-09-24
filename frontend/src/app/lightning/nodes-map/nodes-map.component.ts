@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, Output, EventEmitter, LOCALE_ID, NgZone, OnDestroy, OnInit, OnChanges } from '@angular/core';
-import { SeoService } from 'src/app/services/seo.service';
-import { ApiService } from 'src/app/services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { ApiService } from '../../services/api.service';
 import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
-import { AssetsService } from 'src/app/services/assets.service';
+import { AssetsService } from '../../services/assets.service';
 import { EChartsOption, registerMap } from 'echarts';
-import { lerpColor } from 'src/app/shared/graphs.utils';
+import { lerpColor } from '../../shared/graphs.utils';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from 'src/app/services/state.service';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { getFlagEmoji } from 'src/app/shared/common.utils';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { getFlagEmoji } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-nodes-map',
@@ -46,7 +46,9 @@ export class NodesMap implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes world map`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Lightning nodes world map`);
+    }
 
     if (!this.inputNodes$) {
       this.inputNodes$ = new BehaviorSubject(this.nodes);

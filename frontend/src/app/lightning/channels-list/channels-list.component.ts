@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnI
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { isMobile } from 'src/app/shared/common.utils';
+import { isMobile } from '../../shared/common.utils';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({

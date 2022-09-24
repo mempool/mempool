@@ -1,0 +1,34 @@
+<div class="box preview-box" *ngIf="poolStats$ | async as poolStats">
+  <app-preview-title>
+    <span i18n="mining.pools">mining pool</span>
+  </app-preview-title>
+  <div class="row d-flex justify-content-between full-width-row">
+    <div class="title-wrapper">
+      <h1 class="title">{{ poolStats.pool.name }}</h1>
+    </div>
+    <div class="logo-wrapper">
+      <img width="62" height="62" src="/resources/mining-pools/default.svg">
+      <img [class.noimg]="!imageLoaded" width="62" height="62" src="{{ poolStats['logo'] }}"
+        (load)="onImageLoad()" (error)="onImageFail()">
+    </div>
+  </div>
+  <div class="row full-width-row">
+      <div class="stats">
+        <div class="stat-box">
+          <div class="label" i18n="mining.tags">Tags</div>
+          <div *ngIf="poolStats.pool.regexes.length else nodata" class="data">{{ poolStats.pool.regexes }}</div>
+        </div>
+        <div class="stat-box">
+          <div class="label" i18n="mining.hashrate">Hashrate</div>
+          <div class="data">{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</div>
+        </div>
+      </div>
+  </div>
+  <div class="row hash-chart full-width-row">
+    <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions" (chartFinished)="onChartReady()"></div>
+  </div>
+</div>
+
+<ng-template #nodata>
+  <div>~</div>
+</ng-template>
