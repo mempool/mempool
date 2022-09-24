@@ -288,6 +288,10 @@ yarn add @mempool/liquid.js`;
     return code.codeSampleMainnet.response;
   }
 
+  wrapPythonTemplate(code: any) {
+    return ( ( this.network === 'testnet' || this.network === 'signet' ) ? ( code.codeTemplate.python.replace( "wss://mempool.space/api/v1/ws", "wss://mempool.space/" + this.network + "/api/v1/ws" ) ) : code.codeTemplate.python );
+  }
+
   replaceJSPlaceholder(text: string, code: any) {
     for (let index = 0; index < code.length; index++) {
       const textReplace = code[index];
