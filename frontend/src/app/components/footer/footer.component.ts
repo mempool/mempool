@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../services/state.service';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MempoolInfo } from 'src/app/interfaces/websocket.interface';
+import { MempoolInfo } from '../../interfaces/websocket.interface';
 
 interface MempoolBlocksData {
   blocks: number;

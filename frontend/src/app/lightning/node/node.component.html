@@ -44,10 +44,13 @@
                 <app-fiat [value]="node.avgCapacity" digitsInfo="1.0-0"></app-fiat>
               </td>
             </tr>
-            <tr *ngIf="node.geolocation">
+            <tr>
               <td i18n="location" class="text-truncate">Location</td>
-              <td>
+              <td *ngIf="node.geolocation">
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
+              </td>
+              <td *ngIf="!node.geolocation">
+                <span i18n="unknown">Unknown</span>
               </td>
             </tr>
           </tbody>
@@ -75,12 +78,18 @@
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
             </tr>
-            <tr *ngIf="node.country">
+            <tr>
               <td i18n="isp" class="text-truncate label">ISP</td>
-              <td>
+              <td *ngIf="node.as_number">
                 <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
+              </td>
+              <td *ngIf="clearnetSocketCount === 0 && torSocketCount > 0">
+                <span class="badge badge-success" placement="bottom" i18n="tor">Exclusively on Tor</span>
+              </td>
+              <td *ngIf="node.sockets.length === 0">
+                <span i18n="unknown">Unknown</span>
               </td>
             </tr>
           </tbody>
@@ -114,9 +123,7 @@
         <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
       </div>
     </button>
-    <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
-      <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
-    </button>
+    <app-clipboard [button]="true" [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
   </div>
 
   <div *ngIf="!error">
@@ -224,9 +231,7 @@
       <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
         <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
       </button>
-      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
-        <app-clipboard [text]="''"></app-clipboard>
-      </button>
+      <app-clipboard [button]="true" [text]="''"></app-clipboard>
     </div>
 
     <br>

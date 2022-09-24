@@ -1,8 +1,8 @@
 import TxSprite from './tx-sprite';
 import { FastVertexArray } from './fast-vertex-array';
-import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
-import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
