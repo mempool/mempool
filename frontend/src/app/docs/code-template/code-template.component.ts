@@ -152,6 +152,7 @@ export class CodeTemplateComponent implements OnInit {
 const init = async () => {
   ${codeText}
 };
+
 init();`;
     }
   }
