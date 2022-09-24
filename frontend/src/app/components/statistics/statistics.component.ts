@@ -8,10 +8,10 @@ import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { ApiService } from '../../services/api.service';
 
-import { StateService } from 'src/app/services/state.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { StorageService } from 'src/app/services/storage.service';
-import { feeLevels, chartColors } from 'src/app/app.constants';
+import { StateService } from '../../services/state.service';
+import { SeoService } from '../../services/seo.service';
+import { StorageService } from '../../services/storage.service';
+import { feeLevels, chartColors } from '../../app.constants';
 import { MempoolGraphComponent } from '../mempool-graph/mempool-graph.component';
 import { IncomingTransactionsGraphComponent } from '../incoming-transactions-graph/incoming-transactions-graph.component';
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
-import { dates } from 'src/app/shared/i18n/dates';
+import { StateService } from '../../services/state.service';
+import { dates } from '../../shared/i18n/dates';
 
 @Component({
   selector: 'app-time-since',

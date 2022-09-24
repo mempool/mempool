@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, O
 import { Router } from '@angular/router';
 import { ECharts, EChartsOption, TreemapSeriesOption } from 'echarts';
 import { Observable, share, switchMap, tap } from 'rxjs';
-import { lerpColor } from 'src/app/shared/graphs.utils';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
+import { lerpColor } from '../../shared/graphs.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
 import { LightningApiService } from '../lightning-api.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
 
 @Component({

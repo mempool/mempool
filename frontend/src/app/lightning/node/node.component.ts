@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
-import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-node',
@@ -22,6 +22,8 @@ export class NodeComponent implements OnInit {
   error: Error;
   publicKey: string;
   channelListLoading = false;
+  clearnetSocketCount = 0;
+  torSocketCount = 0;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -47,10 +49,13 @@ export class NodeComponent implements OnInit {
             let label = '';
             if (socket.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/)) {
               label = 'IPv4';
+              this.clearnetSocketCount++;
             } else if (socket.indexOf('[') > -1) {
               label = 'IPv6';
+              this.clearnetSocketCount++;
             } else if (socket.indexOf('onion') > -1) {
               label = 'Tor';
+              this.torSocketCount++;
             }
             socketsObject.push({
               label: label,
