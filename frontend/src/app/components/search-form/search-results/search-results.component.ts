@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../../services/state.service';
 
 @Component({
   selector: 'app-search-results',
@@ -8,7 +8,6 @@ import { StateService } from 'src/app/services/state.service';
 })
 export class SearchResultsComponent implements OnChanges {
   @Input() results: any = {};
-  @Input() searchTerm = '';
   @Output() selectedResult = new EventEmitter();
 
   isMobile = (window.innerWidth <= 767.98);
@@ -16,12 +15,14 @@ export class SearchResultsComponent implements OnChanges {
   activeIdx = 0;
   focusFirst = true;
 
-  constructor(public stateService: StateService) { }
+  constructor(
+    public stateService: StateService,
+    ) { }
 
   ngOnChanges() {
     this.activeIdx = 0;
     if (this.results) {
-      this.resultsFlattened = [...this.results.addresses, ...this.results.nodes, ...this.results.channels];
+      this.resultsFlattened = [...this.results.blockHeight, ...this.results.addresses, ...this.results.nodes, ...this.results.channels];
     }
   }
 
@@ -47,7 +48,7 @@ export class SearchResultsComponent implements OnChanges {
         if (this.resultsFlattened[this.activeIdx]) {
           this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
         } else {
-          this.selectedResult.emit(this.searchTerm);
+          this.selectedResult.emit(this.results.searchText);
         }
         this.results = null;
         break;

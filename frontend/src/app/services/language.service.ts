@@ -1,6 +1,6 @@
 import { DOCUMENT, getLocaleId } from '@angular/common';
 import { LOCALE_ID, Inject, Injectable } from '@angular/core';
-import { languages } from 'src/app/app.constants';
+import { languages } from '../app.constants';
 
 @Injectable({
   providedIn: 'root'

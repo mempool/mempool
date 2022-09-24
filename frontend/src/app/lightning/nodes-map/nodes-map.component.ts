@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { SeoService } from 'src/app/services/seo.service';
-import { ApiService } from 'src/app/services/api.service';
-import { Observable, tap, zip } from 'rxjs';
-import { AssetsService } from 'src/app/services/assets.service';
+import { ChangeDetectionStrategy, Component, Inject, Input, Output, EventEmitter, LOCALE_ID, NgZone, OnDestroy, OnInit, OnChanges } from '@angular/core';
+import { SeoService } from '../../services/seo.service';
+import { ApiService } from '../../services/api.service';
+import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
+import { AssetsService } from '../../services/assets.service';
 import { EChartsOption, registerMap } from 'echarts';
-import { lerpColor } from 'src/app/shared/graphs.utils';
+import { lerpColor } from '../../shared/graphs.utils';
 import { Router } from '@angular/router';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from 'src/app/services/state.service';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { getFlagEmoji } from 'src/app/shared/common.utils';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { getFlagEmoji } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-nodes-map',
@@ -17,7 +17,14 @@ import { getFlagEmoji } from 'src/app/shared/common.utils';
   styleUrls: ['./nodes-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesMap implements OnInit {
+export class NodesMap implements OnInit, OnChanges {
+  @Input() widget: boolean = false;
+  @Input() nodes: any[] | undefined = undefined;
+  @Input() type: 'none' | 'isp' | 'country' = 'none';
+  @Input() fitContainer = false;
+  @Output() readyEvent = new EventEmitter();
+  inputNodes$: BehaviorSubject<any>;
+  nodes$: Observable<any>;
   observable$: Observable<any>;
 
   chartInstance = undefined;
@@ -39,17 +46,62 @@ export class NodesMap implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes world map`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`Lightning nodes world map`);
+    }
 
-    this.observable$ = zip(
+    if (!this.inputNodes$) {
+      this.inputNodes$ = new BehaviorSubject(this.nodes);
+    }
+
+    this.nodes$ = this.inputNodes$.pipe(
+      switchMap((nodes) =>  nodes ? [nodes] : this.apiService.getWorldNodes$())
+    );
+
+    this.observable$ = combineLatest(
       this.assetsService.getWorldMapJson$,
-      this.apiService.getWorldNodes$()
+      this.nodes$
     ).pipe(tap((data) => {
       registerMap('world', data[0]);
 
+      let maxLiquidity = data[1].maxLiquidity;
+      let inputNodes: any[] = data[1].nodes;
+      let mapCenter: number[] = [0, 5];
+      if (this.type === 'country') {
+        mapCenter = [0, 0];
+      } else if (this.type === 'isp') {
+        mapCenter = [0, 10];
+      }
+
+      let mapZoom = 1.3;
+      if (!inputNodes) {
+        inputNodes = [];
+        for (const node of data[1]) {
+          if (this.type === 'country') {
+            mapCenter[0] += node.longitude;
+            mapCenter[1] += node.latitude;
+          }
+          inputNodes.push([
+            node.longitude,
+            node.latitude,
+            node.public_key,
+            node.alias,
+            node.capacity,
+            node.channels,
+            node.country,
+            node.iso_code,
+          ]);
+          maxLiquidity = Math.max(maxLiquidity ?? 0, node.capacity);
+        }
+        if (this.type === 'country') {
+          mapCenter[0] /= data[1].length;
+          mapCenter[1] /= data[1].length;
+          mapZoom = 6;
+        }
+      }
+
       const nodes: any[] = [];
-      console.log(data[1].nodes[0]);
-      for (const node of data[1].nodes) {
+      for (const node of inputNodes) {
         // We add a bit of noise so nodes at the same location are not all
         // on top of each other
         const random = Math.random() * 2 * Math.PI;
@@ -66,11 +118,22 @@ export class NodesMap implements OnInit {
         ]);
       }
 
-      this.prepareChartOptions(nodes, data[1].maxLiquidity);
+      maxLiquidity = Math.max(1, maxLiquidity);
+      this.prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom);
     }));
   }
 
-  prepareChartOptions(nodes, maxLiquidity) {
+  ngOnChanges(changes): void {
+    if (changes.nodes) {
+      if (!this.inputNodes$) {
+        this.inputNodes$ = new BehaviorSubject(changes.nodes.currentValue);
+      } else {
+        this.inputNodes$.next(changes.nodes.currentValue);
+      }
+    }
+  }
+
+  prepareChartOptions(nodes, maxLiquidity, mapCenter, mapZoom) {
     let title: object;
     if (nodes.length === 0) {
       title = {
@@ -91,8 +154,8 @@ export class NodesMap implements OnInit {
       geo: {
         animation: false,
         silent: true,
-        center: [0, 5],
-        zoom: 1.3,
+        center: mapCenter,
+        zoom: mapZoom,
         tooltip: {
           show: false
         },
@@ -122,10 +185,13 @@ export class NodesMap implements OnInit {
             return 10 * Math.pow(params[2] / maxLiquidity, 0.2) + 3;
           },
           tooltip: {
+            position: function(point, params, dom, rect, size) {
+              return point;
+            },
             trigger: 'item',
             show: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',
-            borderRadius: 4,
+            borderRadius: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
               color: '#b1b1b1',
@@ -155,7 +221,6 @@ export class NodesMap implements OnInit {
             borderColor: 'black',
             borderWidth: 0,
           },
-          blendMode: 'lighter',
           zlevel: 2,
         },
       ]
@@ -181,5 +246,9 @@ export class NodesMap implements OnInit {
     this.chartInstance.on('georoam', (e) => {
       this.chartInstance.resize();
     });
+  }
+
+  onChartFinished(e) {
+    this.readyEvent.emit();
   }
 }

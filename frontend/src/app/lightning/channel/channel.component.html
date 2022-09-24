@@ -16,7 +16,8 @@
 
   <div class="clearfix"></div>
 
-  <app-nodes-channels-map *ngIf="!error && (channelGeo$ | async) as channelGeo" [style]="'channelpage'" [channel]="channelGeo"></app-nodes-channels-map>
+  <app-nodes-channels-map *ngIf="!error && (channelGeo$ | async) as channelGeo" [style]="'channelpage'"
+    [channel]="channelGeo"></app-nodes-channels-map>
 
   <div class="box">
 
@@ -51,38 +52,42 @@
           </table>
         </div>
       </div>
+  </div>
 
+  <br>
+
+  <div class="row row-cols-1 row-cols-md-2">
+    <div class="col">
+      <app-channel-box [channel]="channel.node_left"></app-channel-box>
     </div>
-
-    <br>
-
-    <div class="row row-cols-1 row-cols-md-2">
-      <div class="col">
-        <app-channel-box [channel]="channel.node_left"></app-channel-box>
-      </div>
-      <div class="col">
-        <app-channel-box [channel]="channel.node_right"></app-channel-box>
-      </div>
+    <div class="col">
+      <app-channel-box [channel]="channel.node_right"></app-channel-box>
     </div>
-    
-    <br>
+  </div>
 
-    <ng-container *ngIf="transactions$ | async as transactions">
-      <ng-template [ngIf]="transactions[0]">
-        <div class="d-flex">
-          <h3>Opening transaction</h3>
-          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList1.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
-        </div>
-        <app-transactions-list #txList1 [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
-      </ng-template>
-      <ng-template [ngIf]="transactions[1]">
-        <div class="closing-header d-flex">
-          <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason"></app-closing-type>
-          <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList2.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
-        </div>
-        <app-transactions-list #txList2 [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5"></app-transactions-list>
-      </ng-template>
-    </ng-container>
+  <br>
+
+  <ng-container *ngIf="transactions$ | async as transactions">
+    <ng-template [ngIf]="transactions[0]">
+      <div class="d-flex">
+        <h3>Opening transaction</h3>
+        <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList1.toggleDetails()"
+          i18n="transaction.details|Transaction Details">Details</button>
+      </div>
+      <app-transactions-list #txList1 [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5">
+      </app-transactions-list>
+    </ng-template>
+    <ng-template [ngIf]="transactions[1]">
+      <div class="closing-header d-flex">
+        <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason">
+        </app-closing-type>
+        <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList2.toggleDetails()"
+          i18n="transaction.details|Transaction Details">Details</button>
+      </div>
+      <app-transactions-list #txList2 [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5">
+      </app-transactions-list>
+    </ng-template>
+  </ng-container>
 
 </div>
 
@@ -108,7 +113,7 @@
     <div class="badges mb-2">
       <span class="skeleton-loader" style="width: 50px; height: 22px; margin-top: 5px;"></span>
     </div>
-  
+
     <div class="clearfix"></div>
 
     <div style="height: 413px;  padding: 15px;">

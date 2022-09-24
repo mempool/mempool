@@ -1,16 +1,21 @@
 <div class="box preview-box" *ngIf="!error">
-  <h2 class="preview-header" i18n="shared.block-title">Block</h2>
+  <app-preview-title>
+    <span i18n="shared.block-title">Block</span>
+  </app-preview-title>
   <div class="row">
     <div class="col-sm">
-      <div class="row d-flex justify-content-between">
-        <div class="title-wrapper">
+      <div class="row">
+        <div class="block-titles">
           <h1 class="title">
             <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container></ng-template>
             <ng-template [ngIf]="blockHeight" i18n="shared.block-title">{{ blockHeight }}</ng-template>
           </h1>
+          <div class="blockhash" *ngIf="blockHash">
+            <h2 class="truncate right">{{ blockHash.slice(0,32) }}</h2>
+            <h2 class="truncate left">{{ blockHash.slice(32) }}</h2>
+          </div>
         </div>
       </div>
-      <a class="subtitle truncated" [routerLink]="['/block/' | relativeUrl, blockHash]"><span class="first">{{blockHash.slice(0,-4)}}</span><span class="last-four">{{blockHash.slice(-4)}}</span></a>
       <table class="table table-borderless table-striped">
         <tbody>
           <!-- <tr>
@@ -70,6 +75,7 @@
         [blockLimit]="stateService.blockVSize"
         [orientation]="'top'"
         [flip]="false"
+        [disableSpinner]="true"
         (readyEvent)="onGraphReady()"
       ></app-block-overview-graph>
     </div>

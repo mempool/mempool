@@ -31,25 +31,34 @@ export class GeolocationComponent implements OnChanges {
     }
 
     if (this.type === 'list-country') {
-      if (this.data.city) {
+      if (!this.data.city) {
+        this.formattedLocation = '-';
+      }
+      else if (this.data.city) {
         this.formattedLocation += ' ' + city;
         if (this.data.subdivision) {
           this.formattedLocation += ', ' + subdivision;
         }
-      } else {
-        this.formattedLocation += '-';
       }
     }
 
     if (this.type === 'list-isp') {
-      this.formattedLocation = getFlagEmoji(this.data.iso);
-      if (this.data.city) {
-        this.formattedLocation += ' ' + city;
-        if (this.data.subdivision) {
-          this.formattedLocation += ', ' + subdivision;
-        }
+      if (!this.data.country && !this.data.city) {
+        this.formattedLocation = '-';
       } else {
-        this.formattedLocation += ' ' + this.data.country;
+        if (this.data.country) {
+          this.formattedLocation = getFlagEmoji(this.data.iso);
+        } else {
+          this.formattedLocation = '';
+        }
+        if (this.data.city) {
+          this.formattedLocation += ' ' + city;
+          if (this.data.subdivision) {
+            this.formattedLocation += ', ' + subdivision;
+          }
+        } else {
+          this.formattedLocation += ' ' + this.data.country;
+        }
       }
     }
     
@@ -79,5 +88,9 @@ export class GeolocationComponent implements OnChanges {
 
       return;
     }
+  }
+
+  isEllipsisActive(e): boolean {
+    return (e.offsetWidth < e.scrollWidth);
   }
 }
