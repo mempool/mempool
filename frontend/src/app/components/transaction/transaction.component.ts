@@ -50,7 +50,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   graphExpanded: boolean = false;
   graphWidth: number = 1000;
   graphHeight: number = 360;
+  inOutLimit: number = 150;
   maxInOut: number = 0;
+
   tooltipPosition: { x: number, y: number };
 
   @ViewChild('graphContainer')
@@ -298,7 +300,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setupGraph() {
-    this.maxInOut = Math.min(250, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
+    this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
     this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
