@@ -123,9 +123,7 @@
         <app-qrcode [size]="200" [data]="node.socketsObject[selectedSocketIndex].socket"></app-qrcode>
       </div>
     </button>
-    <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04">
-      <app-clipboard [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
-    </button>
+    <app-clipboard [button]="true" [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
   </div>
 
   <div *ngIf="!error">
@@ -233,9 +231,7 @@
       <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
         <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
       </button>
-      <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" [disabled]="true">
-        <app-clipboard [text]="''"></app-clipboard>
-      </button>
+      <app-clipboard [button]="true" [text]="''"></app-clipboard>
     </div>
 
     <br>
