@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic} from 'echarts';
+import { EChartsOption, graphic, LineSeriesOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
@@ -89,10 +89,11 @@ export class NodesNetworksChartComponent implements OnInit {
                   tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
                   clearnet_nodes: data.map(val => [val.added * 1000, val.clearnet_nodes]),
                   unannounced_nodes: data.map(val => [val.added * 1000, val.unannounced_nodes]),
+                  clearnet_tor_nodes: data.map(val => [val.added * 1000, val.clearnet_tor_nodes]),
                 };
                 let maxYAxis = 0;
                 for (const day of data) {
-                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes);
+                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes + day.clearnet_tor_nodes);
                 }
                 maxYAxis = Math.ceil(maxYAxis / 3000) * 3000;
                 this.prepareChartOptions(chartData, maxYAxis);
@@ -134,6 +135,94 @@ export class NodesNetworksChartComponent implements OnInit {
       };
     }
 
+    const series: LineSeriesOption[] = [
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Unknown`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.unannounced_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#D81B60' },
+          { offset: 1, color: '#D81B60AA' },
+        ]),
+
+        smooth: false,
+      },
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Reachable on Clearnet Only`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.clearnet_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#FFB300' },
+          { offset: 1, color: '#FFB300AA' },
+        ]),
+        smooth: false,
+      },
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Reachable on Clearnet and Darknet`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.clearnet_tor_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#be7d4c' },
+          { offset: 1, color: '#be7d4cAA' },
+        ]),
+        smooth: false,
+      },
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Reachable on Darknet Only`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.tor_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#7D4698' },
+          { offset: 1, color: '#7D4698AA' },
+        ]),
+        smooth: false,
+      },
+    ];
+
     this.chartOptions = {
       title: title,
       animation: false,
@@ -164,11 +253,16 @@ export class NodesNetworksChartComponent implements OnInit {
           let tooltip = `<b style="color: white; margin-left: 2px">${date}</b><br>`;
 
           for (const tick of ticks.reverse()) {
+            if (tick.seriesName.indexOf('ignored') !== -1) {
+              continue;
+            }
             if (tick.seriesIndex === 0) { // Tor
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 1) { // Clearnet
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 2) { // Unannounced
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
+            } else if (tick.seriesIndex === 3) { // Tor + Clearnet
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             }
             tooltip += `<br>`;
@@ -190,7 +284,7 @@ export class NodesNetworksChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: $localize`Total`,
+            name: $localize`Reachable on Darknet Only`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -198,7 +292,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Tor`,
+            name: $localize`Reachable on Clearnet and Darknet`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -206,7 +300,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Clearnet`,
+            name: $localize`Reachable on Clearnet Only`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -214,7 +308,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Unannounced`,
+            name: $localize`Unknown`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -223,10 +317,10 @@ export class NodesNetworksChartComponent implements OnInit {
           },
         ],
         selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
-          'Total': true,
-          'Tor': true,
-          'Clearnet': true,
-          'Unannounced': true,
+          '$localize`Reachable on Darknet Only`': true,
+          '$localize`Reachable on Clearnet Only`': true,
+          '$localize`Reachable on Clearnet and Darknet`': true,
+          '$localize`Unknown`': true,
         }
       },
       yAxis: data.tor_nodes.length === 0 ? undefined : [
@@ -250,7 +344,6 @@ export class NodesNetworksChartComponent implements OnInit {
               opacity: 0.25,
             },
           },
-          max: maxYAxis,
           min: 0,
           interval: 3000,
         },
@@ -274,77 +367,25 @@ export class NodesNetworksChartComponent implements OnInit {
               opacity: 0.25,
             },
           },
-          max: maxYAxis,
           min: 0,
           interval: 3000,
         }
       ],
-      series: data.tor_nodes.length === 0 ? [] : [
-        {
-          zlevel: 1,
-          yAxisIndex: 0,
-          name: $localize`Unannounced`,
-          showSymbol: false,
-          symbol: 'none',
-          data: data.unannounced_nodes,
-          type: 'line',
-          lineStyle: {
-            width: 2,
-          },
-          areaStyle: {
-            opacity: 0.5,
-          },
-          stack: 'Total',
-          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
-            { offset: 0, color: '#D81B60' },
-            { offset: 1, color: '#D81B60AA' },
-          ]),
-
-          smooth: false,
-        },
-        {
-          zlevel: 1,
-          yAxisIndex: 0,
-          name: $localize`Clearnet`,
-          showSymbol: false,
-          symbol: 'none',
-          data: data.clearnet_nodes,
-          type: 'line',
-          lineStyle: {
-            width: 2,
-          },
-          areaStyle: {
-            opacity: 0.5,
-          },
-          stack: 'Total',
-          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
-            { offset: 0, color: '#FFB300' },
-            { offset: 1, color: '#FFB300AA' },
-          ]),
-          smooth: false,
-        },
-        {
-          zlevel: 1,
-          yAxisIndex: 1,
-          name: $localize`Tor`,
-          showSymbol: false,
-          symbol: 'none',
-          data: data.tor_nodes,
-          type: 'line',
-          lineStyle: {
-            width: 2,
-          },
-          areaStyle: {
-            opacity: 0.5,
-          },
-          stack: 'Total',
-          color: new graphic.LinearGradient(0, 0.75, 0, 1, [
-            { offset: 0, color: '#7D4698' },
-            { offset: 1, color: '#7D4698AA' },
-          ]),
-          smooth: false,
-        },
-      ],
+      series: data.tor_nodes.length === 0 ? [] : series.concat(series.map((serie) => {
+        // We create dummy duplicated series so when we use the data zoom, the y axis
+        // both scales properly
+        const invisibleSerie = {...serie};
+        invisibleSerie.name = 'ignored' + Math.random().toString(); 
+        invisibleSerie.stack = 'ignored';
+        invisibleSerie.yAxisIndex = 1;
+        invisibleSerie.lineStyle = {
+          opacity: 0,
+        };
+        invisibleSerie.areaStyle = {
+          opacity: 0,
+        };
+        return invisibleSerie;
+      })),
       dataZoom: this.widget ? null : [{
         type: 'inside',
         realtime: true,
@@ -371,6 +412,11 @@ export class NodesNetworksChartComponent implements OnInit {
         },
       }],
     };
+
+    if (isMobile()) {
+      // @ts-ignore
+      this.chartOptions.legend.left = 50;
+    }
   }
 
   onChartInit(ec): void {
