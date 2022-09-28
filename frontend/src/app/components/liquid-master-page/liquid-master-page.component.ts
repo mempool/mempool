@@ -17,6 +17,7 @@ export class LiquidMasterPageComponent implements OnInit {
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   network$: Observable<string>;
   urlLanguage: string;
+  subdomain = '';
 
   constructor(
     private stateService: StateService,
@@ -29,6 +30,7 @@ export class LiquidMasterPageComponent implements OnInit {
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
+    this.subdomain = this.enterpriseService.getSubdomain();
   }
 
   collapse(): void {
