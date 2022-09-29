@@ -73,6 +73,15 @@
 	}
 }
 
+.box.hidden {
+  visibility: hidden;
+  height: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
 .graph-container {
   position: relative;
   width: 100%;
@@ -150,10 +159,33 @@
 	}
 }
 
-.details-button {
+.details-button, .flow-toggle {
   margin-top: -5px;
+  margin-left: 10px;
 	@media (min-width: 768px){
 		display: inline-block;
     margin-top: 0px;
+    margin-bottom: 0px;
 	}
+}
+
+.subtitle-block {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+
+  .title {
+    flex-shrink: 0;
+  }
+
+  .title-buttons {
+    flex-shrink: 1;
+    text-align: right;
+    .btn {
+      margin-top: 0;
+      margin-bottom: 8px;
+      margin-left: 8px;
+    }
+  }
 }
