@@ -1,36 +1,24 @@
 <div class="container-xl" (window:resize)="onResize($event)">
 
-  <div class="title-block" id="block">
+  <div class="title-block" [class.time-ltr]="timeLtr" id="block">
     <h1>
-      <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container>
-        <span class="next-previous-blocks">
-          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
-            <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
-          </a>
-          <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
-          <span placement="bottom" class="disable">
-            <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
-          </span>
+      <ng-container *ngIf="blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
+      <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
+      <span class="next-previous-blocks">
+        <a *ngIf="showNextBlocklink" class="nav-arrow next" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
+          <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
+        </a>
+        <span *ngIf="!showNextBlocklink" placement="bottom" class="disable nav-arrow next">
+          <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
         </span>
-      </ng-template>
-      <ng-template [ngIf]="blockHeight" i18n="shared.block-title">Block <ng-container *ngTemplateOutlet="blockTemplateContent"></ng-container></ng-template>
-      <ng-template #blockTemplateContent>
-        <span class="next-previous-blocks">
-          <a *ngIf="showNextBlocklink" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
-            <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
-          </a>
-          <span *ngIf="!showNextBlocklink" placement="bottom" class="disable">
-            <fa-icon [icon]="['fas', 'angle-left']" [fixedWidth]="true"></fa-icon>
-          </span>
-          <a [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockHeight }}</a>
-          <a *ngIf="showPreviousBlocklink && block" [routerLink]="['/block/' | relativeUrl, block.previousblockhash]" (click)="navigateToPreviousBlock()" i18n-ngbTooltip="Previous Block" ngbTooltip="Previous Block" placement="bottom">
-            <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
-          </a>
-          <span *ngIf="!showPreviousBlocklink" placement="bottom" class="disable">
-            <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
-          </span>
+        <a [routerLink]="['/block/' | relativeUrl, blockHash]" class="block-link">{{ blockHeight }}</a>
+        <a *ngIf="showPreviousBlocklink && block" class="nav-arrow prev"  [routerLink]="['/block/' | relativeUrl, block.previousblockhash]" (click)="navigateToPreviousBlock()" i18n-ngbTooltip="Previous Block" ngbTooltip="Previous Block" placement="bottom">
+          <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
+        </a>
+        <span *ngIf="!showPreviousBlocklink || !block" placement="bottom" class="disable nav-arrow prev">
+          <fa-icon [icon]="['fas', 'angle-right']" [fixedWidth]="true"></fa-icon>
         </span>
-      </ng-template>
+      </span>
     </h1>
 
     <div class="grow"></div>

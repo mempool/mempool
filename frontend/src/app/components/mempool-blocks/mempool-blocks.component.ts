@@ -36,6 +36,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   now = new Date().getTime();
   timeOffset = 0;
   showMiningInfo = false;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
 
   blockWidth = 125;
   blockPadding = 30;
@@ -71,6 +73,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
     }
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
@@ -160,8 +166,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       if (this.markIndex === undefined) {
         return;
       }
+      const prevKey = this.timeLtr ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.timeLtr ? 'ArrowRight' : 'ArrowLeft';
 
-      if (event.key === 'ArrowRight') {
+      if (event.key === prevKey) {
         if (this.mempoolBlocks[this.markIndex - 1]) {
           this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
         } else {
@@ -173,7 +181,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
               }
             });
         }
-      } else if (event.key === 'ArrowLeft') {
+      } else if (event.key === nextKey) {
         if (this.mempoolBlocks[this.markIndex + 1]) {
           this.router.navigate([this.relativeUrlPipe.transform('/mempool-block/'), this.markIndex + 1]);
         }
@@ -185,6 +193,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 

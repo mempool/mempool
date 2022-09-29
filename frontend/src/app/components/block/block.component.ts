@@ -57,6 +57,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   nextBlockSubscription: Subscription = undefined;
   nextBlockSummarySubscription: Subscription = undefined;
   nextBlockTxListSubscription: Subscription = undefined;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
@@ -79,6 +81,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.network = this.stateService.network;
     this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
 
     this.txsLoadingStatus$ = this.route.paramMap
       .pipe(
@@ -277,10 +283,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
-      if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
+      const prevKey = this.timeLtr ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.timeLtr ? 'ArrowRight' : 'ArrowLeft';
+      if (this.showPreviousBlocklink && event.key === prevKey && this.nextBlockHeight - 2 >= 0) {
         this.navigateToPreviousBlock();
       }
-      if (event.key === 'ArrowLeft') {
+      if (event.key === nextKey) {
         if (this.showNextBlocklink) {
           this.navigateToNextBlock();
         } else {
@@ -298,6 +306,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.networkChangedSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
   }
 
@@ -392,8 +401,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   setNextAndPreviousBlockLink(){
-    if (this.latestBlock && this.blockHeight) {
-      if (this.blockHeight === 0){
+    if (this.latestBlock) {
+      if (!this.blockHeight){
         this.showPreviousBlocklink = false;
       } else {
         this.showPreviousBlocklink = true;
