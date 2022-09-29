@@ -46,7 +46,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   feeRounding = '1.0-0';
 
   rightPosition = 0;
-  transition = '2s';
+  transition = 'background 2s, right 2s, transform 1s';
 
   markIndex: number;
   txFeePerVSize: number;
@@ -76,6 +76,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
+      this.cd.markForCheck();
     });
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
@@ -278,7 +279,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.arrowVisible = true;
 
       this.resetTransitionTimeout = window.setTimeout(() => {
-        this.transition = '2s';
+        this.transition = 'background 2s, right 2s, transform 1s';
         this.cd.markForCheck();
       }, 100);
       return;
