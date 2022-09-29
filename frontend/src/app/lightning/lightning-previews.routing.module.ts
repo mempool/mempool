@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NodePreviewComponent } from './node/node-preview.component';
 import { ChannelPreviewComponent } from './channel/channel-preview.component';
 import { NodesPerISPPreview } from './nodes-per-isp/nodes-per-isp-preview.component';
+import { GroupPreviewComponent } from './group/group-preview.component';
 
 const routes: Routes = [
     {
@@ -16,6 +17,10 @@ const routes: Routes = [
     {
       path: 'nodes/isp/:isp',
       component: NodesPerISPPreview,
+    },
+    {
+      path: 'group/:slug',
+      component: GroupPreviewComponent,
     },
     {
       path: '**',
