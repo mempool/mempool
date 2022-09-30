@@ -42,6 +42,15 @@ export default class BlockScene {
     }
   }
 
+  setOrientation(orientation: string, flip: boolean): void {
+    this.orientation = orientation;
+    this.flip = flip;
+    this.dirty = true;
+    if (this.initialised && this.scene) {
+      this.updateAll(performance.now(), 50);
+    }
+  }
+
   // Destroy the current layout and clean up graphics sprites without any exit animation
   destroy(): void {
     Object.values(this.txs).forEach(tx => tx.destroy());
