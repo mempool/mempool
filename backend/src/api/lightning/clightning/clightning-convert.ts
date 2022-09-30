@@ -70,6 +70,8 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
       logger.info(`Building partial channels from clightning output. Channels processed: ${channelProcessed + 1} of ${keys.length}`);
       loggerTimer = new Date().getTime() / 1000;
     }
+
+    channelProcessed++;
   }
 
   return consolidatedChannelList;
