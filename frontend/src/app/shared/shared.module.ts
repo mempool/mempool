@@ -303,5 +303,6 @@ export class SharedModule {
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
     library.addIcons(faArrowRightArrowLeft);
+    library.addIcons(faExchangeAlt);
   }
 }
