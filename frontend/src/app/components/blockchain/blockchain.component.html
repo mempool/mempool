@@ -1,5 +1,5 @@
 <div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
-  <div class="position-container" [class]="['position-container', network || '']">
+  <div class="position-container" [ngClass]="network ? network : ''">
     <span>
       <div class="blocks-wrapper">
         <app-mempool-blocks></app-mempool-blocks>
