@@ -94,10 +94,10 @@
   outline: none;
   margin: 0;
   padding: 0;
-  transition: transform 1s;
 }
 
-.blockchain-wrapper.ltr-transition .blocks-wrapper {
+.blockchain-wrapper.ltr-transition .blocks-wrapper,
+.blockchain-wrapper.ltr-transition .time-toggle {
   transition: transform 1s;
 }
 
