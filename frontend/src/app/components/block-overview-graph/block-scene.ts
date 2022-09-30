@@ -46,18 +46,9 @@ export default class BlockScene {
     this.orientation = orientation;
     this.flip = flip;
     this.dirty = true;
-    const startTime = performance.now();
-    Object.values(this.txs).forEach(txView => {
-      this.saveGridToScreenPosition(txView);
-      this.applyTxUpdate(txView, {
-        display: {
-          position: txView.screenPosition,
-          color: txView.getColor()
-        },
-        duration: 0
-      });
-      this.setTxOnScreen(txView, startTime, 0);
-    });
+    if (this.initialised && this.scene) {
+      this.updateAll(performance.now(), 50);
+    }
   }
 
   // Destroy the current layout and clean up graphics sprites without any exit animation

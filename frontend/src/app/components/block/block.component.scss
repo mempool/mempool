@@ -128,7 +128,7 @@ h1 {
 
 .time-ltr .next-previous-blocks {
   .nav-arrow {
-    transform: rotate(180deg);
+    transform: scaleX(-1);
   }
   .nav-arrow.next {
     order: 2;
