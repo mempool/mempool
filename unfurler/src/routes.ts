@@ -56,6 +56,13 @@ const routes = {
             }
           }
         }
+      },
+      group: {
+        render: true,
+        params: 1,
+        getTitle(path) {
+          return `Lightning Node Group: ${path[0]}`;
+        }
       }
     }
   },
