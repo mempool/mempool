@@ -111,7 +111,8 @@ h1 {
 
 .next-previous-blocks {
   font-size: 28px;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: row;
   @media (min-width: 768px) {
     font-size: 36px;
   }
@@ -122,6 +123,21 @@ h1 {
       color: #09a3ba;
       display: inline-block;
     }
+  }
+}
+
+.time-ltr .next-previous-blocks {
+  .nav-arrow {
+    transform: scaleX(-1);
+  }
+  .nav-arrow.next {
+    order: 2;
+  }
+  .block-link {
+    order: 1;
+  }
+  .nav-arrow.prev {
+    order: 0;
   }
 }
 
