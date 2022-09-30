@@ -1,9 +1,13 @@
-<div class="text-center" class="blockchain-wrapper" #container>
-  <div class="position-container {{ network }}">
+<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
+  <div class="position-container" [ngClass]="network ? network : ''">
     <span>
-      <app-mempool-blocks></app-mempool-blocks>
-      <app-blockchain-blocks></app-blockchain-blocks>
-      <div id="divider"></div>
+      <div class="blocks-wrapper">
+        <app-mempool-blocks></app-mempool-blocks>
+        <app-blockchain-blocks></app-blockchain-blocks>
+      </div>
+      <div id="divider">
+        <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
+      </div>
     </span>
   </div>
 </div>

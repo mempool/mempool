@@ -6,6 +6,7 @@ import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../i
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -108,10 +109,12 @@ export class StateService {
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
+  timeLtr: BehaviorSubject<boolean>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     private router: Router,
+    private storageService: StorageService,
   ) {
     const browserWindow = window || {};
     // @ts-ignore
@@ -147,6 +150,11 @@ export class StateService {
     }
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
+
+    this.timeLtr = new BehaviorSubject<boolean>(this.storageService.getValue('time-preference-ltr') === 'true');
+    this.timeLtr.subscribe((ltr) => {
+      this.storageService.setValue('time-preference-ltr', ltr ? 'true' : 'false');
+    });
   }
 
   setNetworkBasedonUrl(url: string) {

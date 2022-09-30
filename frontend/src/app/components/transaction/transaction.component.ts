@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
   filter,
@@ -39,6 +39,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfpSubscription: Subscription;
   txReplacedSubscription: Subscription;
   blocksSubscription: Subscription;
+  queryParamsSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
@@ -47,6 +48,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
   outputIndex: number;
+  showFlow: boolean = true;
   graphExpanded: boolean = false;
   graphWidth: number = 1000;
   graphHeight: number = 360;
@@ -60,6 +62,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private websocketService: WebsocketService,
@@ -231,6 +234,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
     });
+
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
+      if (params.showFlow === 'false') {
+        this.showFlow = false;
+      } else {
+        this.showFlow = true;
+        this.setGraphSize();
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -304,6 +316,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
+  toggleGraph() {
+    this.showFlow = !this.showFlow;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { showFlow: this.showFlow },
+      queryParamsHandling: 'merge',
+      fragment: 'flow'
+    });
+  }
+
   expandGraph() {
     this.graphExpanded = true;
   }
@@ -324,6 +346,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCpfpSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
+    this.queryParamsSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
