@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
       this.class = 'rtl-layout';
+    } else {
+      this.class = 'ltr-layout';
     }
 
     tooltipConfig.animation = false;
