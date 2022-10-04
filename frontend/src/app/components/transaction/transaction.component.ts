@@ -47,6 +47,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
+  inputIndex: number;
   outputIndex: number;
   showFlow: boolean = true;
   graphExpanded: boolean = false;
@@ -332,6 +333,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   collapseGraph() {
     this.graphExpanded = false;
+  }
+
+  selectInput(input) {
+    this.inputIndex = input;
+    this.outputIndex = null;
+  }
+
+  selectOutput(output) {
+    this.outputIndex = output;
+    this.inputIndex = null;
   }
 
   @HostListener('window:resize', ['$event'])

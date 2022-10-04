@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, HostListener } from '@angular/core';
 import { Transaction } from '../../interfaces/electrs.interface';
 
 interface SvgLine {
@@ -34,6 +34,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
   @Input() tooltip = false;
+
+  @Output() selectInput = new EventEmitter<number>();
+  @Output() selectOutput = new EventEmitter<number>();
 
   inputData: Xput[];
   outputData: Xput[];
@@ -76,11 +79,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.combinedWeight = Math.min(this.maxCombinedWeight, Math.floor((this.width - (2 * this.midWidth)) / 6));
 
     const totalValue = this.calcTotalValue(this.tx);
-    let voutWithFee = this.tx.vout.map(v => {
+    let voutWithFee = this.tx.vout.map((v, i) => {
       return {
         type: v.scriptpubkey_type === 'fee' ? 'fee' : 'output',
         value: v?.value,
         address: v?.scriptpubkey_address || v?.scriptpubkey_type?.toUpperCase(),
+        index: i,
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
       } as Xput;
@@ -91,11 +95,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     }
     const outputCount = voutWithFee.length;
 
-    let truncatedInputs = this.tx.vin.map(v => {
+    let truncatedInputs = this.tx.vin.map((v, i) => {
       return {
         type: 'input',
         value: v?.prevout?.value,
         address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
+        index: i,
         coinbase: v?.is_coinbase,
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
@@ -306,13 +311,20 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       };
     } else {
       this.hoverLine = {
-        ...this.outputData[index],
-        index
+        ...this.outputData[index]
       };
     }
   }
 
   onBlur(event, side, index): void {
     this.hoverLine = null;
+  }
+
+  onClick(event, side, index): void {
+    if (side === 'input') {
+      this.selectInput.emit(index);
+    } else {
+      this.selectOutput.emit(index);
+    }
   }
 }
