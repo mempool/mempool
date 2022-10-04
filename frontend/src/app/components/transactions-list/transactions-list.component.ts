@@ -104,7 +104,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
-      if (this.inputIndex || this.outputIndex) {
+      if ((this.inputIndex || this.outputIndex) && !changes.transactions) {
         setTimeout(() => {
           const assetBoxElements = document.getElementsByClassName('assetBox');
           if (assetBoxElements && assetBoxElements[0]) {

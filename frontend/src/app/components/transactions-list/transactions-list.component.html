@@ -220,7 +220,7 @@
                       <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                     </span>
                     <ng-template #spent>
-                      <a *ngIf="tx._outspends[vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, tx._outspends[vindex].txid]" class="red">
+                      <a *ngIf="tx._outspends[vindex].txid else outputNoTxId" [routerLink]="['/tx/' | relativeUrl, tx._outspends[vindex].vin + ':' + tx._outspends[vindex].txid]" class="red">
                         <fa-icon [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
                       </a>
                       <ng-template #outputNoTxId>
