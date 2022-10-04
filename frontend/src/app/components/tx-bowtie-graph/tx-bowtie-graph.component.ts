@@ -1,5 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, HostListener } from '@angular/core';
-import { Transaction } from '../../interfaces/electrs.interface';
+import { StateService } from '../../services/state.service';
+import { Outspend, Transaction } from '../../interfaces/electrs.interface';
+import { Router } from '@angular/router';
+import { ReplaySubject, merge, Subscription } from 'rxjs';
+import { tap, switchMap } from 'rxjs/operators';
+import { ApiService } from '../../services/api.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 interface SvgLine {
   path: string;
@@ -48,6 +54,10 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   isLiquid: boolean = false;
   hoverLine: Xput | void = null;
   tooltipPosition = { x: 0, y: 0 };
+  outspends: Outspend[] = [];
+
+  outspendsSubscription: Subscription;
+  refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -64,12 +74,45 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   gradient: string[] = ['#105fb0', '#105fb0'];
 
+  constructor(
+    private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
+    private stateService: StateService,
+    private apiService: ApiService,
+  ) { }
+
   ngOnInit(): void {
     this.initGraph();
+
+    this.outspendsSubscription = merge(
+      this.refreshOutspends$
+        .pipe(
+          switchMap((txid) => this.apiService.getOutspendsBatched$([txid])),
+          tap((outspends: Outspend[][]) => {
+            if (!this.tx || !outspends || !outspends.length) {
+              return;
+            }
+            this.outspends = outspends[0];
+          }),
+        ),
+      this.stateService.utxoSpent$
+        .pipe(
+          tap((utxoSpent) => {
+            for (const i in utxoSpent) {
+              this.outspends[i] = {
+                spent: true,
+                txid: utxoSpent[i].txid,
+                vin: utxoSpent[i].vin,
+              };
+            }
+          }),
+        ),
+    ).subscribe(() => {});
   }
 
   ngOnChanges(): void {
     this.initGraph();
+    this.refreshOutspends$.next(this.tx.txid);
   }
 
   initGraph(): void {
@@ -322,9 +365,26 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   onClick(event, side, index): void {
     if (side === 'input') {
-      this.selectInput.emit(index);
+      const input = this.tx.vin[index];
+      if (input && input.txid && input.vout != null) {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), input.txid + ':' + input.vout], {
+          queryParamsHandling: 'merge',
+          fragment: 'flow'
+        });
+      } else {
+        this.selectInput.emit(index);
+      }
     } else {
-      this.selectOutput.emit(index);
+      const output = this.tx.vout[index];
+      const outspend = this.outspends[index];
+      if (output && outspend && outspend.spent && outspend.txid) {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
+          queryParamsHandling: 'merge',
+          fragment: 'flow'
+        });
+      } else {
+        this.selectOutput.emit(index);
+      }
     }
   }
 }
