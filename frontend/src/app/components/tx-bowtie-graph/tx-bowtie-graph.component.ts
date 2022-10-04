@@ -40,6 +40,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
   @Input() tooltip = false;
+  @Input() inputIndex: number;
+  @Input() outputIndex: number;
 
   @Output() selectInput = new EventEmitter<number>();
   @Output() selectOutput = new EventEmitter<number>();
@@ -378,7 +380,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       const output = this.tx.vout[index];
       const outspend = this.outspends[index];
       if (output && outspend && outspend.spent && outspend.txid) {
-        this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.vin + ':' + outspend.txid], {
           queryParamsHandling: 'merge',
           fragment: 'flow'
         });
