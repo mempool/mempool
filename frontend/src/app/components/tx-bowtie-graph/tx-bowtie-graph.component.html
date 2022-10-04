@@ -60,6 +60,7 @@
         attr.marker-start="url(#{{input.class}}-arrow)"
         (pointerover)="onHover($event, 'input', i);"
         (pointerout)="onBlur($event, 'input', i);"
+        (click)="onClick($event, 'input', inputData[i].index);"
       />
     </ng-container>
     <ng-container *ngFor="let output of outputs; let i = index">
@@ -70,6 +71,7 @@
         attr.marker-start="url(#{{output.class}}-arrow)"
         (pointerover)="onHover($event, 'output', i);"
         (pointerout)="onBlur($event, 'output', i);"
+        (click)="onClick($event, 'output', outputData[i].index);"
       />
     </ng-container>
   </svg>

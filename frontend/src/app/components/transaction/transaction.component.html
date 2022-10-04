@@ -208,7 +208,10 @@
             [lineLimit]="inOutLimit"
             [maxStrands]="graphExpanded ? maxInOut : 24"
             [network]="network"
-            [tooltip]="true">
+            [tooltip]="true"
+            (selectInput)="selectInput($event)"
+            (selectOutput)="selectOutput($event)"
+          >
           </tx-bowtie-graph>
         </div>
         <div class="toggle-wrapper" *ngIf="maxInOut > 24">
@@ -240,7 +243,7 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
     <div class="title text-left">
       <h2 i18n="transaction.details">Details</h2>
