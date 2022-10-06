@@ -48,7 +48,7 @@ export class NodesPerISPChartComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Lightning nodes per ISP`);
+      this.seoService.setTitle($localize`:@@8573a1576789bd2c4faeaed23037c4917812c6cf:Lightning Nodes Per ISP`);
     }
 
     this.nodesPerAsObservable$ = combineLatest([
