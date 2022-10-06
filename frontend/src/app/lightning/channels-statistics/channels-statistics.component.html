@@ -1,9 +1,9 @@
 <div class="widget-toggler">
-  <a href="javascript:;" (click)="switchMode('avg')" class="toggler-option"
-    [ngClass]="{'inactive': mode !== 'avg'}"><small>avg</small></a>
+  <a href="" (click)="switchMode('avg')" class="toggler-option"
+    [ngClass]="{'inactive': mode === 'avg'}"><small>avg</small></a>
   <span style="color: #ffffff66; font-size: 8px"> | </span>
-  <a href="javascript:;" (click)="switchMode('med')" class="toggler-option"
-    [ngClass]="{'inactive': mode !== 'med'}"><small>med</small></a>
+  <a href="" (click)="switchMode('med')" class="toggler-option"
+    [ngClass]="{'inactive': mode === 'med'}"><small>med</small></a>
 </div>
 
 <div class="fee-estimation-wrapper" *ngIf="statistics$ | async as statistics; else loadingReward">
