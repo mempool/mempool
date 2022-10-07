@@ -112,14 +112,14 @@ class Server {
         const screenshot = await page.screenshot();
         return screenshot;
       } else if (success === false) {
-        logger.warn(`failed to render page preview for ${action} due to client-side error, e.g. requested an invalid txid`);
+        logger.warn(`failed to render ${path} for ${action} due to client-side error, e.g. requested an invalid txid`);
         page.repairRequested = true;
       } else {
-        logger.warn(`failed to render page preview for ${action} due to puppeteer timeout`);
+        logger.warn(`failed to render ${path} for ${action} due to puppeteer timeout`);
         page.repairRequested = true;
       }
     } catch (e) {
-      logger.err(`failed to render page for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
   }
@@ -154,7 +154,7 @@ class Server {
         res.send(img);
       }
     } catch (e) {
-      logger.err(e instanceof Error ? e.message : `${e}`);
+      logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
