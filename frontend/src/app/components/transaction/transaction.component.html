@@ -195,7 +195,7 @@
         <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
 
-      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-flow-diagram">Hide flow diagram</button>
+      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
 
       <div class="clearfix"></div>
 
@@ -208,7 +208,11 @@
             [lineLimit]="inOutLimit"
             [maxStrands]="graphExpanded ? maxInOut : 24"
             [network]="network"
-            [tooltip]="true">
+            [tooltip]="true"
+            [inputIndex]="inputIndex" [outputIndex]="outputIndex"
+            (selectInput)="selectInput($event)"
+            (selectOutput)="selectOutput($event)"
+          >
           </tx-bowtie-graph>
         </div>
         <div class="toggle-wrapper" *ngIf="maxInOut > 24">
@@ -234,13 +238,13 @@
       </div>
 
       <div class="title-buttons">
-        <button *ngIf="!showFlow" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show">Show flow diagram</button>
+        <button *ngIf="!showFlow" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
         <button type="button" class="btn btn-outline-info btn-sm" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
       </div>
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
     <div class="title text-left">
       <h2 i18n="transaction.details">Details</h2>

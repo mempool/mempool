@@ -47,6 +47,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
+  inputIndex: number;
   outputIndex: number;
   showFlow: boolean = true;
   graphExpanded: boolean = false;
@@ -121,8 +122,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
-          this.txId = urlMatch[0];
-          this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
+          if (urlMatch.length === 2 && urlMatch[1].length === 64) {
+            this.inputIndex = parseInt(urlMatch[0], 10);
+            this.outputIndex = null;
+            this.txId = urlMatch[1];
+          } else {
+            this.txId = urlMatch[0];
+            this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
+            this.inputIndex = null;
+          }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -332,6 +340,16 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   collapseGraph() {
     this.graphExpanded = false;
+  }
+
+  selectInput(input) {
+    this.inputIndex = input;
+    this.outputIndex = null;
+  }
+
+  selectOutput(output) {
+    this.outputIndex = output;
+    this.inputIndex = null;
   }
 
   @HostListener('window:resize', ['$event'])
