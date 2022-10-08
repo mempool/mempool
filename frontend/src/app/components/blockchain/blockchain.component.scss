@@ -27,7 +27,6 @@
   left: 0;
   top: 75px;
   transform: translateX(50vw);
-  transition: transform 1s;
 }
 
 .position-container.liquid, .position-container.liquidtestnet {
@@ -84,9 +83,9 @@
 
 .time-toggle {
   color: white;
-  font-size: 1rem;
+  font-size: 0.8rem;
   position: absolute;
-  bottom: -1.5em;
+  bottom: -1.8em;
   left: 1px;
   transform: translateX(-50%);
   background: none;
@@ -97,14 +96,31 @@
 }
 
 .blockchain-wrapper.ltr-transition .blocks-wrapper,
+.blockchain-wrapper.ltr-transition .position-container,
 .blockchain-wrapper.ltr-transition .time-toggle {
   transition: transform 1s;
 }
 
-.blockchain-wrapper.time-ltr .blocks-wrapper {
-  transform: scaleX(-1);
+.blockchain-wrapper.time-ltr {
+  .blocks-wrapper {
+    transform: scaleX(-1);
+  }
+
+  .time-toggle {
+    transform: translateX(-50%) scaleX(-1);
+  }
 }
 
-.blockchain-wrapper.time-ltr .time-toggle {
-  transform: translateX(-50%) scaleX(-1);
+:host-context(.ltr-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: ltr;
+  }
+}
+
+:host-context(.rtl-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: rtl;
+  }
 }
