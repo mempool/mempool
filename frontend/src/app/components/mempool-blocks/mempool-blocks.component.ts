@@ -287,11 +287,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.arrowVisible = true;
 
-    for (const block of this.mempoolBlocks) {
-      for (let i = 0; i < block.feeRange.length - 1; i++) {
+    let found = false;
+    for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
+      const block = this.mempoolBlocks[txInBlockIndex];
+      for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
         if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
-          const txInBlockIndex = this.mempoolBlocks.indexOf(block);
-          const feeRangeIndex = block.feeRange.findIndex((val, index) => this.txFeePerVSize < block.feeRange[index + 1]);
+          const feeRangeIndex = i;
           const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
 
           const txFee = this.txFeePerVSize - block.feeRange[i];
@@ -306,8 +307,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
           this.rightPosition = arrowRightPosition;
-          break;
+          found = true;
         }
+      }
+      if (this.txFeePerVSize >= block.feeRange[block.feeRange.length - 1]) {
+        this.rightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding);
+        found = true;
       }
     }
   }
