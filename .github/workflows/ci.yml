@@ -17,7 +17,7 @@ jobs:
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 
@@ -63,7 +63,7 @@ jobs:
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 

@@ -68,7 +68,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Checkout project
-        uses: actions/checkout@629c2de402a417ea7690ca6ce3f33229e27606a5 # v2
+        uses: actions/checkout@v3.1.0 # v2
 
       - name: Init repo for Dockerization
         run: docker/init.sh "$TAG"
