@@ -70,10 +70,19 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   deleteAfter?: number;
 }
 
-interface Ancestor {
+export interface Ancestor {
   txid: string;
   weight: number;
   fee: number;
+}
+
+export interface TransactionSet {
+  fee: number;
+  weight: number;
+  score: number;
+  children?: string[];
+  available?: boolean;
+  modified?: boolean;
 }
 
 interface BestDescendant {

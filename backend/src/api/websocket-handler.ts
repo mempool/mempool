@@ -414,15 +414,15 @@ class WebsocketHandler {
     let mBlockDeltas: undefined | MempoolBlockDelta[];
     let matchRate = 0;
     const _memPool = memPool.getMempool();
-    const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+    const projectedBlocks = mempoolBlocks.makeBlockTemplates(cloneMempool(_memPool), 1, 1);
 
-    if (_mempoolBlocks[0]) {
+    if (projectedBlocks[0]) {
       const matches: string[] = [];
       const added: string[] = [];
       const missing: string[] = [];
 
       for (const txId of txIds) {
-        if (_mempoolBlocks[0].transactionIds.indexOf(txId) > -1) {
+        if (projectedBlocks[0].transactionIds.indexOf(txId) > -1) {
           matches.push(txId);
         } else {
           added.push(txId);
@@ -430,7 +430,7 @@ class WebsocketHandler {
         delete _memPool[txId];
       }
 
-      for (const txId of _mempoolBlocks[0].transactionIds) {
+      for (const txId of projectedBlocks[0].transactionIds) {
         if (matches.includes(txId) || added.includes(txId)) {
           continue;
         }
@@ -443,14 +443,14 @@ class WebsocketHandler {
       mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
       if (Common.indexingEnabled()) {
-        const stripped = _mempoolBlocks[0].transactions.map((tx) => {
+        const stripped = projectedBlocks[0].transactions.map((tx) => {
           return {
             txid: tx.txid,
             vsize: tx.vsize,
             fee: tx.fee ? Math.round(tx.fee) : 0,
             value: tx.value,
           };
-        });  
+        });
         BlocksSummariesRepository.$saveSummary({
           height: block.height,
           template: {
@@ -578,6 +578,16 @@ class WebsocketHandler {
       client.send(JSON.stringify(response));
     });
   }
+}
+
+function cloneMempool(mempool: { [txid: string]: TransactionExtended }): { [txid: string]: TransactionExtended } {
+  const cloned = {};
+  Object.keys(mempool).forEach(id => {
+    cloned[id] = {
+      ...mempool[id]
+    };
+  });
+  return cloned;
 }
 
 export default new WebsocketHandler();
