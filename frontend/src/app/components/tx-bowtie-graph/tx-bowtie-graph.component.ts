@@ -365,7 +365,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   onClick(event, side, index): void {
     if (side === 'input') {
       const input = this.tx.vin[index];
-      if (input && input.txid && input.vout != null) {
+      if (input && !input.is_coinbase && !input.is_pegin && input.txid && input.vout != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), input.txid], {
           queryParamsHandling: 'merge',
           fragment: (new URLSearchParams({
