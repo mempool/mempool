@@ -63,7 +63,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     if (this.widget) {
       this.miningWindowPreference = '3y';
     } else {
-      this.seoService.setTitle($localize`Channels and Capacity`);
+      this.seoService.setTitle($localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -119,7 +119,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           color: 'grey',
           fontSize: 11
         },
-        text: $localize`Channels & Capacity`,
+        text: $localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`,
         left: 'center',
         top: 11,
         zlevel: 10,
@@ -341,7 +341,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
-    }), `block-sizes-weights-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `lightning-network-capacity-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
