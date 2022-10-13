@@ -100,7 +100,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             return `<b style="color: white">${country.name.en} (${country.share}%)</b><br>` +
-              $localize`${country.count.toString()} nodes<br>` +
+              $localize`${country.count.toString()} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(country.capacity / 100000000, 2)} BTC capacity`
             ;
           }
