@@ -5734,8 +5734,8 @@
         </context-group>
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
-      <trans-unit id="2471311169194286547" datatype="html">
-        <source><x id="PH" equiv-text="country.count.toString()"/> nodes&lt;br&gt;</source>
+      <trans-unit id="5222540403093176126" datatype="html">
+        <source><x id="PH" equiv-text="country.count.toString()"/> nodes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">103,102</context>
