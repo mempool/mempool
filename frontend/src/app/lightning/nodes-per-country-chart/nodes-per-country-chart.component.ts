@@ -43,7 +43,7 @@ export class NodesPerCountryChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes per country`);
+    this.seoService.setTitle($localize`:@@9d3ad4c6623870d96b65fb7a708fed6ce7c20044:Lightning Nodes Per Country`);
 
     this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
