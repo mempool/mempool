@@ -191,7 +191,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: 'Channels',
+            name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -199,7 +199,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Capacity',
+            name: $localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -279,7 +279,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         {
           zlevel: 0,
           yAxisIndex: 1,
-          name: $localize`Capacity`,
+          name: $localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`,
           showSymbol: false,
           symbol: 'none',
           stack: 'Total',
