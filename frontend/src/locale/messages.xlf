@@ -4905,6 +4905,14 @@
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">60,62</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">202,201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">282,279</context>
+        </context-group>
         <note priority="1" from="description">lightning.capacity</note>
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
@@ -5360,6 +5368,10 @@
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">194,193</context>
+        </context-group>
         <note priority="1" from="description">lightning.channels</note>
       </trans-unit>
       <trans-unit id="e4706894b195010f6814e54bf6570c729d69aaca" datatype="html">
@@ -5447,6 +5459,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.ts</context>
           <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">lightning.liquidity-ranking</note>
       </trans-unit>
@@ -5936,14 +5952,6 @@
         </context-group>
         <note priority="1" from="description">lightning.top-100-connectivity</note>
       </trans-unit>
-      <trans-unit id="fe43c7f717c92d83d8edc99471d643cfbc6a09f8" datatype="html">
-        <source>Liquidity ranking</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-        <note priority="1" from="description">lightning.liquidity-ranking</note>
-      </trans-unit>
       <trans-unit id="47a30fc5a836252f8fe03e2949756b150684d934" datatype="html">
         <source>Oldest nodes</source>
         <context-group purpose="location">
@@ -5966,13 +5974,6 @@
           <context context-type="linenumber">52,55</context>
         </context-group>
         <note priority="1" from="description">lightning.indexing-in-progress</note>
-      </trans-unit>
-      <trans-unit id="7825570888384392250" datatype="html">
-        <source>Capacity</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">282,279</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
