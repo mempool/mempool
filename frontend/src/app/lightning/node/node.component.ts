@@ -39,7 +39,7 @@ export class NodeComponent implements OnInit {
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
-          this.seoService.setTitle(`Node: ${node.alias}`);
+          this.seoService.setTitle($localize`Node: ${node.alias}`);
 
           const socketsObject = [];
           for (const socket of node.sockets.split(',')) {

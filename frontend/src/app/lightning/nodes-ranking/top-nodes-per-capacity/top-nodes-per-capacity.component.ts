@@ -26,7 +26,7 @@ export class TopNodesPerCapacity implements OnInit {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Liquidity Ranking`);
+      this.seoService.setTitle($localize`:@@2d9883d230a47fbbb2ec969e32a186597ea27405:Liquidity Ranking`);
     }
 
     for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 7) : 100); ++i) {

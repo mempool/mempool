@@ -24,7 +24,7 @@ export class LightningDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning Network`);
+    this.seoService.setTitle($localize`:@@142e923d3b04186ac6ba23387265d22a2fa404e0:Lightning Explorer`);
 
     this.nodesRanking$ = this.lightningApiService.getNodesRanking$().pipe(share());
     this.statistics$ = this.lightningApiService.getLatestStatistics$().pipe(share());
