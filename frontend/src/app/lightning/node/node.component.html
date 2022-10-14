@@ -15,7 +15,6 @@
 
   <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
     <span i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
-    <a [routerLink]="['/lightning' | relativeUrl]" i18n="lightning.back-to-lightning-dashboard">Back to the lightning dashboard</a>
   </div>
 
   <div class="box" *ngIf="!error">
@@ -45,7 +44,7 @@
               </td>
             </tr>
             <tr>
-              <td i18n="location" class="text-truncate">Location</td>
+              <td i18n="lightning.location" class="text-truncate">Location</td>
               <td *ngIf="node.geolocation">
                 <app-geolocation [data]="node.geolocation" [type]="'node'"></app-geolocation>
               </td>
@@ -61,19 +60,19 @@
         <table class="table table-borderless table-striped table-fixed">
           <tbody>
             <tr>
-              <td i18n="address.total-received" class="text-truncate label">First seen</td>
+              <td i18n="transaction.first-seen|Transaction first seen" class="text-truncate label">First seen</td>
               <td>
                 <app-timestamp [unixTime]="node.first_seen"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.total-sent" class="text-truncate label">Last update</td>
+              <td class="text-truncate label" i18n="lightning.last_update">Last update</td>
               <td>
                 <app-timestamp [unixTime]="node.updated_at"></app-timestamp>
               </td>
             </tr>
             <tr>
-              <td i18n="address.balance" class="text-truncate label">Color</td>
+              <td i18n="lightning.color" class="text-truncate label">Color</td>
               <td>
                 <div [ngStyle]="{'color': node.color}">{{ node.color }}</div>
               </td>
