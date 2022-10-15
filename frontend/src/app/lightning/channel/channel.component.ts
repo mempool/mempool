@@ -34,7 +34,7 @@ export class ChannelComponent implements OnInit {
           return this.lightningApiService.getChannel$(params.get('short_id'))
             .pipe(
               tap((value) => {
-                this.seoService.setTitle(`Channel: ${value.short_id}`);
+                this.seoService.setTitle($localize`Channel: ${value.short_id}`);
               }),
               catchError((err) => {
                 this.error = err;
