@@ -1,6 +1,6 @@
 <div class="box preview-box" *ngIf="(node$ | async) as node">
   <app-preview-title>
-    <span i18n="lightning.node">lightning node</span>
+    <span i18n="lightning.node">Lightning node</span>
   </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <h1 class="title"></h1>
@@ -29,13 +29,13 @@
             </td>
           </tr>
           <tr>
-            <td i18n="lightning.active-channels-avg">Average size</td>
+            <td i18n="lightning.avg-size">Average size</td>
             <td>
               <app-amount [satoshis]="node.avgCapacity" [noFiat]="true"></app-amount>
             </td>
           </tr>
           <tr *ngIf="node.city">
-            <td i18n="location">Location</td>
+            <td i18n="lightning.location">Location</td>
             <td>
               <span>{{ node.city.en }}</span>
             </td>
@@ -47,7 +47,7 @@
             </td>
           </tr>
           <tr *ngIf="!node.city && !node.country">
-            <td i18n="location">Location</td>
+            <td i18n="lightning.location">Location</td>
             <td>
               <span>unknown</span>
             </td>

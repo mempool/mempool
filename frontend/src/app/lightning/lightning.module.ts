@@ -15,6 +15,7 @@ import { ChannelBoxComponent } from './channel/channel-box/channel-box.component
 import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
 import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
 import { NodeStatisticsChartComponent } from './node-statistics-chart/node-statistics-chart.component';
+import { NodeFeeChartComponent } from './node-fee-chart/node-fee-chart.component';
 import { GraphsModule } from '../graphs/graphs.module';
 import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 import { ChannelsStatisticsComponent } from './channels-statistics/channels-statistics.component';
@@ -38,6 +39,7 @@ import { GroupComponent } from './group/group.component';
     NodesListComponent,
     NodeStatisticsComponent,
     NodeStatisticsChartComponent,
+    NodeFeeChartComponent,
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,
@@ -73,6 +75,7 @@ import { GroupComponent } from './group/group.component';
     NodesListComponent,
     NodeStatisticsComponent,
     NodeStatisticsChartComponent,
+    NodeFeeChartComponent,
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,

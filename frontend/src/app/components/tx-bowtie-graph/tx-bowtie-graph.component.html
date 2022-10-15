@@ -68,7 +68,7 @@
       <path
         [attr.d]="input.path"
         class="line {{input.class}}"
-        [class.highlight]="inputData[i].index === inputIndex"
+        [class.highlight]="inputIndex != null && inputData[i].index === inputIndex"
         [style]="input.style"
         attr.marker-start="url(#{{input.class}}-arrow)"
         (pointerover)="onHover($event, 'input', i);"
@@ -80,7 +80,7 @@
       <path
         [attr.d]="output.path"
         class="line {{output.class}}"
-        [class.highlight]="outputData[i].index === outputIndex"
+        [class.highlight]="outputIndex != null && outputData[i].index === outputIndex"
         [style]="output.style"
         attr.marker-start="url(#{{output.class}}-arrow)"
         (pointerover)="onHover($event, 'output', i);"
