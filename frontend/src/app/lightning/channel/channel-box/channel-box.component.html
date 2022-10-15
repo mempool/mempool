@@ -7,7 +7,7 @@
     <app-clipboard [text]="channel.public_key"></app-clipboard>
   </div>
   <div class="box-right">
-    <div class="second-line">{{ channel.channels }} channels</div>
+    <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: channel.channels }"></ng-container></div>
     <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount></div>
   </div>
 </div>
@@ -16,7 +16,7 @@
   <table class="table table-borderless table-striped">
     <tbody>
       <tr>
-        <td i18n="lightning.fee-rate">Fee rate</td>
+        <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
           <span class="d-inline-block d-md-none">
             {{ channel.fee_rate !== null ? (channel.fee_rate | amountShortener : 2 : undefined : true) : '-' }} <span class="symbol">ppm {{ channel.fee_rate !== null ? '(' + (channel.fee_rate / 10000 | amountShortener : 2 : undefined : true) + '%)' : '' }}</span>
@@ -33,19 +33,24 @@
             <span>
               <span *ngIf="channel.base_fee_mtokens !== null">
                 {{ channel.base_fee_mtokens | amountShortener : 0 }}
-                <span class="symbol">msats</span>
+                <span class="symbol" i18n="shared.m-sats">mSats</span>
               </span>
               <span *ngIf="channel.base_fee_mtokens === null">
                 -
               </span>
             </span>
-            <span *ngIf="channel.base_fee_mtokens !== null" class="badge" [class]="channel.base_fee_mtokens === 0 ? 'badge-success' : 'badge-danger'"
-              i18n-ngbTooltip="lightning.zero-base-fee"
-              [ngbTooltip]="channel.base_fee_mtokens === 0 ? 'This channel supports zero base fee routing' :
-                'This channel does not support zero base fee routing'"
-              placement="bottom" i18n="lightning.zerobasefee">
-              {{ channel.base_fee_mtokens === 0 ? 'Zero base fee' : 'Non-zero base fee' }}
-            </span>
+            <ng-template [ngIf]="channel.base_fee_mtokens !== null">
+              <span class="badge badge-success" *ngIf="channel.base_fee_mtokens === 0; else nonZeroBaseFee"
+                i18n-ngbTooltip="lightning.zero-base-fee-tooltip"
+                ngbTooltip="This channel supports zero base fee routing"
+                placement="bottom" i18n="lightning.zero-base-fee">Zero base fee</span>
+            </ng-template>
+            <ng-template #nonZeroBaseFee>
+              <span class="badge badge-danger"
+                i18n-ngbTooltip="lightning.non-zero-base-fee-tooltip"
+                ngbTooltip="This channel does not support zero base fee routing"
+                placement="bottom" i18n="lightning.non-zero-base-fee">Non-zero base fee</span>
+            </ng-template>
           </span>
         </td>
       </tr>
@@ -62,7 +67,7 @@
         </td>
       </tr>
       <tr>
-        <td i18n="lightning.timelock-detla">Timelock delta</td>
+        <td i18n="lightning.timelock-delta">Timelock delta</td>
         <td>
           <ng-container *ngTemplateOutlet="blocksPlural; context: {$implicit: channel.cltv_delta ?? '-' }"></ng-container>
         </td>
@@ -72,3 +77,4 @@
 </div>
 
 <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+<ng-template #xChannels let-i i18n="lightning.x-channels">{{ i }} channels</ng-template>
