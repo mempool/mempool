@@ -53,6 +53,10 @@ export class LightningApiService {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/nodes/' + publicKey + '/statistics');
   }
 
+  getNodeFeeHistogram$(publicKey: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/nodes/' + publicKey + '/fees/histogram');
+  }
+
   getNodesRanking$(): Observable<INodesRanking> {
     return this.httpClient.get<INodesRanking>(this.apiBasePath + '/api/v1/lightning/nodes/rankings');
   }
