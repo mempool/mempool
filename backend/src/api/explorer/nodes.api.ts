@@ -129,6 +129,56 @@ class NodesApi {
     }
   }
 
+  public async $getFeeHistogram(node_public_key: string): Promise<unknown> {
+    try {
+      const inQuery = `
+        SELECT CASE WHEN fee_rate <= 10.0 THEN CEIL(fee_rate)
+                    WHEN (fee_rate > 10.0 and fee_rate <= 100.0) THEN CEIL(fee_rate / 10.0) * 10.0
+                    WHEN (fee_rate > 100.0 and fee_rate <= 1000.0) THEN CEIL(fee_rate / 100.0) * 100.0
+                    WHEN fee_rate > 1000.0 THEN CEIL(fee_rate / 1000.0) * 1000.0
+               END as bucket,
+               count(short_id) as count,
+               sum(capacity) as capacity
+        FROM (
+          SELECT CASE WHEN node1_public_key = ? THEN node2_fee_rate WHEN node2_public_key = ? THEN node1_fee_rate END as fee_rate,
+                 short_id as short_id,
+                 capacity as capacity
+          FROM channels
+          WHERE status = 1 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+        ) as fee_rate_table
+        GROUP BY bucket;
+      `;
+      const [inRows]: any[] = await DB.query(inQuery, [node_public_key, node_public_key, node_public_key, node_public_key]);
+
+      const outQuery = `
+        SELECT CASE WHEN fee_rate <= 10.0 THEN CEIL(fee_rate)
+                    WHEN (fee_rate > 10.0 and fee_rate <= 100.0) THEN CEIL(fee_rate / 10.0) * 10.0
+                    WHEN (fee_rate > 100.0 and fee_rate <= 1000.0) THEN CEIL(fee_rate / 100.0) * 100.0
+                    WHEN fee_rate > 1000.0 THEN CEIL(fee_rate / 1000.0) * 1000.0
+               END as bucket,
+               count(short_id) as count,
+               sum(capacity) as capacity
+        FROM (
+          SELECT CASE WHEN node1_public_key = ? THEN node1_fee_rate WHEN node2_public_key = ? THEN node2_fee_rate END as fee_rate,
+                 short_id as short_id,
+                 capacity as capacity
+          FROM channels
+          WHERE status = 1 AND (channels.node1_public_key = ? OR channels.node2_public_key = ?)
+        ) as fee_rate_table
+        GROUP BY bucket;
+      `;
+      const [outRows]: any[] = await DB.query(outQuery, [node_public_key, node_public_key, node_public_key, node_public_key]);
+
+      return {
+        incoming: inRows.length > 0 ? inRows : [],
+        outgoing: outRows.length > 0 ? outRows : [],
+      };
+    } catch (e) {
+      logger.err(`Cannot get node fee distribution for ${node_public_key}. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+  }
+
   public async $getAllNodes(): Promise<any> {
     try {
       const query = `SELECT * FROM nodes`;

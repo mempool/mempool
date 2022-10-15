@@ -20,14 +20,17 @@ const routes: Routes = [
     },
     {
       path: 'markets',
+      data: { networks: ['bisq'] },
       component: BisqDashboardComponent,
     },
     {
       path: 'transactions',
+      data: { networks: ['bisq'] },
       component: BisqTransactionsComponent
     },
     {
       path: 'market/:pair',
+      data: { networkSpecific: true },
       component: BisqMarketComponent,
     },
     {
@@ -36,6 +39,7 @@ const routes: Routes = [
     },
     {
       path: 'tx/:id',
+      data: { networkSpecific: true },
       component: BisqTransactionComponent
     },
     {
@@ -45,14 +49,17 @@ const routes: Routes = [
     },
     {
       path: 'block/:id',
+      data: { networkSpecific: true },
       component: BisqBlockComponent,
     },
     {
       path: 'address/:id',
+      data: { networkSpecific: true },
       component: BisqAddressComponent,
     },
     {
       path: 'stats',
+      data: { networks: ['bisq'] },
       component: BisqStatsComponent,
     },
     {
