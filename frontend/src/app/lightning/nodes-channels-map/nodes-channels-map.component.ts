@@ -66,7 +66,7 @@ export class NodesChannelsMap implements OnInit {
     }
     
     if (this.style === 'graph') {
-      this.seoService.setTitle($localize`Lightning nodes channels world map`);
+      this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
     }
 
     if (['nodepage', 'channelpage'].includes(this.style)) {
