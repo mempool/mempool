@@ -21,10 +21,12 @@ const routes: Routes = [
         },
         {
           path: 'node/:public_key',
+          data: { networkSpecific: true },
           component: NodeComponent,
         },
         {
           path: 'channel/:short_id',
+          data: { networkSpecific: true },
           component: ChannelComponent,
         },
         {
