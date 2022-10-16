@@ -8,9 +8,9 @@
     </span>
   </div>
   <div class="badges mb-2">
-    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0">Inactive</span>
-    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1">Active</span>
-    <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2">Closed</span>
+    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
+    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
+    <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2" i18n="status.closed">Closed</span>
     <app-closing-type *ngIf="channel.closing_reason" [type]="channel.closing_reason"></app-closing-type>
   </div>
 
@@ -45,7 +45,7 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td i18n="address.total-received">Capacity</td>
+                <td i18n="lightning.capacity">Capacity</td>
                 <td><app-sats [satoshis]="channel.capacity"></app-sats><app-fiat [value]="channel.capacity" digitsInfo="1.0-0"></app-fiat></td>
               </tr>
             </tbody>
@@ -70,7 +70,7 @@
   <ng-container *ngIf="transactions$ | async as transactions">
     <ng-template [ngIf]="transactions[0]">
       <div class="d-flex">
-        <h3>Opening transaction</h3>
+        <h3 i18n="lightning.opening-transaction">Opening transaction</h3>
         <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList1.toggleDetails()"
           i18n="transaction.details|Transaction Details">Details</button>
       </div>
@@ -79,7 +79,7 @@
     </ng-template>
     <ng-template [ngIf]="transactions[1]">
       <div class="closing-header d-flex">
-        <h3 style="margin: 0;">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason">
+        <h3 style="margin: 0;" i18n="lightning.closing-transaction">Closing transaction</h3>&nbsp;&nbsp;<app-closing-type [type]="channel.closing_reason">
         </app-closing-type>
         <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="txList2.toggleDetails()"
           i18n="transaction.details|Transaction Details">Details</button>
