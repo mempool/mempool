@@ -64,7 +64,7 @@ export class NodesNetworksChartComponent implements OnInit {
     if (this.widget) {
       this.miningWindowPreference = '3y';
     } else {
-      this.seoService.setTitle($localize`Lightning nodes per network`);
+      this.seoService.setTitle($localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -128,7 +128,7 @@ export class NodesNetworksChartComponent implements OnInit {
           color: 'grey',
           fontSize: 11
         },
-        text: $localize`Nodes per network`,
+        text: $localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`,
         left: 'center',
         top: 11,
         zlevel: 10,
@@ -139,7 +139,7 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Unknown`,
+        name: $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`,
         showSymbol: false,
         symbol: 'none',
         data: data.unannounced_nodes,
@@ -308,7 +308,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Unknown`,
+            name: $localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -320,7 +320,7 @@ export class NodesNetworksChartComponent implements OnInit {
           '$localize`Reachable on Darknet Only`': true,
           '$localize`Reachable on Clearnet Only`': true,
           '$localize`Reachable on Clearnet and Darknet`': true,
-          '$localize`Unknown`': true,
+          '$localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`': true,
         }
       },
       yAxis: data.tor_nodes.length === 0 ? undefined : [

@@ -8,7 +8,7 @@
 
 <div *ngIf="countdown > 0" class="warning-label">{{ eventName }} in {{ countdown | number }} block{{ countdown === 1 ? '' : 's' }}!</div>
 
-<div id="blockchain-container" dir="ltr" #blockchainContainer
+<div id="blockchain-container" [dir]="timeLtr ? 'rtl' : 'ltr'" #blockchainContainer
   (mousedown)="onMouseDown($event)"
   (dragstart)="onDragStart($event)"
 >
