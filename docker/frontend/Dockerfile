@@ -30,7 +30,9 @@ RUN chown -R 1000:1000 /patch && chmod -R 755 /patch && \
         chown -R 1000:1000 /var/cache/nginx && \
         chown -R 1000:1000 /var/log/nginx && \
         chown -R 1000:1000 /etc/nginx/nginx.conf && \
-        chown -R 1000:1000 /etc/nginx/conf.d
+        chown -R 1000:1000 /etc/nginx/conf.d && \
+        chown -R 1000:1000 /var/www/mempool
+
 RUN touch /var/run/nginx.pid && \
         chown -R 1000:1000 /var/run/nginx.pid
 
