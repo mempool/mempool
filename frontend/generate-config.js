@@ -75,7 +75,7 @@ const newConfig = `(function (window) {
 
 const newConfigTemplate = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
-    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'\${${obj.key}}'` : `\${${obj.key}}`};`, '')}
+    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'\${__${obj.key}__}'` : `\${__${obj.key}__}`};`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
     window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
   }(this));`;
