@@ -49,12 +49,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
   outputIndex: number;
-  showFlow: boolean = true;
   graphExpanded: boolean = false;
   graphWidth: number = 1000;
   graphHeight: number = 360;
   inOutLimit: number = 150;
   maxInOut: number = 0;
+  flowPrefSubscription: Subscription;
+  hideFlow: boolean = this.stateService.hideFlow.value;
+  overrideFlowPreference: boolean = null;
+  flowEnabled: boolean;
 
   tooltipPosition: { x: number, y: number };
 
@@ -77,6 +80,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stateService.networkChanged$.subscribe(
       (network) => (this.network = network)
     );
+
+    this.setFlowEnabled();
+    this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
+      this.hideFlow = !!hide;
+      this.setFlowEnabled();
+    });
 
     this.timeAvg$ = timer(0, 1000)
       .pipe(
@@ -245,11 +254,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (params.showFlow === 'false') {
-        this.showFlow = false;
+        this.overrideFlowPreference = false;
+      } else if (params.showFlow === 'true') {
+        this.overrideFlowPreference = true;
       } else {
-        this.showFlow = true;
-        this.setGraphSize();
+        this.overrideFlowPreference = null;
       }
+      this.setFlowEnabled();
+      this.setGraphSize();
     });
   }
 
@@ -325,13 +337,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleGraph() {
-    this.showFlow = !this.showFlow;
+    const showFlow = !this.flowEnabled;
+    this.stateService.hideFlow.next(!showFlow);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { showFlow: this.showFlow },
+      queryParams: { showFlow: showFlow },
       queryParamsHandling: 'merge',
       fragment: 'flow'
     });
+  }
+
+  setFlowEnabled() {
+    this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
   }
 
   expandGraph() {
@@ -365,6 +382,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
+    this.flowPrefSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }

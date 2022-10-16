@@ -190,7 +190,7 @@
 
     <br>
 
-    <ng-container *ngIf="showFlow; else flowPlaceholder">
+    <ng-container *ngIf="flowEnabled; else flowPlaceholder">
       <div class="title float-left">
         <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
@@ -238,7 +238,7 @@
       </div>
 
       <div class="title-buttons">
-        <button *ngIf="!showFlow" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
+        <button *ngIf="!flowEnabled" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
         <button type="button" class="btn btn-outline-info btn-sm" (click)="txList.toggleDetails()" i18n="transaction.details|Transaction Details">Details</button>
       </div>
     </div>
@@ -329,7 +329,7 @@
 
     <br>
 
-    <ng-container *ngIf="showFlow">
+    <ng-container *ngIf="flowEnabled">
       <div class="title">
         <h2 i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
