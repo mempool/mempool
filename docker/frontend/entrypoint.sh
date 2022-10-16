@@ -53,17 +53,8 @@ export __BISQ_WEBSITE_URL__
 export __MINING_DASHBOARD__
 export __LIGHTNING__
 
-# This is not an array right now but that might change in the future
-files=()
-while IFS=  read -r -d $'\0'; do
-    files+=("$REPLY")
-done < <(find /var/www/mempool -name "config.js" -print0)
-
-for file in "${files[@]}"
-do
-  folder=$(dirname ${file})
-  echo ${folder}
-  envsubst < ${folder}/config.template.js > ${folder}/config.js
-done
+folder=$(find /var/www/mempool -name "config.js" | xargs dirname)
+echo ${folder}
+envsubst < ${folder}/config.template.js > ${folder}/config.js
 
 exec "$@"
