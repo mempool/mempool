@@ -110,6 +110,7 @@ export class StateService {
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
+  hideFlow: BehaviorSubject<boolean>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -158,6 +159,16 @@ export class StateService {
     this.timeLtr = new BehaviorSubject<boolean>(savedTimePreference === 'true' || (savedTimePreference == null && rtlLanguage));
     this.timeLtr.subscribe((ltr) => {
       this.storageService.setValue('time-preference-ltr', ltr ? 'true' : 'false');
+    });
+
+    const savedFlowPreference = this.storageService.getValue('flow-preference');
+    this.hideFlow = new BehaviorSubject<boolean>(savedFlowPreference === 'hide');
+    this.hideFlow.subscribe((hide) => {
+      if (hide) {
+        this.storageService.setValue('flow-preference', hide ? 'hide' : 'show');
+      } else {
+        this.storageService.removeItem('flow-preference');
+      }
     });
   }
 
