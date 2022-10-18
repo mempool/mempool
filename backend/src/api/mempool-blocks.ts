@@ -207,10 +207,10 @@ class MempoolBlocks {
         if (nextTxSet && blockWeight + nextTxSet.weight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
           blockWeight += nextTxSet.weight;
           // sort txSet by dependency graph (equivalent to sorting by ascending ancestor count)
-          const sortedTxSet = nextTx.ancestors.sort((a, b) => {
+          const sortedTxSet = [...nextTx.ancestors.sort((a, b) => {
             return (mempool[a.txid]?.ancestors?.length || 0) - (mempool[b.txid]?.ancestors?.length || 0);
-          });
-          [...sortedTxSet, nextTx].forEach((ancestor, i, arr) => {
+          }), nextTx];
+          sortedTxSet.forEach((ancestor, i, arr) => {
             const tx = mempool[ancestor.txid];
             const txSet = txSets[ancestor.txid];
             if (txSet.available) {
@@ -340,7 +340,7 @@ class MempoolBlocks {
     if (txSet.children) {
       txSet.children.forEach(childId => {
         const child = mempool[childId];
-        if (child && child.ancestors && txSets[childId]?.available) {
+        if (child && child.ancestors) {
           const ancestorIndex = child.ancestors.findIndex(a => a.txid === root.txid);
           if (ancestorIndex > -1) {
             // remove tx as ancestor
@@ -355,10 +355,11 @@ class MempoolBlocks {
               childTxSet.modified = true;
               modified.push(child);
             }
-
-            // recursively update grandchildren
-            anyModified = this.updateDescendants(root, child, mempool, txSets, modified) || anyModified;
           }
+        }
+        // recursively update grandchildren
+        if (child) {
+          anyModified = this.updateDescendants(root, child, mempool, txSets, modified) || anyModified;
         }
       });
     }
