@@ -65,23 +65,47 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
           .pipe(
             map((response) => {
               const blockAudit = response.body;
-              for (let i = 0; i < blockAudit.template.length; ++i) {
-                if (blockAudit.missingTxs.includes(blockAudit.template[i].txid)) {
-                  blockAudit.template[i].status = 'missing';
-                } else if (blockAudit.addedTxs.includes(blockAudit.template[i].txid)) {
-                  blockAudit.template[i].status = 'added';
+              const inTemplate = {};
+              const inBlock = {};
+              const isAdded = {};
+              const isCensored = {};
+              const isMissing = {};
+              const isSelected = {};
+              for (const tx of blockAudit.template) {
+                inTemplate[tx.txid] = true;
+              }
+              for (const tx of blockAudit.transactions) {
+                inBlock[tx.txid] = true;
+              }
+              for (const txid of blockAudit.addedTxs) {
+                isAdded[txid] = true;
+              }
+              for (const txid of blockAudit.missingTxs) {
+                isCensored[txid] = true;
+              }
+              // set transaction statuses
+              for (const tx of blockAudit.template) {
+                if (isCensored[tx.txid]) {
+                  tx.status = 'censored';
+                } else if (inBlock[tx.txid]) {
+                  tx.status = 'found';
                 } else {
-                  blockAudit.template[i].status = 'found';
+                  tx.status = 'missing';
+                  isMissing[tx.txid] = true;
                 }
               }
-              for (let i = 0; i < blockAudit.transactions.length; ++i) {
-                if (blockAudit.missingTxs.includes(blockAudit.transactions[i].txid)) {
-                  blockAudit.transactions[i].status = 'missing';
-                } else if (blockAudit.addedTxs.includes(blockAudit.transactions[i].txid)) {
-                  blockAudit.transactions[i].status = 'added';
+              for (const [index, tx] of blockAudit.transactions.entries()) {
+                if (isAdded[tx.txid]) {
+                  tx.status = 'added';
+                } else if (index === 0 || inTemplate[tx.txid]) {
+                  tx.status = 'found';
                 } else {
-                  blockAudit.transactions[i].status = 'found';
+                  tx.status = 'selected';
+                  isSelected[tx.txid] = true;
                 }
+              }
+              for (const tx of blockAudit.transactions) {
+                inBlock[tx.txid] = true;
               }
               return blockAudit;
             }),

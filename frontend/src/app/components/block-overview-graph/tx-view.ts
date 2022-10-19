@@ -25,7 +25,7 @@ export default class TxView implements TransactionStripped {
   vsize: number;
   value: number;
   feerate: number;
-  status?: 'found' | 'missing' | 'added';
+  status?: 'found' | 'missing' | 'added' | 'censored' | 'selected';
 
   initialised: boolean;
   vertexArray: FastVertexArray;
@@ -142,16 +142,21 @@ export default class TxView implements TransactionStripped {
   }
 
   getColor(): Color {
-    // Block audit
-    if (this.status === 'missing') {
-      return hexToColor('039BE5');
-    } else if (this.status === 'added') {
-      return hexToColor('D81B60');
-    }
-
-    // Block component
     const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
-    return hexToColor(mempoolFeeColors[feeLevelIndex] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+    const feeLevelColor = hexToColor(mempoolFeeColors[feeLevelIndex] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+    // Block audit
+    switch(this.status) {
+      case 'censored':
+        return hexToColor('D81BC2');
+      case 'missing':
+        return hexToColor('8C1BD8');
+      case 'added':
+        return hexToColor('03E1E5');
+      case 'selected':
+        return hexToColor('039BE5');
+      default:
+        return feeLevelColor;
+    }
   }
 }
 
