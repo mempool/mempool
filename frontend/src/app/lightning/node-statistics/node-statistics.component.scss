@@ -37,8 +37,9 @@
     }
     &.more-padding {
       padding-top: 10px;
-    }  
-    &:first-child{
+    }
+    &:last-child {
+      margin-bottom: 0;
       display: none;
       @media (min-width: 485px) {
         display: block;
@@ -48,10 +49,7 @@
       }    
       @media (min-width: 992px) {
         display: block;
-      }    
-    }
-    &:last-child {
-      margin-bottom: 0;
+      }  
     }
     .card-text span {
       color: #ffffff66;

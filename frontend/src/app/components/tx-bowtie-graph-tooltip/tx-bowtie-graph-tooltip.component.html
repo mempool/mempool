@@ -42,9 +42,9 @@
         <ng-container [ngSwitch]="line.type">
           <span *ngSwitchCase="'input'" i18n="transaction.input">Input</span>
           <span *ngSwitchCase="'output'" i18n="transaction.output">Output</span>
-          <span *ngSwitchCase="'fee'" i18n="transaction.fee">Fee</span>
+          <span *ngSwitchCase="'fee'" i18n="transaction.fee|Transaction fee">Fee</span>
         </ng-container>
-        <span *ngIf="line.type !== 'fee'"> #{{ line.index }}</span>
+        <span *ngIf="line.type !== 'fee'"> #{{ line.index + 1 }}</span>
       </p>
       <p *ngIf="line.value == null && line.confidential" i18n="shared.confidential">Confidential</p>
       <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
