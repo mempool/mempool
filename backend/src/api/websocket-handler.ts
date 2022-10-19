@@ -18,6 +18,7 @@ import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import Audit from './audit';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -405,7 +406,7 @@ class WebsocketHandler {
     });
   }
 
-  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) {
+  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): void {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -414,30 +415,19 @@ class WebsocketHandler {
     let mBlockDeltas: undefined | MempoolBlockDelta[];
     let matchRate = 0;
     const _memPool = memPool.getMempool();
-    const projectedBlocks = mempoolBlocks.makeBlockTemplates(cloneMempool(_memPool), 1, 1);
+    const mempoolCopy = cloneMempool(_memPool);
+
+    const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2, 2);
 
     if (projectedBlocks[0]) {
-      const matches: string[] = [];
-      const added: string[] = [];
-      const missing: string[] = [];
+      const { censored, added, score } = Audit.auditBlock(block, txIds, transactions, projectedBlocks, mempoolCopy);
+      matchRate = Math.round(score * 100 * 100) / 100;
 
+      // Update mempool to remove transactions included in the new block
       for (const txId of txIds) {
-        if (projectedBlocks[0].transactionIds.indexOf(txId) > -1) {
-          matches.push(txId);
-        } else {
-          added.push(txId);
-        }
         delete _memPool[txId];
       }
 
-      for (const txId of projectedBlocks[0].transactionIds) {
-        if (matches.includes(txId) || added.includes(txId)) {
-          continue;
-        }
-        missing.push(txId);
-      }
-
-      matchRate = Math.round((Math.max(0, matches.length - missing.length - added.length) / txIds.length * 100) * 100) / 100;
       mempoolBlocks.updateMempoolBlocks(_memPool);
       mBlocks = mempoolBlocks.getMempoolBlocks();
       mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
@@ -464,7 +454,7 @@ class WebsocketHandler {
           height: block.height,
           hash: block.id,
           addedTxs: added,
-          missingTxs: missing,
+          missingTxs: censored,
           matchRate: matchRate,
         });
       }
