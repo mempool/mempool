@@ -18,6 +18,7 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-transaction',
@@ -40,6 +41,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txReplacedSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
+  urlFragmentSubscription: Subscription;
+  fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
@@ -67,6 +70,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private websocketService: WebsocketService,
@@ -92,6 +96,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         switchMap(() => this.stateService.difficultyAdjustment$),
         map((da) => da.timeAvg)
       );
+
+    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      this.fragmentParams = new URLSearchParams(fragment || '');
+      const vin = parseInt(this.fragmentParams.get('vin'), 10);
+      const vout = parseInt(this.fragmentParams.get('vout'), 10);
+      this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
+      this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    });
 
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(
@@ -132,13 +144,29 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
           if (urlMatch.length === 2 && urlMatch[1].length === 64) {
-            this.inputIndex = parseInt(urlMatch[0], 10);
-            this.outputIndex = null;
+            const vin = parseInt(urlMatch[0], 10);
             this.txId = urlMatch[1];
+            // rewrite legacy vin syntax
+            if (!isNaN(vin)) {
+              this.fragmentParams.set('vin', vin.toString());
+              this.fragmentParams.delete('vout');
+            }
+            this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+              queryParamsHandling: 'merge',
+              fragment: this.fragmentParams.toString(),
+            });
           } else {
             this.txId = urlMatch[0];
-            this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
-            this.inputIndex = null;
+            const vout = parseInt(urlMatch[1], 10);
+            if (urlMatch.length > 1 && !isNaN(vout)) {
+              // rewrite legacy vout syntax
+              this.fragmentParams.set('vout', vout.toString());
+              this.fragmentParams.delete('vin');
+              this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+                queryParamsHandling: 'merge',
+                fragment: this.fragmentParams.toString(),
+              });
+            }
           }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
@@ -222,6 +250,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
+          setTimeout(() => { this.applyFragment(); }, 0);
         },
         (error) => {
           this.error = error;
@@ -359,14 +388,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.graphExpanded = false;
   }
 
-  selectInput(input) {
-    this.inputIndex = input;
-    this.outputIndex = null;
-  }
-
-  selectOutput(output) {
-    this.outputIndex = output;
-    this.inputIndex = null;
+  // simulate normal anchor fragment behavior
+  applyFragment(): void {
+    const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
+    if (anchor) {
+      const anchorElement = document.getElementById(anchor[0]);
+      if (anchorElement) {
+        anchorElement.scrollIntoView();
+      }
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -383,6 +413,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
+    this.urlFragmentSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
