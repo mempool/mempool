@@ -37,10 +37,12 @@ const routes: Routes = [
     children: [
       {
         path: 'mining/pool/:slug',
+        data: { networks: ['bitcoin'] },
         component: PoolComponent,
       },
       {
         path: 'mining',
+        data: { networks: ['bitcoin'] },
         component: StartComponent,
         children: [
           {
@@ -51,6 +53,7 @@ const routes: Routes = [
       },
       {
         path: 'mempool-block/:id',
+        data: { networks: ['bitcoin', 'liquid'] },
         component: StartComponent,
         children: [
           {
@@ -61,62 +64,77 @@ const routes: Routes = [
       },
       {
         path: 'graphs',
+        data: { networks: ['bitcoin', 'liquid'] },
         component: GraphsComponent,
         children: [
           {
             path: 'mempool',
+            data: { networks: ['bitcoin', 'liquid'] },
             component: StatisticsComponent,
           },
           {
             path: 'mining/hashrate-difficulty',
+            data: { networks: ['bitcoin'] },
             component: HashrateChartComponent,
           },
           {
             path: 'mining/pools-dominance',
+            data: { networks: ['bitcoin'] },
             component: HashrateChartPoolsComponent,
           },
           {
             path: 'mining/pools',
+            data: { networks: ['bitcoin'] },
             component: PoolRankingComponent,
           },
           {
             path: 'mining/block-fees',
+            data: { networks: ['bitcoin'] },
             component: BlockFeesGraphComponent,
           },
           {
             path: 'mining/block-rewards',
+            data: { networks: ['bitcoin'] },
             component: BlockRewardsGraphComponent,
           },
           {
             path: 'mining/block-fee-rates',
+            data: { networks: ['bitcoin'] },
             component: BlockFeeRatesGraphComponent,
           },
           {
             path: 'mining/block-sizes-weights',
+            data: { networks: ['bitcoin'] },
             component: BlockSizesWeightsGraphComponent,
           },
           {
             path: 'lightning/nodes-networks',
+            data: { networks: ['bitcoin'] },
             component: NodesNetworksChartComponent,
           },
           {
             path: 'lightning/capacity',
+            data: { networks: ['bitcoin'] },
             component: LightningStatisticsChartComponent,
           },
           {
             path: 'lightning/nodes-per-isp',
+            data: { networks: ['bitcoin'] },
             component: NodesPerISPChartComponent,
           },
           {
             path: 'lightning/nodes-per-country',
+            data: { networks: ['bitcoin'] },
             component: NodesPerCountryChartComponent,
           },
           {
             path: 'lightning/nodes-map',
+            data: { networks: ['bitcoin'] },
             component: NodesMap,
           },
           {
             path: 'lightning/nodes-channels-map',
+            data: { networks: ['bitcoin'] },
             component: NodesChannelsMap,
           },
           {
@@ -125,6 +143,7 @@ const routes: Routes = [
           },
           {
             path: 'mining/block-prediction',
+            data: { networks: ['bitcoin'] },
             component: BlockPredictionGraphComponent,
           },
         ]
@@ -141,6 +160,7 @@ const routes: Routes = [
   },
   {
     path: 'tv',
+    data: { networks: ['bitcoin', 'liquid'] },
     component: TelevisionComponent
   },
 ];

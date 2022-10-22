@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 40;
+  private static currentVersion = 41;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -347,6 +347,10 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `nodes` ADD capacity bigint(20) unsigned DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD channels int(11) unsigned DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `capacity` (`capacity`);');
+    }
+
+    if (databaseSchemaVersion < 41 && isBitcoin === true) {
+      await this.$executeQuery('UPDATE channels SET closing_reason = NULL WHERE closing_reason = 1');
     }
   }
 

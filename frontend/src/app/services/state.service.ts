@@ -110,6 +110,7 @@ export class StateService {
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
+  hideFlow: BehaviorSubject<boolean>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -159,6 +160,16 @@ export class StateService {
     this.timeLtr.subscribe((ltr) => {
       this.storageService.setValue('time-preference-ltr', ltr ? 'true' : 'false');
     });
+
+    const savedFlowPreference = this.storageService.getValue('flow-preference');
+    this.hideFlow = new BehaviorSubject<boolean>(savedFlowPreference === 'hide');
+    this.hideFlow.subscribe((hide) => {
+      if (hide) {
+        this.storageService.setValue('flow-preference', hide ? 'hide' : 'show');
+      } else {
+        this.storageService.removeItem('flow-preference');
+      }
+    });
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -170,7 +181,8 @@ export class StateService {
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
     // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)/);
+    // ($|\/)                                       network string must end or end with a slash
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {

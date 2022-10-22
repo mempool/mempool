@@ -140,6 +140,8 @@
 
     <app-node-channels style="display:block;margin-bottom: 40px" [publicKey]="node.public_key"></app-node-channels>
 
+    <app-node-fee-chart style="display:block;margin-bottom: 40px"></app-node-fee-chart>
+
     <div class="d-flex">
       <h2 *ngIf="channelsListStatus === 'open'">
         <span i18n="lightning.open-channels">Open channels</span>
