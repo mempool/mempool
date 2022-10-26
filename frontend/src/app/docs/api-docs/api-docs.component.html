@@ -106,6 +106,19 @@
       </div>
     </div>
 
+    <div id="electrs" *ngIf="whichTab === 'electrs'">
+      <div class="doc-content no-sidebar">
+        <div class="doc-item-container">
+          <ng-container #default_electrs_note *ngIf="network.val === '' || network.val === 'mainnet' || network.val === 'testnet'; else signet_electrs_note">
+            <p class="center note">This part of the API is available to <a href='/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          </ng-container>
+          <ng-template #signet_electrs_note>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
   </div>
 </ng-container>
 
