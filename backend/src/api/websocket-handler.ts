@@ -250,6 +250,8 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    logger.debug("mempool changed!");
+
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
@@ -417,7 +419,7 @@ class WebsocketHandler {
     const _memPool = memPool.getMempool();
     const mempoolCopy = cloneMempool(_memPool);
 
-    const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2, 2);
+    const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
 
     if (projectedBlocks[0]) {
       const { censored, added, score } = Audit.auditBlock(block, txIds, transactions, projectedBlocks, mempoolCopy);

@@ -1,4 +1,5 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
+import { HeapNode } from "./utils/pairing-heap";
 
 export interface PoolTag {
   id: number; // mysql row id
@@ -70,6 +71,24 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   deleteAfter?: number;
 }
 
+export interface AuditTransaction {
+  txid: string;
+  fee: number;
+  size: number;
+  weight: number;
+  feePerVsize: number;
+  vin: IEsploraApi.Vin[];
+  relativesSet: boolean;
+  ancestorMap: Map<string, AuditTransaction>;
+  children: Set<AuditTransaction>;
+  ancestorFee: number;
+  ancestorWeight: number;
+  score: number;
+  used: boolean;
+  modified: boolean;
+  modifiedNode: HeapNode<AuditTransaction>;
+}
+
 export interface Ancestor {
   txid: string;
   weight: number;
@@ -80,9 +99,10 @@ export interface TransactionSet {
   fee: number;
   weight: number;
   score: number;
-  children?: string[];
+  children?: Set<string>;
   available?: boolean;
   modified?: boolean;
+  modifiedNode?: HeapNode<string>;
 }
 
 interface BestDescendant {

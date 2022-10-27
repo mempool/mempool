@@ -1,3 +1,4 @@
+import logger from '../logger';
 import { BlockExtended, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
