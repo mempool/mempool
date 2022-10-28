@@ -250,8 +250,6 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    logger.debug("mempool changed!");
-
     mempoolBlocks.updateMempoolBlocks(newMempool);
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
@@ -417,54 +415,53 @@ class WebsocketHandler {
     let mBlockDeltas: undefined | MempoolBlockDelta[];
     let matchRate = 0;
     const _memPool = memPool.getMempool();
-    const mempoolCopy = cloneMempool(_memPool);
 
-    const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
+    if (Common.indexingEnabled()) {
+      const mempoolCopy = cloneMempool(_memPool);
+      const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
 
-    if (projectedBlocks[0]) {
-      const { censored, added, score } = Audit.auditBlock(block, txIds, transactions, projectedBlocks, mempoolCopy);
+      const { censored, added, score } = Audit.auditBlock(transactions, projectedBlocks, mempoolCopy);
       matchRate = Math.round(score * 100 * 100) / 100;
 
-      // Update mempool to remove transactions included in the new block
-      for (const txId of txIds) {
-        delete _memPool[txId];
-      }
+      const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
+        return {
+          txid: tx.txid,
+          vsize: tx.vsize,
+          fee: tx.fee ? Math.round(tx.fee) : 0,
+          value: tx.value,
+        };
+      }) : [];
 
-      mempoolBlocks.updateMempoolBlocks(_memPool);
-      mBlocks = mempoolBlocks.getMempoolBlocks();
-      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
+      BlocksSummariesRepository.$saveSummary({
+        height: block.height,
+        template: {
+          id: block.id,
+          transactions: stripped
+        }
+      });
 
-      if (Common.indexingEnabled()) {
-        const stripped = projectedBlocks[0].transactions.map((tx) => {
-          return {
-            txid: tx.txid,
-            vsize: tx.vsize,
-            fee: tx.fee ? Math.round(tx.fee) : 0,
-            value: tx.value,
-          };
-        });
-        BlocksSummariesRepository.$saveSummary({
-          height: block.height,
-          template: {
-            id: block.id,
-            transactions: stripped
-          }
-        });
+      BlocksAuditsRepository.$saveAudit({
+        time: block.timestamp,
+        height: block.height,
+        hash: block.id,
+        addedTxs: added,
+        missingTxs: censored,
+        matchRate: matchRate,
+      });
 
-        BlocksAuditsRepository.$saveAudit({
-          time: block.timestamp,
-          height: block.height,
-          hash: block.id,
-          addedTxs: added,
-          missingTxs: censored,
-          matchRate: matchRate,
-        });
+      if (block.extras) {
+        block.extras.matchRate = matchRate;
       }
     }
 
-    if (block.extras) {
-      block.extras.matchRate = matchRate;
+    // Update mempool to remove transactions included in the new block
+    for (const txId of txIds) {
+      delete _memPool[txId];
     }
+
+    mempoolBlocks.updateMempoolBlocks(_memPool);
+    mBlocks = mempoolBlocks.getMempoolBlocks();
+    mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
