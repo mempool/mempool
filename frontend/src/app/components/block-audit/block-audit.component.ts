@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, Subscription, combineLatest } from 'rxjs';
-import { map, share, switchMap, tap, startWith } from 'rxjs/operators';
+import { map, switchMap, startWith, catchError } from 'rxjs/operators';
 import { BlockAudit, TransactionStripped } from 'src/app/interfaces/node-api.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { StateService } from 'src/app/services/state.service';
@@ -25,21 +25,27 @@ import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overv
 export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   blockAudit: BlockAudit = undefined;
   transactions: string[];
-  auditObservable$: Observable<BlockAudit>;
+  auditSubscription: Subscription;
+  urlFragmentSubscription: Subscription;
 
   paginationMaxSize: number;
   page = 1;
   itemsPerPage: number;
 
-  mode: 'missing' | 'added' = 'missing';
+  mode: 'projected' | 'actual' = 'projected';
+  error: any;
   isLoading = true;
   webGlEnabled = true;
   isMobile = window.innerWidth <= 767.98;
 
   childChangeSubscription: Subscription;
 
-  @ViewChildren('blockGraphTemplate') blockGraphTemplate: QueryList<BlockOverviewGraphComponent>;
-  @ViewChildren('blockGraphMined') blockGraphMined: QueryList<BlockOverviewGraphComponent>;
+  blockHash: string;
+  numMissing: number = 0;
+  numUnexpected: number = 0;
+
+  @ViewChildren('blockGraphProjected') blockGraphProjected: QueryList<BlockOverviewGraphComponent>;
+  @ViewChildren('blockGraphActual') blockGraphActual: QueryList<BlockOverviewGraphComponent>;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,18 +56,31 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webGlEnabled = detectWebGL();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.childChangeSubscription.unsubscribe();
+    this.urlFragmentSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
 
-    this.auditObservable$ = this.route.paramMap.pipe(
+    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (fragment === 'actual') {
+        this.mode = 'actual';
+      } else {
+        this.mode = 'projected'
+      }
+      this.setupBlockGraphs();
+    });
+
+    this.auditSubscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        const blockHash: string = params.get('id') || '';
-        return this.apiService.getBlockAudit$(blockHash)
+        this.blockHash = params.get('id') || null;
+        if (!this.blockHash) {
+          return null;
+        }
+        return this.apiService.getBlockAudit$(this.blockHash)
           .pipe(
             map((response) => {
               const blockAudit = response.body;
@@ -71,6 +90,8 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
               const isCensored = {};
               const isMissing = {};
               const isSelected = {};
+              this.numMissing = 0;
+              this.numUnexpected = 0;
               for (const tx of blockAudit.template) {
                 inTemplate[tx.txid] = true;
               }
@@ -92,6 +113,7 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
                 } else {
                   tx.status = 'missing';
                   isMissing[tx.txid] = true;
+                  this.numMissing++;
                 }
               }
               for (const [index, tx] of blockAudit.transactions.entries()) {
@@ -102,43 +124,46 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
                 } else {
                   tx.status = 'selected';
                   isSelected[tx.txid] = true;
+                  this.numUnexpected++;
                 }
               }
               for (const tx of blockAudit.transactions) {
                 inBlock[tx.txid] = true;
               }
               return blockAudit;
-            }),
-            tap((blockAudit) => {
-              this.blockAudit = blockAudit;
-              this.changeMode(this.mode);
-              this.isLoading = false;
-            }),
+            })
           );
       }),
-      share()
-    );
+      catchError((err) => {
+        console.log(err);
+        this.error = err;
+        this.isLoading = false;
+        return null;
+      }),
+    ).subscribe((blockAudit) => {
+      this.blockAudit = blockAudit;
+      this.setupBlockGraphs();
+      this.isLoading = false;
+    });
   }
 
   ngAfterViewInit() {
-    this.childChangeSubscription = combineLatest([this.blockGraphTemplate.changes.pipe(startWith(null)), this.blockGraphMined.changes.pipe(startWith(null))]).subscribe(() => {
-      console.log('changed!');
+    this.childChangeSubscription = combineLatest([this.blockGraphProjected.changes.pipe(startWith(null)), this.blockGraphActual.changes.pipe(startWith(null))]).subscribe(() => {
       this.setupBlockGraphs();
     })
   }
 
   setupBlockGraphs() {
-    console.log('setting up block graphs')
     if (this.blockAudit) {
-      this.blockGraphTemplate.forEach(graph => {
+      this.blockGraphProjected.forEach(graph => {
         graph.destroy();
-        if (this.isMobile && this.mode === 'added') {
+        if (this.isMobile && this.mode === 'actual') {
           graph.setup(this.blockAudit.transactions);
         } else {
           graph.setup(this.blockAudit.template);
         }
       })
-      this.blockGraphMined.forEach(graph => {
+      this.blockGraphActual.forEach(graph => {
         graph.destroy();
         graph.setup(this.blockAudit.transactions);
       })
@@ -156,18 +181,12 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  changeMode(mode: 'missing' | 'added') {
+  changeMode(mode: 'projected' | 'actual') {
     this.router.navigate([], { fragment: mode });
-    this.mode = mode;
-
-    this.setupBlockGraphs();
   }
 
   onTxClick(event: TransactionStripped): void {
     const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
     this.router.navigate([url]);
-  }
-
-  pageChange(page: number, target: HTMLElement) {
   }
 }

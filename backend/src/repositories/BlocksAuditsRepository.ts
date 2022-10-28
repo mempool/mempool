@@ -58,10 +58,12 @@ class BlocksAuditRepositories {
         WHERE blocks_audits.hash = "${hash}"
       `);
       
-      rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
-      rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
-      rows[0].transactions = JSON.parse(rows[0].transactions);
-      rows[0].template = JSON.parse(rows[0].template);
+      if (rows.length) {
+        rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
+        rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
+        rows[0].transactions = JSON.parse(rows[0].transactions);
+        rows[0].template = JSON.parse(rows[0].template);
+      }
             
       return rows[0];
     } catch (e: any) {

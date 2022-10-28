@@ -413,7 +413,7 @@ class WebsocketHandler {
 
     let mBlocks: undefined | MempoolBlock[];
     let mBlockDeltas: undefined | MempoolBlockDelta[];
-    let matchRate = 0;
+    let matchRate;
     const _memPool = memPool.getMempool();
 
     if (Common.indexingEnabled()) {

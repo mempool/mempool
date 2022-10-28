@@ -36,10 +36,10 @@
         <td class="td-width" i18n="transaction.audit-status">Audit status</td>
         <ng-container [ngSwitch]="tx?.status">
           <td *ngSwitchCase="'found'" i18n="transaction.audit.match">match</td>
-          <td *ngSwitchCase="'censored'" i18n="transaction.audit.censored">censored</td>
+          <td *ngSwitchCase="'censored'" i18n="transaction.audit.removed">removed</td>
           <td *ngSwitchCase="'missing'" i18n="transaction.audit.missing">missing</td>
-          <td *ngSwitchCase="'added'" i18n="transaction.audit.prioritized">prioritized</td>
-          <td *ngSwitchCase="'selected'" i18n="transaction.audit.unexpected">unexpected</td>
+          <td *ngSwitchCase="'added'" i18n="transaction.audit.added">added</td>
+          <td *ngSwitchCase="'selected'" i18n="transaction.audit.included">included</td>
         </ng-container>
       </tr>
     </tbody>
