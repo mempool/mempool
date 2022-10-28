@@ -7,6 +7,15 @@ import { feeLevels, mempoolFeeColors } from '../../app.constants';
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
 
+const feeColors = mempoolFeeColors.map(hexToColor);
+const auditFeeColors = feeColors.map((color) => desaturate(color, 0.3));
+const auditColors = {
+  censored: hexToColor('f344df'),
+  missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
+  added: hexToColor('03E1E5'),
+  selected: darken(desaturate(hexToColor('039BE5'), 0.3), 0.7),
+}
+
 // convert from this class's update format to TxSprite's update format
 function toSpriteUpdate(params: ViewUpdateParams): SpriteUpdateParams {
   return {
@@ -143,17 +152,19 @@ export default class TxView implements TransactionStripped {
 
   getColor(): Color {
     const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
-    const feeLevelColor = hexToColor(mempoolFeeColors[feeLevelIndex] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+    const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
     // Block audit
     switch(this.status) {
       case 'censored':
-        return hexToColor('D81BC2');
+        return auditColors.censored;
       case 'missing':
-        return hexToColor('8C1BD8');
+        return auditColors.missing;
       case 'added':
-        return hexToColor('03E1E5');
+        return auditColors.added;
       case 'selected':
-        return hexToColor('039BE5');
+        return auditColors.selected;
+      case 'found':
+        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
       default:
         return feeLevelColor;
     }
@@ -167,4 +178,23 @@ function hexToColor(hex: string): Color {
     b: parseInt(hex.slice(4, 6), 16) / 255,
     a: 1
   };
+}
+
+function desaturate(color: Color, amount: number): Color {
+  const gray = (color.r + color.g + color.b) / 6;
+  return {
+    r: color.r + ((gray - color.r) * amount),
+    g: color.g + ((gray - color.g) * amount),
+    b: color.b + ((gray - color.b) * amount),
+    a: color.a,
+  };
+}
+
+function darken(color: Color, amount: number): Color {
+  return {
+    r: color.r * amount,
+    g: color.g * amount,
+    b: color.b * amount,
+    a: color.a,
+  }
 }
