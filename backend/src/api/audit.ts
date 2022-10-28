@@ -4,9 +4,12 @@ import { BlockExtended, TransactionExtended, MempoolBlockWithTransactions } from
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[],
-    projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended },
-  ): { censored: string[], added: string[], score: number } {
+  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
+   : { censored: string[], added: string[], score: number } {
+    if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
+      return { censored: [], added: [], score: 0 };
+    }
+
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
     const fresh: string[] = []; // missing, but firstSeen within PROPAGATION_MARGIN
