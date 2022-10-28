@@ -71,6 +71,20 @@ class BlocksAuditRepositories {
       throw e;
     }
   }
+
+  public async $getShortBlockAudit(hash: string): Promise<any> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT hash as id, match_rate as matchRate
+        FROM blocks_audits
+        WHERE blocks_audits.hash = "${hash}"
+      `);
+      return rows[0];
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksAuditRepositories();
