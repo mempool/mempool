@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
@@ -42,9 +42,6 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() tooltip = false;
   @Input() inputIndex: number;
   @Input() outputIndex: number;
-
-  @Output() selectInput = new EventEmitter<number>();
-  @Output() selectOutput = new EventEmitter<number>();
 
   inputData: Xput[];
   outputData: Xput[];
@@ -368,24 +365,42 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   onClick(event, side, index): void {
     if (side === 'input') {
       const input = this.tx.vin[index];
-      if (input && input.txid && input.vout != null) {
-        this.router.navigate([this.relativeUrlPipe.transform('/tx'), input.txid + ':' + input.vout], {
+      if (input && !input.is_coinbase && !input.is_pegin && input.txid && input.vout != null) {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), input.txid], {
           queryParamsHandling: 'merge',
-          fragment: 'flow'
+          fragment: (new URLSearchParams({
+            flow: '',
+            vout: input.vout.toString(),
+          })).toString(),
         });
-      } else {
-        this.selectInput.emit(index);
+      } else if (index != null) {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {
+          queryParamsHandling: 'merge',
+          fragment: (new URLSearchParams({
+            flow: '',
+            vin: index.toString(),
+          })).toString(),
+        });
       }
     } else {
       const output = this.tx.vout[index];
       const outspend = this.outspends[index];
       if (output && outspend && outspend.spent && outspend.txid) {
-        this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.vin + ':' + outspend.txid], {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
           queryParamsHandling: 'merge',
-          fragment: 'flow'
+          fragment: (new URLSearchParams({
+            flow: '',
+            vin: outspend.vin.toString(),
+          })).toString(),
         });
-      } else {
-        this.selectOutput.emit(index);
+      } else if (index != null) {
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {
+          queryParamsHandling: 'merge',
+          fragment: (new URLSearchParams({
+            flow: '',
+            vout: index.toString(),
+          })).toString(),
+        });
       }
     }
   }
