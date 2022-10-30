@@ -109,12 +109,13 @@
     <div id="electrs" *ngIf="whichTab === 'electrs'">
       <div class="doc-content no-sidebar">
         <div class="doc-item-container">
-          <ng-container #default_electrs_note *ngIf="network.val === '' || network.val === 'mainnet' || network.val === 'testnet'; else signet_electrs_note">
-            <p class="center note">This part of the API is available to <a href='/enterprise'>sponsors</a> only—whitelisting is required.</p>
-          </ng-container>
-          <ng-template #signet_electrs_note>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-          </ng-template>
+          <p class='subtitle'>Hostname</p>
+          <p>{{plainHostname}}</p>
+          <p class="subtitle">Port</p>
+          <p>{{electrsPort}}</p>
+          <p class="subtitle">SSL</p>
+          <p>Enabled</p>
+          <p class="note" *ngIf="network.val !== 'signet'">Electrum RPC interface for Bitcoin Signet is <a href="/signet/docs/api/electrs">publicly available</a>. Electrum RPC interface for all other networks is available to <a href='/enterprise'>sponsors</a> only—whitelisting is required.</p>
         </div>
       </div>
     </div>
