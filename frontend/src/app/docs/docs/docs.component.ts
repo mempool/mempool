@@ -46,7 +46,7 @@ export class DocsComponent implements OnInit {
     this.env = this.stateService.env;
     this.showWebSocketTab = ( ! ( ( this.stateService.network === "bisq" ) || ( this.stateService.network === "liquidtestnet" ) ) );
     this.showFaqTab = ( this.env.BASE_MODULE === 'mempool' ) ? true : false;
-    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && ( this.stateService.network === "" || this.stateService.network === "mainnet" || this.stateService.network === "testnet" || this.stateService.network === "signet" );
+    this.showElectrsTab = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && ( this.stateService.network !== "bisq" );
 
     document.querySelector<HTMLElement>( "html" ).style.scrollBehavior = "smooth";
   }
