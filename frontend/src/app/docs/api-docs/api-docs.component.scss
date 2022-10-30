@@ -10,6 +10,12 @@
   font-size: 12px;
 }
 
+.container-xl {
+  display: flex;
+  min-height: 75vh;
+  flex-direction: column;
+}
+
 code {
   background-color: #1d1f31;
   font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
