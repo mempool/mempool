@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 43;
+  private static currentVersion = 44;
   private queryTimeout = 120000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -359,6 +359,11 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 43 && isBitcoin === true) {
       await this.$executeQuery(this.getCreateLNNodeRecordsTableQuery(), await this.$checkIfTableExists('nodes_records'));
+    }
+
+    if (databaseSchemaVersion < 44 && isBitcoin === true) {
+      await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
+      await this.$executeQuery('UPDATE blocks_summaries SET template = NULL');
     }
   }
 
