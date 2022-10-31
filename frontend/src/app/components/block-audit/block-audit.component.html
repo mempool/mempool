@@ -97,21 +97,6 @@
   </div>
 
   <ng-template [ngIf]="!error && isLoading">
-    <div class="title-block" id="block">
-      <h1>
-        <span class="next-previous-blocks">
-          <span i18n="shared.block-audit-title">Block Audit</span>
-          &nbsp;
-          <a *ngIf="blockAudit" [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockAudit.height }}</a>
-          &nbsp;
-        </span>
-      </h1>
-
-      <div class="grow"></div>
-
-      <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
-    </div>
-
     <!-- OVERVIEW -->
     <div class="box mb-3">
       <div class="row">
