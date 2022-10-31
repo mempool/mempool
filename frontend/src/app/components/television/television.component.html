@@ -11,11 +11,15 @@
         [showZoom]="false"
       ></app-mempool-graph>
     </div>
-    <div class="blockchain-wrapper">
+    <div class="blockchain-wrapper" [dir]="timeLtr ? 'rtl' : 'ltr'" [class.time-ltr]="timeLtr">
       <div class="position-container">
-        <app-mempool-blocks></app-mempool-blocks>
-        <app-blockchain-blocks></app-blockchain-blocks>
-        <div id="divider"></div>
+        <span>
+          <div class="blocks-wrapper">
+            <app-mempool-blocks></app-mempool-blocks>
+            <app-blockchain-blocks></app-blockchain-blocks>
+          </div>
+          <div id="divider"></div>
+        </span>
       </div>
     </div>
   </div>
