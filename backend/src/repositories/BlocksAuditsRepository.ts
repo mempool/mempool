@@ -58,11 +58,27 @@ class BlocksAuditRepositories {
         WHERE blocks_audits.hash = "${hash}"
       `);
       
-      rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
-      rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
-      rows[0].transactions = JSON.parse(rows[0].transactions);
-      rows[0].template = JSON.parse(rows[0].template);
+      if (rows.length) {
+        rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
+        rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
+        rows[0].transactions = JSON.parse(rows[0].transactions);
+        rows[0].template = JSON.parse(rows[0].template);
+      }
             
+      return rows[0];
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getShortBlockAudit(hash: string): Promise<any> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT hash as id, match_rate as matchRate
+        FROM blocks_audits
+        WHERE blocks_audits.hash = "${hash}"
+      `);
       return rows[0];
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
