@@ -1,4 +1,4 @@
-import logger from '../logger';
+import config from '../config';
 import { BlockExtended, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
@@ -44,8 +44,6 @@ class Audit {
 
     displacedWeight += (4000 - transactions[0].weight);
 
-    logger.warn(`${fresh.length} fresh, ${Object.keys(isCensored).length} possibly censored, ${displacedWeight} displaced weight`);
-
     // we can expect an honest miner to include 'displaced' transactions in place of recent arrivals and censored txs
     // these displaced transactions should occupy the first N weight units of the next projected block
     let displacedWeightRemaining = displacedWeight;
@@ -73,6 +71,7 @@ class Audit {
 
     // mark unexpected transactions in the mined block as 'added'
     let overflowWeight = 0;
+    let totalWeight = 0;
     for (const tx of transactions) {
       if (inTemplate[tx.txid]) {
         matches.push(tx.txid);
@@ -82,11 +81,13 @@ class Audit {
         }
         overflowWeight += tx.weight;
       }
+      totalWeight += tx.weight
     }
 
     // transactions missing from near the end of our template are probably not being censored
-    let overflowWeightRemaining = overflowWeight;
-    let lastOverflowRate = 1.00;
+    let overflowWeightRemaining = overflowWeight - (config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight);
+    let maxOverflowRate = 0;
+    let rateThreshold = 0;
     index = projectedBlocks[0].transactionIds.length - 1;
     while (index >= 0) {
       const txid = projectedBlocks[0].transactionIds[index];
@@ -94,8 +95,11 @@ class Audit {
         if (isCensored[txid]) {
           delete isCensored[txid];
         }
-        lastOverflowRate = mempool[txid].effectiveFeePerVsize;
-      } else if (Math.floor(mempool[txid].effectiveFeePerVsize * 100) <= Math.ceil(lastOverflowRate * 100)) { // tolerance of 0.01 sat/vb
+        if (mempool[txid].effectiveFeePerVsize > maxOverflowRate) {
+          maxOverflowRate = mempool[txid].effectiveFeePerVsize;
+          rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005
+        }
+      } else if (mempool[txid].effectiveFeePerVsize <= rateThreshold) { // tolerance of 0.01 sat/vb + rounding
         if (isCensored[txid]) {
           delete isCensored[txid];
         }
