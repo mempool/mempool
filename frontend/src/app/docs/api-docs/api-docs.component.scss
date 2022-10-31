@@ -1,5 +1,19 @@
+.center {
+  text-align: center;
+}
+
+.note {
+  font-style: italic;
+}
+
 .text-small {
   font-size: 12px;
+}
+
+.container-xl {
+  display: flex;
+  min-height: 75vh;
+  flex-direction: column;
 }
 
 code {
@@ -114,6 +128,10 @@ li.nav-item {
 .doc-content {
   width: calc(100% - 330px);
   float: right;
+}
+
+.doc-content.no-sidebar {
+  width: 100%
 }
 
 h3 {
