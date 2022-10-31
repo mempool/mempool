@@ -37,6 +37,7 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = true;
   webGlEnabled = true;
   isMobile = window.innerWidth <= 767.98;
+  hoverTx: string;
 
   childChangeSubscription: Subscription;
 
@@ -117,9 +118,11 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               }
               for (const [index, tx] of blockAudit.transactions.entries()) {
-                if (isAdded[tx.txid]) {
+                if (index === 0) {
+                  tx.status = null;
+                } else if (isAdded[tx.txid]) {
                   tx.status = 'added';
-                } else if (index === 0 || inTemplate[tx.txid]) {
+                } else if (inTemplate[tx.txid]) {
                   tx.status = 'found';
                 } else {
                   tx.status = 'selected';
@@ -188,5 +191,13 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   onTxClick(event: TransactionStripped): void {
     const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
     this.router.navigate([url]);
+  }
+
+  onTxHover(txid: string): void {
+    if (txid && txid.length) {
+      this.hoverTx = txid;
+    } else {
+      this.hoverTx = null;
+    }
   }
 }
