@@ -42,10 +42,6 @@
                 </td>
               </tr>
               <tr>
-                <td class="td-width" i18n="shared.transaction-count">Transactions</td>
-                <td>{{ blockAudit.tx_count }}</td>
-              </tr>
-              <tr>
                 <td i18n="blockAudit.size">Size</td>
                 <td [innerHTML]="'&lrm;' + (blockAudit.size | bytes: 2)"></td>
               </tr>
@@ -62,6 +58,10 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td class="td-width" i18n="shared.transaction-count">Transactions</td>
+                <td>{{ blockAudit.tx_count }}</td>
+              </tr>
+              <tr>
                 <td i18n="block.health">Block health</td>
                 <td>{{ blockAudit.matchRate }}%</td>
               </tr>
@@ -70,16 +70,8 @@
                 <td>{{ blockAudit.missingTxs.length }}</td>
               </tr>
               <tr>
-                <td i18n="block.missing-txs">Omitted txs</td>
-                <td>{{ numMissing }}</td>
-              </tr>
-              <tr>
                 <td i18n="block.added-txs">Added txs</td>
                 <td>{{ blockAudit.addedTxs.length }}</td>
-              </tr>
-              <tr>
-                <td i18n="block.missing-txs">Included txs</td>
-                <td>{{ numUnexpected }}</td>
               </tr>
             </tbody>
           </table>
@@ -108,7 +100,6 @@
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
-              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -117,7 +108,6 @@
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
-              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
               <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
@@ -165,16 +155,16 @@
       <div class="col-sm" *ngIf="webGlEnabled">
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
         <app-block-overview-graph #blockGraphProjected [isLoading]="isLoading" [resolution]="75"
-          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
-          (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)"></app-block-overview-graph>
       </div>
 
       <!-- ADDED TX RENDERING -->
       <div class="col-sm" *ngIf="webGlEnabled && !isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
         <app-block-overview-graph #blockGraphActual [isLoading]="isLoading" [resolution]="75"
-          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
-          (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)"></app-block-overview-graph>
       </div>
     </div> <!-- row -->
   </div> <!-- box -->
