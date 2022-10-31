@@ -12,6 +12,8 @@ import { FaqTemplateDirective } from '../faq-template/faq-template.component';
   styleUrls: ['./api-docs.component.scss']
 })
 export class ApiDocsComponent implements OnInit, AfterViewInit {
+  plainHostname = document.location.hostname;
+  electrsPort = 0;
   hostname = document.location.hostname;
   network$: Observable<string>;
   active = 0;
@@ -82,6 +84,20 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
 
     this.network$.subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
+      switch( network ) {
+        case "":
+          this.electrsPort = 50002; break;
+        case "mainnet":
+          this.electrsPort = 50002; break;
+        case "testnet":
+          this.electrsPort = 60002; break;
+        case "signet":
+          this.electrsPort = 60602; break;
+        case "liquid":
+          this.electrsPort = 51002; break;
+        case "liquidtestnet":
+          this.electrsPort = 51302; break;
+      }
     });
   }
 

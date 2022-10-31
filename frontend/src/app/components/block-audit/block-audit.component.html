@@ -1,21 +1,22 @@
 <div class="container-xl" (window:resize)="onResize($event)">
 
-  <div *ngIf="(auditObservable$ | async) as blockAudit; else skeleton">
-    <div class="title-block" id="block">
-      <h1>
-        <span class="next-previous-blocks">
-          <span i18n="shared.block-title">Block </span>
-          &nbsp;
-          <a [routerLink]="['/block/' | relativeUrl, blockAudit.id]">{{ blockAudit.height }}</a>
-          &nbsp;
-          <span i18n="shared.template-vs-mined">Template vs Mined</span>
-        </span>
-      </h1>
+  <div class="title-block" id="block">
+    <h1>
+      <span class="next-previous-blocks">
+        <span i18n="shared.block-audit-title">Block Audit</span>
+        &nbsp;
+        <a *ngIf="blockAudit" [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockAudit.height }}</a>
+        &nbsp;
+      </span>
+    </h1>
 
-      <div class="grow"></div>
+    <div class="grow"></div>
 
-      <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
-    </div>
+    <button [routerLink]="['/block/' | relativeUrl, blockHash]" class="btn btn-sm">&#10005;</button>
+  </div>
+
+  <div *ngIf="!error && !isLoading">
+    
 
     <!-- OVERVIEW -->
     <div class="box mb-3">
@@ -26,8 +27,8 @@
             <tbody>
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
-                <td><a [routerLink]="['/block/' | relativeUrl, blockAudit.id]" title="{{ blockAudit.id }}">{{ blockAudit.id | shortenString : 13 }}</a>
-                  <app-clipboard class="d-none d-sm-inline-block" [text]="blockAudit.id"></app-clipboard>
+                <td><a [routerLink]="['/block/' | relativeUrl, blockHash]" title="{{ blockHash }}">{{ blockHash | shortenString : 13 }}</a>
+                  <app-clipboard class="d-none d-sm-inline-block" [text]="blockHash"></app-clipboard>
                 </td>
               </tr>
               <tr>
@@ -39,6 +40,10 @@
                       </app-time-since>)</i>
                   </div>
                 </td>
+              </tr>
+              <tr>
+                <td class="td-width" i18n="shared.transaction-count">Transactions</td>
+                <td>{{ blockAudit.tx_count }}</td>
               </tr>
               <tr>
                 <td i18n="blockAudit.size">Size</td>
@@ -57,20 +62,24 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
-                <td class="td-width" i18n="shared.transaction-count">Transactions</td>
-                <td>{{ blockAudit.tx_count }}</td>
-              </tr>
-              <tr>
-                <td i18n="block.match-rate">Match rate</td>
+                <td i18n="block.health">Block health</td>
                 <td>{{ blockAudit.matchRate }}%</td>
               </tr>
               <tr>
-                <td i18n="block.missing-txs">Missing txs</td>
+                <td i18n="block.missing-txs">Removed txs</td>
                 <td>{{ blockAudit.missingTxs.length }}</td>
+              </tr>
+              <tr>
+                <td i18n="block.missing-txs">Omitted txs</td>
+                <td>{{ numMissing }}</td>
               </tr>
               <tr>
                 <td i18n="block.added-txs">Added txs</td>
                 <td>{{ blockAudit.addedTxs.length }}</td>
+              </tr>
+              <tr>
+                <td i18n="block.missing-txs">Included txs</td>
+                <td>{{ numUnexpected }}</td>
               </tr>
             </tbody>
           </table>
@@ -79,33 +88,110 @@
     </div> <!-- box -->
 
     <!-- ADDED vs MISSING button -->
-    <div class="d-flex justify-content-center menu mt-3" *ngIf="isMobile">
-      <a routerLinkActive="active" class="btn btn-primary w-50 mr-1 ml-1 menu-button" i18n="block.missing-txs"
-        fragment="missing" (click)="changeMode('missing')">Missing</a>
-      <a routerLinkActive="active" class="btn btn-primary w-50 mr-1 ml-1 menu-button" i18n="block.added-txs"
-        fragment="added" (click)="changeMode('added')">Added</a>
+    <div class="d-flex justify-content-center menu mt-3 mb-3" *ngIf="isMobile">
+      <a class="btn btn-primary w-50 mr-1 ml-1 menu-button" [class.active]="mode === 'projected'" i18n="block.projected"
+        fragment="projected" (click)="changeMode('projected')">Projected</a>
+      <a class="btn btn-primary w-50 mr-1 ml-1 menu-button" [class.active]="mode === 'actual'" i18n="block.actual"
+        fragment="actual" (click)="changeMode('actual')">Actual</a>
     </div>
   </div>
 
+  <ng-template [ngIf]="!error && isLoading">
+    <div class="title-block" id="block">
+      <h1>
+        <span class="next-previous-blocks">
+          <span i18n="shared.block-audit-title">Block Audit</span>
+          &nbsp;
+          <a *ngIf="blockAudit" [routerLink]="['/block/' | relativeUrl, blockHash]">{{ blockAudit.height }}</a>
+          &nbsp;
+        </span>
+      </h1>
+
+      <div class="grow"></div>
+
+      <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="box mb-3">
+      <div class="row">
+        <!-- LEFT COLUMN -->
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="col-sm">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+              <tr><td class="td-width" colspan="2"><span class="skeleton-loader"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div> <!-- row -->
+    </div> <!-- box -->
+
+    <!-- ADDED vs MISSING button -->
+    <div class="d-flex justify-content-center menu mt-3 mb-3" *ngIf="isMobile">
+      <a class="btn btn-primary w-50 mr-1 ml-1 menu-button" [class.active]="mode === 'projected'" i18n="block.projected"
+        fragment="projected" (click)="changeMode('projected')">Projected</a>
+      <a class="btn btn-primary w-50 mr-1 ml-1 menu-button" [class.active]="mode === 'actual'" i18n="block.actual"
+        fragment="actual" (click)="changeMode('actual')">Actual</a>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="error">
+    <div *ngIf="error && error.status === 404; else generalError" class="text-center">
+      <br>
+      <b i18n="error.audit-unavailable">audit unavailable</b>
+      <br><br>
+      <i>{{ error.error }}</i>
+      <br>
+      <br>
+    </div>
+    <ng-template #generalError>
+      <div class="text-center">
+        <br>
+        <span i18n="error.general-loading-data">Error loading data.</span>
+        <br><br>
+        <i>{{ error }}</i>
+        <br>
+        <br>
+      </div>
+    </ng-template>
+  </ng-template>
+
   <!-- VISUALIZATIONS -->
-  <div class="box">
+  <div class="box" *ngIf="!error">
     <div class="row">
       <!-- MISSING TX RENDERING -->
       <div class="col-sm" *ngIf="webGlEnabled">
-        <app-block-overview-graph #blockGraphTemplate [isLoading]="isLoading" [resolution]="75"
+        <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
+        <app-block-overview-graph #blockGraphProjected [isLoading]="isLoading" [resolution]="75"
           [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
           (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
       </div>
 
       <!-- ADDED TX RENDERING -->
       <div class="col-sm" *ngIf="webGlEnabled && !isMobile">
-        <app-block-overview-graph #blockGraphMined [isLoading]="isLoading" [resolution]="75"
+        <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
+        <app-block-overview-graph #blockGraphActual [isLoading]="isLoading" [resolution]="75"
           [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false"
           (txClickEvent)="onTxClick($event)"></app-block-overview-graph>
       </div>
     </div> <!-- row -->
   </div> <!-- box -->
-
-  <ng-template #skeleton></ng-template>
 
 </div>
