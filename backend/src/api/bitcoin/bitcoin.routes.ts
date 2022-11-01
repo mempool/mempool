@@ -90,7 +90,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions);
       ;
 
-      if (config.MEMPOOL.BACKEND !== 'esplora') {
+      if (config.MEMPOOL.BACKEND !== 'none') {
         app
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', this.getMempool)
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', this.getMempoolTxIds)

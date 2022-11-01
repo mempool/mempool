@@ -56,15 +56,18 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
-    throw new Error('Method getAddress not implemented.');
+    return axios.get<IEsploraApi.Address>(config.ESPLORA.REST_API_URL + '/address/' + address, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getAddressTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
-    throw new Error('Method getAddressTransactions not implemented.');
+    return axios.get<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/address/' + address + "/txs", this.axiosConfig)
+      .then((response) => response.data);
   }
 
-  $getAddressPrefix(prefix: string): string[] {
-    throw new Error('Method not implemented.');
+  $getAddressPrefix(prefix: string): Promise<string[]> {
+    return axios.get<string[]>(config.ESPLORA.REST_API_URL + '/address-prefix/' + prefix, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $sendRawTransaction(rawTransaction: string): Promise<string> {
