@@ -1,5 +1,10 @@
 import config from '../config';
-import { BlockExtended, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import { Common } from './common';
+import { TransactionExtended, MempoolBlockWithTransactions, AuditScore } from '../mempool.interfaces';
+import blocksRepository from '../repositories/BlocksRepository';
+import blocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import blocks from '../api/blocks';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
@@ -81,7 +86,7 @@ class Audit {
         }
         overflowWeight += tx.weight;
       }
-      totalWeight += tx.weight
+      totalWeight += tx.weight;
     }
 
     // transactions missing from near the end of our template are probably not being censored
@@ -97,7 +102,7 @@ class Audit {
         }
         if (mempool[txid].effectiveFeePerVsize > maxOverflowRate) {
           maxOverflowRate = mempool[txid].effectiveFeePerVsize;
-          rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005
+          rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005;
         }
       } else if (mempool[txid].effectiveFeePerVsize <= rateThreshold) { // tolerance of 0.01 sat/vb + rounding
         if (isCensored[txid]) {
@@ -116,6 +121,45 @@ class Audit {
       added,
       score
     };
+  }
+
+  public async $getBlockAuditScores(fromHeight?: number, limit: number = 15): Promise<AuditScore[]> {
+    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
+    const returnScores: AuditScore[] = [];
+
+    if (currentHeight < 0) {
+      return returnScores;
+    }
+
+    for (let i = 0; i < limit && currentHeight >= 0; i++) {
+      const block = blocks.getBlocks().find((b) => b.height === currentHeight);
+      if (block?.extras?.matchRate != null) {
+        returnScores.push({
+          hash: block.id,
+          matchRate: block.extras.matchRate
+        });
+      } else {
+        let currentHash;
+        if (!currentHash && Common.indexingEnabled()) {
+          const dbBlock = await blocksRepository.$getBlockByHeight(currentHeight);
+          if (dbBlock && dbBlock['id']) {
+            currentHash = dbBlock['id'];
+          }
+        }
+        if (!currentHash) {
+          currentHash = await bitcoinApi.$getBlockHash(currentHeight);
+        }
+        if (currentHash) {
+          const auditScore = await blocksAuditsRepository.$getBlockAuditScore(currentHash);
+          returnScores.push({
+            hash: currentHash,
+            matchRate: auditScore?.matchRate
+          });
+        }
+      }
+      currentHeight--;
+    }
+    return returnScores;
   }
 }
 
