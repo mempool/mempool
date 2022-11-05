@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
@@ -24,6 +24,8 @@ export class NodeComponent implements OnInit {
   channelListLoading = false;
   clearnetSocketCount = 0;
   torSocketCount = 0;
+  hasDetails = false;
+  showDetails = false;
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -79,6 +81,9 @@ export class NodeComponent implements OnInit {
 
           return node;
         }),
+        tap((node) => {
+          this.hasDetails = Object.keys(node.custom_records).length > 0;
+        }),
         catchError(err => {
           this.error = err;
           return [{
@@ -87,6 +92,10 @@ export class NodeComponent implements OnInit {
           }];
         })
       );
+  }
+
+  toggleShowDetails(): void {
+    this.showDetails = !this.showDetails;
   }
 
   changeSocket(index: number) {
