@@ -125,6 +125,28 @@
     <app-clipboard [button]="true" [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
   </div>
 
+  <div *ngIf="hasDetails" [hidden]="!showDetails" id="details" class="details mt-3">
+    <div class="box">
+      <h5 class="mb-3" i18n="node.tlv.records">TLV extension records</h5>
+      <div class="row">
+        <div class="col">
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <tr *ngFor="let recordItem of node.custom_records | keyvalue">
+                <td class="tlv-type">{{ recordItem.key }}</td>
+                <td class="tlv-payload">{{ recordItem.value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="hasDetails" class="text-right mt-3">
+    <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="node.details|Node Details">Details</button>
+  </div>
+
   <div *ngIf="!error">
     <div class="row" *ngIf="node.as_number && node.active_channel_count">
       <div class="col-sm">

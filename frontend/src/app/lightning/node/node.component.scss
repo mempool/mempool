@@ -72,3 +72,18 @@ app-fiat {
     height: 28px !important;
   };
 }
+
+.details tbody {
+  font-size: 12px;
+
+  .tlv-type {
+    color: #ffffff66;
+  }
+
+  .tlv-payload {
+    width: 100%;
+    word-break: break-all;
+    white-space: normal;
+    font-family: "Courier New", Courier, monospace;
+  }
+}
