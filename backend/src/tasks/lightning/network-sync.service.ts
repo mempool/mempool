@@ -13,6 +13,7 @@ import fundingTxFetcher from './sync-tasks/funding-tx-fetcher';
 import NodesSocketsRepository from '../../repositories/NodesSocketsRepository';
 import { Common } from '../../api/common';
 import blocks from '../../api/blocks';
+import NodeRecordsRepository from '../../repositories/NodeRecordsRepository';
 
 class NetworkSyncService {
   loggerTimer = 0;
@@ -63,6 +64,7 @@ class NetworkSyncService {
     let progress = 0;
 
     let deletedSockets = 0;
+    let deletedRecords = 0;
     const graphNodesPubkeys: string[] = [];
     for (const node of nodes) {
       const latestUpdated = await channelsApi.$getLatestChannelUpdateForNode(node.pub_key);
@@ -84,8 +86,23 @@ class NetworkSyncService {
         addresses.push(socket.addr);
       }
       deletedSockets += await NodesSocketsRepository.$deleteUnusedSockets(node.pub_key, addresses);
+
+      const oldRecordTypes = await NodeRecordsRepository.$getRecordTypes(node.pub_key);
+      const customRecordTypes: number[] = [];
+      for (const [type, payload] of Object.entries(node.custom_records || {})) {
+        const numericalType = parseInt(type);
+        await NodeRecordsRepository.$saveRecord({
+          publicKey: node.pub_key,
+          type: numericalType,
+          payload,
+        });
+        customRecordTypes.push(numericalType);
+      }
+      if (oldRecordTypes.reduce((changed, type) => changed || customRecordTypes.indexOf(type) === -1, false)) {
+        deletedRecords += await NodeRecordsRepository.$deleteUnusedRecords(node.pub_key, customRecordTypes);
+      }
     }
-    logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted`);
+    logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted. ${deletedRecords} custom records deleted.`);
 
     // If a channel if not present in the graph, mark it as inactive
     await nodesApi.$setNodesInactive(graphNodesPubkeys);
