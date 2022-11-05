@@ -5,6 +5,12 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
+import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
+
+interface CustomRecord {
+  type: string;
+  payload: string;
+}
 
 @Component({
   selector: 'app-node',
@@ -26,6 +32,8 @@ export class NodeComponent implements OnInit {
   torSocketCount = 0;
   hasDetails = false;
   showDetails = false;
+  liquidityAd: ILiquidityAd;
+  tlvRecords: CustomRecord[];
 
   constructor(
     private lightningApiService: LightningApiService,
@@ -38,6 +46,8 @@ export class NodeComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           this.publicKey = params.get('public_key');
+          this.tlvRecords = [];
+          this.liquidityAd = null;
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
@@ -83,6 +93,23 @@ export class NodeComponent implements OnInit {
         }),
         tap((node) => {
           this.hasDetails = Object.keys(node.custom_records).length > 0;
+          for (const [type, payload] of Object.entries(node.custom_records)) {
+            if (typeof payload !== 'string') {
+              break;
+            }
+
+            let parsed = false;
+            if (type === '1') {
+              const ad = parseLiquidityAdHex(payload);
+              if (ad) {
+                parsed = true;
+                this.liquidityAd = ad;
+              }
+            }
+            if (!parsed) {
+              this.tlvRecords.push({ type, payload });
+            }
+          }
         }),
         catchError(err => {
           this.error = err;
