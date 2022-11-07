@@ -62,15 +62,15 @@ export const languages = languageDict;
 
 // expects path to start with a leading '/'
 export function parseLanguageUrl(path) {
-  const parts = path.split('/');
+  const parts = path.split('/').filter(part => part.length);
   let lang;
   let rest;
-  if (languages[parts[1]]) {
-    lang = parts[1];
-    rest = '/' + parts.slice(2).join('/');
+  if (languages[parts[0]]) {
+    lang = parts[0];
+    rest = '/' + parts.slice(1).join('/');
   } else {
     lang = null;
-    rest = path;
+    rest = '/' + parts.join('/');
   }
   if (lang === 'en') {
     lang = null;

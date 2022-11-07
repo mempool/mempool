@@ -47,6 +47,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
+  indexingAvailable = false;
 
   transactionSubscription: Subscription;
   overviewSubscription: Subscription;
@@ -85,6 +86,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
     });
+
+    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
+      this.stateService.env.MINING_DASHBOARD === true);
 
     this.txsLoadingStatus$ = this.route.paramMap
       .pipe(
