@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
-import { chartColors } from 'src/app/app.constants';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { isMobile } from 'src/app/shared/common.utils';
-import { download } from 'src/app/shared/graphs.utils';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { chartColors } from '../../app.constants';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
+import { isMobile } from '../../shared/common.utils';
+import { download } from '../../shared/graphs.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-nodes-per-isp-chart',
@@ -48,7 +48,7 @@ export class NodesPerISPChartComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Lightning nodes per ISP`);
+      this.seoService.setTitle($localize`:@@8573a1576789bd2c4faeaed23037c4917812c6cf:Lightning Nodes Per ISP`);
     }
 
     this.nodesPerAsObservable$ = combineLatest([
@@ -154,7 +154,7 @@ export class NodesPerISPChartComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             return `<b style="color: white">${isp[1]} (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)</b><br>` +
-              $localize`${isp[4].toString()} nodes<br>` +
+              $localize`${isp[4].toString()} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BTC`
             ;
           }
@@ -186,7 +186,7 @@ export class NodesPerISPChartComponent implements OnInit {
         borderColor: '#000',
         formatter: () => {
           return `<b style="color: white">Other (${totalShareOther.toFixed(2)}%)</b><br>` +
-            $localize`${nodeCountOther.toString()} nodes<br>` +
+            $localize`${nodeCountOther.toString()} nodes` + `<br>` +
             $localize`${this.amountShortenerPipe.transform(capacityOther / 100000000, 2)} BTC`;
         }
       },

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { merge, Observable, of} from 'rxjs';
-import { LanguageService } from 'src/app/services/language.service';
-import { EnterpriseService } from 'src/app/services/enterprise.service';
+import { LanguageService } from '../../services/language.service';
+import { EnterpriseService } from '../../services/enterprise.service';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-liquid-master-page',
@@ -17,11 +18,13 @@ export class LiquidMasterPageComponent implements OnInit {
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   network$: Observable<string>;
   urlLanguage: string;
+  networkPaths: { [network: string]: string };
 
   constructor(
     private stateService: StateService,
     private languageService: LanguageService,
     private enterpriseService: EnterpriseService,
+    private navigationService: NavigationService,
   ) { }
 
   ngOnInit() {
@@ -29,6 +32,10 @@ export class LiquidMasterPageComponent implements OnInit {
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
+    this.navigationService.subnetPaths.subscribe((paths) => {
+      console.log('network paths updated...');
+      this.networkPaths = paths;
+    });
   }
 
   collapse(): void {

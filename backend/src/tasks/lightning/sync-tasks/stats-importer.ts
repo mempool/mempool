@@ -360,9 +360,11 @@ class LightningStatsImporter {
           fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
         } catch (e: any) {
           if (e.errno == -1) { // EISDIR - Ignore directorie
+            totalProcessed++;
             continue;
           }
           logger.err(`Unable to open ${this.topologiesFolder}/${filename}`);
+          totalProcessed++;
           continue;
         }
 
@@ -372,6 +374,7 @@ class LightningStatsImporter {
           graph = await this.cleanupTopology(graph);
         } catch (e) {
           logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`);
+          totalProcessed++;
           continue;
         }
     

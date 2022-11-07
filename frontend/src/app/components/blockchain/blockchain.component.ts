@@ -1,5 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-blockchain',
@@ -7,8 +8,11 @@ import { StateService } from 'src/app/services/state.service';
   styleUrls: ['./blockchain.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockchainComponent implements OnInit {
+export class BlockchainComponent implements OnInit, OnDestroy {
   network: string;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean = this.stateService.timeLtr.value;
+  ltrTransitionEnabled = false;
 
   constructor(
     public stateService: StateService,
@@ -16,5 +20,17 @@ export class BlockchainComponent implements OnInit {
 
   ngOnInit() {
     this.network = this.stateService.network;
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
+  }
+
+  ngOnDestroy() {
+    this.timeLtrSubscription.unsubscribe();
+  }
+
+  toggleTimeDirection() {
+    this.ltrTransitionEnabled = true;
+    this.stateService.timeLtr.next(!this.timeLtr);
   }
 }

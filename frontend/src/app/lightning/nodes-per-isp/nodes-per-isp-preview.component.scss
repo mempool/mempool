@@ -1,0 +1,31 @@
+.table {
+  font-size: 32px;
+  margin-top: 0px;
+}
+
+.map-col {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 470px;
+  height: 360px;
+  min-width: 470px;
+  min-height: 360px;
+  max-height: 360px;
+  padding: 0;
+  background: #181b2d;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.row {
+  margin-right: 0;
+}
+
+.full-width-row {
+  padding-left: 15px;
+  flex-wrap: nowrap;
+}
+
+::ng-deep .symbol {
+  font-size: 24px;
+}

@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { BisqBlock } from 'src/app/bisq/bisq.interfaces';
+import { BisqBlock } from '../../bisq/bisq.interfaces';
 import { Location } from '@angular/common';
 import { BisqApiService } from '../bisq-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
+import { SeoService } from '../../services/seo.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-block',

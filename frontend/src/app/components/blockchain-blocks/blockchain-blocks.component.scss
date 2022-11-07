@@ -22,7 +22,7 @@
 .mined-block {
   position: absolute;
   top: 0px;
-  transition: 2s;
+  transition: background 2s, left 2s, transform 1s;
 }
 
 .block-size {
@@ -144,4 +144,10 @@
 .hide {
   opacity: 0;
   pointer-events : none;
+}
+
+.time-ltr {
+  .bitcoin-block {
+    transform: scaleX(-1);
+  }
 }

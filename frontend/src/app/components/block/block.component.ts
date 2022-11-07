@@ -6,13 +6,13 @@ import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, 
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { Observable, of, Subscription, asyncScheduler, EMPTY } from 'rxjs';
 import { StateService } from '../../services/state.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { BlockExtended, TransactionStripped } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
-import { detectWebGL } from 'src/app/shared/graphs.utils';
+import { SeoService } from '../../services/seo.service';
+import { WebsocketService } from '../../services/websocket.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
+import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
+import { detectWebGL } from '../../shared/graphs.utils';
 
 @Component({
   selector: 'app-block',
@@ -47,6 +47,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
+  indexingAvailable = false;
 
   transactionSubscription: Subscription;
   overviewSubscription: Subscription;
@@ -57,6 +58,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   nextBlockSubscription: Subscription = undefined;
   nextBlockSummarySubscription: Subscription = undefined;
   nextBlockTxListSubscription: Subscription = undefined;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
@@ -79,6 +82,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
     this.network = this.stateService.network;
     this.itemsPerPage = this.stateService.env.ITEMS_PER_PAGE;
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
+
+    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
+      this.stateService.env.MINING_DASHBOARD === true);
 
     this.txsLoadingStatus$ = this.route.paramMap
       .pipe(
@@ -277,10 +287,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.keyNavigationSubscription = this.stateService.keyNavigation$.subscribe((event) => {
-      if (this.showPreviousBlocklink && event.key === 'ArrowRight' && this.nextBlockHeight - 2 >= 0) {
+      const prevKey = this.timeLtr ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.timeLtr ? 'ArrowRight' : 'ArrowLeft';
+      if (this.showPreviousBlocklink && event.key === prevKey && this.nextBlockHeight - 2 >= 0) {
         this.navigateToPreviousBlock();
       }
-      if (event.key === 'ArrowLeft') {
+      if (event.key === nextKey) {
         if (this.showNextBlocklink) {
           this.navigateToNextBlock();
         } else {
@@ -298,6 +310,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.blocksSubscription.unsubscribe();
     this.networkChangedSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
   }
 
@@ -392,8 +405,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   setNextAndPreviousBlockLink(){
-    if (this.latestBlock && this.blockHeight) {
-      if (this.blockHeight === 0){
+    if (this.latestBlock) {
+      if (!this.blockHeight){
         this.showPreviousBlocklink = false;
       } else {
         this.showPreviousBlocklink = true;

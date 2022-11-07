@@ -18,6 +18,7 @@ import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import Audit from './audit';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -405,74 +406,62 @@ class WebsocketHandler {
     });
   }
 
-  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) {
+  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): void {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
     let mBlocks: undefined | MempoolBlock[];
     let mBlockDeltas: undefined | MempoolBlockDelta[];
-    let matchRate = 0;
+    let matchRate;
     const _memPool = memPool.getMempool();
-    const _mempoolBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
 
-    if (_mempoolBlocks[0]) {
-      const matches: string[] = [];
-      const added: string[] = [];
-      const missing: string[] = [];
+    if (Common.indexingEnabled()) {
+      const mempoolCopy = cloneMempool(_memPool);
+      const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
 
-      for (const txId of txIds) {
-        if (_mempoolBlocks[0].transactionIds.indexOf(txId) > -1) {
-          matches.push(txId);
-        } else {
-          added.push(txId);
+      const { censored, added, score } = Audit.auditBlock(transactions, projectedBlocks, mempoolCopy);
+      matchRate = Math.round(score * 100 * 100) / 100;
+
+      const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
+        return {
+          txid: tx.txid,
+          vsize: tx.vsize,
+          fee: tx.fee ? Math.round(tx.fee) : 0,
+          value: tx.value,
+        };
+      }) : [];
+
+      BlocksSummariesRepository.$saveSummary({
+        height: block.height,
+        template: {
+          id: block.id,
+          transactions: stripped
         }
-        delete _memPool[txId];
-      }
+      });
 
-      for (const txId of _mempoolBlocks[0].transactionIds) {
-        if (matches.includes(txId) || added.includes(txId)) {
-          continue;
-        }
-        missing.push(txId);
-      }
+      BlocksAuditsRepository.$saveAudit({
+        time: block.timestamp,
+        height: block.height,
+        hash: block.id,
+        addedTxs: added,
+        missingTxs: censored,
+        matchRate: matchRate,
+      });
 
-      matchRate = Math.round((Math.max(0, matches.length - missing.length - added.length) / txIds.length * 100) * 100) / 100;
-      mempoolBlocks.updateMempoolBlocks(_memPool);
-      mBlocks = mempoolBlocks.getMempoolBlocks();
-      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
-
-      if (Common.indexingEnabled()) {
-        const stripped = _mempoolBlocks[0].transactions.map((tx) => {
-          return {
-            txid: tx.txid,
-            vsize: tx.vsize,
-            fee: tx.fee ? Math.round(tx.fee) : 0,
-            value: tx.value,
-          };
-        });  
-        BlocksSummariesRepository.$saveSummary({
-          height: block.height,
-          template: {
-            id: block.id,
-            transactions: stripped
-          }
-        });
-
-        BlocksAuditsRepository.$saveAudit({
-          time: block.timestamp,
-          height: block.height,
-          hash: block.id,
-          addedTxs: added,
-          missingTxs: missing,
-          matchRate: matchRate,
-        });
+      if (block.extras) {
+        block.extras.matchRate = matchRate;
       }
     }
 
-    if (block.extras) {
-      block.extras.matchRate = matchRate;
+    // Update mempool to remove transactions included in the new block
+    for (const txId of txIds) {
+      delete _memPool[txId];
     }
+
+    mempoolBlocks.updateMempoolBlocks(_memPool);
+    mBlocks = mempoolBlocks.getMempoolBlocks();
+    mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
@@ -578,6 +567,16 @@ class WebsocketHandler {
       client.send(JSON.stringify(response));
     });
   }
+}
+
+function cloneMempool(mempool: { [txid: string]: TransactionExtended }): { [txid: string]: TransactionExtended } {
+  const cloned = {};
+  Object.keys(mempool).forEach(id => {
+    cloned[id] = {
+      ...mempool[id]
+    };
+  });
+  return cloned;
 }
 
 export default new WebsocketHandler();

@@ -22,3 +22,9 @@
     margin-bottom: 20px;
   }
 }
+
+.base-fee {
+  @media (max-width: 768px) {
+    padding-right: 0px;
+  }
+}

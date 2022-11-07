@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BisqApiService } from '../bisq-api.service';
 import { BisqStats } from '../bisq.interfaces';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-stats',

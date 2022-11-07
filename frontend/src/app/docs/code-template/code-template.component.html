@@ -30,6 +30,13 @@
         <pre><code [innerText]="wrapEsModule(code)"></code></pre>
       </ng-template>
     </li>
+    <li ngbNavItem *ngIf="showCodeExample[network] && network !== 'liquid' && network !== 'liquidtestnet'" role="presentation">
+      <a ngbNavLink (click)="adjustContainerHeight( $event )" role="tab">Python</a>
+      <ng-template ngbNavContent>
+        <div class="subtitle"><ng-container i18n="API Docs code example">Code Example</ng-container> <app-clipboard [text]="wrapEsModule(code)"></app-clipboard></div>
+        <pre><code [innerText]="wrapPythonTemplate(code)"></code></pre>
+      </ng-template>
+    </li>
   </ul>
   <div [ngbNavOutlet]="navCodeTemplate"></div>
   <div *ngIf="code.codeTemplate && wrapResponse(code) !== ''" class="response">
