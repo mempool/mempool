@@ -2,7 +2,7 @@
 
   <div class="card-header mb-0 mb-md-4" [style]="widget ? 'display:none' : ''">
     <div class="d-flex d-md-block align-items-baseline">
-      <span i18n="mining.channels-and-capacity">Channels & Capacity</span>
+      <span i18n="lightning.network-capacity">Lightning Network Capacity</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
@@ -49,9 +49,7 @@
   </div>
 
   <div *ngIf="widget && (capacityObservable$ | async) as stats">
-    <div *ngIf="stats.days === 0" class="indexing-message d-flex" i18n="lightning.indexing-in-progress">
-      Indexing in progress
-    </div>
+    <div *ngIf="stats.days === 0" class="indexing-message d-flex" i18n="lightning.indexing-in-progress">Indexing in progress</div>
   </div>
 
 </div>

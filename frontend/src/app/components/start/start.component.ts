@@ -1,13 +1,14 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
-import { specialBlocks } from 'src/app/app.constants';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { StateService } from '../../services/state.service';
+import { specialBlocks } from '../../app.constants';
 
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
 })
-export class StartComponent implements OnInit {
+export class StartComponent implements OnInit, OnDestroy {
   interval = 60;
   colors = ['#5E35B1', '#ffffff'];
 
@@ -16,6 +17,8 @@ export class StartComponent implements OnInit {
   eventName = '';
   mouseDragStartX: number;
   blockchainScrollLeftInit: number;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean = this.stateService.timeLtr.value;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
 
   constructor(
@@ -23,6 +26,9 @@ export class StartComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
     this.stateService.blocks$
       .subscribe((blocks: any) => {
         if (this.stateService.network !== '') {
@@ -71,5 +77,9 @@ export class StartComponent implements OnInit {
   onMouseUp() {
     this.mouseDragStartX = null;
     this.stateService.setBlockScrollingInProgress(false);
+  }
+
+  ngOnDestroy() {
+    this.timeLtrSubscription.unsubscribe();
   }
 }

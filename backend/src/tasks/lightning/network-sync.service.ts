@@ -289,6 +289,24 @@ class NetworkSyncService {
     1. Mutually closed
     2. Forced closed
     3. Forced closed with penalty
+
+    ┌────────────────────────────────────┐       ┌────────────────────────────┐
+    │ outputs contain revocation script? ├──yes──► force close w/ penalty = 3 │
+    └──────────────┬─────────────────────┘       └────────────────────────────┘
+                   no
+    ┌──────────────▼──────────────────────────┐
+    │ outputs contain other lightning script? ├──┐
+    └──────────────┬──────────────────────────┘  │
+                   no                           yes
+    ┌──────────────▼─────────────┐               │
+    │ sequence starts with 0x80  │      ┌────────▼────────┐
+    │           and              ├──────► force close = 2 │
+    │ locktime starts with 0x20? │      └─────────────────┘
+    └──────────────┬─────────────┘
+                   no
+         ┌─────────▼────────┐
+         │ mutual close = 1 │
+         └──────────────────┘
   */
 
   private async $runClosedChannelsForensics(): Promise<void> {
@@ -326,36 +344,31 @@ class NetworkSyncService {
               lightningScriptReasons.push(lightningScript);
             }
           }
-          if (lightningScriptReasons.length === outspends.length
-            && lightningScriptReasons.filter((r) => r === 1).length === outspends.length) {
-            reason = 1;
-          } else {
-            const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
-            if (filteredReasons.length) {
-              if (filteredReasons.some((r) => r === 2 || r === 4)) {
-                reason = 3;
-              } else {
-                reason = 2;
-              }
+          const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
+          if (filteredReasons.length) {
+            if (filteredReasons.some((r) => r === 2 || r === 4)) {
+              reason = 3;
             } else {
-              /*
-                We can detect a commitment transaction (force close) by reading Sequence and Locktime
-                https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
-              */
-              let closingTx: IEsploraApi.Transaction | undefined;
-              try {
-                closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
-              } catch (e) {
-                logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
-                continue;
-              }
-              const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
-              const locktimeHex: string = closingTx.locktime.toString(16);
-              if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
-                reason = 2; // Here we can't be sure if it's a penalty or not
-              } else {
-                reason = 1;
-              }
+              reason = 2;
+            }
+          } else {
+            /*
+              We can detect a commitment transaction (force close) by reading Sequence and Locktime
+              https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
+            */
+            let closingTx: IEsploraApi.Transaction | undefined;
+            try {
+              closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
+            } catch (e) {
+              logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
+              continue;
+            }
+            const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
+            const locktimeHex: string = closingTx.locktime.toString(16);
+            if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
+              reason = 2; // Here we can't be sure if it's a penalty or not
+            } else {
+              reason = 1;
             }
           }
           if (reason) {

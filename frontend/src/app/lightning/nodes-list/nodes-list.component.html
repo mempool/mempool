@@ -3,8 +3,8 @@
   <table class="table table-borderless">
     <thead>
       <th class="alias text-left" i18n="nodes.alias">Alias</th>
-      <th class="capacity text-right" [class]="show" i18n="node.capacity">Capacity</th>
-      <th class="channels text-right" [class]="show" i18n="node.channels">Channels</th>
+      <th class="capacity text-right" [class]="show" i18n="lightning.capacity">Capacity</th>
+      <th class="channels text-right" [class]="show" i18n="lightning.channels">Channels</th>
     </thead>
     <tbody *ngIf="nodes$ | async as nodes; else skeleton">
       <tr *ngFor="let node of nodes; let i = index;">

@@ -2,15 +2,15 @@ import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angul
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
-import { download } from 'src/app/shared/graphs.utils';
+import { StorageService } from '../../services/storage.service';
+import { MiningService } from '../../services/mining.service';
+import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { isMobile } from 'src/app/shared/common.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-lightning-statistics-chart',
@@ -63,7 +63,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     if (this.widget) {
       this.miningWindowPreference = '3y';
     } else {
-      this.seoService.setTitle($localize`Channels and Capacity`);
+      this.seoService.setTitle($localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -119,7 +119,7 @@ export class LightningStatisticsChartComponent implements OnInit {
           color: 'grey',
           fontSize: 11
         },
-        text: $localize`Channels & Capacity`,
+        text: $localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`,
         left: 'center',
         top: 11,
         zlevel: 10,
@@ -191,7 +191,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: 'Channels',
+            name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -199,7 +199,7 @@ export class LightningStatisticsChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Capacity',
+            name: $localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -279,7 +279,7 @@ export class LightningStatisticsChartComponent implements OnInit {
         {
           zlevel: 0,
           yAxisIndex: 1,
-          name: $localize`Capacity`,
+          name: $localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`,
           showSymbol: false,
           symbol: 'none',
           stack: 'Total',
@@ -341,7 +341,7 @@ export class LightningStatisticsChartComponent implements OnInit {
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
-    }), `block-sizes-weights-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `lightning-network-capacity-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

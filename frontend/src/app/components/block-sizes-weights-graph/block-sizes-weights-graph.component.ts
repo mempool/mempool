@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, H
 import { EChartsOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { StorageService } from 'src/app/services/storage.service';
-import { MiningService } from 'src/app/services/mining.service';
+import { StorageService } from '../../services/storage.service';
+import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
-import { download, formatterXAxis } from 'src/app/shared/graphs.utils';
+import { download, formatterXAxis } from '../../shared/graphs.utils';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
