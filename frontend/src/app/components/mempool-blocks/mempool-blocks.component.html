@@ -1,5 +1,5 @@
 <ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks">
-  <div class="mempool-blocks-container" *ngIf="(difficultyAdjustments$ | async) as da;">
+  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" *ngIf="(difficultyAdjustments$ | async) as da;">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
         <div [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
@@ -45,7 +45,7 @@
 </ng-container>
 
 <ng-template #loadingBlocks>
-  <div class="mempool-blocks-container">
+  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolEmptyBlocks" let-i="index" [ngForTrackBy]="trackByFn">
         <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolEmptyBlockStyles[i]"></div>

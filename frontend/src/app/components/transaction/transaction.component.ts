@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
   filter,
@@ -13,18 +13,19 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
-import { AudioService } from 'src/app/services/audio.service';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { BlockExtended, CpfpInfo } from 'src/app/interfaces/node-api.interface';
+import { AudioService } from '../../services/audio.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-transaction',
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss'],
 })
-export class TransactionComponent implements OnInit, OnDestroy {
+export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   network = '';
   tx: Transaction;
   txId: string;
@@ -39,6 +40,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
   fetchCpfpSubscription: Subscription;
   txReplacedSubscription: Subscription;
   blocksSubscription: Subscription;
+  queryParamsSubscription: Subscription;
+  urlFragmentSubscription: Subscription;
+  fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
@@ -46,10 +50,27 @@ export class TransactionComponent implements OnInit, OnDestroy {
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
+  inputIndex: number;
   outputIndex: number;
+  graphExpanded: boolean = false;
+  graphWidth: number = 1000;
+  graphHeight: number = 360;
+  inOutLimit: number = 150;
+  maxInOut: number = 0;
+  flowPrefSubscription: Subscription;
+  hideFlow: boolean = this.stateService.hideFlow.value;
+  overrideFlowPreference: boolean = null;
+  flowEnabled: boolean;
+
+  tooltipPosition: { x: number, y: number };
+
+  @ViewChild('graphContainer')
+  graphContainer: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
     private websocketService: WebsocketService,
@@ -64,11 +85,25 @@ export class TransactionComponent implements OnInit, OnDestroy {
       (network) => (this.network = network)
     );
 
+    this.setFlowEnabled();
+    this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
+      this.hideFlow = !!hide;
+      this.setFlowEnabled();
+    });
+
     this.timeAvg$ = timer(0, 1000)
       .pipe(
         switchMap(() => this.stateService.difficultyAdjustment$),
         map((da) => da.timeAvg)
       );
+
+    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      this.fragmentParams = new URLSearchParams(fragment || '');
+      const vin = parseInt(this.fragmentParams.get('vin'), 10);
+      const vout = parseInt(this.fragmentParams.get('vout'), 10);
+      this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
+      this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    });
 
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(
@@ -108,8 +143,31 @@ export class TransactionComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((params: ParamMap) => {
           const urlMatch = (params.get('id') || '').split(':');
-          this.txId = urlMatch[0];
-          this.outputIndex = urlMatch[1] === undefined ? null : parseInt(urlMatch[1], 10);
+          if (urlMatch.length === 2 && urlMatch[1].length === 64) {
+            const vin = parseInt(urlMatch[0], 10);
+            this.txId = urlMatch[1];
+            // rewrite legacy vin syntax
+            if (!isNaN(vin)) {
+              this.fragmentParams.set('vin', vin.toString());
+              this.fragmentParams.delete('vout');
+            }
+            this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+              queryParamsHandling: 'merge',
+              fragment: this.fragmentParams.toString(),
+            });
+          } else {
+            this.txId = urlMatch[0];
+            const vout = parseInt(urlMatch[1], 10);
+            if (urlMatch.length > 1 && !isNaN(vout)) {
+              // rewrite legacy vout syntax
+              this.fragmentParams.set('vout', vout.toString());
+              this.fragmentParams.delete('vin');
+              this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
+                queryParamsHandling: 'merge',
+                fragment: this.fragmentParams.toString(),
+              });
+            }
+          }
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
@@ -167,6 +225,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
           this.waitingForTransaction = false;
           this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
+          this.setupGraph();
 
           if (!tx.status.confirmed && tx.firstSeen) {
             this.transactionTime = tx.firstSeen;
@@ -191,6 +250,7 @@ export class TransactionComponent implements OnInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
+          setTimeout(() => { this.applyFragment(); }, 0);
         },
         (error) => {
           this.error = error;
@@ -220,6 +280,22 @@ export class TransactionComponent implements OnInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
     });
+
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
+      if (params.showFlow === 'false') {
+        this.overrideFlowPreference = false;
+      } else if (params.showFlow === 'true') {
+        this.overrideFlowPreference = true;
+      } else {
+        this.overrideFlowPreference = null;
+      }
+      this.setFlowEnabled();
+      this.setGraphSize();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.setGraphSize();
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
@@ -284,11 +360,60 @@ export class TransactionComponent implements OnInit, OnDestroy {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
   }
 
+  setupGraph() {
+    this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
+    this.graphHeight = Math.min(360, this.maxInOut * 80);
+  }
+
+  toggleGraph() {
+    const showFlow = !this.flowEnabled;
+    this.stateService.hideFlow.next(!showFlow);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { showFlow: showFlow },
+      queryParamsHandling: 'merge',
+      fragment: 'flow'
+    });
+  }
+
+  setFlowEnabled() {
+    this.flowEnabled = (this.overrideFlowPreference != null ? this.overrideFlowPreference : !this.hideFlow);
+  }
+
+  expandGraph() {
+    this.graphExpanded = true;
+  }
+
+  collapseGraph() {
+    this.graphExpanded = false;
+  }
+
+  // simulate normal anchor fragment behavior
+  applyFragment(): void {
+    const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
+    if (anchor) {
+      const anchorElement = document.getElementById(anchor[0]);
+      if (anchorElement) {
+        anchorElement.scrollIntoView();
+      }
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  setGraphSize(): void {
+    if (this.graphContainer) {
+      this.graphWidth = this.graphContainer.nativeElement.clientWidth - 24;
+    }
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
+    this.queryParamsSubscription.unsubscribe();
+    this.flowPrefSubscription.unsubscribe();
+    this.urlFragmentSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }

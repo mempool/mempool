@@ -4,10 +4,10 @@ import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from 'src/environments/environment';
-import { AssetsService } from 'src/app/services/assets.service';
+import { AssetsService } from '../../services/assets.service';
 import { filter, map, tap, switchMap } from 'rxjs/operators';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
+import { BlockExtended } from '../../interfaces/node-api.interface';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -24,6 +24,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
   @Input() paginated = false;
+  @Input() inputIndex: number;
   @Input() outputIndex: number;
   @Input() address: string = '';
   @Input() rowLimit = 12;
@@ -37,6 +38,8 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showDetails$ = new BehaviorSubject<boolean>(false);
   assetsMinimal: any;
   transactionsLength: number = 0;
+  inputRowLimit: number = 12;
+  outputRowLimit: number = 12;
 
   constructor(
     public stateService: StateService,
@@ -97,50 +100,57 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     ).subscribe(() => this.ref.markForCheck());
   }
 
-  ngOnChanges(): void {
-    if (!this.transactions || !this.transactions.length) {
-      return;
+  ngOnChanges(changes): void {
+    if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
+      this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
+      this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
+      if ((this.inputIndex || this.outputIndex) && !changes.transactions) {
+        setTimeout(() => {
+          const assetBoxElements = document.getElementsByClassName('assetBox');
+          if (assetBoxElements && assetBoxElements[0]) {
+            assetBoxElements[0].scrollIntoView({block: "center"});
+          }
+        }, 10);
+      }
     }
-
-    this.transactionsLength = this.transactions.length;
-    if (this.outputIndex) {
-      setTimeout(() => {
-        const assetBoxElements = document.getElementsByClassName('assetBox');
-        if (assetBoxElements && assetBoxElements[0]) {
-          assetBoxElements[0].scrollIntoView();
-        }
-      }, 10);
-    }
-
-    this.transactions.forEach((tx) => {
-      tx['@voutLimit'] = true;
-      tx['@vinLimit'] = true;
-      if (tx['addressValue'] !== undefined) {
+    if (changes.transactions || changes.address) {
+      if (!this.transactions || !this.transactions.length) {
         return;
       }
 
-      if (this.address) {
-        const addressIn = tx.vout
-          .filter((v: Vout) => v.scriptpubkey_address === this.address)
-          .map((v: Vout) => v.value || 0)
-          .reduce((a: number, b: number) => a + b, 0);
+      this.transactionsLength = this.transactions.length;
 
-        const addressOut = tx.vin
-          .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
-          .map((v: Vin) => v.prevout.value || 0)
-          .reduce((a: number, b: number) => a + b, 0);
 
-        tx['addressValue'] = addressIn - addressOut;
-      }
-    });
-    const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
-    if (txIds.length) {
-      this.refreshOutspends$.next(txIds);
-    }
-    if (this.stateService.env.LIGHTNING) {
-      const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
+      this.transactions.forEach((tx) => {
+        tx['@voutLimit'] = true;
+        tx['@vinLimit'] = true;
+        if (tx['addressValue'] !== undefined) {
+          return;
+        }
+
+        if (this.address) {
+          const addressIn = tx.vout
+            .filter((v: Vout) => v.scriptpubkey_address === this.address)
+            .map((v: Vout) => v.value || 0)
+            .reduce((a: number, b: number) => a + b, 0);
+
+          const addressOut = tx.vin
+            .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
+            .map((v: Vin) => v.prevout.value || 0)
+            .reduce((a: number, b: number) => a + b, 0);
+
+          tx['addressValue'] = addressIn - addressOut;
+        }
+      });
+      const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
       if (txIds.length) {
-        this.refreshChannels$.next(txIds);
+        this.refreshOutspends$.next(txIds);
+      }
+      if (this.stateService.env.LIGHTNING) {
+        const txIds = this.transactions.filter((tx) => !tx._channels).map((tx) => tx.txid);
+        if (txIds.length) {
+          this.refreshChannels$.next(txIds);
+        }
       }
     }
   }

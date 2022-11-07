@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { INodesRanking, ITopNodesPerCapacity } from 'src/app/interfaces/node-api.interface';
-import { SeoService } from 'src/app/services/seo.service';
-import { isMobile } from 'src/app/shared/common.utils';
-import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { INodesRanking, ITopNodesPerCapacity } from '../../../interfaces/node-api.interface';
+import { SeoService } from '../../../services/seo.service';
+import { isMobile } from '../../../shared/common.utils';
+import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../../lightning-api.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class TopNodesPerCapacity implements OnInit {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Liquidity Ranking`);
+      this.seoService.setTitle($localize`:@@2d9883d230a47fbbb2ec969e32a186597ea27405:Liquidity Ranking`);
     }
 
     for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 7) : 100); ++i) {

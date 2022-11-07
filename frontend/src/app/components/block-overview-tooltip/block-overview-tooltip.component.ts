@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
-import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { Position } from 'src/app/components/block-overview-graph/sprite-types.js';
+import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { Position } from '../../components/block-overview-graph/sprite-types.js';
 
 @Component({
   selector: 'app-block-overview-tooltip',

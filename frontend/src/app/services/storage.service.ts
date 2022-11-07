@@ -46,4 +46,12 @@ export class StorageService {
       console.log(e);
     }
   }
+
+  removeItem(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }

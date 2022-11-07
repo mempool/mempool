@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, OnChanges, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Transaction } from 'src/app/interfaces/electrs.interface';
-import { StateService } from 'src/app/services/state.service';
+import { Transaction } from '../../interfaces/electrs.interface';
+import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { BlockExtended } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-tx-fee-rating',

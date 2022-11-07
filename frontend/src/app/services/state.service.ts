@@ -1,4 +1,4 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
@@ -6,6 +6,7 @@ import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../i
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 interface MarkBlockState {
   blockHeight?: number;
@@ -108,10 +109,14 @@ export class StateService {
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
+  timeLtr: BehaviorSubject<boolean>;
+  hideFlow: BehaviorSubject<boolean>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
+    @Inject(LOCALE_ID) private locale: string,
     private router: Router,
+    private storageService: StorageService,
   ) {
     const browserWindow = window || {};
     // @ts-ignore
@@ -147,6 +152,24 @@ export class StateService {
     }
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
+
+    const savedTimePreference = this.storageService.getValue('time-preference-ltr');
+    const rtlLanguage = (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he'));
+    // default time direction is right-to-left, unless locale is a RTL language
+    this.timeLtr = new BehaviorSubject<boolean>(savedTimePreference === 'true' || (savedTimePreference == null && rtlLanguage));
+    this.timeLtr.subscribe((ltr) => {
+      this.storageService.setValue('time-preference-ltr', ltr ? 'true' : 'false');
+    });
+
+    const savedFlowPreference = this.storageService.getValue('flow-preference');
+    this.hideFlow = new BehaviorSubject<boolean>(savedFlowPreference === 'hide');
+    this.hideFlow.subscribe((hide) => {
+      if (hide) {
+        this.storageService.setValue('flow-preference', hide ? 'hide' : 'show');
+      } else {
+        this.storageService.removeItem('flow-preference');
+      }
+    });
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -158,7 +181,8 @@ export class StateService {
     // (?:[a-z]{2}(?:-[A-Z]{2})?\/)?                optional locale prefix (non-capturing)
     // (?:preview\/)?                               optional "preview" prefix (non-capturing)
     // (bisq|testnet|liquidtestnet|liquid|signet)/  network string (captured as networkMatches[1])
-    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)/);
+    // ($|\/)                                       network string must end or end with a slash
+    const networkMatches = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(bisq|testnet|liquidtestnet|liquid|signet)($|\/)/);
     switch (networkMatches && networkMatches[1]) {
       case 'liquid':
         if (this.network !== 'liquid') {

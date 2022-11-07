@@ -1,6 +1,6 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
-import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { Position, Square, ViewUpdateParams } from './sprite-types';
 
 export default class BlockScene {
@@ -36,6 +36,15 @@ export default class BlockScene {
     this.unitPadding =  width / 500;
     this.unitWidth = this.gridSize - (this.unitPadding * 2);
 
+    this.dirty = true;
+    if (this.initialised && this.scene) {
+      this.updateAll(performance.now(), 50);
+    }
+  }
+
+  setOrientation(orientation: string, flip: boolean): void {
+    this.orientation = orientation;
+    this.flip = flip;
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateAll(performance.now(), 50);

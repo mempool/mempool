@@ -11,6 +11,8 @@ import * as tlite from 'tlite';
 export class ClipboardComponent implements AfterViewInit {
   @ViewChild('btn') btn: ElementRef;
   @ViewChild('buttonWrapper') buttonWrapper: ElementRef;
+  @Input() button = false;
+  @Input() class = 'btn btn-secondary ml-1';
   @Input() size: 'small' | 'normal' = 'normal';
   @Input() text: string;
   @Input() leftPadding = true;

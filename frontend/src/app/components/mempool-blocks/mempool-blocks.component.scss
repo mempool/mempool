@@ -1,7 +1,7 @@
 .bitcoin-block {
   width: 125px;
   height: 125px;
-  transition: 2s;
+  transition: background 2s, right 2s, transform 1s;
 }
 
 .block-size {
@@ -33,6 +33,7 @@
 
 .block-body {
   text-align: center;
+  transition: transform 1s;
 }
 
 @keyframes opacityPulse {
@@ -73,6 +74,7 @@
   background-color: #232838;
   transform:skew(40deg);
   transform-origin:top;
+  transition: transform 1s, left 1s;
 }
 
 .bitcoin-block::before {
@@ -83,9 +85,11 @@
   top: -12px;
   left: -20px;
   background-color: #191c27;
+  z-index: -1;
 
   transform: skewY(50deg);
   transform-origin: top;
+  transition: transform 1s, left 1s;
 }
 
 .mempool-block.bitcoin-block::after {
@@ -127,4 +131,25 @@
 
 .blockLink:hover {
   text-decoration: none;
+}
+
+.time-ltr {
+  .bitcoin-block::after {
+    transform: skew(-40deg);
+    left: 20px;
+  }
+
+  .bitcoin-block::before {
+    transform: skewY(-50deg);
+    left: 125px;
+  }
+  .block-body {
+    transform: scaleX(-1);
+  }
+}
+
+:host-context(.rtl-layout) {
+  #arrow-up {
+    transform: translateX(70px);
+  }
 }

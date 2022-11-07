@@ -7,34 +7,34 @@
 }
 
 .title-block {
-	flex-wrap: wrap;
+  flex-wrap: wrap;
+  align-items: baseline;
   @media (min-width: 650px) {
     flex-direction: row;
   }
   h1 {
     margin: 0rem;
+    margin-right: 15px;
     line-height: 1;
   }
 }
 .tx-link {
-  display: flex;
-	flex-grow: 1;
   margin-bottom: 0px;
   margin-top: 8px;
-	@media (min-width: 650px) {
-    align-self: end;
-    margin-left: 15px;
-    margin-top: 0px;
-    margin-bottom: -3px;
-	}
-	@media (min-width: 768px) {
+  display: inline-block;
+  width: 100%;
+  flex-shrink: 0;
+  @media (min-width: 651px) {
+    display: flex;
+    width: auto;
+    flex-grow: 1;
     margin-bottom: 0px;
     top: 1px;
     position: relative;
-	}
-	@media (max-width: 768px) {
-	  order: 3;
-	}
+  }
+  @media (max-width: 650px) {
+    order: 3;
+  }
 }
 
 .td-width {
@@ -71,6 +71,33 @@
 	@media (min-width: 850px) {
 		flex-direction: row;
 	}
+}
+
+.box.hidden {
+  visibility: hidden;
+  height: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.graph-container {
+  position: relative;
+  width: 100%;
+  background: #181b2d;
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+.toggle-wrapper {
+  width: 100%;
+  text-align: center;
+  margin: 1.25em 0 0;
+}
+
+.graph-toggle {
+  margin: auto;
 }
 
 @media (max-width: 767.98px) {
@@ -132,10 +159,33 @@
 	}
 }
 
-.details-button {
+.details-button, .flow-toggle {
   margin-top: -5px;
+  margin-left: 10px;
 	@media (min-width: 768px){
 		display: inline-block;
     margin-top: 0px;
+    margin-bottom: 0px;
 	}
+}
+
+.subtitle-block {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+
+  .title {
+    flex-shrink: 0;
+  }
+
+  .title-buttons {
+    flex-shrink: 1;
+    text-align: right;
+    .btn {
+      margin-top: 0;
+      margin-bottom: 8px;
+      margin-left: 8px;
+    }
+  }
 }

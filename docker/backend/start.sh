@@ -105,7 +105,7 @@ __LND_MACAROON_PATH__=${LND_MACAROON_PATH:=""}
 __LND_REST_API_URL__=${LND_REST_API_URL:="https://localhost:8080"}
 
 # CLN
-__CLN_SOCKET__=${CLN_SOCKET:=""}
+__CLIGHTNING_SOCKET__=${CLIGHTNING_SOCKET:=""}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -203,6 +203,6 @@ sed -i "s!__LND_MACAROON_PATH__!${__LND_MACAROON_PATH__}!g" mempool-config.json
 sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
 
 # CLN
-sed -i "s!__CLN_SOCKET__!${__CLN_SOCKET__}!g" mempool-config.json
+sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
 
 node /backend/package/index.js
