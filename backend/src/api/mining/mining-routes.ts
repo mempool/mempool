@@ -238,6 +238,12 @@ class MiningRoutes {
   public async $getBlockAudit(req: Request, res: Response) {
     try {
       const audit = await BlocksAuditsRepository.$getBlockAudit(req.params.hash);
+
+      if (!audit) {
+        res.status(404).send(`This block has not been audited.`);
+        return;
+      }
+
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
