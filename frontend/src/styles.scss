@@ -668,6 +668,15 @@ h1, h2, h3 {
   background-color: #2e324e;
 }
 
+.progress.progress-health {
+  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #105fb0 0%, #1a9436 100%);
+  justify-content: flex-end;
+}
+
+.progress-bar.progress-bar-health {
+  background: #2d3348;
+}
+
 .mt-2-5, .my-2-5 {
   margin-top: 0.75rem !important;
 }

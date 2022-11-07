@@ -113,7 +113,7 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * French @Bayernatoor
 * Korean @kcalvinalvinn
 * Italian @HodlBits
-* Hebrew @Sh0ham
+* Hebrew @rapidlab309
 * Georgian @wyd_idk
 * Hungarian @btcdragonlord
 * Dutch @m__btc

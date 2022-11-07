@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
-import { Observable, of, Subject, zip, BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, startWith,  tap } from 'rxjs/operators';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { ApiService } from '../../services/api.service';
@@ -34,7 +34,7 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/;
+  regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[A-z]{2,5}1[a-zA-HJ-NP-Z0-9]{39,59})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
   regexTransaction = /^([a-fA-F0-9]{64})(:\d+)?$/;
   regexBlockheight = /^[0-9]{1,9}$/;
@@ -43,7 +43,7 @@ export class SearchFormComponent implements OnInit {
 
   @Output() searchTriggered = new EventEmitter();
   @ViewChild('searchResults') searchResults: SearchResultsComponent;
-  @HostListener('keydown', ['$event']) keydown($event) {
+  @HostListener('keydown', ['$event']) keydown($event): void {
     this.handleKeyDown($event);
   }
 
@@ -58,7 +58,7 @@ export class SearchFormComponent implements OnInit {
     private elementRef: ElementRef,
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.searchForm = this.formBuilder.group({
@@ -72,70 +72,111 @@ export class SearchFormComponent implements OnInit {
         });
     }
 
-    this.typeAhead$ = this.searchForm.get('searchText').valueChanges
-      .pipe(
-        map((text) => {
-          if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
-            return text.substr(1);
-          }
-          return text.trim();
-        }),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((text) => {
-          if (!text.length) {
-            return of([
-              '',
-              [],
-              {
-                nodes: [],
-                channels: [],
-              }
-            ]);
-          }
-          this.isTypeaheading$.next(true);
-          if (!this.stateService.env.LIGHTNING) {
-            return zip(
-              of(text),
-              this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
-              [{ nodes: [], channels: [] }],
-              of(this.regexBlockheight.test(text)),
-            );
-          }
+    const searchText$ = this.searchForm.get('searchText').valueChanges
+    .pipe(
+      map((text) => {
+        if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
+          return text.substr(1);
+        }
+        return text.trim();
+      }),
+      distinctUntilChanged(),
+    );
+
+    const searchResults$ = searchText$.pipe(
+      debounceTime(200),
+      switchMap((text) => {
+        if (!text.length) {
+          return of([
+            [],
+            { nodes: [], channels: [] }
+          ]);
+        }
+        this.isTypeaheading$.next(true);
+        if (!this.stateService.env.LIGHTNING) {
           return zip(
-            of(text),
             this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
-            this.apiService.lightningSearch$(text).pipe(catchError(() => of({
+            [{ nodes: [], channels: [] }],
+          );
+        }
+        return zip(
+          this.electrsApiService.getAddressesByPrefix$(text).pipe(catchError(() => of([]))),
+          this.apiService.lightningSearch$(text).pipe(catchError(() => of({
+            nodes: [],
+            channels: [],
+          }))),
+        );
+      }),
+      tap((result: any[]) => {
+        this.isTypeaheading$.next(false);
+      })
+    );
+
+    this.typeAhead$ = combineLatest(
+      [
+        searchText$,
+        searchResults$.pipe(
+        startWith([
+          [],
+          {
+            nodes: [],
+            channels: [],
+          }
+        ]))
+      ]
+      ).pipe(
+        map((latestData) => {
+          const searchText = latestData[0];
+          if (!searchText.length) {
+            return {
+              searchText: '',
+              hashQuickMatch: false,
+              blockHeight: false,
+              txId: false,
+              address: false,
+              addresses: [],
               nodes: [],
               channels: [],
-            }))),
-          );
-        }),
-        map((result: any[]) => {
-          this.isTypeaheading$.next(false);
-          if (this.network === 'bisq') {
-            return result[0].map((address: string) => 'B' + address);
+            };
           }
+
+          const result = latestData[1];
+          const addressPrefixSearchResults = result[0];
+          const lightningResults = result[1];
+
+          if (this.network === 'bisq') {
+            return searchText.map((address: string) => 'B' + address);
+          }
+
+          const matchesBlockHeight = this.regexBlockheight.test(searchText);
+          const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
+          const matchesBlockHash = this.regexBlockhash.test(searchText);
+          const matchesAddress = this.regexAddress.test(searchText);
+
           return {
-            searchText: result[0],
-            blockHeight: this.regexBlockheight.test(result[0]) ? [parseInt(result[0], 10)] : [],
-            addresses: result[1],
-            nodes: result[2].nodes,
-            channels: result[2].channels,
-            totalResults: result[1].length + result[2].nodes.length + result[2].channels.length,
+            searchText: searchText,
+            hashQuickMatch: +(matchesBlockHeight || matchesBlockHash || matchesTxId || matchesAddress),
+            blockHeight: matchesBlockHeight,
+            txId: matchesTxId,
+            blockHash: matchesBlockHash,
+            address: matchesAddress,
+            addresses: addressPrefixSearchResults,
+            nodes: lightningResults.nodes,
+            channels: lightningResults.channels,
           };
         })
       );
   }
-  handleKeyDown($event) {
+
+  handleKeyDown($event): void {
     this.searchResults.handleKeyDown($event);
   }
 
-  itemSelected() {
+  itemSelected(): void {
     setTimeout(() => this.search());
   }
 
-  selectedResult(result: any) {
+  selectedResult(result: any): void {
     if (typeof result === 'string') {
       this.search(result);
     } else if (typeof result === 'number') {
@@ -147,7 +188,7 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  search(result?: string) {
+  search(result?: string): void {
     const searchText = result || this.searchForm.value.searchText.trim();
     if (searchText) {
       this.isSearching = true;
@@ -181,7 +222,7 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  navigate(url: string, searchText: string, extras?: any) {
+  navigate(url: string, searchText: string, extras?: any): void {
     this.router.navigate([this.relativeUrlPipe.transform(url), searchText], extras);
     this.searchTriggered.emit();
     this.searchForm.setValue({
