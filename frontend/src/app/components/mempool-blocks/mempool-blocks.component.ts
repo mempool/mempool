@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } from 'rxjs';
-import { MempoolBlock } from 'src/app/interfaces/websocket.interface';
-import { StateService } from 'src/app/services/state.service';
+import { MempoolBlock } from '../../interfaces/websocket.interface';
+import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
-import { feeLevels, mempoolFeeColors } from 'src/app/app.constants';
-import { specialBlocks } from 'src/app/app.constants';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { specialBlocks } from '../../app.constants';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment } from 'src/app/interfaces/node-api.interface';
+import { DifficultyAdjustment } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -36,6 +36,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   now = new Date().getTime();
   timeOffset = 0;
   showMiningInfo = false;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
 
   blockWidth = 125;
   blockPadding = 30;
@@ -44,7 +46,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   feeRounding = '1.0-0';
 
   rightPosition = 0;
-  transition = '2s';
+  transition = 'background 2s, right 2s, transform 1s';
 
   markIndex: number;
   txFeePerVSize: number;
@@ -71,6 +73,11 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
     }
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+      this.cd.markForCheck();
+    });
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
@@ -160,8 +167,10 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       if (this.markIndex === undefined) {
         return;
       }
+      const prevKey = this.timeLtr ? 'ArrowLeft' : 'ArrowRight';
+      const nextKey = this.timeLtr ? 'ArrowRight' : 'ArrowLeft';
 
-      if (event.key === 'ArrowRight') {
+      if (event.key === prevKey) {
         if (this.mempoolBlocks[this.markIndex - 1]) {
           this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
         } else {
@@ -173,7 +182,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
               }
             });
         }
-      } else if (event.key === 'ArrowLeft') {
+      } else if (event.key === nextKey) {
         if (this.mempoolBlocks[this.markIndex + 1]) {
           this.router.navigate([this.relativeUrlPipe.transform('/mempool-block/'), this.markIndex + 1]);
         }
@@ -185,6 +194,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
@@ -269,7 +279,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       this.arrowVisible = true;
 
       this.resetTransitionTimeout = window.setTimeout(() => {
-        this.transition = '2s';
+        this.transition = 'background 2s, right 2s, transform 1s';
         this.cd.markForCheck();
       }, 100);
       return;
@@ -277,11 +287,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.arrowVisible = true;
 
-    for (const block of this.mempoolBlocks) {
-      for (let i = 0; i < block.feeRange.length - 1; i++) {
+    let found = false;
+    for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
+      const block = this.mempoolBlocks[txInBlockIndex];
+      for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
         if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
-          const txInBlockIndex = this.mempoolBlocks.indexOf(block);
-          const feeRangeIndex = block.feeRange.findIndex((val, index) => this.txFeePerVSize < block.feeRange[index + 1]);
+          const feeRangeIndex = i;
           const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
 
           const txFee = this.txFeePerVSize - block.feeRange[i];
@@ -296,8 +307,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
             + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
           this.rightPosition = arrowRightPosition;
-          break;
+          found = true;
         }
+      }
+      if (this.txFeePerVSize >= block.feeRange[block.feeRange.length - 1]) {
+        this.rightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding);
+        found = true;
       }
     }
   }

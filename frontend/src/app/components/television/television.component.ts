@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { WebsocketService } from '../../services/websocket.service';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
-import { StateService } from 'src/app/services/state.service';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { StateService } from '../../services/state.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, scan, startWith, switchMap, tap } from 'rxjs/operators';
-import { interval, merge, Observable } from 'rxjs';
+import { interval, merge, Observable, Subscription } from 'rxjs';
 import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -15,11 +15,13 @@ import { ChangeDetectionStrategy } from '@angular/core';
   styleUrls: ['./television.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TelevisionComponent implements OnInit {
+export class TelevisionComponent implements OnInit, OnDestroy {
 
   mempoolStats: OptimizedMempoolStats[] = [];
   statsSubscription$: Observable<OptimizedMempoolStats[]>;
   fragment: string;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean = this.stateService.timeLtr.value;
 
   constructor(
     private websocketService: WebsocketService,
@@ -36,6 +38,10 @@ export class TelevisionComponent implements OnInit {
   ngOnInit() {
     this.seoService.setTitle($localize`:@@46ce8155c9ab953edeec97e8950b5a21e67d7c4e:TV view`);
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
 
     this.statsSubscription$ = merge(
       this.stateService.live2Chart$.pipe(map(stats => [stats])),
@@ -69,5 +75,9 @@ export class TelevisionComponent implements OnInit {
         return mempoolStats;
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.timeLtrSubscription.unsubscribe();
   }
 }

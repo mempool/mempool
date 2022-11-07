@@ -4,7 +4,7 @@ import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } fro
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -61,6 +61,7 @@ import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
+import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
@@ -134,6 +135,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     FeesBoxComponent,
     DifficultyComponent,
     TxBowtieGraphComponent,
+    TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
@@ -236,6 +238,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     FeesBoxComponent,
     DifficultyComponent,
     TxBowtieGraphComponent,
+    TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
@@ -288,6 +291,7 @@ export class SharedModule {
     library.addIcons(faFileAlt);
     library.addIcons(faRedoAlt);
     library.addIcons(faArrowAltCircleRight);
+    library.addIcons(faArrowsRotate);
     library.addIcons(faExternalLinkAlt);
     library.addIcons(faSortUp);
     library.addIcons(faCaretUp);
@@ -299,5 +303,6 @@ export class SharedModule {
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
     library.addIcons(faArrowRightArrowLeft);
+    library.addIcons(faExchangeAlt);
   }
 }

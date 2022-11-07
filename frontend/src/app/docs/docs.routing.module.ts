@@ -39,6 +39,7 @@ if (browserWindowEnv.BASE_MODULE && (browserWindowEnv.BASE_MODULE === 'bisq' || 
     },
     {
       path: 'faq',
+      data: { networks: ['bitcoin'] },
       component: DocsComponent
     },
     {

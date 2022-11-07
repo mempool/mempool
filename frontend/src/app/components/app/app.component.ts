@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { StateService } from 'src/app/services/state.service';
-import { OpenGraphService } from 'src/app/services/opengraph.service';
+import { StateService } from '../../services/state.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
       this.class = 'rtl-layout';
+    } else {
+      this.class = 'ltr-layout';
     }
 
     tooltipConfig.animation = false;

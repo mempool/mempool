@@ -6,7 +6,8 @@ class StatisticsApi {
   public async $getStatistics(interval: string | null = null): Promise<any> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, total_capacity, tor_nodes, clearnet_nodes, unannounced_nodes
+    let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, total_capacity,
+      tor_nodes, clearnet_nodes, unannounced_nodes, clearnet_tor_nodes
       FROM lightning_stats`;
 
     if (interval) {

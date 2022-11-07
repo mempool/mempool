@@ -15,6 +15,7 @@ import { ChannelBoxComponent } from './channel/channel-box/channel-box.component
 import { ClosingTypeComponent } from './channel/closing-type/closing-type.component';
 import { LightningStatisticsChartComponent } from './statistics-chart/lightning-statistics-chart.component';
 import { NodeStatisticsChartComponent } from './node-statistics-chart/node-statistics-chart.component';
+import { NodeFeeChartComponent } from './node-fee-chart/node-fee-chart.component';
 import { GraphsModule } from '../graphs/graphs.module';
 import { NodesNetworksChartComponent } from './nodes-networks-chart/nodes-networks-chart.component';
 import { ChannelsStatisticsComponent } from './channels-statistics/channels-statistics.component';
@@ -30,6 +31,7 @@ import { TopNodesPerCapacity } from '../lightning/nodes-ranking/top-nodes-per-ca
 import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-nodes.component';
 import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 import { NodeChannels } from '../lightning/nodes-channels/node-channels.component';
+import { GroupComponent } from './group/group.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import { NodeChannels } from '../lightning/nodes-channels/node-channels.componen
     NodesListComponent,
     NodeStatisticsComponent,
     NodeStatisticsChartComponent,
+    NodeFeeChartComponent,
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,
@@ -58,6 +61,7 @@ import { NodeChannels } from '../lightning/nodes-channels/node-channels.componen
     OldestNodes,
     NodesRankingsDashboard,
     NodeChannels,
+    GroupComponent,
   ],
   imports: [
     CommonModule,
@@ -71,6 +75,7 @@ import { NodeChannels } from '../lightning/nodes-channels/node-channels.componen
     NodesListComponent,
     NodeStatisticsComponent,
     NodeStatisticsChartComponent,
+    NodeFeeChartComponent,
     NodeComponent,
     ChannelsListComponent,
     ChannelComponent,

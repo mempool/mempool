@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
-import { VbytesPipe } from 'src/app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
 import { formatNumber } from '@angular/common';
-import { OptimizedMempoolStats } from 'src/app/interfaces/node-api.interface';
-import { StateService } from 'src/app/services/state.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
+import { StateService } from '../../services/state.service';
+import { StorageService } from '../../services/storage.service';
 import { EChartsOption } from 'echarts';
-import { feeLevels, chartColors } from 'src/app/app.constants';
-import { download, formatterXAxis, formatterXAxisLabel } from 'src/app/shared/graphs.utils';
+import { feeLevels, chartColors } from '../../app.constants';
+import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',

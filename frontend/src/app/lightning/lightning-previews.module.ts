@@ -9,11 +9,13 @@ import { NodePreviewComponent } from './node/node-preview.component';
 import { LightningPreviewsRoutingModule } from './lightning-previews.routing.module';
 import { ChannelPreviewComponent } from './channel/channel-preview.component';
 import { NodesPerISPPreview } from './nodes-per-isp/nodes-per-isp-preview.component';
+import { GroupPreviewComponent } from './group/group-preview.component';
 @NgModule({
   declarations: [
     NodePreviewComponent,
     ChannelPreviewComponent,
     NodesPerISPPreview,
+    GroupPreviewComponent,
   ],
   imports: [
     CommonModule,

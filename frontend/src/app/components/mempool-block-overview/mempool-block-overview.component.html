@@ -3,7 +3,7 @@
   [isLoading]="isLoading$ | async"
   [resolution]="75"
   [blockLimit]="stateService.blockVSize"
-  [orientation]="'left'"
+  [orientation]="timeLtr ? 'right' : 'left'"
   [flip]="true"
   (txClickEvent)="onTxClick($event)"
 ></app-block-overview-graph>

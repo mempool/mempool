@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { StateService } from 'src/app/services/state.service';
-import { specialBlocks } from 'src/app/app.constants';
-import { BlockExtended } from 'src/app/interfaces/node-api.interface';
+import { StateService } from '../../services/state.service';
+import { specialBlocks } from '../../app.constants';
+import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { config } from 'process';
 
@@ -33,6 +33,8 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
   blocksFilled = false;
   transition = '1s';
   showMiningInfo = false;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -60,6 +62,11 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
     }
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+      this.cd.markForCheck();
+    });
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.feeRounding = '1.0-1';
@@ -123,6 +130,7 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     clearInterval(this.interval);
   }
 
