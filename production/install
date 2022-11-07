@@ -401,7 +401,7 @@ FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb105-server keybase)
 FREEBSD_PKG+=(geoipupdate)
 
 FREEBSD_UNFURL_PKG=()
-FREEBSD_UNFURL_PKG+=(nvidia-driver-470-470.129.06 chromium xinit xterm twm ja-sourcehansans-otf)
+FREEBSD_UNFURL_PKG+=(nvidia-driver-470 chromium xinit xterm twm ja-sourcehansans-otf)
 FREEBSD_UNFURL_PKG+=(zh-sourcehansans-sc-otf ko-aleefonts-ttf lohit tlwg-ttf)
 
 #############################
