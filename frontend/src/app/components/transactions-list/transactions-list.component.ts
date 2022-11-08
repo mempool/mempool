@@ -18,6 +18,7 @@ import { ApiService } from '../../services/api.service';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  showMoreIncrement = 40;
 
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
@@ -216,6 +217,22 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         tx.fee = newTx.fee;
         this.ref.markForCheck();
       });
+  }
+
+  showMoreInputs(tx: Transaction): void {
+    tx['@vinLimit'] = this.getVinLimit(tx, true);
+  }
+
+  showMoreOutputs(tx: Transaction): void {
+    tx['@voutLimit'] = this.getVoutLimit(tx, true);
+  }
+
+  getVinLimit(tx: Transaction, next = false): number {
+    return Math.min(Math.max(tx['@vinLimit'] || 0, this.inputRowLimit) + (next ? this.showMoreIncrement : 0), tx.vin.length);
+  }
+
+  getVoutLimit(tx: Transaction, next = false): number {
+    return Math.min(Math.max(tx['@voutLimit'] || 0, this.outputRowLimit) + (next ? this.showMoreIncrement : 0), tx.vout.length);
   }
 
   ngOnDestroy(): void {
