@@ -14,10 +14,10 @@ interface Pool {
 class PoolsParser {
   miningPools: any[] = [];
   unknownPool: any = {
-    'name': "Unknown",
-    'link': "https://learnmeabitcoin.com/technical/coinbase-transaction",
-    'regexes': "[]",
-    'addresses': "[]",
+    'name': 'Unknown',
+    'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
+    'regexes': '[]',
+    'addresses': '[]',
     'slug': 'unknown'
   };
   slugWarnFlag = false;
@@ -25,7 +25,7 @@ class PoolsParser {
   /**
    * Parse the pools.json file, consolidate the data and dump it into the database
    */
-  public async migratePoolsJson(poolsJson: object) {
+  public async migratePoolsJson(poolsJson: object): Promise<void> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
@@ -81,6 +81,7 @@ class PoolsParser {
     // Finally, we generate the final consolidated pools data
     const finalPoolDataAdd: Pool[] = [];
     const finalPoolDataUpdate: Pool[] = [];
+    const finalPoolDataRename: Pool[] = [];
     for (let i = 0; i < poolNames.length; ++i) {
       let allAddresses: string[] = [];
       let allRegexes: string[] = [];
@@ -127,8 +128,26 @@ class PoolsParser {
           finalPoolDataUpdate.push(poolObj);
         }
       } else {
-        logger.debug(`Add '${finalPoolName}' mining pool`);
-        finalPoolDataAdd.push(poolObj);
+        // Double check that if we're not just renaming a pool (same address same regex)
+        const [poolToRename]: any[] = await DB.query(`
+          SELECT * FROM pools
+          WHERE addresses = ? OR regexes = ?`,
+          [JSON.stringify(poolObj.addresses), JSON.stringify(poolObj.regexes)]
+        );
+        if (poolToRename && poolToRename.length > 0) {
+          // We're actually renaming an existing pool
+          finalPoolDataRename.push({
+            'name': poolObj.name,
+            'link': poolObj.link,
+            'regexes': allRegexes,
+            'addresses': allAddresses,
+            'slug': slug
+          });
+          logger.debug(`Rename '${poolToRename[0].name}' mining pool to ${poolObj.name}`);
+        } else {
+          logger.debug(`Add '${finalPoolName}' mining pool`);
+          finalPoolDataAdd.push(poolObj);
+        }
       }
 
       this.miningPools.push({
@@ -145,7 +164,9 @@ class PoolsParser {
       return;
     }
 
-    if (finalPoolDataAdd.length > 0 || finalPoolDataUpdate.length > 0) {    
+    if (finalPoolDataAdd.length > 0 || finalPoolDataUpdate.length > 0 ||
+      finalPoolDataRename.length > 0
+    ) {    
       logger.debug(`Update pools table now`);
 
       // Add new mining pools into the database
@@ -169,13 +190,30 @@ class PoolsParser {
         ;`);
       }
 
+      // Rename mining pools
+      const renameQueries: string[] = [];
+      for (let i = 0; i < finalPoolDataRename.length; ++i) {
+        renameQueries.push(`
+          UPDATE pools
+          SET name='${finalPoolDataRename[i].name}', link='${finalPoolDataRename[i].link}',
+            slug='${finalPoolDataRename[i].slug}'
+          WHERE regexes='${JSON.stringify(finalPoolDataRename[i].regexes)}'
+            AND addresses='${JSON.stringify(finalPoolDataRename[i].addresses)}'
+        ;`);
+      }
+
       try {
-        await this.$deleteBlocskToReindex(finalPoolDataUpdate);
+        if (finalPoolDataAdd.length > 0 || updateQueries.length > 0) {
+          await this.$deleteBlocskToReindex(finalPoolDataUpdate);
+        }
 
         if (finalPoolDataAdd.length > 0) {
           await DB.query({ sql: queryAdd, timeout: 120000 });
         }
         for (const query of updateQueries) {
+          await DB.query({ sql: query, timeout: 120000 });
+        }
+        for (const query of renameQueries) {
           await DB.query({ sql: query, timeout: 120000 });
         }
         await this.insertUnknownPool();
