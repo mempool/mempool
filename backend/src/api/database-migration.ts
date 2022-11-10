@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 47;
+  private static currentVersion = 48;
   private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -379,7 +379,12 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateCPFPTableQuery(), await this.$checkIfTableExists('cpfp_clusters'));
       await this.$executeQuery(this.getCreateTransactionsTableQuery(), await this.$checkIfTableExists('transactions'));
     }
-}
+
+    if (databaseSchemaVersion < 48 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `channels` ADD source_checked tinyint(1) DEFAULT 0');
+      await this.$executeQuery(this.getCreateChannelsForensicsTableQuery(), await this.$checkIfTableExists('channels_forensics'));
+    }
+  }
 
   /**
    * Special case here for the `statistics` table - It appeared that somehow some dbs already had the `added` field indexed
@@ -756,6 +761,25 @@ class DatabaseMigration {
       KEY short_id (short_id),
       KEY transaction_id (transaction_id),
       KEY closing_transaction_id (closing_transaction_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateChannelsForensicsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS channels_forensics (
+      channel_id bigint(11) unsigned NOT NULL,
+      closing_fee bigint(20) unsigned DEFAULT 0,
+      node1_funding_balance bigint(20) unsigned DEFAULT 0,
+      node2_funding_balance bigint(20) unsigned DEFAULT 0,
+      node1_closing_balance bigint(20) unsigned DEFAULT 0,
+      node2_closing_balance bigint(20) unsigned DEFAULT 0,
+      funding_ratio float unsigned DEFAULT NULL,
+      closed_by varchar(66) DEFAULT NULL,
+      single_funded tinyint(1) default 0,
+      outputs JSON NOT NULL,
+      PRIMARY KEY (channel_id),
+      FOREIGN KEY (channel_id)
+        REFERENCES channels (id)
+        ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
