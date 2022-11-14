@@ -207,6 +207,12 @@
   <p>Block validation rules do not strictly require that a block's timestamp be more recent than the timestamp of the block preceding it. Without a central authority, it's impossible to know what the exact correct time is. Instead, the Bitcoin protocol requires that a block's timestamp meet certain requirements. One of those requirements is that a block's timestamp cannot be older than the median timestamp of the 12 blocks that came before it. See more details <a href="https://en.bitcoin.it/wiki/Block_timestamp" target="_blank">here</a>.</p><p>As a result, timestamps are only accurate to within an hour or so, which sometimes results in blocks with timestamps that appear out of order.</p>
 </ng-template>
 
+<ng-template type="why-dont-fee-ranges-match">
+  <p>Mempool aims to show you the <i>effective feerate</i> range for blocks—how much would you actually need to pay to get a transaction included in a block.</p>
+  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range because it actually required more than 1 s/vb to confirm that transaction in that block.</p>
+  <p>For unconfirmed CPFP transactions, Mempool will show the effective feerate (along with descendent & ancestor transaction information) on the transaction page. For confirmed transactions, CPFP relationships are not stored, so this additional information is not shown.</p>
+</ng-template>
+
 <ng-template type="who-runs-this-website">
   The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a [routerLink]="['/about']">About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community.
 </ng-template>
