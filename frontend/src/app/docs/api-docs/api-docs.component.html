@@ -163,14 +163,6 @@
   <p>There are feerate estimates on the top of <a [routerLink]="['/' | relativeUrl]">the main dashboard</a> you can use as a guide. See <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="looking-up-fee-estimates">this FAQ</a> for more on picking the right feerate.</p>
 </ng-template>
 
-<ng-template type="what-is-full-mempool">
-  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's "full".</p>
-</ng-template>
-
-<ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
-</ng-template>
-
 <ng-template type="why-is-transaction-stuck-in-mempool">
   <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>
 </ng-template>
@@ -201,6 +193,14 @@
 
 <ng-template type="looking-up-historical-trends">
   See the <a [routerLink]="['/graphs' | relativeUrl]">graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time.
+</ng-template>
+
+<ng-template type="what-is-full-mempool">
+  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's "full".</p>
+</ng-template>
+
+<ng-template type="why-empty-blocks">
+  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
 </ng-template>
 
 <ng-template type="who-runs-this-website">
