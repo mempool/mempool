@@ -181,7 +181,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
     }
     if (this.scene) {
-      this.scene.resize({ width: this.displayWidth, height: this.displayHeight });
+      this.scene.resize({ width: this.displayWidth, height: this.displayHeight, animate: false });
       this.start();
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
