@@ -8654,6 +8654,13 @@ export const faqData = [
     title: "Why are there empty blocks?",
   },
   {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "why-block-timestamps-dont-always-increase",
+    title: "Why don't block timestamps always increase?",
+  },
+  {
     type: "category",
     category: "self-hosting",
     fragment: "self-hosting",
