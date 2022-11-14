@@ -8661,6 +8661,13 @@ export const faqData = [
     title: "Why don't block timestamps always increase?",
   },
   {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "why-dont-fee-ranges-match",
+    title: "Why doesn't the fee range shown for a block match the feerates of transactions within the block?",
+  },
+  {
     type: "category",
     category: "self-hosting",
     fragment: "self-hosting",
