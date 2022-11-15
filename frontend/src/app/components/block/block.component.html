@@ -2,7 +2,7 @@
 
   <div class="title-block" [class.time-ltr]="timeLtr" id="block">
     <h1>
-      <ng-container *ngIf="blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
+      <ng-container *ngIf="blockHeight == null || blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
       <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
       <span class="next-previous-blocks">
         <a *ngIf="showNextBlocklink" class="nav-arrow next" [routerLink]="['/block/' | relativeUrl, nextBlockHeight]" (click)="navigateToNextBlock()" i18n-ngbTooltip="Next Block" ngbTooltip="Next Block" placement="bottom">
