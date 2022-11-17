@@ -417,10 +417,9 @@ class WebsocketHandler {
     const _memPool = memPool.getMempool();
 
     if (Common.indexingEnabled() && memPool.isInSync()) {
-      const mempoolCopy = cloneMempool(_memPool);
-      const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
+      const projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
 
-      const { censored, added, score } = Audit.auditBlock(transactions, projectedBlocks, mempoolCopy);
+      const { censored, added, score } = Audit.auditBlock(transactions, projectedBlocks, _memPool);
       matchRate = Math.round(score * 100 * 100) / 100;
 
       const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -567,16 +566,6 @@ class WebsocketHandler {
       client.send(JSON.stringify(response));
     });
   }
-}
-
-function cloneMempool(mempool: { [txid: string]: TransactionExtended }): { [txid: string]: TransactionExtended } {
-  const cloned = {};
-  Object.keys(mempool).forEach(id => {
-    cloned[id] = {
-      ...mempool[id]
-    };
-  });
-  return cloned;
 }
 
 export default new WebsocketHandler();
