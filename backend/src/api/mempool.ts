@@ -20,6 +20,7 @@ class Mempool {
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
+  private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -63,6 +64,10 @@ class Mempool {
     this.mempoolChangedCallback = fn;
   }
 
+  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; }) => void) {
+    this.asyncMempoolChangedCallback = fn;
+  }
+
   public getMempool(): { [txid: string]: TransactionExtended } {
     return this.mempoolCache;
   }
@@ -71,6 +76,9 @@ class Mempool {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
+    }
+    if (this.asyncMempoolChangedCallback) {
+      this.asyncMempoolChangedCallback(this.mempoolCache);
     }
   }
 
@@ -186,6 +194,9 @@ class Mempool {
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+    }
+    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+      await this.asyncMempoolChangedCallback(this.mempoolCache);
     }
 
     const end = new Date().getTime();
