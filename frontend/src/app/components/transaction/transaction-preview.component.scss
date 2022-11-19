@@ -92,26 +92,37 @@
     max-width: 90%;
     margin: auto;
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 
     .opreturns {
+      display: inline-block;
       width: auto;
+      max-width: 100%;
       margin: auto;
       table-layout: auto;
       background: #2d3348af;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
 
-      td {
-        padding: 10px 10px;
+      .opreturn-row {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0 10px;
+      }
 
-        &.message {
-          overflow: hidden;
-          display: inline-block;
-          vertical-align: bottom;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          text-align: left;
-        }
+      .label {
+        margin-right: 1em;
+      }
+
+      .message {
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
