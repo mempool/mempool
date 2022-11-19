@@ -29,6 +29,8 @@
 .features {
   font-size: 24px;
   margin-left: 1em;
+  margin-top: 0.5em;
+  margin-right: -4px;
 }
 
 .top-data {
@@ -57,6 +59,15 @@
 
   &.pair > *:first-child {
     margin-right: 1em;
+  }
+}
+
+.top-data .field {
+  &:first-child {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-right: 0;
   }
 }
 
