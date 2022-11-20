@@ -31,6 +31,7 @@ class NetworkSyncService {
   }
 
   private async $runTasks(): Promise<void> {
+    const taskStartTime = Date.now();
     try {
       logger.info(`Updating nodes and channels`);
 
@@ -57,7 +58,7 @@ class NetworkSyncService {
       logger.err('$runTasks() error: ' + (e instanceof Error ? e.message : e));
     }
 
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL);
+    setTimeout(() => { this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
   }
 
   /**
@@ -353,9 +354,10 @@ class NetworkSyncService {
       return 1;
   }
 
-  // If a channel open tx spends funds from a closed channel output,
+  // If a channel open tx spends funds from a another channel transaction,
   // we can attribute that output to a specific counterparty
   private async $runOpenedChannelsForensics(): Promise<void> {
+    const runTimer = Date.now();
     let progress = 0;
 
     try {
@@ -395,6 +397,9 @@ class NetworkSyncService {
         if (elapsedSeconds > 10) {
           logger.info(`Updating opened channel forensics ${progress}/${channels?.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
+        }
+        if (Date.now() - runTimer > (config.LIGHTNING.GRAPH_REFRESH_INTERVAL * 1000)) {
+          break;
         }
       }
 
