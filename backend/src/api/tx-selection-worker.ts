@@ -156,7 +156,8 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
 
     // this block is full
     const exceededPackageTries = failures > 1000 && blockWeight > (config.MEMPOOL.BLOCK_WEIGHT_UNITS - 4000);
-    if (exceededPackageTries && (!condenseRest || blocks.length < blockLimit - 1)) {
+    const queueEmpty = top >= mempoolArray.length && modified.isEmpty();
+    if ((exceededPackageTries || queueEmpty) && (!condenseRest || blocks.length < blockLimit - 1)) {
       // construct this block
       if (transactions.length) {
         blocks.push(dataToMempoolBlocks(transactions.map(t => mempool[t.txid]), blockSize, blockWeight, blocks.length));
@@ -209,7 +210,6 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
       tx.cpfpChecked = false;
       tx.ancestors = [];
       tx.bestDescendant = null;
-      tx.ancestors
       blockTransactions.push(tx);
     });
     if (blockTransactions.length) {
