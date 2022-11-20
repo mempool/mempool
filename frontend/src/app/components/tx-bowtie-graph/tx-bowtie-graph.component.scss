@@ -11,6 +11,10 @@
     &.fee {
       stroke: url(#fee-gradient);
     }
+    &.zerovalue {
+      stroke: url(#gradient0);
+      stroke-linecap: round;
+    }
 
     &.highlight {
       z-index: 8;
@@ -20,6 +24,9 @@
       }
       &.output {
         stroke: url(#output-highlight-gradient);
+      }
+      &.zerovalue {
+        stroke: #1bd8f4;
       }
     }
   }
@@ -35,6 +42,9 @@
     }
     &.fee {
       stroke: url(#fee-hover-gradient);
+    }
+    &.zerovalue {
+      stroke: white;
     }
   }
 
