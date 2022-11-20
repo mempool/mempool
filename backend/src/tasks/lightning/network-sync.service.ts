@@ -306,7 +306,7 @@ class NetworkSyncService {
   }
 
   private findLightningScript(vin: IEsploraApi.Vin): number {
-    const topElement = vin.witness[vin.witness.length - 2];
+    const topElement = vin.witness ? vin.witness[vin.witness.length - 2] : '';
       if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSH(NUM_\d+|BYTES_(1 \w{2}|2 \w{4})) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
         if (topElement === '01') {
@@ -325,7 +325,7 @@ class NetworkSyncService {
       ) {
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#received-htlc-outputs
-        if (topElement.length === 66) {
+        if (topElement?.length === 66) {
           // top element is a public key
           // 'Revoked Lightning HTLC'; Penalty force closed
           return 4;
@@ -365,28 +365,35 @@ class NetworkSyncService {
       for (const openChannel of channels) {
         const openTx = await bitcoinApi.$getRawTransaction(openChannel.transaction_id);
         for (const input of openTx.vin) {
-          const closeChannel = await channelsApi.$getChannelForensicsByTransactionId(input.txid);
+          const closeChannel = await channelsApi.$getChannelForensicsByClosingId(input.txid);
           if (closeChannel) {
             // this input directly spends a channel close output
             await this.$attributeChannelBalances(closeChannel, openChannel, input);
           } else {
-            // check if this input spends any swept channel close outputs
-            await this.$attributeSweptChannelCloses(openChannel, input);
+            const prevOpenChannel = await channelsApi.$getChannelForensicsByOpeningId(input.txid);
+            if (prevOpenChannel) {
+              await this.$attributeChannelBalances(prevOpenChannel, openChannel, input, null, null, true);
+            } else {
+              // check if this input spends any swept channel close outputs
+              await this.$attributeSweptChannelCloses(openChannel, input);
+            }
           }
         }
         // calculate how much of the total input value is attributable to the channel open output
         openChannel.funding_ratio = openTx.vout[openChannel.transaction_vout].value / ((openTx.vout.reduce((sum, v) => sum + v.value, 0) || 1) + openTx.fee);
         // save changes to the opening channel, and mark it as checked
-        if (openTx.vin.length === 1) {
+        if (openTx?.vin?.length === 1) {
           openChannel.single_funded = true;
         }
-        await channelsApi.$updateOpeningInfo(openChannel);
+        if (openChannel.node1_funding_balance || openChannel.node2_funding_balance || openChannel.node1_closing_balance || openChannel.node2_closing_balance || openChannel.closed_by) {
+          await channelsApi.$updateOpeningInfo(openChannel);
+        }
         await channelsApi.$markChannelSourceChecked(openChannel.id);
 
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.info(`Updating channel opened channel forensics ${progress}/${channels.length}`);
+          logger.info(`Updating opened channel forensics ${progress}/${channels?.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
@@ -408,7 +415,7 @@ class NetworkSyncService {
     for (const sweepInput of sweepTx.vin) {
       const lnScriptType = this.findLightningScript(sweepInput);
       if (lnScriptType > 1) {
-        const closeChannel = await channelsApi.$getChannelForensicsByTransactionId(sweepInput.txid);
+        const closeChannel = await channelsApi.$getChannelForensicsByClosingId(sweepInput.txid);
         if (closeChannel) {
           const initiator = (lnScriptType === 2 || lnScriptType === 4) ? 'remote' : (lnScriptType === 3 ? 'local' : null);
           await this.$attributeChannelBalances(closeChannel, openChannel, sweepInput, openContribution, initiator);
@@ -418,8 +425,8 @@ class NetworkSyncService {
   }
 
   private async $attributeChannelBalances(
-    closeChannel, openChannel, input: IEsploraApi.Vin, openContribution: number | null = null,
-    initiator: 'remote' | 'local' | null = null
+    prevChannel, openChannel, input: IEsploraApi.Vin, openContribution: number | null = null,
+    initiator: 'remote' | 'local' | null = null, linkedOpenings: boolean = false
   ): Promise<void> {
     // figure out which node controls the input/output
     let openSide;
@@ -427,18 +434,18 @@ class NetworkSyncService {
     let closeRemote;
     let matched = false;
     let ambiguous = false; // if counterparties are the same in both channels, we can't tell them apart
-    if (openChannel.node1_public_key === closeChannel.node1_public_key) {
+    if (openChannel.node1_public_key === prevChannel.node1_public_key) {
       openSide = 1;
       closeLocal = 1;
       closeRemote = 2;
       matched = true;
-    } else if (openChannel.node1_public_key === closeChannel.node2_public_key) {
+    } else if (openChannel.node1_public_key === prevChannel.node2_public_key) {
       openSide = 1;
       closeLocal = 2;
       closeRemote = 1;
       matched = true;
     }
-    if (openChannel.node2_public_key === closeChannel.node1_public_key) {
+    if (openChannel.node2_public_key === prevChannel.node1_public_key) {
       openSide = 2;
       closeLocal = 1;
       closeRemote = 2;
@@ -446,7 +453,7 @@ class NetworkSyncService {
         ambiguous = true;
       }
       matched = true;
-    } else if (openChannel.node2_public_key === closeChannel.node2_public_key) {
+    } else if (openChannel.node2_public_key === prevChannel.node2_public_key) {
       openSide = 2;
       closeLocal = 2;
       closeRemote = 1;
@@ -458,77 +465,78 @@ class NetworkSyncService {
 
     if (matched && !ambiguous) {
       // fetch closing channel transaction and perform forensics on the outputs
-      let closingTx: IEsploraApi.Transaction | undefined;
+      let prevChannelTx: IEsploraApi.Transaction | undefined;
       let outspends: IEsploraApi.Outspend[] | undefined;
       try {
-        closingTx = await bitcoinApi.$getRawTransaction(input.txid);
+        prevChannelTx = await bitcoinApi.$getRawTransaction(input.txid);
         outspends = await bitcoinApi.$getOutspends(input.txid);
       } catch (e) {
-        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + closeChannel.closing_transaction_id + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + input.txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
       }
-      if (!outspends || !closingTx) {
+      if (!outspends || !prevChannelTx) {
         return;
       }
-      if (!closeChannel.outputs) {
-        closeChannel.outputs = closeChannel.outputs || closingTx.vout.map(vout => {
-          return {
-            type: 0,
-            value: vout.value,
-          };
-        });
-      }
-      for (let i = 0; i < outspends.length; i++) {
-        const outspend = outspends[i];
-        const output = closeChannel.outputs[i];
-        if (outspend.spent && outspend.txid) {
-          try {
-            const spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
-            if (spendingTx) {
-              output.type = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
-            }
-          } catch (e) {
-            logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
-          }
-        } else {
-          output.type = 0;
+      if (!linkedOpenings) {
+        if (!prevChannel.outputs) {
+          prevChannel.outputs = prevChannel.outputs || prevChannelTx.vout.map(vout => {
+            return {
+              type: 0,
+              value: vout.value,
+            };
+          });
         }
-      }
-
-      // attribute outputs to each counterparty, and sum up total known balances
-      closeChannel.outputs[input.vout].node = closeLocal;
-      const isPenalty = closeChannel.outputs.filter((out) => out.type === 2 || out.type === 4).length > 0;
-      const normalOutput = [1,3].includes(closeChannel.outputs[input.vout].type);
-      let localClosingBalance = 0;
-      let remoteClosingBalance = 0;
-      for (const output of closeChannel.outputs) {
-        if (isPenalty) {
-          // penalty close, so local node takes everything
-          localClosingBalance += output.value;
-        } else if (output.node) {
-          // this output determinstically linked to one of the counterparties
-          if (output.node === closeLocal) {
-            localClosingBalance += output.value;
+        for (let i = 0; i < outspends?.length; i++) {
+          const outspend = outspends[i];
+          const output = prevChannel.outputs[i];
+          if (outspend.spent && outspend.txid) {
+            try {
+              const spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
+              if (spendingTx) {
+                output.type = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
+              }
+            } catch (e) {
+              logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
+            }
           } else {
+            output.type = 0;
+          }
+        }
+
+        // attribute outputs to each counterparty, and sum up total known balances
+        prevChannel.outputs[input.vout].node = closeLocal;
+        const isPenalty = prevChannel.outputs.filter((out) => out.type === 2 || out.type === 4)?.length > 0;
+        const normalOutput = [1,3].includes(prevChannel.outputs[input.vout].type);
+        let localClosingBalance = 0;
+        let remoteClosingBalance = 0;
+        for (const output of prevChannel.outputs) {
+          if (isPenalty) {
+            // penalty close, so local node takes everything
+            localClosingBalance += output.value;
+          } else if (output.node) {
+            // this output determinstically linked to one of the counterparties
+            if (output.node === closeLocal) {
+              localClosingBalance += output.value;
+            } else {
+              remoteClosingBalance += output.value;
+            }
+          } else if (normalOutput && (output.type === 1 || output.type === 3)) {
+            // local node had one main output, therefore remote node takes the other
             remoteClosingBalance += output.value;
           }
-        } else if (normalOutput && (output.type === 1 || output.type === 3)) {
-          // local node had one main output, therefore remote node takes the other
-          remoteClosingBalance += output.value;
         }
+        prevChannel[`node${closeLocal}_closing_balance`] = localClosingBalance;
+        prevChannel[`node${closeRemote}_closing_balance`] = remoteClosingBalance;
+        prevChannel.closing_fee = prevChannelTx.fee;
+
+        if (initiator && !linkedOpenings) {
+          const initiatorSide = initiator === 'remote' ? closeRemote : closeLocal;
+          prevChannel.closed_by = prevChannel[`node${initiatorSide}_public_key`];
+        }
+  
+        // save changes to the closing channel
+        await channelsApi.$updateClosingInfo(prevChannel);
       }
-
-      openChannel[`node${openSide}_funding_balance`] = openChannel[`node${openSide}_funding_balance`] + (openContribution || closingTx?.vout[input.vout]?.value || 0);
-      closeChannel[`node${closeLocal}_closing_balance`] = localClosingBalance;
-      closeChannel[`node${closeRemote}_closing_balance`] = remoteClosingBalance;
-      closeChannel.closing_fee = closingTx.fee;
-
-      if (initiator) {
-        const initiatorSide = initiator === 'remote' ? closeRemote : closeLocal;
-        closeChannel.closed_by = closeChannel[`node${initiatorSide}_public_key`];
-      }
-
-      // save changes to the closing channel
-      await channelsApi.$updateClosingInfo(closeChannel);
+      openChannel[`node${openSide}_funding_balance`] = openChannel[`node${openSide}_funding_balance`] + (openContribution || prevChannelTx?.vout[input.vout]?.value || 0);
     }
   }
 }
