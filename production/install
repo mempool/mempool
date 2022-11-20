@@ -1319,6 +1319,8 @@ case $OS in
         osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
         osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning" "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
+        echo "[*] Creating symlink to .bitcoin folder"
+        osSudo "${CLN_USER}" ln -s "${BITCOIN_HOME}/.bitcoin" "${CLN_HOME}/.bitcoin"
 
         echo "[*] Installing Core Lightning package"
         osPackageInstall ${CLN_PKG}
