@@ -277,7 +277,7 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelForensicsByTransactionId(transactionId: string): Promise<any> {
+  public async $getChannelForensicsByClosingId(transactionId: string): Promise<any> {
     try {
       const query = `
         SELECT
@@ -294,7 +294,29 @@ class ChannelsApi {
         return rows[0];
       }
     } catch (e) {
-      logger.err('$getChannelForensicsByTransactionId error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getChannelForensicsByClosingId error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
+    }
+  }
+
+  public async $getChannelForensicsByOpeningId(transactionId: string): Promise<any> {
+    try {
+      const query = `
+        SELECT
+          channels.id, channels.node1_public_key, channels.node2_public_key,
+          channels.status, channels.transaction_id,
+          forensics.*
+        FROM channels
+        LEFT JOIN channels_forensics as forensics ON forensics.channel_id = channels.id
+        WHERE channels.transaction_id = ?
+      `;
+      const [rows]: any = await DB.query(query, [transactionId]);
+      if (rows.length > 0) {
+        rows[0].outputs = JSON.parse(rows[0].outputs);
+        return rows[0];
+      }
+    } catch (e) {
+      logger.err('$getChannelForensicsByOpeningId error: ' + (e instanceof Error ? e.message : e));
       // don't throw - this data isn't essential
     }
   }
