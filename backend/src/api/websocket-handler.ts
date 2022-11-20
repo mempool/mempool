@@ -244,59 +244,20 @@ class WebsocketHandler {
     });
   }
 
-  async handleAsyncMempoolChange(newMempool: { [txid: string]: TransactionExtended }): Promise<void> {
+  async handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
-    if (!config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
-      return;
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(newMempool, 8, null, true);
     }
-
-    await mempoolBlocks.makeBlockTemplates(newMempool, 8, null, true);
+    else {
+      mempoolBlocks.updateMempoolBlocks(newMempool);
+    }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
-
-    this.wss.clients.forEach(async (client) => {
-      if (client.readyState !== WebSocket.OPEN) {
-        return;
-      }
-
-      const response = {};
-
-      if (client['want-mempool-blocks']) {
-        response['mempool-blocks'] = mBlocks;
-      }
-
-      if (client['track-mempool-block'] >= 0) {
-        const index = client['track-mempool-block'];
-        if (mBlockDeltas[index]) {
-          response['projected-block-transactions'] = {
-            index: index,
-            delta: mBlockDeltas[index],
-          };
-        }
-      }
-
-      if (Object.keys(response).length) {
-        client.send(JSON.stringify(response));
-      }
-    });
-  }
-
-  handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): void {
-    if (!this.wss) {
-      throw new Error('WebSocket.Server is not set');
-    }
-
-    let mBlocks;
-    let mBlockDeltas;
-    if (!config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
-      mempoolBlocks.updateMempoolBlocks(newMempool);
-      mBlocks = mempoolBlocks.getMempoolBlocks();
-      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
-    }
     const mempoolInfo = memPool.getMempoolInfo();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
@@ -319,7 +280,7 @@ class WebsocketHandler {
         response['fees'] = recommendedFees;
       }
 
-      if (client['want-mempool-blocks'] && !config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      if (client['want-mempool-blocks']) {
         response['mempool-blocks'] = mBlocks;
       }
 
@@ -434,7 +395,7 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-mempool-block'] >= 0 && !config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      if (client['track-mempool-block'] >= 0) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas[index]) {
           response['projected-block-transactions'] = {
@@ -449,61 +410,20 @@ class WebsocketHandler {
       }
     });
   }
-
-  async handleNewAsyncBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): Promise<void> {
-    if (!this.wss) {
-      throw new Error('WebSocket.Server is not set');
-    }
-
-    if (!config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
-      return;
-    }
-
-    const _memPool = memPool.getMempool();
-
-    await mempoolBlocks.makeBlockTemplates(_memPool, 2);
-    const mBlocks = mempoolBlocks.getMempoolBlocks();
-    const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
-
-    this.wss.clients.forEach((client) => {
-      if (client.readyState !== WebSocket.OPEN) {
-        return;
-      }
-
-      if (!client['want-blocks']) {
-        return;
-      }
-
-      const response = {};
-
-      if (mBlocks && client['want-mempool-blocks']) {
-        response['mempool-blocks'] = mBlocks;
-      }
-
-      if (client['track-mempool-block'] >= 0) {
-        const index = client['track-mempool-block'];
-        if (mBlockDeltas && mBlockDeltas[index]) {
-          response['projected-block-transactions'] = {
-            index: index,
-            delta: mBlockDeltas[index],
-          };
-        }
-      }
-
-      client.send(JSON.stringify(response));
-    });
-  }
  
-
-  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): void {
+  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
-    let mBlocks: undefined | MempoolBlock[];
-    let mBlockDeltas: undefined | MempoolBlockDelta[];
-    let matchRate;
     const _memPool = memPool.getMempool();
+    let matchRate;
+
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+    } else {
+      mempoolBlocks.updateMempoolBlocks(_memPool);
+    }
 
     if (Common.indexingEnabled() && memPool.isInSync()) {
       const projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
@@ -547,11 +467,13 @@ class WebsocketHandler {
       delete _memPool[txId];
     }
 
-    if (!config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+    } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);
-      mBlocks = mempoolBlocks.getMempoolBlocks();
-      mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     }
+    const mBlocks = mempoolBlocks.getMempoolBlocks();
+    const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
@@ -572,7 +494,7 @@ class WebsocketHandler {
         'fees': fees,
       };
 
-      if (mBlocks && client['want-mempool-blocks'] && !config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      if (mBlocks && client['want-mempool-blocks']) {
         response['mempool-blocks'] = mBlocks;
       }
 
@@ -644,7 +566,7 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-mempool-block'] >= 0 && !config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      if (client['track-mempool-block'] >= 0) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas && mBlockDeltas[index]) {
           response['projected-block-transactions'] = {
