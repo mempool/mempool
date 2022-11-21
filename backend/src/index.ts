@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
@@ -34,7 +34,7 @@ import miningRoutes from './api/mining/mining-routes';
 import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
-import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
+import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -74,7 +74,7 @@ class Server {
     }
   }
 
-  async startServer(worker = false) {
+  async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     this.app
@@ -92,7 +92,9 @@ class Server {
     this.setUpWebsocketHandling();
 
     await syncAssets.syncAssets$();
-    diskCache.loadMempoolCache();
+    if (config.MEMPOOL.ENABLED) {
+      diskCache.loadMempoolCache();
+    }
 
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
@@ -127,7 +129,10 @@ class Server {
     fiatConversion.startService();
 
     this.setUpHttpApiRoutes();
-    this.runMainUpdateLoop();
+
+    if (config.MEMPOOL.ENABLED) {
+      this.runMainUpdateLoop();
+    }
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
@@ -149,7 +154,7 @@ class Server {
     });
   }
 
-  async runMainUpdateLoop() {
+  async runMainUpdateLoop(): Promise<void> {
     try {
       try {
         await memPool.$updateMemPoolInfo();
@@ -183,7 +188,7 @@ class Server {
     }
   }
 
-  async $runLightningBackend() {
+  async $runLightningBackend(): Promise<void> {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
@@ -195,7 +200,7 @@ class Server {
     };
 }
 
-  setUpWebsocketHandling() {
+  setUpWebsocketHandling(): void {
     if (this.wss) {
       websocketHandler.setWebsocketServer(this.wss);
     }
@@ -209,19 +214,21 @@ class Server {
       });
     }
     websocketHandler.setupConnectionHandling();
-    statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
-    blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
-    memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+    if (config.MEMPOOL.ENABLED) {
+      statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
+      blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
+      memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+    }
     fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
-
-  setUpHttpApiRoutes() {
+  
+  setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
     }
-    if (Common.indexingEnabled()) {
+    if (Common.indexingEnabled() && config.MEMPOOL.ENABLED) {
       miningRoutes.initRoutes(this.app);
     }
     if (config.BISQ.ENABLED) {
@@ -238,4 +245,4 @@ class Server {
   }
 }
 
-const server = new Server();
+((): Server => new Server())();
