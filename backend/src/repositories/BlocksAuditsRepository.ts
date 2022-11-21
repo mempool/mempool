@@ -1,6 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import { BlockAudit } from '../mempool.interfaces';
+import { BlockAudit, AuditScore } from '../mempool.interfaces';
 
 class BlocksAuditRepositories {
   public async $saveAudit(audit: BlockAudit): Promise<void> {
@@ -72,10 +72,10 @@ class BlocksAuditRepositories {
     }
   }
 
-  public async $getShortBlockAudit(hash: string): Promise<any> {
+  public async $getBlockAuditScore(hash: string): Promise<AuditScore> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT hash as id, match_rate as matchRate
+        `SELECT hash, match_rate as matchRate
         FROM blocks_audits
         WHERE blocks_audits.hash = "${hash}"
       `);
