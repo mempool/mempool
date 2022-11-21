@@ -152,6 +152,11 @@ export interface RewardStats {
   totalTx: number;
 }
 
+export interface AuditScore {
+  hash: string;
+  matchRate?: number;
+}
+
 export interface ITopNodesPerChannels {
   publicKey: string,
   alias: string,
