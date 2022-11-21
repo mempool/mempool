@@ -1,5 +1,5 @@
 <div class="bowtie-graph">
-  <svg *ngIf="inputs && outputs" class="bowtie" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
+  <svg *ngIf="inputs && outputs" class="bowtie" [class.rtl]="dir === 'rtl'" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
     <defs>
       <marker id="input-arrow" viewBox="-5 -5 10 10"
           refX="0" refY="0"

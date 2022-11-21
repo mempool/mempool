@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
@@ -50,6 +50,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
 
+  dir: 'rtl' | 'ltr' = 'ltr';
+
   inputData: Xput[];
   outputData: Xput[];
   inputs: SvgLine[];
@@ -90,7 +92,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     private relativeUrlPipe: RelativeUrlPipe,
     private stateService: StateService,
     private apiService: ApiService,
-  ) { }
+    @Inject(LOCALE_ID) private locale: string,
+  ) {
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+      this.dir = 'rtl';
+    }
+  }
 
   ngOnInit(): void {
     this.initGraph();
@@ -420,7 +427,11 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
-    this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+    if (this.dir === 'rtl') {
+      this.tooltipPosition = { x: this.width - event.offsetX, y: event.offsetY };
+    } else {
+     this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+    }
   }
 
   onHover(event, side, index): void {
