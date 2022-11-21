@@ -8,8 +8,8 @@
 
 .box-right {
   text-align: right;
-  width: 50%;
-  margin-top: auto;
+  margin: auto;
+  white-space: nowrap;
 }
 
 .shared-block {
@@ -20,5 +20,11 @@
 @media (max-width: 768px) {
   .box {
     margin-bottom: 20px;
+  }
+}
+
+.base-fee {
+  @media (max-width: 768px) {
+    padding-right: 0px;
   }
 }

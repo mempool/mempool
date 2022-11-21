@@ -1,0 +1,63 @@
+<div class="box preview-box" *ngIf="(nodes$ | async) as ispNodes">
+  <app-preview-title>
+    <span i18n="lightning.node-isp">Lightning ISP</span>
+  </app-preview-title>
+  <div class="row d-flex justify-content-between full-width-row">
+    <div class="title-wrapper">
+      <h1 class="title">{{ isp?.name }}</h1>
+      <a class="subtitle" [routerLink]="['/lightning/nodes/isp/' | relativeUrl, isp?.id]">
+        ASN {{ isp?.id }}
+      </a>
+    </div>
+    <div class="logo-wrapper">
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md">
+      <table class="table table-borderless table-striped table-fixed">
+        <col span="1" width="250px">
+        <tbody>
+          <tr>
+            <td i18n="lightning.node-count">Nodes</td>
+            <td>{{ ispNodes.nodes.length }}</td>
+          </tr>
+          <tr>
+            <td i18n="lightning.liquidity">Liquidity</td>
+            <td>
+              <app-amount *ngIf="ispNodes.sumLiquidity > 100000000; else smallnode" [satoshis]="ispNodes.sumLiquidity" [digitsInfo]="'1.2-2'" [noFiat]="false"></app-amount>
+              <ng-template #smallnode>
+                <app-sats [satoshis]="ispNodes.sumLiquidity" digitsInfo="1.0-2"></app-sats>
+              </ng-template>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="lightning.channels">Channels</td>
+            <td>{{ ispNodes.sumChannels }}</td>
+          </tr>
+          <tr>
+            <td i18n="lightning.top-country">Top country</td>
+            <td class="text-truncate">
+              <span class="">{{ ispNodes.topCountry.country }} {{ ispNodes.topCountry.flag }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="lightning.top-node">Top node</td>
+            <td class="text-truncate">
+              {{ ispNodes.nodes[0].alias }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md map-col">
+      <app-nodes-map [widget]="true" [nodes]="ispNodes.nodes" type="isp" [fitContainer]="true" (readyEvent)="onMapReady()"></app-nodes-map>
+    </div>
+  </div>
+</div>
+
+<ng-template [ngIf]="error">
+  <div class="text-center">
+    <span i18n="error.general-loading-data">Error loading data.</span>
+  </div>
+</ng-template>

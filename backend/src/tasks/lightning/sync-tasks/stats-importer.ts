@@ -20,6 +20,10 @@ class LightningStatsImporter {
     logger.info('Caching funding txs for currently existing channels');
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
+    if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
+      return;
+    }
+
     await this.$importHistoricalLightningStats();
     await this.$cleanupIncorrectSnapshot();
   }
@@ -53,6 +57,8 @@ class LightningStatsImporter {
           features: node.features,
         });
         nodesInDb[node.pub_key] = node;
+      } else {
+        await nodesApi.$updateNodeSockets(node.pub_key, node.addresses);
       }
 
       let hasOnion = false;
@@ -354,9 +360,11 @@ class LightningStatsImporter {
           fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
         } catch (e: any) {
           if (e.errno == -1) { // EISDIR - Ignore directorie
+            totalProcessed++;
             continue;
           }
           logger.err(`Unable to open ${this.topologiesFolder}/${filename}`);
+          totalProcessed++;
           continue;
         }
 
@@ -365,7 +373,8 @@ class LightningStatsImporter {
           graph = JSON.parse(fileContent);
           graph = await this.cleanupTopology(graph);
         } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`);
+          totalProcessed++;
           continue;
         }
     
@@ -415,9 +424,10 @@ class LightningStatsImporter {
       const addressesParts = (node.addresses ?? '').split(',');
       const addresses: any[] = [];
       for (const address of addressesParts) {
+        const formatted = Common.findSocketNetwork(address);
         addresses.push({
-          network: '',
-          addr: address
+          network: formatted.network,
+          addr: formatted.url
         });
       }
 

@@ -1,5 +1,5 @@
 import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -18,6 +18,24 @@ import { LanguageService } from './services/language.service';
 import { FiatShortenerPipe } from './shared/pipes/fiat-shortener.pipe';
 import { ShortenStringPipe } from './shared/pipes/shorten-string-pipe/shorten-string.pipe';
 import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe';
+import { AppPreloadingStrategy } from './app.preloading-strategy';
+
+const providers = [
+  ElectrsApiService,
+  StateService,
+  WebsocketService,
+  AudioService,
+  SeoService,
+  OpenGraphService,
+  StorageService,
+  EnterpriseService,
+  LanguageService,
+  ShortenStringPipe,
+  FiatShortenerPipe,
+  CapAddressPipe,
+  AppPreloadingStrategy,
+  { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
+];
 
 @NgModule({
   declarations: [
@@ -31,21 +49,17 @@ import { CapAddressPipe } from './shared/pipes/cap-address-pipe/cap-address-pipe
     BrowserAnimationsModule,
     SharedModule,
   ],
-  providers: [
-    ElectrsApiService,
-    StateService,
-    WebsocketService,
-    AudioService,
-    SeoService,
-    OpenGraphService,
-    StorageService,
-    EnterpriseService,
-    LanguageService,
-    ShortenStringPipe,
-    FiatShortenerPipe,
-    CapAddressPipe,
-    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor, multi: true }
-  ],
+  providers: providers,
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+@NgModule({})
+export class MempoolSharedModule{
+  static forRoot(): ModuleWithProviders<MempoolSharedModule> {
+    return {
+      ngModule: AppModule,
+      providers: providers
+    };
+  }
+}

@@ -1,6 +1,6 @@
 import { Component, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import * as QRCode from 'qrcode';
-import { StateService } from 'src/app/services/state.service';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-qrcode',

@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy } from '@angular/core';
-import { TransactionStripped } from 'src/app/interfaces/websocket.interface';
+import { Component, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter, NgZone, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
+import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
@@ -11,12 +11,13 @@ import { Position } from './sprite-types';
   templateUrl: './block-overview-graph.component.html',
   styleUrls: ['./block-overview-graph.component.scss'],
 })
-export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
+export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isLoading: boolean;
   @Input() resolution: number;
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
+  @Input() disableSpinner = false;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
   @Output() readyEvent = new EventEmitter();
 
@@ -54,6 +55,14 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy {
     this.initCanvas();
 
     this.resizeCanvas();
+  }
+
+  ngOnChanges(changes): void {
+    if (changes.orientation || changes.flip) {
+      if (this.scene) {
+        this.scene.setOrientation(this.orientation, this.flip);
+      }
+    }
   }
 
   ngOnDestroy(): void {

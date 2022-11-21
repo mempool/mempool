@@ -89,7 +89,7 @@ body {
 
 .preview-box {
   min-height: 520px;
-  padding: 1.5rem 3rem;
+  padding: 1rem 3rem 1.5rem;
 }
 
 @media (max-width: 767.98px) {
@@ -668,6 +668,15 @@ h1, h2, h3 {
   background-color: #2e324e;
 }
 
+.progress.progress-health {
+  background: repeating-linear-gradient(to right, #2d3348, #2d3348 0%, #105fb0 0%, #1a9436 100%);
+  justify-content: flex-end;
+}
+
+.progress-bar.progress-bar-health {
+  background: #2d3348;
+}
+
 .mt-2-5, .my-2-5 {
   margin-top: 0.75rem !important;
 }
@@ -704,6 +713,10 @@ th {
 .crypto { color: #fa3d3d }
 .locktime { color: #ff8c00 }
 .reserved { color: #ff8c00 }
+
+.shortable-address {
+  font-family: monospace;
+}
 
 .rtl-layout {
 
@@ -881,6 +894,7 @@ th {
 
   .shortable-address {
     direction: ltr;
+    font-family: monospace;
   }
 
   .lastest-blocks-table {
@@ -1054,4 +1068,8 @@ th {
 
 .page-item {
   font-family: monospace;
+}
+
+#divider {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='104%25' height='100%25' fill='none' stroke='white' stroke-width='4' stroke-dasharray='10%2c17' stroke-dashoffset='18' stroke-linecap='square'/%3e%3c/svg%3e");
 }

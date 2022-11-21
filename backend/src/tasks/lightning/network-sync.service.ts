@@ -12,9 +12,11 @@ import { ResultSetHeader } from 'mysql2';
 import fundingTxFetcher from './sync-tasks/funding-tx-fetcher';
 import NodesSocketsRepository from '../../repositories/NodesSocketsRepository';
 import { Common } from '../../api/common';
+import blocks from '../../api/blocks';
 
 class NetworkSyncService {
   loggerTimer = 0;
+  closedChannelsScanBlock = 0;
 
   constructor() {}
 
@@ -63,6 +65,9 @@ class NetworkSyncService {
     let deletedSockets = 0;
     const graphNodesPubkeys: string[] = [];
     for (const node of nodes) {
+      const latestUpdated = await channelsApi.$getLatestChannelUpdateForNode(node.pub_key);
+      node.last_update = Math.max(node.last_update, latestUpdated);
+
       await nodesApi.$saveNode(node);
       graphNodesPubkeys.push(node.pub_key);
       ++progress;
@@ -237,10 +242,22 @@ class NetworkSyncService {
   }
 
   private async $scanForClosedChannels(): Promise<void> {
+    if (this.closedChannelsScanBlock === blocks.getCurrentBlockHeight()) {
+      logger.debug(`We've already scan closed channels for this block, skipping.`);
+      return;
+    }
+
     let progress = 0;
 
     try {
-      logger.info(`Starting closed channels scan`);
+      let log = `Starting closed channels scan`;
+      if (this.closedChannelsScanBlock > 0) {
+        log += `. Last scan was at block ${this.closedChannelsScanBlock}`;
+      } else {
+        log += ` for the first time`;
+      }
+      logger.info(log);
+
       const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
@@ -260,7 +277,9 @@ class NetworkSyncService {
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
-      logger.info(`Closed channels scan complete.`);
+
+      this.closedChannelsScanBlock = blocks.getCurrentBlockHeight();
+      logger.info(`Closed channels scan completed at block ${this.closedChannelsScanBlock}`);
     } catch (e) {
       logger.err('$scanForClosedChannels() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -270,6 +289,24 @@ class NetworkSyncService {
     1. Mutually closed
     2. Forced closed
     3. Forced closed with penalty
+
+    ┌────────────────────────────────────┐       ┌────────────────────────────┐
+    │ outputs contain revocation script? ├──yes──► force close w/ penalty = 3 │
+    └──────────────┬─────────────────────┘       └────────────────────────────┘
+                   no
+    ┌──────────────▼──────────────────────────┐
+    │ outputs contain other lightning script? ├──┐
+    └──────────────┬──────────────────────────┘  │
+                   no                           yes
+    ┌──────────────▼─────────────┐               │
+    │ sequence starts with 0x80  │      ┌────────▼────────┐
+    │           and              ├──────► force close = 2 │
+    │ locktime starts with 0x20? │      └─────────────────┘
+    └──────────────┬─────────────┘
+                   no
+         ┌─────────▼────────┐
+         │ mutual close = 1 │
+         └──────────────────┘
   */
 
   private async $runClosedChannelsForensics(): Promise<void> {
@@ -307,36 +344,31 @@ class NetworkSyncService {
               lightningScriptReasons.push(lightningScript);
             }
           }
-          if (lightningScriptReasons.length === outspends.length
-            && lightningScriptReasons.filter((r) => r === 1).length === outspends.length) {
-            reason = 1;
-          } else {
-            const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
-            if (filteredReasons.length) {
-              if (filteredReasons.some((r) => r === 2 || r === 4)) {
-                reason = 3;
-              } else {
-                reason = 2;
-              }
+          const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
+          if (filteredReasons.length) {
+            if (filteredReasons.some((r) => r === 2 || r === 4)) {
+              reason = 3;
             } else {
-              /*
-                We can detect a commitment transaction (force close) by reading Sequence and Locktime
-                https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
-              */
-              let closingTx: IEsploraApi.Transaction | undefined;
-              try {
-                closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
-              } catch (e) {
-                logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
-                continue;
-              }
-              const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
-              const locktimeHex: string = closingTx.locktime.toString(16);
-              if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
-                reason = 2; // Here we can't be sure if it's a penalty or not
-              } else {
-                reason = 1;
-              }
+              reason = 2;
+            }
+          } else {
+            /*
+              We can detect a commitment transaction (force close) by reading Sequence and Locktime
+              https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
+            */
+            let closingTx: IEsploraApi.Transaction | undefined;
+            try {
+              closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
+            } catch (e) {
+              logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
+              continue;
+            }
+            const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
+            const locktimeHex: string = closingTx.locktime.toString(16);
+            if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
+              reason = 2; // Here we can't be sure if it's a penalty or not
+            } else {
+              reason = 1;
             }
           }
           if (reason) {

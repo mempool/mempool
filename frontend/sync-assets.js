@@ -4,9 +4,13 @@ var fs = require('fs');
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
 
-var PATH = 'dist/mempool/browser/en-US/resources/';
-if (process.argv[2] && process.argv[2] === 'dev') {
-  PATH = 'src/resources/';
+var PATH;
+if (process.argv[2]) {
+  PATH = process.argv[2];
+}
+
+if (!PATH) {
+  throw new Error('Resource path argument is not set');
 }
 
 try {

@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { languages } from 'src/app/app.constants';
-import { LanguageService } from 'src/app/services/language.service';
+import { languages } from '../../app.constants';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-language-selector',

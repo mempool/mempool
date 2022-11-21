@@ -20,6 +20,7 @@ import indexer from '../indexer';
 import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
@@ -186,14 +187,18 @@ class Blocks {
       if (!pool) { // We should never have this situation in practise
         logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
           `Check your "pools" table entries`);
-        return blockExtended;
+      } else {
+        blockExtended.extras.pool = {
+          id: pool.id,
+          name: pool.name,
+          slug: pool.slug,
+        };
       }
 
-      blockExtended.extras.pool = {
-        id: pool.id,
-        name: pool.name,
-        slug: pool.slug,
-      };
+      const auditSummary = await BlocksAuditsRepository.$getShortBlockAudit(block.id);
+      if (auditSummary) {
+        blockExtended.extras.matchRate = auditSummary.matchRate;
+      }
     }
 
     return blockExtended;

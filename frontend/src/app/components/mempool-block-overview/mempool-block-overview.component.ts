@@ -1,12 +1,12 @@
 import { Component, ComponentRef, ViewChild, HostListener, Input, Output, EventEmitter,
-  OnDestroy, OnChanges, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
-import { StateService } from 'src/app/services/state.service';
-import { MempoolBlockDelta, TransactionStripped } from 'src/app/interfaces/websocket.interface';
-import { BlockOverviewGraphComponent } from 'src/app/components/block-overview-graph/block-overview-graph.component';
+  OnInit, OnDestroy, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { StateService } from '../../services/state.service';
+import { MempoolBlockDelta, TransactionStripped } from '../../interfaces/websocket.interface';
+import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { Subscription, BehaviorSubject, merge, of } from 'rxjs';
 import { switchMap, filter } from 'rxjs/operators';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
+import { WebsocketService } from '../../services/websocket.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   templateUrl: './mempool-block-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, AfterViewInit {
+export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
@@ -23,6 +23,10 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
   lastBlockHeight: number;
   blockIndex: number;
   isLoading$ = new BehaviorSubject<boolean>(true);
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean;
+  chainDirection: string = 'right';
+  poolDirection: string = 'left';
 
   blockSub: Subscription;
   deltaSub: Subscription;
@@ -31,7 +35,17 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
     public stateService: StateService,
     private websocketService: WebsocketService,
     private router: Router,
+    private cd: ChangeDetectorRef,
   ) { }
+
+  ngOnInit(): void {
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+      this.chainDirection = ltr ? 'left' : 'right';
+      this.poolDirection = ltr ? 'right' : 'left';
+      this.cd.markForCheck();
+    });
+  }
 
   ngAfterViewInit(): void {
     this.blockSub = merge(
@@ -50,7 +64,7 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
   ngOnChanges(changes): void {
     if (changes.index) {
       if (this.blockGraph) {
-        this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? 'right' : 'left');
+        this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? this.chainDirection : this.poolDirection);
       }
       this.isLoading$.next(true);
       this.websocketService.startTrackMempoolBlock(changes.index.currentValue);
@@ -60,16 +74,17 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
   ngOnDestroy(): void {
     this.blockSub.unsubscribe();
     this.deltaSub.unsubscribe();
+    this.timeLtrSubscription.unsubscribe();
     this.websocketService.stopTrackMempoolBlock();
   }
 
   replaceBlock(transactionsStripped: TransactionStripped[]): void {
     const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight);
     if (this.blockIndex !== this.index) {
-      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right';
+      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? this.poolDirection : this.chainDirection;
       this.blockGraph.enter(transactionsStripped, direction);
     } else {
-      this.blockGraph.replace(transactionsStripped, blockMined ? 'right' : 'left');
+      this.blockGraph.replace(transactionsStripped, blockMined ? this.chainDirection : this.poolDirection);
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight;
@@ -81,10 +96,10 @@ export class MempoolBlockOverviewComponent implements OnDestroy, OnChanges, Afte
     const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight);
 
     if (this.blockIndex !== this.index) {
-      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? 'left' : 'right';
+      const direction = (this.blockIndex == null || this.index < this.blockIndex) ? this.poolDirection : this.chainDirection;
       this.blockGraph.replace(delta.added, direction);
     } else {
-      this.blockGraph.update(delta.added, delta.removed, blockMined ? 'right' : 'left', blockMined);
+      this.blockGraph.update(delta.added, delta.removed, blockMined ? this.chainDirection : this.poolDirection, blockMined);
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight;

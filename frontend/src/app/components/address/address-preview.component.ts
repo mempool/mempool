@@ -3,13 +3,13 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
 import { Address, Transaction } from '../../interfaces/electrs.interface';
-import { StateService } from 'src/app/services/state.service';
-import { OpenGraphService } from 'src/app/services/opengraph.service';
-import { AudioService } from 'src/app/services/audio.service';
-import { ApiService } from 'src/app/services/api.service';
+import { StateService } from '../../services/state.service';
+import { OpenGraphService } from '../../services/opengraph.service';
+import { AudioService } from '../../services/audio.service';
+import { ApiService } from '../../services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
-import { SeoService } from 'src/app/services/seo.service';
-import { AddressInformation } from 'src/app/interfaces/node-api.interface';
+import { SeoService } from '../../services/seo.service';
+import { AddressInformation } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-address-preview',
@@ -19,6 +19,7 @@ import { AddressInformation } from 'src/app/interfaces/node-api.interface';
 export class AddressPreviewComponent implements OnInit, OnDestroy {
   network = '';
 
+  rawAddress: string;
   address: Address;
   addressString: string;
   isLoadingAddress = true;
@@ -55,7 +56,8 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
     this.mainSubscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          this.openGraphService.waitFor('address-data');
+          this.rawAddress = params.get('id') || '';
+          this.openGraphService.waitFor('address-data-' + this.rawAddress);
           this.error = undefined;
           this.isLoadingAddress = true;
           this.loadedConfirmedTxCount = 0;
@@ -73,7 +75,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
                 this.isLoadingAddress = false;
                 this.error = err;
                 console.log(err);
-                this.openGraphService.fail('address-data');
+                this.openGraphService.fail('address-data-' + this.rawAddress);
                 return of(null);
               })
             );
@@ -91,7 +93,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           this.address = address;
           this.updateChainStats();
           this.isLoadingAddress = false;
-          this.openGraphService.waitOver('address-data');
+          this.openGraphService.waitOver('address-data-' + this.rawAddress);
         })
       )
       .subscribe(() => {},
@@ -99,7 +101,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           console.log(error);
           this.error = error;
           this.isLoadingAddress = false;
-          this.openGraphService.fail('address-data');
+          this.openGraphService.fail('address-data-' + this.rawAddress);
         }
       );
   }

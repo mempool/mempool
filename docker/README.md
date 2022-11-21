@@ -403,7 +403,7 @@ Corresponding `docker-compose.yml` overrides:
 
 `mempool-config.json`:
 ```
-  "CLN": {
+  "CLIGHTNING": {
     "SOCKET": ""
   }
 ```
@@ -412,6 +412,6 @@ Corresponding `docker-compose.yml` overrides:
 ```
   api:
     environment:
-      CLN_SOCKET: ""
+      CLIGHTNING_SOCKET: ""
       ...
 ```

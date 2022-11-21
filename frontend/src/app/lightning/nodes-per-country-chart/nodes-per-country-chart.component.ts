@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone } from 
 import { Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { map, Observable, share, tap } from 'rxjs';
-import { chartColors } from 'src/app/app.constants';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
-import { StateService } from 'src/app/services/state.service';
-import { download } from 'src/app/shared/graphs.utils';
-import { AmountShortenerPipe } from 'src/app/shared/pipes/amount-shortener.pipe';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from 'src/app/shared/common.utils';
+import { chartColors } from '../../app.constants';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { StateService } from '../../services/state.service';
+import { download } from '../../shared/graphs.utils';
+import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { getFlagEmoji } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',
@@ -43,9 +43,9 @@ export class NodesPerCountryChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`Lightning nodes per country`);
+    this.seoService.setTitle($localize`:@@9d3ad4c6623870d96b65fb7a708fed6ce7c20044:Lightning Nodes Per Country`);
 
-    this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry()
+    this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
         map(data => {
           for (let i = 0; i < data.length; ++i) {
@@ -100,7 +100,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             return `<b style="color: white">${country.name.en} (${country.share}%)</b><br>` +
-              $localize`${country.count.toString()} nodes<br>` +
+              $localize`${country.count.toString()} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(country.capacity / 100000000, 2)} BTC capacity`
             ;
           }

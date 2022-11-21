@@ -31,17 +31,16 @@
 
   .position-container {
     position: absolute;
-    left: 50%;
+    left: 0;
     bottom: 170px;
+    transform: translateX(50vw);
   }
 
   #divider {
-    width: 3px;
+    width: 2px;
     height: 175px;
     left: 0;
     top: -40px;
-    background-image: url('/resources/divider-new.png');
-    background-repeat: repeat-y;
     position: absolute;
     img {
       position: absolute;
@@ -49,9 +48,33 @@
       top: -28px;
     }
   }
+
+  &.time-ltr {
+    .blocks-wrapper {
+      transform: scaleX(-1);
+    }
+  }
 }
+
+:host-context(.ltr-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: ltr;
+  }
+}
+
+:host-context(.rtl-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: rtl;
+  }
+}
+
 .tv-container {
   display: flex;
   margin-top: 0px;
   flex-direction: column;
 }
+
+
+
