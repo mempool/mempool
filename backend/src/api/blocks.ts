@@ -195,9 +195,9 @@ class Blocks {
         };
       }
 
-      const auditSummary = await BlocksAuditsRepository.$getShortBlockAudit(block.id);
-      if (auditSummary) {
-        blockExtended.extras.matchRate = auditSummary.matchRate;
+      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
+      if (auditScore != null) {
+        blockExtended.extras.matchRate = auditScore.matchRate;
       }
     }
 
