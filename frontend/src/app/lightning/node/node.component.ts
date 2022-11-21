@@ -2,10 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
-import { isMobile } from '../../shared/common.utils';
-import { GeolocationData } from 'src/app/shared/components/geolocation/geolocation.component';
+import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 
 @Component({
   selector: 'app-node',
@@ -22,18 +21,15 @@ export class NodeComponent implements OnInit {
   channelsListStatus: string;
   error: Error;
   publicKey: string;
-
-  publicKeySize = 99;
+  channelListLoading = false;
+  clearnetSocketCount = 0;
+  torSocketCount = 0;
 
   constructor(
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
-  ) {
-    if (isMobile()) {
-      this.publicKeySize = 12;
-    }
-  }
+  ) { }
 
   ngOnInit(): void {
     this.node$ = this.activatedRoute.paramMap
@@ -43,7 +39,7 @@ export class NodeComponent implements OnInit {
           return this.lightningApiService.getNode$(params.get('public_key'));
         }),
         map((node) => {
-          this.seoService.setTitle(`Node: ${node.alias}`);
+          this.seoService.setTitle($localize`Node: ${node.alias}`);
 
           const socketsObject = [];
           for (const socket of node.sockets.split(',')) {
@@ -53,10 +49,13 @@ export class NodeComponent implements OnInit {
             let label = '';
             if (socket.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/)) {
               label = 'IPv4';
+              this.clearnetSocketCount++;
             } else if (socket.indexOf('[') > -1) {
               label = 'IPv6';
+              this.clearnetSocketCount++;
             } else if (socket.indexOf('onion') > -1) {
               label = 'Tor';
+              this.torSocketCount++;
             }
             socketsObject.push({
               label: label,
@@ -96,5 +95,9 @@ export class NodeComponent implements OnInit {
 
   onChannelsListStatusChanged(e) {
     this.channelsListStatus = e;
+  }
+
+  onLoadingEvent(e) {
+    this.channelListLoading = e;
   }
 }

@@ -1,29 +1,11 @@
 .title-container {
   display: flex;
-  flex-direction: row;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  flex-direction: column;
 }
 
 .tx-link {
   display: flex;
-	flex-grow: 1;
-	@media (min-width: 650px) {
-    align-self: end;
-    margin-left: 15px;
-    margin-top: 0px;
-    margin-bottom: -3px;
-	}
-	@media (min-width: 768px) {
-    margin-bottom: 4px;
-    top: 1px;
-    position: relative;
-	}
-	@media (max-width: 768px) {
-	  order: 2;
-	}
+	flex-wrap: wrap;
 }
 
 .qr-wrapper {
@@ -56,4 +38,37 @@ app-fiat {
     display: inline-block;
     margin-left: 10px;
   }
+}
+
+.spinner-border {
+  @media (min-width: 768px) {
+    margin-top: 6.5px;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  @media (max-width: 768px) {
+    margin-top: 2.3px;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 100;
+}
+
+.label {
+  width: 50%;
+  @media (min-width: 576px) {
+    width: 40%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  h1 > .skeleton-loader {
+    height: 28px !important;
+  };
 }

@@ -170,6 +170,10 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                "src/favicon.ico",
+                "src/robots.txt"
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -216,6 +220,10 @@
             },
             "local": {
               "proxyConfig": "proxy.conf.local.js",
+              "verbose": true
+            },
+            "local-esplora": {
+              "proxyConfig": "proxy.conf.local-esplora.js",
               "verbose": true
             },
             "mixed": {

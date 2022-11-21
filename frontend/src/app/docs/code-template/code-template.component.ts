@@ -152,6 +152,7 @@ export class CodeTemplateComponent implements OnInit {
 const init = async () => {
   ${codeText}
 };
+
 init();`;
     }
   }
@@ -285,6 +286,10 @@ yarn add @mempool/liquid.js`;
       return code.codeSampleBisq.response;
     }
     return code.codeSampleMainnet.response;
+  }
+
+  wrapPythonTemplate(code: any) {
+    return ( ( this.network === 'testnet' || this.network === 'signet' ) ? ( code.codeTemplate.python.replace( "wss://mempool.space/api/v1/ws", "wss://mempool.space/" + this.network + "/api/v1/ws" ) ) : code.codeTemplate.python );
   }
 
   replaceJSPlaceholder(text: string, code: any) {

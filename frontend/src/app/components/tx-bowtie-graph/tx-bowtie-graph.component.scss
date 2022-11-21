@@ -1,0 +1,40 @@
+.bowtie {
+  .line {
+    fill: none;
+
+    &.input {
+      stroke: url(#input-gradient);
+    }
+    &.output {
+      stroke: url(#output-gradient);
+    }
+    &.fee {
+      stroke: url(#fee-gradient);
+    }
+
+    &.highlight {
+      z-index: 8;
+      cursor: pointer;
+      &.input {
+        stroke: url(#input-highlight-gradient);
+      }
+      &.output {
+        stroke: url(#output-highlight-gradient);
+      }
+    }
+
+    &:hover {
+      z-index: 10;
+      cursor: pointer;
+      &.input {
+        stroke: url(#input-hover-gradient);
+      }
+      &.output {
+        stroke: url(#output-hover-gradient);
+      }
+      &.fee {
+        stroke: url(#fee-hover-gradient);
+      }
+    }
+  }
+}

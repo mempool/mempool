@@ -83,13 +83,13 @@ export class OpenGraphService {
   waitOver(event) {
     if (this.previewLoadingEvents[event]) {
       this.previewLoadingEvents[event]--;
-      if (this.previewLoadingEvents[event] === 0) {
+      if (this.previewLoadingEvents[event] === 0 && this.previewLoadingCount > 0) {
         delete this.previewLoadingEvents[event]
         this.previewLoadingCount--;
       }
-    }
-    if (this.previewLoadingCount === 0) {
-      this.metaService.updateTag({ property: 'og:preview:ready', content: 'ready'});
+      if (this.previewLoadingCount === 0) {
+        this.metaService.updateTag({ property: 'og:preview:ready', content: 'ready'});
+      }
     }
   }
 

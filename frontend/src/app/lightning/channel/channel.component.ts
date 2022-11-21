@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { forkJoin, Observable, of, share, zip } from 'rxjs';
+import { Observable, of, zip } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { IChannel } from 'src/app/interfaces/node-api.interface';
-import { ApiService } from 'src/app/services/api.service';
-import { ElectrsApiService } from 'src/app/services/electrs-api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { IChannel } from '../../interfaces/node-api.interface';
+import { ElectrsApiService } from '../../services/electrs-api.service';
+import { SeoService } from '../../services/seo.service';
 import { LightningApiService } from '../lightning-api.service';
 
 @Component({
@@ -32,9 +31,11 @@ export class ChannelComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           this.error = null;
-          this.seoService.setTitle(`Channel: ${params.get('short_id')}`);
           return this.lightningApiService.getChannel$(params.get('short_id'))
             .pipe(
+              tap((value) => {
+                this.seoService.setTitle($localize`Channel: ${value.short_id}`);
+              }),
               catchError((err) => {
                 this.error = err;
                 return of(null);

@@ -2,15 +2,15 @@ import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } 
 import { EChartsOption, graphic } from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
-import { SeoService } from 'src/app/services/seo.service';
+import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../services/seo.service';
 import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from 'src/app/shared/graphs.utils';
-import { MiningService } from 'src/app/services/mining.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { MiningService } from '../../services/mining.service';
+import { StorageService } from '../../services/storage.service';
 import { ActivatedRoute } from '@angular/router';
-import { FiatShortenerPipe } from 'src/app/shared/pipes/fiat-shortener.pipe';
+import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
 
 @Component({
   selector: 'app-block-rewards-graph',

@@ -1,12 +1,9 @@
 # start on reboot
 @reboot sleep 10 ; $HOME/start
 
-# start cache warmer on reboot
-@reboot sleep 180 ; /mempool/mempool/production/nginx-cache-warmer >/dev/null 2>&1 &
-
 # daily backup
 37 13 * * * sleep 30 ; /mempool/mempool.space/backup >/dev/null 2>&1 &
 
 # hourly liquid asset update
-6 * * * * cd $HOME/liquid/frontend && npm run sync-assets && rsync -av $HOME/liquid/frontend/dist/mempool/browser/en-US/resources/assets* $HOME/public_html/liquid/en-US/resources/ >/dev/null 2>&1
+6 * * * * cd $HOME/liquid/frontend && npm run sync-assets && rsync -av $HOME/liquid/frontend/dist/mempool/browser/resources/assets* $HOME/public_html/liquid/resources/ >/dev/null 2>&1
 

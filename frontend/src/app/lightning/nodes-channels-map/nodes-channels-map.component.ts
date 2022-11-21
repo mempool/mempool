@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
-import { SeoService } from 'src/app/services/seo.service';
-import { ApiService } from 'src/app/services/api.service';
+import { SeoService } from '../../services/seo.service';
+import { ApiService } from '../../services/api.service';
 import { Observable, switchMap, tap, zip } from 'rxjs';
-import { AssetsService } from 'src/app/services/assets.service';
+import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { RelativeUrlPipe } from 'src/app/shared/pipes/relative-url/relative-url.pipe';
-import { StateService } from 'src/app/services/state.service';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { StateService } from '../../services/state.service';
 import { EChartsOption, registerMap } from 'echarts';
 import 'echarts-gl';
-import { isMobile } from 'src/app/shared/common.utils';
+import { isMobile } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-nodes-channels-map',
@@ -23,6 +23,7 @@ export class NodesChannelsMap implements OnInit {
   @Input() fitContainer = false;
   @Input() hasLocation = true;
   @Input() placeholder = false;
+  @Input() disableSpinner = false;
   @Output() readyEvent = new EventEmitter();
 
   channelsObservable: Observable<any>; 
@@ -65,7 +66,7 @@ export class NodesChannelsMap implements OnInit {
     }
     
     if (this.style === 'graph') {
-      this.seoService.setTitle($localize`Lightning nodes channels world map`);
+      this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
     }
 
     if (['nodepage', 'channelpage'].includes(this.style)) {
@@ -238,7 +239,7 @@ export class NodesChannelsMap implements OnInit {
         roam: this.style === 'widget' ? false : true,
         itemStyle: {
           borderColor: 'black',
-          color: '#ffffff44'
+          color: '#272b3f'
         },
         scaleLimit: {
           min: 1.3,

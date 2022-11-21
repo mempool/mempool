@@ -10,24 +10,8 @@
 	font-size: 28px;
 }
 
-.btn-small-height {
-	line-height: 1.1;
-}
-
-.arrow-green {
-	color: #1a9436;
-}
-
-.arrow-red {
-	color: #dc3545;
-}
-
 .row {
 	flex-direction: row;
-}
-
-.effective-fee-container {
-	display: inline-block;
 }
 
 .title {
@@ -42,22 +26,13 @@
 	margin-top: 0px;
 }
 
-.page-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+.features {
+  font-size: 24px;
+  margin-left: 1em;
+}
 
-  h1 {
-    font-size: 52px;
-    margin: 0;
-    line-height: 1;
-  }
-
-  .features {
-    font-size: 24px;
-  }
+.top-data {
+  font-size: 28px;
 }
 
 .table {
@@ -68,8 +43,76 @@
   }
 }
 
+.field {
+  font-size: 32px;
+  margin: 0;
+
+  ::ng-deep .symbol {
+    font-size: 24px;
+  }
+
+  .label {
+    color: #ffffff66;
+  }
+
+  &.pair > *:first-child {
+    margin-right: 1em;
+  }
+}
+
 .tx-link {
-  display: inline-block;
+  display: inline;
   font-size: 28px;
   margin-bottom: 6px;
+}
+
+.graph-wrapper {
+  position: relative;
+  background: #181b2d;
+  padding: 10px;
+  padding-bottom: 0;
+
+  .above-bow {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+  }
+
+  .overlaid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: left;
+    font-size: 28px;
+    max-width: 90%;
+    margin: auto;
+    overflow: hidden;
+
+    .opreturns {
+      width: auto;
+      margin: auto;
+      table-layout: auto;
+      background: #2d3348af;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+
+      td {
+        padding: 10px 10px;
+
+        &.message {
+          overflow: hidden;
+          display: inline-block;
+          vertical-align: bottom;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          text-align: left;
+        }
+      }
+    }
+  }
 }

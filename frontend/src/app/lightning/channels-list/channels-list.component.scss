@@ -7,3 +7,20 @@
   font-size: 12px;
   top: 0px;
 }
+
+.formRadioGroup {
+  @media (min-width: 435px) {
+    position: absolute;
+    right: 0;
+    top: -46px;
+  }
+  @media (max-width: 435px) {
+    display: flex;
+  }
+}
+
+.btn-group {
+  @media (max-width: 435px) {
+    flex-grow: 1;
+  }
+}

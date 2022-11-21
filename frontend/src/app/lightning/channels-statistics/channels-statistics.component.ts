@@ -18,5 +18,6 @@ export class ChannelsStatisticsComponent implements OnInit {
 
   switchMode(mode: 'avg' | 'med') {
     this.mode = mode;
+    return false;
   }
 }

@@ -13,9 +13,13 @@ export function convertNode(clNode: any): ILightningApi.Node {
     features: [], // TODO parse and return clNode.feature
     pub_key: clNode.nodeid,
     addresses: clNode.addresses?.map((addr) => {
+      let address = addr.address;
+      if (addr.type === 'ipv6') {
+        address = `[${address}]`;
+      }
       return {
         network: addr.type,
-        addr: `${addr.address}:${addr.port}`
+        addr: `${address}:${addr.port}`
       };
     }) ?? [],
     last_update: clNode?.last_timestamp ?? 0,
@@ -66,6 +70,8 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
       logger.info(`Building partial channels from clightning output. Channels processed: ${channelProcessed + 1} of ${keys.length}`);
       loggerTimer = new Date().getTime() / 1000;
     }
+
+    channelProcessed++;
   }
 
   return consolidatedChannelList;
@@ -120,7 +126,7 @@ async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Cha
  */
 function convertPolicy(clChannel: any): ILightningApi.RoutingPolicy {
   return {
-    time_lock_delta: 0, // TODO
+    time_lock_delta: clChannel.delay,
     min_htlc: clChannel.htlc_minimum_msat.slice(0, -4),
     max_htlc_msat: clChannel.htlc_maximum_msat.slice(0, -4),
     fee_base_msat: clChannel.base_fee_millisatoshi,

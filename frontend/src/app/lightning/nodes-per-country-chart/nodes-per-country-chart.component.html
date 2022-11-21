@@ -2,7 +2,7 @@
 
   <div class="card-header">
     <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
-      <span i18n="lightning.nodes-per-country">Lightning nodes per country</span>
+      <span i18n="lightning.nodes-per-country">Lightning Nodes Per Country</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
@@ -46,7 +46,7 @@
           <td class="text-right capacity">
             <app-amount *ngIf="country.capacity > 100000000; else smallchannel" [satoshis]="country.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <ng-template #smallchannel>
-              {{ country.capacity | amountShortener: 1 }}
+              {{ country.capacity ?? 0 | amountShortener: 1 }}
               <span class="sats" i18n="shared.sats">sats</span>
             </ng-template>
           </td>

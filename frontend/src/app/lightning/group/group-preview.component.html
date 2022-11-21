@@ -1,0 +1,56 @@
+<div class="box preview-box" *ngIf="nodes$ | async as nodes">
+  <app-preview-title>
+    <span i18n="lightning.node-group">Lightning node group</span>
+  </app-preview-title>
+  <div class="row d-flex justify-content-between full-width-row">
+    <div class="logo-wrapper">
+      <app-svg-images name="officialMempoolSpace" viewBox="0 0 125 126"></app-svg-images>
+    </div>
+    <div class="title-wrapper">
+      <h1 class="title">{{ group.name }}</h1>
+    </div>
+  </div>
+  <div class="row full-width-row">
+    <div class="description-wrapper">
+      <div class="description-text">{{ group.description }}</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md">
+      <table class="table table-borderless table-striped table-fixed">
+        <col span="1" width="250px">
+        <tbody>
+          <tr></tr>
+          <tr>
+            <td i18n="lightning.node-count">Nodes</td>
+            <td>{{ nodes.nodes.length }}</td>
+          </tr>
+          <tr>
+            <td i18n="lightning.liquidity">Liquidity</td>
+            <td>
+              <app-amount *ngIf="nodes.sumLiquidity > 100000000; else smallnode" [satoshis]="nodes.sumLiquidity" [digitsInfo]="'1.2-2'" [noFiat]="false"></app-amount>
+              <ng-template #smallnode>
+                {{ nodes.sumLiquidity | amountShortener: 1 }}
+                <span class="sats" i18n="shared.sats">sats</span>
+              </ng-template>
+              <span class="d-none d-md-inline-block">&nbsp;</span>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="lightning.channels">Channels</td>
+            <td>{{ nodes.sumChannels }}</td>
+          </tr>
+          <tr *ngIf="nodes.sumChannels > 0">
+            <td i18n="lightning.active-channels-avg">Average size</td>
+            <td>
+              <app-sats [satoshis]="nodes.sumLiquidity / nodes.sumChannels"></app-sats>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md map-col">
+      <app-nodes-map [widget]="true" [nodes]="nodes.nodes" type="isp" [fitContainer]="true" (readyEvent)="onMapReady()"></app-nodes-map>
+    </div>
+  </div>
+</div>

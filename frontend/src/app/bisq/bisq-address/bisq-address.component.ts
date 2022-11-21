@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SeoService } from 'src/app/services/seo.service';
+import { SeoService } from '../../services/seo.service';
 import { switchMap, filter, catchError } from 'rxjs/operators';
 import { ParamMap, ActivatedRoute } from '@angular/router';
 import { Subscription, of } from 'rxjs';
 import { BisqTransaction } from '../bisq.interfaces';
 import { BisqApiService } from '../bisq-api.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-bisq-address',
