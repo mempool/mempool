@@ -117,6 +117,17 @@ class ChannelsApi {
     }
   }
 
+  public async $getUnresolvedClosedChannels(): Promise<any[]> {
+    try {
+      const query = `SELECT * FROM channels WHERE status = 2 AND closing_reason = 2 AND closing_resolved = 0 AND closing_transaction_id != ''`;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getUnresolvedClosedChannels error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getChannelsWithoutCreatedDate(): Promise<any[]> {
     try {
       const query = `SELECT * FROM channels WHERE created IS NULL`;
