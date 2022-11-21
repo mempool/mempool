@@ -13,6 +13,7 @@ describe('Mempool Backend Config', () => {
       const config = jest.requireActual('../config').default;
 
       expect(config.MEMPOOL).toStrictEqual({
+        ENABLED: true,
         NETWORK: 'mainnet',
         BACKEND: 'none',
         BLOCKS_SUMMARIES_INDEXING: false,
