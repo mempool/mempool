@@ -8,7 +8,7 @@
         <td *ngIf="showStartingBalance && minStartingBalance !== maxStartingBalance">{{ minStartingBalance | number : '1.0-0' }} - {{ maxStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></td>
         <td *ngIf="!showStartingBalance">?</td>
       </tr>
-      <tr>
+      <tr *ngIf="channel.status === 2">
         <td i18n="lightning.closing-balance|Channel closing balance">Closing balance</td>
         <td *ngIf="showClosingBalance && minClosingBalance === maxClosingBalance"><app-sats [satoshis]="minClosingBalance"></app-sats></td>
         <td *ngIf="showClosingBalance && minClosingBalance !== maxClosingBalance">{{ minClosingBalance | number : '1.0-0' }} - {{ maxClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></td>
