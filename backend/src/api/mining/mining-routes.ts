@@ -27,6 +27,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
     ;
   }
 
@@ -248,6 +249,29 @@ class MiningRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getHeightFromTimestamp(req: Request, res: Response) {
+    try {
+      const timestamp = parseInt(req.params.timestamp, 10);
+      // This will prevent people from entering milliseconds etc.
+      // Block timestamps are allowed to be up to 2 hours off, so 24 hours
+      // will never put the maximum value before the most recent block
+      const nowPlus1day = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+      // Prevent non-integers that are not seconds
+      if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp > nowPlus1day) {
+        throw new Error(`Invalid timestamp, value must be Unix seconds`);
+      }
+      const result = await BlocksRepository.$getBlockHeightFromTimestamp(
+        timestamp,
+      );
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
