@@ -12,6 +12,7 @@ interface SvgLine {
   style: string;
   class?: string;
   connectorPath?: string;
+  markerPath?: string;
 }
 
 interface Xput {
@@ -312,6 +313,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         style: this.makeStyle(line.thickness, xputs[i].type),
         class: xputs[i].type,
         connectorPath: this.connectors ? this.makeConnectorPath(side, line.outerY, line.innerY, line.thickness): null,
+        markerPath: this.makeMarkerPath(side, line.outerY, line.innerY, line.thickness),
       };
     });
   }
@@ -348,6 +350,22 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return `M ${10 - offset} ${y - halfWidth} L ${halfWidth + 10 - offset} ${y} L ${10 - offset} ${y + halfWidth} L -10 ${ y + halfWidth} L -10 ${y - halfWidth}`;
     } else {
       return `M ${this.width - halfWidth - 10 + offset} ${y - halfWidth} L ${this.width - 10 + offset} ${y} L ${this.width - halfWidth - 10 + offset} ${y + halfWidth} L ${this.width + 10} ${ y + halfWidth} L ${this.width + 10} ${y - halfWidth}`;
+    }
+  }
+
+  makeMarkerPath(side: 'in' | 'out', y: number, inner, weight: number): string {
+    const halfWidth = weight * 0.5;
+    const offset = Math.max(2, halfWidth * 0.2);
+
+    // align with for svg horizontal gradient bug correction
+    if (Math.round(y) === Math.round(inner)) {
+      y -= 1;
+    }
+
+    if (side === 'in') {
+      return `M ${10 - offset} ${y - halfWidth} L ${halfWidth + 10 - offset} ${y} L ${10 - offset} ${y + halfWidth} L ${offset + weight} ${ y + halfWidth} L ${offset + weight} ${y - halfWidth}`;
+    } else {
+      return `M ${this.width - halfWidth - 10 + offset} ${y - halfWidth} L ${this.width - 10 + offset} ${y} L ${this.width - halfWidth - 10 + offset} ${y + halfWidth} L ${this.width - halfWidth - 10} ${ y + halfWidth} L ${this.width - halfWidth - 10} ${y - halfWidth}`;
     }
   }
 

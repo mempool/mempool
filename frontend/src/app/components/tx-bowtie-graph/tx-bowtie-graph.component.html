@@ -82,6 +82,14 @@
         (click)="onClick($event, 'input', inputData[i].index);"
       />
       <path
+        [attr.d]="input.markerPath"
+        class="input marker-target {{input.class}}"
+        [class.highlight]="inputData[i].index === inputIndex"
+        (pointerover)="onHover($event, 'input', i);"
+        (pointerout)="onBlur($event, 'input', i);"
+        (click)="onClick($event, 'input', inputData[i].index);"
+      />
+      <path
         [attr.d]="input.path"
         class="line {{input.class}}"
         [class.highlight]="inputIndex != null && inputData[i].index === inputIndex"
@@ -96,6 +104,14 @@
       <path *ngIf="connectors && outspends[outputData[i].index]?.spent"
         [attr.d]="output.connectorPath"
         class="output connector {{output.class}}"
+        [class.highlight]="outputData[i].index === outputIndex"
+        (pointerover)="onHover($event, 'output', i);"
+        (pointerout)="onBlur($event, 'output', i);"
+        (click)="onClick($event, 'output', outputData[i].index);"
+      />
+      <path
+        [attr.d]="output.markerPath"
+        class="output marker-target {{output.class}}"
         [class.highlight]="outputData[i].index === outputIndex"
         (pointerover)="onHover($event, 'output', i);"
         (pointerout)="onBlur($event, 'output', i);"
