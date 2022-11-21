@@ -147,3 +147,9 @@
     transform: scaleX(-1);
   }
 }
+
+:host-context(.rtl-layout) {
+  #arrow-up {
+    transform: translateX(70px);
+  }
+}

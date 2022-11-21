@@ -47,7 +47,7 @@ export class NodesMap implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Lightning nodes world map`);
+      this.seoService.setTitle($localize`:@@af8560ca50882114be16c951650f83bca73161a7:Lightning Nodes World Map`);
     }
 
     if (!this.inputNodes$) {
@@ -141,7 +141,7 @@ export class NodesMap implements OnInit, OnChanges {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`No data to display yet`,
+        text: $localize`No data to display yet. Try again later.`,
         left: 'center',
         top: 'center'
       };

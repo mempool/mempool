@@ -20,6 +20,7 @@ class NodesRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/connectivity', this.$getTopNodesByChannels)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings/age', this.$getOldestNodes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/statistics', this.$getHistoricalNodeStats)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key/fees/histogram', this.$getFeeHistogram)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/:public_key', this.$getNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/group/:name', this.$getNodeGroup)
     ;
@@ -90,6 +91,22 @@ class NodesRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(statistics);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFeeHistogram(req: Request, res: Response) {
+    try {
+      const node = await nodesApi.$getFeeHistogram(req.params.public_key);
+      if (!node) {
+        res.status(404).send('Node not found');
+        return;
+      }
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(node);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

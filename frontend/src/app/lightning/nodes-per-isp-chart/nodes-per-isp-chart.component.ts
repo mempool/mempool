@@ -48,7 +48,7 @@ export class NodesPerISPChartComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.widget) {
-      this.seoService.setTitle($localize`Lightning nodes per ISP`);
+      this.seoService.setTitle($localize`:@@8573a1576789bd2c4faeaed23037c4917812c6cf:Lightning Nodes Per ISP`);
     }
 
     this.nodesPerAsObservable$ = combineLatest([
@@ -154,7 +154,7 @@ export class NodesPerISPChartComponent implements OnInit {
           borderColor: '#000',
           formatter: () => {
             return `<b style="color: white">${isp[1]} (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)</b><br>` +
-              $localize`${isp[4].toString()} nodes<br>` +
+              $localize`${isp[4].toString()} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BTC`
             ;
           }
@@ -186,7 +186,7 @@ export class NodesPerISPChartComponent implements OnInit {
         borderColor: '#000',
         formatter: () => {
           return `<b style="color: white">Other (${totalShareOther.toFixed(2)}%)</b><br>` +
-            $localize`${nodeCountOther.toString()} nodes<br>` +
+            $localize`${nodeCountOther.toString()} nodes` + `<br>` +
             $localize`${this.amountShortenerPipe.transform(capacityOther / 100000000, 2)} BTC`;
         }
       },
