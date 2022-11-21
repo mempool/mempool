@@ -372,9 +372,12 @@ class NetworkSyncService {
             // this input directly spends a channel close output
             await this.$attributeChannelBalances(closeChannel, openChannel, input);
           } else {
-            const prevOpenChannel = await channelsApi.$getChannelForensicsByOpeningId(input.txid);
-            if (prevOpenChannel) {
-              await this.$attributeChannelBalances(prevOpenChannel, openChannel, input, null, null, true);
+            const prevOpenChannels = await channelsApi.$getChannelForensicsByOpeningId(input.txid);
+            if (prevOpenChannels?.length) {
+              // this input spends a channel open change output
+              for (const prevOpenChannel of prevOpenChannels) {
+                await this.$attributeChannelBalances(prevOpenChannel, openChannel, input, null, null, true);
+              }
             } else {
               // check if this input spends any swept channel close outputs
               await this.$attributeSweptChannelCloses(openChannel, input);
@@ -435,33 +438,33 @@ class NetworkSyncService {
   ): Promise<void> {
     // figure out which node controls the input/output
     let openSide;
-    let closeLocal;
-    let closeRemote;
+    let prevLocal;
+    let prevRemote;
     let matched = false;
     let ambiguous = false; // if counterparties are the same in both channels, we can't tell them apart
     if (openChannel.node1_public_key === prevChannel.node1_public_key) {
       openSide = 1;
-      closeLocal = 1;
-      closeRemote = 2;
+      prevLocal = 1;
+      prevRemote = 2;
       matched = true;
     } else if (openChannel.node1_public_key === prevChannel.node2_public_key) {
       openSide = 1;
-      closeLocal = 2;
-      closeRemote = 1;
+      prevLocal = 2;
+      prevRemote = 1;
       matched = true;
     }
     if (openChannel.node2_public_key === prevChannel.node1_public_key) {
       openSide = 2;
-      closeLocal = 1;
-      closeRemote = 2;
+      prevLocal = 1;
+      prevRemote = 2;
       if (matched) {
         ambiguous = true;
       }
       matched = true;
     } else if (openChannel.node2_public_key === prevChannel.node2_public_key) {
       openSide = 2;
-      closeLocal = 2;
-      closeRemote = 1;
+      prevLocal = 2;
+      prevRemote = 1;
       if (matched) {
         ambiguous = true;
       }
@@ -508,7 +511,7 @@ class NetworkSyncService {
         }
 
         // attribute outputs to each counterparty, and sum up total known balances
-        prevChannel.outputs[input.vout].node = closeLocal;
+        prevChannel.outputs[input.vout].node = prevLocal;
         const isPenalty = prevChannel.outputs.filter((out) => out.type === 2 || out.type === 4)?.length > 0;
         const normalOutput = [1,3].includes(prevChannel.outputs[input.vout].type);
         let localClosingBalance = 0;
@@ -519,7 +522,7 @@ class NetworkSyncService {
             localClosingBalance += output.value;
           } else if (output.node) {
             // this output determinstically linked to one of the counterparties
-            if (output.node === closeLocal) {
+            if (output.node === prevLocal) {
               localClosingBalance += output.value;
             } else {
               remoteClosingBalance += output.value;
@@ -529,17 +532,25 @@ class NetworkSyncService {
             remoteClosingBalance += output.value;
           }
         }
-        prevChannel[`node${closeLocal}_closing_balance`] = localClosingBalance;
-        prevChannel[`node${closeRemote}_closing_balance`] = remoteClosingBalance;
+        prevChannel[`node${prevLocal}_closing_balance`] = localClosingBalance;
+        prevChannel[`node${prevRemote}_closing_balance`] = remoteClosingBalance;
         prevChannel.closing_fee = prevChannelTx.fee;
 
         if (initiator && !linkedOpenings) {
-          const initiatorSide = initiator === 'remote' ? closeRemote : closeLocal;
+          const initiatorSide = initiator === 'remote' ? prevRemote : prevLocal;
           prevChannel.closed_by = prevChannel[`node${initiatorSide}_public_key`];
         }
   
         // save changes to the closing channel
         await channelsApi.$updateClosingInfo(prevChannel);
+      } else {
+        if (prevChannelTx.vin.length <= 1) {
+          prevChannel[`node${prevLocal}_funding_balance`] = prevChannel.capacity;
+          prevChannel.single_funded = true;
+          prevChannel.funding_ratio = 1;
+          // save changes to the closing channel
+          await channelsApi.$updateOpeningInfo(prevChannel);
+        }
       }
       openChannel[`node${openSide}_funding_balance`] = openChannel[`node${openSide}_funding_balance`] + (openContribution || prevChannelTx?.vout[input.vout]?.value || 0);
     }

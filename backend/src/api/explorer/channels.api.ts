@@ -282,7 +282,7 @@ class ChannelsApi {
       const query = `
         SELECT
           channels.id, channels.node1_public_key, channels.node2_public_key,
-          channels.closing_reason, channels.closing_transaction_id,
+          channels.closing_reason, channels.closing_transaction_id, channels.capacity,
           forensics.*
         FROM channels
         LEFT JOIN channels_forensics as forensics ON forensics.channel_id = channels.id
@@ -304,7 +304,7 @@ class ChannelsApi {
       const query = `
         SELECT
           channels.id, channels.node1_public_key, channels.node2_public_key,
-          channels.status, channels.transaction_id,
+          channels.status, channels.transaction_id, channels.capacity,
           forensics.*
         FROM channels
         LEFT JOIN channels_forensics as forensics ON forensics.channel_id = channels.id
@@ -312,8 +312,10 @@ class ChannelsApi {
       `;
       const [rows]: any = await DB.query(query, [transactionId]);
       if (rows.length > 0) {
-        rows[0].outputs = JSON.parse(rows[0].outputs);
-        return rows[0];
+        return rows.map(row => {
+          row.outputs = JSON.parse(row.outputs);
+          return row;
+        });
       }
     } catch (e) {
       logger.err('$getChannelForensicsByOpeningId error: ' + (e instanceof Error ? e.message : e));
@@ -344,15 +346,15 @@ class ChannelsApi {
       const jsonOutputs = JSON.stringify(channelInfo.outputs);
       await DB.query<ResultSetHeader>(query, [
         channelInfo.id,
-        channelInfo.node1_closing_balance,
-        channelInfo.node2_closing_balance,
+        channelInfo.node1_closing_balance || 0,
+        channelInfo.node2_closing_balance || 0,
         channelInfo.closed_by,
-        channelInfo.closing_fee,
+        channelInfo.closing_fee || 0,
         jsonOutputs,
-        channelInfo.node1_closing_balance,
-        channelInfo.node2_closing_balance,
+        channelInfo.node1_closing_balance || 0,
+        channelInfo.node2_closing_balance || 0,
         channelInfo.closed_by,
-        channelInfo.closing_fee,
+        channelInfo.closing_fee || 0,
         jsonOutputs
       ]);
     } catch (e) {
@@ -382,12 +384,12 @@ class ChannelsApi {
       `;
       await DB.query<ResultSetHeader>(query, [
         channelInfo.id,
-        channelInfo.node1_funding_balance,
-        channelInfo.node2_funding_balance,
+        channelInfo.node1_funding_balance || 0,
+        channelInfo.node2_funding_balance || 0,
         channelInfo.funding_ratio,
         channelInfo.single_funded ? 1 : 0,
-        channelInfo.node1_funding_balance,
-        channelInfo.node2_funding_balance,
+        channelInfo.node1_funding_balance || 0,
+        channelInfo.node2_funding_balance || 0,
         channelInfo.funding_ratio,
         channelInfo.single_funded ? 1 : 0,
       ]);
