@@ -11,6 +11,7 @@ interface SvgLine {
   path: string;
   style: string;
   class?: string;
+  connectorPath?: string;
 }
 
 interface Xput {
@@ -40,6 +41,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
   @Input() tooltip = false;
+  @Input() connectors = false;
   @Input() inputIndex: number;
   @Input() outputIndex: number;
 
@@ -59,16 +61,16 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
 
   gradientColors = {
-    '': ['#9339f4', '#105fb0'],
-    bisq: ['#9339f4', '#105fb0'],
+    '': ['#9339f4', '#105fb0', '#9339f433'],
+    bisq: ['#9339f4', '#105fb0', '#9339f433'],
     // liquid: ['#116761', '#183550'],
-    liquid: ['#09a197', '#0f62af'],
+    liquid: ['#09a197', '#0f62af', '#09a19733'],
     // 'liquidtestnet': ['#494a4a', '#272e46'],
-    'liquidtestnet': ['#d2d2d2', '#979797'],
+    'liquidtestnet': ['#d2d2d2', '#979797', '#d2d2d233'],
     // testnet: ['#1d486f', '#183550'],
-    testnet: ['#4edf77', '#10a0af'],
+    testnet: ['#4edf77', '#10a0af', '#4edf7733'],
     // signet: ['#6f1d5d', '#471850'],
-    signet: ['#d24fc8', '#a84fd2'],
+    signet: ['#d24fc8', '#a84fd2', '#d24fc833'],
   };
 
   gradient: string[] = ['#105fb0', '#105fb0'];
@@ -308,13 +310,14 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return {
         path: this.makePath(side, line.outerY, line.innerY, line.thickness, line.offset, pad + maxOffset),
         style: this.makeStyle(line.thickness, xputs[i].type),
-        class: xputs[i].type
+        class: xputs[i].type,
+        connectorPath: this.connectors ? this.makeConnectorPath(side, line.outerY, line.innerY, line.thickness): null,
       };
     });
   }
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number, offset: number, pad: number): string {
-    const start = (weight * 0.5);
+    const start = (weight * 0.5) + 10;
     const curveStart = Math.max(start + 1, pad - offset);
     const end =  this.width / 2 - (this.midWidth * 0.9) + 1;
     const curveEnd = end - offset - 10;
@@ -329,6 +332,22 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return `M ${start} ${outer} L ${curveStart} ${outer} C ${midpoint} ${outer}, ${midpoint} ${inner}, ${curveEnd} ${inner} L ${end} ${inner}`;
     } else { // mirrored in y-axis for the right hand side
       return `M ${this.width - start} ${outer} L ${this.width - curveStart} ${outer} C ${this.width - midpoint} ${outer}, ${this.width - midpoint} ${inner}, ${this.width - curveEnd} ${inner} L ${this.width - end} ${inner}`;
+    }
+  }
+
+  makeConnectorPath(side: 'in' | 'out', y: number, inner, weight: number): string {
+    const halfWidth = weight * 0.5;
+    const offset = Math.max(2, halfWidth * 0.2);
+
+    // align with for svg horizontal gradient bug correction
+    if (Math.round(y) === Math.round(inner)) {
+      y -= 1;
+    }
+
+    if (side === 'in') {
+      return `M ${10 - offset} ${y - halfWidth} L ${halfWidth + 10 - offset} ${y} L ${10 - offset} ${y + halfWidth} L -10 ${ y + halfWidth} L -10 ${y - halfWidth}`;
+    } else {
+      return `M ${this.width - halfWidth - 10 + offset} ${y - halfWidth} L ${this.width - 10 + offset} ${y} L ${this.width - halfWidth - 10 + offset} ${y + halfWidth} L ${this.width + 10} ${ y + halfWidth} L ${this.width + 10} ${y - halfWidth}`;
     }
   }
 
