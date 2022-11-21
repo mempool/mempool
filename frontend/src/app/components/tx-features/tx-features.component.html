@@ -13,7 +13,10 @@
 <ng-template #notFullyTaproot>
   <span *ngIf="segwitGains.realizedTaprootGains && segwitGains.potentialTaprootGains; else noTaproot" class="badge badge-warning mr-1" i18n-ngbTooltip="Tooltip about fees that saved and could be saved with taproot" ngbTooltip="This transaction uses Taproot and already saved at least {{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}% on fees, but could save an additional {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% by fully using Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
   <ng-template #noTaproot>
-    <span *ngIf="segwitGains.potentialTaprootGains; else taprootButNoGains" class="badge badge-danger mr-1" i18n-ngbTooltip="Tooltip about fees that could be saved with taproot" ngbTooltip="This transaction could save {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% on fees by using Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
+    <span *ngIf="segwitGains.potentialTaprootGains && segwitGains.potentialTaprootGains > 0; else negativeTaprootGains" class="badge badge-danger mr-1" i18n-ngbTooltip="Tooltip about fees that could be saved with taproot" ngbTooltip="This transaction could save {{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}% on fees by using Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
+    <ng-template #negativeTaprootGains>
+      <span *ngIf="!isTaproot; else taprootButNoGains" class="badge badge-danger mr-1" i18n-ngbTooltip="Tooltip about using taproot" ngbTooltip="This transaction does not use Taproot" placement="bottom"><del i18n="tx-features.tag.taproot|Taproot">Taproot</del></span>
+    </ng-template>
     <ng-template #taprootButNoGains>
       <span *ngIf="isTaproot" class="badge badge-success mr-1" i18n-ngbTooltip="Tooltip about taproot" ngbTooltip="This transaction uses Taproot" placement="bottom" i18n="tx-features.tag.taproot|Taproot">Taproot</span>
     </ng-template>
