@@ -37,4 +37,15 @@
       }
     }
   }
+
+  .connector {
+    stroke: none;
+    opacity: 0.75;
+    &.input {
+      fill: url(#input-connector-gradient);
+    }
+    &.output {
+      fill: url(#output-connector-gradient);
+    }
+  }
 }

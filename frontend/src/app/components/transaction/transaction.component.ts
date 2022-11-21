@@ -402,7 +402,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
     if (this.graphContainer) {
-      this.graphWidth = this.graphContainer.nativeElement.clientWidth - 24;
+      this.graphWidth = this.graphContainer.nativeElement.clientWidth;
     }
   }
 
