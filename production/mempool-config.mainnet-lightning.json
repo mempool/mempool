@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "ENABLED": false,
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8993,

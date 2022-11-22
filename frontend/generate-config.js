@@ -2,7 +2,8 @@ var fs = require('fs');
 const { spawnSync } = require('child_process');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
-const GENERATED_CONFIG_FILE_NAME = 'generated-config.js';
+const GENERATED_CONFIG_FILE_NAME = 'src/resources/config.js';
+const GENERATED_TEMPLATE_CONFIG_FILE_NAME = 'src/resources/config.template.js';
 
 let settings = [];
 let configContent = {};
@@ -67,10 +68,17 @@ if (process.env.DOCKER_COMMIT_HASH) {
 
 const newConfig = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
-    window.__env.${obj.key} = ${ typeof obj.value === 'string' ? `'${obj.value}'` : obj.value };`, '')}
+    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'${obj.value}'` : obj.value};`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
     window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
-  }(global || this));`;
+  }(this));`;
+
+const newConfigTemplate = `(function (window) {
+  window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
+    window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'\${__${obj.key}__}'` : `\${__${obj.key}__}`};`, '')}
+    window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
+    window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
+  }(this));`;
 
 function readConfig(path) {
   try {
@@ -89,6 +97,16 @@ function writeConfig(path, config) {
   }
 }
 
+function writeConfigTemplate(path, config) {
+  try {
+    fs.writeFileSync(path, config, 'utf8');
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+writeConfigTemplate(GENERATED_TEMPLATE_CONFIG_FILE_NAME, newConfigTemplate);
+
 const currentConfig = readConfig(GENERATED_CONFIG_FILE_NAME);
 
 if (currentConfig && currentConfig === newConfig) {
@@ -106,4 +124,4 @@ if (currentConfig && currentConfig === newConfig) {
   console.log('NEW CONFIG: ', newConfig);
   writeConfig(GENERATED_CONFIG_FILE_NAME, newConfig);
   console.log(`${GENERATED_CONFIG_FILE_NAME} file updated`);
-};
+}
