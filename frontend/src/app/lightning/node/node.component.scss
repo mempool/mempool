@@ -72,3 +72,36 @@ app-fiat {
     height: 28px !important;
   };
 }
+
+.details {
+
+  .detail-section {
+    margin-bottom: 1.5rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .tlv-type {
+    font-size: 12px;
+    color: #ffffff66;
+  }
+
+  .tlv-payload {
+    font-size: 12px;
+    width: 100%;
+    word-break: break-all;
+    white-space: normal;
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  .compact-lease {
+    word-break: break-all;
+    white-space: normal;
+    font-family: "Courier New", Courier, monospace;
+  }
+}
+
+.separator {
+  margin: 0 1em;
+}

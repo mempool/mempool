@@ -5,6 +5,9 @@ interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
   index?: number;
+  txid?: string;
+  vin?: number;
+  vout?: number;
   address?: string;
   rest?: number;
   coinbase?: boolean;
@@ -21,6 +24,7 @@ interface Xput {
 export class TxBowtieGraphTooltipComponent implements OnChanges {
   @Input() line: Xput | void;
   @Input() cursorPosition: { x: number, y: number };
+  @Input() isConnector: boolean = false;
 
   tooltipPosition = { x: 0, y: 0 };
 

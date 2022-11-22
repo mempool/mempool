@@ -52,6 +52,10 @@
                 <span i18n="unknown">Unknown</span>
               </td>
             </tr>
+            <tr *ngIf="(avgChannelDistance$ | async) as avgDistance;">
+              <td i18n="lightning.avg-distance" class="text-truncate">Avg channel distance</td>
+              <td>{{ avgDistance | number : '1.0-0' }} <span class="symbol">km</span> <span class="separator">/</span> {{ kmToMiles(avgDistance) | number : '1.0-0' }} <span class="symbol">mi</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -123,6 +127,93 @@
       </div>
     </button>
     <app-clipboard [button]="true" [text]="node.socketsObject[selectedSocketIndex].socket" [leftPadding]="false"></app-clipboard>
+  </div>
+
+  <div *ngIf="hasDetails" [hidden]="!showDetails" id="details" class="details mt-3">
+    <div class="box">
+      <ng-template [ngIf]="liquidityAd">
+        <div class="detail-section">
+          <h5 class="mb-3" i18n="node.liquidity-ad">Liquidity ad</h5>
+          <div class="row">
+            <div class="col-md">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.lease-fee-rate|Liquidity ad lease fee rate">Lease fee rate</td>
+                    <td>
+                      <span class="d-inline-block">
+                        {{ liquidityAd.lease_fee_basis !== null ? ((liquidityAd.lease_fee_basis * 1000) | amountShortener : 2 : undefined : true) : '-' }} <span class="symbol">ppm {{ liquidityAd.lease_fee_basis !== null ? '(' + (liquidityAd.lease_fee_basis / 10 | amountShortener : 2 : undefined : true) + '%)' : '' }}</span>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.lease-base-fee">Lease base fee</td>
+                    <td>
+                      <app-sats [valueOverride]="liquidityAd.lease_fee_base_sat === null ? '- ' : undefined" [satoshis]="liquidityAd.lease_fee_base_sat"></app-sats>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.funding-weight">Funding weight</td>
+                    <td [innerHTML]="'&lrm;' + (liquidityAd.funding_weight | wuBytes: 2)"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.channel-fee-rate|Liquidity ad channel fee rate">Channel fee rate</td>
+                    <td>
+                      <span class="d-inline-block">
+                        {{ liquidityAd.channel_fee_max_rate !== null ? ((liquidityAd.channel_fee_max_rate * 1000) | amountShortener : 2 : undefined : true) : '-' }} <span class="symbol">ppm {{ liquidityAd.channel_fee_max_rate !== null ? '(' + (liquidityAd.channel_fee_max_rate / 10 | amountShortener : 2 : undefined : true) + '%)' : '' }}</span>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.channel-base-fee">Channel base fee</td>
+                    <td>
+                      <span *ngIf="liquidityAd.channel_fee_max_base !== null">
+                        {{ liquidityAd.channel_fee_max_base | amountShortener : 0 }}
+                        <span class="symbol" i18n="shared.m-sats">mSats</span>
+                      </span>
+                      <span *ngIf="liquidityAd.channel_fee_max_base === null">
+                        -
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label" i18n="liquidity-ad.compact-lease">Compact lease</td>
+                    <td class="compact-lease">{{ liquidityAd.compact_lease }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template [ngIf]="tlvRecords?.length">
+        <div class="detail-section">
+          <h5 class="mb-3" i18n="node.tlv.records">TLV extension records</h5>
+          <div class="row">
+            <div class="col">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <tr *ngFor="let recordItem of tlvRecords">
+                    <td class="tlv-type">{{ recordItem.type }}</td>
+                    <td class="tlv-payload">{{ recordItem.payload }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div *ngIf="hasDetails" class="text-right mt-3">
+    <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="node.details|Node Details">Details</button>
   </div>
 
   <div *ngIf="!error">
