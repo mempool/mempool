@@ -148,7 +148,13 @@
             </ng-template>
             <tr *ngIf="tx.vin.length > getVinLimit(tx)">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreInputs(tx)"><span i18n="show-more">Show more</span> ({{ getVinLimit(tx, true) }} / {{ tx.vin.length }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreInputs(tx)">
+                  <span *ngIf="getVinLimit(tx, true) >= tx.vin.length; else showMoreInputsLabel" i18n="show-all">Show all</span>
+                  <ng-template #showMoreInputsLabel>
+                    <span i18n="show-more">Show more</span>
+                  </ng-template>
+                  ({{ tx.vin.length - getVinLimit(tx) }} <span i18n="inputs-remaining">remaining</span> )
+                </button>
               </td>
             </tr>
           </tbody>
@@ -259,7 +265,13 @@
             </ng-template>
             <tr *ngIf="tx.vout.length > getVoutLimit(tx)">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreOutputs(tx)"><span i18n="show-more">Show more</span> ({{ getVoutLimit(tx, true) }} / {{ tx.vout.length }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreOutputs(tx)">
+                  <span *ngIf="getVoutLimit(tx, true) >= tx.vout.length; else showMoreOutputsLabel" i18n="show-all">Show all</span>
+                  <ng-template #showMoreOutputsLabel>
+                    <span i18n="show-more">Show more</span>
+                  </ng-template>
+                  ({{ tx.vout.length - getVoutLimit(tx) }} <span i18n="outputs-remaining">remaining</span> )
+                </button>
               </td>
             </tr>
           </tbody>
