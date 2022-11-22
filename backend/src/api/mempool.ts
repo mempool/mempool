@@ -20,6 +20,8 @@ class Mempool {
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
+  private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+    deletedTransactions: TransactionExtended[]) => void) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -63,6 +65,11 @@ class Mempool {
     this.mempoolChangedCallback = fn;
   }
 
+  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => Promise<void>) {
+    this.asyncMempoolChangedCallback = fn;
+  }
+
   public getMempool(): { [txid: string]: TransactionExtended } {
     return this.mempoolCache;
   }
@@ -71,6 +78,9 @@ class Mempool {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
+    }
+    if (this.asyncMempoolChangedCallback) {
+      this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
   }
 
@@ -103,12 +113,11 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool() {
-    logger.debug('Updating mempool');
+  public async $updateMempool(): Promise<void> {
+    logger.debug(`Updating mempool...`);
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
-    let txCount = 0;
     const transactions = await bitcoinApi.$getRawMempool();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
@@ -124,7 +133,6 @@ class Mempool {
         try {
           const transaction = await transactionUtils.$getTransactionExtended(txid);
           this.mempoolCache[txid] = transaction;
-          txCount++;
           if (this.inSync) {
             this.txPerSecondArray.push(new Date().getTime());
             this.vBytesPerSecondArray.push({
@@ -133,14 +141,9 @@ class Mempool {
             });
           }
           hasChange = true;
-          if (diff > 0) {
-            logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
-          } else {
-            logger.debug('Fetched transaction ' + txCount);
-          }
           newTransactions.push(transaction);
         } catch (e) {
-          logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+          logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
         }
       }
 
@@ -194,11 +197,13 @@ class Mempool {
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
+    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+      await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+    }
 
     const end = new Date().getTime();
     const time = end - start;
-    logger.debug(`New mempool size: ${Object.keys(this.mempoolCache).length} Change: ${diff}`);
-    logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
+    logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
   }
 
   public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {

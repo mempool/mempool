@@ -13,6 +13,7 @@ describe('Mempool Backend Config', () => {
       const config = jest.requireActual('../config').default;
 
       expect(config.MEMPOOL).toStrictEqual({
+        ENABLED: true,
         NETWORK: 'mainnet',
         BACKEND: 'none',
         BLOCKS_SUMMARIES_INDEXING: false,
@@ -36,7 +37,8 @@ describe('Mempool Backend Config', () => {
         USER_AGENT: 'mempool',
         STDOUT_LOG_MIN_PRIORITY: 'debug',
         POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
-        POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json'
+        POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
+        ADVANCED_TRANSACTION_SELECTION: false,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
