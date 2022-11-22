@@ -209,17 +209,19 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   loadMoreInputs(tx: Transaction): void {
-    tx['@vinLimit'] = false;
-
-    this.electrsApiService.getTransaction$(tx.txid)
-      .subscribe((newTx) => {
-        tx.vin = newTx.vin;
-        tx.fee = newTx.fee;
-        this.ref.markForCheck();
-      });
+    if (!tx['@vinLoaded']) {
+      this.electrsApiService.getTransaction$(tx.txid)
+        .subscribe((newTx) => {
+          tx['@vinLoaded'] = true;
+          tx.vin = newTx.vin;
+          tx.fee = newTx.fee;
+          this.ref.markForCheck();
+        });
+    }
   }
 
   showMoreInputs(tx: Transaction): void {
+    this.loadMoreInputs(tx);
     tx['@vinLimit'] = this.getVinLimit(tx, true);
   }
 
@@ -228,11 +230,19 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   getVinLimit(tx: Transaction, next = false): number {
-    return Math.min(Math.max(tx['@vinLimit'] || 0, this.inputRowLimit) + (next ? this.showMoreIncrement : 0), tx.vin.length);
+    if ((tx['@vinLimit'] || 0) > this.inputRowLimit) {
+      return Math.min(tx['@vinLimit'] + (next ? this.showMoreIncrement : 0), tx.vin.length);
+    } else {
+      return Math.min((next ? this.showMoreIncrement : this.inputRowLimit), tx.vin.length);
+    }
   }
 
   getVoutLimit(tx: Transaction, next = false): number {
-    return Math.min(Math.max(tx['@voutLimit'] || 0, this.outputRowLimit) + (next ? this.showMoreIncrement : 0), tx.vout.length);
+    if ((tx['@voutLimit'] || 0) > this.outputRowLimit) {
+      return Math.min(tx['@voutLimit'] + (next ? this.showMoreIncrement : 0), tx.vout.length);
+    } else {
+      return Math.min((next ? this.showMoreIncrement : this.outputRowLimit), tx.vout.length);
+    }
   }
 
   ngOnDestroy(): void {
