@@ -216,8 +216,8 @@ class Server {
     websocketHandler.setupConnectionHandling();
     if (config.MEMPOOL.ENABLED) {
       statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
-      blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
-      memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+      memPool.setAsyncMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+      blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
     fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));

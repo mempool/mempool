@@ -1,6 +1,7 @@
 import { Application, Request, Response } from 'express';
 import config from "../../config";
 import logger from '../../logger';
+import audits from '../audit';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
@@ -26,6 +27,9 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores', this.$getBlockAuditScores)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores/:height', this.$getBlockAuditScores)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/score/:hash', this.$getBlockAuditScore)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
     ;
@@ -272,6 +276,29 @@ class MiningRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
       res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getBlockAuditScores(req: Request, res: Response) {
+    try {
+      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(await audits.$getBlockAuditScores(height, 15));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getBlockAuditScore(req: Request, res: Response) {
+    try {
+      const audit = await BlocksAuditsRepository.$getBlockAuditScore(req.params.hash);
+
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
+      res.json(audit || 'null');
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

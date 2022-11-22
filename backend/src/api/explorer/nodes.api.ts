@@ -105,6 +105,18 @@ class NodesApi {
         node.closed_channel_count = rows[0].closed_channel_count;
       }
 
+      // Custom records
+      query = `
+        SELECT type, payload
+        FROM nodes_records
+        WHERE public_key = ?
+      `;
+      [rows] = await DB.query(query, [public_key]);
+      node.custom_records = {};
+      for (const record of rows) {
+        node.custom_records[record.type] = Buffer.from(record.payload, 'binary').toString('hex');
+      }
+
       return node;
     } catch (e) {
       logger.err(`Cannot get node information for ${public_key}. Reason: ${(e instanceof Error ? e.message : e)}`);
