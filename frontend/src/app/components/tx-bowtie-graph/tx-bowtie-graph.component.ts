@@ -260,7 +260,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let lastOuter = 0;
     let lastInner = innerTop;
     // gap between strands
-    const spacing = (this.height - visibleWeight) / gaps;
+    const spacing = Math.max(4, (this.height - visibleWeight) / gaps);
 
     // curve adjustments to prevent overlaps
     let offset = 0;
@@ -270,7 +270,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let pad = 0;
     lineParams.forEach((line, i) => {
       if (xputs[i].value === 0) {
-        line.outerY = lastOuter + this.zeroValueThickness / 2;
+        line.outerY = lastOuter + (this.zeroValueThickness / 2);
         lastOuter += this.zeroValueThickness + spacing;
         return;
       }
@@ -349,7 +349,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number, offset: number, pad: number): string {
     const start = (weight * 0.5) + this.connectorWidth;
-    const curveStart = Math.max(start + 1, pad - offset);
+    const curveStart = Math.max(start + 5, pad - offset);
     const end =  this.width / 2 - (this.midWidth * 0.9) + 1;
     const curveEnd = end - offset - 10;
     const midpoint = (curveStart + curveEnd) / 2;
@@ -368,11 +368,11 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makeZeroValuePath(side: 'in' | 'out', y: number): string {
     const offset = this.zeroValueThickness / 2;
-    const start = this.connectorWidth + 10;
+    const start = (this.connectorWidth / 2) + 10;
     if (side === 'in') {
-      return `M ${start + offset} ${y} L ${start + this.zeroValueWidth + offset} ${y + 1}`;
+      return `M ${start + offset} ${y} L ${start + this.zeroValueWidth + offset} ${y}`;
     } else { // mirrored in y-axis for the right hand side
-      return `M ${this.width - start - offset} ${y} L ${this.width - start - this.zeroValueWidth - offset} ${y + 1}`;
+      return `M ${this.width - start - offset} ${y} L ${this.width - start - this.zeroValueWidth - offset} ${y}`;
     }
   }
 
