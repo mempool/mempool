@@ -119,7 +119,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
 
       this.transactionsLength = this.transactions.length;
-
+      this.stateService.setTxCache(this.transactions);
 
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
