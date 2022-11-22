@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subscription, combineLatest } from 'rxjs';
-import { map, switchMap, startWith, catchError } from 'rxjs/operators';
+import { Subscription, combineLatest, of } from 'rxjs';
+import { map, switchMap, startWith, catchError, filter } from 'rxjs/operators';
 import { BlockAudit, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 import { StateService } from '../../services/state.service';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -37,6 +38,7 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = true;
   webGlEnabled = true;
   isMobile = window.innerWidth <= 767.98;
+  hoverTx: string;
 
   childChangeSubscription: Subscription;
 
@@ -51,7 +53,8 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     public stateService: StateService,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private electrsApiService: ElectrsApiService,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -76,69 +79,95 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.auditSubscription = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        this.blockHash = params.get('id') || null;
-        if (!this.blockHash) {
+        const blockHash = params.get('id') || null;
+        if (!blockHash) {
           return null;
         }
+
+        let isBlockHeight = false;
+        if (/^[0-9]+$/.test(blockHash)) {
+          isBlockHeight = true;
+        } else {
+          this.blockHash = blockHash;
+        }
+
+        if (isBlockHeight) {
+          return this.electrsApiService.getBlockHashFromHeight$(parseInt(blockHash, 10))
+            .pipe(
+              switchMap((hash: string) => {
+                if (hash) {
+                  this.blockHash = hash;
+                  return this.apiService.getBlockAudit$(this.blockHash)
+                } else {
+                  return null;
+                }
+              }),
+              catchError((err) => {
+                this.error = err;
+                return of(null);
+              }),
+            );
+        }
         return this.apiService.getBlockAudit$(this.blockHash)
-          .pipe(
-            map((response) => {
-              const blockAudit = response.body;
-              const inTemplate = {};
-              const inBlock = {};
-              const isAdded = {};
-              const isCensored = {};
-              const isMissing = {};
-              const isSelected = {};
-              this.numMissing = 0;
-              this.numUnexpected = 0;
-              for (const tx of blockAudit.template) {
-                inTemplate[tx.txid] = true;
-              }
-              for (const tx of blockAudit.transactions) {
-                inBlock[tx.txid] = true;
-              }
-              for (const txid of blockAudit.addedTxs) {
-                isAdded[txid] = true;
-              }
-              for (const txid of blockAudit.missingTxs) {
-                isCensored[txid] = true;
-              }
-              // set transaction statuses
-              for (const tx of blockAudit.template) {
-                if (isCensored[tx.txid]) {
-                  tx.status = 'censored';
-                } else if (inBlock[tx.txid]) {
-                  tx.status = 'found';
-                } else {
-                  tx.status = 'missing';
-                  isMissing[tx.txid] = true;
-                  this.numMissing++;
-                }
-              }
-              for (const [index, tx] of blockAudit.transactions.entries()) {
-                if (isAdded[tx.txid]) {
-                  tx.status = 'added';
-                } else if (index === 0 || inTemplate[tx.txid]) {
-                  tx.status = 'found';
-                } else {
-                  tx.status = 'selected';
-                  isSelected[tx.txid] = true;
-                  this.numUnexpected++;
-                }
-              }
-              for (const tx of blockAudit.transactions) {
-                inBlock[tx.txid] = true;
-              }
-              return blockAudit;
-            })
-          );
+      }),
+      filter((response) => response != null),
+      map((response) => {
+        const blockAudit = response.body;
+        const inTemplate = {};
+        const inBlock = {};
+        const isAdded = {};
+        const isCensored = {};
+        const isMissing = {};
+        const isSelected = {};
+        this.numMissing = 0;
+        this.numUnexpected = 0;
+        for (const tx of blockAudit.template) {
+          inTemplate[tx.txid] = true;
+        }
+        for (const tx of blockAudit.transactions) {
+          inBlock[tx.txid] = true;
+        }
+        for (const txid of blockAudit.addedTxs) {
+          isAdded[txid] = true;
+        }
+        for (const txid of blockAudit.missingTxs) {
+          isCensored[txid] = true;
+        }
+        // set transaction statuses
+        for (const tx of blockAudit.template) {
+          if (isCensored[tx.txid]) {
+            tx.status = 'censored';
+          } else if (inBlock[tx.txid]) {
+            tx.status = 'found';
+          } else {
+            tx.status = 'missing';
+            isMissing[tx.txid] = true;
+            this.numMissing++;
+          }
+        }
+        for (const [index, tx] of blockAudit.transactions.entries()) {
+          if (index === 0) {
+            tx.status = null;
+          } else if (isAdded[tx.txid]) {
+            tx.status = 'added';
+          } else if (inTemplate[tx.txid]) {
+            tx.status = 'found';
+          } else {
+            tx.status = 'selected';
+            isSelected[tx.txid] = true;
+            this.numUnexpected++;
+          }
+        }
+        for (const tx of blockAudit.transactions) {
+          inBlock[tx.txid] = true;
+        }
+        return blockAudit;
       }),
       catchError((err) => {
         console.log(err);
         this.error = err;
         this.isLoading = false;
-        return null;
+        return of(null);
       }),
     ).subscribe((blockAudit) => {
       this.blockAudit = blockAudit;
@@ -188,5 +217,13 @@ export class BlockAuditComponent implements OnInit, AfterViewInit, OnDestroy {
   onTxClick(event: TransactionStripped): void {
     const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
     this.router.navigate([url]);
+  }
+
+  onTxHover(txid: string): void {
+    if (txid && txid.length) {
+      this.hoverTx = txid;
+    } else {
+      this.hoverTx = null;
+    }
   }
 }
