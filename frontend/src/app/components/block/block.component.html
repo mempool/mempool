@@ -114,7 +114,7 @@
                   <td i18n="block.health">Block health</td>
                   <td>
                     <a *ngIf="block.extras?.matchRate != null" [routerLink]="['/block-audit/' | relativeUrl, blockHash]">{{ block.extras.matchRate }}%</a>
-                    <span *ngIf="block.extras?.matchRate == null" i18n="unknown">Unknown</span>
+                    <span *ngIf="block.extras?.matchRate === null" i18n="unknown">Unknown</span>
                   </td>
                 </tr>
               </ng-template>
