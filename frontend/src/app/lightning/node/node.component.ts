@@ -3,9 +3,11 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
+import { ApiService } from '../../services/api.service';
 import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
+import { haversineDistance, kmToMiles } from 'src/app/shared/common.utils';
 
 interface CustomRecord {
   type: string;
@@ -34,8 +36,12 @@ export class NodeComponent implements OnInit {
   showDetails = false;
   liquidityAd: ILiquidityAd;
   tlvRecords: CustomRecord[];
+  avgChannelDistance$: Observable<number | null>;
+
+  kmToMiles = kmToMiles;
 
   constructor(
+    private apiService: ApiService,
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
@@ -119,6 +125,26 @@ export class NodeComponent implements OnInit {
           }];
         })
       );
+
+    this.avgChannelDistance$ = this.activatedRoute.paramMap
+    .pipe(
+      switchMap((params: ParamMap) => {
+        return this.apiService.getChannelsGeo$(params.get('public_key'), 'nodepage');
+      }),
+      map((channelsGeo) => {
+        if (channelsGeo?.length) {
+          const totalDistance = channelsGeo.reduce((sum, chan) => {
+            return sum + haversineDistance(chan[3], chan[2], chan[7], chan[6]);
+          }, 0);
+          return totalDistance / channelsGeo.length;
+        } else {
+          return null;
+        }
+      }),
+      catchError(() => {
+        return null;
+      })
+    ) as Observable<number | null>;
   }
 
   toggleShowDetails(): void {
