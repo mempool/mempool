@@ -524,15 +524,20 @@ class NodesApi {
         ORDER BY short_id DESC
       `;
 
-      const [rows]: any = await DB.query(query, [ISPId.split(','), ISPId.split(',')]);
+      const IPSIds = ISPId.split(',');
+      const [rows]: any = await DB.query(query, [IPSIds, IPSIds]);
       const nodes = {};
 
-      const intIspId = parseInt(ISPId);
+      const intISPIds: number[] = [];
+      for (const ispId of IPSIds) {
+        intISPIds.push(parseInt(ispId, 10));
+      }
+
       for (const channel of rows) {
-        if (channel.isp1ID === intIspId) {
+        if (intISPIds.includes(channel.isp1ID)) {
           nodes[channel.node1PublicKey] = true;
         }
-        if (channel.isp2ID === intIspId) {
+        if (intISPIds.includes(channel.isp2ID)) {
           nodes[channel.node2PublicKey] = true;
         }
       }
