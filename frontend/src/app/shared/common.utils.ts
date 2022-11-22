@@ -118,3 +118,21 @@ export function convertRegion(input, to: 'name' | 'abbreviated'): string {
     }
   }
 }
+
+export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const rlat1 = lat1 * Math.PI / 180;
+  const rlon1 = lon1 * Math.PI / 180;
+  const rlat2 = lat2 * Math.PI / 180;
+  const rlon2 = lon2 * Math.PI / 180;
+
+  const dlat = Math.sin((rlat2 - rlat1) / 2);
+  const dlon = Math.sin((rlon2 - rlon1) / 2);
+  const a = Math.min(1, Math.max(0, (dlat * dlat) + (Math.cos(rlat1) * Math.cos(rlat2) * dlon * dlon)));
+  const d = 2 * 6371 * Math.asin(Math.sqrt(a));
+
+  return d;
+}
+
+export function kmToMiles(km: number): number {
+  return km * 0.62137119;
+}

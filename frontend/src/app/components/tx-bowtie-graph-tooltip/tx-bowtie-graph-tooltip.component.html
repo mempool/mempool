@@ -22,13 +22,13 @@
 
   <ng-template #pegin>
     <ng-container *ngIf="line.pegin; else pegout">
-      <p>Peg In</p>
+      <p *ngIf="!isConnector">Peg In</p>
     </ng-container>
   </ng-template>
 
   <ng-template #pegout>
     <ng-container *ngIf="line.pegout; else normal">
-      <p>Peg Out</p>
+      <p *ngIf="!isConnector">Peg Out</p>
       <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
       <p class="address">
         <span class="first">{{ line.pegout.slice(0, -4) }}</span>
@@ -38,7 +38,7 @@
   </ng-template>
 
   <ng-template #normal>
-      <p>
+      <p *ngIf="!isConnector">
         <ng-container [ngSwitch]="line.type">
           <span *ngSwitchCase="'input'" i18n="transaction.input">Input</span>
           <span *ngSwitchCase="'output'" i18n="transaction.output">Output</span>
@@ -46,6 +46,17 @@
         </ng-container>
         <span *ngIf="line.type !== 'fee'"> #{{ line.index + 1 }}</span>
       </p>
+      <ng-container *ngIf="isConnector && line.txid">
+        <p>
+          <span i18n="transaction">Transaction</span>&nbsp;
+          <span class="first">{{ line.txid.slice(0, 8) }}</span>...
+          <span class="last-four">{{ line.txid.slice(-4) }}</span>
+        </p>
+          <ng-container [ngSwitch]="line.type">
+            <p *ngSwitchCase="'input'"><span i18n="transaction.output">Output</span>&nbsp; #{{ line.vout + 1 }}</p>
+            <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin + 1 }}</p>
+          </ng-container>
+      </ng-container>
       <p *ngIf="line.value == null && line.confidential" i18n="shared.confidential">Confidential</p>
       <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
       <p *ngIf="line.type !== 'fee' && line.address" class="address">

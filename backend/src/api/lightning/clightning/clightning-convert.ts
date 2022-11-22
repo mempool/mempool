@@ -7,6 +7,15 @@ import { Common } from '../../common';
  * Convert a clightning "listnode" entry to a lnd node entry
  */
 export function convertNode(clNode: any): ILightningApi.Node {
+  let custom_records: { [type: number]: string } | undefined = undefined;
+  if (clNode.option_will_fund) {
+    try {
+      custom_records = { '1': Buffer.from(clNode.option_will_fund.compact_lease || '', 'hex').toString('base64') };
+    } catch (e) {
+      logger.err(`Cannot decode option_will_fund compact_lease for ${clNode.nodeid}). Reason: ` + (e instanceof Error ? e.message : e));
+      custom_records = undefined;
+    }
+  }
   return {
     alias: clNode.alias ?? '',
     color: `#${clNode.color ?? ''}`,
@@ -23,6 +32,7 @@ export function convertNode(clNode: any): ILightningApi.Node {
       };
     }) ?? [],
     last_update: clNode?.last_timestamp ?? 0,
+    custom_records
   };
 }
 
