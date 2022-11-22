@@ -3,7 +3,7 @@
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]" [state]="{ data: rbfTransaction.size ? rbfTransaction : null }">
+      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]">
         <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
       </a>
@@ -209,6 +209,7 @@
             [maxStrands]="graphExpanded ? maxInOut : 24"
             [network]="network"
             [tooltip]="true"
+            [connectors]="true"
             [inputIndex]="inputIndex" [outputIndex]="outputIndex"
           >
           </tx-bowtie-graph>

@@ -4,7 +4,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, pairwise } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
-import { Observable, of, Subscription, asyncScheduler, EMPTY } from 'rxjs';
+import { Observable, of, Subscription, asyncScheduler, EMPTY, Subject } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -60,6 +60,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   nextBlockTxListSubscription: Subscription = undefined;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
+  fetchAuditScore$ = new Subject<string>();
+  fetchAuditScoreSubscription: Subscription;
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
 
@@ -105,11 +107,29 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (block.id === this.blockHash) {
           this.block = block;
+          if (this.block.id && this.block?.extras?.matchRate == null) {
+            this.fetchAuditScore$.next(this.block.id);
+          }
           if (block?.extras?.reward != undefined) {
             this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
           }
         }
       });
+
+    if (this.indexingAvailable) {
+      this.fetchAuditScoreSubscription = this.fetchAuditScore$
+        .pipe(
+          switchMap((hash) => this.apiService.getBlockAuditScore$(hash)),
+          catchError(() => EMPTY),
+        )
+        .subscribe((score) => {
+          if (score && score.hash === this.block.id) {
+            this.block.extras.matchRate = score.matchRate || null;
+          } else {
+            this.block.extras.matchRate = null;
+          }
+        });
+    }
 
     const block$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
@@ -209,6 +229,9 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
         }
         this.stateService.markBlock$.next({ blockHeight: this.blockHeight });
+        if (this.block.id && this.block?.extras?.matchRate == null) {
+          this.fetchAuditScore$.next(this.block.id);
+        }
         this.isLoadingTransactions = true;
         this.transactions = null;
         this.transactionsError = null;
@@ -311,6 +334,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.networkChangedSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
+    this.fetchAuditScoreSubscription?.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
   }
 

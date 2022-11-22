@@ -79,7 +79,7 @@ export const poolsColor = {
    'binancepool': '#1E88E5',
    'viabtc': '#039BE5',
    'btccom': '#00897B',
-   'slushpool': '#00ACC1',
+   'braiinspool': '#00ACC1',
    'sbicrypto': '#43A047',
    'marapool': '#7CB342',
    'luxor': '#C0CA33',

@@ -112,6 +112,8 @@ export class StateService {
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
 
+  txCache: { [txid: string]: Transaction } = {};
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     @Inject(LOCALE_ID) private locale: string,
@@ -264,5 +266,20 @@ export class StateService {
 
   isLiquid() {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
+
+  setTxCache(transactions) {
+    this.txCache = {};
+    transactions.forEach(tx => {
+      this.txCache[tx.txid] = tx;
+    });
+  }
+ 
+  getTxFromCache(txid) {
+    if (this.txCache && this.txCache[txid]) {
+      return this.txCache[txid];
+    } else {
+      return null;
+    }
   }
 }
