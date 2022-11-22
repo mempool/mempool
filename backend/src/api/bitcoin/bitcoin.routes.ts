@@ -250,7 +250,7 @@ class BitcoinRoutes {
    * the full parent transaction even with segwit inputs.
    * It will respond with a text/plain PSBT in the same format (hex|base64).
    */
-  private async postPsbtCompletion(req: Request, res: Response) {
+  private async postPsbtCompletion(req: Request, res: Response): Promise<void> {
     res.setHeader('content-type', 'text/plain');
     const notFoundError = `Couldn't get transaction hex for parent of input`;
     try {
@@ -275,11 +275,11 @@ class BitcoinRoutes {
             .reverse()
             .toString('hex');
 
-          let transaction: IEsploraApi.Transaction;
+          let transactionHex: string;
           // If missing transaction, return 404 status error
           try {
-            transaction = await bitcoinApi.$getRawTransaction(txid, true);
-            if (!transaction.hex) {
+            transactionHex = await bitcoinApi.$getTransactionHex(txid);
+            if (!transactionHex) {
               throw new Error('');
             }
           } catch (err) {
@@ -287,7 +287,7 @@ class BitcoinRoutes {
           }
 
           psbt.updateInput(index, {
-            nonWitnessUtxo: Buffer.from(transaction.hex, 'hex'),
+            nonWitnessUtxo: Buffer.from(transactionHex, 'hex'),
           });
           if (!isModified) {
             isModified = true;
