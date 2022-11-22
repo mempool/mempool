@@ -49,6 +49,7 @@ export namespace ILightningApi {
     }[];
     color: string;
     features: { [key: number]: Feature };
+    custom_records?: { [type: number]: string };
   }
 
   export interface Info {

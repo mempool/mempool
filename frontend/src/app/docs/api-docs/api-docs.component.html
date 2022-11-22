@@ -9,6 +9,11 @@
 
       <div class="doc-content">
 
+        <div id="disclaimer">
+          <table><tr><td><svg viewBox="0 0 304 304" xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd" style="fill:#ffc107;fill-opacity:1"><path d="M135.3 34.474c-15.62 27.306-54.206 95.63-85.21 150.534L9.075 257.583C5.382 264.08 6.76 269.217 7.908 271.7c2.326 5.028 7.29 7.537 11.155 8.215l.78.133 264.698.006-.554-.02c4.152.255 9.664-1.24 12.677-6.194 1.926-3.18 3.31-8.589-1.073-16.278L213.637 114.37l-45.351-79.205c-5.681-9.932-12.272-12.022-16.8-12.022-4.42 0-10.818 1.964-16.181 11.331h-.006zm-69.072 159.94c30.997-54.885 69.563-123.184 85.16-150.446l.186-.297c.2.303.393.582.618.981l45.363 79.22s72.377 126.47 78.569 137.283l-247.618-.007 37.719-66.734" style="fill:#ffc107;fill-opacity:1"/><path d="M152.597 247.445c8.02 0 14.518-6.728 14.518-15.025 0-8.29-6.499-15.018-14.518-15.018-8.031 0-14.529 6.728-14.529 15.018 0 8.297 6.498 15.025 14.53 15.025m-.001-147.18c11.586 0 22.23 10.958 20.977 21.7l-9.922 75.564c-.966 6.601-4.95 11.433-11.055 11.433s-10.102-4.832-11.056-11.433l-9.927-75.564c-1.26-10.742 9.39-21.7 20.983-21.7" style="fill:#ffc107;fill-opacity:1"/></g></svg></td><td><p><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></td></tr></table>
+
+        </div>
+
         <div class="doc-item-container" *ngFor="let item of faq">
           <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
           <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
@@ -163,14 +168,6 @@
   <p>There are feerate estimates on the top of <a [routerLink]="['/' | relativeUrl]">the main dashboard</a> you can use as a guide. See <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="looking-up-fee-estimates">this FAQ</a> for more on picking the right feerate.</p>
 </ng-template>
 
-<ng-template type="what-is-full-mempool">
-  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's "full".</p>
-</ng-template>
-
-<ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
-</ng-template>
-
 <ng-template type="why-is-transaction-stuck-in-mempool">
   <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>
 </ng-template>
@@ -201,6 +198,24 @@
 
 <ng-template type="looking-up-historical-trends">
   See the <a [routerLink]="['/graphs' | relativeUrl]">graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time.
+</ng-template>
+
+<ng-template type="what-is-full-mempool">
+  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>By default, Bitcoin Core allocates 300MB of memory for its mempool, so when a node's mempool grows big enough to use all 300MB of allocated memory, we say it's "full".</p><p>Once a node's mempool is using all of its allocated memory, it will start rejecting new transactions below a certain feerate threshold—so when this is the case, be extra sure to set a feerate that (at a minimum) exceeds that threshold. The current threshold feerate (and memory usage) are displayed right on Mempool's front page.</p>
+</ng-template>
+
+<ng-template type="why-empty-blocks">
+  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
+</ng-template>
+
+<ng-template type="why-block-timestamps-dont-always-increase">
+  <p>Block validation rules do not strictly require that a block's timestamp be more recent than the timestamp of the block preceding it. Without a central authority, it's impossible to know what the exact correct time is. Instead, the Bitcoin protocol requires that a block's timestamp meet certain requirements. One of those requirements is that a block's timestamp cannot be older than the median timestamp of the 12 blocks that came before it. See more details <a href="https://en.bitcoin.it/wiki/Block_timestamp" target="_blank">here</a>.</p><p>As a result, timestamps are only accurate to within an hour or so, which sometimes results in blocks with timestamps that appear out of order.</p>
+</ng-template>
+
+<ng-template type="why-dont-fee-ranges-match">
+  <p>Mempool aims to show you the <i>effective feerate</i> range for blocks—how much would you actually need to pay to get a transaction included in a block.</p>
+  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range because it actually required more than 1 s/vb to confirm that transaction in that block.</p>
+  <p>For unconfirmed CPFP transactions, Mempool will show the effective feerate (along with descendent & ancestor transaction information) on the transaction page. For confirmed transactions, CPFP relationships are not stored, so this additional information is not shown.</p>
 </ng-template>
 
 <ng-template type="who-runs-this-website">

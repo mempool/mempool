@@ -29,6 +29,8 @@
 .features {
   font-size: 24px;
   margin-left: 1em;
+  margin-top: 0.5em;
+  margin-right: -4px;
 }
 
 .top-data {
@@ -60,6 +62,15 @@
   }
 }
 
+.top-data .field {
+  &:first-child {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
 .tx-link {
   display: inline;
   font-size: 28px;
@@ -69,7 +80,7 @@
 .graph-wrapper {
   position: relative;
   background: #181b2d;
-  padding: 10px;
+  padding: 10px 0;
   padding-bottom: 0;
 
   .above-bow {
@@ -92,26 +103,37 @@
     max-width: 90%;
     margin: auto;
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 
     .opreturns {
+      display: inline-block;
       width: auto;
+      max-width: 100%;
       margin: auto;
       table-layout: auto;
       background: #2d3348af;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
 
-      td {
-        padding: 10px 10px;
+      .opreturn-row {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0 10px;
+      }
 
-        &.message {
-          overflow: hidden;
-          display: inline-block;
-          vertical-align: bottom;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          text-align: left;
-        }
+      .label {
+        margin-right: 1em;
+      }
+
+      .message {
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
