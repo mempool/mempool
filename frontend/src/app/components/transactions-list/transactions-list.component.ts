@@ -18,7 +18,7 @@ import { ApiService } from '../../services/api.service';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
-  showMoreIncrement = 40;
+  showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
