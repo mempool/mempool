@@ -1,6 +1,6 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
-    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
+    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
       <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
       <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>

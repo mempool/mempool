@@ -152,14 +152,13 @@
             "assets": [
               "src/favicon.ico",
               "src/resources",
-              "src/robots.txt"
+              "src/robots.txt",
+              "src/config.js",
+              "src/config.template.js"
             ],
             "styles": [
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
-            ],
-            "scripts": [
-              "generated-config.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -220,6 +219,10 @@
             },
             "local": {
               "proxyConfig": "proxy.conf.local.js",
+              "verbose": true
+            },
+            "local-esplora": {
+              "proxyConfig": "proxy.conf.local-esplora.js",
               "verbose": true
             },
             "mixed": {

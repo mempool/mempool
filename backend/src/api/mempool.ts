@@ -103,12 +103,11 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool() {
-    logger.debug('Updating mempool');
+  public async $updateMempool(): Promise<void> {
+    logger.debug(`Updating mempool...`);
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
-    let txCount = 0;
     const transactions = await bitcoinApi.$getRawMempool();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
@@ -124,7 +123,6 @@ class Mempool {
         try {
           const transaction = await transactionUtils.$getTransactionExtended(txid);
           this.mempoolCache[txid] = transaction;
-          txCount++;
           if (this.inSync) {
             this.txPerSecondArray.push(new Date().getTime());
             this.vBytesPerSecondArray.push({
@@ -133,14 +131,9 @@ class Mempool {
             });
           }
           hasChange = true;
-          if (diff > 0) {
-            logger.debug('Fetched transaction ' + txCount + ' / ' + diff);
-          } else {
-            logger.debug('Fetched transaction ' + txCount);
-          }
           newTransactions.push(transaction);
         } catch (e) {
-          logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+          logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
         }
       }
 
@@ -197,8 +190,7 @@ class Mempool {
 
     const end = new Date().getTime();
     const time = end - start;
-    logger.debug(`New mempool size: ${Object.keys(this.mempoolCache).length} Change: ${diff}`);
-    logger.debug('Mempool updated in ' + time / 1000 + ' seconds');
+    logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
   }
 
   public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {
