@@ -416,7 +416,7 @@ class WebsocketHandler {
     let matchRate;
     const _memPool = memPool.getMempool();
 
-    if (Common.indexingEnabled()) {
+    if (Common.indexingEnabled() && memPool.isInSync()) {
       const mempoolCopy = cloneMempool(_memPool);
       const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
 
