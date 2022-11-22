@@ -21,6 +21,15 @@
           markerWidth="1.5" markerHeight="1"
           orient="auto">
       </marker>
+      <radialGradient id="gradient0" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[0]" />
+      </radialGradient>
+      <radialGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[1]" />
+      </radialGradient>
+      <radialGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[2]" />
+      </radialGradient>
       <linearGradient id="input-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" [attr.stop-color]="gradient[0]" />
         <stop offset="100%" [attr.stop-color]="gradient[1]" />
@@ -117,7 +126,7 @@
         (pointerout)="onBlur($event, 'output-connector', i);"
         (click)="onClick($event, 'output-connector', outputData[i].index);"
       />
-      <path
+      <path *ngIf="!output.zeroValue"
         [attr.d]="output.markerPath"
         class="output marker-target {{output.class}}"
         [class.highlight]="outputData[i].index === outputIndex"
@@ -125,12 +134,22 @@
         (pointerout)="onBlur($event, 'output', i);"
         (click)="onClick($event, 'output', outputData[i].index);"
       />
-      <path
+      <path *ngIf="!output.zeroValue"
         [attr.d]="output.path"
         class="line {{output.class}}"
         [class.highlight]="outputIndex != null && outputData[i].index === outputIndex"
         [style]="output.style"
         attr.marker-start="url(#{{output.class}}-arrow)"
+        (pointerover)="onHover($event, 'output', i);"
+        (pointerout)="onBlur($event, 'output', i);"
+        (click)="onClick($event, 'output', outputData[i].index);"
+      />
+      <path *ngIf="output.zeroValue"
+        [attr.d]="output.path"
+        class="line {{output.class}} zerovalue"
+        [class.highlight]="outputIndex != null && outputData[i].index === outputIndex"
+        [class.zerovalue]="output.zeroValue"
+        [style]="output.style"
         (pointerover)="onHover($event, 'output', i);"
         (pointerout)="onBlur($event, 'output', i);"
         (click)="onClick($event, 'output', outputData[i].index);"
