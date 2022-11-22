@@ -12,8 +12,8 @@ const auditFeeColors = feeColors.map((color) => desaturate(color, 0.3));
 const auditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
-  added: hexToColor('03E1E5'),
-  selected: darken(desaturate(hexToColor('039BE5'), 0.3), 0.7),
+  added: hexToColor('0099ff'),
+  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
 }
 
 // convert from this class's update format to TxSprite's update format

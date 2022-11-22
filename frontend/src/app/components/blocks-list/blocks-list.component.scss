@@ -196,6 +196,10 @@ tr, td, th {
   @media (max-width: 950px) {
     display: none;
   }
+
+  .progress-text .skeleton-loader {
+    top: -8.5px;
+  }
 }
 .health.widget {
   width: 25%;
