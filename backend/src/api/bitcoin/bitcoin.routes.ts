@@ -88,7 +88,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions);
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -96,7 +97,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool', this.getMempool)
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/txids', this.getMempoolTxIds)
           .get(config.MEMPOOL.API_URL_PREFIX + 'mempool/recent', this.getRecentMempoolTransactions)
-          .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId', this.getTransaction)
           .post(config.MEMPOOL.API_URL_PREFIX + 'tx', this.$postTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
