@@ -1,5 +1,10 @@
-import logger from '../logger';
-import { BlockExtended, TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
+import config from '../config';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import { Common } from './common';
+import { TransactionExtended, MempoolBlockWithTransactions, AuditScore } from '../mempool.interfaces';
+import blocksRepository from '../repositories/BlocksRepository';
+import blocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import blocks from '../api/blocks';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
@@ -44,8 +49,6 @@ class Audit {
 
     displacedWeight += (4000 - transactions[0].weight);
 
-    logger.warn(`${fresh.length} fresh, ${Object.keys(isCensored).length} possibly censored, ${displacedWeight} displaced weight`);
-
     // we can expect an honest miner to include 'displaced' transactions in place of recent arrivals and censored txs
     // these displaced transactions should occupy the first N weight units of the next projected block
     let displacedWeightRemaining = displacedWeight;
@@ -73,6 +76,7 @@ class Audit {
 
     // mark unexpected transactions in the mined block as 'added'
     let overflowWeight = 0;
+    let totalWeight = 0;
     for (const tx of transactions) {
       if (inTemplate[tx.txid]) {
         matches.push(tx.txid);
@@ -82,11 +86,13 @@ class Audit {
         }
         overflowWeight += tx.weight;
       }
+      totalWeight += tx.weight;
     }
 
     // transactions missing from near the end of our template are probably not being censored
-    let overflowWeightRemaining = overflowWeight;
-    let lastOverflowRate = 1.00;
+    let overflowWeightRemaining = overflowWeight - (config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight);
+    let maxOverflowRate = 0;
+    let rateThreshold = 0;
     index = projectedBlocks[0].transactionIds.length - 1;
     while (index >= 0) {
       const txid = projectedBlocks[0].transactionIds[index];
@@ -94,8 +100,11 @@ class Audit {
         if (isCensored[txid]) {
           delete isCensored[txid];
         }
-        lastOverflowRate = mempool[txid].effectiveFeePerVsize;
-      } else if (Math.floor(mempool[txid].effectiveFeePerVsize * 100) <= Math.ceil(lastOverflowRate * 100)) { // tolerance of 0.01 sat/vb
+        if (mempool[txid].effectiveFeePerVsize > maxOverflowRate) {
+          maxOverflowRate = mempool[txid].effectiveFeePerVsize;
+          rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005;
+        }
+      } else if (mempool[txid].effectiveFeePerVsize <= rateThreshold) { // tolerance of 0.01 sat/vb + rounding
         if (isCensored[txid]) {
           delete isCensored[txid];
         }
@@ -112,6 +121,45 @@ class Audit {
       added,
       score
     };
+  }
+
+  public async $getBlockAuditScores(fromHeight?: number, limit: number = 15): Promise<AuditScore[]> {
+    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
+    const returnScores: AuditScore[] = [];
+
+    if (currentHeight < 0) {
+      return returnScores;
+    }
+
+    for (let i = 0; i < limit && currentHeight >= 0; i++) {
+      const block = blocks.getBlocks().find((b) => b.height === currentHeight);
+      if (block?.extras?.matchRate != null) {
+        returnScores.push({
+          hash: block.id,
+          matchRate: block.extras.matchRate
+        });
+      } else {
+        let currentHash;
+        if (!currentHash && Common.indexingEnabled()) {
+          const dbBlock = await blocksRepository.$getBlockByHeight(currentHeight);
+          if (dbBlock && dbBlock['id']) {
+            currentHash = dbBlock['id'];
+          }
+        }
+        if (!currentHash) {
+          currentHash = await bitcoinApi.$getBlockHash(currentHeight);
+        }
+        if (currentHash) {
+          const auditScore = await blocksAuditsRepository.$getBlockAuditScore(currentHash);
+          returnScores.push({
+            hash: currentHash,
+            matchRate: auditScore?.matchRate
+          });
+        }
+      }
+      currentHeight--;
+    }
+    return returnScores;
   }
 }
 
