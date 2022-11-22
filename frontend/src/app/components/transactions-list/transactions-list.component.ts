@@ -230,19 +230,29 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   getVinLimit(tx: Transaction, next = false): number {
+    let limit;
     if ((tx['@vinLimit'] || 0) > this.inputRowLimit) {
-      return Math.min(tx['@vinLimit'] + (next ? this.showMoreIncrement : 0), tx.vin.length);
+      limit = Math.min(tx['@vinLimit'] + (next ? this.showMoreIncrement : 0), tx.vin.length);
     } else {
-      return Math.min((next ? this.showMoreIncrement : this.inputRowLimit), tx.vin.length);
+      limit = Math.min((next ? this.showMoreIncrement : this.inputRowLimit), tx.vin.length);
     }
+    if (tx.vin.length - limit <= 5) {
+      limit = tx.vin.length;
+    }
+    return limit;
   }
 
   getVoutLimit(tx: Transaction, next = false): number {
+    let limit;
     if ((tx['@voutLimit'] || 0) > this.outputRowLimit) {
-      return Math.min(tx['@voutLimit'] + (next ? this.showMoreIncrement : 0), tx.vout.length);
+      limit = Math.min(tx['@voutLimit'] + (next ? this.showMoreIncrement : 0), tx.vout.length);
     } else {
-      return Math.min((next ? this.showMoreIncrement : this.outputRowLimit), tx.vout.length);
+      limit = Math.min((next ? this.showMoreIncrement : this.outputRowLimit), tx.vout.length);
     }
+    if (tx.vout.length - limit <= 5) {
+      limit = tx.vout.length;
+    }
+    return limit;
   }
 
   ngOnDestroy(): void {
