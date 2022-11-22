@@ -2,6 +2,7 @@
   "MEMPOOL": {
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
+    "ENABLED": true,
     "HTTP_PORT": 8999,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
@@ -23,7 +24,8 @@
     "STDOUT_LOG_MIN_PRIORITY": "debug",
     "AUTOMATIC_BLOCK_REINDEXING": false,
     "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json",
-    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master"
+    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
+    "ADVANCED_TRANSACTION_SELECTION": false
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",

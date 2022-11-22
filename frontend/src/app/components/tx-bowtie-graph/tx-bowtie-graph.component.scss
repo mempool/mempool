@@ -22,19 +22,46 @@
         stroke: url(#output-highlight-gradient);
       }
     }
+  }
 
-    &:hover {
-      z-index: 10;
-      cursor: pointer;
-      &.input {
-        stroke: url(#input-hover-gradient);
-      }
-      &.output {
-        stroke: url(#output-hover-gradient);
-      }
-      &.fee {
-        stroke: url(#fee-hover-gradient);
-      }
+  .line:hover, .marker-target:hover + .line {
+    z-index: 10;
+    cursor: pointer;
+    &.input {
+      stroke: url(#input-hover-gradient);
     }
+    &.output {
+      stroke: url(#output-hover-gradient);
+    }
+    &.fee {
+      stroke: url(#fee-hover-gradient);
+    }
+  }
+
+  .connector {
+    stroke: none;
+    opacity: 0.75;
+    cursor: pointer;
+    &.input {
+      fill: url(#input-connector-gradient);
+    }
+    &.output {
+      fill: url(#output-connector-gradient);
+    }
+  }
+
+  .connector:hover {
+    &.input {
+      fill: url(#input-hover-connector-gradient);
+    }
+    &.output {
+      fill: url(#output-hover-connector-gradient);
+    }
+  }
+
+  .marker-target {
+    stroke: none;
+    fill: transparent;
+    cursor: pointer;
   }
 }

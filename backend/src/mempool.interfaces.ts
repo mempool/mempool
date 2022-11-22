@@ -32,6 +32,11 @@ export interface BlockAudit {
   matchRate: number,
 }
 
+export interface AuditScore {
+  hash: string,
+  matchRate?: number,
+}
+
 export interface MempoolBlock {
   blockSize: number;
   blockVSize: number;

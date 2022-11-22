@@ -4,8 +4,8 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 41;
-  private queryTimeout = 120000;
+  private static currentVersion = 44;
+  private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
 
@@ -351,6 +351,19 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 41 && isBitcoin === true) {
       await this.$executeQuery('UPDATE channels SET closing_reason = NULL WHERE closing_reason = 1');
+    }
+
+    if (databaseSchemaVersion < 42 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `channels` ADD closing_resolved tinyint(1) DEFAULT 0');
+    }
+
+    if (databaseSchemaVersion < 43 && isBitcoin === true) {
+      await this.$executeQuery(this.getCreateLNNodeRecordsTableQuery(), await this.$checkIfTableExists('nodes_records'));
+    }
+
+    if (databaseSchemaVersion < 44 && isBitcoin === true) {
+      await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
+      await this.$executeQuery('UPDATE blocks_summaries SET template = NULL');
     }
   }
 
@@ -784,6 +797,19 @@ class DatabaseMigration {
       type enum('ipv4', 'ipv6', 'torv2', 'torv3', 'i2p', 'dns', 'websocket') NULL,
       UNIQUE KEY public_key_socket (public_key, socket),
       INDEX (public_key)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateLNNodeRecordsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS nodes_records (
+      public_key varchar(66) NOT NULL,
+      type int(10) unsigned NOT NULL,
+      payload blob NOT NULL,
+      UNIQUE KEY public_key_type (public_key, type),
+      INDEX (public_key),
+      FOREIGN KEY (public_key)
+        REFERENCES nodes (public_key)
+        ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
