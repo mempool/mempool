@@ -1,13 +1,11 @@
 import * as fs from 'fs';
 import path from "path";
-import { Common } from '../api/common';
 import config from '../config';
 import logger from '../logger';
 import PricesRepository from '../repositories/PricesRepository';
 import BitfinexApi from './price-feeds/bitfinex-api';
 import BitflyerApi from './price-feeds/bitflyer-api';
 import CoinbaseApi from './price-feeds/coinbase-api';
-import FtxApi from './price-feeds/ftx-api';
 import GeminiApi from './price-feeds/gemini-api';
 import KrakenApi from './price-feeds/kraken-api';
 
@@ -48,7 +46,6 @@ class PriceUpdater {
     this.latestPrices = this.getEmptyPricesObj();
 
     this.feeds.push(new BitflyerApi()); // Does not have historical endpoint
-    this.feeds.push(new FtxApi());
     this.feeds.push(new KrakenApi());
     this.feeds.push(new CoinbaseApi());
     this.feeds.push(new BitfinexApi());
