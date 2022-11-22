@@ -11,12 +11,17 @@ interface SvgLine {
   path: string;
   style: string;
   class?: string;
+  connectorPath?: string;
+  markerPath?: string;
 }
 
 interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
   index?: number;
+  txid?: string;
+  vin?: number;
+  vout?: number;
   address?: string;
   rest?: number;
   coinbase?: boolean;
@@ -40,6 +45,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() minWeight = 2; //
   @Input() maxStrands = 24; // number of inputs/outputs to keep fully on-screen.
   @Input() tooltip = false;
+  @Input() connectors = false;
   @Input() inputIndex: number;
   @Input() outputIndex: number;
 
@@ -49,9 +55,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   outputs: SvgLine[];
   middle: SvgLine;
   midWidth: number;
+  txWidth: number;
+  connectorWidth: number;
   combinedWeight: number;
   isLiquid: boolean = false;
   hoverLine: Xput | void = null;
+  hoverConnector: boolean = false;
   tooltipPosition = { x: 0, y: 0 };
   outspends: Outspend[] = [];
 
@@ -59,16 +68,16 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
 
   gradientColors = {
-    '': ['#9339f4', '#105fb0'],
-    bisq: ['#9339f4', '#105fb0'],
+    '': ['#9339f4', '#105fb0', '#9339f400'],
+    bisq: ['#9339f4', '#105fb0', '#9339f400'],
     // liquid: ['#116761', '#183550'],
-    liquid: ['#09a197', '#0f62af'],
+    liquid: ['#09a197', '#0f62af', '#09a19700'],
     // 'liquidtestnet': ['#494a4a', '#272e46'],
-    'liquidtestnet': ['#d2d2d2', '#979797'],
+    'liquidtestnet': ['#d2d2d2', '#979797', '#d2d2d200'],
     // testnet: ['#1d486f', '#183550'],
-    testnet: ['#4edf77', '#10a0af'],
+    testnet: ['#4edf77', '#10a0af', '#4edf7700'],
     // signet: ['#6f1d5d', '#471850'],
-    signet: ['#d24fc8', '#a84fd2'],
+    signet: ['#d24fc8', '#a84fd2', '#d24fc800'],
   };
 
   gradient: string[] = ['#105fb0', '#105fb0'];
@@ -118,7 +127,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.isLiquid = (this.network === 'liquid' || this.network === 'liquidtestnet');
     this.gradient = this.gradientColors[this.network];
     this.midWidth = Math.min(10, Math.ceil(this.width / 100));
-    this.combinedWeight = Math.min(this.maxCombinedWeight, Math.floor((this.width - (2 * this.midWidth)) / 6));
+    this.txWidth = this.connectors ? Math.max(this.width - 200, this.width * 0.8) : this.width - 20;
+    this.combinedWeight = Math.min(this.maxCombinedWeight, Math.floor((this.txWidth - (2 * this.midWidth)) / 6));
+    this.connectorWidth = (this.width - this.txWidth) / 2;
 
     const totalValue = this.calcTotalValue(this.tx);
     let voutWithFee = this.tx.vout.map((v, i) => {
@@ -141,6 +152,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return {
         type: 'input',
         value: v?.prevout?.value,
+        txid: v.txid,
+        vout: v.vout,
         address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
         index: i,
         coinbase: v?.is_coinbase,
@@ -268,7 +281,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       // required to prevent this line overlapping its neighbor
 
       if (this.tooltip || !xputs[i].rest) {
-        const w = (this.width - Math.max(lastWeight, line.weight)) / 2; // approximate horizontal width of the curved section of the line
+        const w = (this.width - Math.max(lastWeight, line.weight) - (2 * this.connectorWidth)) / 2; // approximate horizontal width of the curved section of the line
         const y1 = line.outerY;
         const y2 = line.innerY;
         const t = (lastWeight + line.weight) / 2; // distance between center of this line and center of previous line
@@ -308,13 +321,15 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return {
         path: this.makePath(side, line.outerY, line.innerY, line.thickness, line.offset, pad + maxOffset),
         style: this.makeStyle(line.thickness, xputs[i].type),
-        class: xputs[i].type
+        class: xputs[i].type,
+        connectorPath: this.connectors ? this.makeConnectorPath(side, line.outerY, line.innerY, line.thickness): null,
+        markerPath: this.makeMarkerPath(side, line.outerY, line.innerY, line.thickness),
       };
     });
   }
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number, offset: number, pad: number): string {
-    const start = (weight * 0.5);
+    const start = (weight * 0.5) + this.connectorWidth;
     const curveStart = Math.max(start + 1, pad - offset);
     const end =  this.width / 2 - (this.midWidth * 0.9) + 1;
     const curveEnd = end - offset - 10;
@@ -332,6 +347,40 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     }
   }
 
+  makeConnectorPath(side: 'in' | 'out', y: number, inner, weight: number): string {
+    const halfWidth = weight * 0.5;
+    const offset = 10; //Math.max(2, halfWidth * 0.2);
+    const lineEnd = this.connectorWidth;
+
+    // align with for svg horizontal gradient bug correction
+    if (Math.round(y) === Math.round(inner)) {
+      y -= 1;
+    }
+
+    if (side === 'in') {
+      return `M ${lineEnd - offset} ${y - halfWidth} L ${halfWidth + lineEnd - offset} ${y} L ${lineEnd - offset} ${y + halfWidth} L -${10} ${ y + halfWidth} L -${10} ${y - halfWidth}`;
+    } else {
+      return `M ${this.width - halfWidth - lineEnd + offset} ${y - halfWidth} L ${this.width - lineEnd + offset} ${y} L ${this.width - halfWidth - lineEnd + offset} ${y + halfWidth} L ${this.width + 10} ${ y + halfWidth} L ${this.width + 10} ${y - halfWidth}`;
+    }
+  }
+
+  makeMarkerPath(side: 'in' | 'out', y: number, inner, weight: number): string {
+    const halfWidth = weight * 0.5;
+    const offset = 10; //Math.max(2, halfWidth * 0.2);
+    const lineEnd = this.connectorWidth;
+
+    // align with for svg horizontal gradient bug correction
+    if (Math.round(y) === Math.round(inner)) {
+      y -= 1;
+    }
+
+    if (side === 'in') {
+      return `M ${lineEnd - offset} ${y - halfWidth} L ${halfWidth + lineEnd - offset} ${y} L ${lineEnd - offset} ${y + halfWidth} L ${weight + lineEnd} ${ y + halfWidth} L ${weight + lineEnd} ${y - halfWidth}`;
+    } else {
+      return `M ${this.width - halfWidth - lineEnd + offset} ${y - halfWidth} L ${this.width - lineEnd + offset} ${y} L ${this.width - halfWidth - lineEnd + offset} ${y + halfWidth} L ${this.width - halfWidth - lineEnd} ${ y + halfWidth} L ${this.width - halfWidth - lineEnd} ${y - halfWidth}`;
+    }
+  }
+
   makeStyle(minWeight, type): string {
     if (type === 'fee') {
       return `stroke-width: ${minWeight}`;
@@ -346,26 +395,31 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   }
 
   onHover(event, side, index): void {
-    if (side === 'input') {
+    if (side.startsWith('input')) {
       this.hoverLine = {
         ...this.inputData[index],
         index
       };
+      this.hoverConnector = (side === 'input-connector');
+
     } else {
       this.hoverLine = {
-        ...this.outputData[index]
+        ...this.outputData[index],
+        ...this.outspends[this.outputData[index].index]
       };
+      this.hoverConnector = (side === 'output-connector');
     }
   }
 
   onBlur(event, side, index): void {
     this.hoverLine = null;
+    this.hoverConnector = false;
   }
 
   onClick(event, side, index): void {
-    if (side === 'input') {
+    if (side.startsWith('input')) {
       const input = this.tx.vin[index];
-      if (input && !input.is_coinbase && !input.is_pegin && input.txid && input.vout != null) {
+      if (side === 'input-connector' && input && !input.is_coinbase && !input.is_pegin && input.txid && input.vout != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), input.txid], {
           queryParamsHandling: 'merge',
           fragment: (new URLSearchParams({
@@ -385,7 +439,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     } else {
       const output = this.tx.vout[index];
       const outspend = this.outspends[index];
-      if (output && outspend && outspend.spent && outspend.txid) {
+      if (side === 'output-connector' && output && outspend && outspend.spent && outspend.txid) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
           queryParamsHandling: 'merge',
           fragment: (new URLSearchParams({
