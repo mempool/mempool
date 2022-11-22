@@ -49,6 +49,14 @@
         <stop offset="98%" [attr.stop-color]="gradient[0]" />
         <stop offset="100%" [attr.stop-color]="gradient[0]" />
       </linearGradient>
+      <linearGradient id="input-hover-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="white" />
+        <stop offset="80%" [attr.stop-color]="gradient[0]" />
+      </linearGradient>
+      <linearGradient id="output-hover-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="20%" [attr.stop-color]="gradient[0]" />
+        <stop offset="100%" stop-color="white" />
+      </linearGradient>
       <linearGradient id="input-highlight-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" [attr.stop-color]="gradient[0]" />
       <stop offset="2%" [attr.stop-color]="gradient[0]" />
@@ -77,9 +85,9 @@
         [attr.d]="input.connectorPath"
         class="input connector {{input.class}}"
         [class.highlight]="inputData[i].index === inputIndex"
-        (pointerover)="onHover($event, 'input', i);"
-        (pointerout)="onBlur($event, 'input', i);"
-        (click)="onClick($event, 'input', inputData[i].index);"
+        (pointerover)="onHover($event, 'input-connector', i);"
+        (pointerout)="onBlur($event, 'input-connector', i);"
+        (click)="onClick($event, 'input-connector', inputData[i].index);"
       />
       <path
         [attr.d]="input.markerPath"
@@ -105,9 +113,9 @@
         [attr.d]="output.connectorPath"
         class="output connector {{output.class}}"
         [class.highlight]="outputData[i].index === outputIndex"
-        (pointerover)="onHover($event, 'output', i);"
-        (pointerout)="onBlur($event, 'output', i);"
-        (click)="onClick($event, 'output', outputData[i].index);"
+        (pointerover)="onHover($event, 'output-connector', i);"
+        (pointerout)="onBlur($event, 'output-connector', i);"
+        (click)="onClick($event, 'output-connector', outputData[i].index);"
       />
       <path
         [attr.d]="output.markerPath"
@@ -134,5 +142,6 @@
     *ngIf=[tooltip]
     [line]="hoverLine"
     [cursorPosition]="tooltipPosition"
+    [isConnector]="hoverConnector"
   ></app-tx-bowtie-graph-tooltip>
 </div>

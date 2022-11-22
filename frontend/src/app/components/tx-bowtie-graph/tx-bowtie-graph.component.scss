@@ -24,7 +24,7 @@
     }
   }
 
-  .line:hover, .connector:hover + .marker-target + .line, .marker-target:hover + .line {
+  .line:hover, .marker-target:hover + .line {
     z-index: 10;
     cursor: pointer;
     &.input {
@@ -47,6 +47,15 @@
     }
     &.output {
       fill: url(#output-connector-gradient);
+    }
+  }
+
+  .connector:hover {
+    &.input {
+      fill: url(#input-hover-connector-gradient);
+    }
+    &.output {
+      fill: url(#output-hover-connector-gradient);
     }
   }
 
