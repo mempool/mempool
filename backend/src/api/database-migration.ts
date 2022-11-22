@@ -5,7 +5,7 @@ import { Common } from './common';
 
 class DatabaseMigration {
   private static currentVersion = 44;
-  private queryTimeout = 120000;
+  private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
 
