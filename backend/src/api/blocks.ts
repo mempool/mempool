@@ -130,7 +130,7 @@ class Blocks {
     const stripped = block.tx.map((tx) => {
       return {
         txid: tx.txid,
-        vsize: tx.vsize,
+        vsize: tx.weight / 4,
         fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
         value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
       };
@@ -195,9 +195,9 @@ class Blocks {
         };
       }
 
-      const auditSummary = await BlocksAuditsRepository.$getShortBlockAudit(block.id);
-      if (auditSummary) {
-        blockExtended.extras.matchRate = auditSummary.matchRate;
+      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
+      if (auditScore != null) {
+        blockExtended.extras.matchRate = auditScore.matchRate;
       }
     }
 

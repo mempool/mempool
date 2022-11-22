@@ -3,6 +3,7 @@
 # MEMPOOL
 __MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=mainnet}
 __MEMPOOL_BACKEND__=${MEMPOOL_BACKEND:=electrum}
+__MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=true}
 __MEMPOOL_HTTP_PORT__=${BACKEND_HTTP_PORT:=8999}
 __MEMPOOL_SPAWN_CLUSTER_PROCS__=${MEMPOOL_SPAWN_CLUSTER_PROCS:=0}
 __MEMPOOL_API_URL_PREFIX__=${MEMPOOL_API_URL_PREFIX:=/api/v1/}
@@ -111,6 +112,7 @@ mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_BACKEND__/${__MEMPOOL_BACKEND__}/g" mempool-config.json
+sed -i "s/__MEMPOOL_ENABLED__/${__MEMPOOL_ENABLED__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_HTTP_PORT__/${__MEMPOOL_HTTP_PORT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_SPAWN_CLUSTER_PROCS__/${__MEMPOOL_SPAWN_CLUSTER_PROCS__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_API_URL_PREFIX__!${__MEMPOOL_API_URL_PREFIX__}!g" mempool-config.json
