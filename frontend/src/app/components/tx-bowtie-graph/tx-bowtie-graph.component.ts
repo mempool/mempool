@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ interface SvgLine {
   class?: string;
   connectorPath?: string;
   markerPath?: string;
+  zeroValue?: boolean;
 }
 
 interface Xput {
@@ -49,6 +50,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
 
+  dir: 'rtl' | 'ltr' = 'ltr';
+
   inputData: Xput[];
   outputData: Xput[];
   inputs: SvgLine[];
@@ -63,6 +66,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   hoverConnector: boolean = false;
   tooltipPosition = { x: 0, y: 0 };
   outspends: Outspend[] = [];
+  zeroValueWidth = 60;
+  zeroValueThickness = 20;
 
   outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
@@ -87,7 +92,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     private relativeUrlPipe: RelativeUrlPipe,
     private stateService: StateService,
     private apiService: ApiService,
-  ) { }
+    @Inject(LOCALE_ID) private locale: string,
+  ) {
+    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+      this.dir = 'rtl';
+    }
+  }
 
   ngOnInit(): void {
     this.initGraph();
@@ -130,6 +140,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.txWidth = this.connectors ? Math.max(this.width - 200, this.width * 0.8) : this.width - 20;
     this.combinedWeight = Math.min(this.maxCombinedWeight, Math.floor((this.txWidth - (2 * this.midWidth)) / 6));
     this.connectorWidth = (this.width - this.txWidth) / 2;
+    this.zeroValueWidth = Math.max(20, Math.min((this.txWidth / 2) - this.midWidth - 110, 60));
 
     const totalValue = this.calcTotalValue(this.tx);
     let voutWithFee = this.tx.vout.map((v, i) => {
@@ -236,10 +247,10 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   }
 
   linesFromWeights(side: 'in' | 'out', xputs: Xput[], weights: number[], maxVisibleStrands: number): SvgLine[] {
-    const lineParams = weights.map((w) => {
+    const lineParams = weights.map((w, i) => {
       return {
         weight: w,
-        thickness: Math.max(this.minWeight - 1, w) + 1,
+        thickness: xputs[i].value === 0 ? this.zeroValueThickness : Math.max(this.minWeight - 1, w) + 1,
         offset: 0,
         innerY: 0,
         outerY: 0,
@@ -256,7 +267,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let lastOuter = 0;
     let lastInner = innerTop;
     // gap between strands
-    const spacing = (this.height - visibleWeight) / gaps;
+    const spacing = Math.max(4, (this.height - visibleWeight) / gaps);
 
     // curve adjustments to prevent overlaps
     let offset = 0;
@@ -265,6 +276,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let lastWeight = 0;
     let pad = 0;
     lineParams.forEach((line, i) => {
+      if (xputs[i].value === 0) {
+        line.outerY = lastOuter + (this.zeroValueThickness / 2);
+        lastOuter += this.zeroValueThickness + spacing;
+        return;
+      }
+
       // set the vertical position of the (center of the) outer side of the line
       line.outerY = lastOuter + (line.thickness / 2);
       line.innerY = Math.min(innerBottom + (line.thickness / 2), Math.max(innerTop + (line.thickness / 2), lastInner + (line.weight / 2)));
@@ -318,19 +335,28 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     maxOffset -= minOffset;
 
     return lineParams.map((line, i) => {
-      return {
-        path: this.makePath(side, line.outerY, line.innerY, line.thickness, line.offset, pad + maxOffset),
-        style: this.makeStyle(line.thickness, xputs[i].type),
-        class: xputs[i].type,
-        connectorPath: this.connectors ? this.makeConnectorPath(side, line.outerY, line.innerY, line.thickness): null,
-        markerPath: this.makeMarkerPath(side, line.outerY, line.innerY, line.thickness),
-      };
+      if (xputs[i].value === 0) {
+        return {
+          path: this.makeZeroValuePath(side, line.outerY),
+          style: this.makeStyle(this.zeroValueThickness, xputs[i].type),
+          class: xputs[i].type,
+          zeroValue: true,
+        };
+      } else {
+        return {
+          path: this.makePath(side, line.outerY, line.innerY, line.thickness, line.offset, pad + maxOffset),
+          style: this.makeStyle(line.thickness, xputs[i].type),
+          class: xputs[i].type,
+          connectorPath: this.connectors ? this.makeConnectorPath(side, line.outerY, line.innerY, line.thickness): null,
+          markerPath: this.makeMarkerPath(side, line.outerY, line.innerY, line.thickness),
+        };
+      }
     });
   }
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number, offset: number, pad: number): string {
     const start = (weight * 0.5) + this.connectorWidth;
-    const curveStart = Math.max(start + 1, pad - offset);
+    const curveStart = Math.max(start + 5, pad - offset);
     const end =  this.width / 2 - (this.midWidth * 0.9) + 1;
     const curveEnd = end - offset - 10;
     const midpoint = (curveStart + curveEnd) / 2;
@@ -344,6 +370,16 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       return `M ${start} ${outer} L ${curveStart} ${outer} C ${midpoint} ${outer}, ${midpoint} ${inner}, ${curveEnd} ${inner} L ${end} ${inner}`;
     } else { // mirrored in y-axis for the right hand side
       return `M ${this.width - start} ${outer} L ${this.width - curveStart} ${outer} C ${this.width - midpoint} ${outer}, ${this.width - midpoint} ${inner}, ${this.width - curveEnd} ${inner} L ${this.width - end} ${inner}`;
+    }
+  }
+
+  makeZeroValuePath(side: 'in' | 'out', y: number): string {
+    const offset = this.zeroValueThickness / 2;
+    const start = (this.connectorWidth / 2) + 10;
+    if (side === 'in') {
+      return `M ${start + offset} ${y} L ${start + this.zeroValueWidth + offset} ${y}`;
+    } else { // mirrored in y-axis for the right hand side
+      return `M ${this.width - start - offset} ${y} L ${this.width - start - this.zeroValueWidth - offset} ${y}`;
     }
   }
 
@@ -391,7 +427,11 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
-    this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+    if (this.dir === 'rtl') {
+      this.tooltipPosition = { x: this.width - event.offsetX, y: event.offsetY };
+    } else {
+     this.tooltipPosition = { x: event.offsetX, y: event.offsetY };
+    }
   }
 
   onHover(event, side, index): void {
