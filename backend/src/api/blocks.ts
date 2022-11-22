@@ -34,6 +34,7 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
+  private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>)[] = [];
 
   constructor() { }
 
@@ -55,6 +56,10 @@ class Blocks {
 
   public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
     this.newBlockCallbacks.push(fn);
+  }
+
+  public setNewAsyncBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>) {
+    this.newAsyncBlockCallbacks.push(fn);
   }
 
   /**
@@ -444,6 +449,9 @@ class Blocks {
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
 
+      // start async callbacks
+      const callbackPromises = this.newAsyncBlockCallbacks.map((cb) => cb(blockExtended, txIds, transactions));
+
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
           const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
@@ -514,6 +522,9 @@ class Blocks {
       if (!memPool.hasPriority()) {
         diskCache.$saveCacheToDisk();
       }
+
+      // wait for pending async callbacks to finish
+      await Promise.all(callbackPromises);
     }
   }
 
