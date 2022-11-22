@@ -183,8 +183,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          if (history.state.data && history.state.data.fee !== -1) {
-            transactionObservable$ = of(history.state.data);
+          const cached = this.stateService.getTxFromCache(this.txId);
+          if (cached && cached.fee !== -1) {
+            transactionObservable$ = of(cached);
           } else {
             transactionObservable$ = this.electrsApiService
               .getTransaction$(this.txId)
@@ -279,6 +280,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
+      this.stateService.setTxCache([this.rbfTransaction]);
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {

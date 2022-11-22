@@ -52,6 +52,10 @@
                 <span i18n="unknown">Unknown</span>
               </td>
             </tr>
+            <tr *ngIf="(avgChannelDistance$ | async) as avgDistance;">
+              <td i18n="lightning.avg-distance" class="text-truncate">Avg channel distance</td>
+              <td>{{ avgDistance | number : '1.0-0' }} <span class="symbol">km</span> <span class="separator">/</span> {{ kmToMiles(avgDistance) | number : '1.0-0' }} <span class="symbol">mi</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
