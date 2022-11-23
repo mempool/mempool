@@ -18,6 +18,7 @@ import { ApiService } from '../../services/api.service';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
   @Input() showConfirmations = false;
@@ -208,14 +209,50 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   loadMoreInputs(tx: Transaction): void {
-    tx['@vinLimit'] = false;
+    if (!tx['@vinLoaded']) {
+      this.electrsApiService.getTransaction$(tx.txid)
+        .subscribe((newTx) => {
+          tx['@vinLoaded'] = true;
+          tx.vin = newTx.vin;
+          tx.fee = newTx.fee;
+          this.ref.markForCheck();
+        });
+    }
+  }
 
-    this.electrsApiService.getTransaction$(tx.txid)
-      .subscribe((newTx) => {
-        tx.vin = newTx.vin;
-        tx.fee = newTx.fee;
-        this.ref.markForCheck();
-      });
+  showMoreInputs(tx: Transaction): void {
+    this.loadMoreInputs(tx);
+    tx['@vinLimit'] = this.getVinLimit(tx, true);
+  }
+
+  showMoreOutputs(tx: Transaction): void {
+    tx['@voutLimit'] = this.getVoutLimit(tx, true);
+  }
+
+  getVinLimit(tx: Transaction, next = false): number {
+    let limit;
+    if ((tx['@vinLimit'] || 0) > this.inputRowLimit) {
+      limit = Math.min(tx['@vinLimit'] + (next ? this.showMoreIncrement : 0), tx.vin.length);
+    } else {
+      limit = Math.min((next ? this.showMoreIncrement : this.inputRowLimit), tx.vin.length);
+    }
+    if (tx.vin.length - limit <= 5) {
+      limit = tx.vin.length;
+    }
+    return limit;
+  }
+
+  getVoutLimit(tx: Transaction, next = false): number {
+    let limit;
+    if ((tx['@voutLimit'] || 0) > this.outputRowLimit) {
+      limit = Math.min(tx['@voutLimit'] + (next ? this.showMoreIncrement : 0), tx.vout.length);
+    } else {
+      limit = Math.min((next ? this.showMoreIncrement : this.outputRowLimit), tx.vout.length);
+    }
+    if (tx.vout.length - limit <= 5) {
+      limit = tx.vout.length;
+    }
+    return limit;
   }
 
   ngOnDestroy(): void {
