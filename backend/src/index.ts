@@ -35,6 +35,7 @@ import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
+import forensicsService from './tasks/lightning/forensics.service';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -192,6 +193,7 @@ class Server {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
+      await forensicsService.$startService();
       await lightningStatsUpdater.$startService();
     } catch(e) {
       logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
