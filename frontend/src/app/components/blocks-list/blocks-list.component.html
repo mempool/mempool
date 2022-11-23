@@ -46,7 +46,7 @@
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
           </td>
           <td *ngIf="indexingAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
-            <a class="clear-link" [routerLink]="auditScores[block.id] != null ? ['/block-audit/' | relativeUrl, block.id] : null">
+            <a class="clear-link" [routerLink]="auditScores[block.id] != null ? ['/block/' | relativeUrl, block.id] : null">
               <div class="progress progress-health">
                 <div class="progress-bar progress-bar-health" role="progressbar"
                   [ngStyle]="{'width': (100 - (auditScores[block.id] || 0)) + '%' }"></div>

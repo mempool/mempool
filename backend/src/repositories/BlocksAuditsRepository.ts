@@ -1,3 +1,4 @@
+import blocks from '../api/blocks';
 import DB from '../database';
 import logger from '../logger';
 import { BlockAudit, AuditScore } from '../mempool.interfaces';
@@ -64,6 +65,12 @@ class BlocksAuditRepositories {
         rows[0].freshTxs = JSON.parse(rows[0].freshTxs);
         rows[0].transactions = JSON.parse(rows[0].transactions);
         rows[0].template = JSON.parse(rows[0].template);
+      } else {
+        // fallback to non-audited transaction summary
+        const strippedTransactions = await blocks.$getStrippedBlockTransactions(hash);
+        return {
+          transactions: strippedTransactions
+        }
       }
             
       return rows[0];

@@ -54,7 +54,19 @@
                 <td i18n="block.weight">Weight</td>
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
-              <ng-template [ngIf]="webGlEnabled">
+              <tr *ngIf="auditEnabled">
+                <td i18n="block.health">Block health</td>
+                <td>
+                  <span *ngIf="blockAudit?.matchRate != null">{{ blockAudit.matchRate }}%</span>
+                  <span *ngIf="blockAudit?.matchRate === null" i18n="unknown">Unknown</span>
+                </td>
+              </tr>
+              <ng-container *ngIf="!indexingAvailable && webGlEnabled">
+                <tr *ngIf="isMobile && auditEnabled"></tr>
+                <tr>
+                  <td i18n="mempool-block.fee-span">Fee span</td>
+                  <td><span>{{ block.extras.feeRange[0] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+                </tr>
                 <tr *ngIf="block?.extras?.medianFee != undefined">
                   <td class="td-width" i18n="block.median-fee">Median fee</td>
                   <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
@@ -98,26 +110,19 @@
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.miner">Miner</td>
                   <td *ngIf="stateService.env.MINING_DASHBOARD">
-                    <a [attr.data-cy]="'block-details-miner-badge'" placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
+                    <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge"
                       [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
                       {{ block.extras.pool.name }}
                     </a>
                   </td>
                   <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
-                    <span [attr.data-cy]="'block-details-miner-badge'" placement="bottom" class="badge"
+                    <span placement="bottom" class="badge"
                       [class]="block.extras.pool.name === 'Unknown' ? 'badge-secondary' : 'badge-primary'">
                       {{ block.extras.pool.name }}
                   </span>
                   </td>
                 </tr>
-                <tr *ngIf="indexingAvailable">
-                  <td i18n="block.health">Block health</td>
-                  <td>
-                    <a *ngIf="block.extras?.matchRate != null" [routerLink]="['/block-audit/' | relativeUrl, blockHash]">{{ block.extras.matchRate }}%</a>
-                    <span *ngIf="block.extras?.matchRate === null" i18n="unknown">Unknown</span>
-                  </td>
-                </tr>
-              </ng-template>
+              </ng-container>
             </tbody>
           </table>
         </div>
@@ -138,7 +143,11 @@
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
-              <ng-template [ngIf]="webGlEnabled">
+              <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                <td colspan="2"><span class="skeleton-loader"></span></td>
+              </tr>
+              <ng-container *ngIf="!indexingAvailable && webGlEnabled">
+                <tr *ngIf="isMobile && !auditEnabled"></tr>
                 <tr>
                   <td class="td-width" colspan="2"><span class="skeleton-loader"></span></td>
                 </tr>
@@ -148,17 +157,25 @@
                 <tr>
                   <td colspan="2"><span class="skeleton-loader"></span></td>
                 </tr>
-                <tr>
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td colspan="2"><span class="skeleton-loader"></span></td>
                 </tr>
-              </ng-template>
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                  <td colspan="2"><span class="skeleton-loader"></span></td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
       </ng-template>
-      <div class="col-sm" *ngIf="!webGlEnabled">
-        <table class="table table-borderless table-striped" *ngIf="!isLoadingBlock">
+      <div class="col-sm">
+        <table class="table table-borderless table-striped" *ngIf="!isLoadingBlock && (indexingAvailable || !webGlEnabled)">
           <tbody>
+            <tr *ngIf="isMobile && auditEnabled"></tr>
+            <tr>
+              <td i18n="mempool-block.fee-span">Fee span</td>
+              <td><span>{{ block.extras.feeRange[0] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+            </tr>
             <tr *ngIf="block?.extras?.medianFee != undefined">
               <td class="td-width" i18n="block.median-fee">Median fee</td>
               <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
@@ -216,8 +233,9 @@
             </tr>
           </tbody>
         </table>
-        <table class="table table-borderless table-striped" *ngIf="isLoadingBlock">
+        <table class="table table-borderless table-striped" *ngIf="isLoadingBlock && (indexingAvailable || !webGlEnabled)">
           <tbody>
+            <tr *ngIf="isMobile && !auditEnabled"></tr>
             <tr>
               <td class="td-width" colspan="2"><span class="skeleton-loader"></span></td>
             </tr>
@@ -230,22 +248,54 @@
             <tr>
               <td colspan="2"><span class="skeleton-loader"></span></td>
             </tr>
+            <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+              <td colspan="2"><span class="skeleton-loader"></span></td>
+            </tr>
           </tbody>
         </table>
-      </div>
-      <div class="col-sm chart-container" *ngIf="webGlEnabled">
-        <app-block-overview-graph
-          #blockGraph
-          [isLoading]="isLoadingOverview"
-          [resolution]="75"
-          [blockLimit]="stateService.blockVSize"
-          [orientation]="'top'"
-          [flip]="false"
-          (txClickEvent)="onTxClick($event)"
-        ></app-block-overview-graph>
+        <div class="col-sm chart-container" *ngIf="webGlEnabled && !indexingAvailable">
+          <app-block-overview-graph
+            #blockGraphActual
+            [isLoading]="isLoadingOverview"
+            [resolution]="75"
+            [blockLimit]="stateService.blockVSize"
+            [orientation]="'top'"
+            [flip]="false"
+            (txClickEvent)="onTxClick($event)"
+          ></app-block-overview-graph>
+        </div>
       </div>
     </div>
   </div>
+
+  <span id="overview"></span>
+
+  <br>
+
+  <!-- VISUALIZATIONS -->
+  <div class="box" *ngIf="!error && webGlEnabled && indexingAvailable">
+    <div class="nav nav-tabs" *ngIf="isMobile && auditEnabled">
+      <a class="nav-link" [class.active]="mode === 'projected'" i18n="block.projected"
+        fragment="projected" (click)="changeMode('projected')">Projected</a>
+      <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
+        fragment="actual" (click)="changeMode('actual')">Actual</a>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
+        <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!auditEnabled"></app-block-overview-graph> 
+      </div>
+      <div class="col-sm" *ngIf="!isMobile">
+        <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
+        <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
+          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)"></app-block-overview-graph>
+      </div>
+    </div>
+  </div>
+  
   <ng-template [ngIf]="!isLoadingBlock && !error">
     <div [hidden]="!showDetails" id="details">
       <br>
@@ -273,6 +323,7 @@
           <div class="col-sm" *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
             <table class="table table-borderless table-striped">
               <tbody>
+                <tr *ngIf="isMobile"></tr>
                 <tr>
                   <td class="td-width" i18n="block.difficulty">Difficulty</td>
                   <td>{{ block.difficulty }}</td>
