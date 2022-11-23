@@ -6,6 +6,8 @@ import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { Common } from '../../api/common';
 
+const throttleDelay = 20; //ms
+
 class ForensicsService {
   loggerTimer = 0;
   closedChannelsScanBlock = 0;
@@ -85,7 +87,7 @@ class ForensicsService {
           let outspends: IEsploraApi.Outspend[] | undefined;
           try {
             outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
-            await Common.sleep$(100);
+            await Common.sleep$(throttleDelay);
           } catch (e) {
             logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
             continue;
@@ -97,7 +99,7 @@ class ForensicsService {
               if (!spendingTx) {
                 try {
                   spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
-                  await Common.sleep$(100);
+                  await Common.sleep$(throttleDelay);
                   this.txCache[outspend.txid] = spendingTx;
                 } catch (e) {
                   logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
@@ -126,7 +128,7 @@ class ForensicsService {
             if (!closingTx) {
               try {
                 closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
-                await Common.sleep$(100);
+                await Common.sleep$(throttleDelay);
                 this.txCache[channel.closing_transaction_id] = closingTx;
               } catch (e) {
                 logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
