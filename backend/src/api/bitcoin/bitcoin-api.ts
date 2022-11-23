@@ -57,6 +57,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getTransactionHex(txId: string): Promise<string> {
+    return this.$getRawTransaction(txId, true)
+      .then((tx) => tx.hex || '');
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getChainTips()
       .then((result: IBitcoinApi.ChainTips[]) => {

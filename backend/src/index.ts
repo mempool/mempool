@@ -84,7 +84,7 @@ class Server {
         next();
       })
       .use(express.urlencoded({ extended: true }))
-      .use(express.text())
+      .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
 
     this.server = http.createServer(this.app);

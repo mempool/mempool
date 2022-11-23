@@ -298,7 +298,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       // required to prevent this line overlapping its neighbor
 
       if (this.tooltip || !xputs[i].rest) {
-        const w = (this.width - Math.max(lastWeight, line.weight) - (2 * this.connectorWidth)) / 2; // approximate horizontal width of the curved section of the line
+        const w = (this.txWidth - Math.max(lastWeight, line.weight) - (this.connectorWidth * 2)) / 2; // approximate horizontal width of the curved section of the line
         const y1 = line.outerY;
         const y2 = line.innerY;
         const t = (lastWeight + line.weight) / 2; // distance between center of this line and center of previous line
@@ -356,7 +356,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   makePath(side: 'in' | 'out', outer: number, inner: number, weight: number, offset: number, pad: number): string {
     const start = (weight * 0.5) + this.connectorWidth;
-    const curveStart = Math.max(start + 5, pad - offset);
+    const curveStart = Math.max(start + 5, pad + this.connectorWidth - offset);
     const end =  this.width / 2 - (this.midWidth * 0.9) + 1;
     const curveEnd = end - offset - 10;
     const midpoint = (curveStart + curveEnd) / 2;

@@ -226,6 +226,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.waitingForTransaction = false;
           this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
+          this.graphExpanded = false;
           this.setupGraph();
 
           if (!tx.status.confirmed && tx.firstSeen) {
@@ -364,7 +365,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setupGraph() {
     this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
-    this.graphHeight = Math.min(360, this.maxInOut * 80);
+    this.graphHeight = this.graphExpanded ? this.maxInOut * 15 : Math.min(360, this.maxInOut * 80);
   }
 
   toggleGraph() {
@@ -384,10 +385,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   expandGraph() {
     this.graphExpanded = true;
+    this.graphHeight = this.maxInOut * 15;
   }
 
   collapseGraph() {
     this.graphExpanded = false;
+    this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
   // simulate normal anchor fragment behavior
