@@ -1,5 +1,6 @@
 import { Application, Request, Response } from 'express';
 import axios from 'axios';
+import * as bitcoinjs from 'bitcoinjs-lib';
 import config from '../../config';
 import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
@@ -87,7 +88,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions);
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
+      .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -238,6 +240,74 @@ class BitcoinRoutes {
         statusCode = 404;
       }
       res.status(statusCode).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  /**
+   * Takes the PSBT as text/plain body, parses it, and adds the full
+   * parent transaction to each input that doesn't already have it.
+   * This is used for BTCPayServer / Trezor users which need access to
+   * the full parent transaction even with segwit inputs.
+   * It will respond with a text/plain PSBT in the same format (hex|base64).
+   */
+  private async postPsbtCompletion(req: Request, res: Response): Promise<void> {
+    res.setHeader('content-type', 'text/plain');
+    const notFoundError = `Couldn't get transaction hex for parent of input`;
+    try {
+      let psbt: bitcoinjs.Psbt;
+      let format: 'hex' | 'base64';
+      let isModified = false;
+      try {
+        psbt = bitcoinjs.Psbt.fromBase64(req.body);
+        format = 'base64';
+      } catch (e1) {
+        try {
+          psbt = bitcoinjs.Psbt.fromHex(req.body);
+          format = 'hex';
+        } catch (e2) {
+          throw new Error(`Unable to parse PSBT`);
+        }
+      }
+      for (const [index, input] of psbt.data.inputs.entries()) {
+        if (!input.nonWitnessUtxo) {
+          // Buffer.from ensures it won't be modified in place by reverse()
+          const txid = Buffer.from(psbt.txInputs[index].hash)
+            .reverse()
+            .toString('hex');
+
+          let transactionHex: string;
+          // If missing transaction, return 404 status error
+          try {
+            transactionHex = await bitcoinApi.$getTransactionHex(txid);
+            if (!transactionHex) {
+              throw new Error('');
+            }
+          } catch (err) {
+            throw new Error(`${notFoundError} #${index} @ ${txid}`);
+          }
+
+          psbt.updateInput(index, {
+            nonWitnessUtxo: Buffer.from(transactionHex, 'hex'),
+          });
+          if (!isModified) {
+            isModified = true;
+          }
+        }
+      }
+      if (isModified) {
+        res.send(format === 'hex' ? psbt.toHex() : psbt.toBase64());
+      } else {
+        // Not modified
+        // 422 Unprocessable Entity
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422
+        res.status(422).send(`Psbt had no missing nonWitnessUtxos.`);
+      }
+    } catch (e: any) {
+      if (e instanceof Error && new RegExp(notFoundError).test(e.message)) {
+        res.status(404).send(e.message);
+      } else {
+        res.status(500).send(e instanceof Error ? e.message : e);
+      }
     }
   }
 
