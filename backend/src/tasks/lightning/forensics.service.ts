@@ -61,7 +61,7 @@ class ForensicsService {
   */
 
   public async $runClosedChannelsForensics(onlyNewChannels: boolean = false): Promise<void> {
-    if (!config.ESPLORA.REST_API_URL) {
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
       return;
     }
 
