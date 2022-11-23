@@ -10,9 +10,9 @@ const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first
 
 class Audit {
   auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
-   : { censored: string[], added: string[], score: number } {
+   : { censored: string[], added: string[], fresh: string[], score: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], score: 0 };
+      return { censored: [], added: [], fresh: [], score: 0 };
     }
 
     const matches: string[] = []; // present in both mined block and template
@@ -83,7 +83,17 @@ class Audit {
       } else {
         if (!isDisplaced[tx.txid]) {
           added.push(tx.txid);
+        } else {
         }
+        let blockIndex = -1;
+        let index = -1;
+        projectedBlocks.forEach((block, bi) => {
+          const i = block.transactionIds.indexOf(tx.txid);
+          if (i >= 0) {
+            blockIndex = bi;
+            index = i;
+          }
+        });
         overflowWeight += tx.weight;
       }
       totalWeight += tx.weight;
@@ -119,6 +129,7 @@ class Audit {
     return {
       censored: Object.keys(isCensored),
       added,
+      fresh,
       score
     };
   }

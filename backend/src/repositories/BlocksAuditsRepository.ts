@@ -5,9 +5,9 @@ import { BlockAudit, AuditScore } from '../mempool.interfaces';
 class BlocksAuditRepositories {
   public async $saveAudit(audit: BlockAudit): Promise<void> {
     try {
-      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, match_rate)
-        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
-          JSON.stringify(audit.addedTxs), audit.matchRate]);
+      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, fresh_txs, match_rate)
+        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
+          JSON.stringify(audit.addedTxs), JSON.stringify(audit.freshTxs), audit.matchRate]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
@@ -51,7 +51,7 @@ class BlocksAuditRepositories {
       const [rows]: any[] = await DB.query(
         `SELECT blocks.height, blocks.hash as id, UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.size,
         blocks.weight, blocks.tx_count,
-        transactions, template, missing_txs as missingTxs, added_txs as addedTxs, match_rate as matchRate
+        transactions, template, missing_txs as missingTxs, added_txs as addedTxs, fresh_txs as freshTxs, match_rate as matchRate
         FROM blocks_audits
         JOIN blocks ON blocks.hash = blocks_audits.hash
         JOIN blocks_summaries ON blocks_summaries.id = blocks_audits.hash
@@ -61,6 +61,7 @@ class BlocksAuditRepositories {
       if (rows.length) {
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
         rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
+        rows[0].freshTxs = JSON.parse(rows[0].freshTxs);
         rows[0].transactions = JSON.parse(rows[0].transactions);
         rows[0].template = JSON.parse(rows[0].template);
       }
