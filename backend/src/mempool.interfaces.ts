@@ -28,6 +28,7 @@ export interface BlockAudit {
   height: number,
   hash: string,
   missingTxs: string[],
+  freshTxs: string[],
   addedTxs: string[],
   matchRate: number,
 }
