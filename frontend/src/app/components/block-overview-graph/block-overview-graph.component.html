@@ -1,7 +1,8 @@
 <div class="block-overview-graph">
   <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
-  <div class="loader-wrapper" [class.hidden]="!isLoading || disableSpinner">
-    <div class="spinner-border ml-3 loading" role="status"></div>
+  <div class="loader-wrapper" [class.hidden]="(!isLoading || disableSpinner) && !unavailable">
+    <div *ngIf="isLoading" class="spinner-border ml-3 loading" role="status"></div>
+    <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
   </div>
 
   <app-block-overview-tooltip
