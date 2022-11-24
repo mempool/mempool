@@ -3,7 +3,7 @@ import { StateService } from '../../services/state.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
 import { filter, map, tap, switchMap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
