@@ -133,45 +133,6 @@ class Audit {
       score
     };
   }
-
-  public async $getBlockAuditScores(fromHeight?: number, limit: number = 15): Promise<AuditScore[]> {
-    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
-    const returnScores: AuditScore[] = [];
-
-    if (currentHeight < 0) {
-      return returnScores;
-    }
-
-    for (let i = 0; i < limit && currentHeight >= 0; i++) {
-      const block = blocks.getBlocks().find((b) => b.height === currentHeight);
-      if (block?.extras?.matchRate != null) {
-        returnScores.push({
-          hash: block.id,
-          matchRate: block.extras.matchRate
-        });
-      } else {
-        let currentHash;
-        if (!currentHash && Common.indexingEnabled()) {
-          const dbBlock = await blocksRepository.$getBlockByHeight(currentHeight);
-          if (dbBlock && dbBlock['id']) {
-            currentHash = dbBlock['id'];
-          }
-        }
-        if (!currentHash) {
-          currentHash = await bitcoinApi.$getBlockHash(currentHeight);
-        }
-        if (currentHash) {
-          const auditScore = await blocksAuditsRepository.$getBlockAuditScore(currentHash);
-          returnScores.push({
-            hash: currentHash,
-            matchRate: auditScore?.matchRate
-          });
-        }
-      }
-      currentHeight--;
-    }
-    return returnScores;
-  }
 }
 
 export default new Audit();
