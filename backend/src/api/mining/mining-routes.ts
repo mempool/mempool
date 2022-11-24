@@ -283,9 +283,12 @@ class MiningRoutes {
 
   private async $getBlockAuditScores(req: Request, res: Response) {
     try {
-      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      let height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      if (height == null) {
+        height = await BlocksRepository.$mostRecentBlockHeight();
+      }
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(await audits.$getBlockAuditScores(height, 15));
+      res.json(await BlocksAuditsRepository.$getBlockAuditScores(height, height - 15));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

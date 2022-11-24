@@ -93,6 +93,20 @@ class BlocksAuditRepositories {
       throw e;
     }
   }
+
+  public async $getBlockAuditScores(maxHeight: number, minHeight: number): Promise<AuditScore[]> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT hash, match_rate as matchRate
+        FROM blocks_audits
+        WHERE blocks_audits.height BETWEEN ? AND ?
+      `, [minHeight, maxHeight]);
+      return rows;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksAuditRepositories();
