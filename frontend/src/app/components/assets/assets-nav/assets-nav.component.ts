@@ -9,7 +9,7 @@ import { AssetsService } from '../../../services/assets.service';
 import { SeoService } from '../../../services/seo.service';
 import { StateService } from '../../../services/state.service';
 import { RelativeUrlPipe } from '../../../shared/pipes/relative-url/relative-url.pipe';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-assets-nav',
