@@ -107,18 +107,22 @@ class DatabaseMigration {
     await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
     if (databaseSchemaVersion < 2 && this.statisticsAddedIndexed === false) {
       await this.$executeQuery(`CREATE INDEX added ON statistics (added);`);
+      this.updateToSchemaVersion(2);
     }
     if (databaseSchemaVersion < 3) {
       await this.$executeQuery(this.getCreatePoolsTableQuery(), await this.$checkIfTableExists('pools'));
+      this.updateToSchemaVersion(3);
     }
     if (databaseSchemaVersion < 4) {
       await this.$executeQuery('DROP table IF EXISTS blocks;');
       await this.$executeQuery(this.getCreateBlocksTableQuery(), await this.$checkIfTableExists('blocks'));
+      this.updateToSchemaVersion(4);
     }
     if (databaseSchemaVersion < 5 && isBitcoin === true) {
       this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
       await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
       await this.$executeQuery('ALTER TABLE blocks ADD `reward` double unsigned NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(5);
     }
 
     if (databaseSchemaVersion < 6 && isBitcoin === true) {
@@ -141,11 +145,13 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE blocks ADD `nonce` bigint unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks ADD `merkle_root` varchar(65) NOT NULL DEFAULT ""');
       await this.$executeQuery('ALTER TABLE blocks ADD `previous_block_hash` varchar(65) NULL');
+      this.updateToSchemaVersion(6);
     }
 
     if (databaseSchemaVersion < 7 && isBitcoin === true) {
       await this.$executeQuery('DROP table IF EXISTS hashrates;');
       await this.$executeQuery(this.getCreateDailyStatsTableQuery(), await this.$checkIfTableExists('hashrates'));
+      this.updateToSchemaVersion(7);
     }
 
     if (databaseSchemaVersion < 8 && isBitcoin === true) {
@@ -155,6 +161,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `hashrates` ADD `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST');
       await this.$executeQuery('ALTER TABLE `hashrates` ADD `share` float NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `hashrates` ADD `type` enum("daily", "weekly") DEFAULT "daily"');
+      this.updateToSchemaVersion(8);
     }
 
     if (databaseSchemaVersion < 9 && isBitcoin === true) {
@@ -162,10 +169,12 @@ class DatabaseMigration {
       await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
       await this.$executeQuery('ALTER TABLE `state` CHANGE `name` `name` varchar(100)');
       await this.$executeQuery('ALTER TABLE `hashrates` ADD UNIQUE `hashrate_timestamp_pool_id` (`hashrate_timestamp`, `pool_id`)');
+      this.updateToSchemaVersion(9);
     }
 
     if (databaseSchemaVersion < 10 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `blockTimestamp` (`blockTimestamp`)');
+      this.updateToSchemaVersion(10);
     }
 
     if (databaseSchemaVersion < 11 && isBitcoin === true) {
@@ -178,11 +187,13 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE blocks MODIFY `reward` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `median_fee` INT UNSIGNED NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `fees` INT UNSIGNED NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(11);
     }
 
     if (databaseSchemaVersion < 12 && isBitcoin === true) {
       // No need to re-index because the new data type can contain larger values
       await this.$executeQuery('ALTER TABLE blocks MODIFY `fees` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(12);
     }
 
     if (databaseSchemaVersion < 13 && isBitcoin === true) {
@@ -190,6 +201,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE blocks MODIFY `median_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `avg_fee` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(13);
     }
 
     if (databaseSchemaVersion < 14 && isBitcoin === true) {
@@ -197,37 +209,45 @@ class DatabaseMigration {
       await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
       await this.$executeQuery('ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
       await this.$executeQuery('ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(14);
     }
 
     if (databaseSchemaVersion < 16 && isBitcoin === true) {
       this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
       await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index because we changed timestamps
+      this.updateToSchemaVersion(16);
     }
 
     if (databaseSchemaVersion < 17 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `pools` ADD `slug` CHAR(50) NULL');
+      this.updateToSchemaVersion(17);
     }
 
     if (databaseSchemaVersion < 18 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD INDEX `hash` (`hash`);');
+      this.updateToSchemaVersion(18);
     }
 
     if (databaseSchemaVersion < 19) {
       await this.$executeQuery(this.getCreateRatesTableQuery(), await this.$checkIfTableExists('rates'));
+      this.updateToSchemaVersion(19);
     }
 
     if (databaseSchemaVersion < 20 && isBitcoin === true) {
       await this.$executeQuery(this.getCreateBlocksSummariesTableQuery(), await this.$checkIfTableExists('blocks_summaries'));
+      this.updateToSchemaVersion(20);
     }
 
     if (databaseSchemaVersion < 21) {
       await this.$executeQuery('DROP TABLE IF EXISTS `rates`');
       await this.$executeQuery(this.getCreatePricesTableQuery(), await this.$checkIfTableExists('prices'));
+      this.updateToSchemaVersion(21);
     }
 
     if (databaseSchemaVersion < 22 && isBitcoin === true) {
       await this.$executeQuery('DROP TABLE IF EXISTS `difficulty_adjustments`');
       await this.$executeQuery(this.getCreateDifficultyAdjustmentsTableQuery(), await this.$checkIfTableExists('difficulty_adjustments'));
+      this.updateToSchemaVersion(22);
     }
 
     if (databaseSchemaVersion < 23) {
@@ -240,11 +260,13 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `CHF` float DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `AUD` float DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `JPY` float DEFAULT "0"');
+      this.updateToSchemaVersion(23);
     }
 
     if (databaseSchemaVersion < 24 && isBitcoin == true) {
       await this.$executeQuery('DROP TABLE IF EXISTS `blocks_audits`');
       await this.$executeQuery(this.getCreateBlocksAuditsTableQuery(), await this.$checkIfTableExists('blocks_audits'));
+      this.updateToSchemaVersion(24);
     }
 
     if (databaseSchemaVersion < 25 && isBitcoin === true) {
@@ -252,6 +274,7 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateNodesQuery(), await this.$checkIfTableExists('nodes'));
       await this.$executeQuery(this.getCreateChannelsQuery(), await this.$checkIfTableExists('channels'));
       await this.$executeQuery(this.getCreateNodesStatsQuery(), await this.$checkIfTableExists('node_stats'));
+      this.updateToSchemaVersion(25);
     }
 
     if (databaseSchemaVersion < 26 && isBitcoin === true) {
@@ -262,6 +285,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD tor_nodes int(11) NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_nodes int(11) NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD unannounced_nodes int(11) NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(26);
     }
 
     if (databaseSchemaVersion < 27 && isBitcoin === true) {
@@ -271,6 +295,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_capacity bigint(20) unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_fee_rate int(11) unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(27);
     }
     
     if (databaseSchemaVersion < 28 && isBitcoin === true) {
@@ -280,6 +305,7 @@ class DatabaseMigration {
       await this.$executeQuery(`TRUNCATE lightning_stats`);
       await this.$executeQuery(`TRUNCATE node_stats`);
       await this.$executeQuery(`ALTER TABLE lightning_stats MODIFY added DATE`);
+      this.updateToSchemaVersion(28);
     }
 
     if (databaseSchemaVersion < 29 && isBitcoin === true) {
@@ -291,41 +317,50 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `nodes` ADD subdivision_id int(11) unsigned NULL DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD longitude double NULL DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD latitude double NULL DEFAULT NULL');
+      this.updateToSchemaVersion(29);
     }
 
     if (databaseSchemaVersion < 30 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization") NOT NULL');
+      this.updateToSchemaVersion(30);
     }
 
     if (databaseSchemaVersion < 31 && isBitcoin == true) { // Link blocks to prices
       await this.$executeQuery('ALTER TABLE `prices` ADD `id` int NULL AUTO_INCREMENT UNIQUE');
       await this.$executeQuery('DROP TABLE IF EXISTS `blocks_prices`');
       await this.$executeQuery(this.getCreateBlocksPricesTableQuery(), await this.$checkIfTableExists('blocks_prices'));
+      this.updateToSchemaVersion(31);
     }
 
     if (databaseSchemaVersion < 32 && isBitcoin == true) {
       await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD `template` JSON DEFAULT "[]"');
+      this.updateToSchemaVersion(32);
     }
 
     if (databaseSchemaVersion < 33 && isBitcoin == true) {
       await this.$executeQuery('ALTER TABLE `geo_names` CHANGE `type` `type` enum("city","country","division","continent","as_organization", "country_iso_code") NOT NULL');
+      this.updateToSchemaVersion(33);
     }
 
     if (databaseSchemaVersion < 34 && isBitcoin == true) {
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD clearnet_tor_nodes int(11) NOT NULL DEFAULT "0"');
+      this.updateToSchemaVersion(34);
     }
 
     if (databaseSchemaVersion < 35 && isBitcoin == true) {
       await this.$executeQuery('DELETE from `lightning_stats` WHERE added > "2021-09-19"');
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD CONSTRAINT added_unique UNIQUE (added);');
+      this.updateToSchemaVersion(35);
     }
 
     if (databaseSchemaVersion < 36 && isBitcoin == true) {
       await this.$executeQuery('ALTER TABLE `nodes` ADD status TINYINT NOT NULL DEFAULT "1"');
+      this.updateToSchemaVersion(36);
     }
 
     if (databaseSchemaVersion < 37 && isBitcoin == true) {
       await this.$executeQuery(this.getCreateLNNodesSocketsTableQuery(), await this.$checkIfTableExists('nodes_sockets'));
+      this.updateToSchemaVersion(37);
     }
 
     if (databaseSchemaVersion < 38 && isBitcoin == true) {
@@ -336,34 +371,41 @@ class DatabaseMigration {
       await this.$executeQuery(`TRUNCATE node_stats`);
       await this.$executeQuery('ALTER TABLE `lightning_stats` CHANGE `added` `added` timestamp NULL');
       await this.$executeQuery('ALTER TABLE `node_stats` CHANGE `added` `added` timestamp NULL');
+      this.updateToSchemaVersion(38);
     }
 
     if (databaseSchemaVersion < 39 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `nodes` ADD alias_search TEXT NULL DEFAULT NULL AFTER `alias`');
       await this.$executeQuery('ALTER TABLE nodes ADD FULLTEXT(alias_search)');
+      this.updateToSchemaVersion(39);
     }
 
     if (databaseSchemaVersion < 40 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `nodes` ADD capacity bigint(20) unsigned DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD channels int(11) unsigned DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `nodes` ADD INDEX `capacity` (`capacity`);');
+      this.updateToSchemaVersion(40);
     }
 
     if (databaseSchemaVersion < 41 && isBitcoin === true) {
       await this.$executeQuery('UPDATE channels SET closing_reason = NULL WHERE closing_reason = 1');
+      this.updateToSchemaVersion(41);
     }
 
     if (databaseSchemaVersion < 42 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `channels` ADD closing_resolved tinyint(1) DEFAULT 0');
+      this.updateToSchemaVersion(42);
     }
 
     if (databaseSchemaVersion < 43 && isBitcoin === true) {
       await this.$executeQuery(this.getCreateLNNodeRecordsTableQuery(), await this.$checkIfTableExists('nodes_records'));
+      this.updateToSchemaVersion(43);
     }
 
     if (databaseSchemaVersion < 44 && isBitcoin === true) {
       await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
       await this.$executeQuery('UPDATE blocks_summaries SET template = NULL');
+      this.updateToSchemaVersion(44);
     }
 
     if (databaseSchemaVersion < 45 && isBitcoin === true) {
@@ -527,6 +569,10 @@ class DatabaseMigration {
    */
   private getUpdateToLatestSchemaVersionQuery(): string {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
+  }
+
+  private async updateToSchemaVersion(version): Promise<void> {
+    await this.$executeQuery(`UPDATE state SET number = ${version} WHERE name = 'schema_version';`);
   }
 
   /**
