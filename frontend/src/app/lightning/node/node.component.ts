@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
-import { haversineDistance, kmToMiles } from 'src/app/shared/common.utils';
+import { haversineDistance, kmToMiles } from '../../../app/shared/common.utils';
 
 interface CustomRecord {
   type: string;
