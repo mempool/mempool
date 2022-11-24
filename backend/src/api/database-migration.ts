@@ -4,8 +4,8 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 48;
-  private queryTimeout = 900_000;
+  private static currentVersion = 49;
+  private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
 
@@ -403,23 +403,25 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 44 && isBitcoin === true) {
-      await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
       await this.$executeQuery('UPDATE blocks_summaries SET template = NULL');
       this.updateToSchemaVersion(44);
     }
 
     if (databaseSchemaVersion < 45 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
+      this.updateToSchemaVersion(45);
     }
 
     if (databaseSchemaVersion < 46) {
       await this.$executeQuery(`ALTER TABLE blocks MODIFY blockTimestamp timestamp NOT NULL DEFAULT 0`);
+      this.updateToSchemaVersion(46);
     }
 
     if (databaseSchemaVersion < 47) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD cpfp_indexed tinyint(1) DEFAULT 0');
       await this.$executeQuery(this.getCreateCPFPTableQuery(), await this.$checkIfTableExists('cpfp_clusters'));
       await this.$executeQuery(this.getCreateTransactionsTableQuery(), await this.$checkIfTableExists('transactions'));
+      this.updateToSchemaVersion(47);
     }
 
     if (databaseSchemaVersion < 48 && isBitcoin === true) {
@@ -433,6 +435,12 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `channels` ADD closed_by varchar(66) DEFAULT NULL');
       await this.$executeQuery('ALTER TABLE `channels` ADD single_funded tinyint(1) DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `channels` ADD outputs JSON DEFAULT "[]"');
+      this.updateToSchemaVersion(48);
+    }
+
+    if (databaseSchemaVersion < 49 && isBitcoin === true) {
+      await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
+      this.updateToSchemaVersion(49);
     }
   }
 
