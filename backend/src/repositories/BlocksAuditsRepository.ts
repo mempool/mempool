@@ -65,15 +65,16 @@ class BlocksAuditRepositories {
         rows[0].freshTxs = JSON.parse(rows[0].freshTxs);
         rows[0].transactions = JSON.parse(rows[0].transactions);
         rows[0].template = JSON.parse(rows[0].template);
-      } else {
-        // fallback to non-audited transaction summary
-        const strippedTransactions = await blocks.$getStrippedBlockTransactions(hash);
-        return {
-          transactions: strippedTransactions
+
+        if (rows[0].transactions.length) {
+          return rows[0];
         }
       }
-            
-      return rows[0];
+      // fallback to non-audited transaction summary
+      const strippedTransactions = await blocks.$getStrippedBlockTransactions(hash);
+      return {
+        transactions: strippedTransactions
+      };
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;

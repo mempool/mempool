@@ -590,7 +590,7 @@ class Blocks {
     if (skipMemoryCache === false) {
       // Check the memory cache
       const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
-      if (cachedSummary) {
+      if (cachedSummary?.transactions?.length) {
         return cachedSummary.transactions;
       }
     }
@@ -598,7 +598,7 @@ class Blocks {
     // Check if it's indexed in db
     if (skipDBLookup === false && Common.blocksSummariesIndexingEnabled() === true) {
       const indexedSummary = await BlocksSummariesRepository.$getByBlockId(hash);
-      if (indexedSummary !== undefined) {
+      if (indexedSummary !== undefined && indexedSummary?.transactions?.length) {
         return indexedSummary.transactions;
       }
     }
