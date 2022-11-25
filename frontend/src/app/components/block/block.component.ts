@@ -210,11 +210,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
             this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
-            if (this.indexingAvailable) {
-              this.apiService.getBlockAudit$(block.previousblockhash);
-            } else {
-              this.nextBlockSummarySubscription = this.apiService.getStrippedBlockTransactions$(block.previousblockhash).subscribe();
-            }
+            this.apiService.getBlockAudit$(block.previousblockhash);
           }, 100);
         }
 
@@ -318,7 +314,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           this.numMissing = 0;
           this.numUnexpected = 0;
 
-          if (blockAudit.template) {
+          if (blockAudit?.template) {
             for (const tx of blockAudit.template) {
               inTemplate[tx.txid] = true;
             }

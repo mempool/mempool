@@ -70,11 +70,7 @@ class BlocksAuditRepositories {
           return rows[0];
         }
       }
-      // fallback to non-audited transaction summary
-      const strippedTransactions = await blocks.$getStrippedBlockTransactions(hash);
-      return {
-        transactions: strippedTransactions
-      };
+      return null;
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
