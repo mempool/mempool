@@ -285,13 +285,13 @@
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
         <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
           [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
-          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!auditEnabled"></app-block-overview-graph> 
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !auditEnabled"></app-block-overview-graph> 
       </div>
       <div class="col-sm" *ngIf="!isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
         <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
           [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
-          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)"></app-block-overview-graph>
+          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !auditEnabled"></app-block-overview-graph>
       </div>
     </div>
   </div>
