@@ -19,6 +19,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() flip = true;
   @Input() disableSpinner = false;
   @Input() mirrorTxid: string | void;
+  @Input() unavailable: boolean = false;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();

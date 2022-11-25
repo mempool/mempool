@@ -590,7 +590,7 @@ class Blocks {
     if (skipMemoryCache === false) {
       // Check the memory cache
       const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
-      if (cachedSummary) {
+      if (cachedSummary?.transactions?.length) {
         return cachedSummary.transactions;
       }
     }
@@ -598,7 +598,7 @@ class Blocks {
     // Check if it's indexed in db
     if (skipDBLookup === false && Common.blocksSummariesIndexingEnabled() === true) {
       const indexedSummary = await BlocksSummariesRepository.$getByBlockId(hash);
-      if (indexedSummary !== undefined) {
+      if (indexedSummary !== undefined && indexedSummary?.transactions?.length) {
         return indexedSummary.transactions;
       }
     }
@@ -649,6 +649,19 @@ class Blocks {
     }
 
     return returnBlocks;
+  }
+
+  public async $getBlockAuditSummary(hash: string): Promise<any> {
+    let summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+
+    // fallback to non-audited transaction summary
+    if (!summary?.transactions?.length) {
+      const strippedTransactions = await this.$getStrippedBlockTransactions(hash);
+      summary = {
+        transactions: strippedTransactions
+      };
+    }
+    return summary;
   }
 
   public getLastDifficultyAdjustmentTime(): number {
