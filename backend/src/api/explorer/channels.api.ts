@@ -131,9 +131,8 @@ class ChannelsApi {
   public async $getChannelsWithoutSourceChecked(): Promise<any[]> {
     try {
       const query = `
-        SELECT channels.*, forensics.*
+        SELECT channels.*
         FROM channels
-        LEFT JOIN channels_forensics AS forensics ON forensics.channel_id = channels.id
         WHERE channels.source_checked != 1
       `;
       const [rows]: any = await DB.query(query);
@@ -161,16 +160,12 @@ class ChannelsApi {
         SELECT n1.alias AS alias_left, n1.longitude as node1_longitude, n1.latitude as node1_latitude,
           n2.alias AS alias_right, n2.longitude as node2_longitude, n2.latitude as node2_latitude,
           channels.*,
-          ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right,
-          forensics.closing_fee as closing_fee, forensics.node1_funding_balance as node1_funding_balance, forensics.node2_funding_balance as node2_funding_balance,
-          forensics.funding_ratio as funding_ratio, forensics.node1_closing_balance as node1_closing_balance, forensics.node2_closing_balance as node2_closing_balance,
-          forensics.closed_by as closed_by, forensics.single_funded as single_funded
+          ns1.channels AS channels_left, ns1.capacity AS capacity_left, ns2.channels AS channels_right, ns2.capacity AS capacity_right
         FROM channels
         LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
         LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
         LEFT JOIN node_stats AS ns1 ON ns1.public_key = channels.node1_public_key
         LEFT JOIN node_stats AS ns2 ON ns2.public_key = channels.node2_public_key
-        LEFT JOIN channels_forensics AS forensics ON forensics.channel_id = channels.id
         WHERE (
           ns1.id = (
             SELECT MAX(id)
@@ -277,15 +272,12 @@ class ChannelsApi {
     }
   }
 
-  public async $getChannelForensicsByClosingId(transactionId: string): Promise<any> {
+  public async $getChannelByClosingId(transactionId: string): Promise<any> {
     try {
       const query = `
         SELECT
-          channels.id, channels.node1_public_key, channels.node2_public_key,
-          channels.closing_reason, channels.closing_transaction_id, channels.capacity,
-          forensics.*
+          channels.*
         FROM channels
-        LEFT JOIN channels_forensics as forensics ON forensics.channel_id = channels.id
         WHERE channels.closing_transaction_id = ?
       `;
       const [rows]: any = await DB.query(query, [transactionId]);
@@ -294,20 +286,17 @@ class ChannelsApi {
         return rows[0];
       }
     } catch (e) {
-      logger.err('$getChannelForensicsByClosingId error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getChannelByClosingId error: ' + (e instanceof Error ? e.message : e));
       // don't throw - this data isn't essential
     }
   }
 
-  public async $getChannelForensicsByOpeningId(transactionId: string): Promise<any> {
+  public async $getChannelsByOpeningId(transactionId: string): Promise<any> {
     try {
       const query = `
         SELECT
-          channels.id, channels.node1_public_key, channels.node2_public_key,
-          channels.status, channels.transaction_id, channels.capacity,
-          forensics.*
+          channels.*
         FROM channels
-        LEFT JOIN channels_forensics as forensics ON forensics.channel_id = channels.id
         WHERE channels.transaction_id = ?
       `;
       const [rows]: any = await DB.query(query, [transactionId]);
@@ -318,7 +307,7 @@ class ChannelsApi {
         });
       }
     } catch (e) {
-      logger.err('$getChannelForensicsByOpeningId error: ' + (e instanceof Error ? e.message : e));
+      logger.err('$getChannelsByOpeningId error: ' + (e instanceof Error ? e.message : e));
       // don't throw - this data isn't essential
     }
   }
@@ -326,36 +315,21 @@ class ChannelsApi {
   public async $updateClosingInfo(channelInfo: { id: string, node1_closing_balance: number, node2_closing_balance: number, closed_by: string | null, closing_fee: number, outputs: ILightningApi.ForensicOutput[]}): Promise<void> {
     try {
       const query = `
-        INSERT INTO channels_forensics
-        (
-          channel_id,
-          node1_closing_balance,
-          node2_closing_balance,
-          closed_by,
-          closing_fee,
-          outputs
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE 
+        UPDATE channels SET
           node1_closing_balance = ?,
           node2_closing_balance = ?,
           closed_by = ?,
           closing_fee = ?,
           outputs = ?
+        WHERE channels.id = ?
       `;
-      const jsonOutputs = JSON.stringify(channelInfo.outputs);
       await DB.query<ResultSetHeader>(query, [
+        channelInfo.node1_closing_balance || 0,
+        channelInfo.node2_closing_balance || 0,
+        channelInfo.closed_by,
+        channelInfo.closing_fee || 0,
+        JSON.stringify(channelInfo.outputs),
         channelInfo.id,
-        channelInfo.node1_closing_balance || 0,
-        channelInfo.node2_closing_balance || 0,
-        channelInfo.closed_by,
-        channelInfo.closing_fee || 0,
-        jsonOutputs,
-        channelInfo.node1_closing_balance || 0,
-        channelInfo.node2_closing_balance || 0,
-        channelInfo.closed_by,
-        channelInfo.closing_fee || 0,
-        jsonOutputs
       ]);
     } catch (e) {
       logger.err('$updateClosingInfo error: ' + (e instanceof Error ? e.message : e));
@@ -366,32 +340,19 @@ class ChannelsApi {
   public async $updateOpeningInfo(channelInfo: { id: string, node1_funding_balance: number, node2_funding_balance: number, funding_ratio: number, single_funded: boolean | void }): Promise<void> {
     try {
       const query = `
-      INSERT INTO channels_forensics
-      (
-        channel_id,
-        node1_funding_balance,
-        node2_funding_balance,
-        funding_ratio,
-        single_funded,
-        outputs
-      )
-      VALUES (?, ?, ?, ?, ?, 'null')
-      ON DUPLICATE KEY UPDATE
-        node1_funding_balance = ?,
-        node2_funding_balance = ?,
-        funding_ratio = ?,
-        single_funded = ?
+        UPDATE channels SET
+          node1_funding_balance = ?,
+          node2_funding_balance = ?,
+          funding_ratio = ?,
+          single_funded = ?
+        WHERE channels.id = ?
       `;
       await DB.query<ResultSetHeader>(query, [
+        channelInfo.node1_funding_balance || 0,
+        channelInfo.node2_funding_balance || 0,
+        channelInfo.funding_ratio,
+        channelInfo.single_funded ? 1 : 0,
         channelInfo.id,
-        channelInfo.node1_funding_balance || 0,
-        channelInfo.node2_funding_balance || 0,
-        channelInfo.funding_ratio,
-        channelInfo.single_funded ? 1 : 0,
-        channelInfo.node1_funding_balance || 0,
-        channelInfo.node2_funding_balance || 0,
-        channelInfo.funding_ratio,
-        channelInfo.single_funded ? 1 : 0,
       ]);
     } catch (e) {
       logger.err('$updateOpeningInfo error: ' + (e instanceof Error ? e.message : e));

@@ -227,12 +227,12 @@ class ForensicsService {
           continue;
         }
         for (const input of openTx.vin) {
-          const closeChannel = await channelsApi.$getChannelForensicsByClosingId(input.txid);
+          const closeChannel = await channelsApi.$getChannelByClosingId(input.txid);
           if (closeChannel) {
             // this input directly spends a channel close output
             await this.$attributeChannelBalances(closeChannel, openChannel, input);
           } else {
-            const prevOpenChannels = await channelsApi.$getChannelForensicsByOpeningId(input.txid);
+            const prevOpenChannels = await channelsApi.$getChannelsByOpeningId(input.txid);
             if (prevOpenChannels?.length) {
               // this input spends a channel open change output
               for (const prevOpenChannel of prevOpenChannels) {
@@ -286,7 +286,7 @@ class ForensicsService {
     for (const sweepInput of sweepTx.vin) {
       const lnScriptType = this.findLightningScript(sweepInput);
       if (lnScriptType > 1) {
-        const closeChannel = await channelsApi.$getChannelForensicsByClosingId(sweepInput.txid);
+        const closeChannel = await channelsApi.$getChannelByClosingId(sweepInput.txid);
         if (closeChannel) {
           const initiator = (lnScriptType === 2 || lnScriptType === 4) ? 'remote' : (lnScriptType === 3 ? 'local' : null);
           await this.$attributeChannelBalances(closeChannel, openChannel, sweepInput, openContribution, initiator);
@@ -348,8 +348,8 @@ class ForensicsService {
         return;
       }
       if (!linkedOpenings) {
-        if (!prevChannel.outputs) {
-          prevChannel.outputs = prevChannel.outputs || prevChannelTx.vout.map(vout => {
+        if (!prevChannel.outputs || !prevChannel.outputs.length) {
+          prevChannel.outputs = prevChannelTx.vout.map(vout => {
             return {
               type: 0,
               value: vout.value,
