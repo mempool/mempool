@@ -651,6 +651,19 @@ class Blocks {
     return returnBlocks;
   }
 
+  public async $getBlockAuditSummary(hash: string): Promise<any> {
+    let summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+
+    // fallback to non-audited transaction summary
+    if (!summary?.transactions?.length) {
+      const strippedTransactions = await this.$getStrippedBlockTransactions(hash);
+      summary = {
+        transactions: strippedTransactions
+      };
+    }
+    return summary;
+  }
+
   public getLastDifficultyAdjustmentTime(): number {
     return this.lastDifficultyAdjustmentTime;
   }
