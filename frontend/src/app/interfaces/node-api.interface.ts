@@ -141,7 +141,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
 }
 
 export interface RewardStats {
