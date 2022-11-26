@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AssetsService } from '../../services/assets.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { FormGroup } from '@angular/forms';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
