@@ -72,6 +72,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   firstSeen?: number;
   effectiveFeePerVsize: number;
   ancestors?: Ancestor[];
+  descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
   deleteAfter?: number;

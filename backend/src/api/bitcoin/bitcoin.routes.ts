@@ -201,6 +201,8 @@ class BitcoinRoutes {
         res.json({
           ancestors: tx.ancestors,
           bestDescendant: tx.bestDescendant || null,
+          descendants: tx.descendants || null,
+          effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
         });
         return;
       }

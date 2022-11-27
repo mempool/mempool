@@ -108,36 +108,38 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
       if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
         blockWeight += nextTx.ancestorWeight;
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
+        const descendants: AuditTransaction[] = [];
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
         const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
-        sortedTxSet.forEach((ancestor, i, arr) => {
+
+        while (sortedTxSet.length) {
+          const ancestor = sortedTxSet.pop();
           const mempoolTx = mempool[ancestor.txid];
           if (ancestor && !ancestor?.used) {
             ancestor.used = true;
             // update original copy of this tx with effective fee rate & relatives data
             mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-            mempoolTx.ancestors = (Array.from(ancestor.ancestorMap?.values()) as AuditTransaction[]).map((a) => {
+            mempoolTx.ancestors = sortedTxSet.map((a) => {
+              return {
+                txid: a.txid,
+                fee: a.fee,
+                weight: a.weight,
+              };
+            }).reverse();
+            mempoolTx.descendants = descendants.map((a) => {
               return {
                 txid: a.txid,
                 fee: a.fee,
                 weight: a.weight,
               };
             });
+            descendants.push(ancestor);
             mempoolTx.cpfpChecked = true;
-            if (i < arr.length - 1) {
-              mempoolTx.bestDescendant = {
-                txid: arr[arr.length - 1].txid,
-                fee: arr[arr.length - 1].fee,
-                weight: arr[arr.length - 1].weight,
-              };
-            } else {
-              mempoolTx.bestDescendant = null;
-            }
             transactions.push(ancestor);
             blockSize += ancestor.size;
           }
-        });
+        }
 
         // remove these as valid package ancestors for any descendants remaining in the mempool
         if (sortedTxSet.length) {
