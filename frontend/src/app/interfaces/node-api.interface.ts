@@ -22,7 +22,9 @@ interface BestDescendant {
 
 export interface CpfpInfo {
   ancestors: Ancestor[];
-  bestDescendant: BestDescendant | null;
+  descendants?: Ancestor[];
+  bestDescendant?: BestDescendant | null;
+  effectiveFeePerVsize?: number;
 }
 
 export interface DifficultyAdjustment {
