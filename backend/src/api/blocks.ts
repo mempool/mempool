@@ -21,6 +21,8 @@ import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import cpfpRepository from '../repositories/CpfpRepository';
+import transactionRepository from '../repositories/TransactionRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
@@ -260,7 +262,7 @@ class Blocks {
   /**
    * [INDEXING] Index all blocks summaries for the block txs visualization
    */
-  public async $generateBlocksSummariesDatabase() {
+  public async $generateBlocksSummariesDatabase(): Promise<void> {
     if (Common.blocksSummariesIndexingEnabled() === false) {
       return;
     }
@@ -312,6 +314,56 @@ class Blocks {
       }
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+  }
+
+  /**
+   * [INDEXING] Index transaction CPFP data for all blocks
+   */
+   public async $generateCPFPDatabase(): Promise<void> {
+    if (Common.cpfpIndexingEnabled() === false) {
+      return;
+    }
+
+    try {
+      // Get all indexed block hash
+      const unindexedBlocks = await blocksRepository.$getCPFPUnindexedBlocks();
+
+      if (!unindexedBlocks?.length) {
+        return;
+      }
+
+      // Logging
+      let count = 0;
+      let countThisRun = 0;
+      let timer = new Date().getTime() / 1000;
+      const startedAt = new Date().getTime() / 1000;
+
+      for (const block of unindexedBlocks) {
+        // Logging
+        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+        if (elapsedSeconds > 5) {
+          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+          const blockPerSeconds = Math.max(1, countThisRun / elapsedSeconds);
+          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
+          logger.debug(`Indexing cpfp clusters for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          timer = new Date().getTime() / 1000;
+          countThisRun = 0;
+        }
+
+        await this.$indexCPFP(block.hash); // Calculate and save CPFP data for transactions in this block
+
+        // Logging
+        count++;
+      }
+      if (count > 0) {
+        logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
+      } else {
+        logger.debug(`CPFP indexing completed: indexed ${count} blocks`);
+      }
+    } catch (e) {
+      logger.err(`CPFP indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
     }
   }
@@ -461,9 +513,13 @@ class Blocks {
             await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
             await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
+            await cpfpRepository.$deleteClustersFrom(lastBlock['height'] - 10);
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock['height'] - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
+              if (config.MEMPOOL.TRANSACTION_INDEXING) {
+                await this.$indexCPFP(newBlock.id);
+              }
             }
             await mining.$indexDifficultyAdjustments();
             await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
@@ -488,6 +544,9 @@ class Blocks {
           // Save blocks summary for visualization if it's enabled
           if (Common.blocksSummariesIndexingEnabled() === true) {
             await this.$getStrippedBlockTransactions(blockExtended.id, true);
+          }
+          if (config.MEMPOOL.TRANSACTION_INDEXING) {
+            this.$indexCPFP(blockExtended.id);
           }
         }
       }
@@ -677,6 +736,38 @@ class Blocks {
 
   public getCurrentBlockHeight(): number {
     return this.currentBlockHeight;
+  }
+
+  public async $indexCPFP(hash: string): Promise<void> {
+    const block = await bitcoinClient.getBlock(hash, 2);
+    const transactions = block.tx;
+    let cluster: IBitcoinApi.VerboseTransaction[] = [];
+    let ancestors: { [txid: string]: boolean } = {};
+    for (let i = transactions.length - 1; i >= 0; i--) {
+      const tx = transactions[i];
+      if (!ancestors[tx.txid]) {
+        let totalFee = 0;
+        let totalWeight = 0;
+        cluster.forEach(tx => {
+          totalFee += tx?.fee || 0;
+          totalWeight += tx.weight;
+        });
+        const effectiveFeePerVsize = (totalFee * 100_000_000) / (totalWeight / 4);
+        if (cluster.length > 1) {
+          await cpfpRepository.$saveCluster(block.height, cluster.map(tx => { return { txid: tx.txid, weight: tx.weight, fee: (tx.fee || 0) * 100_000_000 }; }), effectiveFeePerVsize);
+          for (const tx of cluster) {
+            await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
+          }
+        }
+        cluster = [];
+        ancestors = {};
+      }
+      cluster.push(tx);
+      tx.vin.forEach(vin => {
+        ancestors[vin.txid] = true;
+      });
+    }
+    await blocksRepository.$setCPFPIndexed(hash);
   }
 }
 

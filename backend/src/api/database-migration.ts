@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 45;
+  private static currentVersion = 46;
   private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -368,6 +368,12 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 45 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
+    }
+
+    if (databaseSchemaVersion < 46 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD cpfp_indexed tinyint(1) DEFAULT 0');
+      await this.$executeQuery(this.getCreateCPFPTableQuery(), await this.$checkIfTableExists('cpfp_clusters'));
+      await this.$executeQuery(this.getCreateTransactionsTableQuery(), await this.$checkIfTableExists('transactions'));
     }
   }
 
@@ -814,6 +820,25 @@ class DatabaseMigration {
       FOREIGN KEY (public_key)
         REFERENCES nodes (public_key)
         ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateCPFPTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS cpfp_clusters (
+      root varchar(65) NOT NULL,
+      height int(10) NOT NULL,
+      txs JSON DEFAULT NULL,
+      fee_rate double unsigned NOT NULL,
+      PRIMARY KEY (root)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateTransactionsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS transactions (
+      txid varchar(65) NOT NULL,
+      cluster varchar(65) DEFAULT NULL,
+      PRIMARY KEY (txid),
+      FOREIGN KEY (cluster) REFERENCES cpfp_clusters (root) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
