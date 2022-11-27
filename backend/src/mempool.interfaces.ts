@@ -119,7 +119,9 @@ interface BestDescendant {
 
 export interface CpfpInfo {
   ancestors: Ancestor[];
-  bestDescendant: BestDescendant | null;
+  bestDescendant?: BestDescendant | null;
+  descendants?: Ancestor[];
+  effectiveFeePerVsize?: number;
 }
 
 export interface TransactionStripped {
