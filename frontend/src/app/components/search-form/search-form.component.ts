@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
@@ -22,7 +22,7 @@ export class SearchFormComponent implements OnInit {
   isSearching = false;
   isTypeaheading$ = new BehaviorSubject<boolean>(false);
   typeAhead$: Observable<any>;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   dropdownHidden = false;
 
   @HostListener('document:click', ['$event'])
@@ -48,7 +48,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private assetsService: AssetsService,
     private stateService: StateService,
