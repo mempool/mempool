@@ -51,9 +51,6 @@
     "config:defaults:mempool": "node update-config.js TESTNET_ENABLED=true SIGNET_ENABLED=true LIQUID_ENABLED=true LIQUID_TESTNET_ENABLED=true BISQ_ENABLED=true ITEMS_PER_PAGE=25 BASE_MODULE=mempool BLOCK_WEIGHT_UNITS=4000000 && npm run generate-config",
     "config:defaults:liquid": "node update-config.js TESTNET_ENABLED=true SIGNET_ENABLED=true LIQUID_ENABLED=true LIQUID_TESTNET_ENABLED=true BISQ_ENABLED=true ITEMS_PER_PAGE=25 BASE_MODULE=liquid BLOCK_WEIGHT_UNITS=300000 && npm run generate-config",
     "config:defaults:bisq": "node update-config.js TESTNET_ENABLED=true SIGNET_ENABLED=true LIQUID_ENABLED=true BISQ_ENABLED=true ITEMS_PER_PAGE=25 BASE_MODULE=bisq BLOCK_WEIGHT_UNITS=4000000 && npm run generate-config",
-    "dev:ssr": "npm run generate-config && npm run ng -- run mempool:serve-ssr",
-    "serve:ssr": "node server.run.js",
-    "build:ssr": "npm run build && npm run ng -- run mempool:server:production && npm run tsc -- server.run.ts",
     "prerender": "npm run ng -- run mempool:prerender",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
@@ -102,7 +99,6 @@
   "devDependencies": {
     "@angular/compiler-cli": "^14.2.12",
     "@angular/language-service": "^14.2.12",
-    "@nguniversal/builders": "^13.1.1",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
