@@ -19,6 +19,7 @@ import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
+import mempool from './mempool';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -461,6 +462,8 @@ class WebsocketHandler {
         block.extras.matchRate = matchRate;
       }
     }
+
+    await mempool.$saveTxFirstSeenTimes(transactions, _memPool);
 
     const removed: string[] = [];
     // Update mempool to remove transactions included in the new block

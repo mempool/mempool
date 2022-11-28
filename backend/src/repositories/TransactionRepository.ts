@@ -1,14 +1,15 @@
 import DB from '../database';
 import logger from '../logger';
-import { Ancestor, CpfpInfo } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, TransactionExtended, TransactionExtras } from '../mempool.interfaces';
 
-interface CpfpSummary {
+interface TxInfo {
   txid: string;
   cluster: string;
   root: string;
   txs: Ancestor[];
   height: number;
   fee_rate: number;
+  firstSeen: number;
 }
 
 class TransactionRepository {
@@ -29,6 +30,46 @@ class TransactionRepository {
       );
     } catch (e: any) {
       logger.err(`Cannot save transaction cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $saveTxFirstSeen(txid: string, seenAt: number) {
+    try {
+      await DB.query(
+        `
+          INSERT INTO transactions
+          (
+            txid,
+            first_seen
+          )
+          VALUE (?, FROM_UNIXTIME(?))
+          ON DUPLICATE KEY UPDATE
+            first_seen = FROM_UNIXTIME(?)
+        ;`,
+        [txid, seenAt, seenAt]
+      );
+    } catch (e: any) {
+      logger.err(`Cannot save transaction first seen time into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getTransactionExtras(txid: string): Promise<TransactionExtras | void> {
+    try {
+      let query = `
+        SELECT *, UNIX_TIMESTAMP(first_seen) as firstSeen
+        FROM transactions
+        LEFT JOIN cpfp_clusters AS cluster ON cluster.root = transactions.cluster
+        WHERE transactions.txid = ?
+      `;
+      const [rows]: any = await DB.query(query, [txid]);
+      if (rows.length) {
+        rows[0].txs = JSON.parse(rows[0].txs) as Ancestor[];
+        return this.convertCpfp(rows[0]);
+      }
+    } catch (e) {
+      logger.err('Cannot get transaction cpfp info from db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -54,12 +95,12 @@ class TransactionRepository {
     }
   }
 
-  private convertCpfp(cpfp: CpfpSummary): CpfpInfo {
+  private convertCpfp(info: TxInfo): TransactionExtras {
     const descendants: Ancestor[] = [];
     const ancestors: Ancestor[] = [];
     let matched = false;
-    for (const tx of cpfp.txs) {
-      if (tx.txid === cpfp.txid) {
+    for (const tx of (info.txs || [])) {
+      if (tx.txid === info.txid) {
         matched = true;
       } else if (!matched) {
         descendants.push(tx);
@@ -68,9 +109,10 @@ class TransactionRepository {
       }
     }
     return {
-      descendants,
-      ancestors,
-      effectiveFeePerVsize: cpfp.fee_rate
+      descendants: descendants?.length ? descendants : undefined,
+      ancestors: ancestors,
+      effectiveFeePerVsize: info.fee_rate,
+      firstSeen: info.firstSeen || undefined,
     };
   }
 }

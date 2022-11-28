@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, TransactionExtras } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -113,6 +113,10 @@ export class ApiService {
 
   getCpfpinfo$(txid: string): Observable<CpfpInfo> {
     return this.httpClient.get<CpfpInfo>(this.apiBaseUrl + this.apiBasePath + '/api/v1/cpfp/' + txid);
+  }
+
+  getTransactionExtras$(txid: string): Observable<TransactionExtras> {
+    return this.httpClient.get<TransactionExtras>(this.apiBaseUrl + this.apiBasePath + '/api/v1/extras/' + txid);
   }
 
   validateAddress$(address: string): Observable<AddressInformation> {

@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
+import transactionRepository from '../repositories/TransactionRepository';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
@@ -213,6 +214,14 @@ class Mempool {
         rbfCache.add(rbfTransaction, rbfTransactions[rbfTransaction].txid);
         // Erase the replaced transactions from the local mempool
         delete this.mempoolCache[rbfTransaction];
+      }
+    }
+  }
+
+  public async $saveTxFirstSeenTimes(transactions: TransactionExtended[], mempool: { [txid: string]: TransactionExtended }) {
+    for (const tx of transactions) {
+      if (mempool[tx.txid]) {
+         await transactionRepository.$saveTxFirstSeen(tx.txid, tx.firstSeen || Date.now());
       }
     }
   }

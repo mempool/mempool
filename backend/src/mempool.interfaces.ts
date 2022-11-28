@@ -136,6 +136,10 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
 }
 
+export interface TransactionExtras extends CpfpInfo {
+  firstSeen?: number;
+}
+
 export interface TransactionStripped {
   txid: string;
   fee: number;
