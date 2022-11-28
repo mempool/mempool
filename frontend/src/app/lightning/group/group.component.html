@@ -55,12 +55,12 @@
 
   <div class="toggle-holder">
     <form [formGroup]="socketToggleForm" class="formRadioGroup">
-      <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="socket">
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="0">IPv4
+      <div class="btn-group btn-group-toggle" name="radioBasic">
+        <label class="btn btn-primary btn-sm" [class.active]="socketToggleForm.get('socket').value === 0">
+          <input type="radio" [value]="0" formControlName="socket">IPv4
         </label>
-        <label ngbButtonLabel class="btn-primary btn-sm">
-          <input ngbButton type="radio" [value]="1">IPv6
+        <label class="btn btn-primary btn-sm" [class.active]="socketToggleForm.get('socket').value === 1">
+          <input type="radio" [value]="1" formControlName="socket">IPv6
         </label>
       </div>
     </form>

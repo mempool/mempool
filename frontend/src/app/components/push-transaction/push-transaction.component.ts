@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -8,13 +8,13 @@ import { ApiService } from '../../services/api.service';
   styleUrls: ['./push-transaction.component.scss']
 })
 export class PushTransactionComponent implements OnInit {
-  pushTxForm: FormGroup;
+  pushTxForm: UntypedFormGroup;
   error: string = '';
   txId: string = '';
   isLoading = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private apiService: ApiService,
   ) { }
 

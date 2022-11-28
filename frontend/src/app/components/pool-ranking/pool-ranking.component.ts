@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { concat, Observable } from 'rxjs';
@@ -24,7 +24,7 @@ export class PoolRankingComponent implements OnInit {
   @Input() widget = false;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   isLoading = true;
   chartOptions: EChartsOption = {};
@@ -41,7 +41,7 @@ export class PoolRankingComponent implements OnInit {
   constructor(
     private stateService: StateService,
     private storageService: StorageService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private miningService: MiningService,
     private seoService: SeoService,
     private router: Router,
