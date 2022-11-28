@@ -370,7 +370,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
     }
 
-    if (databaseSchemaVersion < 46 && isBitcoin === true) {
+    if (databaseSchemaVersion < 46) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD cpfp_indexed tinyint(1) DEFAULT 0');
       await this.$executeQuery(this.getCreateCPFPTableQuery(), await this.$checkIfTableExists('cpfp_clusters'));
       await this.$executeQuery(this.getCreateTransactionsTableQuery(), await this.$checkIfTableExists('transactions'));
