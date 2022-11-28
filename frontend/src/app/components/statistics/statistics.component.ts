@@ -1,6 +1,6 @@
 import { Component, OnInit, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -39,7 +39,7 @@ export class StatisticsComponent implements OnInit {
   mempoolUnconfirmedTransactionsData: any;
   mempoolTransactionsWeightPerSecondData: any;
 
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
   graphWindowPreference: string;
   inverted: boolean;
   feeLevelDropdownData = [];
@@ -47,7 +47,7 @@ export class StatisticsComponent implements OnInit {
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private websocketService: WebsocketService,
     private apiService: ApiService,

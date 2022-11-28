@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { map, Observable, share } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
@@ -17,12 +17,12 @@ export class GroupComponent implements OnInit {
   skeletonLines: number[] = [];
   selectedSocketIndex = 0;
   qrCodeVisible = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  socketToggleForm: FormGroup;
+  socketToggleForm: UntypedFormGroup;
 
   constructor(
     private lightningApiService: LightningApiService,
     private seoService: SeoService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
   ) {
     for (let i = 0; i < 20; ++i) {
       this.skeletonLines.push(i);

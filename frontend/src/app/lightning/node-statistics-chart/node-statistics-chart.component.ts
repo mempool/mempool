@@ -3,7 +3,7 @@ import { EChartsOption } from 'echarts';
 import { Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '../../services/storage.service';
 import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';
@@ -29,7 +29,7 @@ export class NodeStatisticsChartComponent implements OnInit {
   @Input() widget = false;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
