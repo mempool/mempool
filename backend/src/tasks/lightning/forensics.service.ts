@@ -377,6 +377,7 @@ class ForensicsService {
         prevChannel.outputs[input.vout].node = prevLocal;
         const isPenalty = prevChannel.outputs.filter((out) => out.type === 2 || out.type === 4)?.length > 0;
         const normalOutput = [1,3].includes(prevChannel.outputs[input.vout].type);
+        const mutualClose = ((prevChannel.status === 2 || prevChannel.status === 'closed') && prevChannel.closing_reason === 1);
         let localClosingBalance = 0;
         let remoteClosingBalance = 0;
         for (const output of prevChannel.outputs) {
@@ -390,7 +391,7 @@ class ForensicsService {
             } else {
               remoteClosingBalance += output.value;
             }
-          } else if (normalOutput && (output.type === 1 || output.type === 3)) {
+          } else if (normalOutput && (output.type === 1 || output.type === 3 || (mutualClose && prevChannel.outputs.length === 2))) {
             // local node had one main output, therefore remote node takes the other
             remoteClosingBalance += output.value;
           }
