@@ -63,7 +63,7 @@
               </tr>
               <ng-container *ngIf="!indexingAvailable && webGlEnabled">
                 <tr *ngIf="isMobile && auditEnabled"></tr>
-                <tr>
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="mempool-block.fee-span">Fee span</td>
                   <td><span>{{ block.extras.feeRange[0] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
                 </tr>
@@ -172,7 +172,7 @@
         <table class="table table-borderless table-striped" *ngIf="!isLoadingBlock && (indexingAvailable || !webGlEnabled)">
           <tbody>
             <tr *ngIf="isMobile && auditEnabled"></tr>
-            <tr>
+            <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
               <td i18n="mempool-block.fee-span">Fee span</td>
               <td><span>{{ block.extras.feeRange[0] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
             </tr>

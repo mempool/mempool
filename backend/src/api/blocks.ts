@@ -652,7 +652,10 @@ class Blocks {
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<any> {
-    let summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+    let summary;
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+    }
 
     // fallback to non-audited transaction summary
     if (!summary?.transactions?.length) {
