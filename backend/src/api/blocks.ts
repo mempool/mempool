@@ -744,8 +744,8 @@ class Blocks {
     let transactions;
     if (Common.blocksSummariesIndexingEnabled()) {
       transactions = await this.$getStrippedBlockTransactions(hash);
-      const rawBlock = await bitcoinClient.getBlock(hash, 0);
-      const block = Block.fromHex(rawBlock);
+      const rawBlock = await bitcoinApi.$getRawBlock(hash);
+      const block = Block.fromBuffer(rawBlock);
       const txMap = {};
       for (const tx of block.transactions || []) {
         txMap[tx.getId()] = tx;
