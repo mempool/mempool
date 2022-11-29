@@ -72,6 +72,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   firstSeen?: number;
   effectiveFeePerVsize: number;
   ancestors?: Ancestor[];
+  descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
   deleteAfter?: number;
@@ -119,7 +120,9 @@ interface BestDescendant {
 
 export interface CpfpInfo {
   ancestors: Ancestor[];
-  bestDescendant: BestDescendant | null;
+  bestDescendant?: BestDescendant | null;
+  descendants?: Ancestor[];
+  effectiveFeePerVsize?: number;
 }
 
 export interface TransactionStripped {

@@ -155,6 +155,7 @@ class MempoolBlocks {
       if (newMempool[txid] && mempool[txid]) {
         newMempool[txid].effectiveFeePerVsize = mempool[txid].effectiveFeePerVsize;
         newMempool[txid].ancestors = mempool[txid].ancestors;
+        newMempool[txid].descendants = mempool[txid].descendants;
         newMempool[txid].bestDescendant = mempool[txid].bestDescendant;
         newMempool[txid].cpfpChecked = mempool[txid].cpfpChecked;
       }

@@ -117,25 +117,31 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.tx) {
           return;
         }
-        const lowerFeeParents = cpfpInfo.ancestors.filter(
-          (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
-        );
-        let totalWeight =
-          this.tx.weight +
-          lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
+        if (cpfpInfo.effectiveFeePerVsize) {
+          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        } else {
+          const lowerFeeParents = cpfpInfo.ancestors.filter(
+            (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
+          );
+          let totalWeight =
+            this.tx.weight +
+            lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+          let totalFees =
+            this.tx.fee +
+            lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
-        if (cpfpInfo.bestDescendant) {
-          totalWeight += cpfpInfo.bestDescendant.weight;
-          totalFees += cpfpInfo.bestDescendant.fee;
+          if (cpfpInfo?.bestDescendant) {
+            totalWeight += cpfpInfo?.bestDescendant.weight;
+            totalFees += cpfpInfo?.bestDescendant.fee;
+          }
+
+          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
         }
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-        this.stateService.markBlock$.next({
-          txFeePerVSize: this.tx.effectiveFeePerVsize,
-        });
+        if (!this.tx.status.confirmed) {
+          this.stateService.markBlock$.next({
+            txFeePerVSize: this.tx.effectiveFeePerVsize,
+          });
+        }
         this.cpfpInfo = cpfpInfo;
       });
 
@@ -239,6 +245,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.stateService.markBlock$.next({
               blockHeight: tx.status.block_height,
             });
+            this.fetchCpfp$.next(this.tx.txid);
           } else {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({

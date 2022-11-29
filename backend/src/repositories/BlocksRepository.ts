@@ -663,6 +663,23 @@ class BlocksRepository {
   }
 
   /**
+   * Get a list of blocks that have not had CPFP data indexed
+   */
+   public async $getCPFPUnindexedBlocks(): Promise<any[]> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks WHERE cpfp_indexed = 0 ORDER BY height DESC`);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot fetch CPFP unindexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $setCPFPIndexed(hash: string): Promise<void> {
+    await DB.query(`UPDATE blocks SET cpfp_indexed = 1 WHERE hash = ?`, [hash]);
+  }
+
+  /**
    * Return the oldest block  from a consecutive chain of block from the most recent one
    */
   public async $getOldestConsecutiveBlock(): Promise<any> {
