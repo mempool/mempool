@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 45;
+  private static currentVersion = 46;
   private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -368,6 +368,10 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 45 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fresh_txs JSON DEFAULT "[]"');
+    }
+
+    if (databaseSchemaVersion < 46) {
+      await this.$executeQuery(`ALTER TABLE blocks MODIFY blockTimestamp timestamp NOT NULL DEFAULT 0`);
     }
   }
 
