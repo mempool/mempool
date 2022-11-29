@@ -77,6 +77,7 @@ class Indexer {
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
+      await blocks.$generateCPFPDatabase();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));

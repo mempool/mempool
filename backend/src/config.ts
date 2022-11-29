@@ -30,6 +30,7 @@ interface IConfig {
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
     ADVANCED_TRANSACTION_SELECTION: boolean;
+    TRANSACTION_INDEXING: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -148,6 +149,7 @@ const defaults: IConfig = {
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'ADVANCED_TRANSACTION_SELECTION': false,
+    'TRANSACTION_INDEXING': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
