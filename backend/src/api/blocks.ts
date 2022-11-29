@@ -742,7 +742,7 @@ class Blocks {
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
     let transactions;
-    if (Common.blocksSummariesIndexingEnabled()) {
+    if (false/*Common.blocksSummariesIndexingEnabled()*/) {
       transactions = await this.$getStrippedBlockTransactions(hash);
       const rawBlock = await bitcoinApi.$getRawBlock(hash);
       const block = Block.fromBuffer(rawBlock);
