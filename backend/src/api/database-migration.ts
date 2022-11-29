@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 46;
+  private static currentVersion = 47;
   private queryTimeout = 900_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -371,11 +371,15 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 46) {
+      await this.$executeQuery(`ALTER TABLE blocks MODIFY blockTimestamp timestamp NOT NULL DEFAULT 0`);
+    }
+
+    if (databaseSchemaVersion < 47) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD cpfp_indexed tinyint(1) DEFAULT 0');
       await this.$executeQuery(this.getCreateCPFPTableQuery(), await this.$checkIfTableExists('cpfp_clusters'));
       await this.$executeQuery(this.getCreateTransactionsTableQuery(), await this.$checkIfTableExists('transactions'));
     }
-  }
+}
 
   /**
    * Special case here for the `statistics` table - It appeared that somehow some dbs already had the `added` field indexed
