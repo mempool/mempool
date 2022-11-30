@@ -30,7 +30,6 @@ export class BisqMasterPageComponent implements OnInit {
     this.connectionState$ = this.stateService.connectionState$;
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.navigationService.subnetPaths.subscribe((paths) => {
-      console.log('network paths updated...');
       this.networkPaths = paths;
     });
   }

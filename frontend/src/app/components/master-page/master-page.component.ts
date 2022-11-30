@@ -35,7 +35,6 @@ export class MasterPageComponent implements OnInit {
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.subdomain = this.enterpriseService.getSubdomain();
     this.navigationService.subnetPaths.subscribe((paths) => {
-      console.log('network paths updated...');
       this.networkPaths = paths;
     });
   }
