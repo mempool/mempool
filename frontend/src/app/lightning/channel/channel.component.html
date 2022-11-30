@@ -48,6 +48,15 @@
                 <td i18n="lightning.capacity">Capacity</td>
                 <td><app-sats [satoshis]="channel.capacity"></app-sats><app-fiat [value]="channel.capacity" digitsInfo="1.0-0"></app-fiat></td>
               </tr>
+              <tr *ngIf="channel.closed_by">
+                <td i18n="lightning.closed_by">Closed by</td>
+                <td>
+                  <a [routerLink]="['/lightning/node' | relativeUrl, channel.closed_by]" >
+                    <ng-container *ngIf="channel.closed_by === channel.node_left.public_key">{{ channel.node_left.alias }}</ng-container>
+                    <ng-container *ngIf="channel.closed_by === channel.node_right.public_key">{{ channel.node_right.alias }}</ng-container>
+                  </a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -59,9 +68,11 @@
   <div class="row row-cols-1 row-cols-md-2">
     <div class="col">
       <app-channel-box [channel]="channel.node_left"></app-channel-box>
+      <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [local]="channel.node_left" [remote]="channel.node_right"></app-channel-close-box>
     </div>
     <div class="col">
       <app-channel-box [channel]="channel.node_right"></app-channel-box>
+      <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [local]="channel.node_right" [remote]="channel.node_left"></app-channel-close-box>
     </div>
   </div>
 
