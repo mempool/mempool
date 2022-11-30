@@ -117,25 +117,31 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.tx) {
           return;
         }
-        const lowerFeeParents = cpfpInfo.ancestors.filter(
-          (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
-        );
-        let totalWeight =
-          this.tx.weight +
-          lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
+        if (cpfpInfo.effectiveFeePerVsize) {
+          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        } else {
+          const lowerFeeParents = cpfpInfo.ancestors.filter(
+            (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
+          );
+          let totalWeight =
+            this.tx.weight +
+            lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+          let totalFees =
+            this.tx.fee +
+            lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
-        if (cpfpInfo.bestDescendant) {
-          totalWeight += cpfpInfo.bestDescendant.weight;
-          totalFees += cpfpInfo.bestDescendant.fee;
+          if (cpfpInfo?.bestDescendant) {
+            totalWeight += cpfpInfo?.bestDescendant.weight;
+            totalFees += cpfpInfo?.bestDescendant.fee;
+          }
+
+          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
         }
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-        this.stateService.markBlock$.next({
-          txFeePerVSize: this.tx.effectiveFeePerVsize,
-        });
+        if (!this.tx.status.confirmed) {
+          this.stateService.markBlock$.next({
+            txFeePerVSize: this.tx.effectiveFeePerVsize,
+          });
+        }
         this.cpfpInfo = cpfpInfo;
       });
 
@@ -183,8 +189,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          if (history.state.data && history.state.data.fee !== -1) {
-            transactionObservable$ = of(history.state.data);
+          const cached = this.stateService.getTxFromCache(this.txId);
+          if (cached && cached.fee !== -1) {
+            transactionObservable$ = of(cached);
           } else {
             transactionObservable$ = this.electrsApiService
               .getTransaction$(this.txId)
@@ -225,6 +232,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.waitingForTransaction = false;
           this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
+          this.graphExpanded = false;
           this.setupGraph();
 
           if (!tx.status.confirmed && tx.firstSeen) {
@@ -237,6 +245,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.stateService.markBlock$.next({
               blockHeight: tx.status.block_height,
             });
+            this.fetchCpfp$.next(this.tx.txid);
           } else {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
@@ -279,6 +288,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
+      this.stateService.setTxCache([this.rbfTransaction]);
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
@@ -362,7 +372,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setupGraph() {
     this.maxInOut = Math.min(this.inOutLimit, Math.max(this.tx?.vin?.length || 1, this.tx?.vout?.length + 1 || 1));
-    this.graphHeight = Math.min(360, this.maxInOut * 80);
+    this.graphHeight = this.graphExpanded ? this.maxInOut * 15 : Math.min(360, this.maxInOut * 80);
   }
 
   toggleGraph() {
@@ -382,10 +392,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   expandGraph() {
     this.graphExpanded = true;
+    this.graphHeight = this.maxInOut * 15;
   }
 
   collapseGraph() {
     this.graphExpanded = false;
+    this.graphHeight = Math.min(360, this.maxInOut * 80);
   }
 
   // simulate normal anchor fragment behavior
@@ -402,7 +414,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
     if (this.graphContainer) {
-      this.graphWidth = this.graphContainer.nativeElement.clientWidth - 24;
+      this.graphWidth = this.graphContainer.nativeElement.clientWidth;
     }
   }
 

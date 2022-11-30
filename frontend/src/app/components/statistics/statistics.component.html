@@ -13,46 +13,46 @@
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
             <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
-              <label ngbButtonLabel class="btn-primary btn-sm mr-2">
+              <label class="btn btn-primary btn-sm mr-2">
                 <a [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
                   <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
                 </a>
                 </label>
             </div>
-            <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="dateSpan">
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h"> 2H
+            <div class="btn-group btn-group-toggle" name="radioBasic">
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
+                <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
                 (LIVE)
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h">
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
+                <input type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h" formControlName="dateSpan">
                 24H
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w"> 1W
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1w'">
+                <input type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w" formControlName="dateSpan"> 1W
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m"> 1M
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
+                <input type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m" formControlName="dateSpan"> 1M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m"> 3M
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
+                <input type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m" formControlName="dateSpan"> 3M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m"> 6M
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
+                <input type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan"> 6M
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y"> 1Y
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
+                <input type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y" formControlName="dateSpan"> 1Y
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y"> 2Y
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
+                <input type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y" formControlName="dateSpan"> 2Y
               </label>
-              <label ngbButtonLabel class="btn-primary btn-sm">
-                <input ngbButton type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y"> 3Y
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
+                <input type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan"> 3Y
               </label>
             </div>
             <div class="small-buttons">
               <div ngbDropdown #myDrop="ngbDropdown">
-                <button class="btn btn-primary btn-sm" id="dropdownFees" ngbDropdownAnchor (click)="myDrop.toggle()">
+                <button class="btn btn btn-primary btn-sm" id="dropdownFees" ngbDropdownAnchor (click)="myDrop.toggle()">
                   <fa-icon [icon]="['fas', 'filter']" [fixedWidth]="true" i18n-title="statistics.component-filter.title"
                     title="Filter"></fa-icon>
                 </button>
@@ -71,7 +71,7 @@
                 </div>
               </div>
 
-              <button (click)="invertGraph()" class="btn btn-primary btn-sm">
+              <button (click)="invertGraph()" class="btn btn btn-primary btn-sm">
                 <fa-icon [icon]="['fas', 'exchange-alt']" [rotate]="90" [fixedWidth]="true"
                   i18n-title="statistics.component-invert.title" title="Invert"></fa-icon>
               </button>

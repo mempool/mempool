@@ -8,10 +8,10 @@
     </div>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
-      <span *ngIf="cpfpInfo && cpfpInfo.bestDescendant" class="badge badge-primary mr-1">
+      <span *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.descendants.length)" class="badge badge-primary mr-1">
         CPFP
       </span>
-      <span *ngIf="cpfpInfo && !cpfpInfo.bestDescendant && cpfpInfo.ancestors.length" class="badge badge-info mr-1">
+      <span *ngIf="cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.descendants.length && cpfpInfo.ancestors.length" class="badge badge-info mr-1">
         CPFP
       </span>
     </div>
@@ -29,7 +29,7 @@
 
 
   <div class="row graph-wrapper">
-    <tx-bowtie-graph [tx]="tx" [width]="1112" [height]="346" [network]="network"></tx-bowtie-graph>
+    <tx-bowtie-graph [tx]="tx" [width]="1132" [height]="346" [network]="network"></tx-bowtie-graph>
     <div class="above-bow">
       <p class="field pair">
         <span [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></span>
@@ -41,24 +41,20 @@
     </div>
     <div class="overlaid">
       <ng-container [ngSwitch]="extraData">
-        <table class="opreturns" *ngSwitchCase="'coinbase'">
-          <tbody>
-            <tr>
-              <td class="label">Coinbase</td>
-              <td class="message">{{ tx.vin[0].scriptsig | hex2ascii }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="opreturns" *ngSwitchCase="'opreturn'">
-          <tbody>
+        <div class="opreturns" *ngSwitchCase="'coinbase'">
+            <div class="opreturn-row">
+              <span class="label">Coinbase</span>
+              <span class="message">{{ tx.vin[0].scriptsig | hex2ascii }}</span>
+            </div>
+        </div>
+        <div class="opreturns" *ngSwitchCase="'opreturn'">
             <ng-container *ngFor="let vout of opReturns.slice(0,3)">
-              <tr>
-                <td class="label">OP_RETURN</td>
-                <td *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="message">{{ vout.scriptpubkey_asm | hex2ascii }}</td>
-              </tr>
+              <div class="opreturn-row">
+                <span class="label">OP_RETURN</span>
+                <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="message">{{ vout.scriptpubkey_asm | hex2ascii }}</span>
+              </div>
             </ng-container>
-          </tbody>
-        </table>
+        </div>
       </ng-container>
     </div>
   </div>

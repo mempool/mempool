@@ -105,6 +105,18 @@ class NodesApi {
         node.closed_channel_count = rows[0].closed_channel_count;
       }
 
+      // Custom records
+      query = `
+        SELECT type, payload
+        FROM nodes_records
+        WHERE public_key = ?
+      `;
+      [rows] = await DB.query(query, [public_key]);
+      node.custom_records = {};
+      for (const record of rows) {
+        node.custom_records[record.type] = Buffer.from(record.payload, 'binary').toString('hex');
+      }
+
       return node;
     } catch (e) {
       logger.err(`Cannot get node information for ${public_key}. Reason: ${(e instanceof Error ? e.message : e)}`);
@@ -512,7 +524,37 @@ class NodesApi {
 
   public async $getNodesPerISP(ISPId: string) {
     try {
-      const query = `
+      let query = `
+        SELECT channels.node1_public_key AS node1PublicKey, isp1.id as isp1ID,
+          channels.node2_public_key AS node2PublicKey, isp2.id as isp2ID
+        FROM channels
+        JOIN nodes node1 ON node1.public_key = channels.node1_public_key
+        JOIN nodes node2 ON node2.public_key = channels.node2_public_key
+        JOIN geo_names isp1 ON isp1.id = node1.as_number
+        JOIN geo_names isp2 ON isp2.id = node2.as_number
+        WHERE channels.status = 1 AND (node1.as_number IN (?) OR node2.as_number IN (?))
+        ORDER BY short_id DESC
+      `;
+
+      const IPSIds = ISPId.split(',');
+      const [rows]: any = await DB.query(query, [IPSIds, IPSIds]);
+      const nodes = {};
+
+      const intISPIds: number[] = [];
+      for (const ispId of IPSIds) {
+        intISPIds.push(parseInt(ispId, 10));
+      }
+
+      for (const channel of rows) {
+        if (intISPIds.includes(channel.isp1ID)) {
+          nodes[channel.node1PublicKey] = true;
+        }
+        if (intISPIds.includes(channel.isp2ID)) {
+          nodes[channel.node2PublicKey] = true;
+        }
+      }
+
+      query = `
         SELECT nodes.public_key, CAST(COALESCE(nodes.capacity, 0) as INT) as capacity, CAST(COALESCE(nodes.channels, 0) as INT) as channels,
           nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city, geo_names_country.names as country,
@@ -523,17 +565,18 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
-        WHERE nodes.as_number IN (?)
+        WHERE nodes.public_key IN (?)
         ORDER BY capacity DESC
       `;
 
-      const [rows]: any = await DB.query(query, [ISPId.split(',')]);
-      for (let i = 0; i < rows.length; ++i) {
-        rows[i].country = JSON.parse(rows[i].country);
-        rows[i].city = JSON.parse(rows[i].city);
-        rows[i].subdivision = JSON.parse(rows[i].subdivision);
+      const [rows2]: any = await DB.query(query, [Object.keys(nodes)]);
+      for (let i = 0; i < rows2.length; ++i) {
+        rows2[i].country = JSON.parse(rows2[i].country);
+        rows2[i].city = JSON.parse(rows2[i].city);
+        rows2[i].subdivision = JSON.parse(rows2[i].subdivision);
       }
-      return rows;
+      return rows2;
+
     } catch (e) {
       logger.err(`Cannot get nodes for ISP id ${ISPId}. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;

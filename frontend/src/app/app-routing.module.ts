@@ -4,7 +4,6 @@ import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
-import { BlockAuditComponent } from './components/block-audit/block-audit.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
@@ -100,16 +99,6 @@ let routes: Routes = [
                 data: {
                   ogImage: true
                 }
-              },
-            ],
-          },
-          {
-            path: 'block-audit',
-            data: { networkSpecific: true },
-            children: [
-              {
-                path: ':id',
-                component: BlockAuditComponent,
               },
             ],
           },
@@ -220,16 +209,6 @@ let routes: Routes = [
             ],
           },
           {
-            path: 'block-audit',
-            data: { networkSpecific: true },
-            children: [
-              {
-                path: ':id',
-                component: BlockAuditComponent,
-              },
-            ],
-          },
-          {
             path: 'docs',
             loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
           },
@@ -328,16 +307,6 @@ let routes: Routes = [
             data: {
               ogImage: true
             }
-          },
-        ],
-      },
-      {
-        path: 'block-audit',
-        data: { networkSpecific: true },
-        children: [
-          {
-            path: ':id',
-            component: BlockAuditComponent
           },
         ],
       },
@@ -658,7 +627,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled',
+    initialNavigation: 'enabledBlocking',
     scrollPositionRestoration: 'enabled',
     anchorScrolling: 'enabled',
     preloadingStrategy: AppPreloadingStrategy

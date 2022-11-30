@@ -1,6 +1,6 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
-    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]" [state]="{ data: tx }">
+    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
       <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
       <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
     </a>
@@ -20,7 +20,7 @@
       <div class="col">
         <table class="table table-borderless smaller-text table-sm table-tx-vin">
           <tbody>
-            <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx['@vinLimit'] ? ((tx.vin.length > inputRowLimit) ? tx.vin.slice(0, inputRowLimit - 2) : tx.vin.slice(0, inputRowLimit)) : tx.vin" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
                 'highlight': vin.prevout?.scriptpubkey_address === this.address && this.address !== ''
@@ -146,9 +146,15 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vin.length > inputRowLimit && tx['@vinLimit']">
+            <tr *ngIf="tx.vin.length > getVinLimit(tx)">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="loadMoreInputs(tx);"><span i18n="show-all">Show all</span> ({{ tx.vin.length }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreInputs(tx)">
+                  <span *ngIf="getVinLimit(tx, true) >= tx.vin.length; else showMoreInputsLabel" i18n="show-all">Show all</span>
+                  <ng-template #showMoreInputsLabel>
+                    <span i18n="show-more">Show more</span>
+                  </ng-template>
+                  ({{ tx.vin.length - getVinLimit(tx) }} <span i18n="inputs-remaining">remaining</span>)
+                </button>
               </td>
             </tr>
           </tbody>
@@ -158,7 +164,7 @@
       <div class="col mobile-bottomcol">
         <table class="table table-borderless smaller-text table-sm table-tx-vout">
           <tbody>
-            <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx['@voutLimit'] ? ((tx.vout.length > outputRowLimit) ? tx.vout.slice(0, outputRowLimit - 2) : tx.vout.slice(0, outputRowLimit)) : tx.vout" [ngForTrackBy]="trackByIndexFn">
+            <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx.vout.slice(0, getVoutLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
                 'highlight': vout.scriptpubkey_address === this.address && this.address !== ''
@@ -257,9 +263,15 @@
                 </td>
               </tr>
             </ng-template>
-            <tr *ngIf="tx.vout.length > outputRowLimit && tx['@voutLimit']">
+            <tr *ngIf="tx.vout.length > getVoutLimit(tx)">
               <td colspan="3" class="text-center">
-                <button class="btn btn-sm btn-primary mt-2" (click)="tx['@voutLimit'] = false;"><span i18n="show-all">Show all</span> ({{ tx.vout.length }})</button>
+                <button class="btn btn-sm btn-primary mt-2" (click)="showMoreOutputs(tx)">
+                  <span *ngIf="getVoutLimit(tx, true) >= tx.vout.length; else showMoreOutputsLabel" i18n="show-all">Show all</span>
+                  <ng-template #showMoreOutputsLabel>
+                    <span i18n="show-more">Show more</span>
+                  </ng-template>
+                  ({{ tx.vout.length - getVoutLimit(tx) }} <span i18n="outputs-remaining">remaining</span>)
+                </button>
               </td>
             </tr>
           </tbody>
@@ -271,7 +283,7 @@
       <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
         {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [value]="tx.fee"></app-fiat></span></span>
       </div>
-      <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show all inputs to reveal fee data</div>
+      <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
 
       <div class="float-right">
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">

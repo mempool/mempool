@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
@@ -22,7 +22,17 @@ export class SearchFormComponent implements OnInit {
   isSearching = false;
   isTypeaheading$ = new BehaviorSubject<boolean>(false);
   typeAhead$: Observable<any>;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
+  dropdownHidden = false;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event) {
+    if (this.elementRef.nativeElement.contains(event.target)) {
+      this.dropdownHidden = false;
+    } else {
+      this.dropdownHidden = true;
+    }
+  }
 
   regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[A-z]{2,5}1[a-zA-HJ-NP-Z0-9]{39,59})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
@@ -38,13 +48,14 @@ export class SearchFormComponent implements OnInit {
   }
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private assetsService: AssetsService,
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private relativeUrlPipe: RelativeUrlPipe,
+    private elementRef: ElementRef,
   ) { }
 
   ngOnInit(): void {

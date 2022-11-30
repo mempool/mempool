@@ -244,13 +244,18 @@ class WebsocketHandler {
     });
   }
 
-  handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) {
+  async handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
-    mempoolBlocks.updateMempoolBlocks(newMempool);
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(newMempool, 8, null, true);
+    }
+    else {
+      mempoolBlocks.updateMempoolBlocks(newMempool);
+    }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
@@ -405,22 +410,25 @@ class WebsocketHandler {
       }
     });
   }
-
-  handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): void {
+ 
+  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
-    let mBlocks: undefined | MempoolBlock[];
-    let mBlockDeltas: undefined | MempoolBlockDelta[];
-    let matchRate;
     const _memPool = memPool.getMempool();
+    let matchRate;
 
-    if (Common.indexingEnabled()) {
-      const mempoolCopy = cloneMempool(_memPool);
-      const projectedBlocks = mempoolBlocks.makeBlockTemplates(mempoolCopy, 2);
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+    } else {
+      mempoolBlocks.updateMempoolBlocks(_memPool);
+    }
 
-      const { censored, added, score } = Audit.auditBlock(transactions, projectedBlocks, mempoolCopy);
+    if (Common.indexingEnabled() && memPool.isInSync()) {
+      const projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+
+      const { censored, added, fresh, score } = Audit.auditBlock(transactions, projectedBlocks, _memPool);
       matchRate = Math.round(score * 100 * 100) / 100;
 
       const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -446,6 +454,7 @@ class WebsocketHandler {
         hash: block.id,
         addedTxs: added,
         missingTxs: censored,
+        freshTxs: fresh,
         matchRate: matchRate,
       });
 
@@ -459,9 +468,13 @@ class WebsocketHandler {
       delete _memPool[txId];
     }
 
-    mempoolBlocks.updateMempoolBlocks(_memPool);
-    mBlocks = mempoolBlocks.getMempoolBlocks();
-    mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
+    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+    } else {
+      mempoolBlocks.updateMempoolBlocks(_memPool);
+    }
+    const mBlocks = mempoolBlocks.getMempoolBlocks();
+    const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
@@ -567,16 +580,6 @@ class WebsocketHandler {
       client.send(JSON.stringify(response));
     });
   }
-}
-
-function cloneMempool(mempool: { [txid: string]: TransactionExtended }): { [txid: string]: TransactionExtended } {
-  const cloned = {};
-  Object.keys(mempool).forEach(id => {
-    cloned[id] = {
-      ...mempool[id]
-    };
-  });
-  return cloned;
 }
 
 export default new WebsocketHandler();

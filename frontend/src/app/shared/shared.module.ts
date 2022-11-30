@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbCollapse, NgbCollapseModule, NgbRadioGroup, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -29,7 +29,7 @@ import { TimeUntilComponent } from '../components/time-until/time-until.componen
 import { ClipboardComponent } from '../components/clipboard/clipboard.component';
 import { QrcodeComponent } from '../components/qrcode/qrcode.component';
 import { FiatComponent } from '../fiat/fiat.component';
-import { NgbNavModule, NgbTooltipModule, NgbButtonsModule, NgbPaginationModule, NgbDropdownModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TxFeaturesComponent } from '../components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -45,7 +45,6 @@ import { StartComponent } from '../components/start/start.component';
 import { TransactionComponent } from '../components/transaction/transaction.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockComponent } from '../components/block/block.component';
-import { BlockAuditComponent } from '../components/block-audit/block-audit.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { AddressComponent } from '../components/address/address.component';
@@ -120,7 +119,6 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StartComponent,
     TransactionComponent,
     BlockComponent,
-    BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
@@ -165,7 +163,6 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgbButtonsModule,
     NgbPaginationModule,
     NgbTypeaheadModule,
     NgbDropdownModule,
@@ -186,7 +183,6 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
-    NgbButtonsModule,
     NgbPaginationModule,
     NgbTypeaheadModule,
     NgbDropdownModule,
@@ -223,7 +219,6 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StartComponent,
     TransactionComponent,
     BlockComponent,
-    BlockAuditComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,

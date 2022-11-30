@@ -172,6 +172,7 @@ h3 {
   border-radius: 0.25rem;
   font-family: monospace;
   float: right;
+  white-space: nowrap;
 }
 
 .endpoint-container .section-header table {
@@ -217,6 +218,22 @@ h3 {
 }
 .blockchain-wrapper::-webkit-scrollbar {
   display: none;
+}
+
+#disclaimer {
+  background-color: #1d1f31;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+#disclaimer svg {
+  width: 50px;
+  height: auto;
+  margin-right: 32px;
+}
+
+#disclaimer p:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 992px) {

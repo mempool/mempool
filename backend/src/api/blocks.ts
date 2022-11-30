@@ -21,10 +21,13 @@ import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
+import cpfpRepository from '../repositories/CpfpRepository';
+import transactionRepository from '../repositories/TransactionRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
+import { Block } from 'bitcoinjs-lib';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -34,6 +37,7 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
+  private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>)[] = [];
 
   constructor() { }
 
@@ -55,6 +59,10 @@ class Blocks {
 
   public setNewBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void) {
     this.newBlockCallbacks.push(fn);
+  }
+
+  public setNewAsyncBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>) {
+    this.newAsyncBlockCallbacks.push(fn);
   }
 
   /**
@@ -130,7 +138,7 @@ class Blocks {
     const stripped = block.tx.map((tx) => {
       return {
         txid: tx.txid,
-        vsize: tx.vsize,
+        vsize: tx.weight / 4,
         fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
         value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
       };
@@ -195,9 +203,9 @@ class Blocks {
         };
       }
 
-      const auditSummary = await BlocksAuditsRepository.$getShortBlockAudit(block.id);
-      if (auditSummary) {
-        blockExtended.extras.matchRate = auditSummary.matchRate;
+      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
+      if (auditScore != null) {
+        blockExtended.extras.matchRate = auditScore.matchRate;
       }
     }
 
@@ -255,7 +263,7 @@ class Blocks {
   /**
    * [INDEXING] Index all blocks summaries for the block txs visualization
    */
-  public async $generateBlocksSummariesDatabase() {
+  public async $generateBlocksSummariesDatabase(): Promise<void> {
     if (Common.blocksSummariesIndexingEnabled() === false) {
       return;
     }
@@ -312,6 +320,57 @@ class Blocks {
   }
 
   /**
+   * [INDEXING] Index transaction CPFP data for all blocks
+   */
+   public async $generateCPFPDatabase(): Promise<void> {
+    if (Common.cpfpIndexingEnabled() === false) {
+      return;
+    }
+
+    try {
+      // Get all indexed block hash
+      const unindexedBlocks = await blocksRepository.$getCPFPUnindexedBlocks();
+
+      if (!unindexedBlocks?.length) {
+        return;
+      }
+
+      // Logging
+      let count = 0;
+      let countThisRun = 0;
+      let timer = new Date().getTime() / 1000;
+      const startedAt = new Date().getTime() / 1000;
+
+      for (const block of unindexedBlocks) {
+        // Logging
+        const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
+        if (elapsedSeconds > 5) {
+          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
+          const blockPerSeconds = Math.max(1, countThisRun / elapsedSeconds);
+          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
+          logger.debug(`Indexing cpfp clusters for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          timer = new Date().getTime() / 1000;
+          countThisRun = 0;
+        }
+
+        await this.$indexCPFP(block.hash, block.height); // Calculate and save CPFP data for transactions in this block
+
+        // Logging
+        count++;
+        countThisRun++;
+      }
+      if (count > 0) {
+        logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
+      } else {
+        logger.debug(`CPFP indexing completed: indexed ${count} blocks`);
+      }
+    } catch (e) {
+      logger.err(`CPFP indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+  }
+
+  /**
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase(): Promise<boolean> {
@@ -354,7 +413,7 @@ class Blocks {
           }
           ++indexedThisRun;
           ++totalIndexed;
-          const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+          const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
@@ -444,6 +503,9 @@ class Blocks {
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
 
+      // start async callbacks
+      const callbackPromises = this.newAsyncBlockCallbacks.map((cb) => cb(blockExtended, txIds, transactions));
+
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
           const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
@@ -453,9 +515,13 @@ class Blocks {
             await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
             await HashratesRepository.$deleteLastEntries();
             await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
+            await cpfpRepository.$deleteClustersFrom(lastBlock['height'] - 10);
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock['height'] - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
+              if (config.MEMPOOL.TRANSACTION_INDEXING) {
+                await this.$indexCPFP(newBlock.id, lastBlock['height'] - i);
+              }
             }
             await mining.$indexDifficultyAdjustments();
             await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
@@ -480,6 +546,9 @@ class Blocks {
           // Save blocks summary for visualization if it's enabled
           if (Common.blocksSummariesIndexingEnabled() === true) {
             await this.$getStrippedBlockTransactions(blockExtended.id, true);
+          }
+          if (config.MEMPOOL.TRANSACTION_INDEXING) {
+            this.$indexCPFP(blockExtended.id, this.currentBlockHeight);
           }
         }
       }
@@ -514,6 +583,9 @@ class Blocks {
       if (!memPool.hasPriority()) {
         diskCache.$saveCacheToDisk();
       }
+
+      // wait for pending async callbacks to finish
+      await Promise.all(callbackPromises);
     }
   }
 
@@ -579,7 +651,7 @@ class Blocks {
     if (skipMemoryCache === false) {
       // Check the memory cache
       const cachedSummary = this.getBlockSummaries().find((b) => b.id === hash);
-      if (cachedSummary) {
+      if (cachedSummary?.transactions?.length) {
         return cachedSummary.transactions;
       }
     }
@@ -587,7 +659,7 @@ class Blocks {
     // Check if it's indexed in db
     if (skipDBLookup === false && Common.blocksSummariesIndexingEnabled() === true) {
       const indexedSummary = await BlocksSummariesRepository.$getByBlockId(hash);
-      if (indexedSummary !== undefined) {
+      if (indexedSummary !== undefined && indexedSummary?.transactions?.length) {
         return indexedSummary.transactions;
       }
     }
@@ -640,6 +712,22 @@ class Blocks {
     return returnBlocks;
   }
 
+  public async $getBlockAuditSummary(hash: string): Promise<any> {
+    let summary;
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+      summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+    }
+
+    // fallback to non-audited transaction summary
+    if (!summary?.transactions?.length) {
+      const strippedTransactions = await this.$getStrippedBlockTransactions(hash);
+      summary = {
+        transactions: strippedTransactions
+      };
+    }
+    return summary;
+  }
+
   public getLastDifficultyAdjustmentTime(): number {
     return this.lastDifficultyAdjustmentTime;
   }
@@ -650,6 +738,62 @@ class Blocks {
 
   public getCurrentBlockHeight(): number {
     return this.currentBlockHeight;
+  }
+
+  public async $indexCPFP(hash: string, height: number): Promise<void> {
+    let transactions;
+    if (false/*Common.blocksSummariesIndexingEnabled()*/) {
+      transactions = await this.$getStrippedBlockTransactions(hash);
+      const rawBlock = await bitcoinApi.$getRawBlock(hash);
+      const block = Block.fromBuffer(rawBlock);
+      const txMap = {};
+      for (const tx of block.transactions || []) {
+        txMap[tx.getId()] = tx;
+      }
+      for (const tx of transactions) {
+        if (txMap[tx.txid]?.ins) {
+          tx.vin = txMap[tx.txid].ins.map(vin => {
+            return {
+              txid: vin.hash
+            };
+          });
+        }
+      }
+    } else {
+      const block = await bitcoinClient.getBlock(hash, 2);
+      transactions = block.tx.map(tx => {
+        tx.vsize = tx.weight / 4;
+        return tx;
+      });
+    }
+ 
+    let cluster: TransactionStripped[] = [];
+    let ancestors: { [txid: string]: boolean } = {};
+    for (let i = transactions.length - 1; i >= 0; i--) {
+      const tx = transactions[i];
+      if (!ancestors[tx.txid]) {
+        let totalFee = 0;
+        let totalVSize = 0;
+        cluster.forEach(tx => {
+          totalFee += tx?.fee || 0;
+          totalVSize += tx.vsize;
+        });
+        const effectiveFeePerVsize = (totalFee * 100_000_000) / totalVSize;
+        if (cluster.length > 1) {
+          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: (tx.fee || 0) * 100_000_000 }; }), effectiveFeePerVsize);
+          for (const tx of cluster) {
+            await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
+          }
+        }
+        cluster = [];
+        ancestors = {};
+      }
+      cluster.push(tx);
+      tx.vin.forEach(vin => {
+        ancestors[vin.txid] = true;
+      });
+    }
+    await blocksRepository.$setCPFPIndexed(hash);
   }
 }
 
