@@ -217,8 +217,8 @@ export interface IChannel {
   updated_at: string;
   created: string;
   status: number;
-  node_left: Node,
-  node_right: Node,
+  node_left: INode,
+  node_right: INode,
 }
 
 
@@ -236,4 +236,6 @@ export interface INode {
   updated_at: string;
   longitude: number;
   latitude: number;
+  funding_balance?: number;
+  closing_balance?: number;
 }
