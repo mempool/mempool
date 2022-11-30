@@ -1,0 +1,19 @@
+<div class="box">
+  <table class="table table-borderless table-striped">
+    <tbody>
+      <tr></tr>
+      <tr>
+        <td i18n="lightning.starting-balance|Channel starting balance">Starting balance</td>
+        <td *ngIf="showStartingBalance && minStartingBalance === maxStartingBalance"><app-sats [satoshis]="minStartingBalance"></app-sats></td>
+        <td *ngIf="showStartingBalance && minStartingBalance !== maxStartingBalance">{{ minStartingBalance | number : '1.0-0' }} - {{ maxStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></td>
+        <td *ngIf="!showStartingBalance">?</td>
+      </tr>
+      <tr *ngIf="channel.status === 2">
+        <td i18n="lightning.closing-balance|Channel closing balance">Closing balance</td>
+        <td *ngIf="showClosingBalance && minClosingBalance === maxClosingBalance"><app-sats [satoshis]="minClosingBalance"></app-sats></td>
+        <td *ngIf="showClosingBalance && minClosingBalance !== maxClosingBalance">{{ minClosingBalance | number : '1.0-0' }} - {{ maxClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></td>
+        <td *ngIf="!showClosingBalance">?</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
