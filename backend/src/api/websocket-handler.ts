@@ -250,12 +250,12 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+    if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       await mempoolBlocks.makeBlockTemplates(newMempool, 8, null, true);
-    }
-    else {
+    } else {
       mempoolBlocks.updateMempoolBlocks(newMempool);
     }
+
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
@@ -417,9 +417,8 @@ class WebsocketHandler {
     }
 
     const _memPool = memPool.getMempool();
-    let matchRate;
 
-    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+    if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
       await mempoolBlocks.makeBlockTemplates(_memPool, 2);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);
@@ -429,7 +428,7 @@ class WebsocketHandler {
       const projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
 
       const { censored, added, fresh, score } = Audit.auditBlock(transactions, projectedBlocks, _memPool);
-      matchRate = Math.round(score * 100 * 100) / 100;
+      const matchRate = Math.round(score * 100 * 100) / 100;
 
       const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
         return {
@@ -468,7 +467,7 @@ class WebsocketHandler {
       delete _memPool[txId];
     }
 
-    if (config.MEMPOOL.ADVANCED_TRANSACTION_SELECTION) {
+    if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       await mempoolBlocks.makeBlockTemplates(_memPool, 2);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);

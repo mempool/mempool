@@ -29,7 +29,8 @@ interface IConfig {
     AUTOMATIC_BLOCK_REINDEXING: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
-    ADVANCED_TRANSACTION_SELECTION: boolean;
+    ADVANCED_GBT_AUDIT: boolean;
+    ADVANCED_GBT_MEMPOOL: boolean;
     TRANSACTION_INDEXING: boolean;
   };
   ESPLORA: {
@@ -148,7 +149,8 @@ const defaults: IConfig = {
     'AUTOMATIC_BLOCK_REINDEXING': false,
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
-    'ADVANCED_TRANSACTION_SELECTION': false,
+    'ADVANCED_GBT_AUDIT': false,
+    'ADVANCED_GBT_MEMPOOL': false,
     'TRANSACTION_INDEXING': false,
   },
   'ESPLORA': {
