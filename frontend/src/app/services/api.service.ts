@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -230,7 +230,20 @@ export class ApiService {
 
   getBlockAudit$(hash: string) : Observable<any> {
     return this.httpClient.get<any>(
-      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/audit/` + hash, { observe: 'response' }
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`, { observe: 'response' }
+    );
+  }
+
+  getBlockAuditScores$(from: number): Observable<AuditScore[]> {
+    return this.httpClient.get<AuditScore[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/audit/scores` +
+      (from !== undefined ? `/${from}` : ``)
+    );
+  }
+
+  getBlockAuditScore$(hash: string) : Observable<any> {
+    return this.httpClient.get<any>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/audit/score/` + hash
     );
   }
 

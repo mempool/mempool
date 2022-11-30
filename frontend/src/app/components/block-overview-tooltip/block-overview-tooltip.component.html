@@ -37,9 +37,10 @@
         <ng-container [ngSwitch]="tx?.status">
           <td *ngSwitchCase="'found'" i18n="transaction.audit.match">match</td>
           <td *ngSwitchCase="'censored'" i18n="transaction.audit.removed">removed</td>
-          <td *ngSwitchCase="'missing'" i18n="transaction.audit.missing">missing</td>
+          <td *ngSwitchCase="'missing'" i18n="transaction.audit.marginal">marginal fee rate</td>
+          <td *ngSwitchCase="'fresh'" i18n="transaction.audit.recently-broadcast">recently broadcast</td>
           <td *ngSwitchCase="'added'" i18n="transaction.audit.added">added</td>
-          <td *ngSwitchCase="'selected'" i18n="transaction.audit.included">included</td>
+          <td *ngSwitchCase="'selected'" i18n="transaction.audit.marginal">marginal fee rate</td>
         </ng-container>
       </tr>
     </tbody>

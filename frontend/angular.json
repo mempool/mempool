@@ -152,14 +152,13 @@
             "assets": [
               "src/favicon.ico",
               "src/resources",
-              "src/robots.txt"
+              "src/robots.txt",
+              "src/config.js",
+              "src/config.template.js"
             ],
             "styles": [
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
-            ],
-            "scripts": [
-              "generated-config.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -222,6 +221,10 @@
               "proxyConfig": "proxy.conf.local.js",
               "verbose": true
             },
+            "local-esplora": {
+              "proxyConfig": "proxy.conf.local-esplora.js",
+              "verbose": true
+            },
             "mixed": {
               "proxyConfig": "proxy.conf.mixed.js",
               "verbose": true
@@ -265,57 +268,6 @@
             }
           }
         },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "outputPath": "dist/mempool/server",
-            "main": "server.ts",
-            "tsConfig": "tsconfig.server.json",
-            "sourceMap": true,
-            "optimization": false
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "sourceMap": false,
-              "localize": true,
-              "optimization": true
-            }
-          },
-          "defaultConfiguration": ""
-        },
-        "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
-          "options": {
-            "browserTarget": "mempool:build",
-            "serverTarget": "mempool:server"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "mempool:build:production",
-              "serverTarget": "mempool:server:production"
-            }
-          }
-        },
-        "prerender": {
-          "builder": "@nguniversal/builders:prerender",
-          "options": {
-            "browserTarget": "mempool:build:production",
-            "serverTarget": "mempool:server:production",
-            "routes": [
-              "/"
-            ]
-          },
-          "configurations": {
-            "production": {}
-          }
-        },
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
@@ -336,6 +288,5 @@
         }
       }
     }
-  },
-  "defaultProject": "mempool"
+  }
 }

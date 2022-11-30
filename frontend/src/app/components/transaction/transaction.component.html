@@ -3,7 +3,7 @@
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]" [state]="{ data: rbfTransaction.size ? rbfTransaction : null }">
+      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]">
         <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
         <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
       </a>
@@ -156,7 +156,20 @@
             </tr>
           </thead>
           <tbody>
-            <ng-template [ngIf]="cpfpInfo.bestDescendant">
+            <ng-template [ngIf]="cpfpInfo?.descendants?.length">
+              <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
+                <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
+                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
+                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
+                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
+                  </a>
+                </td>
+                <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
+                <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td class="d-none d-lg-table-cell"><fa-icon  *ngIf="roundToOneDecimal(cpfpTx) > roundToOneDecimal(tx)"  class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
+              </tr>
+            </ng-template>
+            <ng-template [ngIf]="cpfpInfo?.bestDescendant">
               <tr>
                 <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
                 <td>
@@ -170,7 +183,7 @@
                 <td class="d-none d-lg-table-cell"><fa-icon class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
-            <ng-template [ngIf]="cpfpInfo.ancestors.length">
+            <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
                 <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
                   <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
@@ -204,11 +217,12 @@
           <tx-bowtie-graph
             [tx]="tx"
             [width]="graphWidth"
-            [height]="graphExpanded ? (maxInOut * 15) : graphHeight"
+            [height]="graphHeight"
             [lineLimit]="inOutLimit"
             [maxStrands]="graphExpanded ? maxInOut : 24"
             [network]="network"
             [tooltip]="true"
+            [connectors]="true"
             [inputIndex]="inputIndex" [outputIndex]="outputIndex"
           >
           </tx-bowtie-graph>
@@ -467,11 +481,11 @@
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx.status.confirmed">
             &nbsp;
-            <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo.bestDescendant && !cpfpInfo.ancestors.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
+            <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo?.descendants?.length && !cpfpInfo?.bestDescendant && !cpfpInfo?.ancestors?.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="cpfpInfo && (cpfpInfo.bestDescendant || cpfpInfo.ancestors.length)">
+      <tr *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">

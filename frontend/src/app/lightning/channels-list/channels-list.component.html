@@ -1,11 +1,11 @@
 <div *ngIf="channels$ | async as response; else skeleton" style="position: relative;">
   <form [formGroup]="channelStatusForm" class="formRadioGroup">
-    <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="status">
-      <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'open'" fragment="open"><span i18n="open">Open</span>
+    <div class="btn-group btn-group-toggle" name="radioBasic">
+      <label class="btn btn-primary btn-sm" [class.active]="channelStatusForm.get('status').value === 'open'">
+        <input type="radio" [value]="'open'" fragment="open" formControlName="status"><span i18n="open">Open</span>
       </label>
-      <label ngbButtonLabel class="btn-primary btn-sm">
-        <input ngbButton type="radio" [value]="'closed'" fragment="closed"><span i18n="closed">Closed</span>
+      <label class="btn btn-primary btn-sm" [class.active]="channelStatusForm.get('status').value === 'closed'">
+        <input type="radio" [value]="'closed'" fragment="closed" formControlName="status"><span i18n="closed">Closed</span>
       </label>
     </div>
   </form>

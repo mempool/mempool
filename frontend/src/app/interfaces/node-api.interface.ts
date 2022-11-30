@@ -22,7 +22,9 @@ interface BestDescendant {
 
 export interface CpfpInfo {
   ancestors: Ancestor[];
-  bestDescendant: BestDescendant | null;
+  descendants?: Ancestor[];
+  bestDescendant?: BestDescendant | null;
+  effectiveFeePerVsize?: number;
 }
 
 export interface DifficultyAdjustment {
@@ -141,7 +143,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
 }
 
 export interface RewardStats {
@@ -150,6 +152,11 @@ export interface RewardStats {
   totalReward: number;
   totalFee: number;
   totalTx: number;
+}
+
+export interface AuditScore {
+  hash: string;
+  matchRate?: number;
 }
 
 export interface ITopNodesPerChannels {

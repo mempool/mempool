@@ -1,5 +1,5 @@
 <div class="bowtie-graph">
-  <svg *ngIf="inputs && outputs" class="bowtie" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
+  <svg *ngIf="inputs && outputs" class="bowtie" [class.rtl]="dir === 'rtl'" [attr.height]="(height + 10) + 'px'" [attr.width]="width + 'px'">
     <defs>
       <marker id="input-arrow" viewBox="-5 -5 10 10"
           refX="0" refY="0"
@@ -21,6 +21,15 @@
           markerWidth="1.5" markerHeight="1"
           orient="auto">
       </marker>
+      <radialGradient id="gradient0" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[0]" />
+      </radialGradient>
+      <radialGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[1]" />
+      </radialGradient>
+      <radialGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+        <stop [attr.stop-color]="gradient[2]" />
+      </radialGradient>
       <linearGradient id="input-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" [attr.stop-color]="gradient[0]" />
         <stop offset="100%" [attr.stop-color]="gradient[1]" />
@@ -28,6 +37,14 @@
       <linearGradient id="output-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" [attr.stop-color]="gradient[1]" />
         <stop offset="100%" [attr.stop-color]="gradient[0]" />
+      </linearGradient>
+      <linearGradient id="input-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" [attr.stop-color]="gradient[2]" />
+        <stop offset="80%" [attr.stop-color]="gradient[0]" />
+      </linearGradient>
+      <linearGradient id="output-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="20%" [attr.stop-color]="gradient[0]" />
+        <stop offset="100%" [attr.stop-color]="gradient[2]" />
       </linearGradient>
       <linearGradient id="input-hover-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" [attr.stop-color]="gradient[0]" />
@@ -40,6 +57,14 @@
         <stop offset="70%" stop-color="white" />
         <stop offset="98%" [attr.stop-color]="gradient[0]" />
         <stop offset="100%" [attr.stop-color]="gradient[0]" />
+      </linearGradient>
+      <linearGradient id="input-hover-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="white" />
+        <stop offset="80%" [attr.stop-color]="gradient[0]" />
+      </linearGradient>
+      <linearGradient id="output-hover-connector-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="20%" [attr.stop-color]="gradient[0]" />
+        <stop offset="100%" stop-color="white" />
       </linearGradient>
       <linearGradient id="input-highlight-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" [attr.stop-color]="gradient[0]" />
@@ -65,6 +90,22 @@
     </defs>
     <path [attr.d]="middle.path" class="line middle" [style]="middle.style"/>
     <ng-container *ngFor="let input of inputs; let i = index">
+      <path *ngIf="connectors && !inputData[i].coinbase && !inputData[i].pegin"
+        [attr.d]="input.connectorPath"
+        class="input connector {{input.class}}"
+        [class.highlight]="inputData[i].index === inputIndex"
+        (pointerover)="onHover($event, 'input-connector', i);"
+        (pointerout)="onBlur($event, 'input-connector', i);"
+        (click)="onClick($event, 'input-connector', inputData[i].index);"
+      />
+      <path
+        [attr.d]="input.markerPath"
+        class="input marker-target {{input.class}}"
+        [class.highlight]="inputData[i].index === inputIndex"
+        (pointerover)="onHover($event, 'input', i);"
+        (pointerout)="onBlur($event, 'input', i);"
+        (click)="onClick($event, 'input', inputData[i].index);"
+      />
       <path
         [attr.d]="input.path"
         class="line {{input.class}}"
@@ -77,12 +118,38 @@
       />
     </ng-container>
     <ng-container *ngFor="let output of outputs; let i = index">
-      <path
+      <path *ngIf="connectors && outspends[outputData[i].index]?.spent"
+        [attr.d]="output.connectorPath"
+        class="output connector {{output.class}}"
+        [class.highlight]="outputData[i].index === outputIndex"
+        (pointerover)="onHover($event, 'output-connector', i);"
+        (pointerout)="onBlur($event, 'output-connector', i);"
+        (click)="onClick($event, 'output-connector', outputData[i].index);"
+      />
+      <path *ngIf="!output.zeroValue"
+        [attr.d]="output.markerPath"
+        class="output marker-target {{output.class}}"
+        [class.highlight]="outputData[i].index === outputIndex"
+        (pointerover)="onHover($event, 'output', i);"
+        (pointerout)="onBlur($event, 'output', i);"
+        (click)="onClick($event, 'output', outputData[i].index);"
+      />
+      <path *ngIf="!output.zeroValue"
         [attr.d]="output.path"
         class="line {{output.class}}"
         [class.highlight]="outputIndex != null && outputData[i].index === outputIndex"
         [style]="output.style"
         attr.marker-start="url(#{{output.class}}-arrow)"
+        (pointerover)="onHover($event, 'output', i);"
+        (pointerout)="onBlur($event, 'output', i);"
+        (click)="onClick($event, 'output', outputData[i].index);"
+      />
+      <path *ngIf="output.zeroValue"
+        [attr.d]="output.path"
+        class="line {{output.class}} zerovalue"
+        [class.highlight]="outputIndex != null && outputData[i].index === outputIndex"
+        [class.zerovalue]="output.zeroValue"
+        [style]="output.style"
         (pointerover)="onHover($event, 'output', i);"
         (pointerout)="onBlur($event, 'output', i);"
         (click)="onClick($event, 'output', outputData[i].index);"
@@ -94,5 +161,6 @@
     *ngIf=[tooltip]
     [line]="hoverLine"
     [cursorPosition]="tooltipPosition"
+    [isConnector]="hoverConnector"
   ></app-tx-bowtie-graph-tooltip>
 </div>

@@ -393,6 +393,36 @@ class BlocksRepository {
   }
 
   /**
+   * Get the first block at or directly after a given timestamp
+   * @param timestamp number unix time in seconds
+   * @returns The height and timestamp of a block (timestamp might vary from given timestamp)
+   */
+  public async $getBlockHeightFromTimestamp(
+    timestamp: number,
+  ): Promise<{ height: number; hash: string; timestamp: number }> {
+    try {
+      // Get first block at or after the given timestamp
+      const query = `SELECT height, hash, blockTimestamp as timestamp FROM blocks
+        WHERE blockTimestamp <= FROM_UNIXTIME(?)
+        ORDER BY blockTimestamp DESC
+        LIMIT 1`;
+      const params = [timestamp];
+      const [rows]: any[][] = await DB.query(query, params);
+      if (rows.length === 0) {
+        throw new Error(`No block was found before timestamp ${timestamp}`);
+      }
+
+      return rows[0];
+    } catch (e) {
+      logger.err(
+        'Cannot get block height from timestamp from the db. Reason: ' +
+          (e instanceof Error ? e.message : e),
+      );
+      throw e;
+    }
+  }
+
+  /**
    * Return blocks height
    */
    public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
@@ -630,6 +660,23 @@ class BlocksRepository {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
+  }
+
+  /**
+   * Get a list of blocks that have not had CPFP data indexed
+   */
+   public async $getCPFPUnindexedBlocks(): Promise<any[]> {
+    try {
+      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks WHERE cpfp_indexed = 0 ORDER BY height DESC`);
+      return rows;
+    } catch (e) {
+      logger.err('Cannot fetch CPFP unindexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $setCPFPIndexed(hash: string): Promise<void> {
+    await DB.query(`UPDATE blocks SET cpfp_indexed = 1 WHERE hash = ?`, [hash]);
   }
 
   /**

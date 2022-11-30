@@ -3,17 +3,18 @@ import { FastVertexArray } from './fast-vertex-array';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
 import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import BlockScene from './block-scene';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
 
 const feeColors = mempoolFeeColors.map(hexToColor);
-const auditFeeColors = feeColors.map((color) => desaturate(color, 0.3));
+const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
 const auditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
-  added: hexToColor('03E1E5'),
-  selected: darken(desaturate(hexToColor('039BE5'), 0.3), 0.7),
+  added: hexToColor('0099ff'),
+  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
 }
 
 // convert from this class's update format to TxSprite's update format
@@ -34,7 +35,8 @@ export default class TxView implements TransactionStripped {
   vsize: number;
   value: number;
   feerate: number;
-  status?: 'found' | 'missing' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  context?: 'projected' | 'actual';
 
   initialised: boolean;
   vertexArray: FastVertexArray;
@@ -48,6 +50,7 @@ export default class TxView implements TransactionStripped {
   dirty: boolean;
 
   constructor(tx: TransactionStripped, vertexArray: FastVertexArray) {
+    this.context = tx.context;
     this.txid = tx.txid;
     this.fee = tx.fee;
     this.vsize = tx.vsize;
@@ -159,12 +162,18 @@ export default class TxView implements TransactionStripped {
         return auditColors.censored;
       case 'missing':
         return auditColors.missing;
+      case 'fresh':
+        return auditColors.missing;
       case 'added':
         return auditColors.added;
       case 'selected':
         return auditColors.selected;
       case 'found':
-        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
+        if (this.context === 'projected') {
+          return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
+        } else {
+          return feeLevelColor;
+        }
       default:
         return feeLevelColor;
     }

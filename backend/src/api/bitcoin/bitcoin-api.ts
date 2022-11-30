@@ -57,6 +57,11 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getTransactionHex(txId: string): Promise<string> {
+    return this.$getRawTransaction(txId, true)
+      .then((tx) => tx.hex || '');
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return this.bitcoindClient.getChainTips()
       .then((result: IBitcoinApi.ChainTips[]) => {
@@ -76,7 +81,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
-  $getRawBlock(hash: string): Promise<string> {
+  $getRawBlock(hash: string): Promise<Buffer> {
     return this.bitcoindClient.getBlock(hash, 0)
       .then((raw: string) => Buffer.from(raw, "hex"));
   }

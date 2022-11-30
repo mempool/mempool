@@ -6,6 +6,7 @@ import DB from '../../../database';
 import logger from '../../../logger';
 import { ResultSetHeader } from 'mysql2';
 import * as IPCheck from '../../../utils/ipcheck.js';
+import { Reader } from 'mmdb-lib';
 
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
@@ -18,7 +19,10 @@ export async function $lookupNodeLocation(): Promise<void> {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
     const lookupAsn = await maxmind.open<AsnResponse>(config.MAXMIND.GEOLITE2_ASN);
-    const lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
+    let lookupIsp: Reader<IspResponse> | null = null;
+    try {
+      lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
+    } catch (e) { }
 
     for (const node of nodes) {
       const sockets: string[] = node.sockets.split(',');
@@ -29,7 +33,10 @@ export async function $lookupNodeLocation(): Promise<void> {
         if (hasClearnet && ip !== '127.0.1.1' && ip !== '127.0.0.1') {
           const city = lookupCity.get(ip);
           const asn = lookupAsn.get(ip);
-          const isp = lookupIsp.get(ip);
+          let isp: IspResponse | null = null;
+          if (lookupIsp) {
+            isp = lookupIsp.get(ip);
+          }
 
           let asOverwrite: any | undefined;
           if (asn && (IPCheck.match(ip, '170.75.160.0/20') || IPCheck.match(ip, '172.81.176.0/21'))) {

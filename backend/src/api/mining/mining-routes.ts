@@ -1,6 +1,7 @@
 import { Application, Request, Response } from 'express';
 import config from "../../config";
 import logger from '../../logger';
+import audits from '../audit';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
@@ -26,7 +27,11 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores', this.$getBlockAuditScores)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores/:height', this.$getBlockAuditScores)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/score/:hash', this.$getBlockAuditScore)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
     ;
   }
 
@@ -248,6 +253,55 @@ class MiningRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getHeightFromTimestamp(req: Request, res: Response) {
+    try {
+      const timestamp = parseInt(req.params.timestamp, 10);
+      // This will prevent people from entering milliseconds etc.
+      // Block timestamps are allowed to be up to 2 hours off, so 24 hours
+      // will never put the maximum value before the most recent block
+      const nowPlus1day = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+      // Prevent non-integers that are not seconds
+      if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp > nowPlus1day) {
+        throw new Error(`Invalid timestamp, value must be Unix seconds`);
+      }
+      const result = await BlocksRepository.$getBlockHeightFromTimestamp(
+        timestamp,
+      );
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getBlockAuditScores(req: Request, res: Response) {
+    try {
+      let height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      if (height == null) {
+        height = await BlocksRepository.$mostRecentBlockHeight();
+      }
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(await BlocksAuditsRepository.$getBlockAuditScores(height, height - 15));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  public async $getBlockAuditScore(req: Request, res: Response) {
+    try {
+      const audit = await BlocksAuditsRepository.$getBlockAuditScore(req.params.hash);
+
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
+      res.json(audit || 'null');
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

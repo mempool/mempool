@@ -20,6 +20,11 @@ class ElectrsApi implements AbstractBitcoinApi {
       .then((response) => response.data);
   }
 
+  $getTransactionHex(txId: string): Promise<string> {
+    return axios.get<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex', this.axiosConfig)
+      .then((response) => response.data);
+  }
+
   $getBlockHeightTip(): Promise<number> {
     return axios.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height', this.axiosConfig)
       .then((response) => response.data);
@@ -50,9 +55,9 @@ class ElectrsApi implements AbstractBitcoinApi {
       .then((response) => response.data);
   }
 
-  $getRawBlock(hash: string): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", this.axiosConfig)
-      .then((response) => response.data);
+  $getRawBlock(hash: string): Promise<Buffer> {
+    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", { ...this.axiosConfig, responseType: 'arraybuffer' })
+      .then((response) => { return Buffer.from(response.data); });
   }
 
   $getAddress(address: string): Promise<IEsploraApi.Address> {
