@@ -23,7 +23,14 @@ class KrakenApi implements PriceFeed {
 
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
-    return response ? parseInt(response['result'][this.getTicker(currency)]['c'][0], 10) : -1;
+    const ticker = this.getTicker(currency);
+    if (response && response['result'] && response['result'][ticker] &&
+      response['result'][ticker]['c'] && response['result'][ticker]['c'].length > 0
+    ) {
+      return parseInt(response['result'][ticker]['c'][0], 10);
+    } else {
+      return -1;
+    }
   }
 
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {
