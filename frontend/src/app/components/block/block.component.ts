@@ -154,9 +154,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
-          if (this.blockHeight < this.stateService.env.BLOCK_AUDIT_START_HEIGHT) {
-            this.auditDataMissing = true;
-          }
+          this.updateAuditDataMissingFromBlockHeight(this.blockHeight);
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
@@ -218,9 +216,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             this.apiService.getBlockAudit$(block.previousblockhash);
           }, 100);
         }
-        if (block.height < this.stateService.env.BLOCK_AUDIT_START_HEIGHT) {
-          this.auditDataMissing = true;
-        }
+        this.updateAuditDataMissingFromBlockHeight(block.height);
         this.block = block;
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
@@ -588,6 +584,25 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.hoverTx = txid;
     } else {
       this.hoverTx = null;
+    }
+  }
+
+  updateAuditDataMissingFromBlockHeight(blockHeight: number): void {
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
+        break;
+      case 'signet':
+        if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
+        break;
+      default:
+        if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
     }
   }
 }

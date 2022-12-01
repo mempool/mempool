@@ -39,7 +39,9 @@ export interface Env {
   BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
   LIGHTNING: boolean;
-  BLOCK_AUDIT_START_HEIGHT: number;
+  MAINNET_BLOCK_AUDIT_START_HEIGHT: number;
+  TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
+  SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
 }
 
 const defaultEnv: Env = {
@@ -65,7 +67,9 @@ const defaultEnv: Env = {
   'BISQ_WEBSITE_URL': 'https://bisq.markets',
   'MINING_DASHBOARD': true,
   'LIGHTNING': false,
-  'BLOCK_AUDIT_START_HEIGHT': 0,
+  'MAINNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
 };
 
 @Injectable({
