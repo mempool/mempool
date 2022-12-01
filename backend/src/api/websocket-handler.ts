@@ -439,7 +439,7 @@ class WebsocketHandler {
         };
       }) : [];
 
-      BlocksSummariesRepository.$saveSummary({
+      await BlocksSummariesRepository.$saveSummary({
         height: block.height,
         template: {
           id: block.id,
@@ -447,7 +447,7 @@ class WebsocketHandler {
         }
       });
 
-      BlocksAuditsRepository.$saveAudit({
+      await BlocksAuditsRepository.$saveAudit({
         time: block.timestamp,
         height: block.height,
         hash: block.id,

@@ -34,7 +34,7 @@ class BlocksSummariesRepository {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block summary for ${blockId} because it has already been indexed, ignoring`);
       } else {
-        logger.debug(`Cannot save block summary for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Cannot save block summary for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
         throw e;
       }
     }
