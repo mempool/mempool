@@ -14,7 +14,7 @@ export async function $lookupNodeLocation(): Promise<void> {
   let nodesUpdated = 0;
   let geoNamesInserted = 0;
 
-  logger.info(`Running node location updater using Maxmind`);
+  logger.debug(`Running node location updater using Maxmind`, logger.tags.ln);
   try {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
@@ -152,8 +152,8 @@ export async function $lookupNodeLocation(): Promise<void> {
 
           ++progress;
           const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-          if (elapsedSeconds > 10) {
-            logger.info(`Updating node location data ${progress}/${nodes.length}`);
+          if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+            logger.debug(`Updating node location data ${progress}/${nodes.length}`);
             loggerTimer = new Date().getTime() / 1000;
           }
         }
@@ -161,9 +161,7 @@ export async function $lookupNodeLocation(): Promise<void> {
     }
 
     if (nodesUpdated > 0) {
-      logger.info(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`);
-    } else {
-      logger.debug(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`);
+      logger.debug(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`, logger.tags.ln);
     }
   } catch (e) {
     logger.err('$lookupNodeLocation() error: ' + (e instanceof Error ? e.message : e));

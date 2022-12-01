@@ -296,7 +296,7 @@ class Blocks {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
           const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
-          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
         }
@@ -309,12 +309,12 @@ class Blocks {
         newlyIndexed++;
       }
       if (newlyIndexed > 0) {
-        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       } else {
-        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       }
     } catch (e) {
-      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
   }
@@ -385,7 +385,7 @@ class Blocks {
 
       const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
+      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`, logger.tags.mining);
       loadingIndicators.setProgress('block-indexing', 0);
 
       const chunkSize = 10000;
@@ -405,7 +405,7 @@ class Blocks {
           continue;
         }
 
-        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
+        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`, logger.tags.mining);
 
         for (const blockHeight of missingBlockHeights) {
           if (blockHeight < lastBlockToIndex) {
@@ -418,7 +418,7 @@ class Blocks {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
             loadingIndicators.setProgress('block-indexing', progress, false);
@@ -435,13 +435,13 @@ class Blocks {
         currentBlockHeight -= chunkSize;
       }
       if (newlyIndexed > 0) {
-        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       } else {
-        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       }
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
-      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       loadingIndicators.setProgress('block-indexing', 100);
       throw e;
     }
@@ -537,7 +537,7 @@ class Blocks {
               priceId: lastestPriceId,
             }]);
           } else {
-            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`)
+            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
             setTimeout(() => {
               indexer.runSingleTask('blocksPrices');
             }, 10000);
