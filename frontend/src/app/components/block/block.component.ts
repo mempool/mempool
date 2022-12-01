@@ -142,6 +142,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
+          this.updateAuditDataMissingFromBlockHeight(this.blockHeight);
         }
 
         let isBlockHeight = false;
