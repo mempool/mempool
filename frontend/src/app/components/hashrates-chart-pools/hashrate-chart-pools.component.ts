@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { poolsColor } from '../../app.constants';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
@@ -30,7 +30,7 @@ export class HashrateChartPoolsComponent implements OnInit {
   @Input() left: number | string = 25;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -48,7 +48,7 @@ export class HashrateChartPoolsComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
     private miningService: MiningService,

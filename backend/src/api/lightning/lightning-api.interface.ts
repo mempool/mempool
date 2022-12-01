@@ -83,4 +83,10 @@ export namespace ILightningApi {
     is_required: boolean;
     is_known: boolean;
   }
+
+  export interface ForensicOutput {
+    node?: 1 | 2;
+    type: number;
+    value: number;
+  }
 }

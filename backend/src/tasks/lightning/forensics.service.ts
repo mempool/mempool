@@ -5,13 +5,16 @@ import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
 import config from '../../config';
 import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { Common } from '../../api/common';
+import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 
 const throttleDelay = 20; //ms
+const tempCacheSize = 10000;
 
 class ForensicsService {
   loggerTimer = 0;
   closedChannelsScanBlock = 0;
   txCache: { [txid: string]: IEsploraApi.Transaction } = {};
+  tempCached: string[] = [];
 
   constructor() {}
 
@@ -29,6 +32,7 @@ class ForensicsService {
 
       if (config.MEMPOOL.BACKEND === 'esplora') {
         await this.$runClosedChannelsForensics(false);
+        await this.$runOpenedChannelsForensics();
       }
 
     } catch (e) {
@@ -95,16 +99,9 @@ class ForensicsService {
           const lightningScriptReasons: number[] = [];
           for (const outspend of outspends) {
             if (outspend.spent && outspend.txid) {
-              let spendingTx: IEsploraApi.Transaction | undefined = this.txCache[outspend.txid];
+              let spendingTx = await this.fetchTransaction(outspend.txid);
               if (!spendingTx) {
-                try {
-                  spendingTx = await bitcoinApi.$getRawTransaction(outspend.txid);
-                  await Common.sleep$(throttleDelay);
-                  this.txCache[outspend.txid] = spendingTx;
-                } catch (e) {
-                  logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
-                  continue;
-                }
+                continue;
               }
               cached.push(spendingTx.txid);
               const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
@@ -124,16 +121,9 @@ class ForensicsService {
               We can detect a commitment transaction (force close) by reading Sequence and Locktime
               https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
             */
-            let closingTx: IEsploraApi.Transaction | undefined = this.txCache[channel.closing_transaction_id];
+            let closingTx = await this.fetchTransaction(channel.closing_transaction_id, true);
             if (!closingTx) {
-              try {
-                closingTx = await bitcoinApi.$getRawTransaction(channel.closing_transaction_id);
-                await Common.sleep$(throttleDelay);
-                this.txCache[channel.closing_transaction_id] = closingTx;
-              } catch (e) {
-                logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id}. Reason ${e instanceof Error ? e.message : e}`);
-                continue;
-              }
+              continue;
             }
             cached.push(closingTx.txid);
             const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
@@ -174,7 +164,7 @@ class ForensicsService {
   }
 
   private findLightningScript(vin: IEsploraApi.Vin): number {
-    const topElement = vin.witness[vin.witness.length - 2];
+    const topElement = vin.witness?.length > 2 ? vin.witness[vin.witness.length - 2] : null;
       if (/^OP_IF OP_PUSHBYTES_33 \w{66} OP_ELSE OP_PUSH(NUM_\d+|BYTES_(1 \w{2}|2 \w{4})) OP_CSV OP_DROP OP_PUSHBYTES_33 \w{66} OP_ENDIF OP_CHECKSIG$/.test(vin.inner_witnessscript_asm)) {
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction-outputs
         if (topElement === '01') {
@@ -193,7 +183,7 @@ class ForensicsService {
       ) {
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#offered-htlc-outputs
         // https://github.com/lightning/bolts/blob/master/03-transactions.md#received-htlc-outputs
-        if (topElement.length === 66) {
+        if (topElement?.length === 66) {
           // top element is a public key
           // 'Revoked Lightning HTLC'; Penalty force closed
           return 4;
@@ -219,6 +209,249 @@ class ForensicsService {
         }
       }
       return 1;
+  }
+
+  // If a channel open tx spends funds from a another channel transaction,
+  // we can attribute that output to a specific counterparty
+  private async $runOpenedChannelsForensics(): Promise<void> {
+    const runTimer = Date.now();
+    let progress = 0;
+
+    try {
+      logger.info(`Started running open channel forensics...`);
+      const channels = await channelsApi.$getChannelsWithoutSourceChecked();
+
+      for (const openChannel of channels) {
+        let openTx = await this.fetchTransaction(openChannel.transaction_id, true);
+        if (!openTx) {
+          continue;
+        }
+        for (const input of openTx.vin) {
+          const closeChannel = await channelsApi.$getChannelByClosingId(input.txid);
+          if (closeChannel) {
+            // this input directly spends a channel close output
+            await this.$attributeChannelBalances(closeChannel, openChannel, input);
+          } else {
+            const prevOpenChannels = await channelsApi.$getChannelsByOpeningId(input.txid);
+            if (prevOpenChannels?.length) {
+              // this input spends a channel open change output
+              for (const prevOpenChannel of prevOpenChannels) {
+                await this.$attributeChannelBalances(prevOpenChannel, openChannel, input, null, null, true);
+              }
+            } else {
+              // check if this input spends any swept channel close outputs
+              await this.$attributeSweptChannelCloses(openChannel, input);
+            }
+          }
+        }
+        // calculate how much of the total input value is attributable to the channel open output
+        openChannel.funding_ratio = openTx.vout[openChannel.transaction_vout].value / ((openTx.vout.reduce((sum, v) => sum + v.value, 0) || 1) + openTx.fee);
+        // save changes to the opening channel, and mark it as checked
+        if (openTx?.vin?.length === 1) {
+          openChannel.single_funded = true;
+        }
+        if (openChannel.node1_funding_balance || openChannel.node2_funding_balance || openChannel.node1_closing_balance || openChannel.node2_closing_balance || openChannel.closed_by) {
+          await channelsApi.$updateOpeningInfo(openChannel);
+        }
+        await channelsApi.$markChannelSourceChecked(openChannel.id);
+
+        ++progress;
+        const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
+        if (elapsedSeconds > 10) {
+          logger.info(`Updating opened channel forensics ${progress}/${channels?.length}`);
+          this.loggerTimer = new Date().getTime() / 1000;
+          this.truncateTempCache();
+        }
+        if (Date.now() - runTimer > (config.LIGHTNING.FORENSICS_INTERVAL * 1000)) {
+          break;
+        }
+      }
+
+      logger.info(`Open channels forensics scan complete.`);
+    } catch (e) {
+      logger.err('$runOpenedChannelsForensics() error: ' + (e instanceof Error ? e.message : e));
+    } finally {
+      this.clearTempCache();
+    }
+  }
+
+  // Check if a channel open tx input spends the result of a swept channel close output
+  private async $attributeSweptChannelCloses(openChannel: ILightningApi.Channel, input: IEsploraApi.Vin): Promise<void> {
+    let sweepTx = await this.fetchTransaction(input.txid, true);
+    if (!sweepTx) {
+      logger.err(`couldn't find input transaction for channel forensics ${openChannel.channel_id} ${input.txid}`);
+      return;
+    }
+    const openContribution = sweepTx.vout[input.vout].value;
+    for (const sweepInput of sweepTx.vin) {
+      const lnScriptType = this.findLightningScript(sweepInput);
+      if (lnScriptType > 1) {
+        const closeChannel = await channelsApi.$getChannelByClosingId(sweepInput.txid);
+        if (closeChannel) {
+          const initiator = (lnScriptType === 2 || lnScriptType === 4) ? 'remote' : (lnScriptType === 3 ? 'local' : null);
+          await this.$attributeChannelBalances(closeChannel, openChannel, sweepInput, openContribution, initiator);
+        }
+      }
+    }
+  }
+
+  private async $attributeChannelBalances(
+    prevChannel, openChannel, input: IEsploraApi.Vin, openContribution: number | null = null,
+    initiator: 'remote' | 'local' | null = null, linkedOpenings: boolean = false
+  ): Promise<void> {
+    // figure out which node controls the input/output
+    let openSide;
+    let prevLocal;
+    let prevRemote;
+    let matched = false;
+    let ambiguous = false; // if counterparties are the same in both channels, we can't tell them apart
+    if (openChannel.node1_public_key === prevChannel.node1_public_key) {
+      openSide = 1;
+      prevLocal = 1;
+      prevRemote = 2;
+      matched = true;
+    } else if (openChannel.node1_public_key === prevChannel.node2_public_key) {
+      openSide = 1;
+      prevLocal = 2;
+      prevRemote = 1;
+      matched = true;
+    }
+    if (openChannel.node2_public_key === prevChannel.node1_public_key) {
+      openSide = 2;
+      prevLocal = 1;
+      prevRemote = 2;
+      if (matched) {
+        ambiguous = true;
+      }
+      matched = true;
+    } else if (openChannel.node2_public_key === prevChannel.node2_public_key) {
+      openSide = 2;
+      prevLocal = 2;
+      prevRemote = 1;
+      if (matched) {
+        ambiguous = true;
+      }
+      matched = true;
+    }
+
+    if (matched && !ambiguous) {
+      // fetch closing channel transaction and perform forensics on the outputs
+      let prevChannelTx = await this.fetchTransaction(input.txid, true);
+      let outspends: IEsploraApi.Outspend[] | undefined;
+      try {
+        outspends = await bitcoinApi.$getOutspends(input.txid);
+        await Common.sleep$(throttleDelay);
+      } catch (e) {
+        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + input.txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+      }
+      if (!outspends || !prevChannelTx) {
+        return;
+      }
+      if (!linkedOpenings) {
+        if (!prevChannel.outputs || !prevChannel.outputs.length) {
+          prevChannel.outputs = prevChannelTx.vout.map(vout => {
+            return {
+              type: 0,
+              value: vout.value,
+            };
+          });
+        }
+        for (let i = 0; i < outspends?.length; i++) {
+          const outspend = outspends[i];
+          const output = prevChannel.outputs[i];
+          if (outspend.spent && outspend.txid) {
+            try {
+              const spendingTx = await this.fetchTransaction(outspend.txid, true);
+              if (spendingTx) {
+                output.type = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
+              }
+            } catch (e) {
+              logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
+            }
+          } else {
+            output.type = 0;
+          }
+        }
+
+        // attribute outputs to each counterparty, and sum up total known balances
+        prevChannel.outputs[input.vout].node = prevLocal;
+        const isPenalty = prevChannel.outputs.filter((out) => out.type === 2 || out.type === 4)?.length > 0;
+        const normalOutput = [1,3].includes(prevChannel.outputs[input.vout].type);
+        const mutualClose = ((prevChannel.status === 2 || prevChannel.status === 'closed') && prevChannel.closing_reason === 1);
+        let localClosingBalance = 0;
+        let remoteClosingBalance = 0;
+        for (const output of prevChannel.outputs) {
+          if (isPenalty) {
+            // penalty close, so local node takes everything
+            localClosingBalance += output.value;
+          } else if (output.node) {
+            // this output determinstically linked to one of the counterparties
+            if (output.node === prevLocal) {
+              localClosingBalance += output.value;
+            } else {
+              remoteClosingBalance += output.value;
+            }
+          } else if (normalOutput && (output.type === 1 || output.type === 3 || (mutualClose && prevChannel.outputs.length === 2))) {
+            // local node had one main output, therefore remote node takes the other
+            remoteClosingBalance += output.value;
+          }
+        }
+        prevChannel[`node${prevLocal}_closing_balance`] = localClosingBalance;
+        prevChannel[`node${prevRemote}_closing_balance`] = remoteClosingBalance;
+        prevChannel.closing_fee = prevChannelTx.fee;
+
+        if (initiator && !linkedOpenings) {
+          const initiatorSide = initiator === 'remote' ? prevRemote : prevLocal;
+          prevChannel.closed_by = prevChannel[`node${initiatorSide}_public_key`];
+        }
+  
+        // save changes to the closing channel
+        await channelsApi.$updateClosingInfo(prevChannel);
+      } else {
+        if (prevChannelTx.vin.length <= 1) {
+          prevChannel[`node${prevLocal}_funding_balance`] = prevChannel.capacity;
+          prevChannel.single_funded = true;
+          prevChannel.funding_ratio = 1;
+          // save changes to the closing channel
+          await channelsApi.$updateOpeningInfo(prevChannel);
+        }
+      }
+      openChannel[`node${openSide}_funding_balance`] = openChannel[`node${openSide}_funding_balance`] + (openContribution || prevChannelTx?.vout[input.vout]?.value || 0);
+    }
+  }
+
+  async fetchTransaction(txid: string, temp: boolean = false): Promise<IEsploraApi.Transaction | null> {
+    let tx = this.txCache[txid];
+    if (!tx) {
+      try {
+        tx = await bitcoinApi.$getRawTransaction(txid);
+        this.txCache[txid] = tx;
+        if (temp) {
+          this.tempCached.push(txid);
+        }
+        await Common.sleep$(throttleDelay);
+      } catch (e) {
+        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+        return null;
+      }
+    }
+    return tx;
+  }
+
+  clearTempCache(): void {
+    for (const txid of this.tempCached) {
+      delete this.txCache[txid];
+    }
+    this.tempCached = [];
+  }
+
+  truncateTempCache(): void {
+    if (this.tempCached.length > tempCacheSize) {
+      const removed = this.tempCached.splice(0, this.tempCached.length - tempCacheSize);
+      for (const txid of removed) {
+        delete this.txCache[txid];
+      }
+    }
   }
 }
 

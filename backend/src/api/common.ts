@@ -187,6 +187,13 @@ export class Common {
     );
   }
 
+  static cpfpIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.TRANSACTION_INDEXING === true
+    );
+  }
+
   static setDateMidnight(date: Date): void {
     date.setUTCHours(0);
     date.setUTCMinutes(0);
