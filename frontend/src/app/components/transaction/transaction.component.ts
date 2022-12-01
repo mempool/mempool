@@ -7,10 +7,11 @@ import {
   catchError,
   retryWhen,
   delay,
-  map
+  map,
+  mergeMap
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
@@ -110,11 +111,24 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         switchMap((txId) =>
           this.apiService
             .getCpfpinfo$(txId)
-            .pipe(retryWhen((errors) => errors.pipe(delay(2000))))
-        )
+            .pipe(retryWhen((errors) => errors.pipe(
+              mergeMap((error) => {
+                if (!this.tx?.status || this.tx.status.confirmed) {
+                  return throwError(error);
+                } else {
+                  return of(null);
+                }
+              }),
+              delay(2000)
+            )))
+        ),
+        catchError(() => {
+          return of(null);
+        })
       )
       .subscribe((cpfpInfo) => {
-        if (!this.tx) {
+        if (!cpfpInfo || !this.tx) {
+          this.cpfpInfo = null;
           return;
         }
         if (cpfpInfo.effectiveFeePerVsize) {
