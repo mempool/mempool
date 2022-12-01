@@ -3,7 +3,7 @@ import { EChartsOption, graphic, LineSeriesOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
@@ -32,7 +32,7 @@ export class NodesNetworksChartComponent implements OnInit {
   @Input() widget = false;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -51,7 +51,7 @@ export class NodesNetworksChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private lightningApiService: LightningApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
     private amountShortenerPipe: AmountShortenerPipe,

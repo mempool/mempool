@@ -171,3 +171,35 @@ h1 {
     margin: auto;
   }
 }
+
+.menu-button {
+  @media (min-width: 768px) {
+    max-width: 150px;
+  }
+}
+
+.block-subtitle {
+  text-align: center;
+}
+
+.nav-tabs {
+  border-color: white;
+  border-width: 1px;
+}
+
+.nav-tabs .nav-link {
+  background: inherit;
+  border-width: 1px;
+  border-bottom: none;
+  border-color: transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+
+  &.active {
+    background: #24273e;
+  }
+
+  &.active, &:hover {
+    border-color: white;
+  }
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { merge, Observable, of, Subject } from 'rxjs';
@@ -19,7 +19,7 @@ import { environment } from '../../../../environments/environment';
 export class AssetsNavComponent implements OnInit {
   @ViewChild('instance', {static: true}) instance: NgbTypeahead;
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   assetsCache: AssetExtended[];
 
   typeaheadSearchFn: ((text: Observable<string>) => Observable<readonly any[]>);
@@ -30,7 +30,7 @@ export class AssetsNavComponent implements OnInit {
   itemsPerPage = 15;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private seoService: SeoService,
     private router: Router,
     private assetsService: AssetsService,

@@ -17,13 +17,14 @@ import logger from '../../logger';
 import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
+import transactionRepository from '../../repositories/TransactionRepository';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', this.getTransactionTimes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', this.$getBatchedOutspends)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.getCpfpInfo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.$getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
@@ -89,6 +90,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/:height', this.getBlocks.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       ;
 
@@ -187,29 +189,36 @@ class BitcoinRoutes {
     }
   }
 
-  private getCpfpInfo(req: Request, res: Response) {
+  private async $getCpfpInfo(req: Request, res: Response) {
     if (!/^[a-fA-F0-9]{64}$/.test(req.params.txId)) {
       res.status(501).send(`Invalid transaction ID.`);
       return;
     }
 
     const tx = mempool.getMempool()[req.params.txId];
-    if (!tx) {
-      res.status(404).send(`Transaction doesn't exist in the mempool.`);
+    if (tx) {
+      if (tx?.cpfpChecked) {
+        res.json({
+          ancestors: tx.ancestors,
+          bestDescendant: tx.bestDescendant || null,
+          descendants: tx.descendants || null,
+          effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+        });
+        return;
+      }
+
+      const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+
+      res.json(cpfpInfo);
       return;
+    } else {
+      const cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      if (cpfpInfo) {
+        res.json(cpfpInfo);
+        return;
+      }
     }
-
-    if (tx.cpfpChecked) {
-      res.json({
-        ancestors: tx.ancestors,
-        bestDescendant: tx.bestDescendant || null,
-      });
-      return;
-    }
-
-    const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
-
-    res.json(cpfpInfo);
+    res.status(404).send(`Transaction has no CPFP info available.`);
   }
 
   private getBackendInfo(req: Request, res: Response) {
@@ -324,6 +333,16 @@ class BitcoinRoutes {
     }
   }
 
+  private async getStrippedBlockTransactions(req: Request, res: Response) {
+    try {
+      const transactions = await blocks.$getStrippedBlockTransactions(req.params.hash);
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+      res.json(transactions);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
   private async getBlock(req: Request, res: Response) {
     try {
       const block = await blocks.$getBlock(req.params.hash);
@@ -356,9 +375,9 @@ class BitcoinRoutes {
     }
   }
 
-  private async getStrippedBlockTransactions(req: Request, res: Response) {
+  private async getBlockAuditSummary(req: Request, res: Response) {
     try {
-      const transactions = await blocks.$getStrippedBlockTransactions(req.params.hash);
+      const transactions = await blocks.$getBlockAuditSummary(req.params.hash);
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
       res.json(transactions);
     } catch (e) {
