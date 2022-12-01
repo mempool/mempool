@@ -14,8 +14,8 @@ class NodesApi {
         nodes.longitude, nodes.latitude,
         geo_names_country.names as country, geo_names_iso.names as isoCode
         FROM nodes
-        LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
-        LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+        JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         WHERE status = 1 AND nodes.as_number IS NOT NULL
         ORDER BY capacity
       `;
