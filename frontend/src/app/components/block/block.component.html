@@ -61,7 +61,7 @@
                   <span *ngIf="blockAudit?.matchRate === null" i18n="unknown">Unknown</span>
                 </td>
               </tr>
-              <ng-container *ngIf="!indexingAvailable && webGlEnabled">
+              <ng-container *ngIf="webGlEnabled && (auditDataMissing || !indexingAvailable)">
                 <tr *ngIf="isMobile && auditEnabled"></tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="mempool-block.fee-span">Fee span</td>
@@ -146,7 +146,7 @@
               <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
-              <ng-container *ngIf="!indexingAvailable && webGlEnabled">
+              <ng-container *ngIf="webGlEnabled && (!indexingAvailable || auditDataMissing)">
                 <tr *ngIf="isMobile && !auditEnabled"></tr>
                 <tr>
                   <td class="td-width" colspan="2"><span class="skeleton-loader"></span></td>
@@ -169,7 +169,7 @@
         </div>
       </ng-template>
       <div class="col-sm">
-        <table class="table table-borderless table-striped" *ngIf="!isLoadingBlock && (indexingAvailable || !webGlEnabled)">
+        <table class="table table-borderless table-striped" *ngIf="!isLoadingBlock && (!auditDataMissing || indexingAvailable && !webGlEnabled)">
           <tbody>
             <tr *ngIf="isMobile && auditEnabled"></tr>
             <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
@@ -233,7 +233,7 @@
             </tr>
           </tbody>
         </table>
-        <table class="table table-borderless table-striped" *ngIf="isLoadingBlock && (indexingAvailable || !webGlEnabled)">
+        <table class="table table-borderless table-striped" *ngIf="isLoadingBlock && !auditDataMissing && (indexingAvailable || !webGlEnabled)">
           <tbody>
             <tr *ngIf="isMobile && !auditEnabled"></tr>
             <tr>
@@ -253,7 +253,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="col-sm chart-container" *ngIf="webGlEnabled && !indexingAvailable">
+        <div class="col-sm chart-container" *ngIf="webGlEnabled && (!indexingAvailable || auditDataMissing)">
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="isLoadingOverview"
@@ -273,7 +273,7 @@
   <br>
 
   <!-- VISUALIZATIONS -->
-  <div class="box" *ngIf="!error && webGlEnabled && indexingAvailable">
+  <div class="box" *ngIf="!error && webGlEnabled && indexingAvailable && !auditDataMissing">
     <div class="nav nav-tabs" *ngIf="isMobile && auditEnabled">
       <a class="nav-link" [class.active]="mode === 'projected'" i18n="block.projected"
         fragment="projected" (click)="changeMode('projected')">Projected</a>

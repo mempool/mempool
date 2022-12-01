@@ -58,6 +58,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   indexingAvailable = false;
   auditEnabled = true;
+  auditDataMissing: boolean;
   isMobile = window.innerWidth <= 767.98;
   hoverTx: string;
   numMissing: number = 0;
@@ -137,6 +138,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.error = undefined;
         this.fees = undefined;
         this.stateService.markBlock$.next({});
+        this.auditDataMissing = false;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -152,6 +154,9 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
+          if (this.blockHeight < this.stateService.env.BLOCK_AUDIT_START_HEIGHT) {
+            this.auditDataMissing = true;
+          }
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
@@ -213,7 +218,9 @@ export class BlockComponent implements OnInit, OnDestroy {
             this.apiService.getBlockAudit$(block.previousblockhash);
           }, 100);
         }
-
+        if (block.height < this.stateService.env.BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
         this.block = block;
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
@@ -363,6 +370,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             this.auditEnabled = true;
           } else {
             this.auditEnabled = false;
+            this.auditDataMissing = true;
           }
           return blockAudit;
         }),
