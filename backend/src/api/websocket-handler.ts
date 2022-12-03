@@ -439,7 +439,7 @@ class WebsocketHandler {
         };
       }) : [];
 
-      BlocksSummariesRepository.$saveSummary({
+      BlocksSummariesRepository.$saveTemplate({
         height: block.height,
         template: {
           id: block.id,
