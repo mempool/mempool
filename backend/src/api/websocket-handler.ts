@@ -468,7 +468,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+      await mempoolBlocks.makeBlockTemplates(_memPool, 8, null, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);
     }
