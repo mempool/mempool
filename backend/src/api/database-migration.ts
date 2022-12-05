@@ -542,7 +542,7 @@ class DatabaseMigration {
   /**
    * Small query execution wrapper to log all executed queries
    */
-  private async $executeQuery(query: string, silent = false): Promise<any> {
+  public async $executeQuery(query: string, silent = false): Promise<any> {
     if (!silent) {
       logger.debug('MIGRATIONS: Execute query:\n' + query);
     }
@@ -552,7 +552,7 @@ class DatabaseMigration {
   /**
    * Check if 'table' exists in the database
    */
-  private async $checkIfTableExists(table: string): Promise<boolean> {
+  public async $checkIfTableExists(table: string): Promise<boolean> {
     const query = `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${config.DATABASE.DATABASE}' AND TABLE_NAME = '${table}'`;
     const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
     return rows[0]['COUNT(*)'] === 1;
@@ -561,7 +561,7 @@ class DatabaseMigration {
   /**
    * Get current database version
    */
-  private async $getSchemaVersionFromDatabase(): Promise<number> {
+  public async $getSchemaVersionFromDatabase(): Promise<number> {
     const query = `SELECT number FROM state WHERE name = 'schema_version';`;
     const [rows] = await this.$executeQuery(query, true);
     return rows[0]['number'];
@@ -642,14 +642,14 @@ class DatabaseMigration {
     return `UPDATE state SET number = ${DatabaseMigration.currentVersion} WHERE name = 'schema_version';`;
   }
 
-  private async updateToSchemaVersion(version): Promise<void> {
+  public async updateToSchemaVersion(version): Promise<void> {
     await this.$executeQuery(`UPDATE state SET number = ${version} WHERE name = 'schema_version';`);
   }
 
   /**
    * Print current database version
    */
-  private async $printDatabaseVersion() {
+  public async $printDatabaseVersion() {
     try {
       const [rows] = await this.$executeQuery('SELECT VERSION() as version;', true);
       logger.debug(`MIGRATIONS: Database engine version '${rows[0].version}'`);

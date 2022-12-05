@@ -31,7 +31,8 @@
     "test": "./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
+    "rollback": "node dist/api/database-migration-rollback.js"
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
