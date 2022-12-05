@@ -109,7 +109,7 @@
     "typescript": "~4.6.4"
   },
   "optionalDependencies": {
-    "@cypress/schematic": "~2.3.0",
+    "@cypress/schematic": "~2.4.0",
     "cypress": "^11.2.0",
     "cypress-fail-on-console-error": "~4.0.2",
     "cypress-wait-until": "^1.7.2",
