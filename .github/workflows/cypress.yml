@@ -40,7 +40,7 @@ jobs:
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
       - name: Chrome browser tests (${{ matrix.module }})
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
