@@ -33,7 +33,6 @@ export class LiquidMasterPageComponent implements OnInit {
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.navigationService.subnetPaths.subscribe((paths) => {
-      console.log('network paths updated...');
       this.networkPaths = paths;
     });
   }

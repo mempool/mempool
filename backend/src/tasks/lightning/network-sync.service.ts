@@ -31,6 +31,7 @@ class NetworkSyncService {
   }
 
   private async $runTasks(): Promise<void> {
+    const taskStartTime = Date.now();
     try {
       logger.info(`Updating nodes and channels`);
 
@@ -57,7 +58,7 @@ class NetworkSyncService {
       logger.err('$runTasks() error: ' + (e instanceof Error ? e.message : e));
     }
 
-    setTimeout(() => { this.$runTasks(); }, 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL);
+    setTimeout(() => { this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
   }
 
   /**
