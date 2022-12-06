@@ -54,11 +54,12 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
       clChannelsDict[clChannel.short_channel_id] = clChannel;
       clChannelsDictCount[clChannel.short_channel_id] = 1;
     } else {
-      consolidatedChannelList.push(
-        await buildFullChannel(clChannel, clChannelsDict[clChannel.short_channel_id])
-      );
-      delete clChannelsDict[clChannel.short_channel_id];
-      clChannelsDictCount[clChannel.short_channel_id]++;
+      const fullChannel = await buildFullChannel(clChannel, clChannelsDict[clChannel.short_channel_id]);
+      if (fullChannel !== null) {
+        consolidatedChannelList.push(fullChannel);
+        delete clChannelsDict[clChannel.short_channel_id];
+        clChannelsDictCount[clChannel.short_channel_id]++;
+      }
     }
 
     const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
@@ -73,7 +74,10 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
   channelProcessed = 0;
   const keys = Object.keys(clChannelsDict);
   for (const short_channel_id of keys) {
-    consolidatedChannelList.push(await buildIncompleteChannel(clChannelsDict[short_channel_id]));
+    const incompleteChannel = await buildIncompleteChannel(clChannelsDict[short_channel_id]);
+    if (incompleteChannel !== null) {
+      consolidatedChannelList.push(incompleteChannel);
+    }
 
     const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
     if (elapsedSeconds > 10) {
@@ -91,10 +95,13 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
  * Convert two clightning "getchannels" entries into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy for both nodes
  */
-async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILightningApi.Channel> {
+async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILightningApi.Channel | null> {
   const lastUpdate = Math.max(clChannelA.last_update ?? 0, clChannelB.last_update ?? 0);
 
   const tx = await FundingTxFetcher.$fetchChannelOpenTx(clChannelA.short_channel_id);
+  if (!tx) {
+    return null;
+  }
   const parts = clChannelA.short_channel_id.split('x');
   const outputIdx = parts[2];
 
@@ -114,8 +121,11 @@ async function buildFullChannel(clChannelA: any, clChannelB: any): Promise<ILigh
  * Convert one clightning "getchannels" entry into a full a lnd "describegraph.edges" format
  * In this case, clightning knows the channel policy of only one node
  */
-async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Channel> {
+async function buildIncompleteChannel(clChannel: any): Promise<ILightningApi.Channel | null> {
   const tx = await FundingTxFetcher.$fetchChannelOpenTx(clChannel.short_channel_id);
+  if (!tx) {
+    return null;
+  }
   const parts = clChannel.short_channel_id.split('x');
   const outputIdx = parts[2];
 

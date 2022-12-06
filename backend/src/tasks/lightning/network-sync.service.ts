@@ -208,6 +208,9 @@ class NetworkSyncService {
       const channels = await channelsApi.$getChannelsWithoutCreatedDate();
       for (const channel of channels) {
         const transaction = await fundingTxFetcher.$fetchChannelOpenTx(channel.short_id);
+        if (!transaction) {
+          continue;
+        }
         await DB.query(`
           UPDATE channels SET created = FROM_UNIXTIME(?) WHERE channels.id = ?`,
           [transaction.timestamp, channel.id]
