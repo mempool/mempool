@@ -128,6 +128,21 @@ class ChannelsApi {
     }
   }
 
+  public async $getChannelsWithoutSourceChecked(): Promise<any[]> {
+    try {
+      const query = `
+        SELECT channels.*
+        FROM channels
+        WHERE channels.source_checked != 1
+      `;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getUnresolvedClosedChannels error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getChannelsWithoutCreatedDate(): Promise<any[]> {
     try {
       const query = `SELECT * FROM channels WHERE created IS NULL`;
@@ -254,6 +269,108 @@ class ChannelsApi {
     } catch (e) {
       logger.err('$getChannelByTransactionId error: ' + (e instanceof Error ? e.message : e));
       throw e;
+    }
+  }
+
+  public async $getChannelByClosingId(transactionId: string): Promise<any> {
+    try {
+      const query = `
+        SELECT
+          channels.*
+        FROM channels
+        WHERE channels.closing_transaction_id = ?
+      `;
+      const [rows]: any = await DB.query(query, [transactionId]);
+      if (rows.length > 0) {
+        rows[0].outputs = JSON.parse(rows[0].outputs);
+        return rows[0];
+      }
+    } catch (e) {
+      logger.err('$getChannelByClosingId error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
+    }
+  }
+
+  public async $getChannelsByOpeningId(transactionId: string): Promise<any> {
+    try {
+      const query = `
+        SELECT
+          channels.*
+        FROM channels
+        WHERE channels.transaction_id = ?
+      `;
+      const [rows]: any = await DB.query(query, [transactionId]);
+      if (rows.length > 0) {
+        return rows.map(row => {
+          row.outputs = JSON.parse(row.outputs);
+          return row;
+        });
+      }
+    } catch (e) {
+      logger.err('$getChannelsByOpeningId error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
+    }
+  }
+
+  public async $updateClosingInfo(channelInfo: { id: string, node1_closing_balance: number, node2_closing_balance: number, closed_by: string | null, closing_fee: number, outputs: ILightningApi.ForensicOutput[]}): Promise<void> {
+    try {
+      const query = `
+        UPDATE channels SET
+          node1_closing_balance = ?,
+          node2_closing_balance = ?,
+          closed_by = ?,
+          closing_fee = ?,
+          outputs = ?
+        WHERE channels.id = ?
+      `;
+      await DB.query<ResultSetHeader>(query, [
+        channelInfo.node1_closing_balance || 0,
+        channelInfo.node2_closing_balance || 0,
+        channelInfo.closed_by,
+        channelInfo.closing_fee || 0,
+        JSON.stringify(channelInfo.outputs),
+        channelInfo.id,
+      ]);
+    } catch (e) {
+      logger.err('$updateClosingInfo error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
+    }
+  }
+
+  public async $updateOpeningInfo(channelInfo: { id: string, node1_funding_balance: number, node2_funding_balance: number, funding_ratio: number, single_funded: boolean | void }): Promise<void> {
+    try {
+      const query = `
+        UPDATE channels SET
+          node1_funding_balance = ?,
+          node2_funding_balance = ?,
+          funding_ratio = ?,
+          single_funded = ?
+        WHERE channels.id = ?
+      `;
+      await DB.query<ResultSetHeader>(query, [
+        channelInfo.node1_funding_balance || 0,
+        channelInfo.node2_funding_balance || 0,
+        channelInfo.funding_ratio,
+        channelInfo.single_funded ? 1 : 0,
+        channelInfo.id,
+      ]);
+    } catch (e) {
+      logger.err('$updateOpeningInfo error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
+    }
+  }
+
+  public async $markChannelSourceChecked(id: string): Promise<void> {
+    try {
+      const query = `
+        UPDATE channels
+        SET source_checked = 1
+        WHERE id = ?
+      `;
+      await DB.query<ResultSetHeader>(query, [id]);
+    } catch (e) {
+      logger.err('$markChannelSourceChecked error: ' + (e instanceof Error ? e.message : e));
+      // don't throw - this data isn't essential
     }
   }
 
@@ -385,11 +502,15 @@ class ChannelsApi {
       'transaction_id': channel.transaction_id,
       'transaction_vout': channel.transaction_vout,
       'closing_transaction_id': channel.closing_transaction_id,
+      'closing_fee': channel.closing_fee,
       'closing_reason': channel.closing_reason,
       'closing_date': channel.closing_date,
       'updated_at': channel.updated_at,
       'created': channel.created,
       'status': channel.status,
+      'funding_ratio': channel.funding_ratio,
+      'closed_by': channel.closed_by,
+      'single_funded': !!channel.single_funded,
       'node_left': {
         'alias': channel.alias_left,
         'public_key': channel.node1_public_key,
@@ -404,6 +525,9 @@ class ChannelsApi {
         'updated_at': channel.node1_updated_at,
         'longitude': channel.node1_longitude,
         'latitude': channel.node1_latitude,
+        'funding_balance': channel.node1_funding_balance,
+        'closing_balance': channel.node1_closing_balance,
+        'initiated_close': channel.closed_by === channel.node1_public_key ? true : undefined,
       },
       'node_right': {
         'alias': channel.alias_right,
@@ -419,6 +543,9 @@ class ChannelsApi {
         'updated_at': channel.node2_updated_at,
         'longitude': channel.node2_longitude,
         'latitude': channel.node2_latitude,
+        'funding_balance': channel.node2_funding_balance,
+        'closing_balance': channel.node2_closing_balance,
+        'initiated_close': channel.closed_by === channel.node2_public_key ? true : undefined,
       },
     };
   }
