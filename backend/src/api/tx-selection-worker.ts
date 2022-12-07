@@ -106,44 +106,44 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
     if (nextTx && !nextTx?.used) {
       // Check if the package fits into this block
       if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
-        blockWeight += nextTx.ancestorWeight;
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
         const descendants: AuditTransaction[] = [];
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
         const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
-
+        const used: AuditTransaction[] = [];
         while (sortedTxSet.length) {
           const ancestor = sortedTxSet.pop();
           const mempoolTx = mempool[ancestor.txid];
-          if (ancestor && !ancestor?.used) {
-            ancestor.used = true;
-            // update original copy of this tx with effective fee rate & relatives data
-            mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-            mempoolTx.ancestors = sortedTxSet.map((a) => {
-              return {
-                txid: a.txid,
-                fee: a.fee,
-                weight: a.weight,
-              };
-            }).reverse();
-            mempoolTx.descendants = descendants.map((a) => {
-              return {
-                txid: a.txid,
-                fee: a.fee,
-                weight: a.weight,
-              };
-            });
-            descendants.push(ancestor);
-            mempoolTx.cpfpChecked = true;
-            transactions.push(ancestor);
-            blockSize += ancestor.size;
-          }
+          ancestor.used = true;
+          ancestor.usedBy = nextTx.txid;
+          // update original copy of this tx with effective fee rate & relatives data
+          mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
+          mempoolTx.ancestors = sortedTxSet.map((a) => {
+            return {
+              txid: a.txid,
+              fee: a.fee,
+              weight: a.weight,
+            };
+          }).reverse();
+          mempoolTx.descendants = descendants.map((a) => {
+            return {
+              txid: a.txid,
+              fee: a.fee,
+              weight: a.weight,
+            };
+          });
+          descendants.push(ancestor);
+          mempoolTx.cpfpChecked = true;
+          transactions.push(ancestor);
+          blockSize += ancestor.size;
+          blockWeight += ancestor.weight;
+          used.push(ancestor);
         }
 
         // remove these as valid package ancestors for any descendants remaining in the mempool
-        if (sortedTxSet.length) {
-          sortedTxSet.forEach(tx => {
+        if (used.length) {
+          used.forEach(tx => {
             updateDescendants(tx, auditPool, modified);
           });
         }
