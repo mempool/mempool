@@ -7,7 +7,6 @@ import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { Common } from '../../api/common';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 
-const throttleDelay = 20; //ms
 const tempCacheSize = 10000;
 
 class ForensicsService {
@@ -91,7 +90,7 @@ class ForensicsService {
           let outspends: IEsploraApi.Outspend[] | undefined;
           try {
             outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
-            await Common.sleep$(throttleDelay);
+            await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
           } catch (e) {
             logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
             continue;
@@ -340,7 +339,7 @@ class ForensicsService {
       let outspends: IEsploraApi.Outspend[] | undefined;
       try {
         outspends = await bitcoinApi.$getOutspends(input.txid);
-        await Common.sleep$(throttleDelay);
+        await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
       } catch (e) {
         logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + input.txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
       }
@@ -429,7 +428,7 @@ class ForensicsService {
         if (temp) {
           this.tempCached.push(txid);
         }
-        await Common.sleep$(throttleDelay);
+        await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
       } catch (e) {
         logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
         return null;
