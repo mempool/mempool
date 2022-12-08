@@ -44,6 +44,7 @@ interface IConfig {
     GRAPH_REFRESH_INTERVAL: number;
     LOGGER_UPDATE_INTERVAL: number;
     FORENSICS_INTERVAL: number;
+    FORENSICS_RATE_LIMIT: number;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -205,6 +206,7 @@ const defaults: IConfig = {
     'GRAPH_REFRESH_INTERVAL': 600,
     'LOGGER_UPDATE_INTERVAL': 30,
     'FORENSICS_INTERVAL': 43200,
+    'FORENSICS_RATE_LIMIT': 20,
   },
   'LND': {
     'TLS_CERT_PATH': '',
