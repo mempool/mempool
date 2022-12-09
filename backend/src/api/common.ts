@@ -51,8 +51,6 @@ export class Common {
   static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended } {
     const matches: { [txid: string]: TransactionExtended } = {};
     deleted
-      // The replaced tx must have at least one input with nSequence < maxint-1 (That’s the opt-in)
-      .filter((tx) => tx.vin.some((vin) => vin.sequence < 0xfffffffe))
       .forEach((deletedTx) => {
         const foundMatches = added.find((addedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
