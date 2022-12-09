@@ -58,10 +58,10 @@ class WebsocketHandler {
               client['track-tx'] = parsedMessage['track-tx'];
               // Client is telling the transaction wasn't found
               if (parsedMessage['watch-mempool']) {
-                const rbfCacheTx = rbfCache.getReplacedBy(client['track-tx']);
-                if (rbfCacheTx) {
+                const rbfCacheTxid = rbfCache.getReplacedBy(client['track-tx']);
+                if (rbfCacheTxid) {
                   response['txReplaced'] = {
-                    txid: rbfCacheTx.txid,
+                    txid: rbfCacheTxid,
                   };
                   client['track-tx'] = null;
                 } else {
@@ -467,6 +467,7 @@ class WebsocketHandler {
     for (const txId of txIds) {
       delete _memPool[txId];
       removed.push(txId);
+      rbfCache.evict(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {

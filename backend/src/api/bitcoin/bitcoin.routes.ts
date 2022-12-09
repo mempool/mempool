@@ -595,7 +595,7 @@ class BitcoinRoutes {
   private async getRbfHistory(req: Request, res: Response) {
     try {
       const result = rbfCache.getReplaces(req.params.txId);
-      res.json(result?.txids || []);
+      res.json(result || []);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
