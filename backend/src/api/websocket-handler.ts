@@ -58,7 +58,7 @@ class WebsocketHandler {
               client['track-tx'] = parsedMessage['track-tx'];
               // Client is telling the transaction wasn't found
               if (parsedMessage['watch-mempool']) {
-                const rbfCacheTx = rbfCache.get(client['track-tx']);
+                const rbfCacheTx = rbfCache.getReplacedBy(client['track-tx']);
                 if (rbfCacheTx) {
                   response['txReplaced'] = {
                     txid: rbfCacheTx.txid,

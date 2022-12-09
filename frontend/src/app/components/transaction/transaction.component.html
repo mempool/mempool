@@ -6,7 +6,17 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size">
+    <div *ngIf="rbfReplaces?.length" class="alert alert-mempool" role="alert">
+      <span i18n="transaction.rbf.replaced|RBF replaced">This transaction replaced:</span>
+      <div class="tx-list">
+        <a class="alert-link" *ngFor="let replaced of rbfReplaces" [routerLink]="['/tx/' | relativeUrl, replaced]">
+          <span class="d-inline d-lg-none">{{ replaced | shortenString : 24 }}</span>
+          <span class="d-none d-lg-inline">{{ replaced }}</span>
+        </a>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
       <span class="tx-link">
@@ -25,7 +35,10 @@
             <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
           </button>
         </ng-template>
-        <ng-template [ngIf]="tx && !tx?.status.confirmed">
+        <ng-template [ngIf]="tx && !tx?.status?.confirmed && replaced">
+          <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Replaced</button>
+        </ng-template>
+        <ng-template [ngIf]="tx && !tx?.status?.confirmed && !replaced">
           <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
         </ng-template>
       </div>
@@ -88,7 +101,7 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="transactionTime !== 0">
+                <ng-template [ngIf]="transactionTime !== 0 && !replaced">
                   <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
                     <td><span class="skeleton-loader"></span></td>
                     <td><span class="skeleton-loader"></span></td>
@@ -100,7 +113,7 @@
                     </tr>
                   </ng-template>
                 </ng-template>
-                <tr>
+                <tr *ngIf="!replaced">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
                     <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
