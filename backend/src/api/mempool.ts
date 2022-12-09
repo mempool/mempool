@@ -236,6 +236,7 @@ class Mempool {
       const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
       if (lazyDeleteAt && lazyDeleteAt < now) {
         delete this.mempoolCache[tx];
+        rbfCache.evict(tx);
       }
     }
   }
