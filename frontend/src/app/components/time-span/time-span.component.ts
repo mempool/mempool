@@ -14,6 +14,7 @@ export class TimeSpanComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() time: number;
   @Input() fastRender = false;
+  @Input() relative = true;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -36,10 +37,12 @@ export class TimeSpanComponent implements OnInit, OnChanges, OnDestroy {
       this.ref.markForCheck();
       return;
     }
-    this.interval = window.setInterval(() => {
-      this.text = this.calculate();
-      this.ref.markForCheck();
-    }, 1000 * (this.fastRender ? 1 : 60));
+    if (this.relative) {
+      this.interval = window.setInterval(() => {
+        this.text = this.calculate();
+        this.ref.markForCheck();
+      }, 1000 * (this.fastRender ? 1 : 60));
+    }
   }
 
   ngOnChanges() {
@@ -53,7 +56,7 @@ export class TimeSpanComponent implements OnInit, OnChanges, OnDestroy {
 
   calculate() {
     const seconds = Math.floor(this.time);
-    if (seconds < 60) {
+    if (this.relative && seconds < 60) {
       return $localize`:@@date-base.just-now:Just now`;
     }
     let counter: number;

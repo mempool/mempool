@@ -32,7 +32,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/replaces', this.getRbfHistory)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
@@ -639,8 +639,12 @@ class BitcoinRoutes {
 
   private async getRbfHistory(req: Request, res: Response) {
     try {
-      const result = rbfCache.getReplaces(req.params.txId);
-      res.json(result || []);
+      const replacements = rbfCache.getRbfChain(req.params.txId) || [];
+      const replaces = rbfCache.getReplaces(req.params.txId) || null;
+      res.json({
+        replacements,
+        replaces
+      });
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

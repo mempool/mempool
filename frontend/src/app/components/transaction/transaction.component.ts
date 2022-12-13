@@ -19,7 +19,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -52,6 +52,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   rbfReplaces: string[];
+  rbfInfo: RbfInfo[];
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
@@ -175,10 +176,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           .getRbfHistory$(txId)
       ),
       catchError(() => {
-        return of([]);
+        return of(null);
       })
-    ).subscribe((replaces) => {
-      this.rbfReplaces = replaces;
+    ).subscribe((rbfResponse) => {
+      this.rbfInfo = rbfResponse?.replacements || [];
+      this.rbfReplaces = rbfResponse?.replaces || null;
     });
 
     this.fetchCachedTxSubscription = this.fetchCachedTx$
@@ -435,6 +437,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.rbfInfo = [];
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
     document.body.scrollTo(0, 0);
