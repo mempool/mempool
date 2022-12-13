@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
+import { AltElectrsApiService } from '../../services/alt-electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
@@ -43,6 +44,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
+  altBackendTxSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
@@ -55,6 +57,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
+  checkAltBackend$ = new Subject<string>();
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
@@ -69,6 +72,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  notFound: boolean = false;
+  altTx: Transaction;
+  fullRBF: boolean = false;
+  altBackend: string;
 
   tooltipPosition: { x: number, y: number };
 
@@ -80,13 +87,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
+    private altElectrsApiService: AltElectrsApiService,
     private stateService: StateService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService
-  ) {}
+  ) {
+    this.fullRBF = stateService.env.FULL_RBF_ENABLED;
+    this.altBackend = stateService.env.ALT_BACKEND_URL;
+  }
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
@@ -208,6 +219,38 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    this.altBackendTxSubscription = this.checkAltBackend$
+    .pipe(
+      switchMap((txId) =>
+        this.altElectrsApiService
+          .getTransaction$(txId)
+          .pipe(
+            catchError((e) => {
+              return of(null);
+            })
+          )
+      )
+    ).subscribe((tx) => {
+      if (!tx) {
+        this.altTx = null;
+        return;
+      }
+
+      this.altTx = tx;
+      if (tx.fee === undefined) {
+        this.altTx.fee = 0;
+      }
+      this.altTx.feePerVsize = tx.fee / (tx.weight / 4);
+      if (!this.tx) {
+        this.tx = tx;
+        this.isLoadingTx = false;
+        this.error = undefined;
+        this.waitingForTransaction = false;
+        this.graphExpanded = false;
+        this.setupGraph();
+      }
+    });
+
     this.subscription = this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
@@ -282,8 +325,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       )
       .subscribe((tx: Transaction) => {
           if (!tx) {
+            this.notFound = true;
+            if (this.stateService.env.ALT_BACKEND_URL) {
+              this.checkAltBackend$.next(this.txId);
+            }
             return;
           }
+          this.notFound = false;
 
           this.tx = tx;
           if (tx.fee === undefined) {
@@ -322,6 +370,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
             this.fetchRbfHistory$.next(this.tx.txid);
+            if (this.stateService.env.ALT_BACKEND_URL) {
+              this.checkAltBackend$.next(this.txId);
+            }
           }
           setTimeout(() => { this.applyFragment(); }, 0);
         },
@@ -423,6 +474,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
     this.replaced = false;
+    this.altTx = null;
+    this.notFound = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
     this.rbfReplaces = [];
@@ -493,6 +546,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
+    this.altBackendTxSubscription?.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();

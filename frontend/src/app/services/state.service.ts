@@ -42,6 +42,8 @@ export interface Env {
   MAINNET_BLOCK_AUDIT_START_HEIGHT: number;
   TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
+  FULL_RBF_ENABLED: boolean;
+  ALT_BACKEND_URL: string;
 }
 
 const defaultEnv: Env = {
@@ -70,6 +72,8 @@ const defaultEnv: Env = {
   'MAINNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'FULL_RBF_ENABLED': false,
+  'ALT_BACKEND_URL': '',
 };
 
 @Injectable({
