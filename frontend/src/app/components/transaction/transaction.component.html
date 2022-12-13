@@ -197,6 +197,15 @@
 
     <br>
 
+    <ng-container *ngIf="rbfInfo?.length">
+      <div class="title float-left">
+        <h2 id="rbf" i18n="transaction.replacements|Replacements">Replacements</h2>
+      </div>
+      <div class="clearfix"></div>
+      <app-rbf-timeline [txid]="txId" [replacements]="rbfInfo"></app-rbf-timeline>
+      <br>
+    </ng-container>
+
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
       <div class="title float-left">
         <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
