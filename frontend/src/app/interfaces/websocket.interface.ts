@@ -1,6 +1,6 @@
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended, DifficultyAdjustment } from './node-api.interface';
+import { BlockExtended, DifficultyAdjustment, RbfInfo } from './node-api.interface';
 
 export interface WebsocketResponse {
   block?: BlockExtended;
@@ -16,6 +16,7 @@ export interface WebsocketResponse {
   tx?: Transaction;
   rbfTransaction?: ReplacedTransaction;
   txReplaced?: ReplacedTransaction;
+  rbfInfo?: RbfInfo[];
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;

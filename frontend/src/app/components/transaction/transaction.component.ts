@@ -46,6 +46,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
+  txRbfInfoSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
@@ -205,21 +206,28 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.tx = tx;
-      this.setFeatures();
-      this.isCached = true;
-      if (tx.fee === undefined) {
-        this.tx.fee = 0;
-      }
-      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
-      this.isLoadingTx = false;
-      this.error = undefined;
-      this.waitingForTransaction = false;
-      this.graphExpanded = false;
-      this.setupGraph();
+      if (!this.tx) {
+        this.tx = tx;
+        this.setFeatures();
+        this.isCached = true;
+        if (tx.fee === undefined) {
+          this.tx.fee = 0;
+        }
+        this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+        this.isLoadingTx = false;
+        this.error = undefined;
+        this.waitingForTransaction = false;
+        this.graphExpanded = false;
+        this.setupGraph();
 
-      if (!this.tx?.status?.confirmed) {
-        this.fetchRbfHistory$.next(this.tx.txid);
+        if (!this.tx?.status?.confirmed) {
+          this.fetchRbfHistory$.next(this.tx.txid);
+          this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
+            if (this.tx) {
+              this.rbfInfo = rbfInfo;
+            }
+          });
+        }
       }
     });
 
@@ -382,6 +390,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
+      if (this.tx) {
+        this.rbfInfo = rbfInfo;
+      }
+    });
+
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (params.showFlow === 'false') {
         this.overrideFlowPreference = false;
@@ -535,6 +549,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
+    this.txRbfInfoSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
