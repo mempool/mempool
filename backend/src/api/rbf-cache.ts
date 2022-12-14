@@ -5,13 +5,20 @@ interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
 }
 
+type RbfChain = {
+  tx: RbfTransaction,
+  time: number,
+  mined?: boolean,
+}[];
+
 class RbfCache {
-  private replacedBy: { [txid: string]: string; } = {};
-  private replaces: { [txid: string]: string[] } = {};
-  private rbfChains: { [root: string]: { tx: TransactionStripped, time: number, mined?: boolean }[] } = {}; // sequences of consecutive replacements
-  private chainMap: { [txid: string]: string } = {}; // map of txids to sequence ids
-  private txs: { [txid: string]: TransactionExtended } = {};
-  private expiring: { [txid: string]: Date } = {};
+  private replacedBy: Map<string, string> = new Map();
+  private replaces: Map<string, string[]> = new Map();
+  private rbfChains: Map<string, RbfChain> = new Map(); // sequences of consecutive replacements
+  private dirtyChains: Set<string> = new Set();
+  private chainMap: Map<string, string> = new Map(); // map of txids to sequence ids
+  private txs: Map<string, TransactionExtended> = new Map();
+  private expiring: Map<string, Date> = new Map();
 
   constructor() {
     setInterval(this.cleanup.bind(this), 1000 * 60 * 60);
@@ -23,56 +30,79 @@ class RbfCache {
     const newTx = Common.stripTransaction(newTxExtended) as RbfTransaction;
     newTx.rbf = newTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
 
-    this.replacedBy[replacedTx.txid] = newTx.txid;
-    this.txs[replacedTx.txid] = replacedTxExtended;
-    if (!this.replaces[newTx.txid]) {
-      this.replaces[newTx.txid] = [];
+    this.replacedBy.set(replacedTx.txid, newTx.txid);
+    this.txs.set(replacedTx.txid, replacedTxExtended);
+    this.txs.set(newTx.txid, newTxExtended);
+    if (!this.replaces.has(newTx.txid)) {
+      this.replaces.set(newTx.txid, []);
     }
-    this.replaces[newTx.txid].push(replacedTx.txid);
+    this.replaces.get(newTx.txid)?.push(replacedTx.txid);
 
     // maintain rbf chains
-    if (this.chainMap[replacedTx.txid]) {
+    if (this.chainMap.has(replacedTx.txid)) {
       // add to an existing chain
-      const chainRoot = this.chainMap[replacedTx.txid];
-      this.rbfChains[chainRoot].push({ tx: newTx, time: newTxExtended.firstSeen || Date.now() });
-      this.chainMap[newTx.txid] = chainRoot;
+      const chainRoot = this.chainMap.get(replacedTx.txid) || '';
+      this.rbfChains.get(chainRoot)?.push({ tx: newTx, time: newTxExtended.firstSeen || Date.now() });
+      this.chainMap.set(newTx.txid, chainRoot);
+      this.dirtyChains.add(chainRoot);
     } else {
       // start a new chain
-      this.rbfChains[replacedTx.txid] = [
+      this.rbfChains.set(replacedTx.txid, [
         { tx: replacedTx, time: replacedTxExtended.firstSeen || Date.now() },
         { tx: newTx, time: newTxExtended.firstSeen || Date.now() },
-      ];
-      this.chainMap[replacedTx.txid] = replacedTx.txid;
-      this.chainMap[newTx.txid] = replacedTx.txid;
+      ]);
+      this.chainMap.set(replacedTx.txid, replacedTx.txid);
+      this.chainMap.set(newTx.txid, replacedTx.txid);
+      this.dirtyChains.add(replacedTx.txid);
     }
   }
 
   public getReplacedBy(txId: string): string | undefined {
-    return this.replacedBy[txId];
+    return this.replacedBy.get(txId);
   }
 
   public getReplaces(txId: string): string[] | undefined {
-    return this.replaces[txId];
+    return this.replaces.get(txId);
   }
 
   public getTx(txId: string): TransactionExtended | undefined {
-    return this.txs[txId];
+    return this.txs.get(txId);
   }
 
-  public getRbfChain(txId: string): { tx: TransactionStripped, time: number }[] {
-    return this.rbfChains[this.chainMap[txId]] || [];
+  public getRbfChain(txId: string): RbfChain {
+    return this.rbfChains.get(this.chainMap.get(txId) || '') || [];
   }
+
+  // get map of rbf chains that have been updated since the last call
+  public getRbfChanges(): { chains: {[root: string]: RbfChain }, map: { [txid: string]: string }} {
+    const changes: { chains: {[root: string]: RbfChain }, map: { [txid: string]: string }} = {
+      chains: {},
+      map: {},
+    };
+    this.dirtyChains.forEach(root => {
+      const chain = this.rbfChains.get(root);
+      if (chain) {
+        changes.chains[root] = chain;
+        chain.forEach(entry => {
+          changes.map[entry.tx.txid] = root;
+        });
+      }
+    });
+    this.dirtyChains = new Set();
+    return changes;
+  }
+
 
   // flag a transaction as removed from the mempool
   public evict(txid): void {
-    this.expiring[txid] = new Date(Date.now() + 1000 * 86400); // 24 hours
+    this.expiring.set(txid, new Date(Date.now() + 1000 * 86400)); // 24 hours
   }
 
   private cleanup(): void {
     const currentDate = new Date();
     for (const txid in this.expiring) {
-      if (this.expiring[txid] < currentDate) {
-        delete this.expiring[txid];
+      if ((this.expiring.get(txid) || 0) < currentDate) {
+        this.expiring.delete(txid);
         this.remove(txid);
       }
     }
@@ -81,18 +111,18 @@ class RbfCache {
   // remove a transaction & all previous versions from the cache
   private remove(txid): void {
     // don't remove a transaction if a newer version remains in the mempool
-    if (!this.replacedBy[txid]) {
-      const replaces = this.replaces[txid];
-      delete this.replaces[txid];
-      delete this.chainMap[txid];
-      delete this.txs[txid];
-      delete this.expiring[txid];
-      for (const tx of replaces) {
+    if (!this.replacedBy.has(txid)) {
+      const replaces = this.replaces.get(txid);
+      this.replaces.delete(txid);
+      this.chainMap.delete(txid);
+      this.txs.delete(txid);
+      this.expiring.delete(txid);
+      for (const tx of (replaces || [])) {
         // recursively remove prior versions from the cache
-        delete this.replacedBy[tx];
+        this.replacedBy.delete(tx);
         // if this is the root of a chain, remove that too
-        if (this.chainMap[tx] === tx) {
-          delete this.rbfChains[tx];
+        if (this.chainMap.get(tx) === tx) {
+          this.rbfChains.delete(tx);
         }
         this.remove(tx);
       }
