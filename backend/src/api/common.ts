@@ -59,7 +59,7 @@ export class Common {
             && addedTx.feePerVsize > deletedTx.feePerVsize
             // Spends one or more of the same inputs
             && deletedTx.vin.some((deletedVin) =>
-              addedTx.vin.some((vin) => vin.txid === deletedVin.txid));
+              addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
         if (foundMatches) {
           matches[deletedTx.txid] = foundMatches;
