@@ -73,6 +73,33 @@ class RbfCache {
     return this.rbfChains.get(this.chainMap.get(txId) || '') || [];
   }
 
+  // get a paginated list of RbfChains
+  // ordered by most recent replacement time
+  public getRbfChains(onlyFullRbf: boolean, after?: string): RbfChain[] {
+    const limit = 25;
+    const chains: RbfChain[] = [];
+    const used = new Set<string>();
+    const replacements: string[][] = Array.from(this.replacedBy).reverse();
+    const afterChain = after ? this.chainMap.get(after) : null;
+    let ready = !afterChain;
+    for (let i = 0; i < replacements.length && chains.length <= limit - 1; i++) {
+      const txid = replacements[i][1];
+      const chainRoot = this.chainMap.get(txid) || '';
+      if (chainRoot === afterChain) {
+        ready = true;
+      } else if (ready) {
+        if (!used.has(chainRoot)) {
+          const chain = this.rbfChains.get(chainRoot);
+          used.add(chainRoot);
+          if (chain && (!onlyFullRbf || chain.slice(0, -1).some(entry => !entry.tx.rbf))) {
+            chains.push(chain);
+          }
+        }
+      }
+    }
+    return chains;
+  }
+
   // get map of rbf chains that have been updated since the last call
   public getRbfChanges(): { chains: {[root: string]: RbfChain }, map: { [txid: string]: string }} {
     const changes: { chains: {[root: string]: RbfChain }, map: { [txid: string]: string }} = {
@@ -92,6 +119,20 @@ class RbfCache {
     return changes;
   }
 
+  public mined(txid): void {
+    const chainRoot = this.chainMap.get(txid)
+    if (chainRoot && this.rbfChains.has(chainRoot)) {
+      const chain = this.rbfChains.get(chainRoot);
+      if (chain) {
+        const chainEntry = chain.find(entry => entry.tx.txid === txid);
+        if (chainEntry) {
+          chainEntry.mined = true;
+        }
+        this.dirtyChains.add(chainRoot);
+      }
+    }
+    this.evict(txid);
+  }
 
   // flag a transaction as removed from the mempool
   public evict(txid): void {

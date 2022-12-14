@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowRight, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -73,6 +73,7 @@ import { AssetCirculationComponent } from '../components/asset-circulation/asset
 import { AmountShortenerPipe } from '../shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '../components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
+import { RbfList } from '../components/rbf-list/rbf-list.component';
 import { RewardStatsComponent } from '../components/reward-stats/reward-stats.component';
 import { DataCyDirective } from '../data-cy.directive';
 import { LoadingIndicatorComponent } from '../components/loading-indicator/loading-indicator.component';
@@ -153,6 +154,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    RbfList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
@@ -313,6 +315,7 @@ export class SharedModule {
     library.addIcons(faDownload);
     library.addIcons(faQrcode);
     library.addIcons(faArrowRightArrowLeft);
+    library.addIcons(faArrowRight);
     library.addIcons(faExchangeAlt);
   }
 }

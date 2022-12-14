@@ -1,0 +1,51 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+.rbf-chains {
+  .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0;
+
+    .type {
+      .badge {
+        margin-left: .5em;
+      }
+    }
+  }
+
+  .chain {
+    margin-bottom: 1em;
+  }
+
+  .txids {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2px;
+
+    .txid {
+      flex-basis: 0;
+      flex-grow: 1;
+
+      &.right {
+        text-align: right;
+      }
+    }
+  }
+
+  .timeline-wrapper.mined {
+    border: solid 4px #1a9436;
+  }
+
+  .no-replacements {
+    margin: 1em;
+    text-align: center;
+  }
+}

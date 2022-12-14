@@ -140,6 +140,14 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-rbf'] !== undefined) {
+            if (['all', 'fullRbf'].includes(parsedMessage['track-rbf'])) {
+              client['track-rbf'] = parsedMessage['track-rbf'];
+            } else {
+              client['track-rbf'] = false;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
             if (!_blocks) {
@@ -279,6 +287,12 @@ class WebsocketHandler {
     const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
     const rbfChanges = rbfCache.getRbfChanges();
+    let rbfReplacements;
+    let fullRbfReplacements;
+    if (Object.keys(rbfChanges.chains).length) {
+      rbfReplacements = rbfCache.getRbfChains(false);
+      fullRbfReplacements = rbfCache.getRbfChains(true);
+    }
     const recommendedFees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach(async (client) => {
@@ -428,6 +442,13 @@ class WebsocketHandler {
         }
       }
 
+      console.log(client['track-rbf']);
+      if (client['track-rbf'] === 'all' && rbfReplacements) {
+        response['rbfLatest'] = rbfReplacements;
+      } else if (client['track-rbf'] === 'fullRbf' && fullRbfReplacements) {
+        response['rbfLatest'] = fullRbfReplacements;
+      }
+
       if (Object.keys(response).length) {
         client.send(JSON.stringify(response));
       }
@@ -506,7 +527,7 @@ class WebsocketHandler {
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
-      rbfCache.evict(txId);
+      rbfCache.mined(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {

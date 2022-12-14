@@ -1,0 +1,61 @@
+<div class="container-xl" style="min-height: 335px">
+  <h1 class="float-left" i18n="page.rbf-replacements">RBF Replacements</h1>
+  <div *ngIf="isLoading" class="spinner-border ml-3" role="status"></div>
+
+  <div class="mode-toggle float-right" *ngIf="fullRbfEnabled">
+    <form class="formRadioGroup">
+      <div class="btn-group btn-group-toggle" name="radioBasic">
+        <label class="btn btn-primary btn-sm" [class.active]="!fullRbf">
+          <input type="radio" [value]="'All'" fragment="" [routerLink]="[]"> All
+        </label>
+        <label class="btn btn-primary btn-sm" [class.active]="fullRbf">
+          <input type="radio" [value]="'Full RBF'" fragment="fullrbf" [routerLink]="[]"> Full RBF
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <div class="rbf-chains" style="min-height: 295px">
+    <ng-container *ngIf="rbfChains$ | async as chains">
+      <div *ngFor="let chain of chains" class="chain">
+        <p class="info">
+          <app-time kind="since" [time]="chain[chain.length - 1].time"></app-time>
+          <span class="type">
+            <span *ngIf="isMined(chain)" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+            <span *ngIf="isFullRbf(chain)" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
+          </span>
+        </p>
+        <div class="txids">
+          <span class="txid">
+            <a class="rbf-link" [routerLink]="['/tx/' | relativeUrl, chain[0].tx.txid]">
+              <span class="d-inline">{{ chain[0].tx.txid | shortenString : 24 }}</span>
+            </a>
+          </span>
+          <span class="arrow">
+            <fa-icon [icon]="['fas', 'arrow-right']" [fixedWidth]="true"></fa-icon>
+          </span>
+          <span class="txid right">
+            <a class="rbf-link" [routerLink]="['/tx/' | relativeUrl, chain[chain.length - 1].tx.txid]">
+              <span class="d-inline">{{ chain[chain.length - 1].tx.txid | shortenString : 24 }}</span>
+            </a>
+          </span>
+        </div>
+        <div class="timeline-wrapper" [class.mined]="isMined(chain)">
+          <app-rbf-timeline [replacements]="chain"></app-rbf-timeline>
+        </div>
+      </div>
+
+      <div class="no-replacements" *ngIf="!chains?.length">
+        <p i18n="rbf.no-replacements-yet">there are no replacements in the mempool yet!</p>
+      </div>
+    </ng-container>
+    
+    <!-- <ngb-pagination class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+      [collectionSize]="blocksCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination> -->
+  </div>
+  
+</div>
