@@ -12,6 +12,7 @@ import { ApiService } from '../../services/api.service';
 export class RbfTimelineComponent implements OnInit, OnChanges {
   @Input() replacements: RbfInfo[];
   @Input() txid: string;
+  mined: boolean;
 
   dir: 'rtl' | 'ltr' = 'ltr';
 
@@ -27,10 +28,10 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    
+    this.mined = this.replacements.some(entry => entry.mined);
   }
 
   ngOnChanges(): void {
-    
+    this.mined = this.replacements.some(entry => entry.mined);
   }
 }

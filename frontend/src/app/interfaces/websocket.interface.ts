@@ -17,6 +17,7 @@ export interface WebsocketResponse {
   rbfTransaction?: ReplacedTransaction;
   txReplaced?: ReplacedTransaction;
   rbfInfo?: RbfInfo[];
+  rbfLatest?: RbfInfo[][];
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
@@ -27,6 +28,7 @@ export interface WebsocketResponse {
   'track-address'?: string;
   'track-asset'?: string;
   'track-mempool-block'?: number;
+  'track-rbf'?: string;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
 }
