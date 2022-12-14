@@ -6,13 +6,6 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <div *ngIf="rbfReplaces?.length" class="alert alert-mempool" role="alert">
-      <span i18n="transaction.rbf.replaced|RBF replaced">This transaction replaced:</span>
-      <div class="tx-list">
-        <app-truncate [text]="replaced" [lastChars]="12" *ngFor="let replaced of rbfReplaces" [link]="['/tx/' | relativeUrl, replaced]"></app-truncate>
-      </div>
-    </div>
-
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
