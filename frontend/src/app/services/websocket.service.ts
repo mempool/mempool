@@ -257,6 +257,10 @@ export class WebsocketService {
       this.stateService.txReplaced$.next(response.rbfTransaction);
     }
 
+    if (response.rbfInfo) {
+      this.stateService.txRbfInfo$.next(response.rbfInfo);
+    }
+
     if (response.txReplaced) {
       this.stateService.txReplaced$.next(response.txReplaced);
     }
