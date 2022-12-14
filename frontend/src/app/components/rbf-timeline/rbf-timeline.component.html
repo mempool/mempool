@@ -1,4 +1,4 @@
-<div class="rbf-timeline box">
+<div class="rbf-timeline box" [class.mined]="mined">
   <div class="timeline">
     <div class="intervals">
       <ng-container *ngFor="let replacement of replacements; let i = index;">
@@ -15,7 +15,7 @@
         <div class="interval-spacer" *ngIf="i > 0">
           <div class="track"></div>
         </div>
-        <div class="node" [class.selected]="txid === replacement.tx.txid">
+        <div class="node" [class.selected]="txid === replacement.tx.txid" [class.mined]="replacement.mined">
           <div class="track"></div>
           <a class="shape-border" [class.rbf]="replacement.tx.rbf" [routerLink]="['/tx/' | relativeUrl, replacement.tx.txid]" [title]="replacement.tx.txid">
             <div class="shape"></div>

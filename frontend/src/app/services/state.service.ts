@@ -99,6 +99,7 @@ export class StateService {
   mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
   txReplaced$ = new Subject<ReplacedTransaction>();
   txRbfInfo$ = new Subject<RbfInfo[]>();
+  rbfLatest$ = new Subject<RbfInfo[][]>();
   utxoSpent$ = new Subject<object>();
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();

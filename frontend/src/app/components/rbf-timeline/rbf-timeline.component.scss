@@ -126,6 +126,12 @@
         }
       }
 
+      &.mined {
+        .shape-border {
+          background: #1a9436;
+        }
+      }
+
       .shape-border:hover {
         padding: 0px;
         .shape {
