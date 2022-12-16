@@ -66,7 +66,6 @@ function downloadMiningPoolLogos() {
   })
 }
 
-const poolsJsonUrl = 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json';
 let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
 let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
 
@@ -82,8 +81,6 @@ console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
 console.log('Downloading assets minimal');
 download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
-console.log('Downloading mining pools info');
-download(PATH + 'pools.json', poolsJsonUrl);
 console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
 console.log('Downloading testnet assets minimal');
