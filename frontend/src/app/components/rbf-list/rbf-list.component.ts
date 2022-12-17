@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, merge, Observable, Subscription } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/services/websocket.service';
-import { RbfInfo } from '../../interfaces/node-api.interface';
+import { RbfTree } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 
@@ -14,14 +14,12 @@ import { StateService } from '../../services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RbfList implements OnInit, OnDestroy {
-  rbfChains$: Observable<RbfInfo[][]>;
-  fromChainSubject = new BehaviorSubject(null);
+  rbfTrees$: Observable<RbfTree[]>;
+  nextRbfSubject = new BehaviorSubject(null);
   urlFragmentSubscription: Subscription;
   fullRbfEnabled: boolean;
   fullRbf: boolean;
   isLoading = true;
-  firstChainId: string;
-  lastChainId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,13 +35,13 @@ export class RbfList implements OnInit, OnDestroy {
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.fullRbf = (fragment === 'fullrbf');
       this.websocketService.startTrackRbf(this.fullRbf ? 'fullRbf' : 'all');
-      this.fromChainSubject.next(this.firstChainId);
+      this.nextRbfSubject.next(null);
     });
 
-    this.rbfChains$ = merge(
-      this.fromChainSubject.pipe(
-        switchMap((fromChainId) => {
-          return this.apiService.getRbfList$(this.fullRbf, fromChainId || undefined)
+    this.rbfTrees$ = merge(
+      this.nextRbfSubject.pipe(
+        switchMap(() => {
+          return this.apiService.getRbfList$(this.fullRbf);
         }),
         catchError((e) => {
           return EMPTY;
@@ -52,11 +50,8 @@ export class RbfList implements OnInit, OnDestroy {
       this.stateService.rbfLatest$
     )
     .pipe(
-      tap((result: RbfInfo[][]) => {
+      tap(() => {
         this.isLoading = false;
-        if (result && result.length && result[0].length) {
-          this.lastChainId = result[result.length - 1][0].tx.txid;
-        }
       })
     );
   }
@@ -68,16 +63,16 @@ export class RbfList implements OnInit, OnDestroy {
     });
   }
 
-  isFullRbf(chain: RbfInfo[]): boolean {
-    return chain.slice(0, -1).some(entry => !entry.tx.rbf);
+  isFullRbf(tree: RbfTree): boolean {
+    return tree.fullRbf;
   }
 
-  isMined(chain: RbfInfo[]): boolean {
-    return chain.some(entry => entry.mined);
+  isMined(tree: RbfTree): boolean {
+    return tree.mined;
   }
 
   // pageChange(page: number) {
-  //   this.fromChainSubject.next(this.lastChainId);
+  //   this.fromTreeSubject.next(this.lastTreeId);
   // }
 
   ngOnDestroy(): void {

@@ -27,9 +27,15 @@ export interface CpfpInfo {
 }
 
 export interface RbfInfo {
-  tx: RbfTransaction,
-  time: number,
-  mined?: boolean,
+  tx: RbfTransaction;
+  time: number;
+  interval?: number;
+}
+
+export interface RbfTree extends RbfInfo {
+  mined?: boolean;
+  fullRbf: boolean;
+  replaces: RbfTree[];
 }
 
 export interface DifficultyAdjustment {
@@ -154,6 +160,7 @@ export interface TransactionStripped {
 
 interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
+  mined?: boolean,
 }
 
 export interface RewardStats {
