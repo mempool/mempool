@@ -2,7 +2,7 @@ name: Cypress Tests
 
 on:
   pull_request:
-    types: [ opened, review_requested, synchronize ]
+    types: [opened, review_requested, synchronize]
 jobs:
   cypress:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
@@ -24,36 +24,36 @@ jobs:
           - module: "bisq"
             spec: |
               cypress/e2e/bisq/bisq.spec.ts
-          
+
     name: E2E tests for ${{ matrix.module }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ${{ matrix.module }}
-          
+
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16.15.0
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
       - name: Chrome browser tests (${{ matrix.module }})
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:local-staging
-          wait-on: 'http://localhost:4200'
+          wait-on: "http://localhost:4200"
           wait-on-timeout: 120
           record: true
           parallel: true
           spec: ${{ matrix.spec }}
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
-          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
         env:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
