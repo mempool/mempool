@@ -23,7 +23,7 @@
     background: linear-gradient(to left, #24273e, #24273e, transparent);
   }
 
-  .timeline {
+  .timeline-wrapper {
     position: relative;
     width: calc(100% - 2em);
     margin: auto;
@@ -44,20 +44,27 @@
     align-items: flex-start;
     text-align: center;
 
-    .node, .node-spacer {
-      width: 4em;
-      min-width: 4em;
+    .node, .node-spacer, .connector {
+      width: 6em;
+      min-width: 6em;
       flex-grow: 1;
     }
 
     .interval, .interval-spacer {
       width: 8em;
-      min-width: 4em;
+      min-width: 5em;
       max-width: 8em;
+      height: 32px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-end;
     }
 
     .interval-time {
       font-size: 12px;
+      line-height: 16px;
+      padding: 0 10px;
     }
   }
 
@@ -73,7 +80,7 @@
       background: #105fb0;
       border-radius: 5px;
     }
-    &:first-child {
+    &.first-node {
       .track {
         left: 50%;
       }
@@ -137,6 +144,25 @@
         .shape {
           background: #1bd8f4;
         }
+      }
+    }
+
+    .connector {
+      position: relative;
+      height: 10px;
+
+      .corner, .pipe {
+        position: absolute;
+        left: -10px;
+        width: 20px;
+        height: 108px;
+        bottom: 50%;
+        border-right: solid 10px #105fb0;
+      }
+
+      .corner {
+        border-bottom: solid 10px #105fb0;
+        border-bottom-right-radius: 10px;
       }
     }
   }
