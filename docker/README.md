@@ -17,7 +17,7 @@ _Note: address lookups require an Electrum Server and will not work with this co
 
 The default Docker configuration assumes you have the following configuration in your `bitcoin.conf` file:
 
-```
+```ini
 txindex=1
 server=1
 rpcuser=mempool
@@ -26,7 +26,7 @@ rpcpassword=mempool
 
 If you want to use different credentials, specify them in the `docker-compose.yml` file:
 
-```
+```yaml
   api:
     environment:
       MEMPOOL_BACKEND: "none"
@@ -54,7 +54,7 @@ First, configure `bitcoind` as specified above, and make sure your Electrum Serv
 
 Then, set the following variables in `docker-compose.yml` so Mempool can connect to your Electrum Server:
 
-```
+```yaml
   api:
     environment:
       MEMPOOL_BACKEND: "electrum"
@@ -85,7 +85,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "MEMPOOL": {
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
@@ -110,7 +110,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       MEMPOOL_NETWORK: ""
@@ -137,8 +137,8 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
-"CORE_RPC": {
+```json
+  "CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
@@ -147,7 +147,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       CORE_RPC_HOST: ""
@@ -160,7 +160,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "ELECTRUM": {
     "HOST": "127.0.0.1",
     "PORT": 50002,
@@ -169,7 +169,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       ELECTRUM_HOST: ""
@@ -181,14 +181,14 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000"
   },
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       ESPLORA_REST_API_URL: ""
@@ -198,7 +198,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
@@ -208,7 +208,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SECOND_CORE_RPC_HOST: ""
@@ -221,7 +221,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
@@ -233,7 +233,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       DATABASE_ENABLED: ""
@@ -248,7 +248,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SYSLOG": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
@@ -259,7 +259,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SYSLOG_ENABLED: ""
@@ -273,7 +273,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "STATISTICS": {
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
@@ -281,7 +281,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       STATISTICS_ENABLED: ""
@@ -292,7 +292,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
@@ -300,7 +300,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       BISQ_ENABLED: ""
@@ -311,7 +311,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SOCKS5PROXY": {
     "ENABLED": false,
     "HOST": "127.0.0.1",
@@ -322,7 +322,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SOCKS5PROXY_ENABLED: ""
@@ -336,7 +336,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "PRICE_DATA_SERVER": {
     "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
     "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
@@ -344,7 +344,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       PRICE_DATA_SERVER_TOR_URL: ""
@@ -355,7 +355,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "LIGHTNING": {
     "ENABLED": false
     "BACKEND": "lnd"
@@ -367,7 +367,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       LIGHTNING_ENABLED: false
@@ -382,7 +382,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "LND": {
     "TLS_CERT_PATH": ""
     "MACAROON_PATH": ""
@@ -391,7 +391,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       LND_TLS_CERT_PATH: ""
@@ -403,14 +403,14 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "CLIGHTNING": {
     "SOCKET": ""
   }
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       CLIGHTNING_SOCKET: ""
