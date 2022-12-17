@@ -641,7 +641,7 @@ class BitcoinRoutes {
 
   private async getRbfHistory(req: Request, res: Response) {
     try {
-      const replacements = rbfCache.getRbfChain(req.params.txId) || [];
+      const replacements = rbfCache.getRbfTree(req.params.txId) || null;
       const replaces = rbfCache.getReplaces(req.params.txId) || null;
       res.json({
         replacements,
@@ -654,7 +654,7 @@ class BitcoinRoutes {
 
   private async getRbfReplacements(req: Request, res: Response) {
     try {
-      const result = rbfCache.getRbfChains(false);
+      const result = rbfCache.getRbfTrees(false);
       res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -663,7 +663,7 @@ class BitcoinRoutes {
 
   private async getFullRbfReplacements(req: Request, res: Response) {
     try {
-      const result = rbfCache.getRbfChains(true);
+      const result = rbfCache.getRbfTrees(true);
       res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

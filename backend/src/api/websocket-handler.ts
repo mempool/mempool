@@ -275,9 +275,9 @@ class WebsocketHandler {
     const rbfChanges = rbfCache.getRbfChanges();
     let rbfReplacements;
     let fullRbfReplacements;
-    if (Object.keys(rbfChanges.chains).length) {
-      rbfReplacements = rbfCache.getRbfChains(false);
-      fullRbfReplacements = rbfCache.getRbfChains(true);
+    if (Object.keys(rbfChanges.trees).length) {
+      rbfReplacements = rbfCache.getRbfTrees(false);
+      fullRbfReplacements = rbfCache.getRbfTrees(true);
     }
     const recommendedFees = feeApi.getRecommendedFee();
 
@@ -399,20 +399,16 @@ class WebsocketHandler {
           response['utxoSpent'] = outspends;
         }
 
-        if (rbfTransactions[client['track-tx']]) {
-          for (const rbfTransaction in rbfTransactions) {
-            if (client['track-tx'] === rbfTransaction) {
-              response['rbfTransaction'] = {
-                txid: rbfTransactions[rbfTransaction].txid,
-              };
-              break;
-            }
+        const rbfReplacedBy = rbfCache.getReplacedBy(client['track-tx']);
+        if (rbfReplacedBy) {
+          response['rbfTransaction'] = {
+            txid: rbfReplacedBy,
           }
         }
 
         const rbfChange = rbfChanges.map[client['track-tx']];
         if (rbfChange) {
-          response['rbfInfo'] = rbfChanges.chains[rbfChange];
+          response['rbfInfo'] = rbfChanges.trees[rbfChange];
         }
       }
 

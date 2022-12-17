@@ -19,7 +19,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo, RbfInfo } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -53,7 +53,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   rbfReplaces: string[];
-  rbfInfo: RbfInfo[];
+  rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
@@ -180,7 +180,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return of(null);
       })
     ).subscribe((rbfResponse) => {
-      this.rbfInfo = rbfResponse?.replacements || [];
+      this.rbfInfo = rbfResponse?.replacements;
       this.rbfReplaces = rbfResponse?.replaces || null;
     });
 
@@ -451,7 +451,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
-    this.rbfInfo = [];
+    this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
     document.body.scrollTo(0, 0);

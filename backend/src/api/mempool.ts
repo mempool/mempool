@@ -206,13 +206,15 @@ class Mempool {
     logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
   }
 
-  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {
+  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended[]; }): void {
     for (const rbfTransaction in rbfTransactions) {
-      if (this.mempoolCache[rbfTransaction]) {
+      if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
         // Store replaced transactions
-        rbfCache.add(this.mempoolCache[rbfTransaction], rbfTransactions[rbfTransaction]);
+        rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
         // Erase the replaced transactions from the local mempool
-        delete this.mempoolCache[rbfTransaction];
+        for (const replaced of rbfTransactions[rbfTransaction]) {
+          delete this.mempoolCache[replaced.txid];
+        }
       }
     }
   }

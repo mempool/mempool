@@ -4,13 +4,14 @@
   margin-top: 13px;
 }
 
-.rbf-chains {
+.rbf-trees {
   .info {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
     margin: 0;
+    margin-bottom: 0.5em;
 
     .type {
       .badge {
@@ -19,25 +20,8 @@
     }
   }
 
-  .chain {
+  .tree {
     margin-bottom: 1em;
-  }
-
-  .txids {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 2px;
-
-    .txid {
-      flex-basis: 0;
-      flex-grow: 1;
-
-      &.right {
-        text-align: right;
-      }
-    }
   }
 
   .timeline-wrapper.mined {
