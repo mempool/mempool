@@ -7,6 +7,7 @@ import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
+import TransactionRepository from './repositories/TransactionRepository';
 
 class Indexer {
   runIndexer = true;
@@ -78,6 +79,7 @@ class Indexer {
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
       await blocks.$generateCPFPDatabase();
+      await TransactionRepository.$clearOldFirstSeen();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));

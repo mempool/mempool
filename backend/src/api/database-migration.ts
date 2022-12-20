@@ -444,8 +444,8 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 50 && isBitcoin === true) {
-      await this.$executeQuery('ALTER TABLE `transactions` ADD first_seen datetime DEFAULT NULL');
-      await this.updateToSchemaVersion(49);
+      await this.$executeQuery('ALTER TABLE `transactions` ADD first_seen datetime DEFAULT NULL, ADD INDEX (first_seen)');
+      await this.updateToSchemaVersion(50);
     }
   }
 

@@ -463,7 +463,7 @@ class WebsocketHandler {
       }
     }
 
-    if (config.MEMPOOL.TRANSACTION_INDEXING) {
+    if (Common.firstSeenIndexingEnabled()) {
       await mempool.$saveTxFirstSeenTimes(transactions, _memPool);
     }
 

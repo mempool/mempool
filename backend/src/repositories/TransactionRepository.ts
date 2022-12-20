@@ -1,6 +1,7 @@
+import config from '../config';
 import DB from '../database';
 import logger from '../logger';
-import { Ancestor, CpfpInfo, TransactionExtended, TransactionExtras } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, TransactionExtras } from '../mempool.interfaces';
 
 interface TxInfo {
   txid: string;
@@ -91,6 +92,28 @@ class TransactionRepository {
       }
     } catch (e) {
       logger.err('Cannot get transaction cpfp info from db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $clearOldFirstSeen() {
+    if (config.MEMPOOL.FIRST_SEEN_INDEXING_DAYS > 0) {
+      const cutoff = Math.floor(Date.now() / 1000) - (config.MEMPOOL.FIRST_SEEN_INDEXING_DAYS * 86400);
+      await this.$clearFirstSeenBefore(cutoff);
+    }
+  }
+
+  private async $clearFirstSeenBefore(cutoff: number) {
+    try {
+      const result = await DB.query(
+        `
+          DELETE FROM transactions
+          WHERE cluster is null AND first_seen < FROM_UNIXTIME(?)
+        ;`,
+        [cutoff]
+      );
+    } catch (e: any) {
+      logger.err(`Cannot clear old tx first seen times from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

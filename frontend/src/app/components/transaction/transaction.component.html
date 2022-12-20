@@ -75,10 +75,10 @@
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
+                    <td><app-time-span [time]="tx.status.block_time - transactionTime"></app-time-span></td>
                   </tr>
                 </ng-template>
-                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && (cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length) || !(transactionTime > 0))">
                   <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
@@ -509,7 +509,7 @@
           <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
         </td>
       </tr>
-      <tr *ngIf="tx?.status?.confirmed && (!cpfpInfo || (!cpfpInfo?.bestDescendant && !cpfpInfo?.descendants?.length && !cpfpInfo?.ancestors?.length)) && network !== 'liquid' && network !== 'liquidtestnet'">
+      <tr *ngIf="tx?.status?.confirmed && (!cpfpInfo || (!cpfpInfo?.bestDescendant && !cpfpInfo?.descendants?.length && !cpfpInfo?.ancestors?.length)) && transactionTime > 0 && network !== 'liquid' && network !== 'liquidtestnet'">
         <td class="td-width" i18n="transaction.features|Transaction Features">Features</td>
         <td>
           <app-tx-features [tx]="tx"></app-tx-features>
