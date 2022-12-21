@@ -16,9 +16,18 @@
       <div class="nodes">
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <ng-container *ngIf="cell.replacement; else nonNode">
-            <div class="node" [class.selected]="txid === cell.replacement.tx.txid" [class.mined]="cell.replacement.tx.mined" [class.first-node]="cell.first">
+            <div class="node"
+              [class.selected]="txid === cell.replacement.tx.txid"
+              [class.mined]="cell.replacement.tx.mined"
+              [class.first-node]="cell.first"
+            >
               <div class="track"></div>
-              <a class="shape-border" [class.rbf]="cell.replacement.tx.rbf" [routerLink]="['/tx/' | relativeUrl, cell.replacement.tx.txid]" [title]="cell.replacement.tx.txid">
+              <a class="shape-border"
+                [class.rbf]="cell.replacement.tx.rbf"
+                [routerLink]="['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                (pointerover)="onHover($event, cell.replacement);"
+                (pointerout)="onBlur($event);"
+              >
                 <div class="shape"></div>
               </a>
               <span class="fee-rate">{{ cell.replacement.tx.fee / (cell.replacement.tx.vsize) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span>
@@ -48,6 +57,11 @@
   <ng-template #intervalSpacer>
     <div class="interval-spacer"></div>
   </ng-template>
+
+  <app-rbf-timeline-tooltip
+    [rbfInfo]="hoverInfo"
+    [cursorPosition]="tooltipPosition"
+  ></app-rbf-timeline-tooltip>
 
   <!-- <app-rbf-timeline-tooltip
     *ngIf=[tooltip]

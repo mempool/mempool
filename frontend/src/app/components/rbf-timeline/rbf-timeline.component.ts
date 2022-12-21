@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, Inject, LOCALE_ID } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, Inject, LOCALE_ID, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { RbfInfo, RbfTree } from '../../interfaces/node-api.interface';
 import { StateService } from '../../services/state.service';
@@ -21,6 +21,9 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   @Input() replacements: RbfTree;
   @Input() txid: string;
   rows: TimelineCell[][] = [];
+
+  hoverInfo: RbfInfo | void = null;
+  tooltipPosition = { x: 0, y: 0 };
 
   dir: 'rtl' | 'ltr' = 'ltr';
 
@@ -120,46 +123,59 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     return rows;
   }
 
-    // annotates a 2D timeline array with info needed to draw connecting lines for multi-replacements
-    connectTimelines(timelines: RbfInfo[][]): TimelineCell[][] {
-      const rows: TimelineCell[][] = [];
-      timelines.forEach((lines, row) => {
-        rows.push([]);
-        let started = false;
-        let finished = false;
-        lines.forEach((replacement, column) => {
-          const cell: TimelineCell = {};
-          if (replacement) {
-            cell.replacement = replacement;
+  // annotates a 2D timeline array with info needed to draw connecting lines for multi-replacements
+  connectTimelines(timelines: RbfInfo[][]): TimelineCell[][] {
+    const rows: TimelineCell[][] = [];
+    timelines.forEach((lines, row) => {
+      rows.push([]);
+      let started = false;
+      let finished = false;
+      lines.forEach((replacement, column) => {
+        const cell: TimelineCell = {};
+        if (replacement) {
+          cell.replacement = replacement;
+        }
+        rows[row].push(cell);
+        if (replacement) {
+          if (!started) {
+            cell.first = true;
+            started = true;
           }
-          rows[row].push(cell);
-          if (replacement) {
-            if (!started) {
-              cell.first = true;
-              started = true;
-            }
-          } else if (started && !finished) {
-            if (column < timelines[row].length) {
-              let matched = false;
-              for (let i = row; i >= 0 && !matched; i--) {
-                const nextCell = rows[i][column];
-                if (nextCell.replacement) {
-                  matched = true;
-                } else if (i === row) {
-                  rows[i][column] = {
-                    connector: 'corner'
-                  };
-                } else if (nextCell.connector !== 'corner') {
-                  rows[i][column] = {
-                    connector: 'pipe'
-                  };
-                }
+        } else if (started && !finished) {
+          if (column < timelines[row].length) {
+            let matched = false;
+            for (let i = row; i >= 0 && !matched; i--) {
+              const nextCell = rows[i][column];
+              if (nextCell.replacement) {
+                matched = true;
+              } else if (i === row) {
+                rows[i][column] = {
+                  connector: 'corner'
+                };
+              } else if (nextCell.connector !== 'corner') {
+                rows[i][column] = {
+                  connector: 'pipe'
+                };
               }
             }
-            finished = true;
           }
-        });
+          finished = true;
+        }
       });
-      return rows;
-    }
+    });
+    return rows;
+  }
+
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event) {
+    this.tooltipPosition = { x: event.clientX, y: event.clientY };
+  }
+
+  onHover(event, replacement): void {
+    this.hoverInfo = replacement;
+  }
+
+  onBlur(event): void {
+    this.hoverInfo = null;
+  }
 }
