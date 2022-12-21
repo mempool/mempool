@@ -62,6 +62,7 @@ import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-
 import { DifficultyMiningComponent } from '../components/difficulty-mining/difficulty-mining.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
+import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
 import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
 import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
@@ -141,6 +142,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     DifficultyMiningComponent,
     DifficultyTooltipComponent,
     RbfTimelineComponent,
+    RbfTimelineTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
@@ -247,6 +249,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     DifficultyMiningComponent,
     DifficultyTooltipComponent,
     RbfTimelineComponent,
+    RbfTimelineTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
