@@ -21,7 +21,7 @@ class Mempool {
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
   private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
-    deletedTransactions: TransactionExtended[]) => void) | undefined;
+    deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
