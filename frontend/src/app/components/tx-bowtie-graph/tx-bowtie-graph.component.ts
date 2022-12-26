@@ -68,6 +68,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   outspends: Outspend[] = [];
   zeroValueWidth = 60;
   zeroValueThickness = 20;
+  hasLine: boolean;
 
   outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
@@ -162,7 +163,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     let truncatedInputs = this.tx.vin.map((v, i) => {
       return {
         type: 'input',
-        value: v?.prevout?.value,
+        value: v?.prevout?.value || (v?.is_coinbase && !totalValue ? 0 : undefined),
         txid: v.txid,
         vout: v.vout,
         address: v?.prevout?.scriptpubkey_address || v?.prevout?.scriptpubkey_type?.toUpperCase(),
@@ -198,6 +199,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       path: `M ${(this.width / 2) - this.midWidth} ${(this.height / 2) + 0.5} L ${(this.width / 2) + this.midWidth} ${(this.height / 2) + 0.5}`,
       style: `stroke-width: ${this.combinedWeight + 1}; stroke: ${this.gradient[1]}`
     };
+
+    this.hasLine = this.inputs.reduce((line, put) => line || !put.zeroValue, false)
+      && this.outputs.reduce((line, put) => line || !put.zeroValue, false);
   }
 
   calcTotalValue(tx: Transaction): number {
@@ -278,6 +282,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     lineParams.forEach((line, i) => {
       if (xputs[i].value === 0) {
         line.outerY = lastOuter + (this.zeroValueThickness / 2);
+        if (xputs.length === 1) {
+          line.outerY = (this.height / 2);
+        }
         lastOuter += this.zeroValueThickness + spacing;
         return;
       }

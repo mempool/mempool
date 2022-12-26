@@ -91,6 +91,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             tap((channels) => {
+              if (!this.transactions) {
+                return;
+              }
               const transactions = this.transactions.filter((tx) => !tx._channels);
               channels.forEach((channel, i) => {
                 transactions[i]._channels = channel;
