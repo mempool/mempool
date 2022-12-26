@@ -88,7 +88,7 @@
         <stop offset="100%" stop-color="transparent" />
       </linearGradient>
     </defs>
-    <path [attr.d]="middle.path" class="line middle" [style]="middle.style"/>
+    <path *ngIf="hasLine" [attr.d]="middle.path" class="line middle" [style]="middle.style"/>
     <ng-container *ngFor="let input of inputs; let i = index">
       <path *ngIf="connectors && !inputData[i].coinbase && !inputData[i].pegin"
         [attr.d]="input.connectorPath"
@@ -106,12 +106,22 @@
         (pointerout)="onBlur($event, 'input', i);"
         (click)="onClick($event, 'input', inputData[i].index);"
       />
-      <path
+      <path *ngIf="!input.zeroValue"
         [attr.d]="input.path"
         class="line {{input.class}}"
         [class.highlight]="inputIndex != null && inputData[i].index === inputIndex"
         [style]="input.style"
         attr.marker-start="url(#{{input.class}}-arrow)"
+        (pointerover)="onHover($event, 'input', i);"
+        (pointerout)="onBlur($event, 'input', i);"
+        (click)="onClick($event, 'input', inputData[i].index);"
+      />
+      <path *ngIf="input.zeroValue"
+        [attr.d]="input.path"
+        class="line {{input.class}} zerovalue"
+        [class.highlight]="inputIndex != null && inputData[i].index === inputIndex"
+        [class.zerovalue]="input.zeroValue"
+        [style]="input.style"
         (pointerover)="onHover($event, 'input', i);"
         (pointerout)="onBlur($event, 'input', i);"
         (click)="onClick($event, 'input', inputData[i].index);"
