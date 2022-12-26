@@ -120,7 +120,7 @@ export const languages: Language[] = [
    { code: 'he', name: 'עברית' },           // Hebrew
    { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'lv', name: 'Latviešu' },        // Latvian
-// { code: 'lt', name: 'Lietuvių' },        // Lithuanian
+   { code: 'lt', name: 'Lietuvių' },        // Lithuanian
    { code: 'hu', name: 'Magyar' },          // Hungarian
    { code: 'mk', name: 'Македонски' },      // Macedonian
 // { code: 'ms', name: 'Bahasa Melayu' },   // Malay
