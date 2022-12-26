@@ -1,20 +1,32 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/backend"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: npm
-  directory: "/frontend"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: docker
-  directory: "/docker/backend"
-  schedule:
-    interval: weekly
-- package-ecosystem: "github-actions"
-  directory: "/"
-  schedule:
-      interval: "weekly"
+  - package-ecosystem: npm
+    directory: "/backend"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: docker
+    directory: "/docker/backend"
+    schedule:
+      interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

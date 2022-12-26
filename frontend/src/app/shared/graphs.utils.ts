@@ -85,10 +85,10 @@ export const download = (href, name) => {
   document.body.removeChild(a);
 };
 
-export function detectWebGL() {
+export function detectWebGL(): boolean {
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  return (gl && gl instanceof WebGLRenderingContext);
+  return !!(gl && gl instanceof WebGLRenderingContext);
 }
 
 /**
