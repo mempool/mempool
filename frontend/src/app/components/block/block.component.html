@@ -57,8 +57,21 @@
               <tr *ngIf="!auditDataMissing && indexingAvailable">
                 <td i18n="block.health">Block health</td>
                 <td>
-                  <span *ngIf="blockAudit?.matchRate != null">{{ blockAudit.matchRate }}%</span>
-                  <span *ngIf="blockAudit?.matchRate === null" i18n="unknown">Unknown</span>
+                  <span
+                    class="health-badge badge"
+                    [class.badge-success]="blockAudit?.matchRate >= 99"
+                    [class.badge-warning]="blockAudit?.matchRate >= 75 && blockAudit?.matchRate < 99"
+                    [class.badge-danger]="blockAudit?.matchRate < 75"
+                    *ngIf="blockAudit?.matchRate != null; else nullHealth"
+                  >{{ blockAudit?.matchRate }}%</span>
+                  <ng-template #nullHealth>
+                    <ng-container *ngIf="!isLoadingAudit; else loadingHealth">
+                      <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                    </ng-container>
+                  </ng-template>
+                  <ng-template #loadingHealth>
+                    <span class="skeleton-loader" style="max-width: 60px"></span>
+                  </ng-template>
                 </td>
               </tr>
             </ng-container>
