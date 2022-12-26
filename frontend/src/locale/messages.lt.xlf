@@ -331,7 +331,7 @@
       </trans-unit>
       <trans-unit id="7e69426bd97a606d8ae6026762858e6e7c86a1fd" datatype="html">
         <source>Balance</source>
-        <target>Balansas</target>
+        <target>Likutis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">30</context>
@@ -348,7 +348,7 @@
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transaction</source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> pervedimas</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">50</context>
@@ -373,7 +373,7 @@
       </trans-unit>
       <trans-unit id="14779b0ce4cbc4d975a35a8fe074426228a324f3" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> transactions</source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> pervedimai</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/>operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">51</context>
@@ -554,7 +554,7 @@
       </trans-unit>
       <trans-unit id="add4cd82e3e38a3110fe67b3c7df56e9602644ee" datatype="html">
         <source>Transactions</source>
-        <target>Transakcijos</target>
+        <target>Operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">15,18</context>
@@ -615,7 +615,7 @@
       </trans-unit>
       <trans-unit id="6b2fdbdddef74630e1076d58786ca339a8c030f0" datatype="html">
         <source>Bisq Trading Volume</source>
-        <target>Bisq Prekybos Apimtis</target>
+        <target>Bisq Mainų Apimtis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -733,7 +733,7 @@
       </trans-unit>
       <trans-unit id="3f42ea126dba9186d89dffe43937f2b9c17858d6" datatype="html">
         <source>Bisq Price Index</source>
-        <target>Bisq Kainų Indeksas</target>
+        <target>Bisq Kainos Indeksas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -820,7 +820,7 @@
       </trans-unit>
       <trans-unit id="f4ebbeea643a58f45e665e960b494b2ea30b87da" datatype="html">
         <source>Buy Offers</source>
-        <target>Pirkimo Pasiūlymai</target>
+        <target>Perka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">73,74</context>
@@ -829,7 +829,7 @@
       </trans-unit>
       <trans-unit id="abf29235edbf341b6f626c315ff509f38fbf728a" datatype="html">
         <source>Sell Offers</source>
-        <target>Pardavimo Pasiūlymai</target>
+        <target>Parduoda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.html</context>
           <context context-type="linenumber">74,77</context>
@@ -851,7 +851,7 @@
       </trans-unit>
       <trans-unit id="2a30a4cdb123a03facc5ab8c5b3e6d8b8dbbc3d4" datatype="html">
         <source>BSQ statistics</source>
-        <target>BSQ Statistika</target>
+        <target>BSQ statistika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">2</context>
@@ -940,7 +940,7 @@
       </trans-unit>
       <trans-unit id="fb5b5aec9a6add4912de64b7bbc55884cc7f8e3a" datatype="html">
         <source>Unspent TXOs</source>
-        <target>Nepanaudos Išeigos</target>
+        <target>Nepanaudotos išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">28</context>
@@ -957,7 +957,7 @@
       </trans-unit>
       <trans-unit id="0f8a41c901cd606bd3389d8a022cee193264f20b" datatype="html">
         <source>Spent TXOs</source>
-        <target>Panaudotos Išeigos</target>
+        <target>Panaudotos Išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1016,7 +1016,7 @@
       </trans-unit>
       <trans-unit id="93883f08c5e22b14770da46e1a5b724bab7d43fb" datatype="html">
         <source>Outputs</source>
-        <target>Išeigos</target>
+        <target>Išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1039,7 +1039,7 @@
       </trans-unit>
       <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
         <source>Type</source>
-        <target>Tipas</target>
+        <target>Rūšis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction-details/bisq-transaction-details.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1076,7 +1076,7 @@
       </trans-unit>
       <trans-unit id="b59ea65c89a5ae15b787d8318fdad9edd6fec243" datatype="html">
         <source>Transaction</source>
-        <target>Transakcija</target>
+        <target>Operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">6,10</context>
@@ -1208,7 +1208,7 @@
       </trans-unit>
       <trans-unit id="31d8d7f29ddbd3f64d374a132ddacd5e4a0835a2" datatype="html">
         <source>Inputs &amp; Outputs</source>
-        <target>Įvestys ir Išeigos</target>
+        <target>Įvestys ir Išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">97,105</context>
@@ -1230,7 +1230,7 @@
       </trans-unit>
       <trans-unit id="bisq.transaction.browser-title" datatype="html">
         <source>Transaction: <x id="INTERPOLATION" equiv-text="this.txId"/></source>
-        <target>Transakcija: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
+        <target>Operacija: <x id="INTERPOLATION" equiv-text="this.txId"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">50</context>
@@ -1246,7 +1246,7 @@
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
         <source>BSQ Transactions</source>
-        <target>BSQ Transakcijos</target>
+        <target>BSQ Operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1284,7 +1284,7 @@
       </trans-unit>
       <trans-unit id="8411955056013208681" datatype="html">
         <source>Asset listing fee</source>
-        <target>Turto įtraukimo į sąrašą mokestis</target>
+        <target>Įtraukimo į sąrašą mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1340,7 +1340,7 @@
       </trans-unit>
       <trans-unit id="450749685636583691" datatype="html">
         <source>Pay trade fee</source>
-        <target>Mokėti prekybos mokestį</target>
+        <target>Mokėti mainų mokestį</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1388,7 +1388,7 @@
       </trans-unit>
       <trans-unit id="8694527859973232423" datatype="html">
         <source>Vote reveal</source>
-        <target>Balsavimo atskleidimas</target>
+        <target>Rodyti balsus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -1445,6 +1445,7 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
+        <target>Mūsų Bitkoino bendruomenei skirta atminties ir blokų grandinės naršyklė, daugiausia dėmesio skirianti mokesčių rinkai ir daugiasluoksnei ekosistemai, savarankiškai leidžiama be jokių patikimų trečiųjų šalių.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1452,6 +1453,7 @@
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
+        <target>Verslo Rėmėjai 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">29,32</context>
@@ -1460,6 +1462,7 @@
       </trans-unit>
       <trans-unit id="a46e9bc519dc1c320d48635e924d444364845ca8" datatype="html">
         <source>Community Sponsors ❤️</source>
+        <target>Bendruomenės Rėmėjai ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">177,180</context>
@@ -1468,6 +1471,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
+        <target>Bendruomenės Integracijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">191,193</context>
@@ -1476,6 +1480,7 @@
       </trans-unit>
       <trans-unit id="020cce975a5d7e0cc0f4578903358459d693e4bb" datatype="html">
         <source>Community Alliances</source>
+        <target>Bendruomenės Aljansai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">281,283</context>
@@ -1484,6 +1489,7 @@
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
+        <target>Projekto Vertėjai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">297,299</context>
@@ -1492,6 +1498,7 @@
       </trans-unit>
       <trans-unit id="2dd9b8a8997a6b57413ca3cd32dd38cef9fa39c2" datatype="html">
         <source>Project Contributors</source>
+        <target>Projekto Pagalbininkai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">311,313</context>
@@ -1500,6 +1507,7 @@
       </trans-unit>
       <trans-unit id="3d395b07b1f87656ed773adcbb3daf8e00c08779" datatype="html">
         <source>Project Members</source>
+        <target>Projekto Nariai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">323,325</context>
@@ -1508,6 +1516,7 @@
       </trans-unit>
       <trans-unit id="d177262e3a43b2a7221183812daf0ada97659436" datatype="html">
         <source>Project Maintainers</source>
+        <target>Projekto Prižiūrėtojai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">336,338</context>
@@ -1516,6 +1525,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
+        <target>Apie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1535,6 +1545,7 @@
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="ms.m"/> of <x id="multisigN" equiv-text="ms.n"/></source>
+        <target>Multiparašas <x id="multisigM" equiv-text="ms.m"/> iš <x id="multisigN" equiv-text="ms.n"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address-labels/address-labels.component.ts</context>
           <context context-type="linenumber">105</context>
@@ -1542,6 +1553,7 @@
       </trans-unit>
       <trans-unit id="04ffd930e7a2dc086c952a3a51b42c836bf21cc1" datatype="html">
         <source>Unconfidential</source>
+        <target>Nekonfidencialu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">15</context>
@@ -1554,6 +1566,7 @@
       </trans-unit>
       <trans-unit id="30751732ff4b8f6ddb2a906e0173072ac29d412a" datatype="html">
         <source>Confidential</source>
+        <target>Konfidencialu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1594,6 +1607,7 @@
       </trans-unit>
       <trans-unit id="address.component.browser-title" datatype="html">
         <source>Address: <x id="INTERPOLATION" equiv-text="this.addressString"/></source>
+        <target>Adresas: <x id="INTERPOLATION" equiv-text="this.addressString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">70</context>
@@ -1605,6 +1619,7 @@
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transaction</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> iš <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1613,6 +1628,7 @@
       </trans-unit>
       <trans-unit id="0f6ada0cfb60aefd8f77f8a22349850ce186d666" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> transactions</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> iš <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> operacijų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">61</context>
@@ -1621,6 +1637,7 @@
       </trans-unit>
       <trans-unit id="f094f67fbe759cdbeb2ea14455634bbe5cc6375d" datatype="html">
         <source>Error loading address data.</source>
+        <target>Įkeliant adreso duomenis įvyko klaida.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">130</context>
@@ -1629,6 +1646,7 @@
       </trans-unit>
       <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target> <x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/> Šiuo adresu yra daug operacijų, daugiau nei gali parodyti jūsų vidinė sistema. Žr. daugiau apie <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>, kaip nustatyti galingesnę vidinę sistemą <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> . <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Apsvarstykite galimybę peržiūrėti šį adresą oficialioje „Mempool“ svetainėje:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">135,138</context>
@@ -1637,6 +1655,7 @@
       </trans-unit>
       <trans-unit id="f8c91b77ad53ccd0f6adb4a6ea3a0f5c3329688b" datatype="html">
         <source>Asset</source>
+        <target>Turtas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1646,6 +1665,7 @@
       </trans-unit>
       <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
         <source>Name</source>
+        <target>Pavadinimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1666,6 +1686,7 @@
       </trans-unit>
       <trans-unit id="8f301d45550dcb7dec91cc1fdc1f65f13c6a2892" datatype="html">
         <source>Precision</source>
+        <target>Tikslumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1675,6 +1696,7 @@
       </trans-unit>
       <trans-unit id="80475fc1bf22ded644db203c43a075f623c527d4" datatype="html">
         <source>Issuer</source>
+        <target>Emitentas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">31</context>
@@ -1684,6 +1706,7 @@
       </trans-unit>
       <trans-unit id="e357dfd9e8685f17a862680cd98fe4aa2e068d28" datatype="html">
         <source>Issuance TX</source>
+        <target>Išdavimo TX</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">35</context>
@@ -1693,6 +1716,7 @@
       </trans-unit>
       <trans-unit id="c5b2c0d65b8fd12ebf8c0d79f562703776fc954e" datatype="html">
         <source>Pegged in</source>
+        <target>Prisegta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1702,6 +1726,7 @@
       </trans-unit>
       <trans-unit id="8f5d6ce525a24b049fee47f9b2d8447cca97ccc8" datatype="html">
         <source>Pegged out</source>
+        <target>Išsegta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1711,6 +1736,7 @@
       </trans-unit>
       <trans-unit id="e21556753a442f3d474ccfed50cd3f60bec18fe3" datatype="html">
         <source>Burned amount</source>
+        <target>Sudeginta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">51</context>
@@ -1720,6 +1746,7 @@
       </trans-unit>
       <trans-unit id="1990b8bef8f205a7d1b821aa4f979cc9f4fe179d" datatype="html">
         <source>Circulating amount</source>
+        <target>Apyvartoje cirkuliuojantis kiekis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">55</context>
@@ -1733,6 +1760,7 @@
       </trans-unit>
       <trans-unit id="c3360a933cb312b395d276a2b865214cf832df58" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> of <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/> </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ (transactions?.length | number) || '?' }}"/> iš <x id="INTERPOLATION_1" equiv-text="{{ txCount | number }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">80</context>
@@ -1741,6 +1769,7 @@
       </trans-unit>
       <trans-unit id="d2a84740e76b7220516a9f10644e4b3bdabdb833" datatype="html">
         <source>Peg In/Out and Burn Transactions</source>
+        <target>Prisegimo/išsegimo ir deginimo operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">81</context>
@@ -1749,6 +1778,7 @@
       </trans-unit>
       <trans-unit id="fcbd3315aa10b59ba6ef383c6f16ace6c9d53b71" datatype="html">
         <source>Issuance and Burn Transactions</source>
+        <target>Išdavimo ir deginimo operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">82</context>
@@ -1757,6 +1787,7 @@
       </trans-unit>
       <trans-unit id="ef5ac12104751b93b03c16f64d4c3a4341dce89c" datatype="html">
         <source>Error loading asset data.</source>
+        <target>Įkeliant lėšų duomenis įvyko klaida.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.html</context>
           <context context-type="linenumber">152</context>
@@ -1765,6 +1796,7 @@
       </trans-unit>
       <trans-unit id="asset.component.asset-browser-title" datatype="html">
         <source>Asset: <x id="INTERPOLATION" equiv-text="this.assetString"/></source>
+        <target>Lėšos: <x id="INTERPOLATION" equiv-text="this.assetString"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset/asset.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -1772,6 +1804,7 @@
       </trans-unit>
       <trans-unit id="e3f9fda25b281496fe296fb7e8228f59b50983ad" datatype="html">
         <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> assets</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> lėšų grupė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -1783,6 +1816,7 @@
       </trans-unit>
       <trans-unit id="ee8f8008bae6ce3a49840c4e1d39b4af23d4c263" datatype="html">
         <source>Assets</source>
+        <target>Lėšos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1803,6 +1837,7 @@
       </trans-unit>
       <trans-unit id="d06e27f7453fcf29134f9e61533ea4eb4b890f5f" datatype="html">
         <source>Featured</source>
+        <target>Rodomas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1810,6 +1845,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>Visi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1837,6 +1873,7 @@
       </trans-unit>
       <trans-unit id="aef0d676b15fdae8cb70fc3b089cce7399fde9da" datatype="html">
         <source>Search asset</source>
+        <target>Ieškoti lėšų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1845,6 +1882,7 @@
       </trans-unit>
       <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
         <source>Clear</source>
+        <target>Išvalyti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1853,6 +1891,7 @@
       </trans-unit>
       <trans-unit id="4ad173c0e4010b1f25bf58e96a383edc1b59cd80" datatype="html">
         <source>Ticker</source>
+        <target>Tikeris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -1865,6 +1904,7 @@
       </trans-unit>
       <trans-unit id="465c39daa2b644679d73a451043622f1610a2084" datatype="html">
         <source>Issuer domain</source>
+        <target>Išdavėjo domenas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -1877,6 +1917,7 @@
       </trans-unit>
       <trans-unit id="d5e7c95d7c8920ae0a384e3fffb14776b1e203f4" datatype="html">
         <source>Asset ID</source>
+        <target>Lėšų ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">7,10</context>
@@ -1889,6 +1930,7 @@
       </trans-unit>
       <trans-unit id="52686df280be57a57e1e9ecf5786499b147e0e90" datatype="html">
         <source>Error loading assets data.</source>
+        <target>Įkeliant lėšų duomenis įvyko klaida.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets.component.html</context>
           <context context-type="linenumber">48,53</context>
@@ -1897,6 +1939,7 @@
       </trans-unit>
       <trans-unit id="2b34680062c4aed90c4d846eab42d6e99501b783" datatype="html">
         <source>Offline</source>
+        <target>Neprisijungęs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">36,37</context>
@@ -1913,6 +1956,7 @@
       </trans-unit>
       <trans-unit id="c5d46228bea3555d65c705bad40be80f8798a113" datatype="html">
         <source>Reconnecting...</source>
+        <target>Jungiamasi iš naujo...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">37,42</context>
@@ -1929,6 +1973,7 @@
       </trans-unit>
       <trans-unit id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad" datatype="html">
         <source>Layer 2 Networks</source>
+        <target>2-tro Sluoksnio Tinklai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -1945,6 +1990,7 @@
       </trans-unit>
       <trans-unit id="f65253954b66e929a8b4d5ecaf61f9129f8cec64" datatype="html">
         <source>Dashboard</source>
+        <target>Valdymo skydas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">60,62</context>
@@ -1961,6 +2007,7 @@
       </trans-unit>
       <trans-unit id="299f97b8ee9c62d45f2cc01961aa1e5101d6d05a" datatype="html">
         <source>Stats</source>
+        <target>Statistika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">69,71</context>
@@ -1969,6 +2016,7 @@
       </trans-unit>
       <trans-unit id="a7ecfd7757d04b019beaa2d7208c728387bfc7e8" datatype="html">
         <source>Docs</source>
+        <target>Dokumentai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -1981,6 +2029,7 @@
       </trans-unit>
       <trans-unit id="4718502b32e47c66db00ac7cf4f7f058acb6e849" datatype="html">
         <source>Block </source>
+        <target>Blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -1989,6 +2038,7 @@
       </trans-unit>
       <trans-unit id="adb216f561e9101b11a8288cc7da44afa1ab33b8" datatype="html">
         <source>Template vs Mined</source>
+        <target>Šablonas vs Iškasimą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">11,17</context>
@@ -1997,6 +2047,7 @@
       </trans-unit>
       <trans-unit id="7faaaa08f56427999f3be41df1093ce4089bbd75" datatype="html">
         <source>Size</source>
+        <target>Dydis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">44,46</context>
@@ -2045,6 +2096,7 @@
       </trans-unit>
       <trans-unit id="919f2fd60a898850c24b1584362bbf18a4628bcb" datatype="html">
         <source>Weight</source>
+        <target>Svoris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">48,49</context>
@@ -2073,6 +2125,7 @@
       </trans-unit>
       <trans-unit id="e9503a2605cf5d41273a7d5ad653873f28f8f1a3" datatype="html">
         <source>Match rate</source>
+        <target>Atitikties rodiklis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">64,67</context>
@@ -2081,6 +2134,7 @@
       </trans-unit>
       <trans-unit id="c97ea3cbb05527c76b0011820ca76e8e00632ca1" datatype="html">
         <source>Missing txs</source>
+        <target>Trūkstamos txs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">68,71</context>
@@ -2089,6 +2143,7 @@
       </trans-unit>
       <trans-unit id="94d8765805623dd51e562e6e4bb669a944bbe516" datatype="html">
         <source>Added txs</source>
+        <target>Pridėtos txs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">72,75</context>
@@ -2097,6 +2152,7 @@
       </trans-unit>
       <trans-unit id="da5d7e263a3c6dc585d04844074afaa7229b88a0" datatype="html">
         <source>Missing</source>
+        <target>Trūksta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">84,85</context>
@@ -2105,6 +2161,7 @@
       </trans-unit>
       <trans-unit id="80e3b490720757978c99a7b5af3885faf202b955" datatype="html">
         <source>Added</source>
+        <target>Pridėta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">86,92</context>
@@ -2113,6 +2170,7 @@
       </trans-unit>
       <trans-unit id="ed8e33059967f554ff06b4f5b6049c465b92d9b3" datatype="html">
         <source>Block Fee Rates</source>
+        <target>Bloko Mokesčių Tarifai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2129,6 +2187,7 @@
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
         <source>At block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>Bloke: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">188</context>
@@ -2144,6 +2203,7 @@
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
         <source>Around block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <target>Aplink bloką: <x id="PH" equiv-text="data[0].data[2]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -2159,6 +2219,7 @@
       </trans-unit>
       <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
         <source>Block Fees</source>
+        <target>Bloko Mokesčiai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
           <context context-type="linenumber">6,7</context>
@@ -2175,6 +2236,7 @@
       </trans-unit>
       <trans-unit id="23555386d8af1ff73f297e89dd4af3f4689fb9dd" datatype="html">
         <source>Indexing blocks</source>
+        <target>Indeksavimo blokai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">110,105</context>
@@ -2210,6 +2272,7 @@
       </trans-unit>
       <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
         <source>Fee</source>
+        <target>Mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2235,6 +2298,7 @@
       </trans-unit>
       <trans-unit id="83b8b9dd1ed416447cf8438460a37b0ddeb2677c" datatype="html">
         <source>sat</source>
+        <target>sat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2256,6 +2320,7 @@
       </trans-unit>
       <trans-unit id="3e322ffba6477484e0dd2e65650fdd70322ea6d0" datatype="html">
         <source>Fee rate</source>
+        <target>Mokesčio tarifas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2285,6 +2350,7 @@
       </trans-unit>
       <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
         <source>sat/vB</source>
+        <target>sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2378,6 +2444,7 @@
       </trans-unit>
       <trans-unit id="54c58b39481f1749fce23fa8a77f616eee84d761" datatype="html">
         <source>Virtual size</source>
+        <target>Virtualus dydis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2395,6 +2462,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>Blokų Numatymo Tikslumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2411,6 +2479,7 @@
       </trans-unit>
       <trans-unit id="80065834848189518" datatype="html">
         <source>No data to display yet. Try again later.</source>
+        <target>Dar nėra duomenų, kuriuos būtų galima rodyti. Bandyk dar kartą vėliau.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">108,103</context>
@@ -2422,6 +2491,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>Atitikties rodiklis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">189,187</context>
@@ -2429,6 +2499,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
+        <target>Bloko Atlygis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2445,6 +2516,7 @@
       </trans-unit>
       <trans-unit id="56fa1cd221491b6478998679cba2dc8d55ba330d" datatype="html">
         <source>Block Sizes and Weights</source>
+        <target>Blokų Dydžiai ir Svoriai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2461,6 +2533,7 @@
       </trans-unit>
       <trans-unit id="7f5d0c10614e8a34f0e2dad33a0568277c50cf69" datatype="html">
         <source>Block</source>
+        <target>Blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -2473,6 +2546,7 @@
       </trans-unit>
       <trans-unit id="445c243f1d1cd2c7f0df430cdb2fa25639600396" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;/ng-template&gt;           &lt;/h1&gt;           &lt;div class=&quot;blockhash&quot; *ngIf=&quot;block"/></source>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;/ng-template&gt;           &lt;/h1&gt;           &lt;div class=&quot;blockhash&quot; *ngIf=&quot;block"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -2481,6 +2555,7 @@
       </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
         <source>Median fee</source>
+        <target>Vidutinis mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">36,37</context>
@@ -2501,6 +2576,7 @@
       </trans-unit>
       <trans-unit id="ae9770436d1823a1ddfa0837c5a98f412a0d42c4" datatype="html">
         <source>Total fees</source>
+        <target>Bendri mokesčiai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -2530,6 +2606,7 @@
       </trans-unit>
       <trans-unit id="21f88da2fbe81e4dc893ce1df92bd0fe25bcecee" datatype="html">
         <source>Miner</source>
+        <target>Radėjas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -2546,6 +2623,7 @@
       </trans-unit>
       <trans-unit id="block.component.browser-title" datatype="html">
         <source>Block <x id="BLOCK_HEIGHT" equiv-text="block.height"/>: <x id="BLOCK_ID" equiv-text="block.id"/></source>
+        <target>Blokas <x id="BLOCK_HEIGHT" equiv-text="block.height"/> : <x id="BLOCK_ID" equiv-text="block.id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -2557,6 +2635,7 @@
       </trans-unit>
       <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
         <source>Next Block</source>
+        <target>Kitas Blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2569,6 +2648,7 @@
       </trans-unit>
       <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
         <source>Previous Block</source>
+        <target>Ankstesnis Blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -2577,6 +2657,7 @@
       </trans-unit>
       <trans-unit id="855f852e5642a1279605465df0cbbe78c2622648" datatype="html">
         <source>Based on average native segwit transaction of 140 vBytes</source>
+        <target>Remiantis vidutine 140 vBaitų 'native segwit' operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">60,62</context>
@@ -2609,6 +2690,7 @@
       </trans-unit>
       <trans-unit id="b784270035273a5744e3c23c0fff31eebca32050" datatype="html">
         <source>Subsidy + fees:</source>
+        <target>Subsidija + mokesčiai:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">79,81</context>
@@ -2630,6 +2712,7 @@
       </trans-unit>
       <trans-unit id="fd04710d1a54d46cd1b81a13fc98e3d561b92141" datatype="html">
         <source>Bits</source>
+        <target>Bitai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">256,258</context>
@@ -2638,6 +2721,7 @@
       </trans-unit>
       <trans-unit id="d71be278785ad5940aacaf2b29a67bdbf6fc6be8" datatype="html">
         <source>Merkle root</source>
+        <target>Merkle šaknis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">260,262</context>
@@ -2646,6 +2730,7 @@
       </trans-unit>
       <trans-unit id="25148835d92465353fc5fe8897c27d5369978e5a" datatype="html">
         <source>Difficulty</source>
+        <target>Sudėtingumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">270,273</context>
@@ -2674,6 +2759,7 @@
       </trans-unit>
       <trans-unit id="a6bb63d98a8a67689070a79ccf13960c25b572ef" datatype="html">
         <source>Nonce</source>
+        <target>Noncas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">274,276</context>
@@ -2682,6 +2768,7 @@
       </trans-unit>
       <trans-unit id="cbfb79ff517493268a49acffa81ecc02336d8372" datatype="html">
         <source>Block Header Hex</source>
+        <target>Bloko Antraštės Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">278,279</context>
@@ -2690,6 +2777,7 @@
       </trans-unit>
       <trans-unit id="5f32c623f92bf3ca31202cc6281d4abd5febaf6a" datatype="html">
         <source>Details</source>
+        <target>Detalės</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">289,293</context>
@@ -2711,6 +2799,7 @@
       </trans-unit>
       <trans-unit id="822972b5d47ee555d3be0c7ab9aae8090ecdf7bc" datatype="html">
         <source>Error loading data.</source>
+        <target>Įkeliant duomenis įvyko klaida.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">308,310</context>
@@ -2739,6 +2828,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
+        <target>Telkinys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -2759,6 +2849,7 @@
       </trans-unit>
       <trans-unit id="65d447765db0bf3390e9b3ecce142bf34bb602a3" datatype="html">
         <source>Mined</source>
+        <target>Rasta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -2779,6 +2870,7 @@
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
+        <target>Atlygis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -2799,6 +2891,7 @@
       </trans-unit>
       <trans-unit id="c20172223f84462032664d717d739297e5a9e2fe" datatype="html">
         <source>Fees</source>
+        <target>Mokesčiai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">19,20</context>
@@ -2815,6 +2908,7 @@
       </trans-unit>
       <trans-unit id="e6213c3f05146287cf121868d9f3d3c3ff5f9714" datatype="html">
         <source>TXs</source>
+        <target>TXs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">21,22</context>
@@ -2843,6 +2937,7 @@
       </trans-unit>
       <trans-unit id="clipboard.copied-message" datatype="html">
         <source>Copied!</source>
+        <target>Nukopijuota!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clipboard/clipboard.component.ts</context>
           <context context-type="linenumber">19</context>
@@ -2850,6 +2945,7 @@
       </trans-unit>
       <trans-unit id="736a52d86df31df97dbb673d5dd4cc30ee322805" datatype="html">
         <source>Adjusted</source>
+        <target>Pakoreguota</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2858,6 +2954,7 @@
       </trans-unit>
       <trans-unit id="024cdb2814b0cb3f4ced148f1a0b9854447cb214" datatype="html">
         <source>Change</source>
+        <target>Pokytis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -2866,6 +2963,7 @@
       </trans-unit>
       <trans-unit id="63da83692b85cf17e0606153029a83fd4038d6dd" datatype="html">
         <source>Difficulty Adjustment</source>
+        <target>Sudėtingumo Pokytis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">1,5</context>
@@ -2878,6 +2976,7 @@
       </trans-unit>
       <trans-unit id="0912816d94f2f05a7eee8f7622670e0c6bbbce16" datatype="html">
         <source>Remaining</source>
+        <target>Likę</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -2890,6 +2989,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> blokai <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -2914,6 +3014,7 @@
       </trans-unit>
       <trans-unit id="b7ef3894d9b6f157c400ddc937c70c9881ecd896" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> <x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> blokas <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -2930,6 +3031,7 @@
       </trans-unit>
       <trans-unit id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef" datatype="html">
         <source>Estimate</source>
+        <target>Tikimasi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -2942,6 +3044,7 @@
       </trans-unit>
       <trans-unit id="680d5c75b7fd8d37961083608b9fcdc4167b4c43" datatype="html">
         <source>Previous</source>
+        <target>Ankstesnis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -2950,6 +3053,7 @@
       </trans-unit>
       <trans-unit id="5db469cd0357e5f578b85a996f7e99c9e4148ff5" datatype="html">
         <source>Current Period</source>
+        <target>Einamasis Periodas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -2962,6 +3066,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
+        <target>Kitas Blokų Atlygio Dalijimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -2970,6 +3075,7 @@
       </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
+        <target>Arba 2 kart daugiau už minimalų, arba Žemo Prioriteto tarifas (atsižvelgiant į tai, kuris mažesnis)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -2978,6 +3084,7 @@
       </trans-unit>
       <trans-unit id="eef30290726d3d569232f4c136082bb9daaf490b" datatype="html">
         <source>No Priority</source>
+        <target>Nėra Prioriteto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -2990,6 +3097,7 @@
       </trans-unit>
       <trans-unit id="49bba8e970aa3b1bec6fcff7228ef95ceb335f59" datatype="html">
         <source>Usually places your transaction in between the second and third mempool blocks</source>
+        <target>Paprastai įkelia jūsų operacija tarp antrojo ir trečiojo atminties blokų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2998,6 +3106,7 @@
       </trans-unit>
       <trans-unit id="29949587189ee02db19274db4ac656913cb243c3" datatype="html">
         <source>Low Priority</source>
+        <target>Žemas Prioritetas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -3010,6 +3119,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
+        <target>Paprastai įkelia jūsų operacija yra tarp pirmojo ir antrojo atminties blokų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3018,6 +3128,7 @@
       </trans-unit>
       <trans-unit id="ee847b69ef2dc81bb3e9b8cd30f02f8d63adbe07" datatype="html">
         <source>Medium Priority</source>
+        <target>Vidutinis Prioritetas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3030,6 +3141,7 @@
       </trans-unit>
       <trans-unit id="a5a4d2c76b74faddf1aab8dc6e092cddee5a6142" datatype="html">
         <source>Places your transaction in the first mempool block</source>
+        <target>Įkelia jūsų operaciją į pirmąjį atminties bloką</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,14</context>
@@ -3038,6 +3150,7 @@
       </trans-unit>
       <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
         <source>High Priority</source>
+        <target>Didelis Prioritetas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">10,15</context>
@@ -3050,6 +3163,7 @@
       </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>
+        <target>Įeinančios operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -3062,6 +3176,7 @@
       </trans-unit>
       <trans-unit id="a5950b2ce4c3ea32de91034de8269781eb333d73" datatype="html">
         <source>Backend is synchronizing</source>
+        <target>Vidinė sistema sinchronizuojasi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">8,10</context>
@@ -3074,6 +3189,7 @@
       </trans-unit>
       <trans-unit id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1" datatype="html">
         <source>vB/s</source>
+        <target>vB/s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -3087,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
         <source>Unconfirmed</source>
+        <target>Nepatvirtinta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">19,21</context>
@@ -3100,6 +3217,7 @@
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
+        <target>Mempool dydis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -3109,6 +3227,7 @@
       </trans-unit>
       <trans-unit id="c95f8a34509967d6cbcf118a9637b23a83633449" datatype="html">
         <source>Mining</source>
+        <target>Gavyba</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3117,6 +3236,7 @@
       </trans-unit>
       <trans-unit id="4592bd8fffebd3841fc8d59472caf4b4655e6184" datatype="html">
         <source>Pools Ranking</source>
+        <target>Baseinų Reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3129,6 +3249,7 @@
       </trans-unit>
       <trans-unit id="43f992a71c7b7def78d430e5af489b914cc61c11" datatype="html">
         <source>Pools Dominance</source>
+        <target>Baseinų dominavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3141,6 +3262,7 @@
       </trans-unit>
       <trans-unit id="5115edb23059f4dcfe6ce0a979e40962a149c35c" datatype="html">
         <source>Hashrate &amp; Difficulty</source>
+        <target>Maišos Dažnis ir Sudėtingumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -3149,6 +3271,7 @@
       </trans-unit>
       <trans-unit id="a3382a60534e9fff5c3a0fcde39bab356afc4a59" datatype="html">
         <source>Lightning</source>
+        <target>Žaibatinklis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">31</context>
@@ -3157,6 +3280,7 @@
       </trans-unit>
       <trans-unit id="b420668a91f8ebaf6e6409c4ba87f1d45961d2bd" datatype="html">
         <source>Lightning Nodes Per Network</source>
+        <target>Žaibatinklio Mazgai Tinkle</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3177,6 +3301,7 @@
       </trans-unit>
       <trans-unit id="ea8db27e6db64f8b940711948c001a1100e5fe9f" datatype="html">
         <source>Lightning Network Capacity</source>
+        <target>Žaibo Tinklo Talpumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">36</context>
@@ -3197,6 +3322,7 @@
       </trans-unit>
       <trans-unit id="8573a1576789bd2c4faeaed23037c4917812c6cf" datatype="html">
         <source>Lightning Nodes Per ISP</source>
+        <target>Žaibatinklio Mazgai Tenkantys Vienam IPT</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">38</context>
@@ -3209,6 +3335,7 @@
       </trans-unit>
       <trans-unit id="9d3ad4c6623870d96b65fb7a708fed6ce7c20044" datatype="html">
         <source>Lightning Nodes Per Country</source>
+        <target>Žaibatinklio Mazgai Tenkantys Vienai Šaliai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3225,6 +3352,7 @@
       </trans-unit>
       <trans-unit id="af8560ca50882114be16c951650f83bca73161a7" datatype="html">
         <source>Lightning Nodes World Map</source>
+        <target>Žaibatinklio Mazgų Pasaulio Žemėlapis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">42</context>
@@ -3241,6 +3369,7 @@
       </trans-unit>
       <trans-unit id="b482ceceb39c7a045cb2ab2c64f7091d21e63d44" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>Žaibatinklio Kanalų Pasaulio Žemėlapis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">44</context>
@@ -3253,6 +3382,7 @@
       </trans-unit>
       <trans-unit id="79a9dc5b1caca3cbeb1733a19515edacc5fc7920" datatype="html">
         <source>Hashrate</source>
+        <target>Maišos Dažnis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">8,10</context>
@@ -3281,6 +3411,7 @@
       </trans-unit>
       <trans-unit id="3510fc6daa1d975f331e3a717bdf1a34efa06dff" datatype="html">
         <source>Hashrate &amp; Difficulty</source>
+        <target>Maišos Dažnis ir Sudėtingumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.html</context>
           <context context-type="linenumber">27,29</context>
@@ -3293,6 +3424,7 @@
       </trans-unit>
       <trans-unit id="8105839921891777281" datatype="html">
         <source>Hashrate (MA)</source>
+        <target>Maišos dažnis (JV)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">292,291</context>
@@ -3304,6 +3436,7 @@
       </trans-unit>
       <trans-unit id="mining.pools-historical-dominance" datatype="html">
         <source>Pools Historical Dominance</source>
+        <target>Telkinių Istorinis Dominavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -3311,6 +3444,7 @@
       </trans-unit>
       <trans-unit id="5ee5eb7db86675abd5f0b0db835bf362ee9b23ff" datatype="html">
         <source>Indexing network hashrate</source>
+        <target>Tinklo maišos dažnio indeksavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3318,6 +3452,7 @@
       </trans-unit>
       <trans-unit id="439adfcf08f5035e2fd9e4c15e40eef92f6cc780" datatype="html">
         <source>Indexing pools hashrate</source>
+        <target>Telkinių maišos dažnio indeksavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3325,6 +3460,7 @@
       </trans-unit>
       <trans-unit id="5d4f792f048fcaa6df5948575d7cb325c9393383" datatype="html">
         <source>Graphs</source>
+        <target>Grafikai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/liquid-master-page/liquid-master-page.component.html</context>
           <context context-type="linenumber">71,74</context>
@@ -3341,6 +3477,7 @@
       </trans-unit>
       <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
         <source>Mining Dashboard</source>
+        <target>Gavybos Valdymo Skydas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -3353,6 +3490,7 @@
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>
+        <target>Žaibatinklio Naršyklė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">44,45</context>
@@ -3365,6 +3503,7 @@
       </trans-unit>
       <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
         <source>beta</source>
+        <target>beta versija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">45,48</context>
@@ -3373,6 +3512,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target>Dokumentacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">55,57</context>
@@ -3385,6 +3525,7 @@
       </trans-unit>
       <trans-unit id="b2cb12c1680a46464cae5aa0d0d1d6914733a75d" datatype="html">
         <source>Fee span</source>
+        <target>Mokesčio intervalas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -3393,6 +3534,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.stack.of.blocks" datatype="html">
         <source>Stack of <x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="blocksInBlock"/> mempool blokų krūva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">77</context>
@@ -3400,6 +3542,7 @@
       </trans-unit>
       <trans-unit id="mempool-block.block.no" datatype="html">
         <source>Mempool block <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></source>
+        <target>Mempool blokas <x id="INTERPOLATION" equiv-text="this.mempoolBlockIndex + 1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -3407,6 +3550,7 @@
       </trans-unit>
       <trans-unit id="2348971518300945764" datatype="html">
         <source>Range</source>
+        <target>Intervalas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">259</context>
@@ -3414,6 +3558,7 @@
       </trans-unit>
       <trans-unit id="1033261550402895380" datatype="html">
         <source>Sum</source>
+        <target>Suma</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">261</context>
@@ -3421,6 +3566,7 @@
       </trans-unit>
       <trans-unit id="26e78cd052d05a0c1a7db43fac8df52ec6950672" datatype="html">
         <source>Reward stats</source>
+        <target>Atlygio statistika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3429,6 +3575,7 @@
       </trans-unit>
       <trans-unit id="8527213d7c7dbffe48a45c4d796ae221d419c71a" datatype="html">
         <source>(144 blocks)</source>
+        <target>(144 blokai)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3437,6 +3584,7 @@
       </trans-unit>
       <trans-unit id="e1139ea570985b3f114e18876f09fd7223429983" datatype="html">
         <source>Latest blocks</source>
+        <target>Naujausi blokai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">53</context>
@@ -3449,6 +3597,7 @@
       </trans-unit>
       <trans-unit id="21d0c2d4d5429197892c827178819da2770f2f25" datatype="html">
         <source>Adjustments</source>
+        <target>Koregavimai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">67</context>
@@ -3457,6 +3606,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>Telkinių sėkmė (1 savaitė)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3465,6 +3615,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>Telkinių sėkmė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3473,6 +3624,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>Bendra visų gavybos telkinių sėkmė per praėjusią savaitę. Sėkmė, didesnė nei 100 %, reiškia, kad vidutinis einamosios epochos bloko laikas yra trumpesnis nei 10 minučių.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3481,6 +3633,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>Suskaičiuota telkinių  (1 sav.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3489,6 +3642,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
+        <target>Suskaičiuota telkinių</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3497,6 +3651,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
+        <target>Kiek unikalių telkinių rado bent vieną bloką per pastarąją savaitę.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3505,6 +3660,7 @@
       </trans-unit>
       <trans-unit id="9ef8b357c32266f8423e24bf654006d3aa8fcd0b" datatype="html">
         <source>Blocks (1w)</source>
+        <target>Blokai (1 sav.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3521,6 +3677,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
+        <target>Per pastarąją savaitę rastų blokų skaičius.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -3529,6 +3686,7 @@
       </trans-unit>
       <trans-unit id="3c3a423d91e36ac6624e909fcd2669a25685f847" datatype="html">
         <source>Rank</source>
+        <target>Reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">90,92</context>
@@ -3545,6 +3703,7 @@
       </trans-unit>
       <trans-unit id="3b85a3f96af9710b9a7684c5065bfbc2d3fb718a" datatype="html">
         <source>Empty blocks</source>
+        <target>Tušti blokai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">95,98</context>
@@ -3553,6 +3712,7 @@
       </trans-unit>
       <trans-unit id="d720761d772947b9a6a0ae3f1c68b2e7119259cf" datatype="html">
         <source>All miners</source>
+        <target>Visi išgavėjai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">113,114</context>
@@ -3561,6 +3721,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
+        <target>Telkinių sėkmė (1 sav.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">130,132</context>
@@ -3569,6 +3730,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
+        <target>Suskaičiuota Telkinių (1 sav.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">142,144</context>
@@ -3577,6 +3739,7 @@
       </trans-unit>
       <trans-unit id="mining.mining-pools" datatype="html">
         <source>Mining Pools</source>
+        <target>Gavybos Telkiniai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">57</context>
@@ -3584,6 +3747,7 @@
       </trans-unit>
       <trans-unit id="6095122426142344316" datatype="html">
         <source><x id="PH" equiv-text="i"/> blocks</source>
+        <target> <x id="PH" equiv-text="i"/> blokai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -3595,6 +3759,7 @@
       </trans-unit>
       <trans-unit id="2158ea60725d3a97aed6f0f00aa7df48d7bb42ff" datatype="html">
         <source>mining pool</source>
+        <target>gavybos telkinys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -3603,6 +3768,7 @@
       </trans-unit>
       <trans-unit id="cafc87479686947e2590b9f588a88040aeaf660b" datatype="html">
         <source>Tags</source>
+        <target>Žymos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool-preview.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -3627,6 +3793,7 @@
       </trans-unit>
       <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
         <source>Show all</source>
+        <target>Rodyti viską</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">53,55</context>
@@ -3647,6 +3814,7 @@
       </trans-unit>
       <trans-unit id="1eede69e18c5ac9c0b0295b72cabb7e64e029e74" datatype="html">
         <source>Hide</source>
+        <target>Slėpti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">55,58</context>
@@ -3655,6 +3823,7 @@
       </trans-unit>
       <trans-unit id="cc657077942054572b255be033d634cf601c50b6" datatype="html">
         <source>Hashrate (24h)</source>
+        <target>Maišos Dažnis (24 val.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">91,93</context>
@@ -3675,6 +3844,7 @@
       </trans-unit>
       <trans-unit id="91c20d9f5b4e74c46be050ed5bf0db732a86bcf7" datatype="html">
         <source>Estimated</source>
+        <target>Apytikris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3695,6 +3865,7 @@
       </trans-unit>
       <trans-unit id="b34d145304d2f8d17e98586e27652a29f21691fe" datatype="html">
         <source>Reported</source>
+        <target>Pranešta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">97,98</context>
@@ -3715,6 +3886,7 @@
       </trans-unit>
       <trans-unit id="d7739a540416169fc6674db5b39deacbb00730f3" datatype="html">
         <source>Luck</source>
+        <target>Sėkmė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">98,101</context>
@@ -3735,6 +3907,7 @@
       </trans-unit>
       <trans-unit id="88cb6e7b056be423b78e369ae1592c9e751095b8" datatype="html">
         <source>Mined blocks</source>
+        <target>Rasta blokų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">141,143</context>
@@ -3755,6 +3928,7 @@
       </trans-unit>
       <trans-unit id="149da150f9b3a141a73a58a25142a850107a8212" datatype="html">
         <source>24h</source>
+        <target>24 val</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">147</context>
@@ -3767,6 +3941,7 @@
       </trans-unit>
       <trans-unit id="f7b50e4989540954a9035833470efba042a2819c" datatype="html">
         <source>1w</source>
+        <target>1 sav</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">148</context>
@@ -3779,6 +3954,7 @@
       </trans-unit>
       <trans-unit id="d7bb114523b22ee8330164224b11d75e62966539" datatype="html">
         <source>Coinbase tag</source>
+        <target>Monetų bazės žyma</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">215,217</context>
@@ -3791,6 +3967,7 @@
       </trans-unit>
       <trans-unit id="f13cbfe8cfc955918e9f64466d2cafddb4760d9a" datatype="html">
         <source>Broadcast Transaction</source>
+        <target>Transliavimo Operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3808,6 +3985,7 @@
       </trans-unit>
       <trans-unit id="7e93f7285e22e5a3c58cdde2205d4d2b5bfc079c" datatype="html">
         <source>Transaction hex</source>
+        <target>Operacijos hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">6</context>
@@ -3820,6 +3998,7 @@
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
+        <target>Radimo atlygis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">5</context>
@@ -3836,6 +4015,7 @@
       </trans-unit>
       <trans-unit id="79b0842a2010172290ad09062bf51f09d8842f65" datatype="html">
         <source>Amount being paid to miners in the past 144 blocks</source>
+        <target>Suma, mokama išgavėjams per pastaruosius 144 blokus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -3844,6 +4024,7 @@
       </trans-unit>
       <trans-unit id="c4ae62409269c8255a390587baad3ff496889cba" datatype="html">
         <source>Reward Per Tx</source>
+        <target>Atlygis už Tx</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3864,6 +4045,7 @@
       </trans-unit>
       <trans-unit id="b41ac8dd7567baf0e88ad834b5dd95df03a19c09" datatype="html">
         <source>Average miners' reward per transaction in the past 144 blocks</source>
+        <target>Vidutinis gavybos atlygis už operaciją per pastaruosius 144 blokus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -3872,6 +4054,7 @@
       </trans-unit>
       <trans-unit id="31443c29cb161e8aa661eb5035f675746ef95b45" datatype="html">
         <source>sats/tx</source>
+        <target>sats/tx</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21,24</context>
@@ -3885,6 +4068,7 @@
       </trans-unit>
       <trans-unit id="f9bc2ce34cf7fc23c09b4cea1d92cc75ef4d6e71" datatype="html">
         <source>Average Fee</source>
+        <target>Vidutinis mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3897,6 +4081,7 @@
       </trans-unit>
       <trans-unit id="8be96dc461529381c812f64962c62f4228d01470" datatype="html">
         <source>Fee paid on average for each transaction in the past 144 blocks</source>
+        <target>Vidutinis mokestis už kiekvieną operaciją per pastaruosius 144 blokus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">31,32</context>
@@ -3905,6 +4090,7 @@
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
         <source>Explore the full Bitcoin ecosystem</source>
+        <target>Tyrinėkite visą Bitkoino ekosistemą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -3913,6 +4099,7 @@
       </trans-unit>
       <trans-unit id="7e892ba15f2c6c17e83510e273b3e10fc32ea016" datatype="html">
         <source>Search</source>
+        <target>Ieškoti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">11,18</context>
@@ -3921,6 +4108,7 @@
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
+        <target>Mempool pagal vBitus (sat/vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">7</context>
@@ -3929,6 +4117,7 @@
       </trans-unit>
       <trans-unit id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e" datatype="html">
         <source>TV view</source>
+        <target>TV vaizdas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3941,6 +4130,7 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
+        <target>Filtruoti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">57</context>
@@ -3949,6 +4139,7 @@
       </trans-unit>
       <trans-unit id="add9d52e5bf541c941df44e251a5c1cafcc92e9d" datatype="html">
         <source>Invert</source>
+        <target>Apversti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">76</context>
@@ -3957,6 +4148,7 @@
       </trans-unit>
       <trans-unit id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef" datatype="html">
         <source>Transaction vBytes per second (vB/s)</source>
+        <target>Operacijos vBaitai per sekundę (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">96</context>
@@ -3965,6 +4157,7 @@
       </trans-unit>
       <trans-unit id="date-base.just-now" datatype="html">
         <source>Just now</source>
+        <target>Dabar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -3976,6 +4169,7 @@
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
+        <target> Prieš<x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -4035,6 +4229,7 @@
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>Po <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -4094,6 +4289,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
+        <target>Per ~ <x id="DATE" equiv-text="dateStrings.i18nMinute"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -4157,6 +4353,7 @@
       </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
         <source>This transaction has been replaced by:</source>
+        <target>Ši operacija buvo pakeista:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -4166,6 +4363,7 @@
       </trans-unit>
       <trans-unit id="ef772ce5cf98a47b29175e3d46b8a9816c7990a2" datatype="html">
         <source>Unconfirmed</source>
+        <target>Nepatvirtinta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">32,39</context>
@@ -4179,6 +4377,7 @@
       </trans-unit>
       <trans-unit id="1bc4a5de56ea48a832e32294c124009867b478d0" datatype="html">
         <source>First seen</source>
+        <target>Pirmą kartą pamatytas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">101,102</context>
@@ -4212,6 +4411,7 @@
       </trans-unit>
       <trans-unit id="4e738ef3d2b4878f17f43002204f7b31aabb8e87" datatype="html">
         <source>ETA</source>
+        <target>Tikimasi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">108,109</context>
@@ -4221,6 +4421,7 @@
       </trans-unit>
       <trans-unit id="f9bad781ea9c5192160516ca55ddc5edc307ef07" datatype="html">
         <source>In several hours (or more)</source>
+        <target>Po kelių valandų (ar daugiau)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">114,117</context>
@@ -4230,6 +4431,7 @@
       </trans-unit>
       <trans-unit id="dd230222e3ae689913445ce93b6ae3f7cce7458b" datatype="html">
         <source>Descendant</source>
+        <target>Palikuonis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">161,163</context>
@@ -4239,6 +4441,7 @@
       </trans-unit>
       <trans-unit id="8c16167a5d7c96d14ff280b09de312d18d5e2511" datatype="html">
         <source>Ancestor</source>
+        <target>Protėvis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">175,177</context>
@@ -4248,6 +4451,7 @@
       </trans-unit>
       <trans-unit id="53fbdc20554c4e68ae509f652b38ab80021c0739" datatype="html">
         <source>Flow</source>
+        <target>Srautas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">195,198</context>
@@ -4261,6 +4465,7 @@
       </trans-unit>
       <trans-unit id="d0fd8887b50687cfc0fc1f6569f6fd6c5db4ffc0" datatype="html">
         <source>Hide diagram</source>
+        <target>Slėpti diagramą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">198,203</context>
@@ -4269,6 +4474,7 @@
       </trans-unit>
       <trans-unit id="f0c5f6f270e70cbe063b5368fcf48f9afc1abd9b" datatype="html">
         <source>Show more</source>
+        <target>Rodyti daugiau</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">219,221</context>
@@ -4277,6 +4483,7 @@
       </trans-unit>
       <trans-unit id="5403a767248e304199592271bba3366d2ca3f903" datatype="html">
         <source>Show less</source>
+        <target>Rodyti mažiau</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">221,227</context>
@@ -4285,6 +4492,7 @@
       </trans-unit>
       <trans-unit id="e7aa6db8df12d0158df972b6abfc65a8478b2b7d" datatype="html">
         <source>Show diagram</source>
+        <target>Rodyti diagramą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">241,242</context>
@@ -4293,6 +4501,7 @@
       </trans-unit>
       <trans-unit id="516a786e59a57efaf80e11370b4bade400f19445" datatype="html">
         <source>Locktime</source>
+        <target>Užrakinimo laikas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">280,282</context>
@@ -4301,6 +4510,7 @@
       </trans-unit>
       <trans-unit id="c9d9612bcd520103486b5fc84d84c9476a1b7f78" datatype="html">
         <source>Transaction not found.</source>
+        <target>Operacija nerasta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">443,444</context>
@@ -4309,6 +4519,7 @@
       </trans-unit>
       <trans-unit id="66b65556acb90d8764fe166a260af0309671698c" datatype="html">
         <source>Waiting for it to appear in the mempool...</source>
+        <target>Laukiama pasirodymo atmintinėje...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">444,449</context>
@@ -4317,6 +4528,7 @@
       </trans-unit>
       <trans-unit id="eb1737af67381ce6f0b347038bb4c65b3deb84be" datatype="html">
         <source>Effective fee rate</source>
+        <target>Efektyvus mokesčio tarifas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">477,480</context>
@@ -4326,6 +4538,7 @@
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
         <source>Coinbase</source>
+        <target>Monetų bazė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">54</context>
@@ -4334,6 +4547,7 @@
       </trans-unit>
       <trans-unit id="7d745f2569c4ddc2992529f00ed991e36dada39a" datatype="html">
         <source>(Newly Generated Coins)</source>
+        <target>(Naujai Sugeneruotos Monetos)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">54</context>
@@ -4342,6 +4556,7 @@
       </trans-unit>
       <trans-unit id="5de25175982d51c72d25bd79933e7b412d51e343" datatype="html">
         <source>Peg-in</source>
+        <target>Prisegimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">56,58</context>
@@ -4350,6 +4565,7 @@
       </trans-unit>
       <trans-unit id="23f4a0693bc0ad8dbdccfc0b04238edfaf846bc5" datatype="html">
         <source>ScriptSig (ASM)</source>
+        <target>ScriptSig (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">107,109</context>
@@ -4359,6 +4575,7 @@
       </trans-unit>
       <trans-unit id="3a5a04628e57fd93cfce206ccbc1432fed0925d3" datatype="html">
         <source>ScriptSig (HEX)</source>
+        <target>ScriptSig (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">111,114</context>
@@ -4368,6 +4585,7 @@
       </trans-unit>
       <trans-unit id="c64b73564fd858ee5a4f73040893c9d625ca56ad" datatype="html">
         <source>Witness</source>
+        <target>Liudytojas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">116,118</context>
@@ -4376,6 +4594,7 @@
       </trans-unit>
       <trans-unit id="a8bc418b73c6bfcefc1b07c84d7f1126ab2a3237" datatype="html">
         <source>P2SH redeem script</source>
+        <target>P2SH išpirkimo skriptas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">120,121</context>
@@ -4384,6 +4603,7 @@
       </trans-unit>
       <trans-unit id="d4b97cae5fffc21333bed5d04a95e103650ebfb2" datatype="html">
         <source>P2TR tapscript</source>
+        <target>P2TR tapskriptas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">124,126</context>
@@ -4392,6 +4612,7 @@
       </trans-unit>
       <trans-unit id="e1d63108bdf06fa14ec13f038e23eebd4d391b16" datatype="html">
         <source>P2WSH witness script</source>
+        <target>P2WSH liudininko skriptas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">126,128</context>
@@ -4400,6 +4621,7 @@
       </trans-unit>
       <trans-unit id="cb49c3831dcaed1b6ccaf5efe58730cf29a5d15d" datatype="html">
         <source>nSequence</source>
+        <target>nSequence</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">131,133</context>
@@ -4408,6 +4630,7 @@
       </trans-unit>
       <trans-unit id="26cdad3f9e94369ff12c5c628d8eb5c724e3acb3" datatype="html">
         <source>Previous output script</source>
+        <target>Ankstesnis išvesties skriptas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">136,137</context>
@@ -4416,6 +4639,7 @@
       </trans-unit>
       <trans-unit id="e7699861471f18a60e583512c45d84b388cfa120" datatype="html">
         <source>Previous output type</source>
+        <target>Ankstesnis išvesties tipas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">140,141</context>
@@ -4424,6 +4648,7 @@
       </trans-unit>
       <trans-unit id="9fb28e77d5963f2275397f2f9cee54f32942aeeb" datatype="html">
         <source>Peg-out to <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/><x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></source>
+        <target>Atsegti į <x id="START_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;ng-container *ngTemplateOutlet=&quot;pegOutLink&quot;&gt;"/> <x id="CLOSE_TAG_NG_CONTAINER" ctype="x-ng_container" equiv-text="&lt;/ng-contain"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">179,180</context>
@@ -4432,6 +4657,7 @@
       </trans-unit>
       <trans-unit id="4bdf69370ca8b0cae3a17d7b84b59c49cd57288d" datatype="html">
         <source>ScriptPubKey (ASM)</source>
+        <target>ScriptPubKey (ASM)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">240,242</context>
@@ -4441,6 +4667,7 @@
       </trans-unit>
       <trans-unit id="e191b4f47f3ea7532f83fd498f4860db664ab75c" datatype="html">
         <source>ScriptPubKey (HEX)</source>
+        <target>ScriptPubKey (HEX)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">244,247</context>
@@ -4450,6 +4677,7 @@
       </trans-unit>
       <trans-unit id="ed46038430735e21c9b6165380ec1892e2f87791" datatype="html">
         <source>Show all inputs to reveal fee data</source>
+        <target>Rodyti visas įvestis, kad būtų atskleisti mokesčių duomenys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">274,277</context>
@@ -4458,6 +4686,7 @@
       </trans-unit>
       <trans-unit id="ac0c4b49e44c42db35ddf590fb5f78375a891b01" datatype="html">
         <source>other inputs</source>
+        <target>kitos įvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">12</context>
@@ -4466,6 +4695,7 @@
       </trans-unit>
       <trans-unit id="8900247c0476fea8fcbee57a72a1d1da5ddd40ff" datatype="html">
         <source>other outputs</source>
+        <target>kitos išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -4474,6 +4704,7 @@
       </trans-unit>
       <trans-unit id="3e242f213dd1a0754aad9164aa80887d67708500" datatype="html">
         <source>Input</source>
+        <target>Įvestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">43</context>
@@ -4482,6 +4713,7 @@
       </trans-unit>
       <trans-unit id="7a080851e25a41e898776a9c90cf8dbe81027f9a" datatype="html">
         <source>Output</source>
+        <target>Išvestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">44</context>
@@ -4490,6 +4722,7 @@
       </trans-unit>
       <trans-unit id="25d58cd5c18fd9c1c89d6062d67dcc2482161410" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit</source>
+        <target>Ši operacija sutaupė <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/> % mokesčių, naudojant vietinį SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4498,6 +4731,7 @@
       </trans-unit>
       <trans-unit id="0ca27703757bf9a636a0b9b61e6a0cf248781cb4" datatype="html">
         <source>SegWit</source>
+        <target>SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4515,6 +4749,7 @@
       </trans-unit>
       <trans-unit id="b6a3f6afdac6873e2d261647d834c02c91376893" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit</source>
+        <target>Ši operacija sutaupė <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/> % mokesčių naudojant SegWit ir gali sutaupyti <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/> % daugiau visiškai naujovinus į vietinį SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4523,6 +4758,7 @@
       </trans-unit>
       <trans-unit id="a67530e246368aa7e5d010061fd84c3c4fe755c2" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
+        <target>Ši operacija galėtų sutaupyti <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/> % mokesčių atnaujinus į vietinį SegWit arba <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/> % naujovinus į SegWit-P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">6</context>
@@ -4531,6 +4767,7 @@
       </trans-unit>
       <trans-unit id="17e9c05e053cbd29d3835d8ecb19508d0f07241b" datatype="html">
         <source>This transaction uses Taproot and thereby saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees</source>
+        <target>Ši operacija naudoja Taproot ir taip sutaupė bent <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/> % mokesčių</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -4539,6 +4776,7 @@
       </trans-unit>
       <trans-unit id="65d5167c4947e3ad81758d238a7ac7e893c261f0" datatype="html">
         <source>Taproot</source>
+        <target>Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -4560,6 +4798,7 @@
       </trans-unit>
       <trans-unit id="47b821c7df420c96de0b22844a88c04d52628540" datatype="html">
         <source>This transaction uses Taproot and already saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees, but could save an additional <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% by fully using Taproot</source>
+        <target>Ši operacija naudoja „Taproot“ ir jau sutaupė bent <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/> % mokesčių, bet gali sutaupyti papildomai <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/> % visiškai naudojant Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">14</context>
@@ -4568,6 +4807,7 @@
       </trans-unit>
       <trans-unit id="aa31fc4d29f35b2fd36080bb6ff84be8eaab66fd" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% on fees by using Taproot</source>
+        <target>Ši operacija gali sutaupyti <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% mokesčių naudojant Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">16</context>
@@ -4576,6 +4816,7 @@
       </trans-unit>
       <trans-unit id="e6da407140d70e08b6fba731455f8e0d72f900b5" datatype="html">
         <source>This transaction uses Taproot</source>
+        <target>Ši operacija naudoja Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">18</context>
@@ -4584,6 +4825,7 @@
       </trans-unit>
       <trans-unit id="07883574bb93ea23b764861f56a525bdaf907513" datatype="html">
         <source>This transaction supports Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>Ši operacija palaiko „Replace-By-Fee“ (RBF), leidžiančią pridėti mokesčius</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">25</context>
@@ -4592,6 +4834,7 @@
       </trans-unit>
       <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
         <source>RBF</source>
+        <target>RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">25</context>
@@ -4605,6 +4848,7 @@
       </trans-unit>
       <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
+        <target>Ši operacija nepalaiko &quot;Replace-By-Fee&quot; (RBF) ir negali būti paspartinta naudojant šį metodą.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">26</context>
@@ -4613,6 +4857,7 @@
       </trans-unit>
       <trans-unit id="b2035d486e8d59980736a224891d9790c981691a" datatype="html">
         <source>Optimal</source>
+        <target>Optimalus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">1</context>
@@ -4622,6 +4867,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
+        <target>Norint patekti į šį bloką, būtų užtekę ir ~ <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4634,6 +4880,7 @@
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
         <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
+        <target>Permokėta <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/> x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4647,6 +4894,7 @@
       </trans-unit>
       <trans-unit id="86d26b45470e43b409e589517922276109138e87" datatype="html">
         <source>Transaction Fees</source>
+        <target>Operacijos mokesčiai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -4655,6 +4903,7 @@
       </trans-unit>
       <trans-unit id="46ae0bacea22bcf409534f1c314735e4983e398a" datatype="html">
         <source>Latest transactions</source>
+        <target>Naujausios operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">120,123</context>
@@ -4663,6 +4912,7 @@
       </trans-unit>
       <trans-unit id="1cb0c1f40f7ef8d62da2ccdccfdd2b7cdd18d2b9" datatype="html">
         <source>USD</source>
+        <target>USD</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">126,127</context>
@@ -4671,6 +4921,7 @@
       </trans-unit>
       <trans-unit id="1f9a922cb4010ee20eb9a241a22307b670f7628c" datatype="html">
         <source>Minimum fee</source>
+        <target>Minimalus mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">197,198</context>
@@ -4680,6 +4931,7 @@
       </trans-unit>
       <trans-unit id="4c3955cfe5955657297481efaf3ada8c55c75b2c" datatype="html">
         <source>Purging</source>
+        <target>Valymas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">198,199</context>
@@ -4689,6 +4941,7 @@
       </trans-unit>
       <trans-unit id="b9565832c4caef9a03f2b30fe37495ff38566fd5" datatype="html">
         <source>Memory usage</source>
+        <target>Atminties naudojimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">210,211</context>
@@ -4698,6 +4951,7 @@
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
+        <target>L-BTC apyvartoje</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">224,226</context>
@@ -4706,6 +4960,7 @@
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
+        <target>REST API paslauga</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -4714,6 +4969,7 @@
       </trans-unit>
       <trans-unit id="b151944861534c4a9e9623537dba0a95f60e4455" datatype="html">
         <source>Endpoint</source>
+        <target>Galutinis taškas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -4726,6 +4982,7 @@
       </trans-unit>
       <trans-unit id="eec715de352a6b114713b30b640d319fa78207a0" datatype="html">
         <source>Description</source>
+        <target>Apibūdinimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">62,63</context>
@@ -4737,6 +4994,7 @@
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> action: 'want', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
+        <target>Numatytasis siuntimas: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> <x id="INTERPOLATION" equiv-text="'track-ad"/> veiksmas: 'want', duomenys: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/> <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, kad išreikštumėte tai, ką norite pastūmėti. Galimi: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> blokai <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> , <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> mempool blokai <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> , <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> realaus laiko-2val grafikas <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, ir <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/> statistika <x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>. <x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/> Pastūmėti operacijas susietas su adresu:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'track-address': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> priimti visas naujas operacijas susietas su adresu kaip įvestis ar išvestis. Pateikiama kaip operacijų rinkinys. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>adreso-operacijos<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>naujoms mempool operacijoms, ir <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>bloko operacijos<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>naujoms bloke patvirtintoms operacijoms.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">102,103</context>
@@ -4745,6 +5003,7 @@
       </trans-unit>
       <trans-unit id="0a668c1c2a17e557a18fc06619998e002f50df1e" datatype="html">
         <source>Code Example</source>
+        <target>Kodo Pavyzdys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/code-template/code-template.component.html</context>
           <context context-type="linenumber">6,7</context>
@@ -4765,6 +5024,7 @@
       </trans-unit>
       <trans-unit id="d6b673097fb7e79231afc43857e376f69ab9f3e3" datatype="html">
         <source>Install Package</source>
+        <target>Įdiegti Paketą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/code-template/code-template.component.html</context>
           <context context-type="linenumber">23,24</context>
@@ -4773,6 +5033,7 @@
       </trans-unit>
       <trans-unit id="4edb71f23e3ff228dbabd05e8ffc364fae8ae467" datatype="html">
         <source>Response</source>
+        <target>Atsakymas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/code-template/code-template.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -4781,6 +5042,7 @@
       </trans-unit>
       <trans-unit id="docs.faq.button-title" datatype="html">
         <source>FAQ</source>
+        <target>DUK</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -4788,6 +5050,7 @@
       </trans-unit>
       <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
         <source>API</source>
+        <target>API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -4799,6 +5062,7 @@
       </trans-unit>
       <trans-unit id="4ca458fe3274d1c79640b052d57cf3b900b650b6" datatype="html">
         <source>Base fee</source>
+        <target>Bazės mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4811,6 +5075,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
+        <target>mSats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">36</context>
@@ -4827,6 +5092,7 @@
       </trans-unit>
       <trans-unit id="fb2137ba0df55f21a9d6b6ad08d56d74ad852e0e" datatype="html">
         <source>This channel supports zero base fee routing</source>
+        <target>Šis kanalas palaiko nulinio bazinio mokesčio maršrutą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">45</context>
@@ -4835,6 +5101,7 @@
       </trans-unit>
       <trans-unit id="3ec76ccfe1fdcbfd7ea152392f6472d93d4e8cab" datatype="html">
         <source>Zero base fee</source>
+        <target>Nulinis bazinis mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">46</context>
@@ -4843,6 +5110,7 @@
       </trans-unit>
       <trans-unit id="b5e42e06ea8a4012a38eef209104bbd9dd1a0fc0" datatype="html">
         <source>This channel does not support zero base fee routing</source>
+        <target>Šis kanalas nepalaiko nulinio bazinio mokesčio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">51</context>
@@ -4851,6 +5119,7 @@
       </trans-unit>
       <trans-unit id="09a1bc9c4198e87e9e974a51e86b181429b480d3" datatype="html">
         <source>Non-zero base fee</source>
+        <target>Nenulinis bazinis mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">52</context>
@@ -4859,6 +5128,7 @@
       </trans-unit>
       <trans-unit id="055060668d0b9902c37abfb6168a08a36eba4496" datatype="html">
         <source>Min HTLC</source>
+        <target>Min. HTLC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">58</context>
@@ -4867,6 +5137,7 @@
       </trans-unit>
       <trans-unit id="c3d94c1a5aef6211f4a902027bd08540d7222b0d" datatype="html">
         <source>Max HTLC</source>
+        <target>Maks HTLC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">64</context>
@@ -4875,6 +5146,7 @@
       </trans-unit>
       <trans-unit id="9fe79011b50c2ca1f9b7db7066046631bfc6b3cb" datatype="html">
         <source>Timelock delta</source>
+        <target>Laiko užrakto delta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">70</context>
@@ -4883,6 +5155,7 @@
       </trans-unit>
       <trans-unit id="205c1b86ac1cc419c4d0cca51fdde418c4ffdc20" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> channels</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> kanalai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">80</context>
@@ -4895,6 +5168,7 @@
       </trans-unit>
       <trans-unit id="3bbd25c289760a3ba57e30df5ad5fe8977ab25a5" datatype="html">
         <source>lightning channel</source>
+        <target>žaibatinklio kanalas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -4903,6 +5177,7 @@
       </trans-unit>
       <trans-unit id="43c4133c7a0263d2e33dd4c2e74d40784b2e4b1c" datatype="html">
         <source>Inactive</source>
+        <target>Neaktyvus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -4919,6 +5194,7 @@
       </trans-unit>
       <trans-unit id="b36e1450940b7f6028d8587568c7d669b53f7a06" datatype="html">
         <source>Active</source>
+        <target>Aktyvus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -4935,6 +5211,7 @@
       </trans-unit>
       <trans-unit id="4804b8e78964cee9e5c85f31fd982639b97780b2" datatype="html">
         <source>Closed</source>
+        <target>Uždarytas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -4955,6 +5232,7 @@
       </trans-unit>
       <trans-unit id="1b051734b0ee9021991c91b3ed4e81c244322462" datatype="html">
         <source>Created</source>
+        <target>Sukurta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">23,26</context>
@@ -4967,6 +5245,7 @@
       </trans-unit>
       <trans-unit id="ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa" datatype="html">
         <source>Capacity</source>
+        <target>Talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">27,28</context>
@@ -5019,6 +5298,7 @@
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
         <source>ppm</source>
+        <target>ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -5039,6 +5319,7 @@
       </trans-unit>
       <trans-unit id="13142ad9637003749d667393aaae7a286d1eba5b" datatype="html">
         <source>Lightning channel</source>
+        <target>Žaibatinklio kanalas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -5051,6 +5332,7 @@
       </trans-unit>
       <trans-unit id="8dad9f60ff582b632a864f22c7466327793c3f09" datatype="html">
         <source>Last update</source>
+        <target>Atnaujinta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">33,34</context>
@@ -5083,6 +5365,7 @@
       </trans-unit>
       <trans-unit id="0c134c6787c6b763446c096ea5233ace6fd9116d" datatype="html">
         <source>Closing date</source>
+        <target>Uždarymo data</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">37,38</context>
@@ -5095,6 +5378,7 @@
       </trans-unit>
       <trans-unit id="cdd2ea2e12437df848ec474ac15af48859bd09a0" datatype="html">
         <source>Opening transaction</source>
+        <target>Atidarymo operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">73,74</context>
@@ -5103,6 +5387,7 @@
       </trans-unit>
       <trans-unit id="50411064ac48e15659d1985b414ae91af0c8cd36" datatype="html">
         <source>Closing transaction</source>
+        <target>Uždarymo operacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">82,84</context>
@@ -5111,6 +5396,7 @@
       </trans-unit>
       <trans-unit id="6008566722612122663" datatype="html">
         <source>Channel: <x id="PH" equiv-text="value.short_id"/></source>
+        <target>Kanalas: <x id="PH" equiv-text="value.short_id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -5118,6 +5404,7 @@
       </trans-unit>
       <trans-unit id="c9039b1b13b3ef165b66b3c5d79f810ab1ebb050" datatype="html">
         <source>Open</source>
+        <target>Atidarytas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -5126,6 +5413,7 @@
       </trans-unit>
       <trans-unit id="a43e63c25599408ef14b33c80dd523021b21f846" datatype="html">
         <source>No channels to display</source>
+        <target>Nėra kanalų, kuriuos būtų galima rodyti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">29,35</context>
@@ -5134,6 +5422,7 @@
       </trans-unit>
       <trans-unit id="fbaaeb297e70b9a800acf841b9d26c19d60651ef" datatype="html">
         <source>Alias</source>
+        <target>Pseudonimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">35,37</context>
@@ -5170,6 +5459,7 @@
       </trans-unit>
       <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
         <source>Status</source>
+        <target>Būsena</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">37,38</context>
@@ -5178,6 +5468,7 @@
       </trans-unit>
       <trans-unit id="0cd107458dce99721e72971d426a5a3106074331" datatype="html">
         <source>Channel ID</source>
+        <target>Kanalo ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">41,45</context>
@@ -5186,6 +5477,7 @@
       </trans-unit>
       <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
+        <target>sats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">61,65</context>
@@ -5238,6 +5530,7 @@
       </trans-unit>
       <trans-unit id="ab456546aa39de3328fcfdf077f410b5ff1aa773" datatype="html">
         <source>Avg Capacity</source>
+        <target>Vid. Talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -5250,6 +5543,7 @@
       </trans-unit>
       <trans-unit id="f68705670e611f13da1a43e90f9c97d8761dd9ef" datatype="html">
         <source>Avg Fee Rate</source>
+        <target>Vid. Mokesčio Tarifas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -5262,6 +5556,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Vidutinis maršruto mazgų imamas mokesčio tarifas, neatsižvelgiant į mokesčių tarifus &gt; 0,5% arba 5000 ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -5270,6 +5565,7 @@
       </trans-unit>
       <trans-unit id="140fb39368f210ec945417f3eb23bf9564396e5c" datatype="html">
         <source>Avg Base Fee</source>
+        <target>Vidutinis Bazinis Mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -5282,6 +5578,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Vidutinis bazinis mokestis, kurį ima maršruto parinkimo mazgai, neatsižvelgiant į bazinius mokesčius &gt; 5000 ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -5290,6 +5587,7 @@
       </trans-unit>
       <trans-unit id="2e72b276a3c5cc2ec27b4c8189639ba2fe62b6cb" datatype="html">
         <source>Med Capacity</source>
+        <target>Talpumo Mediana</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">59,61</context>
@@ -5298,6 +5596,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
+        <target>Mokesčio Mediana</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -5306,6 +5605,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Maršrutizavimo mazgų imama mokesčio tarifo mediana, neatsižvelgiant į mokesčių tarifus &gt; 0,5 % arba 5000 ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -5314,6 +5614,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
+        <target>Bazinio Mokesčio Mediana</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87,89</context>
@@ -5322,6 +5623,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Bazinio mokesčio mediana, kurią ima maršruto mazgai, neatsižvelgiant į bazinius mokesčius &gt; 5000 ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -5330,6 +5632,7 @@
       </trans-unit>
       <trans-unit id="de1c07e9943fc284461bb8fb4860faecf52a1568" datatype="html">
         <source>Lightning node group</source>
+        <target>Žaibatinklio mazgų grupė</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5342,6 +5645,7 @@
       </trans-unit>
       <trans-unit id="6e2329529b1953198c7dfa0edb260554310bc636" datatype="html">
         <source>Nodes</source>
+        <target>Mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">25,29</context>
@@ -5382,6 +5686,7 @@
       </trans-unit>
       <trans-unit id="14a12efce56ffe89f839e50320bcf47e4e9ca4e4" datatype="html">
         <source>Liquidity</source>
+        <target>Likvidumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -5418,6 +5723,7 @@
       </trans-unit>
       <trans-unit id="807cf11e6ac1cde912496f764c176bdfdd6b7e19" datatype="html">
         <source>Channels</source>
+        <target>Kanalai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">40,43</context>
@@ -5478,6 +5784,7 @@
       </trans-unit>
       <trans-unit id="e4706894b195010f6814e54bf6570c729d69aaca" datatype="html">
         <source>Average size</source>
+        <target>Vidutinis dydis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">44,46</context>
@@ -5490,6 +5797,7 @@
       </trans-unit>
       <trans-unit id="ed31c09fd77c36238c13d83635f3fe5294c733d2" datatype="html">
         <source>Location</source>
+        <target>Lokacija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">74,77</context>
@@ -5530,6 +5838,7 @@
       </trans-unit>
       <trans-unit id="29c05e9a540827cdfa8e3b2e5e2f27aeb478916c" datatype="html">
         <source>Network Statistics</source>
+        <target>Tinklo Statistika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -5538,6 +5847,7 @@
       </trans-unit>
       <trans-unit id="066e05b9a5db60850d907783fde6913e2e47cd5b" datatype="html">
         <source>Channels Statistics</source>
+        <target>Kanalų Statistika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -5546,6 +5856,7 @@
       </trans-unit>
       <trans-unit id="0f33aeb084ac4d83cb0fe6f72648a8585b1b5e88" datatype="html">
         <source>Lightning Network History</source>
+        <target>Žaibo Tinklo Istorija</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">49</context>
@@ -5554,6 +5865,7 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
+        <target>Likvidumo Reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
@@ -5570,6 +5882,7 @@
       </trans-unit>
       <trans-unit id="c50bf442cf99f6fc5f8b687c460f33234b879869" datatype="html">
         <source>Connectivity Ranking</source>
+        <target>Ryšio Reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">76</context>
@@ -5582,6 +5895,7 @@
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
+        <target>Praėjusios savaitės procentinis pokytis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -5598,6 +5912,7 @@
       </trans-unit>
       <trans-unit id="be6ebbb11d55adb8e821d503f8e10ccf43ed8b00" datatype="html">
         <source>Lightning node</source>
+        <target>Žaibatinklio mazgas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5614,6 +5929,7 @@
       </trans-unit>
       <trans-unit id="af15c87bfed273bc095ba572cf27e3aaffc33b22" datatype="html">
         <source>Active capacity</source>
+        <target>Aktyvi talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -5626,6 +5942,7 @@
       </trans-unit>
       <trans-unit id="52ffa66bd0399a49d5aa8d6f8fa077a6e8db09c0" datatype="html">
         <source>Active channels</source>
+        <target>Aktyvūs kanalai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">26,30</context>
@@ -5638,6 +5955,7 @@
       </trans-unit>
       <trans-unit id="a43f25a9ac40e8e2441ff0be7a36b8e5d15534df" datatype="html">
         <source>Country</source>
+        <target>Šalis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">44,47</context>
@@ -5646,6 +5964,7 @@
       </trans-unit>
       <trans-unit id="674378571ab7e72a386f27fd3281558bae821d9d" datatype="html">
         <source>No node found for public key &quot;<x id="INTERPOLATION" equiv-text="{{ node.public_key | shortenString : 12}}"/>&quot;</source>
+        <target>Viešajam raktui mazgas nerastas &amp;quot; <x id="INTERPOLATION" equiv-text="{{ node.public_key | shortenString : 12}}"/> &amp;quot;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -5654,6 +5973,7 @@
       </trans-unit>
       <trans-unit id="43b48b9c15083a164b401bf3775a4b99f3917699" datatype="html">
         <source>Average channel size</source>
+        <target>Vidutinis kanalo dydis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">40,43</context>
@@ -5662,6 +5982,7 @@
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
+        <target>Nežinoma</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">52,56</context>
@@ -5682,6 +6003,7 @@
       </trans-unit>
       <trans-unit id="8fa4d523f7b91df4390120b85ed0406138273e1a" datatype="html">
         <source>Color</source>
+        <target>Spalva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">75,77</context>
@@ -5690,6 +6012,7 @@
       </trans-unit>
       <trans-unit id="5b9904cb31f6f28314443f6385dc5facab7ea851" datatype="html">
         <source>ISP</source>
+        <target>IPT</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">82,83</context>
@@ -5702,6 +6025,7 @@
       </trans-unit>
       <trans-unit id="86d9619247d148019e5599707c39a36e880a2d23" datatype="html">
         <source>Exclusively on Tor</source>
+        <target>Tik Tor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">88,90</context>
@@ -5710,6 +6034,7 @@
       </trans-unit>
       <trans-unit id="b371db1a7ab2167dc8dd91b48ea929d71bb4ef4c" datatype="html">
         <source>Open channels</source>
+        <target>Atviri kanalai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">145,148</context>
@@ -5718,6 +6043,7 @@
       </trans-unit>
       <trans-unit id="a2dff531c3d7477178553f579e0ec7c3ac7a6f30" datatype="html">
         <source>Closed channels</source>
+        <target>Uždaryti kanalai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">149,152</context>
@@ -5726,6 +6052,7 @@
       </trans-unit>
       <trans-unit id="2519445964020754921" datatype="html">
         <source>Node: <x id="PH" equiv-text="node.alias"/></source>
+        <target>Mazgas: <x id="PH" equiv-text="node.alias"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -5733,6 +6060,7 @@
       </trans-unit>
       <trans-unit id="7cac1c3013423d82d5149a5854d709bd08411430" datatype="html">
         <source>(Tor nodes excluded)</source>
+        <target>(Be Tor mazgų)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -5753,6 +6081,7 @@
       </trans-unit>
       <trans-unit id="8199511328474154549" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>Žaibatinklio Mazgų Kanalų Pasaulio Žemėlapis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -5760,6 +6089,7 @@
       </trans-unit>
       <trans-unit id="4390631969351833104" datatype="html">
         <source>No geolocation data available</source>
+        <target>Geografinės vietos duomenų nėra</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">218,213</context>
@@ -5767,6 +6097,7 @@
       </trans-unit>
       <trans-unit id="a4d393ee035f4225083c22cc3909b26a05a87528" datatype="html">
         <source>Active channels map</source>
+        <target>Aktyvių kanalų žemėlapis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels/node-channels.component.html</context>
           <context context-type="linenumber">2,3</context>
@@ -5775,6 +6106,7 @@
       </trans-unit>
       <trans-unit id="4635698809727522638" datatype="html">
         <source>Indexing in progess</source>
+        <target>Vyksta indeksavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -5786,6 +6118,7 @@
       </trans-unit>
       <trans-unit id="1055322764280599360" datatype="html">
         <source>Reachable on Clearnet Only</source>
+        <target>Pasiekiama tik per Clearnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -5797,6 +6130,7 @@
       </trans-unit>
       <trans-unit id="2760682261176173881" datatype="html">
         <source>Reachable on Clearnet and Darknet</source>
+        <target>Galima Pasiekti per Clearnet ir Darknet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -5808,6 +6142,7 @@
       </trans-unit>
       <trans-unit id="1191036460161514668" datatype="html">
         <source>Reachable on Darknet Only</source>
+        <target>Pasiekiamas tik per Darknet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -5819,6 +6154,7 @@
       </trans-unit>
       <trans-unit id="0bd8b27f60a1f098a53e06328426d818e3508ff9" datatype="html">
         <source>Share</source>
+        <target>Dalis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -5831,6 +6167,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="country.count.toString()"/> nodes</source>
+        <target> <x id="PH" equiv-text="country.count.toString()"/> mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">103,102</context>
@@ -5846,6 +6183,7 @@
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
+        <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC talpumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,102</context>
@@ -5853,6 +6191,7 @@
       </trans-unit>
       <trans-unit id="7ede3edfacd291eb9db08e11845d9efdf197f417" datatype="html">
         <source>Lightning nodes in <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></source>
+        <target>Žaibatinklio mazgai <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">3,4</context>
@@ -5861,6 +6200,7 @@
       </trans-unit>
       <trans-unit id="4498ec29c37744fef46809ebc3db67c5fb789917" datatype="html">
         <source>ISP Count</source>
+        <target>IPT Skaičius</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">34,38</context>
@@ -5869,6 +6209,7 @@
       </trans-unit>
       <trans-unit id="90a6a964ba53464578003e3b4b2873ef5d2132a1" datatype="html">
         <source>Top ISP</source>
+        <target>Populiariausias IPT</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">38,40</context>
@@ -5877,6 +6218,7 @@
       </trans-unit>
       <trans-unit id="7246059109648045954" datatype="html">
         <source>Lightning nodes in <x id="PH" equiv-text="response.country.en"/></source>
+        <target>Žaibatinklio mazgai <x id="PH" equiv-text="response.country.en"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -5884,6 +6226,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
+        <target>Clearnet Talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -5896,6 +6239,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
+        <target>Kiek likvidumo turi mazgai, paskelbę bent vieną „clearnet“ IP adresą</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -5904,6 +6248,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
+        <target>Nežinoma Talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -5916,6 +6261,7 @@
       </trans-unit>
       <trans-unit id="26fb07e8754b87bba4bf12c5137ffa77dac389a8" datatype="html">
         <source>How much liquidity is running on nodes which ISP was not identifiable</source>
+        <target>Kiek likvidumo turi mazgai, kurių IPT neatpažintas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -5924,6 +6270,7 @@
       </trans-unit>
       <trans-unit id="df3728b721159d25e68f5daf44aaab7fa25f1415" datatype="html">
         <source>Tor Capacity</source>
+        <target>Tor Talpa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -5936,6 +6283,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
+        <target>Kiek likvidumo turi mazgai, paskelbę tik „Tor“ adresus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -5944,6 +6292,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>100 geriausių IPT, kuriuose yra ŽT mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -5952,6 +6301,7 @@
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
+        <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">158,156</context>
@@ -5963,6 +6313,7 @@
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
         <source>Lightning ISP</source>
+        <target>Žaibatinklio IPT</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5971,6 +6322,7 @@
       </trans-unit>
       <trans-unit id="41074627e075a9b1bd8197c474ea68a2b8276e54" datatype="html">
         <source>Top country</source>
+        <target>Geriausia šalis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">39,41</context>
@@ -5983,6 +6335,7 @@
       </trans-unit>
       <trans-unit id="5fad6872a652d922ad8822f4016e104b9a8cc113" datatype="html">
         <source>Top node</source>
+        <target>Geriausias mazgas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">45,48</context>
@@ -5991,6 +6344,7 @@
       </trans-unit>
       <trans-unit id="5735693498020397727" datatype="html">
         <source>Lightning nodes on ISP: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</source>
+        <target>Žaibatinklio mazgai ant IPT: <x id="PH" equiv-text="response.isp"/> [AS <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -6002,6 +6356,7 @@
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
         <source>Lightning nodes on ISP: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></source>
+        <target>Žaibatinklio mazgai ant IPT: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">2,4</context>
@@ -6010,6 +6365,7 @@
       </trans-unit>
       <trans-unit id="ca0b795795658155d44ddca02e95f1feeeb4a88f" datatype="html">
         <source>ASN</source>
+        <target>ASN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">11,14</context>
@@ -6018,6 +6374,7 @@
       </trans-unit>
       <trans-unit id="5b727d251b06e9959cf24a90250a480d425339de" datatype="html">
         <source>Top 100 oldest lightning nodes</source>
+        <target>100 seniausių žaibatinklio mazgų</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -6026,6 +6383,7 @@
       </trans-unit>
       <trans-unit id="4157312397261844620" datatype="html">
         <source>Oldest lightning nodes</source>
+        <target>Seniausi žaibatinklio mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.ts</context>
           <context context-type="linenumber">27</context>
@@ -6033,6 +6391,7 @@
       </trans-unit>
       <trans-unit id="71bb1ed9da9ebb92cf35925bc6fe0a8fbc325625" datatype="html">
         <source>Top 100 nodes liquidity ranking</source>
+        <target>100 geriausių mazgų likvidumo reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -6041,6 +6400,7 @@
       </trans-unit>
       <trans-unit id="99786bd2106b708e4514d0121964affb19bee636" datatype="html">
         <source>Top 100 nodes connectivity ranking</source>
+        <target>100 geriausių mazgų ryšio reitingas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -6049,6 +6409,7 @@
       </trans-unit>
       <trans-unit id="47a30fc5a836252f8fe03e2949756b150684d934" datatype="html">
         <source>Oldest nodes</source>
+        <target>Seniausi mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -6057,6 +6418,7 @@
       </trans-unit>
       <trans-unit id="4034215342842066505" datatype="html">
         <source>Top lightning nodes</source>
+        <target>Geriausi žaibatinklio mazgai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -6064,6 +6426,7 @@
       </trans-unit>
       <trans-unit id="af1176facd00a0580509fb2900ab0cf7f9b39ae7" datatype="html">
         <source>Indexing in progress</source>
+        <target>Vyksta indeksavimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
           <context context-type="linenumber">52,55</context>
@@ -6072,6 +6435,7 @@
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
+        <target> <x id="DATE" equiv-text="counter"/> metai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -6079,6 +6443,7 @@
       </trans-unit>
       <trans-unit id="date-base.years" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> years</source>
+        <target> <x id="DATE" equiv-text="counter"/> metai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -6086,6 +6451,7 @@
       </trans-unit>
       <trans-unit id="date-base.month" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> month</source>
+        <target> <x id="DATE" equiv-text="counter"/> mėn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -6093,6 +6459,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
+        <target> <x id="DATE" equiv-text="counter"/> mėn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -6100,6 +6467,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
+        <target> <x id="DATE" equiv-text="counter"/> sav</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -6107,6 +6475,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
+        <target> <x id="DATE" equiv-text="counter"/> sav</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -6114,6 +6483,7 @@
       </trans-unit>
       <trans-unit id="date-base.day" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> day</source>
+        <target> <x id="DATE" equiv-text="counter"/> diena</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -6121,6 +6491,7 @@
       </trans-unit>
       <trans-unit id="date-base.days" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> days</source>
+        <target> <x id="DATE" equiv-text="counter"/> dienos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -6128,6 +6499,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
+        <target> <x id="DATE" equiv-text="counter"/> val</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -6135,6 +6507,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
+        <target> <x id="DATE" equiv-text="counter"/> val</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -6142,6 +6515,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
+        <target> <x id="DATE" equiv-text="counter"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -6149,6 +6523,7 @@
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minutes</source>
+        <target> <x id="DATE" equiv-text="counter"/> min</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -6156,6 +6531,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
+        <target> <x id="DATE" equiv-text="counter"/> sek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -6163,6 +6539,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
+        <target> <x id="DATE" equiv-text="counter"/> sek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
@@ -6170,6 +6547,7 @@
       </trans-unit>
       <trans-unit id="2799825781368047816" datatype="html">
         <source>Transaction fee</source>
+        <target>Operacijos mokestis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe.ts</context>
           <context context-type="linenumber">11</context>
