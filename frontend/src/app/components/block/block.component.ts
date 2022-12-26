@@ -58,6 +58,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   indexingAvailable = false;
   auditEnabled = true;
+  auditDataMissing: boolean;
   isMobile = window.innerWidth <= 767.98;
   hoverTx: string;
   numMissing: number = 0;
@@ -137,9 +138,11 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.error = undefined;
         this.fees = undefined;
         this.stateService.markBlock$.next({});
+        this.auditDataMissing = false;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
+          this.updateAuditDataMissingFromBlockHeight(this.blockHeight);
         }
 
         let isBlockHeight = false;
@@ -152,6 +155,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (history.state.data && history.state.data.block) {
           this.blockHeight = history.state.data.block.height;
+          this.updateAuditDataMissingFromBlockHeight(this.blockHeight);
           return of(history.state.data.block);
         } else {
           this.isLoadingBlock = true;
@@ -213,7 +217,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             this.apiService.getBlockAudit$(block.previousblockhash);
           }, 100);
         }
-
+        this.updateAuditDataMissingFromBlockHeight(block.height);
         this.block = block;
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
@@ -363,6 +367,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             this.auditEnabled = true;
           } else {
             this.auditEnabled = false;
+            this.auditDataMissing = true;
           }
           return blockAudit;
         }),
@@ -580,6 +585,25 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.hoverTx = txid;
     } else {
       this.hoverTx = null;
+    }
+  }
+
+  updateAuditDataMissingFromBlockHeight(blockHeight: number): void {
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
+        break;
+      case 'signet':
+        if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
+        break;
+      default:
+        if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
+          this.auditDataMissing = true;
+        }
     }
   }
 }
