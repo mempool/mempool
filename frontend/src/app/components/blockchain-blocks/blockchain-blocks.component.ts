@@ -5,6 +5,7 @@ import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { config } from 'process';
+import { CacheService } from 'src/app/services/cache.service';
 
 interface BlockchainBlock extends BlockExtended {
   loading?: boolean;
@@ -28,6 +29,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
+  blockPageSubscription: Subscription;
   networkSubscription: Subscription;
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
@@ -56,6 +58,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     public stateService: StateService,
+    public cacheService: CacheService,
     private cd: ChangeDetectorRef,
     private location: Location,
   ) {
@@ -123,6 +126,12 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
           this.cd.markForCheck();
         });
+    } else {
+      this.blockPageSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
+        if (block.height <= this.height && block.height > this.height - this.count) {
+          this.onBlockLoaded(block);
+        }
+      });
     }
 
     this.markBlockSubscription = this.stateService.markBlock$
@@ -150,6 +159,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     if (this.blocksSubscription) {
       this.blocksSubscription.unsubscribe();
+    }
+    if (this.blockPageSubscription) {
+      this.blockPageSubscription.unsubscribe();
     }
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
@@ -201,12 +213,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     while (this.blocks.length < Math.min(this.height + 1, this.count)) {
       const height = this.height - this.blocks.length;
       if (height >= 0) {
-        // const block = this.cacheService.getCachedBlock(height) || null;
-        // if (!block) {
-        //   this.cacheService.loadBlock(height);
-        // }
-        // this.blocks.push(block || {
-        this.blocks.push({
+        this.cacheService.loadBlock(height);
+        const block = this.cacheService.getCachedBlock(height) || null;
+        this.blocks.push(block || {
           loading: true,
           id: '',
           height,
@@ -234,6 +243,15 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       }, 50);
     }
+  }
+
+  onBlockLoaded(block: BlockExtended) {
+    const blockIndex = this.height - block.height;
+    if (blockIndex >= 0 && blockIndex < this.blocks.length) {
+      this.blocks[blockIndex] = block;
+      this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);
+    }
+    this.cd.markForCheck();
   }
 
   getStyleForBlock(block: BlockchainBlock, index: number, animateSlideStart: boolean = false) {

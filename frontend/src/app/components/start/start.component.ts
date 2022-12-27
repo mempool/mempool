@@ -46,6 +46,11 @@ export class StartComponent implements OnInit, OnDestroy {
       this.chainTip = height;
       this.updatePages();
     });
+    this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
+      if (mark?.blockHeight != null) {
+        this.scrollToBlock(mark.blockHeight);
+      }
+    });
     this.stateService.blocks$
       .subscribe((blocks: any) => {
         if (this.stateService.network !== '') {
