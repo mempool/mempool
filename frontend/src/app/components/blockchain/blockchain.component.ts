@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 
@@ -9,6 +9,10 @@ import { StateService } from '../../services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlockchainComponent implements OnInit, OnDestroy {
+  @Input() pages: any[] = [];
+  @Input() pageIndex: number;
+  @Input() blocksPerPage: number = 8;
+
   network: string;
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
@@ -27,6 +31,10 @@ export class BlockchainComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.timeLtrSubscription.unsubscribe();
+  }
+
+  trackByPageFn(index: number, item: { height: number }) {
+    return item.height;
   }
 
   toggleTimeDirection() {

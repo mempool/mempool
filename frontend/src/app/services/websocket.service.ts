@@ -70,7 +70,7 @@ export class WebsocketService {
         clearTimeout(this.onlineCheckTimeout);
         clearTimeout(this.onlineCheckTimeoutTwo);
 
-        this.stateService.latestBlockHeight = -1;
+        this.stateService.resetChainTip();
 
         this.websocketSubject.complete();
         this.subscription.unsubscribe();
@@ -226,7 +226,7 @@ export class WebsocketService {
       const blocks = response.blocks;
       blocks.forEach((block: BlockExtended) => {
         if (block.height > this.stateService.latestBlockHeight) {
-          this.stateService.latestBlockHeight = block.height;
+          this.stateService.updateChainTip(block.height);
           this.stateService.blocks$.next([block, false]);
         }
       });
@@ -238,7 +238,7 @@ export class WebsocketService {
 
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
-        this.stateService.latestBlockHeight = response.block.height;
+        this.stateService.updateChainTip(response.block.height);
         this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
       }
 
