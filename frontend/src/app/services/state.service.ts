@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
-import { Block, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
@@ -118,8 +118,6 @@ export class StateService {
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
-
-  txCache: { [txid: string]: Transaction } = {};
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -275,28 +273,12 @@ export class StateService {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
   }
 
-  setTxCache(transactions) {
-    this.txCache = {};
-    transactions.forEach(tx => {
-      this.txCache[tx.txid] = tx;
-    });
-  }
-
-  getTxFromCache(txid) {
-    if (this.txCache && this.txCache[txid]) {
-      return this.txCache[txid];
-    } else {
-    return null;
-    }
-  }
-
   resetChainTip() {
     this.latestBlockHeight = -1;
     this.chainTip$.next(-1);
   }
 
   updateChainTip(height) {
-    console.log('updating chain tip to ', height);
     if (height > this.latestBlockHeight) {
       this.latestBlockHeight = height;
       this.chainTip$.next(height);

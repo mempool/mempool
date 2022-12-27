@@ -13,6 +13,7 @@ import {
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
@@ -74,6 +75,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
@@ -203,7 +205,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          const cached = this.stateService.getTxFromCache(this.txId);
+          const cached = this.cacheService.getTxFromCache(this.txId);
           if (cached && cached.fee !== -1) {
             transactionObservable$ = of(cached);
           } else {
@@ -302,7 +304,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
-      this.stateService.setTxCache([this.rbfTransaction]);
+      this.cacheService.setTxCache([this.rbfTransaction]);
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
