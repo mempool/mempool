@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
@@ -6,16 +6,25 @@ import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { config } from 'process';
 
+interface BlockchainBlock extends BlockExtended {
+  loading?: boolean;
+}
+
 @Component({
   selector: 'app-blockchain-blocks',
   templateUrl: './blockchain-blocks.component.html',
   styleUrls: ['./blockchain-blocks.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockchainBlocksComponent implements OnInit, OnDestroy {
+export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() static: boolean = false;
+  @Input() offset: number = 0;
+  @Input() height: number = 0;
+  @Input() count: number = 8;
+  
   specialBlocks = specialBlocks;
   network = '';
-  blocks: BlockExtended[] = [];
+  blocks: BlockchainBlock[] = [];
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
@@ -75,44 +84,46 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
     this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
     this.networkSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block, txConfirmed]) => {
-        if (this.blocks.some((b) => b.height === block.height)) {
-          return;
-        }
+    if (!this.static) {
+      this.blocksSubscription = this.stateService.blocks$
+        .subscribe(([block, txConfirmed]) => {
+          if (this.blocks.some((b) => b.height === block.height)) {
+            return;
+          }
 
-        if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
-          this.blocks = [];
-          this.blocksFilled = false;
-        }
+          if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
+            this.blocks = [];
+            this.blocksFilled = false;
+          }
 
-        this.blocks.unshift(block);
-        this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+          this.blocks.unshift(block);
+          this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-        if (this.blocksFilled && !this.tabHidden && block.extras) {
-          block.extras.stage = block.extras.matchRate >= 66 ? 1 : 2;
-        }
+          if (this.blocksFilled && !this.tabHidden && block.extras) {
+            block.extras.stage = block.extras.matchRate >= 66 ? 1 : 2;
+          }
 
-        if (txConfirmed) {
-          this.markHeight = block.height;
-          this.moveArrowToPosition(true, true);
-        } else {
-          this.moveArrowToPosition(true, false);
-        }
+          if (txConfirmed) {
+            this.markHeight = block.height;
+            this.moveArrowToPosition(true, true);
+          } else {
+            this.moveArrowToPosition(true, false);
+          }
 
-        this.blockStyles = [];
-        this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-        setTimeout(() => {
           this.blockStyles = [];
-          this.blocks.forEach((b) => this.blockStyles.push(this.getStyleForBlock(b)));
-          this.cd.markForCheck();
-        }, 50);
+          this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
+          setTimeout(() => {
+            this.blockStyles = [];
+            this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
+            this.cd.markForCheck();
+          }, 50);
 
-        if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
-          this.blocksFilled = true;
-        }
-        this.cd.markForCheck();
-      });
+          if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
+            this.blocksFilled = true;
+          }
+          this.cd.markForCheck();
+        });
+    }
 
     this.markBlockSubscription = this.stateService.markBlock$
       .subscribe((state) => {
@@ -123,10 +134,23 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
         this.moveArrowToPosition(false);
         this.cd.markForCheck();
       });
+
+      if (this.static) {
+        this.updateStaticBlocks();
+      }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.static) {
+      const animateSlide = changes.height && (changes.height.currentValue === changes.height.previousValue + 1);
+      this.updateStaticBlocks(animateSlide);
+    }
   }
 
   ngOnDestroy() {
-    this.blocksSubscription.unsubscribe();
+    if (this.blocksSubscription) {
+      this.blocksSubscription.unsubscribe();
+    }
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
@@ -161,30 +185,88 @@ export class BlockchainBlocksComponent implements OnInit, OnDestroy {
           });
         }
       }
+    } else {
+      this.arrowVisible = false;
     }
   }
 
-  trackByBlocksFn(index: number, item: BlockExtended) {
+  trackByBlocksFn(index: number, item: BlockchainBlock) {
     return item.height;
   }
 
-  getStyleForBlock(block: BlockExtended) {
+  updateStaticBlocks(animateSlide: boolean = false) {
+    // reset blocks
+    this.blocks = [];
+    this.blockStyles = [];
+    while (this.blocks.length < Math.min(this.height + 1, this.count)) {
+      const height = this.height - this.blocks.length;
+      if (height >= 0) {
+        // const block = this.cacheService.getCachedBlock(height) || null;
+        // if (!block) {
+        //   this.cacheService.loadBlock(height);
+        // }
+        // this.blocks.push(block || {
+        this.blocks.push({
+          loading: true,
+          id: '',
+          height,
+          version: 0,
+          timestamp: 0,
+          bits: 0,
+          nonce: 0,
+          difficulty: 0,
+          merkle_root: '',
+          tx_count: 0,
+          size: 0,
+          weight: 0,
+          previousblockhash: '',
+        });
+      }
+    }
+    this.blocks = this.blocks.slice(0, this.count);
+    this.blockStyles = [];
+    this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, animateSlide)));
+    if (animateSlide) {
+      // animate blocks slide right
+      setTimeout(() => {
+        this.blockStyles = [];
+        this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
+        this.cd.markForCheck();
+      }, 50);
+    }
+  }
+
+  getStyleForBlock(block: BlockchainBlock, index: number, animateSlideStart: boolean = false) {
+    if (!block || block.loading) {
+      return this.getStyleForLoadingBlock(index, animateSlideStart);
+    }
     const greenBackgroundHeight = 100 - (block.weight / this.stateService.env.BLOCK_WEIGHT_UNITS) * 100;
     let addLeft = 0;
 
-    if (block?.extras?.stage === 1) {
-      block.extras.stage = 2;
+    if (animateSlideStart) {
+      if (block?.extras) {
+        block.extras.stage = 2;
+      }
       addLeft = -205;
     }
 
     return {
-      left: addLeft + 155 * this.blocks.indexOf(block) + 'px',
+      left: addLeft + 155 * index + 'px',
       background: `repeating-linear-gradient(
         #2d3348,
         #2d3348 ${greenBackgroundHeight}%,
         ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
         ${this.gradientColors[this.network][1]} 100%
       )`,
+    };
+  }
+
+  getStyleForLoadingBlock(index: number, animateSlideStart: boolean = false) {
+    const addLeft = animateSlideStart ? -205 : 0;
+
+    return {
+      left: addLeft + (155 * index) + 'px',
+      background: "#2d3348",
     };
   }
 

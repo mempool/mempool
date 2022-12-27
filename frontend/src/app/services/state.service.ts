@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
-import { Transaction } from '../interfaces/electrs.interface';
+import { Block, Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
@@ -104,6 +104,7 @@ export class StateService {
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
+  chainTip$ = new ReplaySubject<number>(-1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -111,7 +112,7 @@ export class StateService {
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
-  markBlock$ = new ReplaySubject<MarkBlockState>();
+  markBlock$ = new BehaviorSubject<MarkBlockState>({});
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
@@ -280,12 +281,25 @@ export class StateService {
       this.txCache[tx.txid] = tx;
     });
   }
- 
+
   getTxFromCache(txid) {
     if (this.txCache && this.txCache[txid]) {
       return this.txCache[txid];
     } else {
-      return null;
+    return null;
+    }
+  }
+
+  resetChainTip() {
+    this.latestBlockHeight = -1;
+    this.chainTip$.next(-1);
+  }
+
+  updateChainTip(height) {
+    console.log('updating chain tip to ', height);
+    if (height > this.latestBlockHeight) {
+      this.latestBlockHeight = height;
+      this.chainTip$.next(height);
     }
   }
 }
