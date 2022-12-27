@@ -122,8 +122,6 @@ export interface BlockExtension {
     name: string;
     slug: string;
   }
-
-  stage?: number; // Frontend only
 }
 
 export interface BlockExtended extends Block {
