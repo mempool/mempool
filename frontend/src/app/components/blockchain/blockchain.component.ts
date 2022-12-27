@@ -33,8 +33,8 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.timeLtrSubscription.unsubscribe();
   }
 
-  trackByPageFn(index: number, item: { height: number }) {
-    return item.height;
+  trackByPageFn(index: number, item: { index: number }) {
+    return item.index;
   }
 
   toggleTimeDirection() {
