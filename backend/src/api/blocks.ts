@@ -530,7 +530,7 @@ class Blocks {
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock['height'] - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
-              if (config.MEMPOOL.TRANSACTION_INDEXING) {
+              if (config.MEMPOOL.CPFP_INDEXING) {
                 await this.$indexCPFP(newBlock.id, lastBlock['height'] - i);
               }
             }
@@ -558,7 +558,7 @@ class Blocks {
           if (Common.blocksSummariesIndexingEnabled() === true) {
             await this.$getStrippedBlockTransactions(blockExtended.id, true);
           }
-          if (config.MEMPOOL.TRANSACTION_INDEXING) {
+          if (config.MEMPOOL.CPFP_INDEXING) {
             this.$indexCPFP(blockExtended.id, this.currentBlockHeight);
           }
         }

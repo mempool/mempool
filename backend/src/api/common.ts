@@ -190,7 +190,7 @@ export class Common {
   static cpfpIndexingEnabled(): boolean {
     return (
       Common.indexingEnabled() &&
-      config.MEMPOOL.TRANSACTION_INDEXING === true
+      config.MEMPOOL.CPFP_INDEXING === true
     );
   }
 
