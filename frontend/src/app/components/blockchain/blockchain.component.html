@@ -2,6 +2,7 @@
   <div class="position-container" [ngClass]="network ? network : ''">
     <span>
       <div class="blocks-wrapper">
+        <div class="scroll-spacer" *ngIf="minScrollWidth" [style.left]="minScrollWidth + 'px'"></div>
         <app-mempool-blocks [hidden]="pageIndex > 0"></app-mempool-blocks>
         <app-blockchain-blocks [hidden]="pageIndex > 0"></app-blockchain-blocks>
         <ng-container *ngFor="let page of pages; trackBy: trackByPageFn">

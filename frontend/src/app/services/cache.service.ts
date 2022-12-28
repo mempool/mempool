@@ -5,7 +5,7 @@ import { BlockExtended } from '../interfaces/node-api.interface';
 import { StateService } from './state.service';
 import { ApiService } from './api.service';
 
-const BLOCK_CACHE_SIZE = 50;
+const BLOCK_CACHE_SIZE = 500;
 const KEEP_RECENT_BLOCKS = 50;
 
 @Injectable({

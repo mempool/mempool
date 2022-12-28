@@ -13,7 +13,7 @@
   (dragstart)="onDragStart($event)"
   (scroll)="onScroll($event)"
 >
-  <app-blockchain [pageIndex]="pageIndex" [pages]="pages" [blocksPerPage]="blocksPerPage"></app-blockchain>
+  <app-blockchain [pageIndex]="pageIndex" [pages]="pages" [blocksPerPage]="blocksPerPage" [minScrollWidth]="minScrollWidth"></app-blockchain>
 </div>
 
 <router-outlet></router-outlet>

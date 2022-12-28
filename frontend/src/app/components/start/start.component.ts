@@ -29,8 +29,10 @@ export class StartComponent implements OnInit, OnDestroy {
   blocksPerPage: number = 1;
   pageWidth: number;
   firstPageWidth: number;
+  minScrollWidth: number;
   pageIndex: number = 0;
   pages: any[] = [];
+  pendingMark: number | void = null;
 
   constructor(
     private stateService: StateService,
@@ -39,16 +41,27 @@ export class StartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.firstPageWidth = 40 + (this.blockWidth * this.stateService.env.KEEP_BLOCKS_AMOUNT);
     this.onResize();
+    this.updatePages();
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
     });
     this.chainTipSubscription = this.stateService.chainTip$.subscribe((height) => {
       this.chainTip = height;
       this.updatePages();
+      if (this.pendingMark != null) {
+        this.scrollToBlock(this.pendingMark);
+        this.pendingMark = null;
+      }
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
-      if (mark?.blockHeight != null && !this.blockInViewport(mark.blockHeight)) {
-        this.scrollToBlock(mark.blockHeight);
+      if (mark?.blockHeight != null) {
+        if (this.chainTip >=0) {
+          if (!this.blockInViewport(mark.blockHeight)) {
+            this.scrollToBlock(mark.blockHeight);
+          }
+        } else {
+          this.pendingMark = mark.blockHeight;
+        }
       }
     });
     this.stateService.blocks$
@@ -96,6 +109,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
     this.blocksPerPage = Math.ceil(window.innerWidth / this.blockWidth);
     this.pageWidth = this.blocksPerPage * this.blockWidth;
+    this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
       this.scrollToBlock(firstVisibleBlock, offset);
@@ -270,5 +284,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.timeLtrSubscription.unsubscribe();
+    this.chainTipSubscription.unsubscribe();
+    this.markBlockSubscription.unsubscribe();
   }
 }

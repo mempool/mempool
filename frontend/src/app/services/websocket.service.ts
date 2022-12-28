@@ -224,12 +224,14 @@ export class WebsocketService {
   handleResponse(response: WebsocketResponse) {
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
+      let maxHeight = 0;
       blocks.forEach((block: BlockExtended) => {
         if (block.height > this.stateService.latestBlockHeight) {
-          this.stateService.updateChainTip(block.height);
+          maxHeight = Math.max(maxHeight, block.height);
           this.stateService.blocks$.next([block, false]);
         }
       });
+      this.stateService.updateChainTip(maxHeight);
     }
 
     if (response.tx) {
