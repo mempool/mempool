@@ -12,6 +12,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   @Input() pages: any[] = [];
   @Input() pageIndex: number;
   @Input() blocksPerPage: number = 8;
+  @Input() minScrollWidth: number = 0;
 
   network: string;
   timeLtrSubscription: Subscription;

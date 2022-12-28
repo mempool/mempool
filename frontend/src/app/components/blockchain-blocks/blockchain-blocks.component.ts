@@ -43,7 +43,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   arrowVisible = false;
   arrowLeftPx = 30;
   blocksFilled = false;
-  transition = '1s';
+  arrowTransition = '1s';
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
@@ -179,13 +179,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
     if (blockindex > -1) {
       if (!animate) {
-        this.transition = 'inherit';
+        this.arrowTransition = 'inherit';
       }
       this.arrowVisible = true;
       if (newBlockFromLeft) {
         this.arrowLeftPx = blockindex * 155 + 30 - 205;
         setTimeout(() => {
-          this.transition = '2s';
+          this.arrowTransition = '2s';
           this.arrowLeftPx = blockindex * 155 + 30;
           this.cd.markForCheck();
         }, 50);
@@ -193,9 +193,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.arrowLeftPx = blockindex * 155 + 30;
         if (!animate) {
           setTimeout(() => {
-            this.transition = '2s';
+            this.arrowTransition = '2s';
             this.cd.markForCheck();
-          });
+          }, 50);
         }
       }
     } else {
