@@ -23,12 +23,19 @@
 
     <div class="grow"></div>
 
+    <div class="audit-toggle" *ngIf="webGlEnabled && auditAvailable">
+      <app-toggle
+        textLeft="audit"
+        i18n-textLeft="block.audit-mode"
+        [checked]="auditModeEnabled"
+        (toggleStatusChanged)="toggleAuditMode($event)"
+      ></app-toggle>
+    </div>
+
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
 
   <div class="clearfix"></div>
-
-
 
   <div class="box" *ngIf="!error">
     <div class="row">
@@ -54,7 +61,7 @@
                 <td i18n="block.weight">Weight</td>
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
-              <tr *ngIf="!auditDataMissing && indexingAvailable">
+              <tr *ngIf="auditAvailable">
                 <td i18n="block.health">Block health</td>
                 <td>
                   <span
@@ -88,21 +95,21 @@
               <tr>
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
-              <tr *ngIf="!auditDataMissing && indexingAvailable">
+              <tr *ngIf="showAudit">
                 <td colspan="2"><span class="skeleton-loader"></span></td>
               </tr>
             </ng-template>
-            <ng-container *ngIf="isMobile || (webGlEnabled && (auditDataMissing || !indexingAvailable)); then restOfTable;"></ng-container>
+            <ng-container *ngIf="isMobile || (webGlEnabled && !showAudit); then restOfTable;"></ng-container>
           </tbody>
         </table>
       </div>
       <div class="col-sm">
-        <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && (auditDataMissing || !indexingAvailable))">
+        <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && !showAudit)">
           <tbody>
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
           </tbody>
         </table>
-        <div class="col-sm chart-container" *ngIf="webGlEnabled && (!indexingAvailable || auditDataMissing)">
+        <div class="col-sm chart-container" *ngIf="webGlEnabled && !showAudit">
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="isLoadingOverview"
@@ -204,8 +211,8 @@
   <br>
 
   <!-- VISUALIZATIONS -->
-  <div class="box" *ngIf="!error && webGlEnabled && indexingAvailable && !auditDataMissing">
-    <div class="nav nav-tabs" *ngIf="isMobile && auditEnabled">
+  <div class="box" *ngIf="!error && webGlEnabled && showAudit">
+    <div class="nav nav-tabs" *ngIf="isMobile && showAudit">
       <a class="nav-link" [class.active]="mode === 'projected'" i18n="block.projected"
         fragment="projected" (click)="changeMode('projected')">Projected</a>
       <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
@@ -217,7 +224,7 @@
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !auditEnabled"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
       </div>
@@ -226,7 +233,7 @@
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !auditEnabled"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
       </div>
