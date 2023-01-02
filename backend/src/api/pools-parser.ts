@@ -1,15 +1,8 @@
 import DB from '../database';
 import logger from '../logger';
 import config from '../config';
-import BlocksRepository from '../repositories/BlocksRepository';
-
-interface Pool {
-  name: string;
-  link: string;
-  regexes: string[];
-  addresses: string[];
-  slug: string;
-}
+import PoolsRepository from '../repositories/PoolsRepository';
+import { PoolTag } from '../mempool.interfaces';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -20,270 +13,118 @@ class PoolsParser {
     'addresses': '[]',
     'slug': 'unknown'
   };
-  slugWarnFlag = false;
+
+  public setMiningPools(pools): void {
+    this.miningPools = pools;
+  }
 
   /**
-   * Parse the pools.json file, consolidate the data and dump it into the database
+   * Populate our db with updated mining pool definition
+   * @param pools 
    */
-  public async migratePoolsJson(poolsJson: object): Promise<void> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return;
-    }
+  public async migratePoolsJson(pools: any[]): Promise<void> {
+    await this.$insertUnknownPool();
 
-    // First we save every entries without paying attention to pool duplication
-    const poolsDuplicated: Pool[] = [];
-
-    const coinbaseTags = Object.entries(poolsJson['coinbase_tags']);
-    for (let i = 0; i < coinbaseTags.length; ++i) {
-      poolsDuplicated.push({
-        'name': (<Pool>coinbaseTags[i][1]).name,
-        'link': (<Pool>coinbaseTags[i][1]).link,
-        'regexes': [coinbaseTags[i][0]],
-        'addresses': [],
-        'slug': ''
-      });
-    }
-    const addressesTags = Object.entries(poolsJson['payout_addresses']);
-    for (let i = 0; i < addressesTags.length; ++i) {
-      poolsDuplicated.push({
-        'name': (<Pool>addressesTags[i][1]).name,
-        'link': (<Pool>addressesTags[i][1]).link,
-        'regexes': [],
-        'addresses': [addressesTags[i][0]],
-        'slug': ''
-      });
-    }
-
-    // Then, we find unique mining pool names
-    const poolNames: string[] = [];
-    for (let i = 0; i < poolsDuplicated.length; ++i) {
-      if (poolNames.indexOf(poolsDuplicated[i].name) === -1) {
-        poolNames.push(poolsDuplicated[i].name);
+    for (const pool of pools) {
+      if (!pool.id) {
+        logger.info(`Mining pool ${pool.name} has no unique 'id' defined. Skipping.`);
+        continue;
       }
-    }
-    logger.debug(`Found ${poolNames.length} unique mining pools`, logger.tags.mining);
 
-    // Get existing pools from the db
-    let existingPools;
-    try {
-      if (config.DATABASE.ENABLED === true) {
-        [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      const poolDB = await PoolsRepository.$getPoolByUniqueId(pool.id, false);
+      if (!poolDB) {
+        // New mining pool
+        const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+        logger.debug(`Inserting new mining pool ${pool.name}`);
+        await PoolsRepository.$insertNewMiningPool(pool, slug);
       } else {
-        existingPools = [];
-      }
-    } catch (e) {
-      logger.err('Cannot get existing pools from the database, skipping pools.json import', logger.tags.mining);
-      return;
-    }
-
-    this.miningPools = [];
-
-    // Finally, we generate the final consolidated pools data
-    const finalPoolDataAdd: Pool[] = [];
-    const finalPoolDataUpdate: Pool[] = [];
-    const finalPoolDataRename: Pool[] = [];
-    for (let i = 0; i < poolNames.length; ++i) {
-      let allAddresses: string[] = [];
-      let allRegexes: string[] = [];
-      const match = poolsDuplicated.filter((pool: Pool) => pool.name === poolNames[i]);
-
-      for (let y = 0; y < match.length; ++y) {
-        allAddresses = allAddresses.concat(match[y].addresses);
-        allRegexes = allRegexes.concat(match[y].regexes);
-      }
-
-      const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
-
-      let slug: string | undefined;
-      try {
-        slug = poolsJson['slugs'][poolNames[i]];
-      } catch (e) {
-        if (this.slugWarnFlag === false) {
-          logger.warn(`pools.json does not seem to contain the 'slugs' object`, logger.tags.mining);
-          this.slugWarnFlag = true;
+        if (poolDB.name !== pool.name) {
+          // Pool has been renamed
+          const newSlug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+          logger.warn(`Renaming ${poolDB.name} mining pool to ${pool.name}. Slug has been updated. Maybe you want to make a redirection from 'https://mempool.space/mining/pool/${poolDB.slug}' to 'https://mempool.space/mining/pool/${newSlug}`);
+          await PoolsRepository.$renameMiningPool(poolDB.id, newSlug, pool.name);
         }
-      }
-
-      if (slug === undefined) {
-        // Only keep alphanumerical
-        slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
-        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`, logger.tags.mining);
-      }
-
-      const poolObj = {
-        'name': finalPoolName,
-        'link': match[0].link,
-        'regexes': allRegexes,
-        'addresses': allAddresses,
-        'slug': slug
-      };
-
-      const existingPool = existingPools.find((pool) => pool.name === poolNames[i]);
-      if (existingPool !== undefined) {
-        // Check if any data was actually updated
-        const equals = (a, b) =>
-          a.length === b.length &&
-          a.every((v, i) => v === b[i]);
-        if (!equals(JSON.parse(existingPool.addresses), poolObj.addresses) || !equals(JSON.parse(existingPool.regexes), poolObj.regexes)) {
-          finalPoolDataUpdate.push(poolObj);
+        if (poolDB.link !== pool.link) {
+          // Pool link has changed
+          logger.debug(`Updating link for ${pool.name} mining pool`);
+          await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link);
         }
-      } else if (config.DATABASE.ENABLED) {
-        // Double check that if we're not just renaming a pool (same address same regex)
-        const [poolToRename]: any[] = await DB.query(`
-          SELECT * FROM pools
-          WHERE addresses = ? OR regexes = ?`,
-          [JSON.stringify(poolObj.addresses), JSON.stringify(poolObj.regexes)]
-        );
-        if (poolToRename && poolToRename.length > 0) {
-          // We're actually renaming an existing pool
-          finalPoolDataRename.push({
-            'name': poolObj.name,
-            'link': poolObj.link,
-            'regexes': allRegexes,
-            'addresses': allAddresses,
-            'slug': slug
-          });
-          logger.debug(`Rename '${poolToRename[0].name}' mining pool to ${poolObj.name}`, logger.tags.mining);
-        } else {
-          logger.debug(`Add '${finalPoolName}' mining pool`, logger.tags.mining);
-          finalPoolDataAdd.push(poolObj);
+        if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
+          JSON.stringify(pool.tags) !== poolDB.regexes) {
+          // Pool addresses changed or coinbase tags changed
+          logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool. If 'AUTOMATIC_BLOCK_REINDEXING' is enabled, we will re-index its blocks and 'unknown' blocks`);
+          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.tags);
+          await this.$deleteBlocksForPool(poolDB);
         }
-      }
-
-      this.miningPools.push({
-        'name': finalPoolName,
-        'link': match[0].link,
-        'regexes': JSON.stringify(allRegexes),
-        'addresses': JSON.stringify(allAddresses),
-        'slug': slug
-      });
-    }
-
-    if (config.DATABASE.ENABLED === false) { // Don't run db operations
-      logger.info('Mining pools.json import completed (no database)', logger.tags.mining);
-      return;
-    }
-
-    if (finalPoolDataAdd.length > 0 || finalPoolDataUpdate.length > 0 ||
-      finalPoolDataRename.length > 0
-    ) {    
-      logger.debug(`Update pools table now`, logger.tags.mining);
-
-      // Add new mining pools into the database
-      let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses, slug) VALUES ';
-      for (let i = 0; i < finalPoolDataAdd.length; ++i) {
-        queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
-        '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
-        ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
-      }
-      queryAdd = queryAdd.slice(0, -1) + ';';
-
-      // Updated existing mining pools in the database
-      const updateQueries: string[] = [];
-      for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
-        updateQueries.push(`
-          UPDATE pools
-          SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
-          regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}',
-          slug='${finalPoolDataUpdate[i].slug}'
-          WHERE name='${finalPoolDataUpdate[i].name}'
-        ;`);
-      }
-
-      // Rename mining pools
-      const renameQueries: string[] = [];
-      for (let i = 0; i < finalPoolDataRename.length; ++i) {
-        renameQueries.push(`
-          UPDATE pools
-          SET name='${finalPoolDataRename[i].name}', link='${finalPoolDataRename[i].link}',
-            slug='${finalPoolDataRename[i].slug}'
-          WHERE regexes='${JSON.stringify(finalPoolDataRename[i].regexes)}'
-            AND addresses='${JSON.stringify(finalPoolDataRename[i].addresses)}'
-        ;`);
-      }
-
-      try {
-        if (finalPoolDataAdd.length > 0 || updateQueries.length > 0) {
-          await this.$deleteBlocskToReindex(finalPoolDataUpdate);
-        }
-
-        if (finalPoolDataAdd.length > 0) {
-          await DB.query({ sql: queryAdd, timeout: 120000 });
-        }
-        for (const query of updateQueries) {
-          await DB.query({ sql: query, timeout: 120000 });
-        }
-        for (const query of renameQueries) {
-          await DB.query({ sql: query, timeout: 120000 });
-        }
-        await this.insertUnknownPool();
-        logger.info('Mining pools.json import completed', logger.tags.mining);
-      } catch (e) {
-        logger.err(`Cannot import pools in the database`, logger.tags.mining);
-        throw e;
       }
     }
 
-    try {
-      await this.insertUnknownPool();
-    } catch (e) {
-      logger.err(`Cannot insert unknown pool in the database`, logger.tags.mining);
-      throw e;
-    }
+    logger.info('Mining pools.json import completed');
   }
 
   /**
    * Manually add the 'unknown pool'
    */
-  private async insertUnknownPool() {
+  public async $insertUnknownPool(): Promise<void> {
+    if (!config.DATABASE.ENABLED) {
+      return;
+    }
+
     try {
       const [rows]: any[] = await DB.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
         await DB.query({
-          sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
-          VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
+          sql: `INSERT INTO pools(name, link, regexes, addresses, slug, unique_id)
+          VALUES("${this.unknownPool.name}", "${this.unknownPool.link}", "[]", "[]", "${this.unknownPool.slug}", 0);
         `});
       } else {
         await DB.query(`UPDATE pools
-          SET name='Unknown', link='https://learnmeabitcoin.com/technical/coinbase-transaction',
+          SET name='${this.unknownPool.name}', link='${this.unknownPool.link}',
           regexes='[]', addresses='[]',
-          slug='unknown'
-          WHERE name='Unknown'
+          slug='${this.unknownPool.slug}',
+          unique_id=0
+          WHERE slug='${this.unknownPool.slug}'
         `);
       }
     } catch (e) {
-      logger.err('Unable to insert "Unknown" mining pool', logger.tags.mining);
+      logger.err(`Unable to insert or update "Unknown" mining pool. Reason: ${e instanceof Error ? e.message : e}`);
     }
   }
 
   /**
-   * Delete blocks which needs to be reindexed
+   * Delete indexed blocks for an updated mining pool
+   * 
+   * @param pool 
    */
-   private async $deleteBlocskToReindex(finalPoolDataUpdate: any[]) {
+  private async $deleteBlocksForPool(pool: PoolTag): Promise<void> {
     if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
       return;
     }
 
-    const blockCount = await BlocksRepository.$blockCount(null, null);
-    if (blockCount === 0) {
-      return;
-    }
-
-    for (const updatedPool of finalPoolDataUpdate) {
-      const [pool]: any[] = await DB.query(`SELECT id, name from pools where slug = "${updatedPool.slug}"`);
-      if (pool.length > 0) {
-        logger.notice(`Deleting blocks from ${pool[0].name} mining pool for future re-indexing`, logger.tags.mining);
-        await DB.query(`DELETE FROM blocks WHERE pool_id = ${pool[0].id}`);
-      }
-    }
-
-    // Ignore early days of Bitcoin as there were not mining pool yet
-    logger.notice(`Deleting blocks with unknown mining pool from height 130635 for future re-indexing`, logger.tags.mining);
+    // Get oldest blocks mined by the pool and assume pools.json updates only concern most recent years
+    // Ignore early days of Bitcoin as there were no mining pool yet
+    const [oldestPoolBlock]: any[] = await DB.query(`
+      SELECT height
+      FROM blocks
+      WHERE pool_id = ?
+      ORDER BY height
+      LIMIT 1`,
+      [pool.id]
+    );
+    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : 130635;
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    await DB.query(`DELETE FROM blocks WHERE pool_id = ${unknownPool[0].id} AND height > 130635`);
-
-    logger.notice(`Truncating hashrates for future re-indexing`, logger.tags.mining);
-    await DB.query(`DELETE FROM hashrates`);
+    logger.notice(`Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ? AND height >= ${oldestBlockHeight}`,
+      [unknownPool[0].id]
+    );
+    logger.notice(`Deleting blocks from ${pool.name} mining pool for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ?`,
+      [pool.id]
+    );
   }
 }
 
