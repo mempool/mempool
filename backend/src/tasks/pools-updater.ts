@@ -61,9 +61,24 @@ class PoolsUpdater {
       if (poolsJson === undefined) {
         return;
       }
-      await poolsParser.migratePoolsJson(poolsJson);
-      await this.updateDBSha(githubSha);
-      logger.notice(`PoolsUpdater completed`, logger.tags.mining);
+      poolsParser.setMiningPools(poolsJson);
+
+      if (config.DATABASE.ENABLED === false) { // Don't run db operations
+        logger.info('Mining pools.json import completed (no database)');
+        return;
+      }
+
+      try {
+        await DB.query('START TRANSACTION;');
+        await poolsParser.migratePoolsJson(poolsJson);
+        await this.updateDBSha(githubSha);
+        await DB.query('START TRANSACTION;');
+        await DB.query('COMMIT;');
+      } catch (e) {
+        logger.err(`Could not migrate mining pools, rolling back. Reason: ${e instanceof Error ? e.message : e}`);
+        await DB.query('ROLLBACK;');
+      }
+      logger.notice('PoolsUpdater completed');
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
@@ -106,8 +121,8 @@ class PoolsUpdater {
     const response = await this.query(this.treeUrl);
 
     if (response !== undefined) {
-      for (const file of response['tree']) {
-        if (file['path'] === 'pools.json') {
+      for (const file of response) {
+        if (file['name'] === 'pool-list.json') {
           return file['sha'];
         }
       }
@@ -120,7 +135,7 @@ class PoolsUpdater {
   /**
    * Http request wrapper
    */
-  private async query(path): Promise<object | undefined> {
+  private async query(path): Promise<any[] | undefined> {
     type axiosOptions = {
       headers: {
         'User-Agent': string
