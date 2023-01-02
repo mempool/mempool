@@ -4,11 +4,12 @@ import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
 import { take, map, switchMap } from 'rxjs/operators';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { feeLevels } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
 import { DifficultyAdjustment } from '../../interfaces/node-api.interface';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-mempool-blocks',
@@ -58,6 +59,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     public stateService: StateService,
+    private themeService: ThemeService,
     private cd: ChangeDetectorRef,
     private relativeUrlPipe: RelativeUrlPipe,
     private location: Location
@@ -245,7 +247,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     trimmedFeeRange.forEach((fee: number) => {
       let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fee >= feeLvl);
       feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-      gradientColors.push(mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+      gradientColors.push(this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
     });
 
     gradientColors.forEach((color, i, gc) => {

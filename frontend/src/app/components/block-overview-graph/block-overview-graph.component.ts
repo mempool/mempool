@@ -5,6 +5,8 @@ import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
 import { Position } from './sprite-types';
+import { ThemeService } from 'src/app/services/theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -26,6 +28,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
+  themeChangedSubscription: Subscription;
 
   gl: WebGLRenderingContext;
   animationFrameRequest: number;
@@ -48,6 +51,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
+    private themeService: ThemeService,
   ) {
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
   }
@@ -59,6 +63,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     this.initCanvas();
 
     this.resizeCanvas();
+
+    this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
+      // force full re-render
+      this.resizeCanvas();
+    });
   }
 
   ngOnChanges(changes): void {
@@ -79,6 +88,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
     this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+    this.themeChangedSubscription.unsubscribe();
   }
 
   clear(direction): void {
@@ -195,7 +205,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.start();
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray });
+        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService });
       this.start();
     }
   }

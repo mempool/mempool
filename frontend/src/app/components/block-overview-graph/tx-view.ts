@@ -2,20 +2,10 @@ import TxSprite from './tx-sprite';
 import { FastVertexArray } from './fast-vertex-array';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
-import BlockScene from './block-scene';
+import { feeLevels } from '../../app.constants';
+import { ThemeService } from 'src/app/services/theme.service';
 
 const hoverTransitionTime = 300;
-const defaultHoverColor = hexToColor('1bd8f4');
-
-const feeColors = mempoolFeeColors.map(hexToColor);
-const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
-const auditColors = {
-  censored: hexToColor('f344df'),
-  missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
-  added: hexToColor('0099ff'),
-  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
-}
 
 // convert from this class's update format to TxSprite's update format
 function toSpriteUpdate(params: ViewUpdateParams): SpriteUpdateParams {
@@ -37,6 +27,7 @@ export default class TxView implements TransactionStripped {
   feerate: number;
   status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
   context?: 'projected' | 'actual';
+  theme: ThemeService;
 
   initialised: boolean;
   vertexArray: FastVertexArray;
@@ -49,7 +40,7 @@ export default class TxView implements TransactionStripped {
 
   dirty: boolean;
 
-  constructor(tx: TransactionStripped, vertexArray: FastVertexArray) {
+  constructor(tx: TransactionStripped, vertexArray: FastVertexArray, theme: ThemeService) {
     this.context = tx.context;
     this.txid = tx.txid;
     this.fee = tx.fee;
@@ -59,6 +50,7 @@ export default class TxView implements TransactionStripped {
     this.status = tx.status;
     this.initialised = false;
     this.vertexArray = vertexArray;
+    this.theme = theme;
 
     this.hover = false;
 
@@ -131,10 +123,10 @@ export default class TxView implements TransactionStripped {
 
   // Temporarily override the tx color
   // returns minimum transition end time
-  setHover(hoverOn: boolean, color: Color | void = defaultHoverColor): number {
+  setHover(hoverOn: boolean, color: Color | void): number {
     if (hoverOn) {
       this.hover = true;
-      this.hoverColor = color;
+      this.hoverColor = color || this.theme.defaultHoverColor;
 
       this.sprite.update({
         ...this.hoverColor,
@@ -155,55 +147,27 @@ export default class TxView implements TransactionStripped {
 
   getColor(): Color {
     const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
-    const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
+    const feeLevelColor = this.theme.feeColors[feeLevelIndex] || this.theme.feeColors[this.theme.mempoolFeeColors.length - 1];
     // Block audit
     switch(this.status) {
       case 'censored':
-        return auditColors.censored;
+        return this.theme.auditColors.censored;
       case 'missing':
-        return auditColors.missing;
+        return this.theme.auditColors.missing;
       case 'fresh':
-        return auditColors.missing;
+        return this.theme.auditColors.missing;
       case 'added':
-        return auditColors.added;
+        return this.theme.auditColors.added;
       case 'selected':
-        return auditColors.selected;
+        return this.theme.auditColors.selected;
       case 'found':
         if (this.context === 'projected') {
-          return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
+          return this.theme.auditFeeColors[feeLevelIndex] || this.theme.auditFeeColors[this.theme.mempoolFeeColors.length - 1];
         } else {
           return feeLevelColor;
         }
       default:
         return feeLevelColor;
     }
-  }
-}
-
-function hexToColor(hex: string): Color {
-  return {
-    r: parseInt(hex.slice(0, 2), 16) / 255,
-    g: parseInt(hex.slice(2, 4), 16) / 255,
-    b: parseInt(hex.slice(4, 6), 16) / 255,
-    a: 1
-  };
-}
-
-function desaturate(color: Color, amount: number): Color {
-  const gray = (color.r + color.g + color.b) / 6;
-  return {
-    r: color.r + ((gray - color.r) * amount),
-    g: color.g + ((gray - color.g) * amount),
-    b: color.b + ((gray - color.b) * amount),
-    a: color.a,
-  };
-}
-
-function darken(color: Color, amount: number): Color {
-  return {
-    r: color.r * amount,
-    g: color.g * amount,
-    b: color.b * amount,
-    a: color.a,
   }
 }

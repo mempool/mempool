@@ -1,0 +1,70 @@
+/* Theme */
+$bg: #ff1f31;
+$active-bg: #ff131f;
+$hover-bg: #ff131e;
+$fg: #ff0;
+
+/* Bootstrap */
+
+$body-bg: $bg;
+$body-color: $fg;
+$gray-800: $bg;
+$gray-700: $fg;
+
+$nav-tabs-link-active-bg: $active-bg;
+
+$primary: #105fb0;
+$secondary: #2d3348;
+$tertiary: #653b9c;
+$success: #1a9436;
+$info: #1bd8f4;
+
+$h5-font-size: 1.15rem !default;
+
+$pagination-bg: $body-bg;
+$pagination-border-color: $gray-800;
+$pagination-disabled-bg:           $fg;
+$pagination-disabled-border-color: $bg;
+$pagination-active-color:          $fg;
+$pagination-active-bg:             $tertiary;
+$pagination-hover-bg:              $hover-bg;
+$pagination-hover-border-color:     $bg;
+$pagination-disabled-bg:          $bg;
+
+$custom-select-indicator-color: $fg;
+
+.input-group-text {
+  background-color: #1c2031 !important;
+  border: 1px solid #20263e !important;
+}
+
+$link-color:                $info;
+$link-decoration:           none !default;
+$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-decoration:     underline !default;
+
+$dropdown-bg: $bg;
+$dropdown-link-color: $fg;
+
+$dropdown-link-hover-color: $fg;
+$dropdown-link-hover-bg: $active-bg;
+
+$dropdown-link-active-color: $fg;
+$dropdown-link-active-bg: $active-bg;
+
+@import "~bootstrap/scss/bootstrap";
+
+:root {
+  --bg: #{$bg};
+  --active-bg: #{$active-bg};
+  --hover-bg: #{$hover-bg};
+  --fg: #{$fg};
+
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --tertiary: #{$tertiary};
+  --success: #{$success};
+  --info: #{$info};
+
+  --box-bg: var(--box-bg);
+}
