@@ -324,3 +324,10 @@
   text-decoration: none;
   color: inherit;
 }
+
+.pref-selectors {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
