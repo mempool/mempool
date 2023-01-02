@@ -21,6 +21,9 @@
           <div class="selector">
             <app-rate-unit-selector></app-rate-unit-selector>
           </div>
+          <div class="selector">
+            <app-theme-selector></app-theme-selector>
+          </div>
           <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login' | relativeUrl]">
             <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
             <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
