@@ -1,4 +1,4 @@
-export const mempoolFeeColors = [
+export const defaultMempoolFeeColors = [
   '557d00',
   '5d7d01',
   '637d02',
@@ -37,6 +37,47 @@ export const mempoolFeeColors = [
   'b10857',
   'b00259',
   'ae005b',
+];
+
+export const contrastMempoolFeeColors = [
+  '83fd00',
+  '83f609',
+  '83ef12',
+  '83e71a',
+  '83e023',
+  '83d92c',
+  '83d235',
+  '83cb3e',
+  '83c446',
+  '83bc4f',
+  '83b558',
+  '83ae61',
+  '83a76a',
+  '83a072',
+  '83997b',
+  '839184',
+  '838a8d',
+  '838395',
+  '837c9e',
+  '8375a7',
+  '836eb0',
+  '8366b9',
+  '835fc1',
+  '8358ca',
+  '8351d3',
+  '834adc',
+  '8343e5',
+  '833bed',
+  '8334f6',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
+  '832dff',
 ];
 
 export const chartColors = [

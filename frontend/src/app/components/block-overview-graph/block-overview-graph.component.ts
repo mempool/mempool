@@ -7,6 +7,7 @@ import TxView from './tx-view';
 import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
+import { ThemeService } from 'src/app/services/theme.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
@@ -55,6 +56,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   @ViewChild('blockCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
+  themeChangedSubscription: Subscription;
 
   gl: WebGLRenderingContext;
   animationFrameRequest: number;
@@ -86,6 +88,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
     public stateService: StateService,
+    private themeService: ThemeService,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
@@ -104,6 +107,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       if (this.gl) {
         this.initCanvas();
         this.resizeCanvas();
+        this.themeChangedSubscription = this.themeService.themeChanged$.subscribe(() => {
+          // force full re-render
+          this.resizeCanvas();
+        });
       }
     }
   }
@@ -149,6 +156,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.canvas) {
       this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
       this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
+      this.themeChangedSubscription?.unsubscribe();
     }
   }
 
@@ -291,7 +299,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
         this.start();
       } else {
         this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
+          blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, theme: this.themeService,
           highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
         colorFunction: this.getColorFunction() });
         this.start();

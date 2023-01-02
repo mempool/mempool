@@ -5,6 +5,8 @@ import { hexToColor } from './utils';
 import BlockScene from './block-scene';
 import { TransactionStripped } from '../../interfaces/node-api.interface';
 import { TransactionFlags } from '../../shared/filters.utils';
+import { feeLevels } from '../../app.constants';
+import { ThemeService } from 'src/app/services/theme.service';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
@@ -36,6 +38,7 @@ export default class TxView implements TransactionStripped {
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'prioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
+  theme: ThemeService;
 
   initialised: boolean;
   vertexArray: FastVertexArray;
@@ -50,7 +53,7 @@ export default class TxView implements TransactionStripped {
 
   dirty: boolean;
 
-  constructor(tx: TransactionStripped, scene: BlockScene) {
+  constructor(tx: TransactionStripped, scene: BlockScene, theme: ThemeService) {
     this.scene = scene;
     this.context = tx.context;
     this.txid = tx.txid;
@@ -66,6 +69,7 @@ export default class TxView implements TransactionStripped {
     this.bigintFlags = tx.flags ? (BigInt(tx.flags) | (this.acc ? TransactionFlags.acceleration : 0n)): 0n;
     this.initialised = false;
     this.vertexArray = scene.vertexArray;
+    this.theme = theme;
 
     this.hover = false;
 
@@ -138,10 +142,10 @@ export default class TxView implements TransactionStripped {
 
   // Temporarily override the tx color
   // returns minimum transition end time
-  setHover(hoverOn: boolean, color: Color | void = defaultHoverColor): number {
+  setHover(hoverOn: boolean, color: Color | void): number {
     if (hoverOn) {
       this.hover = true;
-      this.hoverColor = color;
+      this.hoverColor = color || this.theme.defaultHoverColor;
 
       this.sprite.update({
         ...this.hoverColor,
@@ -190,5 +194,31 @@ export default class TxView implements TransactionStripped {
     }
     this.dirty = false;
     return performance.now() + hoverTransitionTime;
+  }
+
+  getColor(): Color {
+    const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
+    const feeLevelColor = this.theme.feeColors[feeLevelIndex] || this.theme.feeColors[this.theme.mempoolFeeColors.length - 1];
+    // Block audit
+    switch(this.status) {
+      case 'censored':
+        return this.theme.auditColors.censored;
+      case 'missing':
+        return this.theme.auditColors.missing;
+      case 'fresh':
+        return this.theme.auditColors.missing;
+      case 'added':
+        return this.theme.auditColors.added;
+      case 'selected':
+        return this.theme.auditColors.selected;
+      case 'found':
+        if (this.context === 'projected') {
+          return this.theme.auditFeeColors[feeLevelIndex] || this.theme.auditFeeColors[this.theme.mempoolFeeColors.length - 1];
+        } else {
+          return feeLevelColor;
+        }
+      default:
+        return feeLevelColor;
+    }
   }
 }

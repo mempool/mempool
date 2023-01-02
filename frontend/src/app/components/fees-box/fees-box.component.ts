@@ -2,8 +2,9 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, combineLatest } from 'rxjs';
 import { Recommendedfees } from '../../interfaces/websocket.interface';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { feeLevels } from '../../app.constants';
 import { map, startWith, tap } from 'rxjs/operators';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-fees-box',
@@ -18,7 +19,8 @@ export class FeesBoxComponent implements OnInit {
   noPriority = '#2e324e';
 
   constructor(
-    private stateService: StateService
+    private stateService: StateService,
+    private themeService: ThemeService,
   ) { }
 
   ngOnInit(): void {
@@ -33,11 +35,11 @@ export class FeesBoxComponent implements OnInit {
         tap((fees) => {
           let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.minimumFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const startColor = '#' + (this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
 
           feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.fastestFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const endColor = '#' + (this.themeService.mempoolFeeColors[feeLevelIndex - 1] || this.themeService.mempoolFeeColors[this.themeService.mempoolFeeColors.length - 1]);
 
           this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
           this.noPriority = startColor;
