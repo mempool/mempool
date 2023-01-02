@@ -20,7 +20,7 @@
   width: 100%;
   margin: 16px 0 0;
   padding: 20px 12px;
-  background: #181b2d;
+  background: var(--stat-box-bg);
   font-size: 32px;
 }
 
@@ -46,7 +46,7 @@
   min-height: 272px;
   max-height: 272px;
   padding: 0;
-  background: #181b2d;
+  background: var(--stat-box-bg);
   overflow: hidden;
   margin-top: 16px;
 }

@@ -61,13 +61,13 @@
 }
 
 .big-fiat {
-  color: #3bcc49;
+  color: var(--green);
   font-size: 26px;
 }
 
 
   .card {
-    background-color: #1d1f31;
+    background-color: var(--bg);
     height: 100%;
   }
 
@@ -85,7 +85,7 @@
   .progress {
     display: inline-flex;
     width: 100%;
-    background-color: #2d3348;
+    background-color: var(--secondary);
     height: 1.1rem;
   }
 

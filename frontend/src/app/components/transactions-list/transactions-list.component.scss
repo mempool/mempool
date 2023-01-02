@@ -17,7 +17,7 @@
 }
 
 .red {
-  color:#dc3545;
+  color:var(--red);
 }
 
 .grey {
@@ -56,7 +56,7 @@
 		text-align: right;
 	}
 	.sats {
-		color: #ffffff66;
+		color: var(--transparent-fg);
 		font-size: 11px;
 	}
 }
@@ -95,7 +95,7 @@
 		padding: 0.75rem;
 		font-size: 12px;
 		&:first-child {
-			color: #ffffff66;
+			color: var(--transparent-fg);
 			white-space: pre-wrap;
 			@media (min-width: 476px) {
 				white-space: nowrap;
@@ -123,7 +123,7 @@ h2 {
 }
 
 .highlight {
-	background-color: #181b2d;
+	background-color: var(--stat-box-bg);
 }
 
 .summary {

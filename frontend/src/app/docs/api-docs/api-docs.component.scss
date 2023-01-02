@@ -17,7 +17,7 @@
 }
 
 code {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
@@ -47,7 +47,7 @@ li.nav-item {
 .nav-tabs .nav-link.active {
   border-bottom: 1px solid #fff;
   @media (min-width: 676px){
-    border-bottom: 1px solid #11131f;
+    border-bottom: 1px solid var(--active-bg);
   }
 }
 
@@ -65,7 +65,7 @@ li.nav-item {
     padding: 0px;
   }
   .nav-tabs .nav-link.active {
-    border-bottom: 1px solid #11131f;
+    border-bottom: 1px solid var(--active-bg);
   }
   .subtitle {
     display: flex;
@@ -110,17 +110,17 @@ li.nav-item {
   top: 20px;
   overflow-y: auto;
   height: calc(100vh - 50px);
-  scrollbar-color: #2d3348 #11131f;
+  scrollbar-color: var(--secondary) var(--active-bg);
   scrollbar-width: thin;
 }
 ::-webkit-scrollbar {
   width: 3px;
 }
 ::-webkit-scrollbar-track {
-  background: #11131f;
+  background: var(--active-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #2d3348;
+  background-color: var(--secondary);
   border-radius: 5px;
   border: none;
 }
@@ -148,8 +148,8 @@ h3 {
 
 .endpoint-container .section-header {
   display: block;
-  background-color: #2d3348;
-  color: #1bd8f4;
+  background-color: var(--secondary);
+  color: var(--info);
   padding: 1rem 1.3rem 1rem 1.3rem;
   font-weight: bold;
   border-radius: 0.25rem;
@@ -163,7 +163,7 @@ h3 {
 
 .endpoint-container .section-header span {
   color: #fff;
-  background-color: #653b9c;
+  background-color: var(--tertiary);
   font-size: 12px;
   text-transform: uppercase;
   font-weight: 400;
@@ -195,7 +195,7 @@ h3 {
 }
 
 #doc-nav-mobile > div {
-  background-color: #2d3348;
+  background-color: var(--secondary);
   z-index: 100;
   border-radius: 0 0 0.5rem 0.5rem;
   height: 55vh;
@@ -204,9 +204,9 @@ h3 {
 
 #doc-nav-mobile button {
   width: 100%;
-  background-color: #105fb0;
+  background-color: var(--primary);
   color: #fff;
-  border-color: #105fb0;
+  border-color: var(--primary);
   border-radius: 0.5rem 0.5rem 0 0;
 }
 
@@ -221,7 +221,7 @@ h3 {
 }
 
 #disclaimer {
-  background-color: #1d1f31;
+  background-color: var(--bg);
   padding: 24px;
   margin: 24px 0;
 }

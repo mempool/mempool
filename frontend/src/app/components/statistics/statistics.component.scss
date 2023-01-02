@@ -117,7 +117,7 @@
   }
   .inactive {
     .square {
-      background-color: #ffffff66 !important;
+      background-color: var(--transparent-fg) !important;
     }
     .fee-text {
       text-decoration: line-through;
