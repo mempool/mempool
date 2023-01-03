@@ -34,6 +34,7 @@ import { TxFeaturesComponent } from '../components/tx-features/tx-features.compo
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
+import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -93,6 +94,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -199,6 +201,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
