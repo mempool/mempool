@@ -184,7 +184,7 @@ div.scrollable {
 }
 
 .block-count-title {
-  color: #4a68b9;
+  color: var(--title-fg);
   font-size: 14px;
   text-align: left;
   @media (max-width: 767.98px) {

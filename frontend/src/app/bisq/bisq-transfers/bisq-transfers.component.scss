@@ -12,15 +12,15 @@
 }
 
 .green {
-  	color:#28a745;
+  	color: var(--green);
 }
 
 .red {
-  	color:var(--red);
+  	color: var(--red);
 }
 
 .grey {
-  	color:#6c757d;
+  	color: var(--grey);
 }
 
 @media (max-width: 767.98px) {

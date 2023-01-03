@@ -96,7 +96,7 @@ export class NodeChannels implements OnChanges {
             borderRadius: 4,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             textStyle: {
-              color: '#b1b1b1',
+              color: 'var(--tooltip-grey)',
             },
             borderColor: '#000',
             formatter: (value): string => {

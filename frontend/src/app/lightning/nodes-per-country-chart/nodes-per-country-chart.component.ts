@@ -85,7 +85,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         name: country.name.en + (this.isMobile() ? `` : ` (${country.share}%)`),
         label: {
           overflow: 'truncate',
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -95,7 +95,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#b1b1b1',
+            color: 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -118,7 +118,7 @@ export class NodesPerCountryChartComponent implements OnInit {
       name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'truncate',
-        color: '#b1b1b1',
+        color: 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -127,7 +127,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {

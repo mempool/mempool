@@ -139,7 +139,7 @@ export class NodesPerISPChartComponent implements OnInit {
         label: {
           overflow: 'truncate',
           width: isMobile() ? 75 : this.widget ? 125 : 250,
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -149,7 +149,7 @@ export class NodesPerISPChartComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#b1b1b1',
+            color: 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -172,7 +172,7 @@ export class NodesPerISPChartComponent implements OnInit {
       name: 'Other' + (isMobile() || this.widget ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'truncate',
-        color: '#b1b1b1',
+        color: 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -181,7 +181,7 @@ export class NodesPerISPChartComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {

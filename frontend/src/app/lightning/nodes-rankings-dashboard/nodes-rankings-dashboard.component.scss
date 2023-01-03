@@ -14,10 +14,10 @@
 
 .card-title {
   font-size: 1rem;
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 .card-title > a {
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 
 .card-text {
