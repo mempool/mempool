@@ -144,7 +144,14 @@
     </div>
   </div>
 
-  <app-language-selector></app-language-selector>
+  <div class="pref-selectors">
+    <div class="selector">
+      <app-language-selector></app-language-selector>
+    </div>
+    <div class="selector">
+      <app-fiat-selector></app-fiat-selector>
+    </div>
+  </div>
 
   <div class="terms-of-service">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>

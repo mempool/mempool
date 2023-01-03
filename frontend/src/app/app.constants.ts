@@ -157,3 +157,97 @@ export const specialBlocks = {
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
 };
+
+export const fiatCurrencies = {
+  AED: {
+    name: 'UAE Dirham',
+    code: 'AED'
+  },
+  AUD: {
+    name: 'Australian Dollar',
+    code: 'AUD',
+    indexed: true,
+  },
+  BRL: {
+    name: 'Brazilian Real',
+    code: 'BRL'
+  },
+  CAD: {
+    name: 'Canadian Dollar',
+    code: 'CAD',
+    indexed: true,
+  },
+  CHF: {
+    name: 'Swiss Franc',
+    code: 'CHF',
+    indexed: true,
+  },
+  EUR: {
+    name: 'Euro',
+    code: 'EUR',
+    indexed: true,
+  },
+  GBP: {
+    name: 'Pound Sterling',
+    code: 'GBP',
+    indexed: true,
+  },
+  HKD: {
+    name: 'Hong Kong Dollar',
+    code: 'HKD'
+  },
+  IDR: {
+    name: 'Indonesian Rupiah',
+    code: 'IDR'
+  },
+  JPY: {
+    name: 'Japanese Yen',
+    code: 'JPY',
+    indexed: true,
+  },
+  KRW: {
+    name: 'Korean Won',
+    code: 'KRW'
+  },
+  MYR: {
+    name: 'Malaysian Ringgit',
+    code: 'MYR'
+  },
+  NGN: {
+    name: 'Nigerian Naira',
+    code: 'NGN'
+  },
+  NZD: {
+    name: 'New Zealand Dollar',
+    code: 'NZD'
+  },
+  PLN: {
+    name: 'Polish Złoty',
+    code: 'PLN'
+  },
+  RUB: {
+    name: 'Russian Ruble',
+    code: 'RUB'
+  },
+  SGD: {
+    name: 'Singapore Dollar',
+    code: 'SGD'
+  },
+  TRY: {
+    name: 'Turkish Lira',
+    code: 'TRY'
+  },
+  UAH: {
+    name: 'Ukrainian Hryvnia',
+    code: 'UAH'
+  },
+  USD: {
+    name: 'US Dollar',
+    code: 'USD',
+    indexed: true,
+  },
+  ZAR: {
+    name: 'South African Rand',
+    code: 'ZAR'
+  },
+};
