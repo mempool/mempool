@@ -23,6 +23,7 @@ import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
+import { FiatCurrencyPipe } from './pipes/fiat-currency.pipe';
 import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { TimeUntilComponent } from '../components/time-until/time-until.component';
@@ -109,6 +110,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
+    FiatCurrencyPipe,
     ColoredPriceDirective,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -210,6 +212,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
+    FiatCurrencyPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,
