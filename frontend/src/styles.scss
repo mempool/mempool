@@ -3,13 +3,13 @@ $bg: #1d1f31;
 $active-bg: #11131f;
 $hover-bg: #12131e;
 $fg: #fff;
+$title-fg: #4a68b9;
 
 $taproot: #eba814;
 $taproot-light: #d5a90a;
 $taproot-dark: #9d7c05;
 
 /* Bootstrap */
-
 $body-bg: $bg;
 $body-color: $fg;
 $gray-800: $bg;
@@ -64,6 +64,8 @@ $dropdown-link-active-bg: $active-bg;
   --active-bg: #{$active-bg};
   --hover-bg: #{$hover-bg};
   --fg: #{$fg};
+  --color-fg: #ffffff;
+  --title-fg: #{$title-fg};
 
   --primary: #{$primary};
   --secondary: #{$secondary};
@@ -93,6 +95,8 @@ $dropdown-link-active-bg: $active-bg;
   --green: #3bcc49;
   --red: #dc3545;
   --yellow: #ffd800;
+  --grey: #6c757d;
+  --tooltip-grey: #b1b1b1;
 }
 
 html, body {
@@ -384,7 +388,7 @@ html:lang(ru) .card-title {
   background: rgba($active-bg, 0.95);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
-  color: #b1b1b1;
+  color: var(--tooltip-grey);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -394,7 +398,7 @@ html:lang(ru) .card-title {
   thead {
     th {
       font-size: 9px;
-      color: #b1b1b1;
+      color: var(--tooltip-grey);
       text-align: right;
       &:first-child {
         text-align: left;
@@ -485,7 +489,7 @@ html:lang(ru) .card-title {
   thead {
     th {
       font-size: 9px;
-      color: #b1b1b1;
+      color: var(--tooltip-grey);
       text-align: right;
       &:first-child {
         text-align: left;

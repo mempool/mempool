@@ -58,7 +58,7 @@ li.nav-item {
 }
 
 .navbar-nav {
-  background: #212121;
+  background: var(--navbar-bg);
   bottom: 0;
   box-shadow: 0px 0px 15px 0px #000;
   flex-direction: row;

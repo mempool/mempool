@@ -40,16 +40,8 @@
   }
 }
 
-.txPerSecond {
-  color: #4a9ff4;
-}
-
 .mempoolSize {
-  color: #4a68b9;
-}
-
-.unconfirmedTx {
-  color: #f14d80;
+  color: var(--title-fg);
 }
 
 .info-block {

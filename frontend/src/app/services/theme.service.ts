@@ -46,13 +46,17 @@ export class ThemeService {
         this.mempoolFeeColors = contrastMempoolFeeColors;
         this.auditColors = contrastAuditColors;
       }
-      if (!this.style) {
-        this.style = document.createElement('link');
-        this.style.rel = 'stylesheet';
-        this.style.href = `theme-${theme}.css`;
-        document.head.appendChild(this.style);
-      } else {
-        this.style.href = `theme-${theme}.css`;
+      try {
+        if (!this.style) {
+          this.style = document.createElement('link');
+          this.style.rel = 'stylesheet';
+          this.style.href = `${theme}.css`;
+          document.head.appendChild(this.style);
+        } else {
+          this.style.href = `${theme}.css`;
+        }
+      } catch (err) {
+        console.log('failed to apply theme stylesheet: ', err);
       }
     } else {
       this.mempoolFeeColors = defaultMempoolFeeColors;

@@ -146,7 +146,7 @@ export class PoolRankingComponent implements OnInit {
         name: pool.name + ((isMobile() || this.widget) ? `` : ` (${pool.share}%)`),
         label: {
           overflow: 'none',
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -156,7 +156,7 @@ export class PoolRankingComponent implements OnInit {
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
           textStyle: {
-            color: '#b1b1b1',
+            color: 'var(--tooltip-grey)',
           },
           borderColor: '#000',
           formatter: () => {
@@ -184,7 +184,7 @@ export class PoolRankingComponent implements OnInit {
       name: 'Other' + (isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
       label: {
         overflow: 'none',
-        color: '#b1b1b1',
+        color: 'var(--tooltip-grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -193,7 +193,7 @@ export class PoolRankingComponent implements OnInit {
         borderRadius: 4,
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         textStyle: {
-          color: '#b1b1b1',
+          color: 'var(--tooltip-grey)',
         },
         borderColor: '#000',
         formatter: () => {
