@@ -538,6 +538,10 @@ class NodesApi {
 
       const IPSIds = ISPId.split(',');
       const [rows]: any = await DB.query(query, [IPSIds, IPSIds]);
+      if (!rows || rows.length === 0) {
+        return [];
+      }
+
       const nodes = {};
 
       const intISPIds: number[] = [];

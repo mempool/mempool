@@ -251,7 +251,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.makeBlockTemplates(newMempool, 8, null, true);
+      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid));
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool);
     }
@@ -419,7 +419,7 @@ class WebsocketHandler {
     const _memPool = memPool.getMempool();
 
     if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+      await mempoolBlocks.makeBlockTemplates(_memPool);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);
     }
@@ -439,7 +439,7 @@ class WebsocketHandler {
         };
       }) : [];
 
-      BlocksSummariesRepository.$saveSummary({
+      BlocksSummariesRepository.$saveTemplate({
         height: block.height,
         template: {
           id: block.id,
@@ -462,13 +462,15 @@ class WebsocketHandler {
       }
     }
 
+    const removed: string[] = [];
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
+      removed.push(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.makeBlockTemplates(_memPool, 2);
+      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool);
     }
