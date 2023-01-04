@@ -309,6 +309,11 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
+    if (!config.LIGHTNING.TOPOLOGY_FOLDER) {
+      logger.info(`Lightning topology folder is not set. Not importing historical LN stats`);
+      return;
+    }
+
     logger.debug('Run the historical importer');
     try {
       let fileList: string[] = [];

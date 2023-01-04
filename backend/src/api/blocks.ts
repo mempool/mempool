@@ -742,7 +742,7 @@ class Blocks {
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
     let transactions;
-    if (false/*Common.blocksSummariesIndexingEnabled()*/) {
+    if (Common.blocksSummariesIndexingEnabled()) {
       transactions = await this.$getStrippedBlockTransactions(hash);
       const rawBlock = await bitcoinApi.$getRawBlock(hash);
       const block = Block.fromBuffer(rawBlock);
@@ -751,10 +751,11 @@ class Blocks {
         txMap[tx.getId()] = tx;
       }
       for (const tx of transactions) {
+        // convert from bitcoinjs to esplora vin format
         if (txMap[tx.txid]?.ins) {
           tx.vin = txMap[tx.txid].ins.map(vin => {
             return {
-              txid: vin.hash
+              txid: vin.hash.slice().reverse().toString('hex')
             };
           });
         }
@@ -763,6 +764,7 @@ class Blocks {
       const block = await bitcoinClient.getBlock(hash, 2);
       transactions = block.tx.map(tx => {
         tx.vsize = tx.weight / 4;
+        tx.fee *= 100_000_000;
         return tx;
       });
     }
@@ -778,9 +780,9 @@ class Blocks {
           totalFee += tx?.fee || 0;
           totalVSize += tx.vsize;
         });
-        const effectiveFeePerVsize = (totalFee * 100_000_000) / totalVSize;
+        const effectiveFeePerVsize = totalFee / totalVSize;
         if (cluster.length > 1) {
-          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: (tx.fee || 0) * 100_000_000 }; }), effectiveFeePerVsize);
+          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
           for (const tx of cluster) {
             await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
           }

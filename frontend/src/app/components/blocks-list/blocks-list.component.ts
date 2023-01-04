@@ -23,6 +23,7 @@ export class BlocksList implements OnInit, OnDestroy {
 
   indexingAvailable = false;
   isLoading = true;
+  loadingScores = true;
   fromBlockHeight = undefined;
   paginationMaxSize: number;
   page = 1;
@@ -113,6 +114,7 @@ export class BlocksList implements OnInit, OnDestroy {
     if (this.indexingAvailable) {
       this.auditScoreSubscription = this.fromHeightSubject.pipe(
         switchMap((fromBlockHeight) => {
+          this.loadingScores = true;
           return this.apiService.getBlockAuditScores$(this.page === 1 ? undefined : fromBlockHeight)
             .pipe(
               catchError(() => {
@@ -124,6 +126,7 @@ export class BlocksList implements OnInit, OnDestroy {
         Object.values(scores).forEach(score => {
           this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
         });
+        this.loadingScores = false;
       });
 
       this.latestScoreSubscription = this.stateService.blocks$.pipe(
