@@ -4,10 +4,6 @@
   flex-direction: row;
   align-items: baseline;
 
-  &.rtl {
-    flex-direction: row-reverse;
-  }
-
   .first {
     flex-grow: 0;
     flex-shrink: 1;
