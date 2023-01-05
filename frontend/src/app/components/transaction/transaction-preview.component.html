@@ -4,7 +4,7 @@
   </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <div class="title-wrapper">
-      <h1 class="title truncated"><span class="first">{{txId.slice(0,-4)}}</span><span class="last-four">{{txId.slice(-4)}}</span></h1>
+      <h1 class="title truncated"><app-truncate [text]="txId"></app-truncate></h1>
     </div>
     <div *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" class="features">
       <app-tx-features [tx]="tx"></app-tx-features>
