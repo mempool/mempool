@@ -806,7 +806,6 @@ class Blocks {
         ancestors[vin.txid] = true;
       });
     }
-    await blocksRepository.$setCPFPIndexed(hash);
   }
 }
 
