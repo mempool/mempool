@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 
 class DatabaseMigration {
-  private static currentVersion = 49;
+  private static currentVersion = 50;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -441,6 +441,11 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 49 && isBitcoin === true) {
       await this.$executeQuery('TRUNCATE TABLE `blocks_audits`');
       await this.updateToSchemaVersion(49);
+    }
+
+    if (databaseSchemaVersion < 50 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks` DROP COLUMN `cpfp_indexed`');
+      await this.updateToSchemaVersion(50);
     }
   }
 
