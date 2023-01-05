@@ -2,9 +2,10 @@
   <div class="box-left text-truncate">
     <h3 class="mb-0 text-truncate">{{ channel.alias || '?' }}</h3>
     <a [routerLink]="['/lightning/node' | relativeUrl, channel.public_key]" >
-      {{ channel.public_key | shortenString : 12 }}
+      <app-truncate [text]="channel.public_key" [lastChars]="6">
+        <app-clipboard [text]="channel.public_key"></app-clipboard>
+      </app-truncate>
     </a>
-    <app-clipboard [text]="channel.public_key"></app-clipboard>
   </div>
   <div class="box-right">
     <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: channel.channels }"></ng-container></div>

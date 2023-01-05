@@ -19,21 +19,32 @@
   }
 }
 .tx-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  margin-right: 0px;
   margin-bottom: 0px;
   margin-top: 8px;
-  display: inline-block;
-  width: 100%;
-  flex-shrink: 0;
   @media (min-width: 651px) {
-    display: flex;
-    width: auto;
     flex-grow: 1;
     margin-bottom: 0px;
+    margin-right: 1em;
     top: 1px;
     position: relative;
   }
   @media (max-width: 650px) {
+    width: 100%;
     order: 3;
+  }
+
+  .txid {
+    width: 200px;
+    min-width: 200px;
+    flex-grow: 1;
   }
 }
 
@@ -187,5 +198,11 @@
       margin-bottom: 8px;
       margin-left: 8px;
     }
+  }
+}
+
+.cpfp-details {
+  .txids {
+    width: 60%;
   }
 }

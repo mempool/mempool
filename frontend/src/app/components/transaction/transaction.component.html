@@ -4,20 +4,19 @@
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]">
-        <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
+        <app-truncate [text]="rbfTransaction.txid" [lastChars]="12"></app-truncate>
       </a>
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size">
       <h1 i18n="shared.transaction">Transaction</h1>
 
-      <span class="tx-link float-left">
-        <a [routerLink]="['/tx/' | relativeUrl, txId]">
-          <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
-          <span class="d-none d-lg-inline">{{ txId }}</span>
+      <span class="tx-link">
+        <a [routerLink]="['/tx/' | relativeUrl, txId]" class="txid">
+          <app-truncate [text]="txId" [lastChars]="12">
+            <app-clipboard [text]="txId"></app-clipboard>
+          </app-truncate>
         </a>
-        <app-clipboard [text]="txId"></app-clipboard>
       </span>
 
       <div class="container-buttons">
@@ -144,12 +143,12 @@
       <br>
 
       <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
-      <div class="box">
-        <table class="table table-borderless table-striped">
+      <div class="box cpfp-details">
+        <table class="table table-fixed table-borderless table-striped">
           <thead>
             <tr>
               <th i18n="transactions-list.vout.scriptpubkey-type">Type</th>
-              <th i18n="dashboard.latest-transactions.txid">TXID</th>
+              <th class="txids" i18n="dashboard.latest-transactions.txid">TXID</th>
               <th class="d-none d-lg-table-cell" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</th>
               <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
               <th class="d-none d-lg-table-cell"></th>
@@ -160,8 +159,7 @@
               <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
                 <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
                   <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
+                    <app-truncate [text]="cpfpTx.txid"></app-truncate>
                   </a>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
@@ -172,10 +170,9 @@
             <ng-template [ngIf]="cpfpInfo?.bestDescendant">
               <tr>
                 <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                <td>
+                <td class="txids">
                   <a [routerLink]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpInfo.bestDescendant.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpInfo.bestDescendant.txid }}</span>
+                    <app-truncate [text]="cpfpInfo.bestDescendant.txid"></app-truncate>
                   </a>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight / 4 | vbytes: 2"></td>
@@ -186,9 +183,9 @@
             <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
                 <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
-                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
+                <td class="txids">
+                  <a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
+                    <app-truncate [text]="cpfpTx.txid"></app-truncate>
                   </a>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>

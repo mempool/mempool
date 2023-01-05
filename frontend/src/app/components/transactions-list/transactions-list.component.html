@@ -1,16 +1,14 @@
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
-    <a class="float-left" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
-      <span style="float: left;" class="d-block d-md-none">{{ tx.txid | shortenString : 16 }}</span>
-      <span style="float: left;" class="d-none d-md-block">{{ tx.txid }}</span>
+    <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
+      <app-truncate [text]="tx.txid"></app-truncate>
     </a>
-    <div class="float-right">
+    <div>
       <ng-template [ngIf]="tx.status.confirmed">&lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}</ng-template>
       <ng-template [ngIf]="!tx.status.confirmed && tx.firstSeen">
         <i><app-time-since [time]="tx.firstSeen" [fastRender]="true"></app-time-since></i>
       </ng-template>
     </div>
-    <div class="clearfix"></div>
   </div>
 
   <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [attr.data-cy]="'tx-' + i">
@@ -18,7 +16,7 @@
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
     <div class="row">
       <div class="col">
-        <table class="table table-borderless smaller-text table-sm table-tx-vin">
+        <table class="table table-fixed table-borderless smaller-text table-sm table-tx-vin">
           <tbody>
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
@@ -49,7 +47,7 @@
                     </ng-template>
                   </ng-template>
                 </td>
-                <td>
+                <td class="address-cell">
                   <div [ngSwitch]="true">
                     <ng-container *ngSwitchCase="vin.is_coinbase"><span i18n="transactions-list.coinbase">Coinbase</span><ng-template [ngIf]="network !== 'liquid' && network !== 'liquidtestnet'">&nbsp;<span i18n="transactions-list.newly-generated-coins">(Newly Generated Coins)</span></ng-template><br /><a placement="bottom" [ngbTooltip]="vin.scriptsig | hex2ascii"><span class="badge badge-secondary scriptmessage longer">{{ vin.scriptsig | hex2ascii }}</span></a></ng-container>
                     <ng-container *ngSwitchCase="vin.is_pegin">
@@ -66,12 +64,8 @@
                         </ng-template>
                       </ng-template>
                       <ng-template #defaultAddress>
-                        <a class="shortable-address" *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
-                          <span class="d-block d-lg-none">{{ vin.prevout.scriptpubkey_address | shortenString : 16 }}</span>
-                          <span class="d-none d-lg-inline-flex justify-content-start">
-                            <span class="addr-left flex-grow-1" [style]="vin.prevout.scriptpubkey_address.length > 40 ? 'max-width: 235px' : ''">{{ vin.prevout.scriptpubkey_address }}</span>
-                            <span *ngIf="vin.prevout.scriptpubkey_address.length > 40" class="addr-right">{{ vin.prevout.scriptpubkey_address | capAddress: 40: 10 }}</span>
-                          </span>
+                        <a class="address" *ngIf="vin.prevout.scriptpubkey_address; else vinScriptPubkeyType" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey_address]" title="{{ vin.prevout.scriptpubkey_address }}">
+                          <app-truncate [text]="vin.prevout.scriptpubkey_address" [lastChars]="8"></app-truncate>
                         </a>
                         <ng-template #vinScriptPubkeyType>
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
@@ -162,20 +156,16 @@
       </div>
       <div class="w-100 d-block d-md-none"></div>
       <div class="col mobile-bottomcol">
-        <table class="table table-borderless smaller-text table-sm table-tx-vout">
+        <table class="table table-fixed table-borderless smaller-text table-sm table-tx-vout">
           <tbody>
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx.vout.slice(0, getVoutLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
                 'highlight': vout.scriptpubkey_address === this.address && this.address !== ''
               }">
-                <td>
-                  <a class="shortable-address" *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
-                    <span class="d-block d-lg-none">{{ vout.scriptpubkey_address | shortenString : 16 }}</span>
-                    <span class="d-none d-lg-inline-flex justify-content-start">
-                      <span class="addr-left flex-grow-1" [style]="vout.scriptpubkey_address.length > 40 ? 'max-width: 235px' : ''">{{ vout.scriptpubkey_address }}</span>
-                      <span *ngIf="vout.scriptpubkey_address.length > 40" class="addr-right">{{ vout.scriptpubkey_address | capAddress: 40: 10 }}</span>
-                    </span>
+                <td class="address-cell">
+                  <a class="address" *ngIf="vout.scriptpubkey_address; else scriptpubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
+                    <app-truncate [text]="vout.scriptpubkey_address" [lastChars]="8"></app-truncate>
                   </a>
                   <div>
                     <app-address-labels [vout]="vout" [channel]="tx._channels && tx._channels.outputs[vindex] ? tx._channels.outputs[vindex] : null"></app-address-labels>
@@ -185,13 +175,11 @@
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>
                       <ng-template #pegOutLink>
                         <a *ngIf="stateService.env.BASE_MODULE === 'liquid'; else localPegoutLink" [attr.href]="'https://mempool.space/address/' + vout.pegout.scriptpubkey_address" title="{{ vout.pegout.scriptpubkey_address }}">
-                          <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                          <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                          <app-truncate [text]="vout.pegout.scriptpubkey_address"></app-truncate>
                         </a>
                         <ng-template #localPegoutLink>
                           <a [routerLink]="['/address/', vout.pegout.scriptpubkey_address]" title="{{ vout.pegout.scriptpubkey_address }}">
-                            <span class="d-block d-lg-none">{{ vout.pegout.scriptpubkey_address | shortenString : 16 }}</span>
-                            <span class="d-none d-lg-block">{{ vout.pegout.scriptpubkey_address | shortenString : 35 }}</span>
+                            <app-truncate [text]="vout.pegout.scriptpubkey_address"></app-truncate>
                           </a>
                         </ng-template>
                       </ng-template>
