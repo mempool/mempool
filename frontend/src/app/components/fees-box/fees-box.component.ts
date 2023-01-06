@@ -33,11 +33,11 @@ export class FeesBoxComponent implements OnInit {
         tap((fees) => {
           let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.minimumFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[0]);
 
           feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.fastestFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[0]);
 
           this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
           this.noPriority = startColor;
