@@ -753,33 +753,14 @@ class Blocks {
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
     let transactions;
-    if (Common.blocksSummariesIndexingEnabled()) {
-      transactions = await this.$getStrippedBlockTransactions(hash);
-      const rawBlock = await bitcoinApi.$getRawBlock(hash);
-      const block = Block.fromBuffer(rawBlock);
-      const txMap = {};
-      for (const tx of block.transactions || []) {
-        txMap[tx.getId()] = tx;
-      }
-      for (const tx of transactions) {
-        // convert from bitcoinjs to esplora vin format
-        if (txMap[tx.txid]?.ins) {
-          tx.vin = txMap[tx.txid].ins.map(vin => {
-            return {
-              txid: vin.hash.slice().reverse().toString('hex')
-            };
-          });
-        }
-      }
-    } else {
-      const block = await bitcoinClient.getBlock(hash, 2);
-      transactions = block.tx.map(tx => {
-        tx.vsize = tx.weight / 4;
-        tx.fee *= 100_000_000;
-        return tx;
-      });
-    }
  
+    const block = await bitcoinClient.getBlock(hash, 2);
+    transactions = block.tx.map(tx => {
+      tx.vsize = tx.weight / 4;
+      tx.fee *= 100_000_000;
+      return tx;
+    });
+
     let cluster: TransactionStripped[] = [];
     let ancestors: { [txid: string]: boolean } = {};
     for (let i = transactions.length - 1; i >= 0; i--) {
