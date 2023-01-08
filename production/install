@@ -1010,6 +1010,7 @@ osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-build-all upgrade
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-kill-all stop
 osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-start-all start
+osSudo "${MEMPOOL_USER}" ln -s mempool/production/mempool-reset-all reset
 
 
 case $OS in
