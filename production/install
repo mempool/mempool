@@ -251,6 +251,7 @@ MEMPOOL_BISQ_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_HOME=/mempool
 MEMPOOL_USER=mempool
 MEMPOOL_GROUP=mempool
+MEMPOOL_MYSQL_CREDENTIALS="${MEMPOOL_HOME}/.mysql_credentials"
 # name of Tor hidden service in torrc
 MEMPOOL_TOR_HS=mempool
 
@@ -1869,7 +1870,7 @@ grant all on mempool_bisq.* to '${MEMPOOL_BISQ_USER}'@'localhost' identified by 
 _EOF_
 
 echo "[*] save MySQL credentials"
-cat > ${MEMPOOL_HOME}/mysql_credentials << _EOF_
+cat > "${MEMPOOL_MYSQL_CREDENTIALS}" << _EOF_
 declare -x MEMPOOL_MAINNET_USER="${MEMPOOL_MAINNET_USER}"
 declare -x MEMPOOL_MAINNET_PASS="${MEMPOOL_MAINNET_PASS}"
 declare -x MEMPOOL_TESTNET_USER="${MEMPOOL_TESTNET_USER}"
@@ -1889,6 +1890,7 @@ declare -x MEMPOOL_LIQUIDTESTNET_PASS="${MEMPOOL_LIQUIDTESTNET_PASS}"
 declare -x MEMPOOL_BISQ_USER="${MEMPOOL_BISQ_USER}"
 declare -x MEMPOOL_BISQ_PASS="${MEMPOOL_BISQ_PASS}"
 _EOF_
+chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 ##### nginx
 
