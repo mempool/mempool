@@ -25,6 +25,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', this.getTransactionTimes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', this.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.$getCpfpInfo)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'extras/:txId', this.$getTransactionExtras)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
@@ -219,6 +220,42 @@ class BitcoinRoutes {
       }
     }
     res.status(404).send(`Transaction has no CPFP info available.`);
+  }
+
+  private async $getTransactionExtras(req: Request, res: Response): Promise<void> {
+    if (!/^[a-fA-F0-9]{64}$/.test(req.params.txId)) {
+      res.status(501).send(`Invalid transaction ID.`);
+      return;
+    }
+
+    const tx = mempool.getMempool()[req.params.txId];
+    if (tx) {
+      if (tx?.cpfpChecked) {
+        res.json({
+          ancestors: tx.ancestors,
+          bestDescendant: tx.bestDescendant || null,
+          descendants: tx.descendants || null,
+          effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          firstSeen: tx.firstSeen,
+        });
+        return;
+      }
+
+      const cpfpInfo = Common.setRelativesAndGetCpfpInfo(tx, mempool.getMempool());
+
+      res.json({
+        ...cpfpInfo,
+        firstSeen: tx.firstSeen,
+      });
+      return;
+    } else {
+      const extras = await transactionRepository.$getTransactionExtras(req.params.txId);
+      if (extras) {
+        res.json(extras);
+        return;
+      }
+    }
+    res.status(404).send(`Transaction has no extra info available.`);
   }
 
   private getBackendInfo(req: Request, res: Response) {

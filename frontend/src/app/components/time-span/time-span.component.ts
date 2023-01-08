@@ -53,9 +53,6 @@ export class TimeSpanComponent implements OnInit, OnChanges, OnDestroy {
 
   calculate() {
     const seconds = Math.floor(this.time);
-    if (seconds < 60) {
-      return $localize`:@@date-base.just-now:Just now`;
-    }
     let counter: number;
     for (const i in this.intervals) {
       if (this.intervals.hasOwnProperty(i)) {

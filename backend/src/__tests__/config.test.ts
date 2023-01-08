@@ -41,6 +41,7 @@ describe('Mempool Backend Config', () => {
         ADVANCED_GBT_AUDIT: false,
         ADVANCED_GBT_MEMPOOL: false,
         TRANSACTION_INDEXING: false,
+        FIRST_SEEN_INDEXING_DAYS: 0,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });

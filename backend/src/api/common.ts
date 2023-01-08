@@ -194,6 +194,13 @@ export class Common {
     );
   }
 
+  static firstSeenIndexingEnabled(): boolean {
+    return (
+      Common.indexingEnabled() &&
+      config.MEMPOOL.FIRST_SEEN_INDEXING_DAYS !== 0
+    );
+  }
+
   static setDateMidnight(date: Date): void {
     date.setUTCHours(0);
     date.setUTCMinutes(0);

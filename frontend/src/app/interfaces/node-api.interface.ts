@@ -27,6 +27,10 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
 }
 
+export interface TransactionExtras extends CpfpInfo {
+  firstSeen?: number;
+}
+
 export interface DifficultyAdjustment {
   progressPercent: number;
   difficultyChange: number;
