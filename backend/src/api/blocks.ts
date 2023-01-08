@@ -101,12 +101,23 @@ class Blocks {
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
-          if (i === 0) {
-            const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
-            logger.err(msg);
-            throw new Error(msg);
-          } else {
-            logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+          try {
+            if (config.MEMPOOL.BACKEND === 'esplora') {
+              // Try again with core
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true);
+              transactions.push(tx);
+              transactionsFetched++;
+            } else {
+              throw e;
+            }
+          } catch (e) {
+            if (i === 0) {
+              const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
+              logger.err(msg);
+              throw new Error(msg);
+            } else {
+              logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+            }
           }
         }
       }
