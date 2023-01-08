@@ -1,9 +1,7 @@
-import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { TransactionExtended, TransactionMinerInfo } from '../mempool.interfaces';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
-import config from '../config';
 import { Common } from './common';
-import bitcoinClient from './bitcoin/bitcoin-client';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 
 class TransactionUtils {
   constructor() { }
@@ -31,7 +29,7 @@ class TransactionUtils {
   public async $getTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<TransactionExtended> {
     let transaction: IEsploraApi.Transaction;
     if (forceCore === true) {
-      transaction  = await bitcoinClient.$getRawTransaction(txId, true);
+      transaction  = await bitcoinCoreApi.$getRawTransaction(txId, true);
     } else {
       transaction  = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts, lazyPrevouts);
     }

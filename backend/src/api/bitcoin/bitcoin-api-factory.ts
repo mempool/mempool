@@ -17,4 +17,6 @@ function bitcoinApiFactory(): AbstractBitcoinApi {
   }
 }
 
+export const bitcoinCoreApi = new BitcoinApi(bitcoinClient);
+
 export default bitcoinApiFactory();
