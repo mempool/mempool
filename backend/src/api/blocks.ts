@@ -341,6 +341,7 @@ class Blocks {
     try {
       // Get all indexed block hash
       const unindexedBlocks = await blocksRepository.$getCPFPUnindexedBlocks();
+      logger.info(`Indexing cpfp data for ${unindexedBlocks.length} blocks`);
 
       if (!unindexedBlocks?.length) {
         return;
@@ -357,7 +358,7 @@ class Blocks {
         const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
         if (elapsedSeconds > 5) {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-          const blockPerSeconds = Math.max(1, countThisRun / elapsedSeconds);
+          const blockPerSeconds = (countThisRun / elapsedSeconds);
           const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
           logger.debug(`Indexing cpfp clusters for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
