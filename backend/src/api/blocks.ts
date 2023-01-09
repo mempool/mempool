@@ -350,7 +350,7 @@ class Blocks {
       let countThisRun = 0;
       let timer = new Date().getTime() / 1000;
       const startedAt = new Date().getTime() / 1000;
-
+      let lastHeight;
       for (const block of unindexedBlocks) {
         // Logging
         const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
@@ -365,11 +365,13 @@ class Blocks {
 
         await this.$indexCPFP(block.hash, block.height); // Calculate and save CPFP data for transactions in this block
 
+        lastHeight = block.height;
         // Logging
         count++;
         countThisRun++;
       }
       if (count > 0) {
+        await cpfpRepository.$insertProgressMarker(lastHeight);
         logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
       } else {
         logger.debug(`CPFP indexing completed: indexed ${count} blocks`);
