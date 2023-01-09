@@ -77,6 +77,34 @@ class CpfpRepository {
     }
   }
 
+  // insert a dummy row to mark that we've indexed as far as this block
+  public async $insertProgressMarker(height: number): Promise<void> {
+    try {
+      const [rows]: any = await DB.query(
+        `
+          SELECT root
+          FROM compact_cpfp_clusters
+          WHERE height = ?
+        `,
+        [height]
+      );
+      if (!rows?.length) {
+        const rootBuffer = Buffer.alloc(32);
+        rootBuffer.writeInt32LE(height);
+        await DB.query(
+          `
+            INSERT INTO compact_cpfp_clusters(root, height, fee_rate)
+            VALUE (?, ?, ?)
+          `,
+          [rootBuffer, height, 0]
+        );
+      }
+    } catch (e: any) {
+      logger.err(`Cannot insert cpfp progress marker. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public pack(txs: Ancestor[]): ArrayBuffer {
     const buf = new ArrayBuffer(44 * txs.length);
     const view = new DataView(buf);
