@@ -22,12 +22,10 @@ import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import cpfpRepository from '../repositories/CpfpRepository';
-import transactionRepository from '../repositories/TransactionRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
-import { Block } from 'bitcoinjs-lib';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -753,10 +751,8 @@ class Blocks {
   }
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
-    let transactions;
- 
     const block = await bitcoinClient.getBlock(hash, 2);
-    transactions = block.tx.map(tx => {
+    const transactions = block.tx.map(tx => {
       tx.vsize = tx.weight / 4;
       tx.fee *= 100_000_000;
       return tx;
@@ -775,9 +771,12 @@ class Blocks {
         });
         const effectiveFeePerVsize = totalFee / totalVSize;
         if (cluster.length > 1) {
-          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
-          for (const tx of cluster) {
-            await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
+          const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
+          const equalFee = cluster.reduce((acc, tx) => {
+            return (acc && Math.round(((tx.fee || 0) / tx.vsize) * 100) / 100 === roundedEffectiveFee);
+          }, true);
+          if (!equalFee) {
+            await cpfpRepository.$saveCluster(cluster[0].txid, height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
           }
         }
         cluster = [];
