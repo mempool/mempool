@@ -29,7 +29,7 @@ __MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubuserconte
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
 __MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}
 __MEMPOOL_ADVANCED_GBT_MEMPOOL__=${MEMPOOL_ADVANCED_GBT_MEMPOOL:=false}
-__MEMPOOL_TRANSACTION_INDEXING__=${MEMPOOL_TRANSACTION_INDEXING:=false}
+__MEMPOOL_CPFP_INDEXING__=${MEMPOOL_CPFP_INDEXING:=false}
 
 # CORE_RPC
 __CORE_RPC_HOST__=${CORE_RPC_HOST:=127.0.0.1}
@@ -140,7 +140,7 @@ sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REI
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g" mempool-config.json
-sed -i "s!__MEMPOOL_TRANSACTION_INDEXING__!${__MEMPOOL_TRANSACTION_INDEXING__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
