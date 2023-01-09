@@ -445,6 +445,8 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 50 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `blocks` DROP COLUMN `cpfp_indexed`');
+      await this.$executeQuery(this.getCreateCompactCPFPTableQuery(), await this.$checkIfTableExists('compact_cpfp_clusters'));
+      await this.$executeQuery(this.getCreateCompactTransactionsTableQuery(), await this.$checkIfTableExists('compact_transactions'));
       await this.updateToSchemaVersion(50);
     }
   }
@@ -915,6 +917,25 @@ class DatabaseMigration {
       cluster varchar(65) DEFAULT NULL,
       PRIMARY KEY (txid),
       FOREIGN KEY (cluster) REFERENCES cpfp_clusters (root) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateCompactCPFPTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS compact_cpfp_clusters (
+      root binary(32) NOT NULL,
+      height int(10) NOT NULL,
+      txs BLOB DEFAULT NULL,
+      fee_rate float unsigned NOT NULL,
+      PRIMARY KEY (root),
+      INDEX (height)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateCompactTransactionsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS compact_transactions (
+      txid binary(32) NOT NULL,
+      cluster binary(32) DEFAULT NULL,
+      PRIMARY KEY (txid)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
