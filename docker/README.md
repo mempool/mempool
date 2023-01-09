@@ -111,7 +111,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
     "ADVANCED_GBT_AUDIT": false,
     "ADVANCED_GBT_MEMPOOL": false,
-    "TRANSACTION_INDEXING": false,
+    "CPFP_INDEXING": false,
   },
 ```
 
@@ -142,13 +142,13 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_POOLS_JSON_TREE_URL: ""
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
-      MEMPOOL_TRANSACTION_INDEXING: ""
+      MEMPOOL_CPFP_INDEXING: ""
       ...
 ```
 
 `ADVANCED_GBT_AUDIT` AND `ADVANCED_GBT_MEMPOOL` enable a more accurate (but slower) block prediction algorithm for the block audit feature and the projected mempool-blocks respectively.
 
-`TRANSACTION_INDEXING` enables indexing CPFP (Child Pays For Parent) information for the last `INDEXING_BLOCKS_AMOUNT` blocks.
+`CPFP_INDEXING` enables indexing CPFP (Child Pays For Parent) information for the last `INDEXING_BLOCKS_AMOUNT` blocks.
 
 <br/>
 
