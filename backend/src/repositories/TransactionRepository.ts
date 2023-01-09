@@ -83,7 +83,6 @@ class TransactionRepository {
     return {
       descendants,
       ancestors,
-      effectiveFeePerVsize: cpfp.fee_rate
     };
   }
 }
