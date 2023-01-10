@@ -34,6 +34,30 @@ class TransactionRepository {
     }
   }
 
+  public async $batchSetCluster(txs): Promise<void> {
+    try {
+      let query = `
+          INSERT IGNORE INTO compact_transactions
+          (
+            txid,
+            cluster
+          )
+          VALUES
+      `;
+      query += txs.map(tx => {
+        return (' (UNHEX(?), UNHEX(?))');
+      }) + ';';
+      const values = txs.map(tx => [tx.txid, tx.cluster]).flat();
+      await DB.query(
+        query,
+        values
+      );
+    } catch (e: any) {
+      logger.err(`Cannot save cpfp transactions into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getCpfpInfo(txid: string): Promise<CpfpInfo | void> {
     try {
       const [txRows]: any = await DB.query(

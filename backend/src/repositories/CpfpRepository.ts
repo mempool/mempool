@@ -10,6 +10,15 @@ class CpfpRepository {
     if (!txs[0]) {
       return;
     }
+    // skip clusters of transactions with the same fees
+    const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
+    const equalFee = txs.reduce((acc, tx) => {
+      return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
+    }, true);
+    if (equalFee) {
+      return;
+    }
+
     try {
       const packedTxs = Buffer.from(this.pack(txs));
       await DB.query(
@@ -23,11 +32,80 @@ class CpfpRepository {
         `,
         [clusterRoot, height, packedTxs, effectiveFeePerVsize, height, packedTxs, effectiveFeePerVsize]
       );
-      for (const tx of txs) {
-        await transactionRepository.$setCluster(tx.txid, clusterRoot);
+      const maxChunk = 10;
+      let chunkIndex = 0;
+      while (chunkIndex < txs.length) {
+        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk).map(tx => {
+          return { txid: tx.txid, cluster: clusterRoot };
+        });
+        await transactionRepository.$batchSetCluster(chunk);
+        chunkIndex += maxChunk;
       }
     } catch (e: any) {
       logger.err(`Cannot save cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $batchSaveClusters(clusters: { root: string, height: number, txs: any, effectiveFeePerVsize: number}[]): Promise<void> {
+    try {
+      const clusterValues: any[] = [];
+      const txs: any[] = [];
+
+      for (const cluster of clusters) {
+        if (cluster.txs?.length > 1) {
+          const roundedEffectiveFee = Math.round(cluster.effectiveFeePerVsize * 100) / 100;
+          const equalFee = cluster.txs.reduce((acc, tx) => {
+            return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
+          }, true);
+          if (!equalFee) {
+            clusterValues.push([
+              cluster.root,
+              cluster.height,
+              Buffer.from(this.pack(cluster.txs)),
+              cluster.effectiveFeePerVsize
+            ]);
+            for (const tx of cluster.txs) {
+              txs.push({ txid: tx.txid, cluster: cluster.root });
+            }
+          }
+        }
+      }
+
+      if (!clusterValues.length) {
+        return;
+      }
+
+      const maxChunk = 100;
+      let chunkIndex = 0;
+      // insert transactions in batches of up to 100 rows
+      while (chunkIndex < txs.length) {
+        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk);
+        await transactionRepository.$batchSetCluster(chunk);
+        chunkIndex += maxChunk;
+      }
+
+      chunkIndex = 0;
+      // insert clusters in batches of up to 100 rows
+      while (chunkIndex < clusterValues.length) {
+        const chunk = clusterValues.slice(chunkIndex, chunkIndex + maxChunk);
+        let query = `
+            INSERT IGNORE INTO compact_cpfp_clusters(root, height, txs, fee_rate)
+            VALUES
+        `;
+        query += chunk.map(chunk => {
+          return (' (UNHEX(?), ?, ?, ?)');
+        }) + ';';
+        const values = chunk.flat();
+        await DB.query(
+          query,
+          values
+        );
+        chunkIndex += maxChunk;
+      }
+      return;
+    } catch (e: any) {
+      logger.err(`Cannot save cpfp clusters into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
