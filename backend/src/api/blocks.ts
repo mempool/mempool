@@ -760,6 +760,8 @@ class Blocks {
       return tx;
     });
 
+    const clusters: any[] = [];
+
     let cluster: TransactionStripped[] = [];
     let ancestors: { [txid: string]: boolean } = {};
     for (let i = transactions.length - 1; i >= 0; i--) {
@@ -773,13 +775,12 @@ class Blocks {
         });
         const effectiveFeePerVsize = totalFee / totalVSize;
         if (cluster.length > 1) {
-          const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
-          const equalFee = cluster.reduce((acc, tx) => {
-            return (acc && Math.round(((tx.fee || 0) / tx.vsize) * 100) / 100 === roundedEffectiveFee);
-          }, true);
-          if (!equalFee) {
-            await cpfpRepository.$saveCluster(cluster[0].txid, height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
-          }
+          clusters.push({
+            root: cluster[0].txid,
+            height,
+            txs: cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }),
+            effectiveFeePerVsize,
+          });
         }
         cluster = [];
         ancestors = {};
@@ -789,6 +790,7 @@ class Blocks {
         ancestors[vin.txid] = true;
       });
     }
+    await cpfpRepository.$batchSaveClusters(clusters);
   }
 }
 
