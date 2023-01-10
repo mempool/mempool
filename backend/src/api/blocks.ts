@@ -338,10 +338,10 @@ class Blocks {
 
     try {
       // Get all indexed block hash
-      const unindexedBlocks = await blocksRepository.$getCPFPUnindexedBlocks();
-      logger.info(`Indexing cpfp data for ${unindexedBlocks.length} blocks`);
+      const unindexedBlockHeights = await blocksRepository.$getCPFPUnindexedBlocks();
+      logger.info(`Indexing cpfp data for ${unindexedBlockHeights.length} blocks`);
 
-      if (!unindexedBlocks?.length) {
+      if (!unindexedBlockHeights?.length) {
         return;
       }
 
@@ -350,32 +350,26 @@ class Blocks {
       let countThisRun = 0;
       let timer = new Date().getTime() / 1000;
       const startedAt = new Date().getTime() / 1000;
-      let lastHeight;
-      for (const block of unindexedBlocks) {
+      for (const height of unindexedBlockHeights) {
         // Logging
+        const hash = await bitcoinApi.$getBlockHash(height);
         const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
         if (elapsedSeconds > 5) {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const blockPerSeconds = (countThisRun / elapsedSeconds);
-          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
-          logger.debug(`Indexing cpfp clusters for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          const progress = Math.round(count / unindexedBlockHeights.length * 10000) / 100;
+          logger.debug(`Indexing cpfp clusters for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlockHeights.length} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           countThisRun = 0;
         }
 
-        await this.$indexCPFP(block.hash, block.height); // Calculate and save CPFP data for transactions in this block
+        await this.$indexCPFP(hash, height); // Calculate and save CPFP data for transactions in this block
 
-        lastHeight = block.height;
         // Logging
         count++;
         countThisRun++;
       }
-      if (count > 0) {
-        await cpfpRepository.$insertProgressMarker(lastHeight);
-        logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
-      } else {
-        logger.debug(`CPFP indexing completed: indexed ${count} blocks`);
-      }
+      logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
     } catch (e) {
       logger.err(`CPFP indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
@@ -790,7 +784,10 @@ class Blocks {
         ancestors[vin.txid] = true;
       });
     }
-    await cpfpRepository.$batchSaveClusters(clusters);
+    const result = await cpfpRepository.$batchSaveClusters(clusters);
+    if (!result) {
+      await cpfpRepository.$insertProgressMarker(height);
+    }
   }
 }
 

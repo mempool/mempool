@@ -6,9 +6,9 @@ import { Ancestor } from '../mempool.interfaces';
 import transactionRepository from '../repositories/TransactionRepository';
 
 class CpfpRepository {
-  public async $saveCluster(clusterRoot: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number): Promise<void> {
+  public async $saveCluster(clusterRoot: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number): Promise<boolean> {
     if (!txs[0]) {
-      return;
+      return false;
     }
     // skip clusters of transactions with the same fees
     const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
@@ -16,7 +16,7 @@ class CpfpRepository {
       return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
     }, true);
     if (equalFee) {
-      return;
+      return false;
     }
 
     try {
@@ -41,13 +41,14 @@ class CpfpRepository {
         await transactionRepository.$batchSetCluster(chunk);
         chunkIndex += maxChunk;
       }
+      return true;
     } catch (e: any) {
       logger.err(`Cannot save cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
 
-  public async $batchSaveClusters(clusters: { root: string, height: number, txs: any, effectiveFeePerVsize: number}[]): Promise<void> {
+  public async $batchSaveClusters(clusters: { root: string, height: number, txs: any, effectiveFeePerVsize: number}[]): Promise<boolean> {
     try {
       const clusterValues: any[] = [];
       const txs: any[] = [];
@@ -73,7 +74,7 @@ class CpfpRepository {
       }
 
       if (!clusterValues.length) {
-        return;
+        return false;
       }
 
       const maxChunk = 100;
@@ -103,7 +104,7 @@ class CpfpRepository {
         );
         chunkIndex += maxChunk;
       }
-      return;
+      return true;
     } catch (e: any) {
       logger.err(`Cannot save cpfp clusters into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;

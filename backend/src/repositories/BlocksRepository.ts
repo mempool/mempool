@@ -671,19 +671,25 @@ class BlocksRepository {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
-      const [lastHeightRows]: any = await DB.query(`SELECT MIN(height) AS minHeight from compact_cpfp_clusters`);
-      const lastHeight = (lastHeightRows.length && lastHeightRows[0].minHeight != null) ? lastHeightRows[0].minHeight : currentBlockHeight;
-
-      let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, blockchainInfo.blocks);
+      let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, currentBlockHeight);
       if (indexingBlockAmount <= -1) {
         indexingBlockAmount = currentBlockHeight + 1;
       }
-      const firstHeight = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
+      const minHeight = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      if (firstHeight < lastHeight) {
-        const [rows]: any = await DB.query(`SELECT height, hash FROM blocks WHERE height BETWEEN ? AND ? ORDER BY height DESC`, [firstHeight, lastHeight]);
-        return rows;
-      }
+      const [rows]: any[] = await DB.query(`
+        SELECT height
+        FROM compact_cpfp_clusters
+        WHERE height <= ? AND height >= ?
+        ORDER BY height DESC;
+      `, [currentBlockHeight, minHeight]);
+
+      const indexedHeights = {};
+      rows.forEach((row) => { indexedHeights[row.height] = true; });
+      const allHeights: number[] = Array.from(Array(currentBlockHeight - minHeight + 1).keys(), n => n + minHeight).reverse();
+      const unindexedHeights = allHeights.filter(x => !indexedHeights[x]);
+
+      return unindexedHeights;
     } catch (e) {
       logger.err('Cannot fetch CPFP unindexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
