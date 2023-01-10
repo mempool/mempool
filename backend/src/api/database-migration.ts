@@ -2,9 +2,12 @@ import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from './common';
+import blocksRepository from '../repositories/BlocksRepository';
+import cpfpRepository from '../repositories/CpfpRepository';
+import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 50;
+  private static currentVersion = 52;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -443,11 +446,27 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(49);
     }
 
-    if (databaseSchemaVersion < 50 && isBitcoin === true) {
+    if (databaseSchemaVersion < 50) {
       await this.$executeQuery('ALTER TABLE `blocks` DROP COLUMN `cpfp_indexed`');
+      await this.updateToSchemaVersion(50);
+    }
+
+    if (databaseSchemaVersion < 51) {
+      await this.$executeQuery('ALTER TABLE `cpfp_clusters` ADD INDEX `height` (`height`)');
+      await this.updateToSchemaVersion(51);
+    }
+
+    if (databaseSchemaVersion < 52) {
       await this.$executeQuery(this.getCreateCompactCPFPTableQuery(), await this.$checkIfTableExists('compact_cpfp_clusters'));
       await this.$executeQuery(this.getCreateCompactTransactionsTableQuery(), await this.$checkIfTableExists('compact_transactions'));
-      await this.updateToSchemaVersion(50);
+      try {
+        await this.$convertCompactCpfpTables();
+        await this.$executeQuery('DROP TABLE IF EXISTS `cpfp_clusters`');
+        await this.$executeQuery('DROP TABLE IF EXISTS `transactions`');
+        await this.updateToSchemaVersion(52);
+      } catch(e) {
+        logger.warn('' + (e instanceof Error ? e.message : e));
+      }
     }
   }
 
@@ -925,7 +944,7 @@ class DatabaseMigration {
       root binary(32) NOT NULL,
       height int(10) NOT NULL,
       txs BLOB DEFAULT NULL,
-      fee_rate float unsigned NOT NULL,
+      fee_rate float unsigned,
       PRIMARY KEY (root),
       INDEX (height)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
@@ -957,6 +976,49 @@ class DatabaseMigration {
       }
     } catch (e) {
       logger.warn(`Unable to erase indexed data`);
+    }
+  }
+
+  private async $convertCompactCpfpTables(): Promise<void> {
+    try {
+      const batchSize = 250;
+      const maxHeight = await blocksRepository.$mostRecentBlockHeight() || 0;
+      const [minHeightRows]: any = await DB.query(`SELECT MIN(height) AS minHeight from cpfp_clusters`);
+      const minHeight = (minHeightRows.length && minHeightRows[0].minHeight != null) ? minHeightRows[0].minHeight : maxHeight;
+      let height = maxHeight;
+
+      // Logging
+      let timer = new Date().getTime() / 1000;
+      const startedAt = new Date().getTime() / 1000;
+
+      while (height > minHeight) {
+        const [rows] = await DB.query(
+          `
+            SELECT * from cpfp_clusters
+            WHERE height <= ? AND height > ?
+            ORDER BY height
+          `,
+          [height, height - batchSize]
+        ) as RowDataPacket[][];
+        if (rows?.length) {
+          await cpfpRepository.$batchSaveClusters(rows.map(row => {
+            return {
+              root: row.root,
+              height: row.height,
+              txs: JSON.parse(row.txs),
+              effectiveFeePerVsize: row.fee_rate,
+            };
+          }));
+        }
+
+        const elapsed = new Date().getTime() / 1000 - timer;
+        const runningFor = new Date().getTime() / 1000 - startedAt;
+        logger.debug(`Migrated cpfp data from block ${height} to ${height - batchSize} in ${elapsed.toFixed(2)} seconds | total elapsed: ${runningFor.toFixed(2)} seconds`);
+        timer = new Date().getTime() / 1000;
+        height -= batchSize;
+      }
+    } catch (e) {
+      logger.warn(`Failed to migrate cpfp transaction data`);
     }
   }
 }
