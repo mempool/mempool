@@ -131,8 +131,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cpfpInfo = null;
           return;
         }
-
-        const relatives = [...cpfpInfo.ancestors, ...cpfpInfo.descendants || [cpfpInfo.bestDescendant]];
+        // merge ancestors/descendants
+        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+          relatives.push(cpfpInfo.bestDescendant);
+        }
         let totalWeight =
           this.tx.weight +
           relatives.reduce((prev, val) => prev + val.weight, 0);
