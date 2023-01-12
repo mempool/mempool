@@ -83,17 +83,19 @@
             </tr>
             <tr>
               <td i18n="isp" class="text-truncate label">ISP</td>
-              <td *ngIf="node.as_number">
+              <td *ngIf="node.as_number else unknownAS">
                 <a class="d-block text-wrap" [routerLink]="['/lightning/nodes/isp' | relativeUrl, node.as_number]">
                   {{ node.as_organization }} [ASN {{node.as_number}}]
                 </a>                
               </td>
-              <td *ngIf="clearnetSocketCount === 0 && torSocketCount > 0">
-                <span class="badge badge-success" placement="bottom" i18n="tor">Exclusively on Tor</span>
-              </td>
-              <td *ngIf="node.sockets.length === 0">
-                <span i18n="unknown">Unknown</span>
-              </td>
+              <ng-template #unknownAS>
+                <td *ngIf="clearnetSocketCount === 0 && torSocketCount > 0">
+                  <span class="badge badge-success" placement="bottom" i18n="tor">Exclusively on Tor</span>
+                </td>
+                <td *ngIf="node.sockets.length === 0">
+                  <span i18n="unknown">Unknown</span>
+                </td>
+              </ng-template>
             </tr>
           </tbody>
         </table>

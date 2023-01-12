@@ -58,6 +58,8 @@ export class NodeComponent implements OnInit {
         }),
         map((node) => {
           this.seoService.setTitle($localize`Node: ${node.alias}`);
+          this.clearnetSocketCount = 0;
+          this.torSocketCount = 0;
 
           const socketsObject = [];
           for (const socket of node.sockets.split(',')) {
