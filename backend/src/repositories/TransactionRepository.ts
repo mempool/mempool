@@ -44,7 +44,9 @@ class TransactionRepository {
       const [rows]: any = await DB.query(query, [txid]);
       if (rows.length) {
         rows[0].txs = JSON.parse(rows[0].txs) as Ancestor[];
-        return this.convertCpfp(rows[0]);
+        if (rows[0]?.txs?.length) {
+          return this.convertCpfp(rows[0]);
+        }
       }
     } catch (e) {
       logger.err('Cannot get transaction cpfp info from db. Reason: ' + (e instanceof Error ? e.message : e));

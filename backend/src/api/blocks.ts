@@ -101,12 +101,23 @@ class Blocks {
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
-          if (i === 0) {
-            const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
-            logger.err(msg);
-            throw new Error(msg);
-          } else {
-            logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+          try {
+            if (config.MEMPOOL.BACKEND === 'esplora') {
+              // Try again with core
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true);
+              transactions.push(tx);
+              transactionsFetched++;
+            } else {
+              throw e;
+            }
+          } catch (e) {
+            if (i === 0) {
+              const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
+              logger.err(msg);
+              throw new Error(msg);
+            } else {
+              logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+            }
           }
         }
       }
@@ -296,7 +307,7 @@ class Blocks {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
           const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
           const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
-          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
         }
@@ -309,12 +320,12 @@ class Blocks {
         newlyIndexed++;
       }
       if (newlyIndexed > 0) {
-        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.notice(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       } else {
-        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.debug(`Blocks summaries indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       }
     } catch (e) {
-      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
   }
@@ -385,7 +396,7 @@ class Blocks {
 
       const lastBlockToIndex = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`);
+      logger.debug(`Indexing blocks from #${currentBlockHeight} to #${lastBlockToIndex}`, logger.tags.mining);
       loadingIndicators.setProgress('block-indexing', 0);
 
       const chunkSize = 10000;
@@ -405,7 +416,7 @@ class Blocks {
           continue;
         }
 
-        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`);
+        logger.info(`Indexing ${missingBlockHeights.length} blocks from #${currentBlockHeight} to #${endBlock}`, logger.tags.mining);
 
         for (const blockHeight of missingBlockHeights) {
           if (blockHeight < lastBlockToIndex) {
@@ -418,7 +429,7 @@ class Blocks {
             const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
             const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`);
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
             timer = new Date().getTime() / 1000;
             indexedThisRun = 0;
             loadingIndicators.setProgress('block-indexing', progress, false);
@@ -435,13 +446,13 @@ class Blocks {
         currentBlockHeight -= chunkSize;
       }
       if (newlyIndexed > 0) {
-        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.notice(`Block indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       } else {
-        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`);
+        logger.debug(`Block indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.mining);
       }
       loadingIndicators.setProgress('block-indexing', 100);
     } catch (e) {
-      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Block indexing failed. Trying again in 10 seconds. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       loadingIndicators.setProgress('block-indexing', 100);
       throw e;
     }
@@ -537,7 +548,7 @@ class Blocks {
               priceId: lastestPriceId,
             }]);
           } else {
-            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`)
+            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
             setTimeout(() => {
               indexer.runSingleTask('blocksPrices');
             }, 10000);
@@ -677,7 +688,7 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-    let currentHeight = fromHeight !== undefined ? fromHeight : await blocksRepository.$mostRecentBlockHeight();
+    let currentHeight = fromHeight !== undefined ? fromHeight : this.currentBlockHeight;
     const returnBlocks: BlockExtended[] = [];
 
     if (currentHeight < 0) {
@@ -742,7 +753,7 @@ class Blocks {
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
     let transactions;
-    if (false/*Common.blocksSummariesIndexingEnabled()*/) {
+    if (Common.blocksSummariesIndexingEnabled()) {
       transactions = await this.$getStrippedBlockTransactions(hash);
       const rawBlock = await bitcoinApi.$getRawBlock(hash);
       const block = Block.fromBuffer(rawBlock);
@@ -751,10 +762,11 @@ class Blocks {
         txMap[tx.getId()] = tx;
       }
       for (const tx of transactions) {
+        // convert from bitcoinjs to esplora vin format
         if (txMap[tx.txid]?.ins) {
           tx.vin = txMap[tx.txid].ins.map(vin => {
             return {
-              txid: vin.hash
+              txid: vin.hash.slice().reverse().toString('hex')
             };
           });
         }
@@ -763,6 +775,7 @@ class Blocks {
       const block = await bitcoinClient.getBlock(hash, 2);
       transactions = block.tx.map(tx => {
         tx.vsize = tx.weight / 4;
+        tx.fee *= 100_000_000;
         return tx;
       });
     }
@@ -778,9 +791,9 @@ class Blocks {
           totalFee += tx?.fee || 0;
           totalVSize += tx.vsize;
         });
-        const effectiveFeePerVsize = (totalFee * 100_000_000) / totalVSize;
+        const effectiveFeePerVsize = totalFee / totalVSize;
         if (cluster.length > 1) {
-          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: (tx.fee || 0) * 100_000_000 }; }), effectiveFeePerVsize);
+          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
           for (const tx of cluster) {
             await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
           }
