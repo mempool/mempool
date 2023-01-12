@@ -70,7 +70,7 @@ export class WebsocketService {
         clearTimeout(this.onlineCheckTimeout);
         clearTimeout(this.onlineCheckTimeoutTwo);
 
-        this.stateService.latestBlockHeight = -1;
+        this.stateService.resetChainTip();
 
         this.websocketSubject.complete();
         this.subscription.unsubscribe();
@@ -224,12 +224,14 @@ export class WebsocketService {
   handleResponse(response: WebsocketResponse) {
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
+      let maxHeight = 0;
       blocks.forEach((block: BlockExtended) => {
         if (block.height > this.stateService.latestBlockHeight) {
-          this.stateService.latestBlockHeight = block.height;
+          maxHeight = Math.max(maxHeight, block.height);
           this.stateService.blocks$.next([block, false]);
         }
       });
+      this.stateService.updateChainTip(maxHeight);
     }
 
     if (response.tx) {
@@ -238,7 +240,7 @@ export class WebsocketService {
 
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
-        this.stateService.latestBlockHeight = response.block.height;
+        this.stateService.updateChainTip(response.block.height);
         this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
       }
 

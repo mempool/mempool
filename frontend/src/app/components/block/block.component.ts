@@ -138,7 +138,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
-        this.stateService.markBlock$.next({});
         this.auditDataMissing = false;
 
         if (history.state.data && history.state.data.blockHeight) {

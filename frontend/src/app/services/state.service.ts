@@ -104,6 +104,7 @@ export class StateService {
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
+  chainTip$ = new ReplaySubject<number>(-1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -111,14 +112,12 @@ export class StateService {
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
-  markBlock$ = new ReplaySubject<MarkBlockState>();
+  markBlock$ = new BehaviorSubject<MarkBlockState>({});
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
-
-  txCache: { [txid: string]: Transaction } = {};
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -274,18 +273,15 @@ export class StateService {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
   }
 
-  setTxCache(transactions) {
-    this.txCache = {};
-    transactions.forEach(tx => {
-      this.txCache[tx.txid] = tx;
-    });
+  resetChainTip() {
+    this.latestBlockHeight = -1;
+    this.chainTip$.next(-1);
   }
- 
-  getTxFromCache(txid) {
-    if (this.txCache && this.txCache[txid]) {
-      return this.txCache[txid];
-    } else {
-      return null;
+
+  updateChainTip(height) {
+    if (height > this.latestBlockHeight) {
+      this.latestBlockHeight = height;
+      this.chainTip$.next(height);
     }
   }
 }
