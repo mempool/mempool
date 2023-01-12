@@ -1,17 +1,30 @@
 import config from '../config';
 import logger from '../logger';
-import { TransactionExtended, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
+import { ThreadTransaction, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
 import { PairingHeap } from '../utils/pairing-heap';
 import { Common } from './common';
 import { parentPort } from 'worker_threads';
 
+let mempool: { [txid: string]: ThreadTransaction } = {};
+
 if (parentPort) {
-  parentPort.on('message', (params: { mempool: { [txid: string]: TransactionExtended }, blockLimit: number, weightLimit: number | null, condenseRest: boolean}) => {
-    const { mempool, blocks } = makeBlockTemplates(params);
+  parentPort.on('message', (params) => {
+    if (params.type === 'set') {
+      mempool = params.mempool;
+    } else if (params.type === 'update') {
+      params.added.forEach(tx => {
+        mempool[tx.txid] = tx;
+      });
+      params.removed.forEach(txid => {
+        delete mempool[txid];
+      });
+    }
+    
+    const { blocks, clusters } = makeBlockTemplates(mempool);
 
     // return the result to main thread.
     if (parentPort) {
-     parentPort.postMessage({ mempool, blocks });
+     parentPort.postMessage({ blocks, clusters });
     }
   });
 }
@@ -19,35 +32,24 @@ if (parentPort) {
 /*
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
-*
-* blockLimit: number of blocks to build in total.
-* weightLimit: maximum weight of transactions to consider using the selection algorithm.
-*              if weightLimit is significantly lower than the mempool size, results may start to diverge from getBlockTemplate 
-* condenseRest: whether to ignore excess transactions or append them to the final block.
 */
-function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: { mempool: { [txid: string]: TransactionExtended }, blockLimit: number, weightLimit?: number | null, condenseRest?: boolean | null })
-  : { mempool: { [txid: string]: TransactionExtended }, blocks: MempoolBlockWithTransactions[] } {
+function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
+  : { blocks: ThreadTransaction[][], clusters: { [root: string]: string[] } } {
   const start = Date.now();
   const auditPool: { [txid: string]: AuditTransaction } = {};
   const mempoolArray: AuditTransaction[] = [];
-  const restOfArray: TransactionExtended[] = [];
+  const restOfArray: ThreadTransaction[] = [];
+  const cpfpClusters: { [root: string]: string[] } = {};
   
-  let weight = 0;
-  const maxWeight = weightLimit ? Math.max(4_000_000 * blockLimit, weightLimit) : Infinity;
   // grab the top feerate txs up to maxWeight
   Object.values(mempool).sort((a, b) => b.feePerVsize - a.feePerVsize).forEach(tx => {
-    weight += tx.weight;
-    if (weight >= maxWeight) {
-      restOfArray.push(tx);
-      return;
-    }
     // initializing everything up front helps V8 optimize property access later
     auditPool[tx.txid] = {
       txid: tx.txid,
       fee: tx.fee,
-      size: tx.size,
       weight: tx.weight,
       feePerVsize: tx.feePerVsize,
+      effectiveFeePerVsize: tx.feePerVsize,
       vin: tx.vin,
       relativesSet: false,
       ancestorMap: new Map<string, AuditTransaction>(),
@@ -74,7 +76,7 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
 
   // Build blocks by greedily choosing the highest feerate package
   // (i.e. the package rooted in the transaction with the best ancestor score)
-  const blocks: MempoolBlockWithTransactions[] = [];
+  const blocks: ThreadTransaction[][] = [];
   let blockWeight = 4000;
   let blockSize = 0;
   let transactions: AuditTransaction[] = [];
@@ -82,7 +84,7 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
   let overflow: AuditTransaction[] = [];
   let failures = 0;
   let top = 0;
-  while ((top < mempoolArray.length || !modified.isEmpty()) && (condenseRest || blocks.length < blockLimit)) {
+  while ((top < mempoolArray.length || !modified.isEmpty())) {
     // skip invalid transactions
     while (top < mempoolArray.length && (mempoolArray[top].used || mempoolArray[top].modified)) {
       top++;
@@ -107,9 +109,13 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
       // Check if the package fits into this block
       if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
-        const descendants: AuditTransaction[] = [];
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
+        let isCluster = false;
+        if (sortedTxSet.length > 1) {
+          cpfpClusters[nextTx.txid] = sortedTxSet.map(tx => tx.txid);
+          isCluster = true;
+        }
         const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
         const used: AuditTransaction[] = [];
         while (sortedTxSet.length) {
@@ -119,21 +125,9 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
           ancestor.usedBy = nextTx.txid;
           // update original copy of this tx with effective fee rate & relatives data
           mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-          mempoolTx.ancestors = sortedTxSet.map((a) => {
-            return {
-              txid: a.txid,
-              fee: a.fee,
-              weight: a.weight,
-            };
-          }).reverse();
-          mempoolTx.descendants = descendants.map((a) => {
-            return {
-              txid: a.txid,
-              fee: a.fee,
-              weight: a.weight,
-            };
-          });
-          descendants.push(ancestor);
+          if (isCluster) {
+            mempoolTx.cpfpRoot = nextTx.txid;
+          }
           mempoolTx.cpfpChecked = true;
           transactions.push(ancestor);
           blockSize += ancestor.size;
@@ -159,10 +153,10 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
     // this block is full
     const exceededPackageTries = failures > 1000 && blockWeight > (config.MEMPOOL.BLOCK_WEIGHT_UNITS - 4000);
     const queueEmpty = top >= mempoolArray.length && modified.isEmpty();
-    if ((exceededPackageTries || queueEmpty) && (!condenseRest || blocks.length < blockLimit - 1)) {
+    if ((exceededPackageTries || queueEmpty) && blocks.length < 7) {
       // construct this block
       if (transactions.length) {
-        blocks.push(dataToMempoolBlocks(transactions.map(t => mempool[t.txid]), blockSize, blockWeight, blocks.length));
+        blocks.push(transactions.map(t => mempool[t.txid]));
       }
       // reset for the next block
       transactions = [];
@@ -181,55 +175,40 @@ function makeBlockTemplates({ mempool, blockLimit, weightLimit, condenseRest }: 
       overflow = [];
     }
   }
-  if (condenseRest) {
-    // pack any leftover transactions into the last block
-    for (const tx of overflow) {
-      if (!tx || tx?.used) {
-        continue;
-      }
-      blockWeight += tx.weight;
-      blockSize += tx.size;
-      const mempoolTx = mempool[tx.txid];
-      // update original copy of this tx with effective fee rate & relatives data
-      mempoolTx.effectiveFeePerVsize = tx.score;
-      mempoolTx.ancestors = (Array.from(tx.ancestorMap?.values()) as AuditTransaction[]).map((a) => {
-        return {
-          txid: a.txid,
-          fee: a.fee,
-          weight: a.weight,
-        };
-      });
-      mempoolTx.bestDescendant = null;
-      mempoolTx.cpfpChecked = true;
-      transactions.push(tx);
-      tx.used = true;
+  // pack any leftover transactions into the last block
+  for (const tx of overflow) {
+    if (!tx || tx?.used) {
+      continue;
     }
-    const blockTransactions = transactions.map(t => mempool[t.txid]);
-    restOfArray.forEach(tx => {
-      blockWeight += tx.weight;
-      blockSize += tx.size;
-      tx.effectiveFeePerVsize = tx.feePerVsize;
-      tx.cpfpChecked = false;
-      tx.ancestors = [];
-      tx.bestDescendant = null;
-      blockTransactions.push(tx);
-    });
-    if (blockTransactions.length) {
-      blocks.push(dataToMempoolBlocks(blockTransactions, blockSize, blockWeight, blocks.length));
+    blockWeight += tx.weight;
+    const mempoolTx = mempool[tx.txid];
+    // update original copy of this tx with effective fee rate & relatives data
+    mempoolTx.effectiveFeePerVsize = tx.score;
+    if (tx.ancestorMap.size > 0) {
+      cpfpClusters[tx.txid] = Array.from(tx.ancestorMap?.values()).map(a => a.txid);
+      mempoolTx.cpfpRoot = tx.txid;
     }
-    transactions = [];
-  } else if (transactions.length) {
-    blocks.push(dataToMempoolBlocks(transactions.map(t => mempool[t.txid]), blockSize, blockWeight, blocks.length));
+    mempoolTx.cpfpChecked = true;
+    transactions.push(tx);
+    tx.used = true;
   }
+  const blockTransactions = transactions.map(t => mempool[t.txid]);
+  restOfArray.forEach(tx => {
+    blockWeight += tx.weight;
+    tx.effectiveFeePerVsize = tx.feePerVsize;
+    tx.cpfpChecked = false;
+    blockTransactions.push(tx);
+  });
+  if (blockTransactions.length) {
+    blocks.push(blockTransactions);
+  }
+  transactions = [];
 
   const end = Date.now();
   const time = end - start;
   logger.debug('Mempool templates calculated in ' + time / 1000 + ' seconds');
 
-  return {
-    mempool,
-    blocks
-  };
+  return { blocks, clusters: cpfpClusters };
 }
 
 // traverse in-mempool ancestors
@@ -239,9 +218,9 @@ function setRelatives(
   mempool: { [txid: string]: AuditTransaction },
 ): void {
   for (const parent of tx.vin) {
-    const parentTx = mempool[parent.txid];
-    if (parentTx && !tx.ancestorMap?.has(parent.txid)) {
-      tx.ancestorMap.set(parent.txid, parentTx);
+    const parentTx = mempool[parent];
+    if (parentTx && !tx.ancestorMap?.has(parent)) {
+      tx.ancestorMap.set(parent, parentTx);
       parentTx.children.add(tx);
       // visit each node only once
       if (!parentTx.relativesSet) {
@@ -312,27 +291,4 @@ function updateDescendants(
       });
     }
   }
-}
-
-function dataToMempoolBlocks(transactions: TransactionExtended[],
-  blockSize: number, blockWeight: number, blocksIndex: number): MempoolBlockWithTransactions {
-  let rangeLength = 4;
-  if (blocksIndex === 0) {
-    rangeLength = 8;
-  }
-  if (transactions.length > 4000) {
-    rangeLength = 6;
-  } else if (transactions.length > 10000) {
-    rangeLength = 8;
-  }
-  return {
-    blockSize: blockSize,
-    blockVSize: blockWeight / 4,
-    nTx: transactions.length,
-    totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-    medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
-    feeRange: Common.getFeesInRange(transactions, rangeLength),
-    transactionIds: transactions.map((tx) => tx.txid),
-    transactions: transactions.map((tx) => Common.stripTransaction(tx)),
-  };
 }

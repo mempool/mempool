@@ -77,6 +77,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       cancelAnimationFrame(this.animationFrameRequest);
       clearTimeout(this.animationHeartBeat);
     }
+    this.canvas.nativeElement.removeEventListener('webglcontextlost', this.handleContextLost);
+    this.canvas.nativeElement.removeEventListener('webglcontextrestored', this.handleContextRestored);
   }
 
   clear(direction): void {

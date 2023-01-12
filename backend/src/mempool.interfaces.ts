@@ -81,10 +81,10 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
 export interface AuditTransaction {
   txid: string;
   fee: number;
-  size: number;
   weight: number;
   feePerVsize: number;
-  vin: IEsploraApi.Vin[];
+  effectiveFeePerVsize: number;
+  vin: string[];
   relativesSet: boolean;
   ancestorMap: Map<string, AuditTransaction>;
   children: Set<AuditTransaction>;
@@ -94,6 +94,17 @@ export interface AuditTransaction {
   used: boolean;
   modified: boolean;
   modifiedNode: HeapNode<AuditTransaction>;
+}
+
+export interface ThreadTransaction {
+  txid: string;
+  fee: number;
+  weight: number;
+  feePerVsize: number;
+  effectiveFeePerVsize?: number;
+  vin: string[];
+  cpfpRoot?: string;
+  cpfpChecked?: boolean;
 }
 
 export interface Ancestor {
@@ -263,6 +274,7 @@ export interface IBackendInfo {
   hostname: string;
   gitCommit: string;
   version: string;
+  lightning: boolean;
 }
 
 export interface IDifficultyAdjustment {
