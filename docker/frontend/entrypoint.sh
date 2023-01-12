@@ -31,6 +31,9 @@ __LIQUID_WEBSITE_URL__=${LIQUID_WEBSITE_URL:=https://liquid.network}
 __BISQ_WEBSITE_URL__=${BISQ_WEBSITE_URL:=https://bisq.markets}
 __MINING_DASHBOARD__=${MINING_DASHBOARD:=true}
 __LIGHTNING__=${LIGHTNING:=false}
+__MAINNET_BLOCK_AUDIT_START_HEIGHT__=${MAINNET_BLOCK_AUDIT_START_HEIGHT:=0}
+__TESTNET_BLOCK_AUDIT_START_HEIGHT__=${TESTNET_BLOCK_AUDIT_START_HEIGHT:=0}
+__SIGNET_BLOCK_AUDIT_START_HEIGHT__=${SIGNET_BLOCK_AUDIT_START_HEIGHT:=0}
 
 # Export as environment variables to be used by envsubst
 export __TESTNET_ENABLED__
@@ -52,6 +55,9 @@ export __LIQUID_WEBSITE_URL__
 export __BISQ_WEBSITE_URL__
 export __MINING_DASHBOARD__
 export __LIGHTNING__
+export __MAINNET_BLOCK_AUDIT_START_HEIGHT__
+export __TESTNET_BLOCK_AUDIT_START_HEIGHT__
+export __SIGNET_BLOCK_AUDIT_START_HEIGHT__
 
 folder=$(find /var/www/mempool -name "config.js" | xargs dirname)
 echo ${folder}
