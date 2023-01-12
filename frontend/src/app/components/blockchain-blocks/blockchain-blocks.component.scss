@@ -25,6 +25,10 @@
   transition: background 2s, left 2s, transform 1s;
 }
 
+.mined-block.placeholder-block {
+  background: none !important;
+}
+
 .block-size {
   font-size: 16px;
   font-weight: bold;
@@ -94,6 +98,16 @@
 
   transform: skewY(50deg);
   transform-origin: top;
+}
+
+.bitcoin-block.placeholder-block::after {
+  content: none;
+  background: 0;
+}
+
+.bitcoin-block.placeholder-block::before {
+  content: none;
+  background: 0;
 }
 
 .black-background {

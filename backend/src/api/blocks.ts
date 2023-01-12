@@ -22,12 +22,10 @@ import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import cpfpRepository from '../repositories/CpfpRepository';
-import transactionRepository from '../repositories/TransactionRepository';
 import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
-import { Block } from 'bitcoinjs-lib';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -101,12 +99,23 @@ class Blocks {
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
-          if (i === 0) {
-            const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
-            logger.err(msg);
-            throw new Error(msg);
-          } else {
-            logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+          try {
+            if (config.MEMPOOL.BACKEND === 'esplora') {
+              // Try again with core
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true);
+              transactions.push(tx);
+              transactionsFetched++;
+            } else {
+              throw e;
+            }
+          } catch (e) {
+            if (i === 0) {
+              const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
+              logger.err(msg);
+              throw new Error(msg);
+            } else {
+              logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
+            }
           }
         }
       }
@@ -329,9 +338,10 @@ class Blocks {
 
     try {
       // Get all indexed block hash
-      const unindexedBlocks = await blocksRepository.$getCPFPUnindexedBlocks();
+      const unindexedBlockHeights = await blocksRepository.$getCPFPUnindexedBlocks();
+      logger.info(`Indexing cpfp data for ${unindexedBlockHeights.length} blocks`);
 
-      if (!unindexedBlocks?.length) {
+      if (!unindexedBlockHeights?.length) {
         return;
       }
 
@@ -340,30 +350,26 @@ class Blocks {
       let countThisRun = 0;
       let timer = new Date().getTime() / 1000;
       const startedAt = new Date().getTime() / 1000;
-
-      for (const block of unindexedBlocks) {
+      for (const height of unindexedBlockHeights) {
         // Logging
+        const hash = await bitcoinApi.$getBlockHash(height);
         const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
         if (elapsedSeconds > 5) {
           const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-          const blockPerSeconds = Math.max(1, countThisRun / elapsedSeconds);
-          const progress = Math.round(count / unindexedBlocks.length * 10000) / 100;
-          logger.debug(`Indexing cpfp clusters for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`);
+          const blockPerSeconds = (countThisRun / elapsedSeconds);
+          const progress = Math.round(count / unindexedBlockHeights.length * 10000) / 100;
+          logger.debug(`Indexing cpfp clusters for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlockHeights.length} (${progress}%) | elapsed: ${runningFor} seconds`);
           timer = new Date().getTime() / 1000;
           countThisRun = 0;
         }
 
-        await this.$indexCPFP(block.hash, block.height); // Calculate and save CPFP data for transactions in this block
+        await this.$indexCPFP(hash, height); // Calculate and save CPFP data for transactions in this block
 
         // Logging
         count++;
         countThisRun++;
       }
-      if (count > 0) {
-        logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
-      } else {
-        logger.debug(`CPFP indexing completed: indexed ${count} blocks`);
-      }
+      logger.notice(`CPFP indexing completed: indexed ${count} blocks`);
     } catch (e) {
       logger.err(`CPFP indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
@@ -519,7 +525,7 @@ class Blocks {
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock['height'] - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
-              if (config.MEMPOOL.TRANSACTION_INDEXING) {
+              if (config.MEMPOOL.CPFP_INDEXING) {
                 await this.$indexCPFP(newBlock.id, lastBlock['height'] - i);
               }
             }
@@ -547,7 +553,7 @@ class Blocks {
           if (Common.blocksSummariesIndexingEnabled() === true) {
             await this.$getStrippedBlockTransactions(blockExtended.id, true);
           }
-          if (config.MEMPOOL.TRANSACTION_INDEXING) {
+          if (config.MEMPOOL.CPFP_INDEXING) {
             this.$indexCPFP(blockExtended.id, this.currentBlockHeight);
           }
         }
@@ -677,7 +683,12 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
+
     let currentHeight = fromHeight !== undefined ? fromHeight : this.currentBlockHeight;
+    if (currentHeight > this.currentBlockHeight) {
+      limit -= currentHeight - this.currentBlockHeight;
+      currentHeight = this.currentBlockHeight;
+    }
     const returnBlocks: BlockExtended[] = [];
 
     if (currentHeight < 0) {
@@ -741,34 +752,15 @@ class Blocks {
   }
 
   public async $indexCPFP(hash: string, height: number): Promise<void> {
-    let transactions;
-    if (Common.blocksSummariesIndexingEnabled()) {
-      transactions = await this.$getStrippedBlockTransactions(hash);
-      const rawBlock = await bitcoinApi.$getRawBlock(hash);
-      const block = Block.fromBuffer(rawBlock);
-      const txMap = {};
-      for (const tx of block.transactions || []) {
-        txMap[tx.getId()] = tx;
-      }
-      for (const tx of transactions) {
-        // convert from bitcoinjs to esplora vin format
-        if (txMap[tx.txid]?.ins) {
-          tx.vin = txMap[tx.txid].ins.map(vin => {
-            return {
-              txid: vin.hash.slice().reverse().toString('hex')
-            };
-          });
-        }
-      }
-    } else {
-      const block = await bitcoinClient.getBlock(hash, 2);
-      transactions = block.tx.map(tx => {
-        tx.vsize = tx.weight / 4;
-        tx.fee *= 100_000_000;
-        return tx;
-      });
-    }
- 
+    const block = await bitcoinClient.getBlock(hash, 2);
+    const transactions = block.tx.map(tx => {
+      tx.vsize = tx.weight / 4;
+      tx.fee *= 100_000_000;
+      return tx;
+    });
+
+    const clusters: any[] = [];
+
     let cluster: TransactionStripped[] = [];
     let ancestors: { [txid: string]: boolean } = {};
     for (let i = transactions.length - 1; i >= 0; i--) {
@@ -782,10 +774,12 @@ class Blocks {
         });
         const effectiveFeePerVsize = totalFee / totalVSize;
         if (cluster.length > 1) {
-          await cpfpRepository.$saveCluster(height, cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }), effectiveFeePerVsize);
-          for (const tx of cluster) {
-            await transactionRepository.$setCluster(tx.txid, cluster[0].txid);
-          }
+          clusters.push({
+            root: cluster[0].txid,
+            height,
+            txs: cluster.map(tx => { return { txid: tx.txid, weight: tx.vsize * 4, fee: tx.fee || 0 }; }),
+            effectiveFeePerVsize,
+          });
         }
         cluster = [];
         ancestors = {};
@@ -795,7 +789,10 @@ class Blocks {
         ancestors[vin.txid] = true;
       });
     }
-    await blocksRepository.$setCPFPIndexed(hash);
+    const result = await cpfpRepository.$batchSaveClusters(clusters);
+    if (!result) {
+      await cpfpRepository.$insertProgressMarker(height);
+    }
   }
 }
 
