@@ -274,6 +274,7 @@ export interface IBackendInfo {
   hostname: string;
   gitCommit: string;
   version: string;
+  lightning: boolean;
 }
 
 export interface IDifficultyAdjustment {
