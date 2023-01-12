@@ -112,6 +112,7 @@
             [flip]="false"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
+          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
       </div>
     </div>
@@ -213,15 +214,21 @@
     <div class="row">
       <div class="col-sm">
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
-        <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
-          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
-          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !auditEnabled"></app-block-overview-graph> 
+        <div class="block-graph-wrapper">
+          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !auditEnabled"></app-block-overview-graph>
+          <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
+        </div>
       </div>
       <div class="col-sm" *ngIf="!isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
-        <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
-          [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
-          (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !auditEnabled"></app-block-overview-graph>
+        <div class="block-graph-wrapper">
+          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !auditEnabled"></app-block-overview-graph>
+          <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
+        </div>
       </div>
     </div>
   </div>
@@ -342,6 +349,18 @@
   </ng-template>
 
 </div>
+
+<ng-template #emptyBlockInfo>
+  <a
+    *ngIf="network === '' && block && block.height > 100000 && block.tx_count <= 1"
+    class="info-bubble-link badge badge-primary"
+    [routerLink]="['/docs/faq/' | relativeUrl]"
+    fragment="why-empty-blocks"
+  >
+    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+    <span i18n="block.empty-block-explanation">Why is this block empty?</span>
+  </a>
+</ng-template>
 
 <br>
 <br>
