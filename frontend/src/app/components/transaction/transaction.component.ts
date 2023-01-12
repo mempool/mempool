@@ -13,6 +13,7 @@ import {
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
@@ -74,6 +75,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
@@ -131,26 +133,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cpfpInfo = null;
           return;
         }
-        if (cpfpInfo.effectiveFeePerVsize) {
-          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
-        } else {
-          const lowerFeeParents = cpfpInfo.ancestors.filter(
-            (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
-          );
-          let totalWeight =
-            this.tx.weight +
-            lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-          let totalFees =
-            this.tx.fee +
-            lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-          if (cpfpInfo?.bestDescendant) {
-            totalWeight += cpfpInfo?.bestDescendant.weight;
-            totalFees += cpfpInfo?.bestDescendant.fee;
-          }
-
-          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        // merge ancestors/descendants
+        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+          relatives.push(cpfpInfo.bestDescendant);
         }
+        let totalWeight =
+          this.tx.weight +
+          relatives.reduce((prev, val) => prev + val.weight, 0);
+        let totalFees =
+          this.tx.fee +
+          relatives.reduce((prev, val) => prev + val.fee, 0);
+
+        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+
         if (!this.tx.status.confirmed) {
           this.stateService.markBlock$.next({
             txFeePerVSize: this.tx.effectiveFeePerVsize,
@@ -203,7 +199,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          const cached = this.stateService.getTxFromCache(this.txId);
+          const cached = this.cacheService.getTxFromCache(this.txId);
           if (cached && cached.fee !== -1) {
             transactionObservable$ = of(cached);
           } else {
@@ -302,7 +298,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
-      this.stateService.setTxCache([this.rbfTransaction]);
+      this.cacheService.setTxCache([this.rbfTransaction]);
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
