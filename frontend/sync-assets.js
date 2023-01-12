@@ -54,9 +54,13 @@ function downloadMiningPoolLogos() {
   
     response.on('end', () => {
       let response_body = Buffer.concat(chunks_of_data);
-      const poolLogos = JSON.parse(response_body.toString());
-      for (const poolLogo of poolLogos) {
-          download(`${PATH}/mining-pools/${poolLogo.name}`, poolLogo.download_url);
+      try {
+        const poolLogos = JSON.parse(response_body.toString());
+        for (const poolLogo of poolLogos) {
+            download(`${PATH}/mining-pools/${poolLogo.name}`, poolLogo.download_url);
+        }
+      } catch (e) {
+        console.error(`Unable to download mining pool logos. Trying again at next restart. Reason: ${e instanceof Error ? e.message : e}`);
       }
     });
   
