@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -44,6 +45,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   constructor(
     public stateService: StateService,
+    private cacheService: CacheService,
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private assetsService: AssetsService,
@@ -123,7 +125,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
 
       this.transactionsLength = this.transactions.length;
-      this.stateService.setTxCache(this.transactions);
+      this.cacheService.setTxCache(this.transactions);
 
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
