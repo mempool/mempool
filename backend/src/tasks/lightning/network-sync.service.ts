@@ -23,7 +23,7 @@ class NetworkSyncService {
   constructor() {}
 
   public async $startService(): Promise<void> {
-    logger.info('Starting lightning network sync service');
+    logger.info(`Starting lightning network sync service`, logger.tags.ln);
 
     this.loggerTimer = new Date().getTime() / 1000;
 
@@ -33,11 +33,11 @@ class NetworkSyncService {
   private async $runTasks(): Promise<void> {
     const taskStartTime = Date.now();
     try {
-      logger.info(`Updating nodes and channels`);
+      logger.debug(`Updating nodes and channels`, logger.tags.ln);
 
       const networkGraph = await lightningApi.$getNetworkGraph();
       if (networkGraph.nodes.length === 0 || networkGraph.edges.length === 0) {
-        logger.info(`LN Network graph is empty, retrying in 10 seconds`);
+        logger.info(`LN Network graph is empty, retrying in 10 seconds`, logger.tags.ln);
         setTimeout(() => { this.$runTasks(); }, 10000);
         return;
       }
@@ -55,7 +55,7 @@ class NetworkSyncService {
       }
 
     } catch (e) {
-      logger.err('$runTasks() error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`$runTasks() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
 
     setTimeout(() => { this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
@@ -79,8 +79,8 @@ class NetworkSyncService {
       ++progress;
 
       const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-      if (elapsedSeconds > 10) {
-        logger.info(`Updating node ${progress}/${nodes.length}`);
+      if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+        logger.debug(`Updating node ${progress}/${nodes.length}`, logger.tags.ln);
         this.loggerTimer = new Date().getTime() / 1000;
       }
 
@@ -106,7 +106,7 @@ class NetworkSyncService {
         deletedRecords += await NodeRecordsRepository.$deleteUnusedRecords(node.pub_key, customRecordTypes);
       }
     }
-    logger.info(`${progress} nodes updated. ${deletedSockets} sockets deleted. ${deletedRecords} custom records deleted.`);
+    logger.debug(`${progress} nodes updated. ${deletedSockets} sockets deleted. ${deletedRecords} custom records deleted.`);
 
     // If a channel if not present in the graph, mark it as inactive
     await nodesApi.$setNodesInactive(graphNodesPubkeys);
@@ -138,18 +138,18 @@ class NetworkSyncService {
         ++progress;
 
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-        if (elapsedSeconds > 10) {
-          logger.info(`Updating channel ${progress}/${channels.length}`);
+        if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+          logger.debug(`Updating channel ${progress}/${channels.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
 
-      logger.info(`${progress} channels updated`);
+      logger.debug(`${progress} channels updated`, logger.tags.ln);
 
       // If a channel if not present in the graph, mark it as inactive
       await channelsApi.$setChannelsInactive(graphChannelsIds);
     } catch (e) {
-      logger.err(`Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(` Cannot update channel list. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.ln);
     }
   }
 
@@ -184,26 +184,28 @@ class NetworkSyncService {
         if (lowest < node.first_seen) {
           const query = `UPDATE nodes SET first_seen = FROM_UNIXTIME(?) WHERE public_key = ?`;
           const params = [lowest, node.public_key];
+          ++updated;
           await DB.query(query, params);
         }
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-        if (elapsedSeconds > 10) {
-          logger.info(`Updating node first seen date ${progress}/${nodes.length}`);
+        if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+          logger.debug(`Updating node first seen date ${progress}/${nodes.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
-          ++updated;
         }
       }
-      logger.info(`Updated ${updated} node first seen dates`);
+      if (updated > 0) {
+        logger.debug(`Updated ${updated} node first seen dates`, logger.tags.ln);
+      }
     } catch (e) {
-      logger.err('$updateNodeFirstSeen() error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`$updateNodeFirstSeen() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
   }
 
   private async $lookUpCreationDateFromChain(): Promise<void> {
     let progress = 0;
 
-    logger.info(`Running channel creation date lookup`);
+    logger.debug(`Running channel creation date lookup`, logger.tags.ln);
     try {
       const channels = await channelsApi.$getChannelsWithoutCreatedDate();
       for (const channel of channels) {
@@ -214,14 +216,17 @@ class NetworkSyncService {
         );
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-        if (elapsedSeconds > 10) {
-          logger.info(`Updating channel creation date ${progress}/${channels.length}`);
+        if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+          logger.debug(`Updating channel creation date ${progress}/${channels.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
-      logger.info(`Updated ${channels.length} channels' creation date`);
+
+      if (channels.length > 0) {
+        logger.debug(`Updated ${channels.length} channels' creation date`, logger.tags.ln);
+      }      
     } catch (e) {
-      logger.err('$lookUpCreationDateFromChain() error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`$lookUpCreationDateFromChain() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
   }
 
@@ -230,7 +235,7 @@ class NetworkSyncService {
    * mark that channel as inactive
    */
   private async $deactivateChannelsWithoutActiveNodes(): Promise<void> {
-    logger.info(`Find channels which nodes are offline`);
+    logger.debug(`Find channels which nodes are offline`, logger.tags.ln);
 
     try {
       const result = await DB.query<ResultSetHeader>(`
@@ -253,12 +258,10 @@ class NetworkSyncService {
         `);
 
       if (result[0].changedRows ?? 0 > 0) {
-        logger.info(`Marked ${result[0].changedRows} channels as inactive because they are not linked to any active node`);
-      } else {
-        logger.debug(`Marked ${result[0].changedRows} channels as inactive because they are not linked to any active node`);
+        logger.debug(`Marked ${result[0].changedRows} channels as inactive because they are not linked to any active node`, logger.tags.ln);
       }
     } catch (e) {
-      logger.err('$deactivateChannelsWithoutActiveNodes() error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`$deactivateChannelsWithoutActiveNodes() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
   }
 
@@ -277,13 +280,13 @@ class NetworkSyncService {
       } else {
         log += ` for the first time`;
       }
-      logger.info(log);
+      logger.info(`${log}`, logger.tags.ln);
 
       const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
         const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
         if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
-          logger.debug('Marking channel: ' + channel.id + ' as closed.');
+          logger.debug(`Marking channel: ${channel.id} as closed.`, logger.tags.ln);
           await DB.query(`UPDATE channels SET status = 2, closing_date = FROM_UNIXTIME(?) WHERE id = ?`,
             [spendingTx.status.block_time, channel.id]);
           if (spendingTx.txid && !channel.closing_transaction_id) {
@@ -293,16 +296,16 @@ class NetworkSyncService {
 
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
-        if (elapsedSeconds > 10) {
-          logger.info(`Checking if channel has been closed ${progress}/${channels.length}`);
+        if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+          logger.info(`Checking if channel has been closed ${progress}/${channels.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
 
       this.closedChannelsScanBlock = blocks.getCurrentBlockHeight();
-      logger.info(`Closed channels scan completed at block ${this.closedChannelsScanBlock}`);
+      logger.debug(`Closed channels scan completed at block ${this.closedChannelsScanBlock}`, logger.tags.ln);
     } catch (e) {
-      logger.err('$scanForClosedChannels() error: ' + (e instanceof Error ? e.message : e));
+      logger.err(`$scanForClosedChannels() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
   }
 }
