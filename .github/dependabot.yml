@@ -8,6 +8,9 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    allow:
+      - dependency-type: "production"
+
   - package-ecosystem: npm
     directory: "/frontend"
     schedule:
@@ -16,17 +19,29 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    allow:
+      - dependency-type: "production"
+
   - package-ecosystem: docker
     directory: "/docker/backend"
     schedule:
-      interval: daily
+      interval: weekly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: docker
+    directory: "/docker/frontend"
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
