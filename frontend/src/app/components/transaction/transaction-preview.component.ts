@@ -11,6 +11,7 @@ import {
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 import { OpenGraphService } from '../../services/opengraph.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
@@ -45,6 +46,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private cacheService: CacheService,
     private apiService: ApiService,
     private seoService: SeoService,
     private openGraphService: OpenGraphService,
@@ -97,7 +99,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          const cached = this.stateService.getTxFromCache(this.txId);
+          const cached = this.cacheService.getTxFromCache(this.txId);
           if (cached && cached.fee !== -1) {
             transactionObservable$ = of(cached);
           } else {

@@ -2,6 +2,7 @@ import { ILightningApi } from '../lightning-api.interface';
 import FundingTxFetcher from '../../../tasks/lightning/sync-tasks/funding-tx-fetcher';
 import logger from '../../../logger';
 import { Common } from '../../common';
+import config from '../../../config';
 
 /**
  * Convert a clightning "listnode" entry to a lnd node entry
@@ -40,7 +41,7 @@ export function convertNode(clNode: any): ILightningApi.Node {
  * Convert clightning "listchannels" response to lnd "describegraph.edges" format
  */
 export async function convertAndmergeBidirectionalChannels(clChannels: any[]): Promise<ILightningApi.Channel[]> {
-  logger.info('Converting clightning nodes and channels to lnd graph format');
+  logger.debug(`Converting clightning nodes and channels to lnd graph format`, logger.tags.ln);
 
   let loggerTimer = new Date().getTime() / 1000;
   let channelProcessed = 0;
@@ -62,8 +63,8 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
     }
 
     const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-    if (elapsedSeconds > 10) {
-      logger.info(`Building complete channels from clightning output. Channels processed: ${channelProcessed + 1} of ${clChannels.length}`);
+    if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+      logger.info(`Building complete channels from clightning output. Channels processed: ${channelProcessed + 1} of ${clChannels.length}`, logger.tags.ln);
       loggerTimer = new Date().getTime() / 1000;
     }
 
@@ -76,7 +77,7 @@ export async function convertAndmergeBidirectionalChannels(clChannels: any[]): P
     consolidatedChannelList.push(await buildIncompleteChannel(clChannelsDict[short_channel_id]));
 
     const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-    if (elapsedSeconds > 10) {
+    if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
       logger.info(`Building partial channels from clightning output. Channels processed: ${channelProcessed + 1} of ${keys.length}`);
       loggerTimer = new Date().getTime() / 1000;
     }

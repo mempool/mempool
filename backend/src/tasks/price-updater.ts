@@ -82,7 +82,7 @@ class PriceUpdater {
         await this.$updatePrice();
       }
     } catch (e) {
-      logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
     }
 
     this.running = false;
@@ -115,14 +115,14 @@ class PriceUpdater {
             if (price > 0) {
               prices.push(price);
             }
-            logger.debug(`${feed.name} BTC/${currency} price: ${price}`);
+            logger.debug(`${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
           } catch (e) {
-            logger.debug(`Could not fetch BTC/${currency} price at ${feed.name}. Reason: ${(e instanceof Error ? e.message : e)}`);
+            logger.debug(`Could not fetch BTC/${currency} price at ${feed.name}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
           }
         }
       }
       if (prices.length === 1) {
-        logger.debug(`Only ${prices.length} feed available for BTC/${currency} price`);
+        logger.debug(`Only ${prices.length} feed available for BTC/${currency} price`, logger.tags.mining);
       }
 
       // Compute average price, non weighted
@@ -175,9 +175,9 @@ class PriceUpdater {
       ++insertedCount;
     }
     if (insertedCount > 0) {
-      logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+      logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`, logger.tags.mining);
     } else {
-      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`, logger.tags.mining);
     }
 
     // Insert Kraken weekly prices
@@ -198,7 +198,7 @@ class PriceUpdater {
   private async $insertMissingRecentPrices(type: 'hour' | 'day'): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
 
-    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database, this may take a while`);
+    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database`, logger.tags.mining);
 
     const historicalPrices: PriceHistory[] = [];
 
@@ -207,7 +207,7 @@ class PriceUpdater {
       try {
         historicalPrices.push(await feed.$fetchRecentPrice(this.currencies, type));
       } catch (e) {
-        logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
       }
     }
 
@@ -252,9 +252,9 @@ class PriceUpdater {
     }
 
     if (totalInserted > 0) {
-      logger.notice(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
+      logger.notice(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`, logger.tags.mining);
     } else {
-      logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
+      logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`, logger.tags.mining);
     }
   }
 }

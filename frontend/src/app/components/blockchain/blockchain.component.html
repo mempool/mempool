@@ -2,10 +2,14 @@
   <div class="position-container" [ngClass]="network ? network : ''">
     <span>
       <div class="blocks-wrapper">
-        <app-mempool-blocks></app-mempool-blocks>
-        <app-blockchain-blocks></app-blockchain-blocks>
+        <div class="scroll-spacer" *ngIf="minScrollWidth" [style.left]="minScrollWidth + 'px'"></div>
+        <app-mempool-blocks [hidden]="pageIndex > 0"></app-mempool-blocks>
+        <app-blockchain-blocks [hidden]="pageIndex > 0"></app-blockchain-blocks>
+        <ng-container *ngFor="let page of pages; trackBy: trackByPageFn">
+          <app-blockchain-blocks [static]="true" [offset]="page.offset" [height]="page.height" [count]="blocksPerPage"></app-blockchain-blocks>
+        </ng-container>
       </div>
-      <div id="divider">
+      <div id="divider" [hidden]="pageIndex > 0">
         <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
       </div>
     </span>

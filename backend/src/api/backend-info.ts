@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { IBackendInfo } from '../mempool.interfaces';
+import config from '../config';
 
 class BackendInfo {
   private backendInfo: IBackendInfo;
@@ -22,7 +23,8 @@ class BackendInfo {
     this.backendInfo = {
       hostname: os.hostname(),
       version: versionInfo.version,
-      gitCommit: versionInfo.gitCommit
+      gitCommit: versionInfo.gitCommit,
+      lightning: config.LIGHTNING.ENABLED
     };
   }
 
