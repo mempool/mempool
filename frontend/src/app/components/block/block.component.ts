@@ -43,6 +43,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
   isLoadingOverview = true;
+  isLoadingAudit = true;
   error: any;
   blockSubsidy: number;
   fees: number;
@@ -137,7 +138,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
-        this.stateService.markBlock$.next({});
         this.auditDataMissing = false;
 
         if (history.state.data && history.state.data.blockHeight) {
@@ -297,13 +297,18 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.auditSubscription = block$.pipe(
         startWith(null),
         pairwise(),
-        switchMap(([prevBlock, block]) => this.apiService.getBlockAudit$(block.id)
-          .pipe(
-            catchError((err) => {
-              this.overviewError = err;
-              return of([]);
-            })
-          )
+        switchMap(([prevBlock, block]) => {
+          this.isLoadingAudit = true;
+          this.blockAudit = null;
+          return this.apiService.getBlockAudit$(block.id)
+            .pipe(
+              catchError((err) => {
+                this.overviewError = err;
+                this.isLoadingAudit = false;
+                return of([]);
+              })
+            );
+        }
         ),
         filter((response) => response != null),
         map((response) => {
@@ -375,12 +380,14 @@ export class BlockComponent implements OnInit, OnDestroy {
           console.log(err);
           this.error = err;
           this.isLoadingOverview = false;
+          this.isLoadingAudit = false;
           return of(null);
         }),
       ).subscribe((blockAudit) => {
         this.blockAudit = blockAudit;
         this.setupBlockGraphs();
         this.isLoadingOverview = false;
+        this.isLoadingAudit = false;
       });
     }
 

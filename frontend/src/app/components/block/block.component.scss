@@ -203,3 +203,23 @@ h1 {
     border-color: white;
   }
 }
+
+.block-graph-wrapper {
+  position: relative;
+}
+
+.info-bubble-link {
+  position: absolute;
+  display: block;
+  top: 2em;
+  left: 50%;
+  margin: auto;
+  text-align: center;
+  padding: 0.5em 1em;
+  font-size: 80%;
+  transform: translateX(-50%);
+
+  .ng-fa-icon {
+    margin-right: 1em;
+  }
+}

@@ -32,9 +32,9 @@ class PoolsUpdater {
     this.lastRun = now;
 
     if (config.SOCKS5PROXY.ENABLED) {
-      logger.info(`Updating latest mining pools from ${this.poolsUrl} over the Tor network`);
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over the Tor network`, logger.tags.mining);
     } else {
-      logger.info(`Updating latest mining pools from ${this.poolsUrl} over clearnet`);
+      logger.info(`Updating latest mining pools from ${this.poolsUrl} over clearnet`, logger.tags.mining);
     }
 
     try {
@@ -53,9 +53,9 @@ class PoolsUpdater {
       }
 
       if (this.currentSha === undefined) {
-        logger.info(`Downloading pools.json for the first time from ${this.poolsUrl}`);
+        logger.info(`Downloading pools.json for the first time from ${this.poolsUrl}`, logger.tags.mining);
       } else {
-        logger.warn(`Pools.json is outdated, fetch latest from ${this.poolsUrl}`);
+        logger.warn(`Pools.json is outdated, fetch latest from ${this.poolsUrl}`, logger.tags.mining);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
@@ -63,11 +63,11 @@ class PoolsUpdater {
       }
       await poolsParser.migratePoolsJson(poolsJson);
       await this.updateDBSha(githubSha);
-      logger.notice('PoolsUpdater completed');
+      logger.notice(`PoolsUpdater completed`, logger.tags.mining);
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err('PoolsUpdater failed. Will try again in 24h. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err(`PoolsUpdater failed. Will try again in 24h. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
     }
   }
 
@@ -81,7 +81,7 @@ class PoolsUpdater {
         await DB.query('DELETE FROM state where name="pools_json_sha"');
         await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
       } catch (e) {
-        logger.err('Cannot save github pools.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e));
+        logger.err('Cannot save github pools.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       }
     }
   }
@@ -94,7 +94,7 @@ class PoolsUpdater {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : undefined);
     } catch (e) {
-      logger.err('Cannot fetch pools.json sha from db. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch pools.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       return undefined;
     }
   }
@@ -113,7 +113,7 @@ class PoolsUpdater {
       }
     }
 
-    logger.err(`Cannot find "pools.json" in git tree (${this.treeUrl})`);
+    logger.err(`Cannot find "pools.json" in git tree (${this.treeUrl})`, logger.tags.mining);
     return undefined;
   }
 
