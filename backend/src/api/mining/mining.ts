@@ -265,9 +265,9 @@ class Mining {
       }
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
+        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`, logger.tags.mining);
       } else {
-        logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`);
+        logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`, logger.tags.mining);
       }
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
@@ -370,14 +370,14 @@ class Mining {
 
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
       if (newlyIndexed > 0) {
-        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
+        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       } else {
-        logger.debug(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`);
+        logger.debug(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
-      logger.err(`Daily network hashrate indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Daily network hashrate indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
   }
@@ -449,9 +449,9 @@ class Mining {
     }
 
     if (totalIndexed > 0) {
-      logger.notice(`Indexed ${totalIndexed} difficulty adjustments`);
+      logger.notice(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     } else {
-      logger.debug(`Indexed ${totalIndexed} difficulty adjustments`);
+      logger.debug(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     }
   }
 
