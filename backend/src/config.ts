@@ -31,7 +31,7 @@ interface IConfig {
     POOLS_JSON_TREE_URL: string,
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
-    TRANSACTION_INDEXING: boolean;
+    CPFP_INDEXING: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -152,7 +152,7 @@ const defaults: IConfig = {
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,
-    'TRANSACTION_INDEXING': false,
+    'CPFP_INDEXING': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

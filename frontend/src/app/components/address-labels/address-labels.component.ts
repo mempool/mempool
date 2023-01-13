@@ -36,7 +36,9 @@ export class AddressLabelsComponent implements OnChanges {
 
   handleChannel() {
     const type = this.vout ? 'open' : 'close';
-    this.label = `Channel ${type}: ${this.channel.node_left.alias} <> ${this.channel.node_right.alias}`;
+    const leftNodeName = this.channel.node_left.alias || this.channel.node_left.public_key.substring(0, 10);
+    const rightNodeName = this.channel.node_right.alias || this.channel.node_right.public_key.substring(0, 10);
+    this.label = `Channel ${type}: ${leftNodeName} <> ${rightNodeName}`;
   }
 
   handleVin() {

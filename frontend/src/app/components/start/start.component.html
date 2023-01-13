@@ -11,8 +11,9 @@
 <div id="blockchain-container" [dir]="timeLtr ? 'rtl' : 'ltr'" #blockchainContainer
   (mousedown)="onMouseDown($event)"
   (dragstart)="onDragStart($event)"
+  (scroll)="onScroll($event)"
 >
-<app-blockchain></app-blockchain>
+  <app-blockchain [pageIndex]="pageIndex" [pages]="pages" [blocksPerPage]="blocksPerPage" [minScrollWidth]="minScrollWidth"></app-blockchain>
 </div>
 
 <router-outlet></router-outlet>
