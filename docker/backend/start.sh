@@ -140,6 +140,7 @@ sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REI
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_ADVANCED_GBT_AUDIT__!${__MEMPOOL_ADVANCED_GBT_AUDIT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
