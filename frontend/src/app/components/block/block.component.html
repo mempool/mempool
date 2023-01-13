@@ -333,6 +333,9 @@
       </div>
     </ng-template>
     <ngb-pagination class="pagination-container float-right" [collectionSize]="block.tx_count" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="page" (pageChange)="pageChange(page, blockTxTitle)" [maxSize]="paginationMaxSize" [boundaryLinks]="true" [ellipses]="false"></ngb-pagination>
+
+    <div class="clearfix"></div>
+    <br>
   </ng-template>
   <ng-template [ngIf]="error">
     <div class="text-center">
