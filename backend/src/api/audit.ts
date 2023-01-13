@@ -1,10 +1,5 @@
 import config from '../config';
-import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { Common } from './common';
-import { TransactionExtended, MempoolBlockWithTransactions, AuditScore } from '../mempool.interfaces';
-import blocksRepository from '../repositories/BlocksRepository';
-import blocksAuditsRepository from '../repositories/BlocksAuditsRepository';
-import blocks from '../api/blocks';
+import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 

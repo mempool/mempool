@@ -141,13 +141,13 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
       // main data directory provided, default to using the bitcoin mainnet subdirectory
       // to be removed in v0.2.0
       else if (fExists(rpcPath, 'bitcoin', 'lightning-rpc')) {
-        logger.warn(`[CLightningClient] ${rpcPath}/lightning-rpc is missing, using the bitcoin mainnet subdirectory at ${rpcPath}/bitcoin instead.`)
-        logger.warn(`[CLightningClient] specifying the main lightning data directory is deprecated, please specify the network directory explicitly.\n`)
+        logger.warn(`${rpcPath}/lightning-rpc is missing, using the bitcoin mainnet subdirectory at ${rpcPath}/bitcoin instead.`, logger.tags.ln)
+        logger.warn(`specifying the main lightning data directory is deprecated, please specify the network directory explicitly.\n`, logger.tags.ln)
         rpcPath = path.join(rpcPath, 'bitcoin', 'lightning-rpc')
       }
     }
 
-    logger.debug(`[CLightningClient] Connecting to ${rpcPath}`);
+    logger.debug(`Connecting to ${rpcPath}`, logger.tags.ln);
 
     super();
     this.rpcPath = rpcPath;
@@ -172,19 +172,19 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
 
     this.clientConnectionPromise = new Promise<void>(resolve => {
       _self.client.on('connect', () => {
-        logger.info(`[CLightningClient] Lightning client connected`);
+        logger.info(`CLightning client connected`, logger.tags.ln);
         _self.reconnectWait = 1;
         resolve();
       });
 
       _self.client.on('end', () => {
-        logger.err('[CLightningClient] Lightning client connection closed, reconnecting');
+        logger.err(`CLightning client connection closed, reconnecting`, logger.tags.ln);
         _self.increaseWaitTime();
         _self.reconnect();
       });
 
       _self.client.on('error', error => {
-        logger.err(`[CLightningClient] Lightning client connection error: ${error}`);
+        logger.err(`CLightning client connection error: ${error}`, logger.tags.ln);
         _self.increaseWaitTime();
         _self.reconnect();
       });
@@ -196,7 +196,6 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
         return;
       }
       const data = JSON.parse(line);
-      // logger.debug(`[CLightningClient] #${data.id} <-- ${JSON.stringify(data.error || data.result)}`);
       _self.emit('res:' + data.id, data);
     });
   }
@@ -217,7 +216,7 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
     }
 
     this.reconnectTimeout = setTimeout(() => {
-      logger.debug('[CLightningClient] Trying to reconnect...');
+      logger.debug(`Trying to reconnect...`, logger.tags.ln);
 
       _self.client.connect(_self.rpcPath);
       _self.reconnectTimeout = null;
@@ -235,7 +234,6 @@ export default class CLightningClient extends EventEmitter implements AbstractLi
       id: '' + callInt
     };
 
-    // logger.debug(`[CLightningClient] #${callInt} --> ${method} ${args}`);
 
     // Wait for the client to connect
     return this.clientConnectionPromise

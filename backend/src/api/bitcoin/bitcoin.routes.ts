@@ -402,7 +402,8 @@ class BitcoinRoutes {
   private async getLegacyBlocks(req: Request, res: Response) {
     try {
       const returnBlocks: IEsploraApi.Block[] = [];
-      const fromHeight = parseInt(req.params.height, 10) || blocks.getCurrentBlockHeight();
+      const tip = blocks.getCurrentBlockHeight();
+      const fromHeight = Math.min(parseInt(req.params.height, 10) || tip, tip);
 
       // Check if block height exist in local cache to skip the hash lookup
       const blockByHeight = blocks.getBlocks().find((b) => b.height === fromHeight);

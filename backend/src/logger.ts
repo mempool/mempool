@@ -32,22 +32,27 @@ class Logger {
     local7: 23
   };
 
+  public tags = {
+    mining: 'Mining',
+    ln: 'Lightning',
+  };  
+
   // @ts-ignore
-  public emerg: ((msg: string) => void);
+  public emerg: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public alert: ((msg: string) => void);
+  public alert: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public crit: ((msg: string) => void);
+  public crit: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public err: ((msg: string) => void);
+  public err: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public warn: ((msg: string) => void);
+  public warn: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public notice: ((msg: string) => void);
+  public notice: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public info: ((msg: string) => void);
+  public info: ((msg: string, tag?: string) => void);
   // @ts-ignore
-  public debug: ((msg: string) => void);
+  public debug: ((msg: string, tag?: string) => void);
 
   private name = 'mempool';
   private client: dgram.Socket;
@@ -66,8 +71,8 @@ class Logger {
 
   private addprio(prio): void {
     this[prio] = (function(_this) {
-      return function(msg) {
-        return _this.msg(prio, msg);
+      return function(msg, tag?: string) {
+        return _this.msg(prio, msg, tag);
       };
     })(this);
   }
@@ -85,7 +90,7 @@ class Logger {
     return '';
   }
 
-  private msg(priority, msg) {
+  private msg(priority, msg, tag?: string) {
     let consolemsg, prionum, syslogmsg;
     if (typeof msg === 'string' && msg.length > 0) {
       while (msg[msg.length - 1].charCodeAt(0) === 10) {
@@ -94,10 +99,10 @@ class Logger {
     }
     const network = this.network ? ' <' + this.network + '>' : '';
     prionum = Logger.priorities[priority] || Logger.priorities.info;
-    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${msg}`;
+    consolemsg = `${this.ts()} [${process.pid}] ${priority.toUpperCase()}:${network} ${tag ? '[' + tag + '] ' : ''}${msg}`;
 
     if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
-      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${msg}`;
+      syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${tag ? '[' + tag + '] ' : ''}${msg}`;
       this.syslog(syslogmsg);
     }
     if (Logger.priorities[priority] > Logger.priorities[config.MEMPOOL.STDOUT_LOG_MIN_PRIORITY]) {

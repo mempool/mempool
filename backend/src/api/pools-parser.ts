@@ -61,7 +61,7 @@ class PoolsParser {
         poolNames.push(poolsDuplicated[i].name);
       }
     }
-    logger.debug(`Found ${poolNames.length} unique mining pools`);
+    logger.debug(`Found ${poolNames.length} unique mining pools`, logger.tags.mining);
 
     // Get existing pools from the db
     let existingPools;
@@ -72,7 +72,7 @@ class PoolsParser {
         existingPools = [];
       }
     } catch (e) {
-      logger.err('Cannot get existing pools from the database, skipping pools.json import');
+      logger.err('Cannot get existing pools from the database, skipping pools.json import', logger.tags.mining);
       return;
     }
 
@@ -99,7 +99,7 @@ class PoolsParser {
         slug = poolsJson['slugs'][poolNames[i]];
       } catch (e) {
         if (this.slugWarnFlag === false) {
-          logger.warn(`pools.json does not seem to contain the 'slugs' object`);
+          logger.warn(`pools.json does not seem to contain the 'slugs' object`, logger.tags.mining);
           this.slugWarnFlag = true;
         }
       }
@@ -107,7 +107,7 @@ class PoolsParser {
       if (slug === undefined) {
         // Only keep alphanumerical
         slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
-        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
+        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`, logger.tags.mining);
       }
 
       const poolObj = {
@@ -143,9 +143,9 @@ class PoolsParser {
             'addresses': allAddresses,
             'slug': slug
           });
-          logger.debug(`Rename '${poolToRename[0].name}' mining pool to ${poolObj.name}`);
+          logger.debug(`Rename '${poolToRename[0].name}' mining pool to ${poolObj.name}`, logger.tags.mining);
         } else {
-          logger.debug(`Add '${finalPoolName}' mining pool`);
+          logger.debug(`Add '${finalPoolName}' mining pool`, logger.tags.mining);
           finalPoolDataAdd.push(poolObj);
         }
       }
@@ -160,14 +160,14 @@ class PoolsParser {
     }
 
     if (config.DATABASE.ENABLED === false) { // Don't run db operations
-      logger.info('Mining pools.json import completed (no database)');
+      logger.info('Mining pools.json import completed (no database)', logger.tags.mining);
       return;
     }
 
     if (finalPoolDataAdd.length > 0 || finalPoolDataUpdate.length > 0 ||
       finalPoolDataRename.length > 0
     ) {    
-      logger.debug(`Update pools table now`);
+      logger.debug(`Update pools table now`, logger.tags.mining);
 
       // Add new mining pools into the database
       let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses, slug) VALUES ';
@@ -217,9 +217,9 @@ class PoolsParser {
           await DB.query({ sql: query, timeout: 120000 });
         }
         await this.insertUnknownPool();
-        logger.info('Mining pools.json import completed');
+        logger.info('Mining pools.json import completed', logger.tags.mining);
       } catch (e) {
-        logger.err(`Cannot import pools in the database`);
+        logger.err(`Cannot import pools in the database`, logger.tags.mining);
         throw e;
       }
     }
@@ -227,7 +227,7 @@ class PoolsParser {
     try {
       await this.insertUnknownPool();
     } catch (e) {
-      logger.err(`Cannot insert unknown pool in the database`);
+      logger.err(`Cannot insert unknown pool in the database`, logger.tags.mining);
       throw e;
     }
   }
@@ -252,7 +252,7 @@ class PoolsParser {
         `);
       }
     } catch (e) {
-      logger.err('Unable to insert "Unknown" mining pool');
+      logger.err('Unable to insert "Unknown" mining pool', logger.tags.mining);
     }
   }
 
@@ -272,17 +272,17 @@ class PoolsParser {
     for (const updatedPool of finalPoolDataUpdate) {
       const [pool]: any[] = await DB.query(`SELECT id, name from pools where slug = "${updatedPool.slug}"`);
       if (pool.length > 0) {
-        logger.notice(`Deleting blocks from ${pool[0].name} mining pool for future re-indexing`);
+        logger.notice(`Deleting blocks from ${pool[0].name} mining pool for future re-indexing`, logger.tags.mining);
         await DB.query(`DELETE FROM blocks WHERE pool_id = ${pool[0].id}`);
       }
     }
 
     // Ignore early days of Bitcoin as there were not mining pool yet
-    logger.notice('Deleting blocks with unknown mining pool from height 130635 for future re-indexing');
+    logger.notice(`Deleting blocks with unknown mining pool from height 130635 for future re-indexing`, logger.tags.mining);
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
     await DB.query(`DELETE FROM blocks WHERE pool_id = ${unknownPool[0].id} AND height > 130635`);
 
-    logger.notice('Truncating hashrates for future re-indexing');
+    logger.notice(`Truncating hashrates for future re-indexing`, logger.tags.mining);
     await DB.query(`DELETE FROM hashrates`);
   }
 }
