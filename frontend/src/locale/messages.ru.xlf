@@ -2038,6 +2038,7 @@
       </trans-unit>
       <trans-unit id="adb216f561e9101b11a8288cc7da44afa1ab33b8" datatype="html">
         <source>Template vs Mined</source>
+        <target>Шаблон против майнинга</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">11,17</context>
