@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.previous-month" datatype="html">
         <source>Previous month</source>
-        <target>Ankstesnis mėnesis</target>
+        <target>Ankstesnis mėnuo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/datepicker/datepicker-navigation.ts</context>
           <context context-type="linenumber">69</context>
@@ -72,7 +72,7 @@
       </trans-unit>
       <trans-unit id="ngb.datepicker.next-month" datatype="html">
         <source>Next month</source>
-        <target>Kitas mėnesis</target>
+        <target>Kitas mėnuo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/datepicker/datepicker-navigation.ts</context>
           <context context-type="linenumber">69</context>
@@ -293,7 +293,7 @@
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
         <source>Total received</source>
-        <target>Viso gauta</target>
+        <target>Iš viso gauta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">22</context>
@@ -310,7 +310,7 @@
       </trans-unit>
       <trans-unit id="f149942f271231be52f55589398967093382d96d" datatype="html">
         <source>Total sent</source>
-        <target>Viso išsiųsta</target>
+        <target>Iš viso išsiųsta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.html</context>
           <context context-type="linenumber">26</context>
@@ -503,7 +503,7 @@
       </trans-unit>
       <trans-unit id="6c2ae4f9da67155a00f8db40ac22315eeaff33e2" datatype="html">
         <source>BSQ Blocks</source>
-        <target>BSQ Blokai</target>
+        <target>BSQ blokai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.html</context>
           <context context-type="linenumber">2,7</context>
@@ -615,7 +615,7 @@
       </trans-unit>
       <trans-unit id="6b2fdbdddef74630e1076d58786ca339a8c030f0" datatype="html">
         <source>Bisq Trading Volume</source>
-        <target>Bisq Mainų Apimtis</target>
+        <target>&quot;Bisq&quot; prekybos apyvarta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -641,7 +641,7 @@
       </trans-unit>
       <trans-unit id="ece163b62f5e9b0b68a8d6a2d93e216318f557ba" datatype="html">
         <source>Bitcoin Markets</source>
-        <target>Bitkoino Rinkos</target>
+        <target>Bitkoino rinkos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">21,24</context>
@@ -694,7 +694,7 @@
       </trans-unit>
       <trans-unit id="b666c0101ab9ef128a75fdf05a43184a57de0cff" datatype="html">
         <source>Volume (7d)</source>
-        <target>Apimtis (7 d.)</target>
+        <target>Prekybos apyvarta (7 d.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">29</context>
@@ -703,7 +703,7 @@
       </trans-unit>
       <trans-unit id="faf7b6da436cb9342858ec551aecdab8052dbde6" datatype="html">
         <source>Trades (7d)</source>
-        <target>Mainai (7 d.)</target>
+        <target>Sandoriai (7 d.)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">30</context>
@@ -716,7 +716,7 @@
       </trans-unit>
       <trans-unit id="8d54d714a00023ea23b58d8642980ef41cea0cb3" datatype="html">
         <source>Latest Trades</source>
-        <target>Naujausi Mainai</target>
+        <target>Naujausi sandoriai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">52,56</context>
@@ -733,7 +733,7 @@
       </trans-unit>
       <trans-unit id="3f42ea126dba9186d89dffe43937f2b9c17858d6" datatype="html">
         <source>Bisq Price Index</source>
-        <target>Bisq Kainos Indeksas</target>
+        <target>&quot;Bisq&quot; kainos indeksas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -742,7 +742,7 @@
       </trans-unit>
       <trans-unit id="e32fd95e667cfcee9948135918a151a614d5d349" datatype="html">
         <source>Bisq Market Price</source>
-        <target>Bisq Rinkos Kaina</target>
+        <target>&quot;Bisq&quot; rinkos kaina</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">21,23</context>
@@ -751,7 +751,7 @@
       </trans-unit>
       <trans-unit id="97ff5554c708164d58b14e45072acbcbf9f4d137" datatype="html">
         <source>View more »</source>
-        <target>Žiūrėti daugiau »</target>
+        <target>Parodyti daugiau »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">92,97</context>
@@ -780,7 +780,7 @@
       </trans-unit>
       <trans-unit id="94731fb77c18c6d537337dddc3699f67a0587985" datatype="html">
         <source>Terms of Service</source>
-        <target>Paslaugų Teikimo Sąlygos</target>
+        <target>Paslaugų teikimo sąlygos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">111,113</context>
@@ -802,7 +802,7 @@
       </trans-unit>
       <trans-unit id="8f3ac0544491bf048120928d39e02a6baeb0b278" datatype="html">
         <source>Privacy Policy</source>
-        <target>Privatumo Politika</target>
+        <target>Privatumo politika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">113,120</context>
@@ -877,7 +877,7 @@
       </trans-unit>
       <trans-unit id="3218e6768d0d5fbc69d4931819e21451c89ba8ed" datatype="html">
         <source>Minted amount</source>
-        <target>Viso išleista</target>
+        <target>Iš viso išleista</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">16</context>
@@ -957,7 +957,7 @@
       </trans-unit>
       <trans-unit id="0f8a41c901cd606bd3389d8a022cee193264f20b" datatype="html">
         <source>Spent TXOs</source>
-        <target>Panaudotos Išvestys</target>
+        <target>Panaudotos išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1208,7 +1208,7 @@
       </trans-unit>
       <trans-unit id="31d8d7f29ddbd3f64d374a132ddacd5e4a0835a2" datatype="html">
         <source>Inputs &amp; Outputs</source>
-        <target>Įvestys ir Išvestys</target>
+        <target>Įvestys ir išvestys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">97,105</context>
@@ -1246,7 +1246,7 @@
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
         <source>BSQ Transactions</source>
-        <target>BSQ Operacijos</target>
+        <target>BSQ operacijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.html</context>
           <context context-type="linenumber">2,5</context>
@@ -1340,7 +1340,7 @@
       </trans-unit>
       <trans-unit id="450749685636583691" datatype="html">
         <source>Pay trade fee</source>
-        <target>Mokėti mainų mokestį</target>
+        <target>Mokėti prekybos mokestį</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -1412,7 +1412,7 @@
       </trans-unit>
       <trans-unit id="bisq-transactions.unselectall" datatype="html">
         <source>Unselect all</source>
-        <target>Atšaukti visų pasirinkimą</target>
+        <target>Atšaukti visus pasirinkimus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -1420,7 +1420,7 @@
       </trans-unit>
       <trans-unit id="bisq-graph-trades" datatype="html">
         <source>Trades</source>
-        <target>Mainai</target>
+        <target>Sandoriai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">99</context>
@@ -1428,7 +1428,7 @@
       </trans-unit>
       <trans-unit id="bisq-graph-volume" datatype="html">
         <source>Volume</source>
-        <target>Apimtis</target>
+        <target>Prekybos apimtis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/lightweight-charts-area/lightweight-charts-area.component.ts</context>
           <context context-type="linenumber">100</context>
@@ -1436,7 +1436,7 @@
       </trans-unit>
       <trans-unit id="4b137ec8bf73a47063740b75c0c40d5fd3c48015" datatype="html">
         <source>The Mempool Open Source Project</source>
-        <target>„Mempool“ Atviro Kodo Projektas</target>
+        <target>„Mempool“ atvirojo kodo projektas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -1445,7 +1445,7 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
-        <target>Mūsų Bitkoino bendruomenei skirta atminties ir blokų grandinės naršyklė, daugiausia dėmesio skirianti mokesčių rinkai ir daugiasluoksnei ekosistemai, savarankiškai leidžiama be jokių patikimų trečiųjų šalių.</target>
+        <target>Nuo trečiųjų šalių prieglobos paslaugų nepriklausoma BTC operacijų mokesčių ir daugiasluoksnės Bitkoino ekosistemos analizei skirta mempulo ir blokų grandinės naršyklė. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">13,17</context>
@@ -1453,7 +1453,7 @@
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
         <source>Enterprise Sponsors 🚀</source>
-        <target>Verslo Rėmėjai 🚀</target>
+        <target>Rėmėjai iš verslo 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">29,32</context>
@@ -1462,7 +1462,7 @@
       </trans-unit>
       <trans-unit id="a46e9bc519dc1c320d48635e924d444364845ca8" datatype="html">
         <source>Community Sponsors ❤️</source>
-        <target>Bendruomenės Rėmėjai ❤️</target>
+        <target>Rėmėjai iš bendruomenės ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">177,180</context>
@@ -1471,7 +1471,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
-        <target>Bendruomenės Integracijos</target>
+        <target>Bendruomenės integracijos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">191,193</context>
@@ -1480,7 +1480,7 @@
       </trans-unit>
       <trans-unit id="020cce975a5d7e0cc0f4578903358459d693e4bb" datatype="html">
         <source>Community Alliances</source>
-        <target>Bendruomenės Aljansai</target>
+        <target>Bendruomenės aljansai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">281,283</context>
@@ -1489,7 +1489,7 @@
       </trans-unit>
       <trans-unit id="d5a535ddb26ae8cb056325715af27bb1b4008c14" datatype="html">
         <source>Project Translators</source>
-        <target>Projekto Vertėjai</target>
+        <target>Projekto vertėjai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">297,299</context>
@@ -1498,7 +1498,7 @@
       </trans-unit>
       <trans-unit id="2dd9b8a8997a6b57413ca3cd32dd38cef9fa39c2" datatype="html">
         <source>Project Contributors</source>
-        <target>Projekto Pagalbininkai</target>
+        <target>Projekto pagalbininkai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">311,313</context>
@@ -1507,7 +1507,7 @@
       </trans-unit>
       <trans-unit id="3d395b07b1f87656ed773adcbb3daf8e00c08779" datatype="html">
         <source>Project Members</source>
-        <target>Projekto Nariai</target>
+        <target>Projekto nariai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">323,325</context>
@@ -1516,7 +1516,7 @@
       </trans-unit>
       <trans-unit id="d177262e3a43b2a7221183812daf0ada97659436" datatype="html">
         <source>Project Maintainers</source>
-        <target>Projekto Prižiūrėtojai</target>
+        <target>Projekto prižiūrėtojai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">336,338</context>
@@ -1646,7 +1646,7 @@
       </trans-unit>
       <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Consider viewing this address on the official Mempool website instead: </source>
-        <target> <x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/> Šiuo adresu yra daug operacijų, daugiau nei gali parodyti jūsų vidinė sistema. Žr. daugiau apie <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>, kaip nustatyti galingesnę vidinę sistemą <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> . <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Apsvarstykite galimybę peržiūrėti šį adresą oficialioje „Mempool“ svetainėje:</target>
+        <target> <x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/> Šiuo adresu yra daug operacijų, daugiau nei gali parodyti jūsų vidinė sistema. Žr. daugiau apie <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>, kaip nustatyti galingesnę vidinę sistemą <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> . <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Patikrinkite šį adresą oficialioje „Mempool“ svetainėje:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">135,138</context>
@@ -1973,7 +1973,7 @@
       </trans-unit>
       <trans-unit id="9daedf013e87630c4e0a9123dc62e5bbf15a59ad" datatype="html">
         <source>Layer 2 Networks</source>
-        <target>2-tro Sluoksnio Tinklai</target>
+        <target>2-ojo sluoksnio tinklai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
           <context context-type="linenumber">50,51</context>
@@ -2170,7 +2170,7 @@
       </trans-unit>
       <trans-unit id="ed8e33059967f554ff06b4f5b6049c465b92d9b3" datatype="html">
         <source>Block Fee Rates</source>
-        <target>Bloko Mokesčių Tarifai</target>
+        <target>Bloko mokesčių tarifai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2219,7 +2219,7 @@
       </trans-unit>
       <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
         <source>Block Fees</source>
-        <target>Bloko Mokesčiai</target>
+        <target>Bloko mokesčiai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
           <context context-type="linenumber">6,7</context>
@@ -2462,7 +2462,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
-        <target>Blokų Numatymo Tikslumas</target>
+        <target>Blokų mumatymo tikslumas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2479,7 +2479,7 @@
       </trans-unit>
       <trans-unit id="80065834848189518" datatype="html">
         <source>No data to display yet. Try again later.</source>
-        <target>Dar nėra duomenų, kuriuos būtų galima rodyti. Bandyk dar kartą vėliau.</target>
+        <target>Dar nėra rodytinų duomenų. Bandyk dar kartą vėliau.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">108,103</context>
@@ -2499,7 +2499,7 @@
       </trans-unit>
       <trans-unit id="8ba8fe810458280a83df7fdf4c614dfc1a826445" datatype="html">
         <source>Block Rewards</source>
-        <target>Bloko Atlygis</target>
+        <target>Bloko atlygis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.html</context>
           <context context-type="linenumber">7,8</context>
@@ -2516,7 +2516,7 @@
       </trans-unit>
       <trans-unit id="56fa1cd221491b6478998679cba2dc8d55ba330d" datatype="html">
         <source>Block Sizes and Weights</source>
-        <target>Blokų Dydžiai ir Svoriai</target>
+        <target>Blokų dydžiai ir svoriai</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -2635,7 +2635,7 @@
       </trans-unit>
       <trans-unit id="bdf0e930eb22431140a2eaeacd809cc5f8ebd38c" datatype="html">
         <source>Next Block</source>
-        <target>Kitas Blokas</target>
+        <target>Kitas blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2648,7 +2648,7 @@
       </trans-unit>
       <trans-unit id="a0e07a711d171f4d40dd388d70ed32f9b8101e0a" datatype="html">
         <source>Previous Block</source>
-        <target>Ankstesnis Blokas</target>
+        <target>Ankstesnis blokas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -2768,7 +2768,7 @@
       </trans-unit>
       <trans-unit id="cbfb79ff517493268a49acffa81ecc02336d8372" datatype="html">
         <source>Block Header Hex</source>
-        <target>Bloko Antraštės Hex</target>
+        <target>Bloko antraštės Hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">278,279</context>
@@ -2828,7 +2828,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
-        <target>Telkinys</target>
+        <target>Pulas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -2963,7 +2963,7 @@
       </trans-unit>
       <trans-unit id="63da83692b85cf17e0606153029a83fd4038d6dd" datatype="html">
         <source>Difficulty Adjustment</source>
-        <target>Sudėtingumo Pokytis</target>
+        <target>Sudėtingumo pokytis</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">1,5</context>
@@ -3053,7 +3053,7 @@
       </trans-unit>
       <trans-unit id="5db469cd0357e5f578b85a996f7e99c9e4148ff5" datatype="html">
         <source>Current Period</source>
-        <target>Einamasis Periodas</target>
+        <target>Einamasis periodas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -3066,7 +3066,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
-        <target>Kitas Blokų Atlygio Dalijimas</target>
+        <target>Kitas blokų atlygio dalijimas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -3075,7 +3075,7 @@
       </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
-        <target>Arba 2 kart daugiau už minimalų, arba Žemo Prioriteto tarifas (atsižvelgiant į tai, kuris mažesnis)</target>
+        <target>Arba dukart daugiau už minimalų, arba žemo prioriteto tarifas (atsižvelgiant į tai, kuris mažesnis)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -3084,7 +3084,7 @@
       </trans-unit>
       <trans-unit id="eef30290726d3d569232f4c136082bb9daaf490b" datatype="html">
         <source>No Priority</source>
-        <target>Nėra Prioriteto</target>
+        <target>Nėra prioriteto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -3106,7 +3106,7 @@
       </trans-unit>
       <trans-unit id="29949587189ee02db19274db4ac656913cb243c3" datatype="html">
         <source>Low Priority</source>
-        <target>Žemas Prioritetas</target>
+        <target>Žemas prioritetas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
