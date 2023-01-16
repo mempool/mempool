@@ -14,9 +14,7 @@
           <tr *ngIf="addressInfo && addressInfo.unconfidential">
             <td i18n="address.unconfidential">Unconfidential</td>
             <td>
-              <a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                <app-truncate [text]="addressInfo.unconfidential" [lastChars]="7"></app-truncate>
-              </a>
+              <app-truncate [text]="addressInfo.unconfidential" [lastChars]="7" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]"></app-truncate>
             </td>
           </tr>
           <ng-template [ngIf]="!address.electrum">

@@ -1,11 +1,9 @@
 <div class="container-xl">
   <h1 i18n="shared.address">Address</h1>
   <span class="address-link">
-    <a  [routerLink]="['/address/' | relativeUrl, addressString]">
-      <app-truncate [text]="addressString" [lastChars]="8">
-        <app-clipboard [text]="addressString"></app-clipboard>
-      </app-truncate>
-    </a>
+    <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
+      <app-clipboard [text]="addressString"></app-clipboard>
+    </app-truncate>
   </span>
   <br>
 
