@@ -122,7 +122,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               }),
               delay(2000)
-            )))
+            )),
+            catchError(() => {
+              return of(null);
+            })
+          )
         ),
         catchError(() => {
           return of(null);
