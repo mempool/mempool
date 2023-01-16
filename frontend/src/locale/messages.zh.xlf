@@ -1804,6 +1804,7 @@
       </trans-unit>
       <trans-unit id="e3f9fda25b281496fe296fb7e8228f59b50983ad" datatype="html">
         <source>Group of <x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> assets</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ group.assets.length | number }}"/> 个资产</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/asset-group/asset-group.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -1836,6 +1837,7 @@
       </trans-unit>
       <trans-unit id="d06e27f7453fcf29134f9e61533ea4eb4b890f5f" datatype="html">
         <source>Featured</source>
+        <target>精选</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1843,6 +1845,7 @@
       </trans-unit>
       <trans-unit id="dfc3c34e182ea73c5d784ff7c8135f087992dac1" datatype="html">
         <source>All</source>
+        <target>全部时间</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2035,6 +2038,7 @@
       </trans-unit>
       <trans-unit id="adb216f561e9101b11a8288cc7da44afa1ab33b8" datatype="html">
         <source>Template vs Mined</source>
+        <target>预期协议与实际协议</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-audit/block-audit.component.html</context>
           <context context-type="linenumber">11,17</context>
@@ -2551,7 +2555,7 @@
       </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
         <source>Median fee</source>
-        <target>中位数矿工手续费</target>
+        <target>中位矿工手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">36,37</context>
@@ -2686,7 +2690,7 @@
       </trans-unit>
       <trans-unit id="b784270035273a5744e3c23c0fff31eebca32050" datatype="html">
         <source>Subsidy + fees:</source>
-        <target>补贴+手续费：</target>
+        <target>奖励+手续费：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">79,81</context>
@@ -2972,7 +2976,7 @@
       </trans-unit>
       <trans-unit id="0912816d94f2f05a7eee8f7622670e0c6bbbce16" datatype="html">
         <source>Remaining</source>
-        <target>剩余</target>
+        <target>距离下次调整</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -3027,7 +3031,7 @@
       </trans-unit>
       <trans-unit id="5e65ce907fc0e1a1a09d4130eb8c59d00a9457ef" datatype="html">
         <source>Estimate</source>
-        <target>预估</target>
+        <target>预估调整量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">16,17</context>
@@ -3062,7 +3066,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
-        <target>下一个减半</target>
+        <target>距离下次奖励减半</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -3440,6 +3444,7 @@
       </trans-unit>
       <trans-unit id="5ee5eb7db86675abd5f0b0db835bf362ee9b23ff" datatype="html">
         <source>Indexing network hashrate</source>
+        <target>正在统计网络哈希率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3447,6 +3452,7 @@
       </trans-unit>
       <trans-unit id="439adfcf08f5035e2fd9e4c15e40eef92f6cc780" datatype="html">
         <source>Indexing pools hashrate</source>
+        <target>正在统计矿池哈希率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3569,7 +3575,7 @@
       </trans-unit>
       <trans-unit id="8527213d7c7dbffe48a45c4d796ae221d419c71a" datatype="html">
         <source>(144 blocks)</source>
-        <target>（144个区块）</target>
+        <target>（近 144 个区块）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">11</context>
@@ -3591,7 +3597,7 @@
       </trans-unit>
       <trans-unit id="21d0c2d4d5429197892c827178819da2770f2f25" datatype="html">
         <source>Adjustments</source>
-        <target>调整</target>
+        <target>难度调整</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">67</context>
@@ -3600,6 +3606,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>矿池幸运度（1 周）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3608,6 +3615,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>矿池幸运度</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3616,6 +3624,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>过去一周所有矿池的整体幸运值超过前一周。幸运值大于 100% 意味着当前阶段的平均出块时间少于 10 分钟</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3624,7 +3633,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
-        <target>矿池数（1周）</target>
+        <target>矿池数（近 1 周）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3642,7 +3651,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
-        <target>过去一周挖出至少一个区块的独立矿池数量。</target>
+        <target>近 1 周挖出至少一个区块的独立矿池数量。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3651,7 +3660,7 @@
       </trans-unit>
       <trans-unit id="9ef8b357c32266f8423e24bf654006d3aa8fcd0b" datatype="html">
         <source>Blocks (1w)</source>
-        <target>区块量（1周）</target>
+        <target>区块量（近 1 周）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3668,7 +3677,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
-        <target>过去一周中发现的区块总数。</target>
+        <target>近 1 周中发现的区块总数。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -3712,6 +3721,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
+        <target>矿池幸运度（近 1 周）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">130,132</context>
@@ -3720,6 +3730,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
+        <target>矿池数（近 1 周）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">142,144</context>
@@ -3812,7 +3823,7 @@
       </trans-unit>
       <trans-unit id="cc657077942054572b255be033d634cf601c50b6" datatype="html">
         <source>Hashrate (24h)</source>
-        <target>哈希率（24小时）</target>
+        <target>哈希率（近 24 小时）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">91,93</context>
@@ -3854,6 +3865,7 @@
       </trans-unit>
       <trans-unit id="b34d145304d2f8d17e98586e27652a29f21691fe" datatype="html">
         <source>Reported</source>
+        <target>实际</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">97,98</context>
@@ -3874,6 +3886,7 @@
       </trans-unit>
       <trans-unit id="d7739a540416169fc6674db5b39deacbb00730f3" datatype="html">
         <source>Luck</source>
+        <target>加成后</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">98,101</context>
@@ -3894,6 +3907,7 @@
       </trans-unit>
       <trans-unit id="88cb6e7b056be423b78e369ae1592c9e751095b8" datatype="html">
         <source>Mined blocks</source>
+        <target>已出块数</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">141,143</context>
@@ -3914,7 +3928,7 @@
       </trans-unit>
       <trans-unit id="149da150f9b3a141a73a58a25142a850107a8212" datatype="html">
         <source>24h</source>
-        <target>24小时</target>
+        <target>近 24 小时</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">147</context>
@@ -3927,7 +3941,7 @@
       </trans-unit>
       <trans-unit id="f7b50e4989540954a9035833470efba042a2819c" datatype="html">
         <source>1w</source>
-        <target>一周</target>
+        <target>近 1 周</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">148</context>
@@ -4001,7 +4015,7 @@
       </trans-unit>
       <trans-unit id="79b0842a2010172290ad09062bf51f09d8842f65" datatype="html">
         <source>Amount being paid to miners in the past 144 blocks</source>
-        <target>过去 144 区块已支付的手续费</target>
+        <target>近 144 个区块已支付的手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -4031,7 +4045,7 @@
       </trans-unit>
       <trans-unit id="b41ac8dd7567baf0e88ad834b5dd95df03a19c09" datatype="html">
         <source>Average miners' reward per transaction in the past 144 blocks</source>
-        <target>过去 144 个区块单个交易矿工平均奖励额</target>
+        <target>近 144 个区块中每笔交易平均矿工奖励</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -4067,7 +4081,7 @@
       </trans-unit>
       <trans-unit id="8be96dc461529381c812f64962c62f4228d01470" datatype="html">
         <source>Fee paid on average for each transaction in the past 144 blocks</source>
-        <target>过去 144 个区块每笔交易平均手续费</target>
+        <target>近 144 个区块每笔交易平均手续费</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">31,32</context>
@@ -4811,6 +4825,7 @@
       </trans-unit>
       <trans-unit id="07883574bb93ea23b764861f56a525bdaf907513" datatype="html">
         <source>This transaction supports Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>此交易支持手续费替换（RBF）且允许使用此方法追加费用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">25</context>
@@ -4833,7 +4848,7 @@
       </trans-unit>
       <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
-        <target>此交易不支持按付费更替（RBF）且不能使用此方法增加费用</target>
+        <target>此交易不支持手续费替换（RBF）且不能使用此方法追加费用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">26</context>
@@ -5018,7 +5033,7 @@
       </trans-unit>
       <trans-unit id="4edb71f23e3ff228dbabd05e8ffc364fae8ae467" datatype="html">
         <source>Response</source>
-        <target>回复</target>
+        <target>响应</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/code-template/code-template.component.html</context>
           <context context-type="linenumber">43,44</context>
@@ -5060,6 +5075,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
+        <target>mSats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">36</context>
@@ -5130,6 +5146,7 @@
       </trans-unit>
       <trans-unit id="9fe79011b50c2ca1f9b7db7066046631bfc6b3cb" datatype="html">
         <source>Timelock delta</source>
+        <target>时间锁变化量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">70</context>
@@ -5281,6 +5298,7 @@
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
         <source>ppm</source>
+        <target>ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -5395,6 +5413,7 @@
       </trans-unit>
       <trans-unit id="a43e63c25599408ef14b33c80dd523021b21f846" datatype="html">
         <source>No channels to display</source>
+        <target>没有可展示的频道</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">29,35</context>
@@ -5403,7 +5422,7 @@
       </trans-unit>
       <trans-unit id="fbaaeb297e70b9a800acf841b9d26c19d60651ef" datatype="html">
         <source>Alias</source>
-        <target>别称</target>
+        <target>备注</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">35,37</context>
@@ -5458,7 +5477,7 @@
       </trans-unit>
       <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
-        <target>聪</target>
+        <target>sats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">61,65</context>
@@ -5537,6 +5556,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>节点平均费率，排除费率大于 0.5% 或 5000ppm 的节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -5558,6 +5578,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>节点平均基础费率，排除费率大于 5000ppm 的节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -5566,7 +5587,7 @@
       </trans-unit>
       <trans-unit id="2e72b276a3c5cc2ec27b4c8189639ba2fe62b6cb" datatype="html">
         <source>Med Capacity</source>
-        <target>中位数容量</target>
+        <target>中位容量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">59,61</context>
@@ -5575,7 +5596,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
-        <target>中位数费率</target>
+        <target>中位费率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -5584,6 +5605,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>节点中位费率，排除费率大于 0.5% 或 5000ppm 的节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -5592,7 +5614,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
-        <target>中位数基础费率</target>
+        <target>中位基础费率</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87,89</context>
@@ -5601,6 +5623,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>节点中位基础费率，排除费率大于 5000ppm 的节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -5663,7 +5686,7 @@
       </trans-unit>
       <trans-unit id="14a12efce56ffe89f839e50320bcf47e4e9ca4e4" datatype="html">
         <source>Liquidity</source>
-        <target>流动性</target>
+        <target>流通量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -5842,7 +5865,7 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
-        <target>流动性排名</target>
+        <target>流通量排名</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
@@ -5872,7 +5895,7 @@
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
-        <target>过去一周中百分比变化</target>
+        <target>近 1 周中百分比变化</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -5941,6 +5964,7 @@
       </trans-unit>
       <trans-unit id="674378571ab7e72a386f27fd3281558bae821d9d" datatype="html">
         <source>No node found for public key &quot;<x id="INTERPOLATION" equiv-text="{{ node.public_key | shortenString : 12}}"/>&quot;</source>
+        <target>没有找到符合该公钥 <x id="INTERPOLATION" equiv-text="{{ node.public_key | shortenString : 12}}"/> 的节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -5958,7 +5982,7 @@
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
-        <target>位置的</target>
+        <target>未知</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">52,56</context>
@@ -6001,7 +6025,7 @@
       </trans-unit>
       <trans-unit id="86d9619247d148019e5599707c39a36e880a2d23" datatype="html">
         <source>Exclusively on Tor</source>
-        <target>仅在 Tor 上</target>
+        <target>仅在 Tor 网络上</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">88,90</context>
@@ -6036,7 +6060,7 @@
       </trans-unit>
       <trans-unit id="7cac1c3013423d82d5149a5854d709bd08411430" datatype="html">
         <source>(Tor nodes excluded)</source>
-        <target>（包含洋葱节点）</target>
+        <target>（包含 Tor 网络）</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -6082,6 +6106,7 @@
       </trans-unit>
       <trans-unit id="4635698809727522638" datatype="html">
         <source>Indexing in progess</source>
+        <target>正在统计</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -6093,7 +6118,7 @@
       </trans-unit>
       <trans-unit id="1055322764280599360" datatype="html">
         <source>Reachable on Clearnet Only</source>
-        <target>仅可在公开网络上访问</target>
+        <target>仅可在公网上访问</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6105,7 +6130,7 @@
       </trans-unit>
       <trans-unit id="2760682261176173881" datatype="html">
         <source>Reachable on Clearnet and Darknet</source>
-        <target>可在公开和暗网上访问</target>
+        <target>可在公网和暗网上访问</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6201,7 +6226,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
-        <target>公开网络容量</target>
+        <target>公网网络容量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -6223,7 +6248,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
-        <target>未知容量</target>
+        <target>未知网络容量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6245,7 +6270,7 @@
       </trans-unit>
       <trans-unit id="df3728b721159d25e68f5daf44aaab7fa25f1415" datatype="html">
         <source>Tor Capacity</source>
-        <target>Tor 容量</target>
+        <target>Tor 网络容量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -6258,7 +6283,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
-        <target>对外仅公布 Tor 地址的节点所提供的流动性</target>
+        <target>对外仅公布 Tor 网络地址的节点所提供的流动性</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -6267,6 +6292,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>Top 100 网络节点 ISP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -6309,6 +6335,7 @@
       </trans-unit>
       <trans-unit id="5fad6872a652d922ad8822f4016e104b9a8cc113" datatype="html">
         <source>Top node</source>
+        <target>Top 节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">45,48</context>
@@ -6391,6 +6418,7 @@
       </trans-unit>
       <trans-unit id="4034215342842066505" datatype="html">
         <source>Top lightning nodes</source>
+        <target>Top 闪电网络节点</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -6398,6 +6426,7 @@
       </trans-unit>
       <trans-unit id="af1176facd00a0580509fb2900ab0cf7f9b39ae7" datatype="html">
         <source>Indexing in progress</source>
+        <target>正在统计</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
           <context context-type="linenumber">52,55</context>
