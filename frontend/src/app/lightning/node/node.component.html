@@ -3,11 +3,11 @@
   <div class="title-container mb-2" *ngIf="!error">
     <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
     <span class="tx-link">
-      <a class="node-id" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        <app-truncate [text]="node.public_key" [lastChars]="8">
+      <span class="node-id">
+        <app-truncate [text]="node.public_key" [lastChars]="8" [link]="['/lightning/node' | relativeUrl, node.public_key]">
           <app-clipboard [text]="node.public_key"></app-clipboard>
         </app-truncate>
-      </a>
+      </span>
     </span>
   </div>
 

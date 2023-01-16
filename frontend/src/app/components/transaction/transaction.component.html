@@ -3,20 +3,18 @@
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]">
-        <app-truncate [text]="rbfTransaction.txid" [lastChars]="12"></app-truncate>
-      </a>
+      <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size">
       <h1 i18n="shared.transaction">Transaction</h1>
 
       <span class="tx-link">
-        <a [routerLink]="['/tx/' | relativeUrl, txId]" class="txid">
-          <app-truncate [text]="txId" [lastChars]="12">
+        <span class="txid">
+          <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
             <app-clipboard [text]="txId"></app-clipboard>
           </app-truncate>
-        </a>
+        </span>
       </span>
 
       <div class="container-buttons">
@@ -158,9 +156,8 @@
             <ng-template [ngIf]="cpfpInfo?.descendants?.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
                 <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <app-truncate [text]="cpfpTx.txid"></app-truncate>
-                  </a>
+                <td>
+                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -171,9 +168,7 @@
               <tr>
                 <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
                 <td class="txids">
-                  <a [routerLink]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]">
-                    <app-truncate [text]="cpfpInfo.bestDescendant.txid"></app-truncate>
-                  </a>
+                  <app-truncate [text]="cpfpInfo.bestDescendant.txid" [link]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -184,9 +179,7 @@
               <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
                 <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
                 <td class="txids">
-                  <a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <app-truncate [text]="cpfpTx.txid"></app-truncate>
-                  </a>
+                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>

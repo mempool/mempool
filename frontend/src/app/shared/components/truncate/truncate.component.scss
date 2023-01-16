@@ -4,6 +4,14 @@
   flex-direction: row;
   align-items: baseline;
 
+  .truncate-link {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+
   .first {
     flex-grow: 0;
     flex-shrink: 1;
