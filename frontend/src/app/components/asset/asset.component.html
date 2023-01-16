@@ -3,10 +3,10 @@
     <h1 i18n="asset|Liquid Asset page title">Asset</h1>
     <div class="tx-link">
       <a [routerLink]="['/assets/asset/' | relativeUrl, assetString]">
-        <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ assetString }}</span>
+        <app-truncate [text]="assetString" [lastChars]="8">
+          <app-clipboard [text]="assetString"></app-clipboard>
+        </app-truncate>
       </a>
-      <app-clipboard [text]="assetString"></app-clipboard>
     </div>
   </div>
 
