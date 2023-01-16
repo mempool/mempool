@@ -47,9 +47,10 @@
     <div>{{ node.alias || '?' }}</div>
     <div class="second-line">
       <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        <span>{{ node.public_key | shortenString : publicKeySize }}</span>
+        <app-truncate [text]="node.public_key" [maxWidth]="200" [lastChars]="6">
+          <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
+        </app-truncate>
       </a>
-      <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
     </div>
   </td>
   <td class="alias text-left d-none d-md-table-cell">

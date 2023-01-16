@@ -1,0 +1,12 @@
+<span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null">
+  <ng-container *ngIf="!rtl">
+    <span class="first">{{text.slice(0,-lastChars)}}</span>
+    <span class="last-four">{{text.slice(-lastChars)}}</span>
+    <ng-content></ng-content>
+  </ng-container>
+  <ng-container *ngIf="rtl">
+    <span class="first">{{text.slice(lastChars)}}</span>
+    <span class="last-four">{{text.slice(0,lastChars)}}</span>
+    <ng-content></ng-content>
+  </ng-container>
+</span>

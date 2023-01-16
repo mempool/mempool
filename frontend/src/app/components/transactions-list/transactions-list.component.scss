@@ -1,6 +1,6 @@
 
 .arrow-td {
-	width: 20px;
+	width: 30px;
 	padding-top: 0;
 	padding-bottom: 0;
 }
@@ -45,6 +45,10 @@
 	}
 }
 
+td.amount {
+	width: 32.5%;
+}
+
 .extra-info {
 	display: none;
 	@media (min-width: 576px) {
@@ -81,6 +85,10 @@
 }
 
 .tx-page-container {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	white-space: nowrap;
 	padding: 10px;
 	margin-bottom: 10px;
 	margin-top: 10px;
@@ -130,14 +138,7 @@ h2 {
 	margin-top: 10px;
 }
 
-.addr-left {
-	font-family: monospace;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	margin-right: -7px
-}
-
-.addr-right {
+.address {
 	font-family: monospace;
 }
 
@@ -145,4 +146,10 @@ h2 {
 	color:#6c757d;
 	font-style: italic;
 	font-size: 12px;
+}
+
+.tx-link {
+	width: 0;
+	flex-grow: 1;
+	margin-inline-end: 2em;
 }
