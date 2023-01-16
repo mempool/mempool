@@ -7,11 +7,11 @@
       </div>
 
       <span class="tx-link">
-        <a [routerLink]="['/tx/' | relativeUrl, bisqTx.id]" class="txid">
-          <app-truncate [text]="bisqTx.id" [lastChars]="12">
+        <span class="txid">
+          <app-truncate [text]="bisqTx.id" [lastChars]="12" [link]="['/tx/' | relativeUrl, bisqTx.id]">
             <app-clipboard [text]="bisqTx.id"></app-clipboard>
           </app-truncate>
-        </a>
+        </span>
       </span>
       <span class="grow"></span>
       <div class="container-buttons">

@@ -2,11 +2,9 @@
   <div class="title-address">
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
-      <a [routerLink]="['/address/' | relativeUrl, addressString]" >
-        <app-truncate [text]="addressString" [lastChars]="8">
-          <app-clipboard [text]="addressString"></app-clipboard>
-        </app-truncate>
-      </a>
+      <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
+        <app-clipboard [text]="addressString"></app-clipboard>
+      </app-truncate>
     </div>
   </div>
 
@@ -22,11 +20,9 @@
               <tr *ngIf="addressInfo && addressInfo.unconfidential">
                 <td i18n="address.unconfidential">Unconfidential</td>
                 <td>
-                  <a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                    <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8">
-                      <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
-                    </app-truncate>
-                  </a>
+                  <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+                    <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
+                  </app-truncate>
                 </td>
               </tr>
               <ng-template [ngIf]="!address.electrum">
