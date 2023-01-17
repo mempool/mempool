@@ -17,6 +17,7 @@ import logger from './logger';
 import backendInfo from './api/backend-info';
 import loadingIndicators from './api/loading-indicators';
 import mempool from './api/mempool';
+import altMempool from './api/alt-mempool';
 import elementsParser from './api/liquid/elements-parser';
 import databaseMigration from './api/database-migration';
 import syncAssets from './sync-assets';
@@ -170,6 +171,9 @@ class Server {
       await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
+      if (config.MEMPOOL.RBF_DUAL_NODE) {
+        await altMempool.$updateMempool();
+      }
       indexer.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);

@@ -249,7 +249,7 @@ class MempoolBlocks {
             cluster.forEach(txid => {
               if (txid === tx.txid) {
                 matched = true;
-              } else {
+              } else if (mempool[txid]) {
                 const relative = {
                   txid: txid,
                   fee: mempool[txid].fee,

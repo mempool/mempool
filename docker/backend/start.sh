@@ -30,6 +30,8 @@ __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.githu
 __MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}
 __MEMPOOL_ADVANCED_GBT_MEMPOOL__=${MEMPOOL_ADVANCED_GBT_MEMPOOL:=false}
 __MEMPOOL_CPFP_INDEXING__=${MEMPOOL_CPFP_INDEXING:=false}
+__MEMPOOL_RBF_DUAL_NODE__=${MEMPOOL_RBF_DUAL_NODE:=false}
+
 
 # CORE_RPC
 __CORE_RPC_HOST__=${CORE_RPC_HOST:=127.0.0.1}
@@ -142,6 +144,7 @@ sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" 
 sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_ADVANCED_GBT_AUDIT__!${__MEMPOOL_ADVANCED_GBT_AUDIT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
+sed -i "s/__MEMPOOL_RBF_DUAL_NODE__/${__MEMPOOL_RBF_DUAL_NODE__}/g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json

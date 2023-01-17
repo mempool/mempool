@@ -1,6 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { AltElectrsApiService } from '../../services/alt-electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
   switchMap,
@@ -44,7 +43,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
-  altBackendTxSubscription: Subscription;
+  altTxSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
@@ -87,7 +86,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
-    private altElectrsApiService: AltElectrsApiService,
     private stateService: StateService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
@@ -96,7 +94,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private seoService: SeoService
   ) {
     this.fullRBF = stateService.env.FULL_RBF_ENABLED;
-    this.altBackend = stateService.env.ALT_BACKEND_URL;
   }
 
   ngOnInit() {
@@ -203,27 +200,29 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.tx = tx;
-      if (tx.fee === undefined) {
-        this.tx.fee = 0;
-      }
-      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
-      this.isLoadingTx = false;
-      this.error = undefined;
-      this.waitingForTransaction = false;
-      this.graphExpanded = false;
-      this.setupGraph();
+      if (!this.altTx && !this.tx) {
+        this.tx = tx;
+        if (tx.fee === undefined) {
+          this.tx.fee = 0;
+        }
+        this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+        this.isLoadingTx = false;
+        this.error = undefined;
+        this.waitingForTransaction = false;
+        this.graphExpanded = false;
+        this.setupGraph();
 
-      if (!this.tx?.status?.confirmed) {
-        this.fetchRbfHistory$.next(this.tx.txid);
+        if (!this.tx?.status?.confirmed) {
+          this.fetchRbfHistory$.next(this.tx.txid);
+        }
       }
     });
 
-    this.altBackendTxSubscription = this.checkAltBackend$
+    this.altTxSubscription = this.checkAltBackend$
     .pipe(
       switchMap((txId) =>
-        this.altElectrsApiService
-          .getTransaction$(txId)
+        this.apiService
+          .getAltTransaction$(txId)
           .pipe(
             catchError((e) => {
               return of(null);
@@ -326,7 +325,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((tx: Transaction) => {
           if (!tx) {
             this.notFound = true;
-            if (this.stateService.env.ALT_BACKEND_URL) {
+            if (this.stateService.env.ALT_BACKEND_ENABLED) {
               this.checkAltBackend$.next(this.txId);
             }
             return;
@@ -370,9 +369,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
             this.fetchRbfHistory$.next(this.tx.txid);
-            if (this.stateService.env.ALT_BACKEND_URL) {
-              this.checkAltBackend$.next(this.txId);
-            }
           }
           setTimeout(() => { this.applyFragment(); }, 0);
         },
@@ -546,7 +542,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
-    this.altBackendTxSubscription?.unsubscribe();
+    this.altTxSubscription?.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
