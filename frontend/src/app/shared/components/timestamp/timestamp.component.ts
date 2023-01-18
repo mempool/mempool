@@ -10,6 +10,7 @@ export class TimestampComponent implements OnChanges {
   @Input() unixTime: number;
   @Input() dateString: string;
   @Input() customFormat: string;
+  @Input() hideTimeSince: boolean = false;
 
   seconds: number | undefined = undefined;
 

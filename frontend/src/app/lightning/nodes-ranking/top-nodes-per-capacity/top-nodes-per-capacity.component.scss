@@ -1,7 +1,7 @@
 .container-xl {
   max-width: 1400px;
   padding-bottom: 100px;
-  @media (min-width: 767.98px) {
+  @media (min-width: 960px) {
     padding-left: 50px;
     padding-right: 50px;
   }
@@ -15,40 +15,44 @@
   width: 5%;
 }
 .widget .rank {
-  @media (min-width: 767.98px) {
+  @media (min-width: 960px) {
     width: 13%;
   }
-  @media (max-width: 767.98px) {
+  @media (max-width: 960px) {
     padding-left: 0px;
     padding-right: 0px;
   }
 }
 
 .full .alias {
-  width: 10%;
+  width: 20%;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 350px;
-  @media (max-width: 767.98px) {
-    max-width: 175px;
+  @media (max-width: 960px) {
+    width: 40%;
+    max-width: 500px;
   }
 }
 .widget .alias {
-  width: 55%;
+  width: 60%;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 350px;
-  @media (max-width: 767.98px) {
+  @media (max-width: 960px) {
     max-width: 175px;
   }
 }
 
 .full .capacity {
   width: 10%;
+  @media (max-width: 960px) {
+    width: 30%;
+  }
 }
 .widget .capacity {
   width: 32%;
-  @media (max-width: 767.98px) {
+  @media (max-width: 960px) {
     padding-left: 0px;
     padding-right: 0px;
   }
@@ -57,28 +61,31 @@
 .full .channels {
   width: 15%;
   padding-right: 50px;
-  @media (max-width: 767.98px) {
+  @media (max-width: 960px) {
     display: none;
   }
 }
 
 .full .timestamp-first {
-  width: 15%;
-  @media (max-width: 767.98px) {
+  width: 10%;
+  @media (max-width: 960px) {
     display: none;
   }
 }
 
 .full .timestamp-update {
-  width: 15%;
-  @media (max-width: 767.98px) {
+  width: 10%;
+  @media (max-width: 960px) {
     display: none;
   }
 }
 
 .full .location {
-  width: 10%;
-  @media (max-width: 767.98px) {
+  width: 15%;
+  @media (max-width: 960px) {
+    width: 30%;
+  }
+  @media (max-width: 600px) {
     display: none;
   }
 }
