@@ -213,6 +213,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         },
       },
       legend: (data.series.length === 0) ? undefined : {
+        padding: [10, 75],
         data: data.legends,
         selected: JSON.parse(this.storageService.getValue('fee_rates_legend')) ?? {
           'Min': true,
