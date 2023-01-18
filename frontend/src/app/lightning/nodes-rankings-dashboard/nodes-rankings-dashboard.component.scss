@@ -9,15 +9,15 @@
 }
 
 .card {
-  background-color: #1d1f31;
+  background-color: var(--bg);
 }
 
 .card-title {
   font-size: 1rem;
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 .card-title > a {
-  color: #4a68b9;
+  color: var(--title-fg);
 }
 
 .card-text {

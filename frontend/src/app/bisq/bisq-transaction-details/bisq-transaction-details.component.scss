@@ -3,7 +3,7 @@
 		width: 150px;
 	}
 	.mobile-even tr:nth-of-type(even) {
-		background-color: #181b2d;
+		background-color: var(--stat-box-bg);
 	}
 	.mobile-even tr:nth-of-type(odd) {
 		background-color: inherit;

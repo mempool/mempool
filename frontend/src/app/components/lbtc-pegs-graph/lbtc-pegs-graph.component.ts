@@ -99,7 +99,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const colorSpan = (color: string) => `<span class="indicator" style="background-color: #116761;"></span>`;
+          const colorSpan = (color: string) => `<span class="indicator" style="background-color: var(--liquid);"></span>`;
           let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
           params.map((item: any, index: number) => {
             if (index < 26) {
@@ -131,7 +131,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         splitLine: {
           lineStyle: {
             type: 'dotted',
-            color: '#ffffff66',
+            color: 'var(--transparent-fg)',
             opacity: 0.25,
           }
         }
@@ -145,11 +145,11 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           showSymbol: false,
           areaStyle: {
             opacity: 0.2,
-            color: '#116761',
+            color: 'var(--liquid)',
           },
           lineStyle: {
             width: 3,
-            color: '#116761',
+            color: 'var(--liquid)',
           },
         },
       ],

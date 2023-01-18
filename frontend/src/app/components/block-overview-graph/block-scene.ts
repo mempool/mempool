@@ -2,11 +2,13 @@ import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { Position, Square, ViewUpdateParams } from './sprite-types';
+import { ThemeService } from 'src/app/services/theme.service';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
   vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
+  theme: ThemeService;
   orientation: string;
   flip: boolean;
   width: number;
@@ -22,11 +24,11 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
+  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, theme }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService }
   ) {
-    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray });
+    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, theme });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
@@ -67,7 +69,7 @@ export default class BlockScene {
     });
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
     txs.forEach(tx => {
-      const txView = new TxView(tx, this.vertexArray);
+      const txView = new TxView(tx, this.vertexArray, this.theme);
       this.txs[tx.txid] = txView;
       this.place(txView);
       this.saveGridToScreenPosition(txView);
@@ -114,7 +116,7 @@ export default class BlockScene {
     });
     txs.forEach(tx => {
       if (!this.txs[tx.txid]) {
-        this.txs[tx.txid] = new TxView(tx, this.vertexArray);
+        this.txs[tx.txid] = new TxView(tx, this.vertexArray, this.theme);
       }
     });
 
@@ -156,7 +158,7 @@ export default class BlockScene {
     if (resetLayout) {
       add.forEach(tx => {
         if (!this.txs[tx.txid]) {
-          this.txs[tx.txid] = new TxView(tx, this.vertexArray);
+          this.txs[tx.txid] = new TxView(tx, this.vertexArray, this.theme);
         }
       });
       this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
@@ -166,7 +168,7 @@ export default class BlockScene {
     } else {
       // try to insert new txs directly
       const remaining = [];
-      add.map(tx => new TxView(tx, this.vertexArray)).sort(feeRateDescending).forEach(tx => {
+      add.map(tx => new TxView(tx, this.vertexArray, this.theme)).sort(feeRateDescending).forEach(tx => {
         if (!this.tryInsertByFee(tx)) {
           remaining.push(tx);
         }
@@ -192,13 +194,14 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHover(value));
   }
 
-  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray }:
+  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, theme }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, theme: ThemeService }
   ): void {
     this.orientation = orientation;
     this.flip = flip;
     this.vertexArray = vertexArray;
+    this.theme = theme;
 
     this.scene = {
       count: 0,

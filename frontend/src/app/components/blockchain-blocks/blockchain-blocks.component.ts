@@ -49,12 +49,12 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   timeLtr: boolean;
 
   gradientColors = {
-    '': ['#9339f4', '#105fb0'],
-    bisq: ['#9339f4', '#105fb0'],
-    liquid: ['#116761', '#183550'],
-    'liquidtestnet': ['#494a4a', '#272e46'],
-    testnet: ['#1d486f', '#183550'],
-    signet: ['#6f1d5d', '#471850'],
+    '': ['var(--mainnet-alt)', 'var(--primary)'],
+    bisq: ['var(--mainnet-alt)', 'var(--primary)'],
+    liquid: ['var(--liquid)', 'var(--testnet-alt)'],
+    'liquidtestnet': ['var(--liquidtestnet)', 'var(--liquidtestnet-alt)'],
+    testnet: ['var(--testnet)', 'var(--testnet-alt)'],
+    signet: ['var(--signet)', 'var(--signet-alt)'],
   };
 
   constructor(
@@ -278,7 +278,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       left: addLeft + 155 * index + 'px',
       background: `repeating-linear-gradient(
         #2d3348,
-        #2d3348 ${greenBackgroundHeight}%,
+        var(--secondary) ${greenBackgroundHeight}%,
         ${this.gradientColors[this.network][0]} ${Math.max(greenBackgroundHeight, 0)}%,
         ${this.gradientColors[this.network][1]} 100%
       )`,
@@ -307,7 +307,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + 155 * this.emptyBlocks.indexOf(block) + 'px',
-      background: "#2d3348",
+      background: "var(--secondary)",
     };
   }
 
