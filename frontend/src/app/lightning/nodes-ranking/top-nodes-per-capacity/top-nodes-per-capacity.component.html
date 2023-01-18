@@ -4,7 +4,7 @@
   </h1>
 
   <div [class]="widget ? 'widget' : 'full'">
-    <table class="table table-borderless">
+    <table class="table table-borderless table-fixed">
       <thead>
         <th class="rank"></th>
         <th class="alias text-left" i18n="nodes.alias">Alias</th>
@@ -29,10 +29,10 @@
             {{ node.channels | number }}
           </td>
           <td *ngIf="!widget" class="timestamp-first text-left">
-            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.firstSeen"></app-timestamp>
+            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.firstSeen" [hideTimeSince]="true"></app-timestamp>
           </td>
           <td *ngIf="!widget" class="timestamp-update text-left">
-            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updatedAt"></app-timestamp>
+            <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updatedAt" [hideTimeSince]="true"></app-timestamp>
           </td>
           <td *ngIf="!widget" class="location text-right text-truncate">
             <app-geolocation [data]="node.geolocation" [type]="'list-isp'"></app-geolocation>
