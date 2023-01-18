@@ -10,12 +10,13 @@ const defaultHoverColor = hexToColor('1bd8f4');
 
 const feeColors = mempoolFeeColors.map(hexToColor);
 const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
+const marginalFeeColors = feeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
 const auditColors = {
   censored: hexToColor('f344df'),
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
   selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
-}
+};
 
 // convert from this class's update format to TxSprite's update format
 function toSpriteUpdate(params: ViewUpdateParams): SpriteUpdateParams {
@@ -161,13 +162,13 @@ export default class TxView implements TransactionStripped {
       case 'censored':
         return auditColors.censored;
       case 'missing':
-        return auditColors.missing;
+        return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
       case 'fresh':
         return auditColors.missing;
       case 'added':
         return auditColors.added;
       case 'selected':
-        return auditColors.selected;
+        return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
       case 'found':
         if (this.context === 'projected') {
           return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
