@@ -35,16 +35,25 @@ export class Common {
   }
 
   static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const arr = [transactions[transactions.length - 1].effectiveFeePerVsize];
+    const filtered: TransactionExtended[] = [];
+    let lastValidRate = Infinity;
+    // filter out anomalous fee rates to ensure monotonic range
+    for (const tx of transactions) {
+      if (tx.effectiveFeePerVsize <= lastValidRate) {
+        filtered.push(tx);
+        lastValidRate = tx.effectiveFeePerVsize;
+      }
+    }
+    const arr = [filtered[filtered.length - 1].effectiveFeePerVsize];
     const chunk = 1 / (rangeLength - 1);
     let itemsToAdd = rangeLength - 2;
 
     while (itemsToAdd > 0) {
-      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].effectiveFeePerVsize);
+      arr.push(filtered[Math.floor(filtered.length * chunk * itemsToAdd)].effectiveFeePerVsize);
       itemsToAdd--;
     }
 
-    arr.push(transactions[0].effectiveFeePerVsize);
+    arr.push(filtered[0].effectiveFeePerVsize);
     return arr;
   }
 
