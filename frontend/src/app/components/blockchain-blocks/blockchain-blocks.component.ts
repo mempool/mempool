@@ -4,8 +4,7 @@ import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { Location } from '@angular/common';
-import { config } from 'process';
-import { CacheService } from 'src/app/services/cache.service';
+import { CacheService } from '../../services/cache.service';
 
 interface BlockchainBlock extends BlockExtended {
   placeholder?: boolean;
