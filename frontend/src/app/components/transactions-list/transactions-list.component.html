@@ -161,7 +161,7 @@
                   <ng-template #showMoreInputsLabel>
                     <span i18n="show-more">Show more</span>
                   </ng-template>
-                  ({{ tx.vin.length - getVinLimit(tx) }} <span i18n="inputs-remaining">remaining</span>)
+                  (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: tx.vin.length - getVinLimit(tx)}"></ng-container>)
                 </button>
               </td>
             </tr>
@@ -272,7 +272,7 @@
                   <ng-template #showMoreOutputsLabel>
                     <span i18n="show-more">Show more</span>
                   </ng-template>
-                  ({{ tx.vout.length - getVoutLimit(tx) }} <span i18n="outputs-remaining">remaining</span>)
+                  (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: tx.vout.length - getVoutLimit(tx)}"></ng-container>)
                 </button>
               </td>
             </tr>
@@ -326,3 +326,5 @@
   <br />
   <a [routerLink]="['/assets/asset/' | relativeUrl, item.asset]">{{ item.asset | shortenString : 13 }}</a>
 </ng-template>
+
+<ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>
