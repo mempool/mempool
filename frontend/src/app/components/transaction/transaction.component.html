@@ -9,10 +9,7 @@
     <div *ngIf="rbfReplaces?.length" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replaced|RBF replaced">This transaction replaced:</span>
       <div class="tx-list">
-        <a class="alert-link" *ngFor="let replaced of rbfReplaces" [routerLink]="['/tx/' | relativeUrl, replaced]">
-          <span class="d-inline d-lg-none">{{ replaced | shortenString : 24 }}</span>
-          <span class="d-none d-lg-inline">{{ replaced }}</span>
-        </a>
+        <app-truncate [text]="replaced" [lastChars]="12" *ngFor="let replaced of rbfReplaces" [link]="['/tx/' | relativeUrl, replaced]"></app-truncate>
       </div>
     </div>
 
