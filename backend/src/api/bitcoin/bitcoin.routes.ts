@@ -18,6 +18,7 @@ import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
+import rbfCache from '../rbf-cache';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -31,6 +32,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/replaces', this.getRbfHistory)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
         try {
@@ -584,6 +587,28 @@ class BitcoinRoutes {
     try {
       const result = await bitcoinClient.validateAddress(req.params.address);
       res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getRbfHistory(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getReplaces(req.params.txId);
+      res.json(result || []);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getCachedTx(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getTx(req.params.txId);
+      if (result) {
+        res.json(result);
+      } else {
+        res.status(404).send('not found');
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
