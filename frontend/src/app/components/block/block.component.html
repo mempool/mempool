@@ -206,9 +206,10 @@
     </ng-template>
   </ng-template>
 
-  <span id="overview"></span>
-
-  <br>
+  <ng-container *ngIf="showAudit">
+    <span id="overview"></span>
+    <br>
+  </ng-container>
 
   <!-- VISUALIZATIONS -->
   <div class="box" *ngIf="!error && webGlEnabled && showAudit">
