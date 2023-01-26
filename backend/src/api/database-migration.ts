@@ -461,8 +461,8 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateCompactTransactionsTableQuery(), await this.$checkIfTableExists('compact_transactions'));
       try {
         await this.$convertCompactCpfpTables();
-        await this.$executeQuery('DROP TABLE IF EXISTS `cpfp_clusters`');
         await this.$executeQuery('DROP TABLE IF EXISTS `transactions`');
+        await this.$executeQuery('DROP TABLE IF EXISTS `cpfp_clusters`');
         await this.updateToSchemaVersion(52);
       } catch(e) {
         logger.warn('' + (e instanceof Error ? e.message : e));
