@@ -42,8 +42,8 @@ export class RewardStatsComponent implements OnInit {
         map((stats) => {
           return {
             totalReward: stats.totalReward,
-            rewardPerTx: stats.totalReward / stats.totalTx,
             feePerTx: stats.totalFee / stats.totalTx,
+            feePerBlock: stats.totalFee / 144,
           };
         })
       );

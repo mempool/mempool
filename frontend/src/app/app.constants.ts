@@ -116,11 +116,12 @@ export const languages: Language[] = [
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
    { code: 'hi', name: 'हिन्दी' },             // Hindi
+   { code: 'ne', name: 'नेपाली' },            // Nepalese
    { code: 'it', name: 'Italiano' },        // Italian
    { code: 'he', name: 'עברית' },           // Hebrew
    { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'lv', name: 'Latviešu' },        // Latvian
-// { code: 'lt', name: 'Lietuvių' },        // Lithuanian
+   { code: 'lt', name: 'Lietuvių' },        // Lithuanian
    { code: 'hu', name: 'Magyar' },          // Hungarian
    { code: 'mk', name: 'Македонски' },      // Macedonian
 // { code: 'ms', name: 'Bahasa Melayu' },   // Malay

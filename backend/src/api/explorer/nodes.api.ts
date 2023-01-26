@@ -538,6 +538,10 @@ class NodesApi {
 
       const IPSIds = ISPId.split(',');
       const [rows]: any = await DB.query(query, [IPSIds, IPSIds]);
+      if (!rows || rows.length === 0) {
+        return [];
+      }
+
       const nodes = {};
 
       const intISPIds: number[] = [];
@@ -681,9 +685,7 @@ class NodesApi {
         )
       `);
       if (result[0].changedRows ?? 0 > 0) {
-        logger.info(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
-      } else {
-        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`, logger.tags.ln);
       }
     } catch (e) {
       logger.err('$setNodesInactive() error: ' + (e instanceof Error ? e.message : e));

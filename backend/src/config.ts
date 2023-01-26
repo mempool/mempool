@@ -31,7 +31,7 @@ interface IConfig {
     POOLS_JSON_TREE_URL: string,
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
-    TRANSACTION_INDEXING: boolean;
+    CPFP_INDEXING: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -44,6 +44,7 @@ interface IConfig {
     GRAPH_REFRESH_INTERVAL: number;
     LOGGER_UPDATE_INTERVAL: number;
     FORENSICS_INTERVAL: number;
+    FORENSICS_RATE_LIMIT: number;
   };
   LND: {
     TLS_CERT_PATH: string;
@@ -151,7 +152,7 @@ const defaults: IConfig = {
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,
-    'TRANSACTION_INDEXING': false,
+    'CPFP_INDEXING': false,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
@@ -205,6 +206,7 @@ const defaults: IConfig = {
     'GRAPH_REFRESH_INTERVAL': 600,
     'LOGGER_UPDATE_INTERVAL': 30,
     'FORENSICS_INTERVAL': 43200,
+    'FORENSICS_RATE_LIMIT': 20,
   },
   'LND': {
     'TLS_CERT_PATH': '',

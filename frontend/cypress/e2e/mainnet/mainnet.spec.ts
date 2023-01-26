@@ -41,7 +41,6 @@ describe('Mainnet', () => {
     // cy.intercept('/api/v1/block/*/summary').as('block-summary');
     // cy.intercept('/api/v1/outspends/*').as('outspends');
     // cy.intercept('/api/tx/*/outspends').as('tx-outspends');
-    // cy.intercept('/resources/pools.json').as('pools');
 
     // Search Auto Complete
     cy.intercept('/api/address-prefix/1wiz').as('search-1wiz');

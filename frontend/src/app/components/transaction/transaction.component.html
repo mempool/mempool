@@ -3,21 +3,25 @@
   <div class="title-block">
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-      <a class="alert-link" [routerLink]="['/tx/' | relativeUrl, rbfTransaction.txid]">
-        <span class="d-inline d-lg-none">{{ rbfTransaction.txid | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ rbfTransaction.txid }}</span>
-      </a>
+      <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size">
+    <div *ngIf="rbfReplaces?.length" class="alert alert-mempool" role="alert">
+      <span i18n="transaction.rbf.replaced|RBF replaced">This transaction replaced:</span>
+      <div class="tx-list">
+        <app-truncate [text]="replaced" [lastChars]="12" *ngFor="let replaced of rbfReplaces" [link]="['/tx/' | relativeUrl, replaced]"></app-truncate>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
-      <span class="tx-link float-left">
-        <a [routerLink]="['/tx/' | relativeUrl, txId]">
-          <span class="d-inline d-lg-none">{{ txId | shortenString : 24 }}</span>
-          <span class="d-none d-lg-inline">{{ txId }}</span>
-        </a>
-        <app-clipboard [text]="txId"></app-clipboard>
+      <span class="tx-link">
+        <span class="txid">
+          <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
+            <app-clipboard [text]="txId"></app-clipboard>
+          </app-truncate>
+        </span>
       </span>
 
       <div class="container-buttons">
@@ -28,7 +32,10 @@
             <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
           </button>
         </ng-template>
-        <ng-template [ngIf]="tx && !tx?.status.confirmed">
+        <ng-template [ngIf]="tx && !tx?.status?.confirmed && replaced">
+          <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Replaced</button>
+        </ng-template>
+        <ng-template [ngIf]="tx && !tx?.status?.confirmed && !replaced">
           <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
         </ng-template>
       </div>
@@ -91,7 +98,7 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="transactionTime !== 0">
+                <ng-template [ngIf]="transactionTime !== 0 && !replaced">
                   <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
                     <td><span class="skeleton-loader"></span></td>
                     <td><span class="skeleton-loader"></span></td>
@@ -103,7 +110,7 @@
                     </tr>
                   </ng-template>
                 </ng-template>
-                <tr>
+                <tr *ngIf="!replaced">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
                     <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
@@ -144,12 +151,12 @@
       <br>
 
       <h2 class="text-left">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="xs"></fa-icon></h2>
-      <div class="box">
-        <table class="table table-borderless table-striped">
+      <div class="box cpfp-details">
+        <table class="table table-fixed table-borderless table-striped">
           <thead>
             <tr>
               <th i18n="transactions-list.vout.scriptpubkey-type">Type</th>
-              <th i18n="dashboard.latest-transactions.txid">TXID</th>
+              <th class="txids" i18n="dashboard.latest-transactions.txid">TXID</th>
               <th class="d-none d-lg-table-cell" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</th>
               <th i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
               <th class="d-none d-lg-table-cell"></th>
@@ -159,10 +166,8 @@
             <ng-template [ngIf]="cpfpInfo?.descendants?.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.descendants">
                 <td><span class="badge badge-primary" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
-                  </a>
+                <td>
+                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -172,11 +177,8 @@
             <ng-template [ngIf]="cpfpInfo?.bestDescendant">
               <tr>
                 <td><span class="badge badge-success" i18n="transaction.descendant|Descendant">Descendant</span></td>
-                <td>
-                  <a [routerLink]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpInfo.bestDescendant.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpInfo.bestDescendant.txid }}</span>
-                  </a>
+                <td class="txids">
+                  <app-truncate [text]="cpfpInfo.bestDescendant.txid" [link]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -186,10 +188,8 @@
             <ng-template [ngIf]="cpfpInfo?.ancestors?.length">
               <tr *ngFor="let cpfpTx of cpfpInfo.ancestors">
                 <td><span class="badge badge-primary" i18n="transaction.ancestor|Transaction Ancestor">Ancestor</span></td>
-                  <td><a [routerLink]="['/tx' | relativeUrl, cpfpTx.txid]">
-                    <span class="d-inline d-lg-none">{{ cpfpTx.txid | shortenString : 8 }}</span>
-                    <span class="d-none d-lg-inline">{{ cpfpTx.txid }}</span>
-                  </a>
+                <td class="txids">
+                  <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
                 <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
