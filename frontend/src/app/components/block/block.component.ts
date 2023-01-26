@@ -608,8 +608,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.showAudit = this.auditAvailable && this.auditModeEnabled;
   }
 
-  toggleAuditMode(event): void {
-    this.stateService.hideAudit.next(!event);
+  toggleAuditMode(): void {
+    this.stateService.hideAudit.next(this.auditModeEnabled);
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
