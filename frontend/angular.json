@@ -138,6 +138,10 @@
             "translation": "src/locale/messages.hi.xlf",
             "baseHref": "/hi/"
           },
+          "ne": {
+            "translation": "src/locale/messages.ne.xlf",
+            "baseHref": "/ne/"
+          },
           "lt": {
             "translation": "src/locale/messages.lt.xlf",
             "baseHref": "/lt/"
