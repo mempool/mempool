@@ -35,24 +35,31 @@ export class Common {
   }
 
   static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const arr = [transactions[transactions.length - 1].effectiveFeePerVsize];
+    const filtered: TransactionExtended[] = [];
+    let lastValidRate = Infinity;
+    // filter out anomalous fee rates to ensure monotonic range
+    for (const tx of transactions) {
+      if (tx.effectiveFeePerVsize <= lastValidRate) {
+        filtered.push(tx);
+        lastValidRate = tx.effectiveFeePerVsize;
+      }
+    }
+    const arr = [filtered[filtered.length - 1].effectiveFeePerVsize];
     const chunk = 1 / (rangeLength - 1);
     let itemsToAdd = rangeLength - 2;
 
     while (itemsToAdd > 0) {
-      arr.push(transactions[Math.floor(transactions.length * chunk * itemsToAdd)].effectiveFeePerVsize);
+      arr.push(filtered[Math.floor(filtered.length * chunk * itemsToAdd)].effectiveFeePerVsize);
       itemsToAdd--;
     }
 
-    arr.push(transactions[0].effectiveFeePerVsize);
+    arr.push(filtered[0].effectiveFeePerVsize);
     return arr;
   }
 
   static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended } {
     const matches: { [txid: string]: TransactionExtended } = {};
     deleted
-      // The replaced tx must have at least one input with nSequence < maxint-1 (That’s the opt-in)
-      .filter((tx) => tx.vin.some((vin) => vin.sequence < 0xfffffffe))
       .forEach((deletedTx) => {
         const foundMatches = added.find((addedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
@@ -61,7 +68,7 @@ export class Common {
             && addedTx.feePerVsize > deletedTx.feePerVsize
             // Spends one or more of the same inputs
             && deletedTx.vin.some((deletedVin) =>
-              addedTx.vin.some((vin) => vin.txid === deletedVin.txid));
+              addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
         if (foundMatches) {
           matches[deletedTx.txid] = foundMatches;

@@ -3,11 +3,11 @@
   <div class="title-container mb-2" *ngIf="!error">
     <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
     <span class="tx-link">
-      <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">
-        <span class="d-inline d-lg-none">{{ node.public_key | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ node.public_key }}</span>
-      </a>
-      <app-clipboard [text]="node.public_key"></app-clipboard>
+      <span class="node-id">
+        <app-truncate [text]="node.public_key" [lastChars]="8" [link]="['/lightning/node' | relativeUrl, node.public_key]">
+          <app-clipboard [text]="node.public_key"></app-clipboard>
+        </app-truncate>
+      </span>
     </span>
   </div>
 
@@ -215,7 +215,7 @@
   </div>
 
   <div *ngIf="hasDetails" class="text-right mt-3">
-    <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="node.details|Node Details">Details</button>
+    <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
   </div>
 
   <div *ngIf="!error">

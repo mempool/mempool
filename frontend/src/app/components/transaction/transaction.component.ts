@@ -40,15 +40,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
+  fetchRbfSubscription: Subscription;
+  fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
+  replaced: boolean = false;
+  rbfReplaces: string[];
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
+  fetchRbfHistory$ = new Subject<string>();
+  fetchCachedTx$ = new Subject<string>();
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
@@ -122,7 +128,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               }),
               delay(2000)
-            )))
+            )),
+            catchError(() => {
+              return of(null);
+            })
+          )
         ),
         catchError(() => {
           return of(null);
@@ -154,6 +164,49 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.cpfpInfo = cpfpInfo;
       });
+
+    this.fetchRbfSubscription = this.fetchRbfHistory$
+    .pipe(
+      switchMap((txId) =>
+        this.apiService
+          .getRbfHistory$(txId)
+      ),
+      catchError(() => {
+        return of([]);
+      })
+    ).subscribe((replaces) => {
+      this.rbfReplaces = replaces;
+    });
+
+    this.fetchCachedTxSubscription = this.fetchCachedTx$
+    .pipe(
+      switchMap((txId) =>
+        this.apiService
+          .getRbfCachedTx$(txId)
+      ),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe((tx) => {
+      if (!tx) {
+        return;
+      }
+
+      this.tx = tx;
+      if (tx.fee === undefined) {
+        this.tx.fee = 0;
+      }
+      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+      this.isLoadingTx = false;
+      this.error = undefined;
+      this.waitingForTransaction = false;
+      this.graphExpanded = false;
+      this.setupGraph();
+
+      if (!this.tx?.status?.confirmed) {
+        this.fetchRbfHistory$.next(this.tx.txid);
+      }
+    });
 
     this.subscription = this.route.paramMap
       .pipe(
@@ -268,6 +321,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
+            this.fetchRbfHistory$.next(this.tx.txid);
           }
           setTimeout(() => { this.applyFragment(); }, 0);
         },
@@ -299,6 +353,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
       this.cacheService.setTxCache([this.rbfTransaction]);
+      this.replaced = true;
+      if (rbfTransaction && !this.tx) {
+        this.fetchCachedTx$.next(this.txId);
+      }
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
@@ -364,8 +422,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
+    this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.rbfReplaces = [];
     this.showCpfpDetails = false;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
@@ -431,6 +491,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
+    this.fetchRbfSubscription.unsubscribe();
+    this.fetchCachedTxSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
