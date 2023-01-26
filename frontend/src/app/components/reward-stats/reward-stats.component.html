@@ -13,21 +13,21 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="mining.rewards-per-tx" i18n-ngbTooltip="mining.rewards-per-tx"
-      ngbTooltip="Reward Per Tx" placement="bottom" #rewardspertx [disableTooltip]="!isEllipsisActive(rewardspertx)">Reward Per Tx</h5>
-      <div class="card-text" i18n-ngbTooltip="mining.rewards-per-tx-desc" ngbTooltip="Average miners' reward per transaction in the past 144 blocks" placement="bottom">
+      <h5 class="card-title" i18n="mining.fees-per-block" i18n-ngbTooltip="mining.fees-per-block"
+      ngbTooltip="Avg Block Fees" placement="bottom" #rewardsperblock [disableTooltip]="!isEllipsisActive(rewardsperblock)">Avg Block Fees</h5>
+      <div class="card-text" i18n-ngbTooltip="mining.fees-per-block-desc" ngbTooltip="Average fees per block in the past 144 blocks" placement="bottom">
         <div class="fee-text">
-          {{ rewardStats.rewardPerTx | amountShortener: 2 }}
-          <span i18n="shared.sat-vbyte|sat/vB">sats/tx</span>
+          {{ (rewardStats.feePerBlock / 100000000) | amountShortener: 4 }}
+          <span i18n="shared.btc-block|BTC/block">BTC/block</span>
         </div>
         <span class="fiat">
-          <app-fiat [value]="rewardStats.rewardPerTx"></app-fiat>
+          <app-fiat [value]="rewardStats.feePerBlock"></app-fiat>
         </span>
       </div>
     </div>
     <div class="item">
       <h5 class="card-title" i18n="mining.average-fee" i18n-ngbTooltip="mining.average-fee"
-      ngbTooltip="Average Fee" placement="bottom" #averagefee [disableTooltip]="!isEllipsisActive(averagefee)">Average Fee</h5>
+      ngbTooltip="Avg Tx Fee" placement="bottom" #averagefee [disableTooltip]="!isEllipsisActive(averagefee)">Avg Tx Fee</h5>
       <div class="card-text" i18n-ngbTooltip="mining.average-fee" ngbTooltip="Fee paid on average for each transaction in the past 144 blocks" placement="bottom">
         <div class="fee-text">{{ rewardStats.feePerTx | amountShortener: 2 }}
           <span i18n="shared.sat-vbyte|sat/vB">sats/tx</span>

@@ -21,7 +21,7 @@ class Mempool {
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
   private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
-    deletedTransactions: TransactionExtended[]) => void) | undefined;
+    deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -210,7 +210,7 @@ class Mempool {
     for (const rbfTransaction in rbfTransactions) {
       if (this.mempoolCache[rbfTransaction]) {
         // Store replaced transactions
-        rbfCache.add(rbfTransaction, rbfTransactions[rbfTransaction].txid);
+        rbfCache.add(this.mempoolCache[rbfTransaction], rbfTransactions[rbfTransaction].txid);
         // Erase the replaced transactions from the local mempool
         delete this.mempoolCache[rbfTransaction];
       }
@@ -236,6 +236,7 @@ class Mempool {
       const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
       if (lazyDeleteAt && lazyDeleteAt < now) {
         delete this.mempoolCache[tx];
+        rbfCache.evict(tx);
       }
     }
   }

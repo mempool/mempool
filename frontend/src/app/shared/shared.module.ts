@@ -77,6 +77,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
@@ -152,6 +153,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
@@ -252,6 +254,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
