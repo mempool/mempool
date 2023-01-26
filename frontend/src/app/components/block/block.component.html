@@ -23,15 +23,6 @@
 
     <div class="grow"></div>
 
-    <div class="audit-toggle" *ngIf="webGlEnabled && auditAvailable">
-      <app-toggle
-        textLeft="audit"
-        i18n-textLeft="block.audit-mode"
-        [checked]="auditModeEnabled"
-        (toggleStatusChanged)="toggleAuditMode($event)"
-      ></app-toggle>
-    </div>
-
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
 
@@ -288,8 +279,22 @@
       </div>
     </div>
 
-    <div class="text-right mt-3">
-      <button type="button" class="btn btn-outline-info btn-sm btn-details" (click)="toggleShowDetails()" i18n="transaction.details|Transaction Details">Details</button>
+    <div class="text-right mt-3 toggle-btns">
+      <button
+        *ngIf="webGlEnabled && auditAvailable"
+        type="button"
+        class="btn btn-outline-info btn-sm btn-audit"
+        [class.active]="auditModeEnabled"
+        (click)="toggleAuditMode()"
+        i18n="block.toggle-audit|Toggle Audit"
+      >Audit</button>
+      <button
+        type="button"
+        class="btn btn-outline-info btn-sm btn-details"
+        [class.active]="showDetails"
+        (click)="toggleShowDetails()"
+        i18n="transaction.details|Transaction Details"
+      >Details</button>
     </div>
 
     <div #blockTxTitle id="block-tx-title" class="block-tx-title">
