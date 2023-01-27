@@ -11,6 +11,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   @Input() tx: TransactionStripped | void;
   @Input() cursorPosition: Position;
   @Input() clickable: boolean;
+  @Input() auditEnabled: boolean = false;
 
   txid = '';
   fee = 0;
