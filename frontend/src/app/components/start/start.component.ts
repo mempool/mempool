@@ -250,6 +250,10 @@ export class StartComponent implements OnInit, OnDestroy {
     };
   }
 
+  resetScroll(): void {
+    this.scrollToBlock(this.chainTip);
+  }
+
   getPageIndexOf(height: number): number {
     const delta = this.chainTip - 8 - height;
     return Math.max(0, Math.floor(delta / this.blocksPerPage) + 1);
