@@ -38,6 +38,7 @@ export default class TxView implements TransactionStripped {
   feerate: number;
   status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
   context?: 'projected' | 'actual';
+  scene?: BlockScene;
 
   initialised: boolean;
   vertexArray: FastVertexArray;
@@ -50,7 +51,8 @@ export default class TxView implements TransactionStripped {
 
   dirty: boolean;
 
-  constructor(tx: TransactionStripped, vertexArray: FastVertexArray) {
+  constructor(tx: TransactionStripped, scene: BlockScene) {
+    this.scene = scene;
     this.context = tx.context;
     this.txid = tx.txid;
     this.fee = tx.fee;
@@ -59,7 +61,7 @@ export default class TxView implements TransactionStripped {
     this.feerate = tx.fee / tx.vsize;
     this.status = tx.status;
     this.initialised = false;
-    this.vertexArray = vertexArray;
+    this.vertexArray = scene.vertexArray;
 
     this.hover = false;
 
@@ -157,6 +159,10 @@ export default class TxView implements TransactionStripped {
   getColor(): Color {
     const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, this.feerate) < feeLvl) - 1;
     const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
+    // Normal mode
+    if (!this.scene?.highlightingEnabled) {
+      return feeLevelColor;
+    }
     // Block audit
     switch(this.status) {
       case 'censored':
