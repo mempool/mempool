@@ -75,12 +75,17 @@ h1 {
 	}
 }
 
-.btn-details {
+.toggle-btns {
   position: relative;
+  z-index: 2;
   top: 7px;
   @media (min-width: 550px) {
     top: 0px;
   }
+}
+
+.btn-audit {
+  margin-right: .5em;
 }
 
 .block-tx-title {
