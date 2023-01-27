@@ -215,7 +215,7 @@
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.projected-block">Projected Block</h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
-            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
@@ -224,7 +224,7 @@
         <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
-            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"
+            [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
