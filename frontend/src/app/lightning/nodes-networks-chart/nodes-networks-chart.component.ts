@@ -413,7 +413,7 @@ export class NodesNetworksChartComponent implements OnInit {
       }],
     };
 
-    if (isMobile()) {
+    if (isMobile() && this.chartOptions.legend) {
       // @ts-ignore
       this.chartOptions.legend.left = 50;
     }
