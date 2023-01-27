@@ -616,17 +616,17 @@ export class BlockComponent implements OnInit, OnDestroy {
     switch (this.stateService.network) {
       case 'testnet':
         if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(true);
+          this.setAuditAvailable(false);
         }
         break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(true);
+          this.setAuditAvailable(false);
         }
         break;
       default:
         if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(true);
+          this.setAuditAvailable(false);
         }
     }
   }
