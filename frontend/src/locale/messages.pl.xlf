@@ -11,6 +11,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION" equiv-text="true`, will pau"/> of <x id="INTERPOLATION_1" equiv-text="n mouse cursor"/> </source>
+        <target> Slajd <x id="INTERPOLATION" equiv-text="true`, will pau"/> z <x id="INTERPOLATION_1" equiv-text="n mouse cursor"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/carousel/carousel.ts</context>
           <context context-type="linenumber">175,181</context>
@@ -147,6 +148,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="* The maximal"/></source>
+        <target><x id="INTERPOLATION" equiv-text="* The maximal"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/progressbar/progressbar.ts</context>
           <context context-type="linenumber">30,33</context>
@@ -2121,6 +2123,7 @@
       </trans-unit>
       <trans-unit id="86c50fc2171298179283e3c9b6d79b57b821599b" datatype="html">
         <source>not available</source>
+        <target>nie dostępne</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2323,6 +2326,7 @@
       </trans-unit>
       <trans-unit id="1a8035ac608b083c29407327290b7cc9d6cbb95d" datatype="html">
         <source>Audit status</source>
+        <target>Status audytu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2331,6 +2335,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
+        <target>Dopasowanie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2339,6 +2344,7 @@
       </trans-unit>
       <trans-unit id="1aa4883bc4f1352f7a0bdd94810a9bf6dc22bd02" datatype="html">
         <source>Removed</source>
+        <target>Usunięte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">39</context>
@@ -2347,6 +2353,7 @@
       </trans-unit>
       <trans-unit id="f0136f1a1d77aa656e0ebd0f3c023118dd2a2776" datatype="html">
         <source>Marginal fee rate</source>
+        <target>Marginalna stopa opłat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2359,6 +2366,7 @@
       </trans-unit>
       <trans-unit id="d702ad6f00c620c9658ac1ad8184d5fe5bc099fb" datatype="html">
         <source>Recently broadcasted</source>
+        <target>Ostatnio rozgłoszone</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2627,6 +2635,7 @@
       </trans-unit>
       <trans-unit id="930c93e0c7afdf0f8d926773d5157c803bdc86e1" datatype="html">
         <source>Block health</source>
+        <target>Zdrowie bloku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">58,61</context>
@@ -2720,6 +2729,7 @@
       </trans-unit>
       <trans-unit id="26f41d32df1646d45fcb03fe6952fb3eccf60b0f" datatype="html">
         <source>Projected</source>
+        <target>Prognoza</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">210,212</context>
@@ -2728,6 +2738,7 @@
       </trans-unit>
       <trans-unit id="1da6d9283e3222148d76c10c8e37abeeb66c93cb" datatype="html">
         <source>Actual</source>
+        <target>Wartość aktualna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">212,216</context>
@@ -2736,6 +2747,7 @@
       </trans-unit>
       <trans-unit id="a37e529c0d7b39d95861dd019cb78bb9ac9a3c5d" datatype="html">
         <source>Projected Block</source>
+        <target>Prognozowany blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216,218</context>
@@ -2744,6 +2756,7 @@
       </trans-unit>
       <trans-unit id="6efa73f0d6f0844a1e0c341c9b88323f51852d91" datatype="html">
         <source>Actual Block</source>
+        <target>Rzeczywisty blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">225,227</context>
@@ -2872,6 +2885,7 @@
       </trans-unit>
       <trans-unit id="9f63968580fcea609d6b9e7a5b6ba7180b54e18f" datatype="html">
         <source>Why is this block empty?</source>
+        <target>Czemu ten blok jest pusty?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">361,367</context>
@@ -2922,6 +2936,7 @@
       </trans-unit>
       <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
         <source>Health</source>
+        <target>Zdrowie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">18,19</context>
@@ -4083,6 +4098,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
+        <target>Średnie opłaty bloku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4095,6 +4111,7 @@
       </trans-unit>
       <trans-unit id="a0d4ab5b063e7be1c9ea980f5fd6ce1b5384ad0b" datatype="html">
         <source>Average fees per block in the past 144 blocks</source>
+        <target>Średnie opłaty na blok w ciągu ostatnich 144 bloków</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -4103,6 +4120,7 @@
       </trans-unit>
       <trans-unit id="0705223420d290a218e4ed83bd4d904454a9cee8" datatype="html">
         <source>BTC/block</source>
+        <target>BTC/blok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21,24</context>
@@ -4112,6 +4130,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
+        <target>Średnia stopa opłat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4429,6 +4448,7 @@
       </trans-unit>
       <trans-unit id="72cfda88d5ab4851cba76abb402cae8f03ab6c6b" datatype="html">
         <source>This transaction replaced:</source>
+        <target>Ta transakcja zastąpiła:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">10,12</context>
@@ -4438,6 +4458,7 @@
       </trans-unit>
       <trans-unit id="ed1b6bfe4b7beca445156e6bb92a76d3cdebe945" datatype="html">
         <source>Replaced</source>
+        <target>Zastąpiona</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">36,39</context>
@@ -4777,6 +4798,7 @@
       </trans-unit>
       <trans-unit id="d70397ee91f6c9ec91f1c1dff88126f8f9b7c2c4" datatype="html">
         <source>Show more inputs to reveal fee data</source>
+        <target>Pokaż więcej wejść by ujawnić dane o opłatach</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">288,291</context>
@@ -4785,6 +4807,7 @@
       </trans-unit>
       <trans-unit id="ea7c261363dc5f6134b7bacba2a1ef97f4ff7859" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> remaining</source>
+        <target>pozostało <x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">330,331</context>
@@ -4935,6 +4958,7 @@
       </trans-unit>
       <trans-unit id="b0fb884cf71b19e3a4d146146d260ccedd9d50a5" datatype="html">
         <source>This transaction does not use Taproot</source>
+        <target>Ta transakcja nie używa Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">18</context>
@@ -5303,6 +5327,7 @@
       </trans-unit>
       <trans-unit id="4e64e04c01e8f5fc09c41cb8942dcc3af0398b28" datatype="html">
         <source>Starting balance</source>
+        <target>Saldo początkowe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-close-box/channel-close-box.component.html</context>
           <context context-type="linenumber">6</context>
@@ -5312,6 +5337,7 @@
       </trans-unit>
       <trans-unit id="5c4bfd47a4f4d7cb99912f028494fe2530d36d57" datatype="html">
         <source>Closing balance</source>
+        <target>Saldo końcowe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-close-box/channel-close-box.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5531,6 +5557,7 @@
       </trans-unit>
       <trans-unit id="1f0b0f2c90de4f3f0eb2c138eed38f4e9ac7a13e" datatype="html">
         <source>Closed by</source>
+        <target>Zamknięty przez</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">52,54</context>
@@ -6052,6 +6079,7 @@
       </trans-unit>
       <trans-unit id="7b8687bbc13bbf62288689606dcab9784a3eb53b" datatype="html">
         <source>Fee distribution</source>
+        <target>Rozkład opłat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6147,6 +6175,7 @@
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
+        <target>Średnia odległość kanałów</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">56,57</context>
@@ -6186,6 +6215,7 @@
       </trans-unit>
       <trans-unit id="e128630e07a4c467f51b246a31c5734d5fb1a2c2" datatype="html">
         <source>Liquidity ad</source>
+        <target>Reklama płynności</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">138,141</context>
@@ -6194,6 +6224,7 @@
       </trans-unit>
       <trans-unit id="bc84b5a9a70217104a53c7139e30b392be6520b7" datatype="html">
         <source>Lease fee rate</source>
+        <target>Stawka opłat dzierżawy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">144,147</context>
@@ -6203,6 +6234,7 @@
       </trans-unit>
       <trans-unit id="ee807dd54b4a45eeba284744c64774de1ab5e4f1" datatype="html">
         <source>Lease base fee</source>
+        <target>Opłata bazowa dzierżawy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">152,154</context>
@@ -6211,6 +6243,7 @@
       </trans-unit>
       <trans-unit id="5e348f3d51c3bb283c16572bee1e293ea991cf49" datatype="html">
         <source>Funding weight</source>
+        <target>Blok finansujący</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">158,159</context>
@@ -6219,6 +6252,7 @@
       </trans-unit>
       <trans-unit id="8af4768ed9112268945c697923ce017fbe23e1b7" datatype="html">
         <source>Channel fee rate</source>
+        <target>Stawka opłat kanału</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">168,171</context>
@@ -6228,6 +6262,7 @@
       </trans-unit>
       <trans-unit id="4e6d03f01a59434dee25104fe9478041db186ca8" datatype="html">
         <source>Channel base fee</source>
+        <target>Opłata bazowa kanału</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">176,178</context>
@@ -6236,6 +6271,7 @@
       </trans-unit>
       <trans-unit id="e8e09fa12864e94f094a2a7c8c97cfdf0cff8aab" datatype="html">
         <source>Compact lease</source>
+        <target>Kompaktowa dzierżawa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">188,190</context>
@@ -6244,6 +6280,7 @@
       </trans-unit>
       <trans-unit id="aa687f4987e2d4e0010be692d402174962ece70e" datatype="html">
         <source>TLV extension records</source>
+        <target>Rekordy rozszerzeń TLV</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">199,202</context>
@@ -6324,6 +6361,7 @@
       </trans-unit>
       <trans-unit id="6391724349488018234" datatype="html">
         <source>Indexing in progress</source>
+        <target>Indeksowanie w toku</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -6591,6 +6629,7 @@
       </trans-unit>
       <trans-unit id="e422817608e8d55e08b45a1da2e118eb42815af4" datatype="html">
         <source>Active nodes</source>
+        <target>Aktywne węzły</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">14,18</context>
