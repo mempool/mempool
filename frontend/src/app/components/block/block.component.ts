@@ -439,17 +439,17 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateService.markBlock$.next({});
-    this.transactionSubscription.unsubscribe();
+    this.transactionSubscription?.unsubscribe();
     this.overviewSubscription?.unsubscribe();
     this.auditSubscription?.unsubscribe();
-    this.keyNavigationSubscription.unsubscribe();
-    this.blocksSubscription.unsubscribe();
-    this.networkChangedSubscription.unsubscribe();
-    this.queryParamsSubscription.unsubscribe();
-    this.timeLtrSubscription.unsubscribe();
-    this.auditSubscription.unsubscribe();
+    this.keyNavigationSubscription?.unsubscribe();
+    this.blocksSubscription?.unsubscribe();
+    this.networkChangedSubscription?.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe();
+    this.timeLtrSubscription?.unsubscribe();
+    this.auditSubscription?.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
-    this.childChangeSubscription.unsubscribe();
+    this.childChangeSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {
