@@ -26,6 +26,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   specialBlocks = specialBlocks;
   network = '';
   blocks: BlockchainBlock[] = [];
+  dynamicBlocksAmount: number = 8;
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   blocksSubscription: Subscription;
@@ -70,6 +71,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
@@ -100,7 +103,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.blocks.unshift(block);
-          this.blocks = this.blocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+          this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
 
           if (txConfirmed) {
             this.markHeight = block.height;
@@ -121,7 +124,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
           }
 
-          if (this.blocks.length === this.stateService.env.KEEP_BLOCKS_AMOUNT) {
+          if (this.blocks.length === this.dynamicBlocksAmount) {
             this.blocksFilled = true;
           }
           this.cd.markForCheck();
@@ -312,7 +315,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   mountEmptyBlocks() {
     const emptyBlocks = [];
-    for (let i = 0; i < this.stateService.env.KEEP_BLOCKS_AMOUNT; i++) {
+    for (let i = 0; i < this.dynamicBlocksAmount; i++) {
       emptyBlocks.push({
         id: '',
         height: 0,
