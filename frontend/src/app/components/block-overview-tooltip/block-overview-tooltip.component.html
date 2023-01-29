@@ -35,12 +35,12 @@
       <tr *ngIf="auditEnabled && tx && tx.status && tx.status.length">
         <td class="td-width" i18n="transaction.audit-status">Audit status</td>
         <ng-container [ngSwitch]="tx?.status">
-          <td *ngSwitchCase="'found'" i18n="transaction.audit.match">Match</td>
-          <td *ngSwitchCase="'censored'" i18n="transaction.audit.removed">Removed</td>
-          <td *ngSwitchCase="'missing'" i18n="transaction.audit.marginal">Marginal fee rate</td>
-          <td *ngSwitchCase="'fresh'" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</td>
-          <td *ngSwitchCase="'added'" i18n="transaction.audit.added">Added</td>
-          <td *ngSwitchCase="'selected'" i18n="transaction.audit.marginal">Marginal fee rate</td>
+          <td *ngSwitchCase="'found'"><span class="badge badge-success" i18n="transaction.audit.match">Match</span></td>
+          <td *ngSwitchCase="'censored'"><span class="badge badge-danger" i18n="transaction.audit.removed">Removed</span></td>
+          <td *ngSwitchCase="'missing'"><span class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span></td>
+          <td *ngSwitchCase="'fresh'"><span class="badge badge-warning" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</span></td>
+          <td *ngSwitchCase="'added'"><span class="badge badge-warning" i18n="transaction.audit.added">Added</span></td>
+          <td *ngSwitchCase="'selected'"><span class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span></td>
         </ng-container>
       </tr>
     </tbody>
