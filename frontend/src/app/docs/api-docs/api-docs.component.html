@@ -221,7 +221,7 @@
 <ng-template type="what-is-block-health">
   <p>Block health indicates the extent of <i>potential</i> censorship in a block. This is determined by counting how many expected transactions a block is missing—a block that is not missing any expected transactions will have 100% health, while a block missing 1 or more expected transactions will have sub-100% health.</p>
   <p>How does this work? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions Mempool expected to be in a block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions actually in a block. Let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
-  <p>Then let <span class='math'>r</span> be the number of all transactions expected to be in <span class='math'>s<sub>actual</sub></span> but not actually in it (excluding those that have been recently broadcast; see below).</p>
+  <p>Then let <span class='math'>r</span> be the number of removed transactions—all transactions expected to be in <span class='math'>s<sub>actual</sub></span> but not actually in it (excluding those that have been recently broadcast; see below).</p>
   <p>Block health is calculated as <span class='math'>n / ( n + r</span> ).</p>
   <p>Transactions appearing in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span> are used (instead of a block's full transaction count) in order to minimize chances that block health is impacted by missing transactions that don't imply censorship:</p>
   <ul>
