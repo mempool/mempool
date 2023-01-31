@@ -42,7 +42,6 @@
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.LIGHTNING">
         <a class="nav-link" [routerLink]="['/lightning' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'bolt']" [fixedWidth]="true" i18n-title="master-page.lightning" title="Lightning Explorer"></fa-icon>
-          <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span>
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active" id="btn-blocks" *ngIf="!stateService.env.MINING_DASHBOARD">
