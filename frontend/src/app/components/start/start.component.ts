@@ -123,7 +123,7 @@ export class StartComponent implements OnInit, OnDestroy {
     this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
-      this.scrollToBlock(firstVisibleBlock, offset);
+      this.scrollToBlock(firstVisibleBlock, offset + (this.isMobile ? this.blockWidth : 0));
     } else {
       this.updatePages();
     }
@@ -178,8 +178,10 @@ export class StartComponent implements OnInit, OnDestroy {
       setTimeout(() => { this.scrollToBlock(height, blockOffset); }, 50);
       return;
     }
-    const targetHeight = this.isMobile ? height - 1 : height;
-    const viewingPageIndex = this.getPageIndexOf(targetHeight);
+    if (this.isMobile) {
+      blockOffset -= this.blockWidth;
+    }
+    const viewingPageIndex = this.getPageIndexOf(height);
     const pages = [];
     this.pageIndex = Math.max(viewingPageIndex - 1, 0);
     let viewingPage = this.getPageAt(viewingPageIndex);
@@ -189,7 +191,7 @@ export class StartComponent implements OnInit, OnDestroy {
       viewingPage = this.getPageAt(viewingPageIndex);
     }
     const left = viewingPage.offset - this.getConvertedScrollOffset();
-    const blockIndex = viewingPage.height - targetHeight;
+    const blockIndex = viewingPage.height - height;
     const targetOffset = (this.blockWidth * blockIndex) + left;
     let deltaOffset = targetOffset - blockOffset;
 
