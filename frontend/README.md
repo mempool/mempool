@@ -132,3 +132,4 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Russian @TonyCrusoe @Bitconan
 * Romanian @mirceavesa
 * Macedonian @SkechBoy
+* Nepalese @kebinm
