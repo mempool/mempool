@@ -103,6 +103,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onDocScroll);
+    this.faqTemplates?.destroy();
   }
 
   onDocScroll() {
