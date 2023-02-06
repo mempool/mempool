@@ -20,6 +20,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() disableSpinner = false;
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
+  @Input() auditHighlighting: boolean = false;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
@@ -69,6 +70,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     if (changes.mirrorTxid) {
       this.setMirror(this.mirrorTxid);
+    }
+    if (changes.auditHighlighting) {
+      this.setHighlightingEnabled(this.auditHighlighting);
     }
   }
 
@@ -195,7 +199,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.start();
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray });
+        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, highlighting: this.auditHighlighting });
       this.start();
     }
   }
@@ -392,6 +396,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (txid && this.scene.txs[txid]) {
       this.mirrorTx = this.scene.txs[txid];
       this.scene.setHover(this.mirrorTx, true);
+      this.start();
+    }
+  }
+
+  setHighlightingEnabled(enabled: boolean): void {
+    if (this.scene) {
+      this.scene.setHighlighting(enabled);
       this.start();
     }
   }

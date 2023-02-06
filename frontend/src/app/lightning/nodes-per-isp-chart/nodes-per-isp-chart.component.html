@@ -51,7 +51,7 @@
       <app-toggle [textLeft]="'Sort by nodes'" [textRight]="'capacity'" [checked]="true" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
     </div>
 
-    <table class="table table-borderless text-center m-auto" style="max-width: 900px"  *ngIf="!widget">
+    <table class="table table-borderless table-fixed text-center m-auto" style="max-width: 900px"  *ngIf="!widget">
       <thead>
         <tr>
           <th class="rank text-left pl-0" i18n="mining.rank">Rank</th>

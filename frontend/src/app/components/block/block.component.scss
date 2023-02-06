@@ -34,6 +34,10 @@
         text-align: left;
       }
     }
+    .info-link {
+      color: rgba(255, 255, 255, 0.4);
+      margin-left: 5px;
+    }
   }
 }
 
@@ -75,12 +79,17 @@ h1 {
 	}
 }
 
-.btn-details {
+.toggle-btns {
   position: relative;
+  z-index: 2;
   top: 7px;
   @media (min-width: 550px) {
     top: 0px;
   }
+}
+
+.btn-audit {
+  margin-right: .5em;
 }
 
 .block-tx-title {
@@ -222,4 +231,13 @@ h1 {
   .ng-fa-icon {
     margin-right: 1em;
   }
+}
+
+.beta {
+  font-size: 10px;
+  margin: 5p;
+  padding: 5p;
+  position: absolute;
+  top: 11px;
+  margin-left: 10px;
 }

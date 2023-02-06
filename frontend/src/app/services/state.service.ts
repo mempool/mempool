@@ -118,6 +118,7 @@ export class StateService {
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
+  hideAudit: BehaviorSubject<boolean>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -176,6 +177,12 @@ export class StateService {
       } else {
         this.storageService.removeItem('flow-preference');
       }
+    });
+
+    const savedAuditPreference = this.storageService.getValue('audit-preference');
+    this.hideAudit = new BehaviorSubject<boolean>(savedAuditPreference === 'hide');
+    this.hideAudit.subscribe((hide) => {
+      this.storageService.setValue('audit-preference', hide ? 'hide' : 'show');
     });
   }
 

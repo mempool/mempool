@@ -1,4 +1,4 @@
-import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, ChangeDetectionStrategy, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-toggle',
@@ -11,9 +11,15 @@ export class ToggleComponent implements AfterViewInit {
   @Input() textLeft: string;
   @Input() textRight: string;
   @Input() checked: boolean = false;
+  animate: boolean = false;
+
+  constructor(
+    private cd: ChangeDetectorRef,
+  ) { }
 
   ngAfterViewInit(): void {
-    this.toggleStatusChanged.emit(false);
+    this.animate = true;
+    setTimeout(() => { this.cd.markForCheck()});
   }
 
   onToggleStatusChanged(e): void {

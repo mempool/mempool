@@ -22,10 +22,13 @@ export class StartComponent implements OnInit, OnDestroy {
   chainTipSubscription: Subscription;
   chainTip: number = -1;
   markBlockSubscription: Subscription;
+  blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
 
   isMobile: boolean = false;
   blockWidth = 155;
+  dynamicBlocksAmount: number = 8;
+  blockCount: number = 0;
   blocksPerPage: number = 1;
   pageWidth: number;
   firstPageWidth: number;
@@ -39,7 +42,15 @@ export class StartComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.firstPageWidth = 40 + (this.blockWidth * this.stateService.env.KEEP_BLOCKS_AMOUNT);
+    this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
+    this.blockCounterSubscription = this.stateService.blocks$.subscribe(() => {
+      this.blockCount++;
+      this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
+      this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
+      if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
+        this.onResize();
+      }
+    });
     this.onResize();
     this.updatePages();
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
@@ -241,7 +252,7 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   getPageAt(index: number) {
-    const height = this.chainTip - 8 - ((index - 1) * this.blocksPerPage)
+    const height = this.chainTip - this.dynamicBlocksAmount - ((index - 1) * this.blocksPerPage);
     return {
       offset: this.firstPageWidth + (this.pageWidth * (index - 1 - this.pageIndex)),
       height: height,
@@ -250,8 +261,12 @@ export class StartComponent implements OnInit, OnDestroy {
     };
   }
 
+  resetScroll(): void {
+    this.scrollToBlock(this.chainTip);
+  }
+
   getPageIndexOf(height: number): number {
-    const delta = this.chainTip - 8 - height;
+    const delta = this.chainTip - this.dynamicBlocksAmount - height;
     return Math.max(0, Math.floor(delta / this.blocksPerPage) + 1);
   }
 
@@ -286,5 +301,6 @@ export class StartComponent implements OnInit, OnDestroy {
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
+    this.blockCounterSubscription.unsubscribe();
   }
 }

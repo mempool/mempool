@@ -14,7 +14,7 @@
     </div>
     <div class="item">
       <h5 class="card-title" i18n="mining.fees-per-block" i18n-ngbTooltip="mining.fees-per-block"
-      ngbTooltip="Avg block Fees" placement="bottom" #rewardsperblock [disableTooltip]="!isEllipsisActive(rewardsperblock)">Avg Block Fees</h5>
+      ngbTooltip="Avg Block Fees" placement="bottom" #rewardsperblock [disableTooltip]="!isEllipsisActive(rewardsperblock)">Avg Block Fees</h5>
       <div class="card-text" i18n-ngbTooltip="mining.fees-per-block-desc" ngbTooltip="Average fees per block in the past 144 blocks" placement="bottom">
         <div class="fee-text">
           {{ (rewardStats.feePerBlock / 100000000) | amountShortener: 4 }}

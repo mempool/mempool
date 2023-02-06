@@ -218,6 +218,19 @@
   <p>For unconfirmed CPFP transactions, Mempool will show the effective feerate (along with descendent & ancestor transaction information) on the transaction page. For confirmed transactions, CPFP relationships are not stored, so this additional information is not shown.</p>
 </ng-template>
 
+<ng-template type="what-is-block-health">
+  <p>Block health indicates the extent of <i>potential</i> censorship in a block. This is determined by counting how many expected transactions a block is missing—a block that is not missing any expected transactions will have 100% health, while a block missing 1 or more expected transactions will have sub-100% health.</p>
+  <p>How does this work? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions Mempool expected to be in a block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions actually in a block. Let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
+  <p>Then let <span class='math'>r</span> be the number of removed transactions—all transactions expected to be in <span class='math'>s<sub>actual</sub></span> but not actually in it (excluding those that have been recently broadcast; see below).</p>
+  <p>Block health is calculated as <span class='math'>n / ( n + r</span> ).</p>
+  <p>Transactions appearing in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span> are used (instead of a block's full transaction count) in order to minimize chances that block health is impacted by missing transactions that don't imply censorship:</p>
+  <ul>
+    <li>recently-broadcast transactions, since the miner may simply not have received them</li>
+    <li>certain low-feerate transactions, since the miner may have opted to replace them with more profitable out-of-band transactions</li>
+  </ul>
+  <p>Mempool uses a re-implementation of Bitcoin Core's transaction selection algorithm to determine the transactions it expects to see in the next block.</p>
+</ng-template>
+
 <ng-template type="who-runs-this-website">
   The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a [routerLink]="['/about']">About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community.
 </ng-template>

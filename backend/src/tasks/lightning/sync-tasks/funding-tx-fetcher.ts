@@ -71,7 +71,7 @@ class FundingTxFetcher {
     this.running = false;
   }
   
-  public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number}> {
+  public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number} | null> {
     channelId = Common.channelIntegerIdToShortId(channelId);
 
     if (this.fundingTxCache[channelId]) {
@@ -101,6 +101,11 @@ class FundingTxFetcher {
     const txid = block.tx[txIdx];
     const rawTx = await bitcoinClient.getRawTransaction(txid);
     const tx = await bitcoinClient.decodeRawTransaction(rawTx);
+
+    if (!tx || !tx.vout || tx.vout.length < parseInt(outputIdx, 10) + 1 || tx.vout[outputIdx].value === undefined) {
+      logger.err(`Cannot find blockchain funding tx for channel id ${channelId}. Possible reasons are: bitcoin backend timeout or the channel shortId is not valid`);
+      return null;
+    }
 
     this.fundingTxCache[channelId] = {
       timestamp: block.time,
