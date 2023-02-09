@@ -1,6 +1,6 @@
 <div class="blocks-container blockchain-blocks-container" [class.time-ltr]="timeLtr"
   [style.left]="static ? (offset || 0) + 'px' : null"
-  *ngIf="(loadingBlocks$ | async) === false; else loadingBlocksTemplate">
+  *ngIf="static || (loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn">
     <ng-container *ngIf="block && !block.loading && !block.placeholder; else placeholderBlock">
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
@@ -59,17 +59,17 @@
       </div>
     </ng-container>
     <ng-template #placeholderBlock>
-      <ng-container *ngIf="block && block.placeholder; else loadingBlock">
+      <ng-container *ngIf="block && block.placeholder && !loadingTip; else loadingBlock">
         <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i"
           class="text-center bitcoin-block mined-block placeholder-block blockchain-blocks-{{ i }}"
           id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
-
+ 
         </div>
       </ng-container>
     </ng-template>
     <ng-template #loadingBlock>
-      <ng-container *ngIf="block && block.loading">
-        <div class="flashing">
+      <ng-container *ngIf="loadingTip || (block && block.loading)">
+        <div class="flashing loading">
           <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
             [ngStyle]="blockStyles[i]"></div>
         </div>
