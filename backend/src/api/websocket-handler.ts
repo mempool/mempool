@@ -19,6 +19,7 @@ import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
+import { deepClone } from '../utils/clone';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -421,7 +422,7 @@ class WebsocketHandler {
     let projectedBlocks;
     // template calculation functions have mempool side effects, so calculate audits using
     // a cloned copy of the mempool if we're running a different algorithm for mempool updates
-    const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : JSON.parse(JSON.stringify(_memPool));
+    const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : deepClone(_memPool);
     if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
       projectedBlocks = await mempoolBlocks.makeBlockTemplates(auditMempool, false);
     } else {
