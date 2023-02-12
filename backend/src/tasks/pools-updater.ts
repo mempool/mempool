@@ -8,7 +8,7 @@ import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
 
 /**
- * Maintain the most recent version of pools.json
+ * Maintain the most recent version of pools-v2.json
  */
 class PoolsUpdater {
   lastRun: number = 0;
@@ -38,7 +38,7 @@ class PoolsUpdater {
     }
 
     try {
-      const githubSha = await this.fetchPoolsSha(); // Fetch pools.json sha from github
+      const githubSha = await this.fetchPoolsSha(); // Fetch pools-v2.json sha from github
       if (githubSha === undefined) {
         return;
       }
@@ -47,15 +47,15 @@ class PoolsUpdater {
         this.currentSha = await this.getShaFromDb();
       }
 
-      logger.debug(`Pools.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
+      logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
       if (this.currentSha !== undefined && this.currentSha === githubSha) {
         return;
       }
 
       if (this.currentSha === undefined) {
-        logger.info(`Downloading pools.json for the first time from ${this.poolsUrl}`, logger.tags.mining);
+        logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl}`, logger.tags.mining);
       } else {
-        logger.warn(`Pools.json is outdated, fetch latest from ${this.poolsUrl}`, logger.tags.mining);
+        logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl}`, logger.tags.mining);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
@@ -64,7 +64,7 @@ class PoolsUpdater {
       poolsParser.setMiningPools(poolsJson);
 
       if (config.DATABASE.ENABLED === false) { // Don't run db operations
-        logger.info('Mining pools.json import completed (no database)');
+        logger.info('Mining pools-v2.json import completed (no database)');
         return;
       }
 
@@ -87,7 +87,7 @@ class PoolsUpdater {
   }
 
   /**
-   * Fetch our latest pools.json sha from the db
+   * Fetch our latest pools-v2.json sha from the db
    */
   private async updateDBSha(githubSha: string): Promise<void> {
     this.currentSha = githubSha;
@@ -96,39 +96,39 @@ class PoolsUpdater {
         await DB.query('DELETE FROM state where name="pools_json_sha"');
         await DB.query(`INSERT INTO state VALUES('pools_json_sha', NULL, '${githubSha}')`);
       } catch (e) {
-        logger.err('Cannot save github pools.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+        logger.err('Cannot save github pools-v2.json sha into the db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       }
     }
   }
 
   /**
-   * Fetch our latest pools.json sha from the db
+   * Fetch our latest pools-v2.json sha from the db
    */
   private async getShaFromDb(): Promise<string | undefined> {
     try {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
       return (rows.length > 0 ? rows[0].string : undefined);
     } catch (e) {
-      logger.err('Cannot fetch pools.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+      logger.err('Cannot fetch pools-v2.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       return undefined;
     }
   }
 
   /**
-   * Fetch our latest pools.json sha from github
+   * Fetch our latest pools-v2.json sha from github
    */
   private async fetchPoolsSha(): Promise<string | undefined> {
     const response = await this.query(this.treeUrl);
 
     if (response !== undefined) {
-      for (const file of response) {
-        if (file['name'] === 'pool-list.json') {
+      for (const file of response['tree']) {
+        if (file['path'] === 'pools-v2.json') {
           return file['sha'];
         }
       }
     }
 
-    logger.err(`Cannot find "pools.json" in git tree (${this.treeUrl})`, logger.tags.mining);
+    logger.err(`Cannot find "pools-v2.json" in git tree (${this.treeUrl})`, logger.tags.mining);
     return undefined;
   }
 
