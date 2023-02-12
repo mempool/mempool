@@ -17,6 +17,11 @@ class PoolsUpdater {
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
   public async updatePoolsJson(): Promise<void> {
+    if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
+      logger.info(`Not updating mining pools to avoid inconsistency because AUTOMATIC_BLOCK_REINDEXING is set to false`)
+      return;
+    }
+
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }

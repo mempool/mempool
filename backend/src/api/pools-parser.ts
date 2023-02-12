@@ -37,6 +37,7 @@ class PoolsParser {
         const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
         logger.debug(`Inserting new mining pool ${pool.name}`);
         await PoolsRepository.$insertNewMiningPool(pool, slug);
+        await this.$deleteUnknownBlocks();
       } else {
         if (poolDB.name !== pool.name) {
           // Pool has been renamed
@@ -124,6 +125,16 @@ class PoolsParser {
       DELETE FROM blocks
       WHERE pool_id = ?`,
       [pool.id]
+    );
+  }
+
+  private async $deleteUnknownBlocks(): Promise<void> {
+    const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
+    logger.notice(`Deleting blocks with unknown mining pool from height 130635 for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ? AND height >= 130635`,
+      [unknownPool[0].id]
     );
   }
 }
