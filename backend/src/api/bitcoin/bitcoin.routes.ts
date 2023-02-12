@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import altMempool from '../alt-mempool';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -32,6 +33,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/alt/:txId', this.getAltTransaction)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/replaces', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
@@ -232,6 +234,23 @@ class BitcoinRoutes {
     try {
       const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
       res.json(transaction);
+    } catch (e) {
+      let statusCode = 500;
+      if (e instanceof Error && e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {
+        statusCode = 404;
+      }
+      res.status(statusCode).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getAltTransaction(req: Request, res: Response) {
+    try {
+      const transaction = altMempool.getTransaction(req.params.txId);
+      if (transaction) {
+        res.json(transaction);
+      } else {
+        res.status(404).send('No such transaction in the alternate mempool');
+      }
     } catch (e) {
       let statusCode = 500;
       if (e instanceof Error && e instanceof Error && e.message && e.message.indexOf('No such mempool or blockchain transaction') > -1) {

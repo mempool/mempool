@@ -12,8 +12,8 @@ import memoryCache from '../memory-cache';
 class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   private electrumClient: any;
 
-  constructor(bitcoinClient: any) {
-    super(bitcoinClient);
+  constructor(bitcoinClient: any, mempool: any) {
+    super(bitcoinClient, mempool);
 
     const electrumConfig = { client: 'mempool-v2', version: '1.4' };
     const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };

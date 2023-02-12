@@ -1,6 +1,13 @@
 <div class="container-xl">
-
   <div class="title-block">
+    <div *ngIf="fullRBF && notFound && altTx && !replaced" class="alert alert-mempool" role="alert">
+      <span i18n="transaction.rbf.only-default-mempool">This transaction cannot be found in the Full RBF mempool. It may depend on an ancestor which has been replaced by fee.</span>
+    </div>
+
+    <div *ngIf="!fullRBF && notFound && altTx && !replaced" class="alert alert-mempool" role="alert">
+      <span i18n="transaction.rbf.only-full-rbf-mempool">This transaction cannot be found in the default mempool. It may replace a transaction which does not opt-in to replace-by-fee.</span>
+    </div>
+
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
@@ -98,7 +105,7 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="transactionTime !== 0 && !replaced">
+                <ng-template [ngIf]="transactionTime !== 0 && !notFound">
                   <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
                     <td><span class="skeleton-loader"></span></td>
                     <td><span class="skeleton-loader"></span></td>
@@ -110,7 +117,7 @@
                     </tr>
                   </ng-template>
                 </ng-template>
-                <tr *ngIf="!replaced">
+                <tr *ngIf="!notFound">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
                     <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">

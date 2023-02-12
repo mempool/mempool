@@ -10,28 +10,32 @@ import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
 
-class Mempool {
-  private static WEBSOCKET_REFRESH_RATE_MS = 10000;
-  private static LAZY_DELETE_AFTER_SECONDS = 30;
-  private inSync: boolean = false;
-  private mempoolCacheDelta: number = -1;
-  private mempoolCache: { [txId: string]: TransactionExtended } = {};
-  private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
+export class Mempool {
+  protected static WEBSOCKET_REFRESH_RATE_MS = 10000;
+  protected static LAZY_DELETE_AFTER_SECONDS = 30;
+  protected inSync: boolean = false;
+  protected mempoolCacheDelta: number = -1;
+  protected mempoolCache: { [txId: string]: TransactionExtended } = {};
+  protected mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
-  private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  protected mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
-  private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  protected asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
 
-  private txPerSecondArray: number[] = [];
-  private txPerSecond: number = 0;
+  protected txPerSecondArray: number[] = [];
+  protected txPerSecond: number = 0;
 
-  private vBytesPerSecondArray: VbytesPerSecond[] = [];
-  private vBytesPerSecond: number = 0;
-  private mempoolProtection = 0;
-  private latestTransactions: any[] = [];
+  protected vBytesPerSecondArray: VbytesPerSecond[] = [];
+  protected vBytesPerSecond: number = 0;
+  protected mempoolProtection = 0;
+  protected latestTransactions: any[] = [];
 
   constructor() {
+    this.init();
+  }
+
+  protected init(): void {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
     setInterval(this.deleteExpiredTransactions.bind(this), 20000);
   }
@@ -217,7 +221,7 @@ class Mempool {
     }
   }
 
-  private updateTxPerSecond() {
+  protected updateTxPerSecond() {
     const nowMinusTimeSpan = new Date().getTime() - (1000 * config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD);
     this.txPerSecondArray = this.txPerSecondArray.filter((unixTime) => unixTime > nowMinusTimeSpan);
     this.txPerSecond = this.txPerSecondArray.length / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD || 0;
@@ -230,7 +234,7 @@ class Mempool {
     }
   }
 
-  private deleteExpiredTransactions() {
+  protected deleteExpiredTransactions() {
     const now = new Date().getTime();
     for (const tx in this.mempoolCache) {
       const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
@@ -241,7 +245,7 @@ class Mempool {
     }
   }
 
-  private $getMempoolInfo() {
+  protected $getMempoolInfo() {
     if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
       return Promise.all([
         bitcoinClient.getMempoolInfo(),

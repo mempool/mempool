@@ -3,15 +3,18 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
-import mempool from '../mempool';
-import { TransactionExtended } from '../../mempool.interfaces';
+import { MempoolBlock, TransactionExtended } from '../../mempool.interfaces';
 
 class BitcoinApi implements AbstractBitcoinApi {
+  private mempool: any = null;
   private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
   protected bitcoindClient: any;
+  protected backupBitcoinApi: BitcoinApi;
 
-  constructor(bitcoinClient: any) {
+  constructor(bitcoinClient: any, mempool: any, backupBitcoinApi: any = null) {
     this.bitcoindClient = bitcoinClient;
+    this.mempool = mempool;
+    this.backupBitcoinApi = backupBitcoinApi;
   }
 
   static convertBlock(block: IBitcoinApi.Block): IEsploraApi.Block {
@@ -34,7 +37,7 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $getRawTransaction(txId: string, skipConversion = false, addPrevout = false, lazyPrevouts = false): Promise<IEsploraApi.Transaction> {
     // If the transaction is in the mempool we already converted and fetched the fee. Only prevouts are missing
-    const txInMempool = mempool.getMempool()[txId];
+    const txInMempool = this.mempool.getMempool()[txId];
     if (txInMempool && addPrevout) {
       return this.$addPrevouts(txInMempool);
     }
@@ -118,7 +121,7 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $getAddressPrefix(prefix: string): string[] {
     const found: { [address: string]: string } = {};
-    const mp = mempool.getMempool();
+    const mp = this.mempool.getMempool();
     for (const tx in mp) {
       for (const vout of mp[tx].vout) {
         if (vout.scriptpubkey_address.indexOf(prefix) === 0) {
@@ -260,7 +263,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       return transaction;
     }
     let mempoolEntry: IBitcoinApi.MempoolEntry;
-    if (!mempool.isInSync() && !this.rawMempoolCache) {
+    if (!this.mempool.isInSync() && !this.rawMempoolCache) {
       this.rawMempoolCache = await this.$getRawMempoolVerbose();
     }
     if (this.rawMempoolCache && this.rawMempoolCache[transaction.txid]) {
@@ -316,10 +319,23 @@ class BitcoinApi implements AbstractBitcoinApi {
         transaction.vin[i].lazy = true;
         continue;
       }
-      const innerTx = await this.$getRawTransaction(transaction.vin[i].txid, false, false);
-      transaction.vin[i].prevout = innerTx.vout[transaction.vin[i].vout];
-      this.addInnerScriptsToVin(transaction.vin[i]);
-      totalIn += innerTx.vout[transaction.vin[i].vout].value;
+      let innerTx;
+      try {
+        innerTx = await this.$getRawTransaction(transaction.vin[i].txid, false, false);
+      } catch (e) {
+        if (this.backupBitcoinApi) {
+          // input tx is confirmed, but the preferred client has txindex=0, so fetch from the backup client instead.
+          const backupTx = await this.backupBitcoinApi.$getRawTransaction(transaction.vin[i].txid);
+          innerTx = JSON.parse(JSON.stringify(backupTx));
+        } else {
+          throw e;
+        }
+      }
+      if (innerTx) {
+        transaction.vin[i].prevout = innerTx.vout[transaction.vin[i].vout];
+        this.addInnerScriptsToVin(transaction.vin[i]);
+        totalIn += innerTx.vout[transaction.vin[i].vout].value;
+      }
     }
     if (lazyPrevouts && transaction.vin.length > 12) {
       transaction.fee = -1;
