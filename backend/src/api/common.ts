@@ -244,7 +244,11 @@ export class Common {
 
   static findSocketNetwork(addr: string): {network: string | null, url: string} {
     let network: string | null = null;
-    let url = addr.split('://')[1];
+    let url: string = addr;
+
+    if (config.LIGHTNING.BACKEND === 'cln') {
+      url = addr.split('://')[1];
+    }
 
     if (!url) {
       return {
@@ -261,7 +265,7 @@ export class Common {
       }
     } else if (addr.indexOf('i2p') !== -1) {
       network = 'i2p';
-    } else if (addr.indexOf('ipv4') !== -1) {
+    } else if (addr.indexOf('ipv4') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && isIP(url.split(':')[0]) === 4)) {
       const ipv = isIP(url.split(':')[0]);
       if (ipv === 4) {
         network = 'ipv4';
@@ -271,7 +275,7 @@ export class Common {
           url: addr,
         };
       }
-    } else if (addr.indexOf('ipv6') !== -1) {
+    } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:'))) {
       url = url.split('[')[1].split(']')[0];
       const ipv = isIP(url);
       if (ipv === 6) {
