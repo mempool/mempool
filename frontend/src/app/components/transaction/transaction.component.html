@@ -1,6 +1,10 @@
 <div class="container-xl">
 
   <div class="title-block">
+    <div *ngIf="isPurged" class="alert alert-mempool" role="alert">
+      <span i18n="transaction.purged|Purged from mempool">This transaction has been purged from our default sized 300MB mempool</span>
+    </div>
+
     <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>

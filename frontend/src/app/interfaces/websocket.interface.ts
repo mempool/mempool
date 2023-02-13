@@ -16,6 +16,7 @@ export interface WebsocketResponse {
   tx?: Transaction;
   rbfTransaction?: ReplacedTransaction;
   txReplaced?: ReplacedTransaction;
+  txPurged?: boolean;
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
