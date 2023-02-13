@@ -58,7 +58,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   overviewError: any = null;
   webGlEnabled = true;
   indexingAvailable = false;
-  auditModeEnabled: boolean = !this.stateService.hideAudit.value;
+  auditModeEnabled: boolean = this.stateService.env.AUDIT && !this.stateService.hideAudit.value;
   auditAvailable = true;
   showAudit: boolean;
   isMobile = window.innerWidth <= 767.98;
@@ -110,12 +110,15 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
 
     this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true);
-    this.setAuditAvailable(this.indexingAvailable);
 
-    this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
-      this.auditModeEnabled = !hide;
-      this.showAudit = this.auditAvailable && this.auditModeEnabled;
-    });
+    this.setAuditAvailable(this.stateService.env.AUDIT && this.indexingAvailable);
+
+    if (this.stateService.env.AUDIT) {
+      this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
+        this.auditModeEnabled = !hide;
+        this.showAudit = this.auditAvailable && this.auditModeEnabled;
+      });
+    }
 
     this.txsLoadingStatus$ = this.route.paramMap
       .pipe(
@@ -221,7 +224,9 @@ export class BlockComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
             this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
-            this.apiService.getBlockAudit$(block.previousblockhash);
+            if (this.stateService.env.AUDIT) {
+              this.apiService.getBlockAudit$(block.previousblockhash);
+            }
           }, 100);
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
@@ -269,7 +274,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingOverview = false;
     });
 
-    if (!this.indexingAvailable) {
+    if (!this.indexingAvailable || !this.stateService.env.AUDIT) {
       this.overviewSubscription = block$.pipe(
         startWith(null),
         pairwise(),
@@ -300,7 +305,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.indexingAvailable) {
+    if (this.indexingAvailable && this.stateService.env.AUDIT) {
       this.auditSubscription = block$.pipe(
         startWith(null),
         pairwise(),
@@ -613,6 +618,9 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
+    if (!this.stateService.env.AUDIT) {
+      this.setAuditAvailable(false);
+    }
     switch (this.stateService.network) {
       case 'testnet':
         if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
