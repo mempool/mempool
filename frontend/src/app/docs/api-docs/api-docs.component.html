@@ -242,7 +242,6 @@
 
 <ng-template type="what-is-block-health">
   <p>Block health is a measure of how many transactions appear to be intentionally excluded from a block—a block without any transactions that appear intentionally excluded will have 100% health, while a block with 1 or more transactions that appear intentionally excluded will have sub-100% health.</p>
-  <p>As a result, block health is <i>not</i> intended to be a measure of how closely an expected block resembles an actual block.</p>
   <p>How is it calculated? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions in Mempool's expected block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions in the actual block. Then let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
   <p>Furthermore, let <span class='math'>r</span> be the number of transactions Mempool deduces were <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">intentionally excluded</a> from <span class='math'>s<sub>actual</sub></span>.</p>
   <p>Block health is calculated as <span class='math'>n / ( n + r</span> ).</p>
