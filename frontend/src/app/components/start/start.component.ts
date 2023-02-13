@@ -298,6 +298,10 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.blockchainContainer?.nativeElement) {
+      // clean up scroll position to prevent caching wrong scroll in Firefox
+      this.blockchainContainer.nativeElement.scrollLeft = 0;
+    }
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
