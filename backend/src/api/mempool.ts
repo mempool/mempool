@@ -16,6 +16,7 @@ class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
+  private minFeeMempool: { [txId: string]: boolean } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
@@ -119,6 +120,7 @@ class Mempool {
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     const transactions = await bitcoinApi.$getRawMempool();
+    await this.updateMinFeeMempool();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
@@ -204,6 +206,34 @@ class Mempool {
     const end = new Date().getTime();
     const time = end - start;
     logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
+  }
+
+  public isTxPurged(txid: string): boolean {
+    return !this.minFeeMempool[txid];
+  }
+
+  private async updateMinFeeMempool() {
+    const minFeeTransactions = await bitcoinSecondClient.getRawMemPool();
+    const minFeeTxMap = {};
+    for (const txid of minFeeTransactions) {
+      minFeeTxMap[txid] = true;
+    }
+    const removed: string[] = [];
+    const added: string[] = [];
+    for (const txid of Object.keys(this.minFeeMempool)) {
+      if (!minFeeTxMap[txid]) {
+        removed.push(txid);
+      }
+    }
+    for (const txid of minFeeTransactions) {
+      if (!this.minFeeMempool[txid]) {
+        added.push(txid);
+        this.minFeeMempool[txid] = true;
+      }
+    }
+    for (const txid of removed) {
+      delete this.minFeeMempool[txid];
+    }
   }
 
   public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {

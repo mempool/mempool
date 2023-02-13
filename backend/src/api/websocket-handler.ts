@@ -20,6 +20,7 @@ import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
 import { deepClone } from '../utils/clone';
+import mempool from './mempool';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -90,6 +91,9 @@ class WebsocketHandler {
                     }
                   }
                 }
+              }
+              if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE && memPool.getMempool()[client['track-tx']]) {
+                response['txPurged'] = memPool.isTxPurged(client['track-tx']);
               }
             } else {
               client['track-tx'] = null;
@@ -393,6 +397,11 @@ class WebsocketHandler {
               break;
             }
           }
+        }
+
+        // update purge status of unconfirmed tracked txs
+        if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE && newMempool[client['track-tx']]) {
+          response['txPurged'] = memPool.isTxPurged(client['track-tx']);
         }
       }
 

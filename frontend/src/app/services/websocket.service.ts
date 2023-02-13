@@ -261,6 +261,10 @@ export class WebsocketService {
       this.stateService.txReplaced$.next(response.txReplaced);
     }
 
+    if (response.txPurged != null) {
+      this.stateService.txPurged$.next(response.txPurged);
+    }
+
     if (response['mempool-blocks']) {
       this.stateService.mempoolBlocks$.next(response['mempool-blocks']);
     }
