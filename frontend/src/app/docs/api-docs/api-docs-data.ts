@@ -8671,6 +8671,13 @@ export const faqData = [
     type: "endpoint",
     category: "advanced",
     showConditions: bitcoinNetworks,
+    fragment: "how-do-block-audits-work",
+    title: "How do block audits work?",
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
     fragment: "what-is-block-health",
     title: "What is block health?",
   },
