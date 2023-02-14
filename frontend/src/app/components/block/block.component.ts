@@ -57,8 +57,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
-  indexingAvailable = false;
-  auditModeEnabled: boolean = this.stateService.env.AUDIT && !this.stateService.hideAudit.value;
+  auditSupported: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
+  auditModeEnabled: boolean = !this.stateService.hideAudit.value;
   auditAvailable = true;
   showAudit: boolean;
   isMobile = window.innerWidth <= 767.98;
@@ -109,11 +109,9 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.timeLtr = !!ltr;
     });
 
-    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true);
+    this.setAuditAvailable(this.auditSupported);
 
-    this.setAuditAvailable(this.stateService.env.AUDIT && this.indexingAvailable);
-
-    if (this.stateService.env.AUDIT) {
+    if (this.auditSupported) {
       this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
         this.auditModeEnabled = !hide;
         this.showAudit = this.auditAvailable && this.auditModeEnabled;
@@ -224,7 +222,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.nextBlockSubscription = this.apiService.getBlock$(block.previousblockhash).subscribe();
             this.nextBlockTxListSubscription = this.electrsApiService.getBlockTransactions$(block.previousblockhash).subscribe();
-            if (this.stateService.env.AUDIT) {
+            if (this.auditSupported) {
               this.apiService.getBlockAudit$(block.previousblockhash);
             }
           }, 100);
@@ -274,7 +272,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingOverview = false;
     });
 
-    if (!this.indexingAvailable || !this.stateService.env.AUDIT) {
+    if (!this.auditSupported) {
       this.overviewSubscription = block$.pipe(
         startWith(null),
         pairwise(),
@@ -305,7 +303,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.indexingAvailable && this.stateService.env.AUDIT) {
+    if (this.auditSupported) {
       this.auditSubscription = block$.pipe(
         startWith(null),
         pairwise(),
@@ -610,7 +608,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   setAuditAvailable(available: boolean): void {
     this.auditAvailable = available;
-    this.showAudit = this.auditAvailable && this.auditModeEnabled;
+    this.showAudit = this.auditAvailable && this.auditModeEnabled && this.auditSupported;
   }
 
   toggleAuditMode(): void {
@@ -618,7 +616,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
-    if (!this.stateService.env.AUDIT) {
+    if (!this.auditSupported) {
       this.setAuditAvailable(false);
     }
     switch (this.stateService.network) {
