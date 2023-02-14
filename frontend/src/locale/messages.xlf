@@ -2453,11 +2453,19 @@
         </context-group>
         <note priority="1" from="description">Previous Block</note>
       </trans-unit>
-      <trans-unit id="86a513b38cd9838cee79e8b303ca1b090a5b696e" datatype="html">
-        <source>Health <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;info-link&quot; [routerLink]=&quot;[&apos;/docs/faq&apos; | relativeUrl ]&quot; fragment=&quot;what-is-block-health&quot;&gt;"/><x id="START_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="=&quot;[&apos;fas&apos;, &apos;info-circle&apos;]&quot; [fixedWidth]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="&lt;/a&gt;&lt;/td&gt;"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/td&gt;"/></source>
+      <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
+        <source>Health</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">56,57</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.health</note>
       </trans-unit>
@@ -2578,12 +2586,11 @@
         </context-group>
         <note priority="1" from="description">block.expected-block</note>
       </trans-unit>
-      <trans-unit id="e8da185b2ffb710551d80b6d29be74a1ce2a2a80" datatype="html">
-        <source>Actual Block <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;info-link&quot; [routerLink]=&quot;[&apos;/docs/faq&apos; | relativeUrl ]&quot; fragment=&quot;how-do-block-audits-work&quot;&gt;"/><x id="START_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="=&quot;[&apos;fas&apos;, &apos;info-circle&apos;]&quot; [fixedWidth]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="&lt;/a&gt;&lt;/h3&gt;"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/h3&gt;
-        &lt;div"/></source>
+      <trans-unit id="6efa73f0d6f0844a1e0c341c9b88323f51852d91" datatype="html">
+        <source>Actual Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">224,225</context>
+          <context context-type="linenumber">224</context>
         </context-group>
         <note priority="1" from="description">block.actual-block</note>
       </trans-unit>
@@ -2756,18 +2763,6 @@
           <context context-type="linenumber">88,89</context>
         </context-group>
         <note priority="1" from="description">latest-blocks.mined</note>
-      </trans-unit>
-      <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
-        <source>Health</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">18,19</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
-          <context context-type="linenumber">18,19</context>
-        </context-group>
-        <note priority="1" from="description">latest-blocks.health</note>
       </trans-unit>
       <trans-unit id="12f86e6747a5ad39e62d3480ddc472b1aeab5b76" datatype="html">
         <source>Reward</source>
@@ -3909,14 +3904,6 @@
           <context context-type="linenumber">9,16</context>
         </context-group>
         <note priority="1" from="description">search-form.search-title</note>
-      </trans-unit>
-      <trans-unit id="7150c828c25c15df9ed0e2a819110c90aabd9881" datatype="html">
-        <source>Return to tip</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/start/start.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note priority="1" from="description">blocks.return-to-tip</note>
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
