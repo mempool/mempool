@@ -238,6 +238,7 @@
     <li><span class="block-audit-highlight-color removed">■</span><code>Removed</code><p>A transaction is highlighted bright pink if it is present in the expected block, not present in the actual block, and qualifies as neither recently-broadcasted nor marginal-fee. In other words, it has been in the mempool long enough to be widely propagated and has a feerate that is well within the range expected for the block. There is a chance such a transaction may have been intentionally excluded from the block.<p>Removed transactions do negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
   </ul>
   <p>See how results of the block audit are used to devise the block health score <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">below</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
 </ng-template>
 
 <ng-template type="what-is-block-health">
@@ -252,6 +253,7 @@
   </ul>
   <p>As a result, block health is <i>not</i> intended to be a measure of how closely an expected block resembles an actual block. The actual block can be vastly different from the expected block, but if no transactions appear to be intentionally excluded, it will have a high health rating (<a [routerLink]="['/block/0000000000000000000515e202c8ae73c8155fc472422d7593af87aa74f2cf3d']">extreme example</a>).</p>
   <p>See more context in our FAQ on <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">block audits</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
 </ng-template>
 
 <ng-template type="who-runs-this-website">
