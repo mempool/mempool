@@ -45,7 +45,7 @@ export class BlocksList implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
       this.stateService.env.MINING_DASHBOARD === true);
-    this.auditAvailable = this.stateService.env.AUDIT;
+    this.auditAvailable = this.indexingAvailable && this.stateService.env.AUDIT;
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
