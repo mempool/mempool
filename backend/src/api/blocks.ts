@@ -212,9 +212,11 @@ class Blocks {
         };
       }
 
-      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
-      if (auditScore != null) {
-        blockExtended.extras.matchRate = auditScore.matchRate;
+      if (config.MEMPOOL.AUDIT) {
+        const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
+        if (auditScore != null) {
+          blockExtended.extras.matchRate = auditScore.matchRate;
+        }
       }
     }
 

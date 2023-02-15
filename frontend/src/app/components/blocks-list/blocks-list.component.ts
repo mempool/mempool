@@ -22,6 +22,7 @@ export class BlocksList implements OnInit, OnDestroy {
   latestScoreSubscription: Subscription;
 
   indexingAvailable = false;
+  auditAvailable = false;
   isLoading = true;
   loadingScores = true;
   fromBlockHeight = undefined;
@@ -44,6 +45,7 @@ export class BlocksList implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
       this.stateService.env.MINING_DASHBOARD === true);
+    this.auditAvailable = this.indexingAvailable && this.stateService.env.AUDIT;
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
@@ -111,7 +113,7 @@ export class BlocksList implements OnInit, OnDestroy {
         }, [])
       );
 
-    if (this.indexingAvailable) {
+    if (this.indexingAvailable && this.auditAvailable) {
       this.auditScoreSubscription = this.fromHeightSubject.pipe(
         switchMap((fromBlockHeight) => {
           this.loadingScores = true;
