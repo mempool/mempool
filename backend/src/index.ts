@@ -105,7 +105,9 @@ class Server {
       .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
 
-    await priceUpdater.$initializeLatestPriceWithDb();
+    if (config.DATABASE.ENABLED) {
+      await priceUpdater.$initializeLatestPriceWithDb();
+    }
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
