@@ -143,7 +143,7 @@
           </ng-template>
         </tr>
         <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
-          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
+          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees</td>
           <td>
             <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             <span class="fiat">
@@ -158,7 +158,7 @@
           <td style="width: 75%;"><span class="skeleton-loader"></span></td>
         </tr>
         <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
-          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
+          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees</td>
           <td><span class="skeleton-loader"></span></td>
         </tr>
       </ng-template>
