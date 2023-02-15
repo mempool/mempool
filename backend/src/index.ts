@@ -78,6 +78,24 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
+    if (config.DATABASE.ENABLED) {
+      await DB.checkDbConnection();
+      try {
+        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
+          const tables = process.env.npm_config_reindex.split(',');
+          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
+          await Common.sleep$(5000);
+          await databaseMigration.$truncateIndexedData(tables);
+        }
+        await databaseMigration.$initializeOrMigrateDatabase();
+        if (Common.indexingEnabled()) {
+          await indexer.$resetHashratesIndexingState();
+        }
+      } catch (e) {
+        throw new Error(e instanceof Error ? e.message : 'Error');
+      }
+    }
+
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -97,24 +115,6 @@ class Server {
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
       diskCache.loadMempoolCache();
-    }
-
-    if (config.DATABASE.ENABLED) {
-      await DB.checkDbConnection();
-      try {
-        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
-          const tables = process.env.npm_config_reindex.split(',');
-          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep$(5000);
-          await databaseMigration.$truncateIndexedData(tables);
-        }
-        await databaseMigration.$initializeOrMigrateDatabase();
-        if (Common.indexingEnabled()) {
-          await indexer.$resetHashratesIndexingState();
-        }
-      } catch (e) {
-        throw new Error(e instanceof Error ? e.message : 'Error');
-      }
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
