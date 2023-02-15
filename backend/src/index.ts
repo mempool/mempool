@@ -10,7 +10,6 @@ import memPool from './api/mempool';
 import diskCache from './api/disk-cache';
 import statistics from './api/statistics/statistics';
 import websocketHandler from './api/websocket-handler';
-import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 import logger from './logger';
@@ -36,6 +35,7 @@ import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
+import priceUpdater from './tasks/price-updater';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -87,6 +87,8 @@ class Server {
       .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
 
+    await priceUpdater.$initializeLatestPriceWithDb();
+
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
 
@@ -127,7 +129,7 @@ class Server {
       }
     }
 
-    fiatConversion.startService();
+    priceUpdater.$run();
 
     this.setUpHttpApiRoutes();
 
@@ -221,7 +223,7 @@ class Server {
       memPool.setAsyncMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
       blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
-    fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
   
