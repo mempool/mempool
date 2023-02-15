@@ -8,7 +8,6 @@ import blocks from './blocks';
 import memPool from './mempool';
 import backendInfo from './backend-info';
 import mempoolBlocks from './mempool-blocks';
-import fiatConversion from './fiat-conversion';
 import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import config from '../config';
@@ -20,6 +19,7 @@ import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
 import { deepClone } from '../utils/clone';
+import priceUpdater from '../tasks/price-updater';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -214,7 +214,7 @@ class WebsocketHandler {
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
       'blocks': _blocks,
-      'conversions': fiatConversion.getConversionRates(),
+      'conversions': priceUpdater.latestPrices,
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
       'transactions': memPool.getLatestTransactions(),
       'backendInfo': backendInfo.getBackendInfo(),
