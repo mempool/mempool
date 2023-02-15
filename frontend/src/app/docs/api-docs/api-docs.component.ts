@@ -28,6 +28,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   wsDocs: any;
   screenWidth: number;
   officialMempoolInstance: boolean;
+  auditEnabled: boolean;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -60,6 +61,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
     this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
+    this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
