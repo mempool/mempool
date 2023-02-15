@@ -1,5 +1,5 @@
 <ng-container *ngIf="!noFiat && (viewFiat$ | async) && (conversions$ | async) as conversions; else viewFiatVin">
-  <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ conversions.USD * (satoshis / 100000000) | currency:'USD':'symbol':'1.2-2' }}</span>
+  <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ (conversions ? conversions[currency] : 0) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency }}</span>
 </ng-container>
 <ng-template #viewFiatVin>
   <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && (satoshis === undefined || satoshis === null)" [ngIfElse]="default">

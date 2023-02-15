@@ -521,7 +521,7 @@ class BlocksRepository {
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(fees) as INT) as avgFees,
-        prices.USD
+        prices.*
         FROM blocks
         JOIN blocks_prices on blocks_prices.height = blocks.height
         JOIN prices on prices.id = blocks_prices.price_id
@@ -550,7 +550,7 @@ class BlocksRepository {
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
         CAST(AVG(reward) as INT) as avgRewards,
-        prices.USD
+        prices.*
         FROM blocks
         JOIN blocks_prices on blocks_prices.height = blocks.height
         JOIN prices on prices.id = blocks_prices.price_id
