@@ -157,3 +157,41 @@ export const specialBlocks = {
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
 };
+
+export const fiatCurrencies = {
+  AUD: {
+    name: 'Australian Dollar',
+    code: 'AUD',
+    indexed: true,
+  },
+  CAD: {
+    name: 'Canadian Dollar',
+    code: 'CAD',
+    indexed: true,
+  },
+  CHF: {
+    name: 'Swiss Franc',
+    code: 'CHF',
+    indexed: true,
+  },
+  EUR: {
+    name: 'Euro',
+    code: 'EUR',
+    indexed: true,
+  },
+  GBP: {
+    name: 'Pound Sterling',
+    code: 'GBP',
+    indexed: true,
+  },
+  JPY: {
+    name: 'Japanese Yen',
+    code: 'JPY',
+    indexed: true,
+  },
+  USD: {
+    name: 'US Dollar',
+    code: 'USD',
+    indexed: true,
+  },
+};
