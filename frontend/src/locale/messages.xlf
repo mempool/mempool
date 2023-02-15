@@ -546,7 +546,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">49,51</context>
+          <context context-type="linenumber">48,50</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -1420,7 +1420,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">58,61</context>
+          <context context-type="linenumber">57,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
@@ -2457,7 +2457,7 @@
         <source>Health</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">56,59</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
@@ -2550,13 +2550,25 @@
         <note priority="1" from="description">Total subsidy and fees in a block</note>
         <note priority="1" from="meaning">block.subsidy-and-fees</note>
       </trans-unit>
-      <trans-unit id="26f41d32df1646d45fcb03fe6952fb3eccf60b0f" datatype="html">
-        <source>Projected</source>
+      <trans-unit id="23fa95fce7b4badf5ad584d4a1712d558266266f" datatype="html">
+        <source>Expected</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">209,211</context>
+          <context context-type="linenumber">209</context>
         </context-group>
-        <note priority="1" from="description">block.projected</note>
+        <note priority="1" from="description">block.expected</note>
+      </trans-unit>
+      <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
+        <source>beta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">209,210</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">215,217</context>
+        </context-group>
+        <note priority="1" from="description">beta</note>
       </trans-unit>
       <trans-unit id="1da6d9283e3222148d76c10c8e37abeeb66c93cb" datatype="html">
         <source>Actual</source>
@@ -2566,19 +2578,19 @@
         </context-group>
         <note priority="1" from="description">block.actual</note>
       </trans-unit>
-      <trans-unit id="a37e529c0d7b39d95861dd019cb78bb9ac9a3c5d" datatype="html">
-        <source>Projected Block</source>
+      <trans-unit id="97577daae15cc7f30ab4d0f4f4dfb8045477aefd" datatype="html">
+        <source>Expected Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">215,217</context>
+          <context context-type="linenumber">215</context>
         </context-group>
-        <note priority="1" from="description">block.projected-block</note>
+        <note priority="1" from="description">block.expected-block</note>
       </trans-unit>
       <trans-unit id="6efa73f0d6f0844a1e0c341c9b88323f51852d91" datatype="html">
         <source>Actual Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">224,226</context>
+          <context context-type="linenumber">224</context>
         </context-group>
         <note priority="1" from="description">block.actual-block</note>
       </trans-unit>
@@ -3308,7 +3320,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">52,54</context>
+          <context context-type="linenumber">51,53</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
@@ -3332,7 +3344,7 @@
         <source>Lightning Explorer</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">44,47</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.ts</context>
@@ -3340,19 +3352,11 @@
         </context-group>
         <note priority="1" from="description">master-page.lightning</note>
       </trans-unit>
-      <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
-        <source>beta</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">45,48</context>
-        </context-group>
-        <note priority="1" from="description">beta</note>
-      </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">55,57</context>
+          <context context-type="linenumber">54,56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.html</context>
@@ -3900,14 +3904,6 @@
           <context context-type="linenumber">9,16</context>
         </context-group>
         <note priority="1" from="description">search-form.search-title</note>
-      </trans-unit>
-      <trans-unit id="7150c828c25c15df9ed0e2a819110c90aabd9881" datatype="html">
-        <source>Return to tip</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/start/start.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note priority="1" from="description">blocks.return-to-tip</note>
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
@@ -4760,7 +4756,7 @@
         <source>REST API service</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">41,42</context>
         </context-group>
         <note priority="1" from="description">api-docs.title</note>
       </trans-unit>
@@ -4768,11 +4764,11 @@
         <source>Endpoint</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">102,105</context>
+          <context context-type="linenumber">104,107</context>
         </context-group>
         <note priority="1" from="description">Api docs endpoint</note>
       </trans-unit>
@@ -4780,18 +4776,18 @@
         <source>Description</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">67,68</context>
+          <context context-type="linenumber">69,70</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">106,107</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="&apos;track-ad"/> action: &apos;want&apos;, data: [&apos;blocks&apos;, ...] <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="&apos;track-ad"/> &apos;track-address&apos;: &apos;3PbJ...bF9B&apos; <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
