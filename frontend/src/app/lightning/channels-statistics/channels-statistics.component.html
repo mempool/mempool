@@ -17,7 +17,7 @@
           <span i18n="shared.sats">sats</span>
         </div>
         <span class="fiat" *ngIf="statistics.previous">
-          <app-change [current]="statistics.latest?.avg_capacity" [previous]="statistics.previous?.avg_capacity"></app-change>
+          <app-fiat [value]="statistics.latest?.avg_capacity" digitsInfo="1.0-0" ></app-fiat>
         </span>
       </div>
     </div>
@@ -63,7 +63,7 @@
           <span i18n="shared.sats">sats</span>
         </div>
         <span class="fiat" *ngIf="statistics.previous">
-          <app-change [current]="statistics.latest?.med_capacity" [previous]="statistics.previous?.med_capacity"></app-change>
+          <app-fiat [value]="statistics.latest?.med_capacity" digitsInfo="1.0-0" ></app-fiat>
         </span>
       </div>
     </div>

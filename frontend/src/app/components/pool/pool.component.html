@@ -235,10 +235,10 @@
             </span>
           </td>
           <td class="reward text-right">
-            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
           </td>
           <td class="fees text-right">
-            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2"></app-amount>
+            <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
           </td>
           <td class="txs text-right">
             {{ block.tx_count | number }}
