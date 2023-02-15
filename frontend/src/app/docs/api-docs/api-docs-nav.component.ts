@@ -15,7 +15,7 @@ export class ApiDocsNavComponent implements OnInit {
   @Output() navLinkClickEvent: EventEmitter<any> = new EventEmitter();
   env: Env;
   tabData: any[];
-  officialMempoolInstance: boolean;
+  auditEnabled: boolean;
 
   constructor(
     private stateService: StateService
@@ -23,7 +23,7 @@ export class ApiDocsNavComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
-    this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
+    this.auditEnabled = this.env.AUDIT;
     if (this.whichTab === 'rest') {
       this.tabData = restApiDocsData;
     } else if (this.whichTab === 'faq') {
