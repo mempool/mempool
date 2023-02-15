@@ -19,6 +19,7 @@ import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
+import { deepClone } from '../utils/clone';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -251,9 +252,9 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid));
+      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
     } else {
-      mempoolBlocks.updateMempoolBlocks(newMempool);
+      mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
 
     const mBlocks = mempoolBlocks.getMempoolBlocks();
@@ -418,16 +419,18 @@ class WebsocketHandler {
 
     const _memPool = memPool.getMempool();
 
+    let projectedBlocks;
+    // template calculation functions have mempool side effects, so calculate audits using
+    // a cloned copy of the mempool if we're running a different algorithm for mempool updates
+    const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : deepClone(_memPool);
     if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-      await mempoolBlocks.makeBlockTemplates(_memPool);
+      projectedBlocks = await mempoolBlocks.makeBlockTemplates(auditMempool, false);
     } else {
-      mempoolBlocks.updateMempoolBlocks(_memPool);
+      projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
     }
 
     if (Common.indexingEnabled() && memPool.isInSync()) {
-      const projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
-
-      const { censored, added, fresh, score } = Audit.auditBlock(transactions, projectedBlocks, _memPool);
+      const { censored, added, fresh, score } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
       const matchRate = Math.round(score * 100 * 100) / 100;
 
       const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -471,9 +474,9 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed);
+      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed, true);
     } else {
-      mempoolBlocks.updateMempoolBlocks(_memPool);
+      mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
