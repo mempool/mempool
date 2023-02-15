@@ -38,6 +38,7 @@ describe('Mempool Backend Config', () => {
         STDOUT_LOG_MIN_PRIORITY: 'debug',
         POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
         POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
+        AUDIT: false,
         ADVANCED_GBT_AUDIT: false,
         ADVANCED_GBT_MEMPOOL: false,
         CPFP_INDEXING: false,
