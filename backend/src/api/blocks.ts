@@ -688,7 +688,6 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-
     let currentHeight = fromHeight !== undefined ? fromHeight : this.currentBlockHeight;
     if (currentHeight > this.currentBlockHeight) {
       limit -= currentHeight - this.currentBlockHeight;
@@ -726,6 +725,63 @@ class Blocks {
     }
 
     return returnBlocks;
+  }
+
+  public async $getBlocksByBulk(start: number, end: number) {
+    start = Math.max(1, start);
+
+    const blocks: any[] = [];
+    for (let i = end; i >= start; --i) {
+      const blockHash = await bitcoinApi.$getBlockHash(i);
+      const coreBlock = await bitcoinClient.getBlock(blockHash);
+      const electrsBlock = await bitcoinApi.$getBlock(blockHash);
+      const txs = await this.$getTransactionsExtended(blockHash, i, true);
+      const stats = await bitcoinClient.getBlockStats(blockHash);
+      const header = await bitcoinClient.getBlockHeader(blockHash, false);
+      const txoutset = await bitcoinClient.getTxoutSetinfo('none', i);
+
+      const formatted = {
+        blockhash: coreBlock.id,
+        blockheight: coreBlock.height,
+        prev_blockhash: coreBlock.previousblockhash,
+        timestamp: coreBlock.timestamp,
+        median_timestamp: coreBlock.mediantime,
+        // @ts-ignore
+        blocktime: coreBlock.time,
+        orphaned: null,
+        header: header,
+        version: coreBlock.version,
+        difficulty: coreBlock.difficulty,
+        merkle_root: coreBlock.merkle_root,
+        bits: coreBlock.bits,
+        nonce: coreBlock.nonce,
+        coinbase_scriptsig: txs[0].vin[0].scriptsig,
+        coinbase_address: txs[0].vout[0].scriptpubkey_address,
+        coinbase_signature: txs[0].vout[0].scriptpubkey_asm,
+        size: coreBlock.size,
+        virtual_size: coreBlock.weight / 4.0,
+        weight: coreBlock.weight,
+        utxoset_size: txoutset.txouts,
+        utxoset_change: stats.utxo_increase,
+        total_txs: coreBlock.tx_count,
+        avg_tx_size: Math.round(stats.total_size / stats.txs * 100) * 0.01,
+        total_inputs: stats.ins,
+        total_outputs: stats.outs,
+        total_input_amt: Math.round(txoutset.block_info.prevout_spent * 100000000),
+        total_output_amt: stats.total_out,
+        block_subsidy: txs[0].vout.reduce((acc, curr) => acc + curr.value, 0),
+        total_fee: stats.totalfee,
+        avg_feerate: stats.avgfeerate,
+        feerate_percentiles: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
+        avg_fee: stats.avgfee,
+        fee_percentiles: null,
+        segwit_total_txs: stats.swtxs,
+        segwit_total_size: stats.swtotal_size,
+        segwit_total_weight: stats.swtotal_weight,
+      };
+      blocks.push(formatted);
+    }
+    return blocks;
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<any> {
