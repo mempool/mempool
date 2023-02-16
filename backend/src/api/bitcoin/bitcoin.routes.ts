@@ -95,6 +95,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -397,6 +399,32 @@ class BitcoinRoutes {
       } else { // Liquid, Bisq
         return await this.getLegacyBlocks(req, res);
       }
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getBlocksByBulk(req: Request, res: Response) {
+    try {
+      if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
+        return res.status(404).send(`Not implemented`);
+      }
+
+      const from = parseInt(req.params.from, 10);
+      if (!from) {
+        return res.status(400).send(`Parameter 'from' must be a block height (integer)`);
+      }
+      const to = req.params.to === undefined ? await bitcoinApi.$getBlockHeightTip() : parseInt(req.params.to, 10);
+      if (!to) {
+        return res.status(400).send(`Parameter 'to' must be a block height (integer)`);
+      }
+      if (from > to) {
+        return res.status(400).send(`Parameter 'to' must be a higher block height than 'from'`);
+      }
+
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(await blocks.$getBlocksByBulk(from, to));
+
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
