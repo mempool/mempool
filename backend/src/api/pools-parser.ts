@@ -16,6 +16,11 @@ class PoolsParser {
 
   public setMiningPools(pools): void {
     this.miningPools = pools;
+    for (const pool of this.miningPools) {
+      pool.regexes = JSON.stringify(pool.tags);
+      pool.addresses = JSON.stringify(pool.addresses);
+      delete pool.tags;
+    }
   }
 
   /**
