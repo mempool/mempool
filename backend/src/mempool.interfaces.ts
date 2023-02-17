@@ -143,6 +143,12 @@ export interface CompactThreadTransaction {
   dirty?: boolean;
 }
 
+export interface GbtCandidates {
+  txs: { [txid: string ]: boolean },
+  added: MempoolTransactionExtended[];
+  removed: MempoolTransactionExtended[];
+}
+
 export interface ThreadTransaction {
   txid: string;
   fee: number;
