@@ -18,17 +18,27 @@ class BlocksRepository {
   public async $saveBlockInDatabase(block: BlockExtended) {
     try {
       const query = `INSERT INTO blocks(
-        height,           hash,                blockTimestamp, size,
-        weight,           tx_count,            coinbase_raw,   difficulty,
-        pool_id,          fees,                fee_span,       median_fee,
-        reward,           version,             bits,           nonce,
-        merkle_root,      previous_block_hash, avg_fee,        avg_fee_rate
+        height,             hash,                blockTimestamp,    size,
+        weight,             tx_count,            coinbase_raw,      difficulty,
+        pool_id,            fees,                fee_span,          median_fee,
+        reward,             version,             bits,              nonce,
+        merkle_root,        previous_block_hash, avg_fee,           avg_fee_rate,
+        median_timestamp,   block_time,          header,            coinbase_address,
+        coinbase_signature, utxoset_size,        utxoset_change,    avg_tx_size,
+        total_inputs,       total_outputs,       total_input_amt,   total_output_amt,
+        fee_percentiles,    segwit_total_txs,    segwit_total_size, segwit_total_weight,
+        median_fee_amt
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, ?, ?
+        ?, ?, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?, ?, ?,
+        ?, ?, ?, ?,
+        ?
       )`;
 
       const params: any[] = [
@@ -52,6 +62,23 @@ class BlocksRepository {
         block.previousblockhash,
         block.extras.avgFee,
         block.extras.avgFeeRate,
+        block.extras.medianTimestamp,
+        block.extras.blockTime,
+        block.extras.header,
+        block.extras.coinbaseAddress,
+        block.extras.coinbaseSignature,
+        block.extras.utxoSetSize,
+        block.extras.utxoSetChange,
+        block.extras.avgTxSize,
+        block.extras.totalInputs,
+        block.extras.totalOutputs,
+        block.extras.totalInputAmt,
+        block.extras.totalOutputAmt,
+        JSON.stringify(block.extras.feePercentiles),
+        block.extras.segwitTotalTxs,
+        block.extras.segwitTotalSize,
+        block.extras.segwitTotalWeight,
+        block.extras.medianFeeAmt,
       ];
 
       await DB.query(query, params);
@@ -62,6 +89,33 @@ class BlocksRepository {
         logger.err('Cannot save indexed block into db. Reason: ' + (e instanceof Error ? e.message : e));
         throw e;
       }
+    }
+  }
+
+  /**
+   * Save newly indexed data from core coinstatsindex
+   * 
+   * @param utxoSetSize 
+   * @param totalInputAmt 
+   */
+  public async $updateCoinStatsIndexData(blockHash: string, utxoSetSize: number,
+    totalInputAmt: number
+  ) : Promise<void> {
+    try {
+      const query = `
+        UPDATE blocks
+        SET utxoset_size = ?, total_input_amt = ?
+        WHERE hash = ?
+      `;
+      const params: any[] = [
+        utxoSetSize,
+        totalInputAmt,
+        blockHash
+      ];
+      await DB.query(query, params);
+    } catch (e: any) {
+      logger.err('Cannot update indexed block coinstatsindex. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
@@ -310,32 +364,16 @@ class BlocksRepository {
   public async $getBlockByHeight(height: number): Promise<object | null> {
     try {
       const [rows]: any[] = await DB.query(`SELECT
-        blocks.height,
-        hash,
+        blocks.*,
         hash as id,
         UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
-        size,
-        weight,
-        tx_count,
-        coinbase_raw,
-        difficulty,
         pools.id as pool_id,
         pools.name as pool_name,
         pools.link as pool_link,
         pools.slug as pool_slug,
         pools.addresses as pool_addresses,
         pools.regexes as pool_regexes,
-        fees,
-        fee_span,
-        median_fee,
-        reward,
-        version,
-        bits,
-        nonce,
-        merkle_root,
-        previous_block_hash as previousblockhash,
-        avg_fee,
-        avg_fee_rate
+        previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE blocks.height = ${height}
@@ -694,7 +732,6 @@ class BlocksRepository {
       logger.err('Cannot fetch CPFP unindexed blocks. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
-    return [];
   }
 
   /**
@@ -741,7 +778,7 @@ class BlocksRepository {
     try {
       let query = `INSERT INTO blocks_prices(height, price_id) VALUES`;
       for (const price of blockPrices) {
-        query += ` (${price.height}, ${price.priceId}),`
+        query += ` (${price.height}, ${price.priceId}),`;
       }
       query = query.slice(0, -1);
       await DB.query(query);
@@ -752,6 +789,24 @@ class BlocksRepository {
         logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
         throw e;
       }
+    }
+  }
+
+  /**
+   * Get all indexed blocsk with missing coinstatsindex data
+   */
+  public async $getBlocksMissingCoinStatsIndex(maxHeight: number, minHeight: number): Promise<any> {
+    try {
+      const [blocks] = await DB.query(`
+        SELECT height, hash
+        FROM blocks
+        WHERE height >= ${minHeight} AND height <= ${maxHeight} AND
+          (utxoset_size IS NULL OR total_input_amt IS NULL)
+      `);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with missing coinstatsindex. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 }

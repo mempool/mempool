@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 52;
+  private static currentVersion = 53;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -468,6 +468,11 @@ class DatabaseMigration {
         logger.warn('' + (e instanceof Error ? e.message : e));
       }
     }
+
+    if (databaseSchemaVersion < 53) {
+      await this.$executeQuery(this.getAdditionalBlocksDataQuery());
+      await this.updateToSchemaVersion(53);
+    }
   }
 
   /**
@@ -591,7 +596,7 @@ class DatabaseMigration {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_hashrates_indexing', 0, NULL)`);
     }
 
-    if (version < 9  && isBitcoin === true) {
+    if (version < 9 && isBitcoin === true) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
     }
 
@@ -739,6 +744,28 @@ class DatabaseMigration {
       INDEX (pool_id),
       FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getAdditionalBlocksDataQuery(): string {
+    return `ALTER TABLE blocks
+      ADD median_timestamp timestamp NOT NULL,
+      ADD block_time int unsigned NOT NULL,
+      ADD coinbase_address varchar(100) NULL,
+      ADD coinbase_signature varchar(500) NULL,
+      ADD avg_tx_size double unsigned NOT NULL,
+      ADD total_inputs int unsigned NOT NULL,
+      ADD total_outputs int unsigned NOT NULL,
+      ADD total_output_amt bigint unsigned NOT NULL,
+      ADD fee_percentiles longtext NULL,
+      ADD median_fee_amt int unsigned NOT NULL,
+      ADD segwit_total_txs int unsigned NOT NULL,
+      ADD segwit_total_size int unsigned NOT NULL,
+      ADD segwit_total_weight int unsigned NOT NULL,
+      ADD header varchar(160) NOT NULL,
+      ADD utxoset_change int NOT NULL,
+      ADD utxoset_size int unsigned NULL,
+      ADD total_input_amt bigint unsigned NULL
+    `;
   }
 
   private getCreateDailyStatsTableQuery(): string {
