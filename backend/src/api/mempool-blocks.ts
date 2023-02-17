@@ -1,5 +1,5 @@
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, ThreadTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor } from '../mempool.interfaces';
+import { MempoolBlock, TransactionExtended, ThreadTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, GbtCandidates } from '../mempool.interfaces';
 import { Common } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -147,19 +147,23 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  public async makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false, candidates?: GbtCandidates): Promise<MempoolBlockWithTransactions[]> {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
+    const txids = candidates ? Object.keys(candidates.txs) : Object.keys(newMempool);
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
-    Object.values(newMempool).forEach(entry => {
-      strippedMempool[entry.txid] = {
-        txid: entry.txid,
-        fee: entry.fee,
-        weight: entry.weight,
-        feePerVsize: entry.fee / (entry.weight / 4),
-        effectiveFeePerVsize: entry.fee / (entry.weight / 4),
-        vin: entry.vin.map(v => v.txid),
-      };
+    txids.forEach(txid => {
+      const entry = newMempool[txid];
+      if (entry) {
+        strippedMempool[entry.txid] = {
+          txid: entry.txid,
+          fee: entry.fee,
+          weight: entry.weight,
+          feePerVsize: entry.fee / (entry.weight / 4),
+          effectiveFeePerVsize: entry.fee / (entry.weight / 4),
+          vin: entry.vin.map(v => v.txid),
+        };
+      }
     });
 
     // (re)initialize tx selection worker thread
@@ -191,31 +195,49 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      return this.processBlockTemplates(newMempool, blocks, clusters, saveResults);
+      return this.processBlockTemplates(newMempool, blocks, clusters, saveResults, candidates);
     } catch (e) {
       logger.err('makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
     }
     return this.mempoolBlocks;
   }
 
-  public async updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
+  public async updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false, candidates?: GbtCandidates): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      this.makeBlockTemplates(newMempool, saveResults);
+      this.makeBlockTemplates(newMempool, saveResults, candidates);
       return;
     }
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const addedStripped: ThreadTransaction[] = added.map(entry => {
-      return {
-        txid: entry.txid,
-        fee: entry.fee,
-        weight: entry.weight,
-        feePerVsize: entry.fee / (entry.weight / 4),
-        effectiveFeePerVsize: entry.fee / (entry.weight / 4),
-        vin: entry.vin.map(v => v.txid),
-      };
-    });
+    let addedStripped: ThreadTransaction[] = [];
+    let removedList;
+    if (candidates) {
+      addedStripped = candidates.added.filter(txid => newMempool[txid]).map(txid => {
+        const entry = newMempool[txid];
+        return {
+          txid: entry.txid,
+          fee: entry.fee,
+          weight: entry.weight,
+          feePerVsize: entry.fee / (entry.weight / 4),
+          effectiveFeePerVsize: entry.fee / (entry.weight / 4),
+          vin: entry.vin.map(v => v.txid),
+        };
+      });
+      removedList = candidates.removed;
+    } else {
+      addedStripped = added.map(entry => {
+        return {
+          txid: entry.txid,
+          fee: entry.fee,
+          weight: entry.weight,
+          feePerVsize: entry.fee / (entry.weight / 4),
+          effectiveFeePerVsize: entry.fee / (entry.weight / 4),
+          vin: entry.vin.map(v => v.txid),
+        };
+      });
+      removedList = removed;
+    }
 
     // run the block construction algorithm in a separate thread, and wait for a result
     let threadErrorListener;
@@ -227,19 +249,19 @@ class MempoolBlocks {
         });
         this.txSelectionWorker?.once('error', reject);
       });
-      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed });
+      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedList });
       const { blocks, clusters } = await workerResultPromise;
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      this.processBlockTemplates(newMempool, blocks, clusters, saveResults);
+      this.processBlockTemplates(newMempool, blocks, clusters, saveResults, candidates);
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
     }
   }
 
-  private processBlockTemplates(mempool, blocks, clusters, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string ]: TransactionExtended }, blocks, clusters, saveResults, candidates?: GbtCandidates): MempoolBlockWithTransactions[] {
     // update this thread's mempool with the results
     blocks.forEach(block => {
       block.forEach(tx => {
@@ -276,6 +298,32 @@ class MempoolBlocks {
         }
       });
     });
+
+    // Add purged transactions at the end, if required
+    if (candidates) {
+      const purged: string[] = [];
+      Object.values(mempool).forEach(tx => {
+        if (!candidates.txs[tx.txid]) {
+          purged.push(tx.txid);
+        }
+      });
+      if (!blocks.length) {
+        blocks = [[]];
+      }
+      let blockIndex = blocks.length - 1;
+      let weight = blocks[blockIndex].reduce((acc, tx) => acc + tx.weight, 0);
+      purged.sort((a,b) => { return mempool[b].effectiveFeePerVsize - mempool[a].effectiveFeePerVsize});
+      purged.forEach(txid => {
+        const tx = mempool[txid];
+        if ((weight + tx.weight) >= (config.MEMPOOL.BLOCK_WEIGHT_UNITS - 4000) && blockIndex < 7) {
+          blocks.push([]);
+          blockIndex++;
+          weight = 0;
+        }
+        blocks[blockIndex].push(tx);
+        weight += tx.weight;
+      });
+    }
 
     // unpack the condensed blocks into proper mempool blocks
     const mempoolBlocks = blocks.map((transactions, blockIndex) => {

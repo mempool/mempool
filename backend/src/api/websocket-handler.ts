@@ -2,7 +2,7 @@ import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, WebsocketResponse,
-  OptimizedStatistic, ILoadingIndicators
+  OptimizedStatistic, ILoadingIndicators, GbtCandidates
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -19,7 +19,6 @@ import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import Audit from './audit';
 import { deepClone } from '../utils/clone';
-import mempool from './mempool';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 
@@ -251,13 +250,14 @@ class WebsocketHandler {
   }
 
   async handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): Promise<void> {
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[],
+    candidates?: GbtCandidates): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
+      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true, candidates);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -428,6 +428,7 @@ class WebsocketHandler {
     }
 
     const _memPool = memPool.getMempool();
+    const candidateTxs = await memPool.getMempoolCandidates();
 
     if (config.MEMPOOL.AUDIT) {
       let projectedBlocks;
@@ -435,7 +436,15 @@ class WebsocketHandler {
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : deepClone(_memPool);
       if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-        projectedBlocks = await mempoolBlocks.makeBlockTemplates(auditMempool, false);
+        let candidates;
+        if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
+          candidates = {
+            txs: candidateTxs,
+            added: [],
+            removed: [],
+          };
+        }
+        projectedBlocks = await mempoolBlocks.makeBlockTemplates(auditMempool, false, candidates);
       } else {
         projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
       }
@@ -487,12 +496,21 @@ class WebsocketHandler {
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
+      delete candidateTxs[txId];
       removed.push(txId);
       rbfCache.evict(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed, true);
+      let candidates;
+      if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
+        candidates = {
+          txs: candidateTxs,
+          added: [],
+          removed: removed,
+        };
+      }
+      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed, true, candidates);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }

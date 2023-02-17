@@ -1,6 +1,6 @@
 import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
+import { GbtCandidates, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
 import transactionUtils from './transaction-utils';
@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
+import blocks from './blocks';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
@@ -16,13 +17,16 @@ class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
+  private mempoolCandidates: { [txid: string ]: boolean } = {};
   private minFeeMempool: { [txId: string]: boolean } = {};
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
+                                                    maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
+  private secondMempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
   private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
-    deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
+    deletedTransactions: TransactionExtended[], candidates?: GbtCandidates) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -72,7 +76,7 @@ class Mempool {
   }
 
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => Promise<void>) {
+    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[], candidates?: GbtCandidates) => Promise<void>) {
     this.asyncMempoolChangedCallback = fn;
   }
 
@@ -86,8 +90,16 @@ class Mempool {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
     if (this.asyncMempoolChangedCallback) {
-      this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
+      if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
+        this.asyncMempoolChangedCallback(this.mempoolCache, [], [], { txs: {}, added: [], removed: [] });
+      } else {
+        this.asyncMempoolChangedCallback(this.mempoolCache, [], [], );
+      }
     }
+  }
+
+  public getMempoolCandidates(): { [txid: string]: boolean } {
+    return this.mempoolCandidates;
   }
 
   public async $updateMemPoolInfo() {
@@ -125,7 +137,7 @@ class Mempool {
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     const transactions = await bitcoinApi.$getRawMempool();
-    await this.updateMinFeeMempool();
+    const candidates = await this.getNextCandidates();
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
@@ -225,8 +237,8 @@ class Mempool {
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
-    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-      await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length || candidates?.added.length || candidates?.removed.length)) {
+      await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions, candidates);
     }
 
     const end = new Date().getTime();
@@ -238,27 +250,48 @@ class Mempool {
     return !this.minFeeMempool[txid];
   }
 
-  private async updateMinFeeMempool() {
-    const minFeeTransactions = await bitcoinSecondClient.getRawMemPool();
-    const minFeeTxMap = {};
-    for (const txid of minFeeTransactions) {
-      minFeeTxMap[txid] = true;
-    }
-    const removed: string[] = [];
-    const added: string[] = [];
-    for (const txid of Object.keys(this.minFeeMempool)) {
-      if (!minFeeTxMap[txid]) {
-        removed.push(txid);
-      }
-    }
-    for (const txid of minFeeTransactions) {
-      if (!this.minFeeMempool[txid]) {
-        added.push(txid);
+  public async getNextCandidates(): Promise<GbtCandidates | undefined> {
+    if (config.MEMPOOL.USE_SECOND_NODE_FOR_MINFEE) {
+      const minFeeTransactions = await bitcoinSecondClient.getRawMemPool();
+      const blockHeight = await bitcoinSecondClient.getChainTips()
+        .then((result: IBitcoinApi.ChainTips[]) => {
+          return result.find(tip => tip.status === 'active')!.height;
+        });
+      const newCandidateTxMap = {};
+      this.minFeeMempool = {};
+      for (const txid of minFeeTransactions) {
+        if (this.mempoolCache[txid]) {
+          newCandidateTxMap[txid] = true;
+        }
         this.minFeeMempool[txid] = true;
       }
-    }
-    for (const txid of removed) {
-      delete this.minFeeMempool[txid];
+      const removed: string[] = [];
+      const added: string[] = [];
+      // don't prematurely remove txs included in a new block
+      if (blockHeight > blocks.getCurrentBlockHeight()) {
+        for (const txid of Object.keys(this.mempoolCandidates)) {
+          newCandidateTxMap[txid] = true;
+        }
+      } else {
+        for (const txid of Object.keys(this.mempoolCandidates)) {
+          if (!newCandidateTxMap[txid]) {
+            removed.push(txid);
+          }
+        }
+      }
+
+      for (const txid of Object.keys(newCandidateTxMap)) {
+        if (!this.mempoolCandidates[txid]) {
+          added.push(txid);
+        }
+      }
+
+      this.mempoolCandidates = newCandidateTxMap;
+      return {
+        txs: this.mempoolCandidates,
+        added,
+        removed
+      };
     }
   }
 
