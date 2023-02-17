@@ -384,6 +384,7 @@ class BlocksRepository {
       }
 
       rows[0].fee_span = JSON.parse(rows[0].fee_span);
+      rows[0].fee_percentiles = JSON.parse(rows[0].fee_percentiles);
       return rows[0];
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
