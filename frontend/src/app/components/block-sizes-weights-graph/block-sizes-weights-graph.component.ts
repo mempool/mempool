@@ -125,7 +125,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
       color: [
         '#FDD835',
         '#D81B60',
-        '#039BE5,
+        '#039BE5',
       ],
       grid: {
         top: 30,
