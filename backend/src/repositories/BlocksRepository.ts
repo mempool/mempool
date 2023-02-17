@@ -367,6 +367,7 @@ class BlocksRepository {
         blocks.*,
         hash as id,
         UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+        UNIX_TIMESTAMP(blocks.median_timestamp) as medianTime,
         pools.id as pool_id,
         pools.name as pool_name,
         pools.link as pool_link,
