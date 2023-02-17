@@ -783,10 +783,18 @@ class Blocks {
     const blocks: any[] = [];
 
     while (fromHeight <= toHeight) {
-      let block = await blocksRepository.$getBlockByHeight(fromHeight);
+      let block: any = await blocksRepository.$getBlockByHeight(fromHeight);
       if (!block) {
         block = await this.$indexBlock(fromHeight);
       }
+
+      delete(block.hash);
+      delete(block.previous_block_hash);
+      delete(block.pool_name);
+      delete(block.pool_link);
+      delete(block.pool_addresses);
+      delete(block.pool_regexes);
+
       blocks.push(block);
       fromHeight++;
     }
