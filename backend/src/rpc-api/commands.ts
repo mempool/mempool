@@ -89,5 +89,6 @@ module.exports = {
   walletLock: 'walletlock',
   walletPassphrase: 'walletpassphrase',
   walletPassphraseChange: 'walletpassphrasechange',
-  getTxoutSetinfo: 'gettxoutsetinfo'
-}
+  getTxoutSetinfo: 'gettxoutsetinfo',
+  getIndexInfo: 'getindexinfo',
+};

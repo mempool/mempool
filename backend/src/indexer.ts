@@ -8,18 +8,67 @@ import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
 
+export interface CoreIndex {
+  name: string;
+  synced: boolean;
+  best_block_height: number;
+}
+
 class Indexer {
   runIndexer = true;
   indexerRunning = false;
   tasksRunning: string[] = [];
+  coreIndexes: CoreIndex[] = [];
 
-  public reindex() {
+  /**
+   * Check which core index is available for indexing
+   */
+  public async checkAvailableCoreIndexes(): Promise<void> {
+    const updatedCoreIndexes: CoreIndex[] = [];
+
+    const indexes: any = await bitcoinClient.getIndexInfo();
+    for (const indexName in indexes) {
+      const newState = {
+        name: indexName,
+        synced: indexes[indexName].synced,
+        best_block_height: indexes[indexName].best_block_height,
+      };
+      logger.info(`Core index '${indexName}' is ${indexes[indexName].synced ? 'synced' : 'not synced'}. Best block height is ${indexes[indexName].best_block_height}`);      
+      updatedCoreIndexes.push(newState);
+
+      if (indexName === 'coinstatsindex' && newState.synced === true) {
+        const previousState = this.isCoreIndexReady('coinstatsindex');
+        // if (!previousState || previousState.synced === false) {
+          this.runSingleTask('coinStatsIndex');
+        // }
+      }
+    }
+
+    this.coreIndexes = updatedCoreIndexes;
+  }
+
+  /**
+   * Return the best block height if a core index is available, or 0 if not
+   * 
+   * @param name 
+   * @returns 
+   */
+  public isCoreIndexReady(name: string): CoreIndex | null {
+    for (const index of this.coreIndexes) {
+      if (index.name === name && index.synced === true) {
+        return index;
+      }
+    }
+    return null;
+  }
+
+  public reindex(): void {
     if (Common.indexingEnabled()) {
       this.runIndexer = true;
     }
   }
 
-  public async runSingleTask(task: 'blocksPrices') {
+  public async runSingleTask(task: 'blocksPrices' | 'coinStatsIndex'): Promise<void> {
     if (!Common.indexingEnabled()) {
       return;
     }
@@ -28,20 +77,27 @@ class Indexer {
       this.tasksRunning.push(task);
       const lastestPriceId = await PricesRepository.$getLatestPriceId();
       if (priceUpdater.historyInserted === false || lastestPriceId === null) {
-        logger.debug(`Blocks prices indexer is waiting for the price updater to complete`)
+        logger.debug(`Blocks prices indexer is waiting for the price updater to complete`);
         setTimeout(() => {
-          this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask != task)
+          this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask !== task);
           this.runSingleTask('blocksPrices');
         }, 10000);
       } else {
-        logger.debug(`Blocks prices indexer will run now`)
+        logger.debug(`Blocks prices indexer will run now`);
         await mining.$indexBlockPrices();
-        this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask != task)
+        this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask !== task);
       }
+    }
+
+    if (task === 'coinStatsIndex' && !this.tasksRunning.includes(task)) {
+      this.tasksRunning.push(task);
+      logger.debug(`Indexing coinStatsIndex now`);
+      await mining.$indexCoinStatsIndex();
+      this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask !== task);
     }
   }
 
-  public async $run() {
+  public async $run(): Promise<void> {
     if (!Common.indexingEnabled() || this.runIndexer === false ||
       this.indexerRunning === true || mempool.hasPriority()
     ) {
@@ -57,7 +113,9 @@ class Indexer {
     this.runIndexer = false;
     this.indexerRunning = true;
 
-    logger.debug(`Running mining indexer`);
+    logger.info(`Running mining indexer`);
+
+    await this.checkAvailableCoreIndexes();
 
     try {
       await priceUpdater.$run();
@@ -93,7 +151,7 @@ class Indexer {
     setTimeout(() => this.reindex(), runEvery);
   }
 
-  async $resetHashratesIndexingState() {
+  async $resetHashratesIndexingState(): Promise<void> {
     try {
       await HashratesRepository.$setLatestRun('last_hashrates_indexing', 0);
       await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', 0);

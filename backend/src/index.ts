@@ -36,6 +36,7 @@ import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
+import mining from './api/mining/mining';
 import { AxiosError } from 'axios';
 
 class Server {
