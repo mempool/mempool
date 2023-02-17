@@ -170,6 +170,7 @@ class Blocks {
     blk.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
     blk.extras.coinbaseRaw = blk.extras.coinbaseTx.vin[0].scriptsig;
     blk.extras.usd = priceUpdater.latestPrices.USD;
+    blk.extras.medianTimestamp = block.medianTime;
 
     if (block.height === 0) {
       blk.extras.medianFee = 0; // 50th percentiles
@@ -204,7 +205,6 @@ class Blocks {
 
     blk.extras.feePercentiles = [], // TODO
     blk.extras.medianFeeAmt = 0; // TODO
-    blk.extras.medianTimestamp = block.medianTime; // TODO
     blk.extras.blockTime = 0; // TODO
     blk.extras.orphaned = false; // TODO
   
@@ -785,7 +785,11 @@ class Blocks {
     while (fromHeight <= toHeight) {
       let block: any = await blocksRepository.$getBlockByHeight(fromHeight);
       if (!block) {
-        block = await this.$indexBlock(fromHeight);
+        await this.$indexBlock(fromHeight);
+        block = await blocksRepository.$getBlockByHeight(fromHeight);
+        if (!block) {
+          continue;
+        }
       }
 
       delete(block.hash);
@@ -794,6 +798,7 @@ class Blocks {
       delete(block.pool_link);
       delete(block.pool_addresses);
       delete(block.pool_regexes);
+      delete(block.median_timestamp);
 
       blocks.push(block);
       fromHeight++;
