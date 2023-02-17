@@ -92,15 +92,11 @@ export class ApiService {
     return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
   }
 
-  requestDonation$(amount: number, orderId: string): Observable<any> {
-    const params = {
-      amount: amount,
-      orderId: orderId,
-    };
-    return this.httpClient.post<any>(this.apiBaseUrl + '/api/v1/donations', params);
+  getAboutPageProfiles$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/about-page');
   }
 
-  getDonation$(): Observable<any[]> {
+  getOgs$(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations');
   }
 
@@ -110,10 +106,6 @@ export class ApiService {
 
   getContributor$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/contributors');
-  }
-
-  checkDonation$(orderId: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations/check?order_id=' + orderId);
   }
 
   getInitData$(): Observable<WebsocketResponse> {
