@@ -407,7 +407,10 @@ class BitcoinRoutes {
   private async getBlocksByBulk(req: Request, res: Response) {
     try {
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
-        return res.status(404).send(`Not implemented`);
+        return res.status(404).send(`This API is only available for Bitcoin networks`);
+      }
+      if (!Common.indexingEnabled()) {
+        return res.status(404).send(`Indexing is required for this API`);
       }
 
       const from = parseInt(req.params.from, 10);
@@ -423,7 +426,7 @@ class BitcoinRoutes {
       }
 
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(await blocks.$getBlocksByBulk(from, to));
+      res.json(await blocks.$getBlocksBetweenHeight(from, to));
 
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

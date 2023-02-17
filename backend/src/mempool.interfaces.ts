@@ -64,6 +64,7 @@ interface VinStrippedToScriptsig {
 
 interface VoutStrippedToScriptPubkey {
   scriptpubkey_address: string | undefined;
+  scriptpubkey_asm: string | undefined;
   value: number;
 }
 
@@ -160,6 +161,26 @@ export interface BlockExtension {
   avgFeeRate?: number;
   coinbaseRaw?: string;
   usd?: number | null;
+  medianTimestamp?: number;
+  blockTime?: number;
+  orphaned?: boolean;
+  coinbaseAddress?: string | null;
+  coinbaseSignature?: string | null;
+  virtualSize?: number;
+  avgTxSize?: number;
+  totalInputs?: number;
+  totalOutputs?: number;
+  totalOutputAmt?: number;
+  medianFeeAmt?: number;
+  feePercentiles?: number[],
+  segwitTotalTxs?: number;
+  segwitTotalSize?: number;
+  segwitTotalWeight?: number;
+  header?: string;
+  utxoSetChange?: number;
+  // Requires coinstatsindex, will be set to NULL otherwise
+  utxoSetSize?: number | null;
+  totalInputAmt?: number | null;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {
