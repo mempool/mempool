@@ -1,4 +1,5 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
+import { OrphanedBlock } from './api/chain-tips';
 import { HeapNode } from "./utils/pairing-heap";
 
 export interface PoolTag {
@@ -163,7 +164,7 @@ export interface BlockExtension {
   usd?: number | null;
   medianTimestamp?: number;
   blockTime?: number;
-  orphaned?: boolean;
+  orphans?: OrphanedBlock[] | null;
   coinbaseAddress?: string | null;
   coinbaseSignature?: string | null;
   virtualSize?: number;

@@ -37,6 +37,7 @@ import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
 import mining from './api/mining/mining';
+import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 
 class Server {
@@ -134,6 +135,7 @@ class Server {
     }
 
     priceUpdater.$run();
+    await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
 
