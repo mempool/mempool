@@ -80,6 +80,48 @@ class BlocksSummariesRepository {
       logger.err('Cannot delete indexed blocks summaries. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
+
+  /**
+   * Get the fee percentiles if the block has already been indexed, [] otherwise
+   * 
+   * @param id 
+   */
+  public async $getFeePercentilesByBlockId(id: string): Promise<number[] | null> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT transactions
+        FROM blocks_summaries
+        WHERE id = ?`,
+        [id]
+      );
+      if (rows === null || rows.length === 0) {
+        return null;
+      }
+
+      const transactions = JSON.parse(rows[0].transactions);
+      if (transactions === null) {
+        return null;
+      }
+
+      transactions.shift(); // Ignore coinbase
+      transactions.sort((a: any, b: any) => a.fee - b.fee);
+      const fees = transactions.map((t: any) => t.fee);
+
+      return [
+        fees[0], // min
+        fees[Math.max(0, Math.floor(fees.length * 0.1) - 1)], // 10th
+        fees[Math.max(0, Math.floor(fees.length * 0.25) - 1)], // 25th
+        fees[Math.max(0, Math.floor(fees.length * 0.5) - 1)], // median
+        fees[Math.max(0, Math.floor(fees.length * 0.75) - 1)], // 75th
+        fees[Math.max(0, Math.floor(fees.length * 0.9) - 1)], // 90th
+        fees[fees.length - 1], // max
+      ];
+
+    } catch (e) {
+      logger.err(`Cannot get block summaries transactions. Reason: ` + (e instanceof Error ? e.message : e));
+      return null;
+    }
+  }
 }
 
 export default new BlocksSummariesRepository();

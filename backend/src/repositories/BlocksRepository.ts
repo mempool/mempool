@@ -811,6 +811,25 @@ class BlocksRepository {
       throw e;
     }
   }
+
+  /**
+   * Save indexed median fee to avoid recomputing it later
+   * 
+   * @param id 
+   * @param feePercentiles 
+   */
+  public async $saveFeePercentilesForBlockId(id: string, feePercentiles: number[]): Promise<void> {
+    try {
+      await DB.query(`
+        UPDATE blocks SET fee_percentiles = ?, median_fee_amt = ?
+        WHERE hash = ?`,
+        [JSON.stringify(feePercentiles), feePercentiles[3], id]
+      );
+    } catch (e) {
+      logger.err(`Cannot update block fee_percentiles. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new BlocksRepository();
