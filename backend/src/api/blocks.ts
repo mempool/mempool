@@ -25,6 +25,7 @@ import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
+import chainTips from './chain-tips';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -171,6 +172,7 @@ class Blocks {
     blk.extras.coinbaseRaw = blk.extras.coinbaseTx.vin[0].scriptsig;
     blk.extras.usd = priceUpdater.latestPrices.USD;
     blk.extras.medianTimestamp = block.medianTime;
+    blk.extras.orphans = chainTips.getOrphanedBlocksAtHeight(blk.height);
 
     if (block.height === 0) {
       blk.extras.medianFee = 0; // 50th percentiles
@@ -204,7 +206,6 @@ class Blocks {
     }
 
     blk.extras.blockTime = 0; // TODO
-    blk.extras.orphaned = false; // TODO
 
     blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
     if (blk.extras.feePercentiles !== null) {
@@ -545,6 +546,7 @@ class Blocks {
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
+        await chainTips.updateOrphanedBlocks();
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
@@ -811,6 +813,10 @@ class Blocks {
           await blocksRepository.$saveFeePercentilesForBlockId(block.id, block.fee_percentiles);
         }
       }
+
+      // Re-org can happen after indexing so we need to always get the
+      // latest state from core
+      block.orphans = chainTips.getOrphanedBlocksAtHeight(block.height);
 
       blocks.push(block);
       fromHeight++;
