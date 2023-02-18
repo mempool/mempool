@@ -13,7 +13,11 @@ class CoinbaseApi implements PriceFeed {
 
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
-    return response ? parseInt(response['data']['amount'], 10) : -1;
+    if (response && response['data'] && response['data']['amount']) {
+      return parseInt(response['data']['amount'], 10);
+    } else {
+      return -1;
+    }
   }
 
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {

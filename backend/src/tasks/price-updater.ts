@@ -130,7 +130,11 @@ class PriceUpdater {
 
       // Compute average price, non weighted
       prices = prices.filter(price => price > 0);
-      this.latestPrices[currency] = Math.round((prices.reduce((partialSum, a) => partialSum + a, 0)) / prices.length);
+      if (prices.length === 0) {
+        this.latestPrices[currency] = -1;
+      } else {
+        this.latestPrices[currency] = Math.round((prices.reduce((partialSum, a) => partialSum + a, 0)) / prices.length);
+      }
     }
 
     logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
