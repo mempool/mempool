@@ -203,10 +203,13 @@ class Blocks {
       blk.extras.segwitTotalWeight = stats.swtotal_weight;
     }
 
-    blk.extras.feePercentiles = [], // TODO
-    blk.extras.medianFeeAmt = 0; // TODO
     blk.extras.blockTime = 0; // TODO
     blk.extras.orphaned = false; // TODO
+
+    blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
+    if (blk.extras.feePercentiles !== null) {
+      blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
+    }
   
     blk.extras.virtualSize = block.weight / 4.0;
     if (blk.extras.coinbaseTx.vout.length > 0) {
@@ -791,7 +794,6 @@ class Blocks {
           continue;
         }
       }
-
       delete(block.hash);
       delete(block.previous_block_hash);
       delete(block.pool_name);
@@ -799,6 +801,16 @@ class Blocks {
       delete(block.pool_addresses);
       delete(block.pool_regexes);
       delete(block.median_timestamp);
+
+      // This requires `blocks_summaries` to be available. It takes a very long
+      // time to index this table so we just try to serve the data the best we can
+      if (block.fee_percentiles === null) {
+        block.fee_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id); 
+        if (block.fee_percentiles !== null) {
+          block.median_fee_amt = block.fee_percentiles[3];
+          await blocksRepository.$saveFeePercentilesForBlockId(block.id, block.fee_percentiles);
+        }
+      }
 
       blocks.push(block);
       fromHeight++;
