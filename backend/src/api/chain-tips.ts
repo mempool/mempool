@@ -19,24 +19,28 @@ class ChainTips {
   private orphanedBlocks: OrphanedBlock[] = [];
 
   public async updateOrphanedBlocks(): Promise<void> {
-    this.chainTips = await bitcoinClient.getChainTips();
-    this.orphanedBlocks = [];
+    try {
+      this.chainTips = await bitcoinClient.getChainTips();
+      this.orphanedBlocks = [];
 
-    for (const chain of this.chainTips) {
-      if (chain.status === 'valid-fork' || chain.status === 'valid-headers' || chain.status === 'headers-only') {
-        let block = await bitcoinClient.getBlock(chain.hash);
-        while (block && block.confirmations === -1) {
-          this.orphanedBlocks.push({
-            height: block.height,
-            hash: block.hash,
-            status: chain.status
-          });
-          block = await bitcoinClient.getBlock(block.previousblockhash);
+      for (const chain of this.chainTips) {
+        if (chain.status === 'valid-fork' || chain.status === 'valid-headers' || chain.status === 'headers-only') {
+          let block = await bitcoinClient.getBlock(chain.hash);
+          while (block && block.confirmations === -1) {
+            this.orphanedBlocks.push({
+              height: block.height,
+              hash: block.hash,
+              status: chain.status
+            });
+            block = await bitcoinClient.getBlock(block.previousblockhash);
+          }
         }
       }
-    }
 
-    logger.debug(`Updated orphaned blocks cache. Found ${this.orphanedBlocks.length} orphaned blocks`);
+      logger.debug(`Updated orphaned blocks cache. Found ${this.orphanedBlocks.length} orphaned blocks`);
+    } catch (e) {
+      logger.err(`Cannot get fetch orphaned blocks. Reason: ${e instanceof Error ? e.message : e}`);
+    }
   }
 
   public getOrphanedBlocksAtHeight(height: number): OrphanedBlock[] {
