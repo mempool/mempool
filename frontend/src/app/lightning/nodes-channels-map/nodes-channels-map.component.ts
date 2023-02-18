@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
-import { Observable, switchMap, tap, zip } from 'rxjs';
+import { delay, Observable, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -75,6 +75,7 @@ export class NodesChannelsMap implements OnInit {
     
     this.channelsObservable = this.activatedRoute.paramMap
      .pipe(
+       delay(100),
        switchMap((params: ParamMap) => {
         this.isLoading = true;
         if (this.style === 'channelpage' && this.channel.length === 0 || !this.hasLocation) {
