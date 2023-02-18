@@ -7,6 +7,7 @@
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
     "INDEXING_BLOCKS_AMOUNT": -1,
+    "AUDIT": true,
     "ADVANCED_GBT_AUDIT": true,
     "ADVANCED_GBT_MEMPOOL": false,
     "POLL_RATE_MS": 1000

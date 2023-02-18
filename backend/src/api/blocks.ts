@@ -17,7 +17,6 @@ import { prepareBlock } from '../utils/blocks-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import HashratesRepository from '../repositories/HashratesRepository';
 import indexer from '../indexer';
-import fiatConversion from './fiat-conversion';
 import poolsParser from './pools-parser';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
@@ -170,7 +169,7 @@ class Blocks {
     blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
     blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
     blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
-    blockExtended.extras.usd = fiatConversion.getConversionRates().USD;
+    blockExtended.extras.usd = priceUpdater.latestPrices.USD;
 
     if (block.height === 0) {
       blockExtended.extras.medianFee = 0; // 50th percentiles
@@ -212,9 +211,11 @@ class Blocks {
         };
       }
 
-      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
-      if (auditScore != null) {
-        blockExtended.extras.matchRate = auditScore.matchRate;
+      if (config.MEMPOOL.AUDIT) {
+        const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
+        if (auditScore != null) {
+          blockExtended.extras.matchRate = auditScore.matchRate;
+        }
       }
     }
 
@@ -609,7 +610,9 @@ class Blocks {
     const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
-    await blocksRepository.$saveBlockInDatabase(blockExtended);
+    if (Common.indexingEnabled()) {
+      await blocksRepository.$saveBlockInDatabase(blockExtended);
+    }
 
     return prepareBlock(blockExtended);
   }
@@ -713,7 +716,7 @@ class Blocks {
         block = await this.$indexBlock(currentHeight);
         returnBlocks.push(block);
       } else if (nextHash != null) {
-        block = prepareBlock(await bitcoinClient.getBlock(nextHash));
+        block = await this.$indexBlock(currentHeight);
         nextHash = block.previousblockhash;
         returnBlocks.push(block);
       }
