@@ -757,7 +757,7 @@ class DatabaseMigration {
       ADD total_outputs int unsigned NOT NULL,
       ADD total_output_amt bigint unsigned NOT NULL,
       ADD fee_percentiles longtext NULL,
-      ADD median_fee_amt int unsigned NOT NULL,
+      ADD median_fee_amt int unsigned NULL,
       ADD segwit_total_txs int unsigned NOT NULL,
       ADD segwit_total_size int unsigned NOT NULL,
       ADD segwit_total_weight int unsigned NOT NULL,
