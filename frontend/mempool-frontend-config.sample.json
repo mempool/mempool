@@ -17,6 +17,7 @@
   "LIQUID_WEBSITE_URL": "https://liquid.network",
   "BISQ_WEBSITE_URL": "https://bisq.markets",
   "MINING_DASHBOARD": true,
+  "AUDIT": false,
   "MAINNET_BLOCK_AUDIT_START_HEIGHT": 0,
   "TESTNET_BLOCK_AUDIT_START_HEIGHT": 0,
   "SIGNET_BLOCK_AUDIT_START_HEIGHT": 0,

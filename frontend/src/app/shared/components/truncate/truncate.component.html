@@ -1,0 +1,19 @@
+<span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null">
+    <ng-container *ngIf="link">
+      <a [routerLink]="link" class="truncate-link">
+        <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+      </a>
+    </ng-container>
+    <ng-container *ngIf="!link">
+      <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
+    </ng-container>
+    <ng-content></ng-content>
+</span>
+
+<ng-template #ltrTruncated>
+  <span class="first">{{text.slice(0,-lastChars)}}</span><span class="last-four">{{text.slice(-lastChars)}}</span>
+</ng-template>
+
+<ng-template #rtlTruncated>
+  <span class="first">{{text.slice(lastChars)}}</span><span class="last-four">{{text.slice(0,lastChars)}}</span>
+</ng-template>

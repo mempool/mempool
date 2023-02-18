@@ -22,7 +22,9 @@ export class BlocksList implements OnInit, OnDestroy {
   latestScoreSubscription: Subscription;
 
   indexingAvailable = false;
+  auditAvailable = false;
   isLoading = true;
+  loadingScores = true;
   fromBlockHeight = undefined;
   paginationMaxSize: number;
   page = 1;
@@ -43,6 +45,7 @@ export class BlocksList implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
       this.stateService.env.MINING_DASHBOARD === true);
+    this.auditAvailable = this.indexingAvailable && this.stateService.env.AUDIT;
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
@@ -110,9 +113,10 @@ export class BlocksList implements OnInit, OnDestroy {
         }, [])
       );
 
-    if (this.indexingAvailable) {
+    if (this.indexingAvailable && this.auditAvailable) {
       this.auditScoreSubscription = this.fromHeightSubject.pipe(
         switchMap((fromBlockHeight) => {
+          this.loadingScores = true;
           return this.apiService.getBlockAuditScores$(this.page === 1 ? undefined : fromBlockHeight)
             .pipe(
               catchError(() => {
@@ -124,6 +128,7 @@ export class BlocksList implements OnInit, OnDestroy {
         Object.values(scores).forEach(score => {
           this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
         });
+        this.loadingScores = false;
       });
 
       this.latestScoreSubscription = this.stateService.blocks$.pipe(

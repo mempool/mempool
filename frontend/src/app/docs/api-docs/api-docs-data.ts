@@ -8668,6 +8668,22 @@ export const faqData = [
     title: "Why doesn't the fee range shown for a block match the feerates of transactions within the block?",
   },
   {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    options: { auditOnly: true },
+    fragment: "how-do-block-audits-work",
+    title: "How do block audits work?",
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    options: { auditOnly: true },
+    fragment: "what-is-block-health",
+    title: "What is block health?",
+  },
+  {
     type: "category",
     category: "self-hosting",
     fragment: "self-hosting",

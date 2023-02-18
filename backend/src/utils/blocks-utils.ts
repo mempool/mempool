@@ -17,7 +17,7 @@ export function prepareBlock(block: any): BlockExtended {
     extras: {
       coinbaseRaw: block.coinbase_raw ?? block.extras?.coinbaseRaw,
       medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
-      feeRange: block.feeRange ?? block.fee_span,
+      feeRange: block.feeRange ?? block?.extras?.feeRange ?? block.fee_span,
       reward: block.reward ?? block?.extras?.reward,
       totalFees: block.totalFees ?? block?.fees ?? block?.extras?.totalFees,
       avgFee: block?.extras?.avgFee ?? block.avg_fee,

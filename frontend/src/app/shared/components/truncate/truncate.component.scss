@@ -1,0 +1,26 @@
+.truncate {
+  text-overflow: unset;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+
+  .truncate-link {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    flex-shrink: 1;
+    overflow: hidden;
+  }
+
+  .first {
+    flex-grow: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .last-four {
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+}

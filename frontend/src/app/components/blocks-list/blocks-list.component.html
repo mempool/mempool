@@ -14,7 +14,7 @@
           i18n-ngbTooltip="mining.pool-name" ngbTooltip="Pool" placement="bottom" #miningpool [disableTooltip]="!isEllipsisActive(miningpool)">Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Mined</th>
-        <th *ngIf="indexingAvailable" class="health text-left" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
+        <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.health" ngbTooltip="Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Health</th>
         <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.reward" ngbTooltip="Reward" placement="bottom" #reward [disableTooltip]="!isEllipsisActive(reward)">Reward</th>
@@ -27,7 +27,7 @@
       <tbody *ngIf="blocks$ | async as blocks; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <tr *ngFor="let block of blocks; let i= index; trackBy: trackByBlock">
           <td class="text-left" [class]="widget ? 'widget' : ''">
-            <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
+            <a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a>
           </td>
           <td  *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <div class="tooltip-custom">
@@ -45,17 +45,24 @@
           <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since>
           </td>
-          <td *ngIf="indexingAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
-            <a class="clear-link" [routerLink]="auditScores[block.id] != null ? ['/block/' | relativeUrl, block.id] : null">
-              <div class="progress progress-health">
-                <div class="progress-bar progress-bar-health" role="progressbar"
-                  [ngStyle]="{'width': (100 - (auditScores[block.id] || 0)) + '%' }"></div>
-                <div class="progress-text">
-                  <span *ngIf="auditScores[block.id] != null;">{{ auditScores[block.id] }}%</span>
-                  <span *ngIf="auditScores[block.id] == null">~</span>
-                </div>
-              </div>
-            </a>
+          <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
+            <a
+              class="health-badge badge"
+              [class.badge-success]="auditScores[block.id] >= 99"
+              [class.badge-warning]="auditScores[block.id] >= 75 && auditScores[block.id] < 99"
+              [class.badge-danger]="auditScores[block.id] < 75"
+              [routerLink]="auditScores[block.id] != null ? ['/block/' | relativeUrl, block.id] : null"
+              [state]="{ data: { block: block } }"
+              *ngIf="auditScores[block.id] != null; else nullHealth"
+            >{{ auditScores[block.id] }}%</a>
+            <ng-template #nullHealth>
+              <ng-container *ngIf="!loadingScores; else loadingHealth">
+                <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+              </ng-container>
+            </ng-template>
+            <ng-template #loadingHealth>
+              <span class="skeleton-loader" style="max-width: 60px"></span>
+            </ng-template>
           </td>
           <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
@@ -91,7 +98,7 @@
             <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 125px"></span>
             </td>
-            <td *ngIf="indexingAvailable" class="health text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
+            <td *ngIf="auditAvailable" class="health text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
@@ -115,6 +122,9 @@
       [collectionSize]="blocksCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>
+
+    <div class="clearfix"></div>
+    <br>
   </div>
   
 </div>

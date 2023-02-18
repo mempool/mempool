@@ -116,11 +116,12 @@ export const languages: Language[] = [
 // { code: 'hr', name: 'Hrvatski' },        // Croatian
 // { code: 'id', name: 'Bahasa Indonesia' },// Indonesian
    { code: 'hi', name: 'हिन्दी' },             // Hindi
+   { code: 'ne', name: 'नेपाली' },            // Nepalese
    { code: 'it', name: 'Italiano' },        // Italian
    { code: 'he', name: 'עברית' },           // Hebrew
    { code: 'ka', name: 'ქართული' },         // Georgian
 // { code: 'lv', name: 'Latviešu' },        // Latvian
-// { code: 'lt', name: 'Lietuvių' },        // Lithuanian
+   { code: 'lt', name: 'Lietuvių' },        // Lithuanian
    { code: 'hu', name: 'Magyar' },          // Hungarian
    { code: 'mk', name: 'Македонски' },      // Macedonian
 // { code: 'ms', name: 'Bahasa Melayu' },   // Malay
@@ -155,4 +156,42 @@ export const specialBlocks = {
     labelEvent: 'Halving 🥳',
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
+};
+
+export const fiatCurrencies = {
+  AUD: {
+    name: 'Australian Dollar',
+    code: 'AUD',
+    indexed: true,
+  },
+  CAD: {
+    name: 'Canadian Dollar',
+    code: 'CAD',
+    indexed: true,
+  },
+  CHF: {
+    name: 'Swiss Franc',
+    code: 'CHF',
+    indexed: true,
+  },
+  EUR: {
+    name: 'Euro',
+    code: 'EUR',
+    indexed: true,
+  },
+  GBP: {
+    name: 'Pound Sterling',
+    code: 'GBP',
+    indexed: true,
+  },
+  JPY: {
+    name: 'Japanese Yen',
+    code: 'JPY',
+    indexed: true,
+  },
+  USD: {
+    name: 'US Dollar',
+    code: 'USD',
+    indexed: true,
+  },
 };

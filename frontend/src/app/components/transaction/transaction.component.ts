@@ -13,6 +13,7 @@ import {
 import { Transaction } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
+import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
@@ -39,15 +40,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   transactionTime = -1;
   subscription: Subscription;
   fetchCpfpSubscription: Subscription;
+  fetchRbfSubscription: Subscription;
+  fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
+  replaced: boolean = false;
+  rbfReplaces: string[];
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
+  fetchRbfHistory$ = new Subject<string>();
+  fetchCachedTx$ = new Subject<string>();
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
@@ -74,6 +81,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
     private stateService: StateService,
+    private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
@@ -120,7 +128,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               }),
               delay(2000)
-            )))
+            )),
+            catchError(() => {
+              return of(null);
+            })
+          )
         ),
         catchError(() => {
           return of(null);
@@ -131,26 +143,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cpfpInfo = null;
           return;
         }
-        if (cpfpInfo.effectiveFeePerVsize) {
-          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
-        } else {
-          const lowerFeeParents = cpfpInfo.ancestors.filter(
-            (parent) => parent.fee / (parent.weight / 4) < this.tx.feePerVsize
-          );
-          let totalWeight =
-            this.tx.weight +
-            lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
-          let totalFees =
-            this.tx.fee +
-            lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-          if (cpfpInfo?.bestDescendant) {
-            totalWeight += cpfpInfo?.bestDescendant.weight;
-            totalFees += cpfpInfo?.bestDescendant.fee;
-          }
-
-          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        // merge ancestors/descendants
+        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+          relatives.push(cpfpInfo.bestDescendant);
         }
+        let totalWeight =
+          this.tx.weight +
+          relatives.reduce((prev, val) => prev + val.weight, 0);
+        let totalFees =
+          this.tx.fee +
+          relatives.reduce((prev, val) => prev + val.fee, 0);
+
+        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+
         if (!this.tx.status.confirmed) {
           this.stateService.markBlock$.next({
             txFeePerVSize: this.tx.effectiveFeePerVsize,
@@ -158,6 +164,49 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.cpfpInfo = cpfpInfo;
       });
+
+    this.fetchRbfSubscription = this.fetchRbfHistory$
+    .pipe(
+      switchMap((txId) =>
+        this.apiService
+          .getRbfHistory$(txId)
+      ),
+      catchError(() => {
+        return of([]);
+      })
+    ).subscribe((replaces) => {
+      this.rbfReplaces = replaces;
+    });
+
+    this.fetchCachedTxSubscription = this.fetchCachedTx$
+    .pipe(
+      switchMap((txId) =>
+        this.apiService
+          .getRbfCachedTx$(txId)
+      ),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe((tx) => {
+      if (!tx) {
+        return;
+      }
+
+      this.tx = tx;
+      if (tx.fee === undefined) {
+        this.tx.fee = 0;
+      }
+      this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+      this.isLoadingTx = false;
+      this.error = undefined;
+      this.waitingForTransaction = false;
+      this.graphExpanded = false;
+      this.setupGraph();
+
+      if (!this.tx?.status?.confirmed) {
+        this.fetchRbfHistory$.next(this.tx.txid);
+      }
+    });
 
     this.subscription = this.route.paramMap
       .pipe(
@@ -203,7 +252,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
         switchMap(() => {
           let transactionObservable$: Observable<Transaction>;
-          const cached = this.stateService.getTxFromCache(this.txId);
+          const cached = this.cacheService.getTxFromCache(this.txId);
           if (cached && cached.fee !== -1) {
             transactionObservable$ = of(cached);
           } else {
@@ -272,6 +321,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
+            this.fetchRbfHistory$.next(this.tx.txid);
           }
           setTimeout(() => { this.applyFragment(); }, 0);
         },
@@ -302,7 +352,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
-      this.stateService.setTxCache([this.rbfTransaction]);
+      this.cacheService.setTxCache([this.rbfTransaction]);
+      this.replaced = true;
+      if (rbfTransaction && !this.tx) {
+        this.fetchCachedTx$.next(this.txId);
+      }
     });
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
@@ -368,8 +422,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
+    this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.rbfReplaces = [];
     this.showCpfpDetails = false;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
@@ -435,6 +491,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
+    this.fetchRbfSubscription.unsubscribe();
+    this.fetchCachedTxSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();

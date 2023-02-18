@@ -8,6 +8,11 @@
 	flex-wrap: wrap;
 }
 
+.node-id {
+  width: 0;
+  flex-grow: 1;
+}
+
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
