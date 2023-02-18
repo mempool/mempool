@@ -170,8 +170,8 @@ export interface BlockExtension {
   totalInputs?: number;
   totalOutputs?: number;
   totalOutputAmt?: number;
-  medianFeeAmt?: number;
-  feePercentiles?: number[],
+  medianFeeAmt?: number | null;
+  feePercentiles?: number[] | null,
   segwitTotalTxs?: number;
   segwitTotalSize?: number;
   segwitTotalWeight?: number;
