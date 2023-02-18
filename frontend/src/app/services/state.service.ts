@@ -39,6 +39,7 @@ export interface Env {
   BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
   LIGHTNING: boolean;
+  AUDIT: boolean;
   MAINNET_BLOCK_AUDIT_START_HEIGHT: number;
   TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
@@ -67,6 +68,7 @@ const defaultEnv: Env = {
   'BISQ_WEBSITE_URL': 'https://bisq.markets',
   'MINING_DASHBOARD': true,
   'LIGHTNING': false,
+  'AUDIT': false,
   'MAINNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
@@ -104,6 +106,7 @@ export class StateService {
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
+  chainTip$ = new ReplaySubject<number>(-1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -111,14 +114,14 @@ export class StateService {
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
-  markBlock$ = new ReplaySubject<MarkBlockState>();
+  markBlock$ = new BehaviorSubject<MarkBlockState>({});
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
-
-  txCache: { [txid: string]: Transaction } = {};
+  hideAudit: BehaviorSubject<boolean>;
+  fiatCurrency$: BehaviorSubject<string>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -178,6 +181,15 @@ export class StateService {
         this.storageService.removeItem('flow-preference');
       }
     });
+
+    const savedAuditPreference = this.storageService.getValue('audit-preference');
+    this.hideAudit = new BehaviorSubject<boolean>(savedAuditPreference === 'hide');
+    this.hideAudit.subscribe((hide) => {
+      this.storageService.setValue('audit-preference', hide ? 'hide' : 'show');
+    });
+    
+    const fiatPreference = this.storageService.getValue('fiat-preference');
+    this.fiatCurrency$ = new BehaviorSubject<string>(fiatPreference || 'USD');
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -274,18 +286,15 @@ export class StateService {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
   }
 
-  setTxCache(transactions) {
-    this.txCache = {};
-    transactions.forEach(tx => {
-      this.txCache[tx.txid] = tx;
-    });
+  resetChainTip() {
+    this.latestBlockHeight = -1;
+    this.chainTip$.next(-1);
   }
- 
-  getTxFromCache(txid) {
-    if (this.txCache && this.txCache[txid]) {
-      return this.txCache[txid];
-    } else {
-      return null;
+
+  updateChainTip(height) {
+    if (height > this.latestBlockHeight) {
+      this.latestBlockHeight = height;
+      this.chainTip$.next(height);
     }
   }
 }

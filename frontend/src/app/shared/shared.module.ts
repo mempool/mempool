@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -23,6 +23,7 @@ import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
+import { FiatCurrencyPipe } from './pipes/fiat-currency.pipe';
 import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { TimeUntilComponent } from '../components/time-until/time-until.component';
@@ -34,6 +35,7 @@ import { TxFeaturesComponent } from '../components/tx-features/tx-features.compo
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
+import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -77,6 +79,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
@@ -92,6 +95,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -106,6 +110,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
+    FiatCurrencyPipe,
     ColoredPriceDirective,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -152,6 +157,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
@@ -197,6 +203,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -205,6 +212,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
+    FiatCurrencyPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,
@@ -252,6 +260,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
     ToggleComponent,
@@ -287,6 +296,7 @@ export class SharedModule {
     library.addIcons(faRedoAlt);
     library.addIcons(faArrowAltCircleRight);
     library.addIcons(faArrowsRotate);
+    library.addIcons(faCircleLeft);
     library.addIcons(faExternalLinkAlt);
     library.addIcons(faSortUp);
     library.addIcons(faCaretUp);

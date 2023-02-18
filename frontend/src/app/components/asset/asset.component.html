@@ -2,11 +2,9 @@
   <div class="title-asset">
     <h1 i18n="asset|Liquid Asset page title">Asset</h1>
     <div class="tx-link">
-      <a [routerLink]="['/assets/asset/' | relativeUrl, assetString]">
-        <span class="d-inline d-lg-none">{{ assetString | shortenString : 24 }}</span>
-        <span class="d-none d-lg-inline">{{ assetString }}</span>
-      </a>
-      <app-clipboard [text]="assetString"></app-clipboard>
+      <app-truncate [text]="assetString" [lastChars]="8" [link]="['/assets/asset/' | relativeUrl, assetString]">
+        <app-clipboard [text]="assetString"></app-clipboard>
+      </app-truncate>
     </div>
   </div>
 

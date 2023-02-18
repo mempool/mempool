@@ -1,7 +1,8 @@
 import * as fs from 'fs';
-import path from "path";
+import path from 'path';
 import config from '../config';
 import logger from '../logger';
+import { IConversionRates } from '../mempool.interfaces';
 import PricesRepository from '../repositories/PricesRepository';
 import BitfinexApi from './price-feeds/bitfinex-api';
 import BitflyerApi from './price-feeds/bitflyer-api';
@@ -20,17 +21,7 @@ export interface PriceFeed {
 }
 
 export interface PriceHistory {
-  [timestamp: number]: Prices;
-}
-
-export interface Prices {
-  USD: number;
-  EUR: number;
-  GBP: number;
-  CAD: number;
-  CHF: number;
-  AUD: number;
-  JPY: number;
+  [timestamp: number]: IConversionRates;
 }
 
 class PriceUpdater {
@@ -40,7 +31,8 @@ class PriceUpdater {
   running = false;
   feeds: PriceFeed[] = [];
   currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
-  latestPrices: Prices;
+  latestPrices: IConversionRates;
+  private ratesChangedCallback: ((rates: IConversionRates) => void) | undefined;
 
   constructor() {
     this.latestPrices = this.getEmptyPricesObj();
@@ -52,16 +44,28 @@ class PriceUpdater {
     this.feeds.push(new GeminiApi());
   }
 
-  public getEmptyPricesObj(): Prices {
+  public getEmptyPricesObj(): IConversionRates {
     return {
-      USD: -1,
-      EUR: -1,
-      GBP: -1,
-      CAD: -1,
-      CHF: -1,
-      AUD: -1,
-      JPY: -1,
+      USD: 0,
+      EUR: 0,
+      GBP: 0,
+      CAD: 0,
+      CHF: 0,
+      AUD: 0,
+      JPY: 0,
     };
+  }
+
+  public setRatesChangedCallback(fn: (rates: IConversionRates) => void) {
+    this.ratesChangedCallback = fn;
+  }
+
+  /**
+   * We execute this function before the websocket initialization since
+   * the websocket init is not done asyncronously
+   */
+  public async $initializeLatestPriceWithDb(): Promise<void> {
+    this.latestPrices = await PricesRepository.$getLatestConversionRates();
   }
 
   public async $run(): Promise<void> {
@@ -76,13 +80,12 @@ class PriceUpdater {
     }
 
     try {
+      await this.$updatePrice();
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
-      } else {
-        await this.$updatePrice();
       }
     } catch (e) {
-      logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
     }
 
     this.running = false;
@@ -115,14 +118,14 @@ class PriceUpdater {
             if (price > 0) {
               prices.push(price);
             }
-            logger.debug(`${feed.name} BTC/${currency} price: ${price}`);
+            logger.debug(`${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
           } catch (e) {
-            logger.debug(`Could not fetch BTC/${currency} price at ${feed.name}. Reason: ${(e instanceof Error ? e.message : e)}`);
+            logger.debug(`Could not fetch BTC/${currency} price at ${feed.name}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
           }
         }
       }
       if (prices.length === 1) {
-        logger.debug(`Only ${prices.length} feed available for BTC/${currency} price`);
+        logger.debug(`Only ${prices.length} feed available for BTC/${currency} price`, logger.tags.mining);
       }
 
       // Compute average price, non weighted
@@ -146,6 +149,10 @@ class PriceUpdater {
         this.lastRun = previousRun + 5 * 60;
         logger.err(`Cannot save latest prices into db. Trying again in 5 minutes. Reason: ${(e instanceof Error ? e.message : e)}`);
       }
+    }
+
+    if (this.ratesChangedCallback) {
+      this.ratesChangedCallback(this.latestPrices);
     }
 
     this.lastRun = new Date().getTime() / 1000;
@@ -179,9 +186,9 @@ class PriceUpdater {
       ++insertedCount;
     }
     if (insertedCount > 0) {
-      logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+      logger.notice(`Inserted ${insertedCount} MtGox USD weekly price history into db`, logger.tags.mining);
     } else {
-      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`);
+      logger.debug(`Inserted ${insertedCount} MtGox USD weekly price history into db`, logger.tags.mining);
     }
 
     // Insert Kraken weekly prices
@@ -202,7 +209,7 @@ class PriceUpdater {
   private async $insertMissingRecentPrices(type: 'hour' | 'day'): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
 
-    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database, this may take a while`);
+    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database`, logger.tags.mining);
 
     const historicalPrices: PriceHistory[] = [];
 
@@ -211,13 +218,13 @@ class PriceUpdater {
       try {
         historicalPrices.push(await feed.$fetchRecentPrice(this.currencies, type));
       } catch (e) {
-        logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Cannot fetch hourly historical price from ${feed.name}. Ignoring this feed. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
       }
     }
 
     // Group them by timestamp and currency, for example
     // grouped[123456789]['USD'] = [1, 2, 3, 4];
-    const grouped: Object = {};
+    const grouped: any = {};
     for (const historicalEntry of historicalPrices) {
       for (const time in historicalEntry) {
         if (existingPriceTimes.includes(parseInt(time, 10))) {
@@ -233,7 +240,7 @@ class PriceUpdater {
         for (const currency of this.currencies) {
           const price = historicalEntry[time][currency];
           if (price > 0) {
-            grouped[time][currency].push(parseInt(price, 10));
+            grouped[time][currency].push(typeof price === 'string' ? parseInt(price, 10) : price);
           }
         }
       }
@@ -242,7 +249,7 @@ class PriceUpdater {
     // Average prices and insert everything into the db
     let totalInserted = 0;
     for (const time in grouped) {
-      const prices: Prices = this.getEmptyPricesObj();
+      const prices: IConversionRates = this.getEmptyPricesObj();
       for (const currency in grouped[time]) {
         if (grouped[time][currency].length === 0) {
           continue;
@@ -256,9 +263,9 @@ class PriceUpdater {
     }
 
     if (totalInserted > 0) {
-      logger.notice(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
+      logger.notice(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`, logger.tags.mining);
     } else {
-      logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`);
+      logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`, logger.tags.mining);
     }
   }
 }

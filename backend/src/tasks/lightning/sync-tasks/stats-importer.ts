@@ -8,7 +8,6 @@ import { isIP } from 'net';
 import { Common } from '../../../api/common';
 import channelsApi from '../../../api/explorer/channels.api';
 import nodesApi from '../../../api/explorer/nodes.api';
-import { ResultSetHeader } from 'mysql2';
 
 const fsPromises = promises;
 
@@ -17,7 +16,7 @@ class LightningStatsImporter {
 
   async $run(): Promise<void> {
     const [channels]: any[] = await DB.query('SELECT short_id from channels;');
-    logger.info('Caching funding txs for currently existing channels');
+    logger.info(`Caching funding txs for currently existing channels`, logger.tags.ln);
     await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
     if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
@@ -108,7 +107,7 @@ class LightningStatsImporter {
 
       const tx = await fundingTxFetcher.$fetchChannelOpenTx(short_id);
       if (!tx) {
-        logger.err(`Unable to fetch funding tx for channel ${short_id}. Capacity and creation date is unknown. Skipping channel.`);
+        logger.err(`Unable to fetch funding tx for channel ${short_id}. Capacity and creation date is unknown. Skipping channel.`, logger.tags.ln);
         continue;
       }
 
@@ -310,13 +309,18 @@ class LightningStatsImporter {
    * Import topology files LN historical data into the database
    */
   async $importHistoricalLightningStats(): Promise<void> {
+    if (!config.LIGHTNING.TOPOLOGY_FOLDER) {
+      logger.info(`Lightning topology folder is not set. Not importing historical LN stats`);
+      return;
+    }
+
     logger.debug('Run the historical importer');
     try {
       let fileList: string[] = [];
       try {
         fileList = await fsPromises.readdir(this.topologiesFolder);
       } catch (e) {
-        logger.err(`Unable to open topology folder at ${this.topologiesFolder}`);
+        logger.err(`Unable to open topology folder at ${this.topologiesFolder}`, logger.tags.ln);
         throw e;
       }
       // Insert history from the most recent to the oldest
@@ -354,7 +358,7 @@ class LightningStatsImporter {
           continue;
         }
 
-        logger.debug(`Reading ${this.topologiesFolder}/${filename}`);
+        logger.debug(`Reading ${this.topologiesFolder}/${filename}`, logger.tags.ln);
         let fileContent = '';
         try {
           fileContent = await fsPromises.readFile(`${this.topologiesFolder}/${filename}`, 'utf8');
@@ -363,7 +367,7 @@ class LightningStatsImporter {
             totalProcessed++;
             continue;
           }
-          logger.err(`Unable to open ${this.topologiesFolder}/${filename}`);
+          logger.err(`Unable to open ${this.topologiesFolder}/${filename}`, logger.tags.ln);
           totalProcessed++;
           continue;
         }
@@ -373,7 +377,7 @@ class LightningStatsImporter {
           graph = JSON.parse(fileContent);
           graph = await this.cleanupTopology(graph);
         } catch (e) {
-          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`);
+          logger.debug(`Invalid topology file ${this.topologiesFolder}/${filename}, cannot parse the content. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
           totalProcessed++;
           continue;
         }
@@ -385,20 +389,20 @@ class LightningStatsImporter {
         }
 
         if (!logStarted) {
-          logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`);
+          logger.info(`Founds a topology file that we did not import. Importing historical lightning stats now.`, logger.tags.ln);
           logStarted = true;
         }
         
         const datestr = `${new Date(timestamp * 1000).toUTCString()} (${timestamp})`;
-        logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`);
+        logger.debug(`${datestr}: Found ${graph.nodes.length} nodes and ${graph.edges.length} channels`, logger.tags.ln);
 
         totalProcessed++;
 
         if (processed > 10) {
-          logger.info(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
+          logger.info(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`, logger.tags.ln);
           processed = 0;
         } else {
-          logger.debug(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`);
+          logger.debug(`Generating LN network stats for ${datestr}. Processed ${totalProcessed}/${fileList.length} files`, logger.tags.ln);
         }
         await fundingTxFetcher.$fetchChannelsFundingTxs(graph.edges.map(channel => channel.channel_id.slice(0, -2)));
         const stat = await this.computeNetworkStats(timestamp, graph, true);
@@ -407,10 +411,10 @@ class LightningStatsImporter {
       }
 
       if (totalProcessed > 0) {
-        logger.info(`Lightning network stats historical import completed`);
+        logger.notice(`Lightning network stats historical import completed`, logger.tags.ln);
       }
     } catch (e) {
-      logger.err(`Lightning network stats historical failed. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Lightning network stats historical failed. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
   }
 

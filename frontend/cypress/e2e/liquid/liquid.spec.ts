@@ -7,7 +7,6 @@ describe('Liquid', () => {
     cy.intercept('/liquid/api/blocks/').as('blocks');
     cy.intercept('/liquid/api/tx/**/outspends').as('outspends');
     cy.intercept('/liquid/api/block/**/txs/**').as('block-txs');
-    cy.intercept('/resources/pools.json').as('pools');
 
     Cypress.Commands.add('waitForBlockData', () => {
       cy.wait('@socket');

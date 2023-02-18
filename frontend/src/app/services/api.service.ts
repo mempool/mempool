@@ -5,7 +5,7 @@ import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITrans
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
-import { Outspend } from '../interfaces/electrs.interface';
+import { Outspend, Transaction } from '../interfaces/electrs.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -117,6 +117,14 @@ export class ApiService {
 
   validateAddress$(address: string): Observable<AddressInformation> {
     return this.httpClient.get<AddressInformation>(this.apiBaseUrl + this.apiBasePath + '/api/v1/validate-address/' + address);
+  }
+
+  getRbfHistory$(txid: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/tx/' + txid + '/replaces');
+  }
+
+  getRbfCachedTx$(txid: string): Observable<Transaction> {
+    return this.httpClient.get<Transaction>(this.apiBaseUrl + this.apiBasePath + '/api/v1/tx/' + txid + '/cached');
   }
 
   listLiquidPegsMonth$(): Observable<LiquidPegs[]> {

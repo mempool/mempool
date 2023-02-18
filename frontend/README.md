@@ -127,8 +127,9 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Thai @Gusb3ll
 * Turkish @stackmore
 * Ukrainian @volbil
-* Vietnamese @bitcoin_vietnam
+* Vietnamese @BitcoinvnNews
 * Chinese @wdljt
 * Russian @TonyCrusoe @Bitconan
 * Romanian @mirceavesa
 * Macedonian @SkechBoy
+* Nepalese @kebinm

@@ -1,14 +1,13 @@
 <div class="mb-2 box-top">
   <div class="box-left text-truncate">
     <h3 class="mb-0 text-truncate">{{ channel.alias || '?' }}</h3>
-    <a [routerLink]="['/lightning/node' | relativeUrl, channel.public_key]" >
-      {{ channel.public_key | shortenString : 12 }}
-    </a>
-    <app-clipboard [text]="channel.public_key"></app-clipboard>
+    <app-truncate [text]="channel.public_key" [lastChars]="6" [link]="['/lightning/node' | relativeUrl, channel.public_key]">
+      <app-clipboard [text]="channel.public_key"></app-clipboard>
+    </app-truncate>
   </div>
   <div class="box-right">
     <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: channel.channels }"></ng-container></div>
-    <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount></div>
+    <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2" [noFiat]="true"></app-amount></div>
   </div>
 </div>
 

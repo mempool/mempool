@@ -12,6 +12,43 @@
   display: none;
 }
 
+.blockchain-wrapper {
+  position: relative;
+
+  .reset-scroll {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 50px;
+    z-index: 10;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 500ms;
+    background: radial-gradient(#1d1f31 0%, transparent 50%);
+
+    &:hover {
+      opacity: 1;
+      transition: opacity 300ms;
+    }
+
+    &.hidden {
+      opacity: 0;
+      cursor: inherit;
+      pointer-events: none;
+      transition: opacity 500ms;
+    }
+  }
+
+  &.time-ltr .reset-scroll{
+    right: 10px;
+    transform: translateY(-50%) rotateZ(180deg);
+  }
+
+  &.time-rtl .reset-scroll {
+    left: 10px;
+  }
+}
+
 .warning-label {
   position: relative;
   text-align: center;

@@ -64,26 +64,6 @@
     white-space: nowrap;
     margin: 0;
     display: inline-block;
-
-    &.truncated {
-      text-overflow: unset;
-      display: flex;
-      flex-direction: row;
-      align-items: baseline;
-
-      .first {
-        flex-grow: 1;
-        flex-shrink: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-right: -2px;
-      }
-
-      .last-four {
-        flex-shrink: 0;
-        flex-grow: 0;
-      }
-    }
   }
 
   ::ng-deep .title-wrapper {

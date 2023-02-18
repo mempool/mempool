@@ -1,31 +1,23 @@
 import DB from '../database';
 import logger from '../logger';
 import { Ancestor, CpfpInfo } from '../mempool.interfaces';
-
-interface CpfpSummary {
-  txid: string;
-  cluster: string;
-  root: string;
-  txs: Ancestor[];
-  height: number;
-  fee_rate: number;
-}
+import cpfpRepository from './CpfpRepository';
 
 class TransactionRepository {
-  public async $setCluster(txid: string, cluster: string): Promise<void> {
+  public async $setCluster(txid: string, clusterRoot: string): Promise<void> {
     try {
       await DB.query(
         `
-          INSERT INTO transactions
+          INSERT INTO compact_transactions
           (
             txid,
             cluster
           )
-          VALUE (?, ?)
+          VALUE (UNHEX(?), UNHEX(?))
           ON DUPLICATE KEY UPDATE
-            cluster = ?
+            cluster = UNHEX(?)
         ;`,
-        [txid, cluster, cluster]
+        [txid, clusterRoot, clusterRoot]
       );
     } catch (e: any) {
       logger.err(`Cannot save transaction cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
@@ -33,19 +25,46 @@ class TransactionRepository {
     }
   }
 
-  public async $getCpfpInfo(txid: string): Promise<CpfpInfo | void> {
+  public async $batchSetCluster(txs): Promise<void> {
     try {
       let query = `
-        SELECT *
-        FROM transactions
-        LEFT JOIN cpfp_clusters AS cluster ON cluster.root = transactions.cluster
-        WHERE transactions.txid = ?
+          INSERT IGNORE INTO compact_transactions
+          (
+            txid,
+            cluster
+          )
+          VALUES
       `;
-      const [rows]: any = await DB.query(query, [txid]);
-      if (rows.length) {
-        rows[0].txs = JSON.parse(rows[0].txs) as Ancestor[];
-        if (rows[0]?.txs?.length) {
-          return this.convertCpfp(rows[0]);
+      query += txs.map(tx => {
+        return (' (UNHEX(?), UNHEX(?))');
+      }) + ';';
+      const values = txs.map(tx => [tx.txid, tx.cluster]).flat();
+      await DB.query(
+        query,
+        values
+      );
+    } catch (e: any) {
+      logger.err(`Cannot save cpfp transactions into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getCpfpInfo(txid: string): Promise<CpfpInfo | void> {
+    try {
+      const [txRows]: any = await DB.query(
+        `
+          SELECT HEX(txid) as id, HEX(cluster) as root
+          FROM compact_transactions
+          WHERE txid = UNHEX(?)
+        `,
+        [txid]
+      );
+      if (txRows.length && txRows[0].root != null) {
+        const txid = txRows[0].id.toLowerCase();
+        const clusterId = txRows[0].root.toLowerCase();
+        const cluster = await cpfpRepository.$getCluster(clusterId);
+        if (cluster) {
+          return this.convertCpfp(txid, cluster);
         }
       }
     } catch (e) {
@@ -54,12 +73,28 @@ class TransactionRepository {
     }
   }
 
-  private convertCpfp(cpfp: CpfpSummary): CpfpInfo {
+  public async $removeTransaction(txid: string): Promise<void> {
+    try {
+      await DB.query(
+        `
+          DELETE FROM compact_transactions
+          WHERE txid = UNHEX(?)
+        `,
+        [txid]
+      );
+    } catch (e) {
+      logger.warn('Cannot delete transaction cpfp info from db. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  private convertCpfp(txid, cluster): CpfpInfo {
     const descendants: Ancestor[] = [];
     const ancestors: Ancestor[] = [];
     let matched = false;
-    for (const tx of cpfp.txs) {
-      if (tx.txid === cpfp.txid) {
+
+    for (const tx of (cluster?.txs || [])) {
+      if (tx.txid === txid) {
         matched = true;
       } else if (!matched) {
         descendants.push(tx);
@@ -70,7 +105,6 @@ class TransactionRepository {
     return {
       descendants,
       ancestors,
-      effectiveFeePerVsize: cpfp.fee_rate
     };
   }
 }
