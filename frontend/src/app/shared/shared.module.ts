@@ -23,6 +23,7 @@ import { RelativeUrlPipe } from './pipes/relative-url/relative-url.pipe';
 import { ScriptpubkeyTypePipe } from './pipes/scriptpubkey-type-pipe/scriptpubkey-type.pipe';
 import { BytesPipe } from './pipes/bytes-pipe/bytes.pipe';
 import { WuBytesPipe } from './pipes/bytes-pipe/wubytes.pipe';
+import { FiatCurrencyPipe } from './pipes/fiat-currency.pipe';
 import { BlockchainComponent } from '../components/blockchain/blockchain.component';
 import { TimeSinceComponent } from '../components/time-since/time-since.component';
 import { TimeUntilComponent } from '../components/time-until/time-until.component';
@@ -34,6 +35,7 @@ import { TxFeaturesComponent } from '../components/tx-features/tx-features.compo
 import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
+import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -93,6 +95,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -107,6 +110,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     CapAddressPipe,
     Decimal2HexPipe,
     FeeRoundingPipe,
+    FiatCurrencyPipe,
     ColoredPriceDirective,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -199,6 +203,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TxFeaturesComponent,
     TxFeeRatingComponent,
     LanguageSelectorComponent,
+    FiatSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -207,6 +212,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     BytesPipe,
     VbytesPipe,
     WuBytesPipe,
+    FiatCurrencyPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,
