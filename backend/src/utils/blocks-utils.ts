@@ -17,17 +17,18 @@ export function prepareBlock(block: any): BlockExtended {
     extras: {
       coinbaseRaw: block.coinbase_raw ?? block.extras?.coinbaseRaw,
       medianFee: block.medianFee ?? block.median_fee ?? block.extras?.medianFee,
-      feeRange: block.feeRange ?? block?.extras?.feeRange ?? block.fee_span,
-      reward: block.reward ?? block?.extras?.reward,
-      totalFees: block.totalFees ?? block?.fees ?? block?.extras?.totalFees,
-      avgFee: block?.extras?.avgFee ?? block.avg_fee,
-      avgFeeRate: block?.avgFeeRate ?? block.avg_fee_rate,
-      pool: block?.extras?.pool ?? (block?.pool_id ? {
+      feeRange: block.feeRange ?? block.extras?.feeRange ?? block.fee_span,
+      reward: block.reward ?? block.extras?.reward,
+      totalFees: block.totalFees ?? block.fees ?? block.extras?.totalFees,
+      avgFee: block.extras?.avgFee ?? block.avg_fee,
+      avgFeeRate: block.avgFeeRate ?? block.avg_fee_rate,
+      pool: block.extras?.pool ?? (block.pool_id ? {
         id: block.pool_id,
         name: block.pool_name,
         slug: block.pool_slug,
       } : undefined),
-      usd: block?.extras?.usd ?? block.usd ?? null,
+      usd: block.extras?.usd ?? block.usd ?? null,
+      medianTimestamp: block.mediantime ?? block.medianTime ?? block.extras?.medianTimestamp,
     }
   };
 }

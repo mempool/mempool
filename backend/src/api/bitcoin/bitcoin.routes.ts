@@ -360,7 +360,7 @@ class BitcoinRoutes {
       } else if (blockAge > 30 * day) {
         cacheDuration = 10 * day;
       } else {
-        cacheDuration = 600
+        cacheDuration = 600;
       }
 
       res.setHeader('Expires', new Date(Date.now() + 1000 * cacheDuration).toUTCString());

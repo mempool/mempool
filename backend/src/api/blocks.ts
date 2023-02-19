@@ -649,9 +649,11 @@ class Blocks {
    * Index a block if it's missing from the database. Returns the block after indexing
    */
   public async $indexBlock(height: number): Promise<BlockExtended> {
-    const dbBlock = await blocksRepository.$getBlockByHeight(height);
-    if (dbBlock !== null) {
-      return prepareBlock(dbBlock);
+    if (Common.indexingEnabled()) {
+      const dbBlock = await blocksRepository.$getBlockByHeight(height);
+      if (dbBlock !== null) {
+        return prepareBlock(dbBlock);
+      }
     }
 
     const blockHash = await bitcoinApi.$getBlockHash(height);
@@ -679,7 +681,7 @@ class Blocks {
     // Block has already been indexed
     if (Common.indexingEnabled()) {
       const dbBlock = await blocksRepository.$getBlockByHash(hash);
-      if (dbBlock != null) {
+      if (dbBlock !== null) {
         return prepareBlock(dbBlock);
       }
     }
@@ -689,18 +691,10 @@ class Blocks {
       return await bitcoinApi.$getBlock(hash);
     }
 
-    let block = await bitcoinClient.getBlock(hash);
-    block = prepareBlock(block);
-
     // Bitcoin network, add our custom data on top
-    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
-    const blockExtended = await this.$getBlockExtended(block, transactions);
-    if (Common.indexingEnabled()) {
-      delete(blockExtended['coinbaseTx']);
-      await blocksRepository.$saveBlockInDatabase(blockExtended);
-    }
-
-    return blockExtended;
+    let block = await bitcoinClient.getBlock(hash);
+    block = await this.$indexBlock(block.height);
+    return block;
   }
 
   public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
@@ -763,7 +757,7 @@ class Blocks {
       } else if (Common.indexingEnabled()) {
         block = await this.$indexBlock(currentHeight);
         returnBlocks.push(block);
-      } else if (nextHash != null) {
+      } else if (nextHash !== null) {
         block = await this.$indexBlock(currentHeight);
         nextHash = block.previousblockhash;
         returnBlocks.push(block);

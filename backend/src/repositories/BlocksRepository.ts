@@ -399,10 +399,17 @@ class BlocksRepository {
   public async $getBlockByHash(hash: string): Promise<object | null> {
     try {
       const query = `
-        SELECT *, blocks.height, UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp, hash as id,
-        pools.id as pool_id, pools.name as pool_name, pools.link as pool_link, pools.slug as pool_slug,
-        pools.addresses as pool_addresses, pools.regexes as pool_regexes,
-        previous_block_hash as previousblockhash
+        SELECT *,
+          blocks.height,
+          UNIX_TIMESTAMP(blocks.blockTimestamp) as blockTimestamp,
+          UNIX_TIMESTAMP(blocks.median_timestamp) as medianTime,
+          hash as id,
+          pools.id as pool_id, pools.name as pool_name,
+          pools.link as pool_link,
+          pools.slug as pool_slug,
+          pools.addresses as pool_addresses,
+          pools.regexes as pool_regexes,
+          previous_block_hash as previousblockhash
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
         WHERE hash = ?;
