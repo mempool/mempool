@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { StateService } from '../../services/state.service';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
+import { fiatCurrencies } from '../../app.constants';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -44,6 +47,9 @@ export class BlockFeesGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
+  currencySubscription: Subscription;
+  currency: string;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
@@ -51,11 +57,21 @@ export class BlockFeesGraphComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
+    private stateService: StateService,
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
+    private fiatCurrencyPipe: FiatCurrencyPipe,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+
+    this.currencySubscription = this.stateService.fiatCurrency$.subscribe((fiat) => {
+      if (fiat && fiatCurrencies[fiat]?.indexed) {
+        this.currency = fiat;
+      } else {
+        this.currency = 'USD';
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -84,7 +100,7 @@ export class BlockFeesGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
-                  blockFeesUSD: response.body.filter(val => val.USD > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val.USD, val.avgHeight]),
+                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val[this.currency], val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -157,7 +173,7 @@ export class BlockFeesGraphComponent implements OnInit {
             if (tick.seriesIndex === 0) {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatCurrency(tick.data[1], this.locale, getCurrencySymbol('USD', 'narrow'), 'USD', '1.0-0')}<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
             }
           }
 
@@ -184,7 +200,7 @@ export class BlockFeesGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees USD',
+            name: 'Fees ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {  
               color: 'white',
@@ -216,7 +232,7 @@ export class BlockFeesGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val);
+              return this.fiatShortenerPipe.transform(val, null, this.currency);
             }.bind(this)
           },
           splitLine: {
@@ -243,8 +259,8 @@ export class BlockFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
-          name: 'Fees USD',
-          data: data.blockFeesUSD,
+          name: 'Fees ' + this.currency,
+          data: data.blockFeesFiat,
           type: 'line',
           smooth: 0.25,
           symbol: 'none',

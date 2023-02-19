@@ -324,3 +324,18 @@
   text-decoration: none;
   color: inherit;
 }
+
+.pref-selectors {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .selector {
+    margin-left: .5em;
+    margin-bottom: .5em;
+    &:first {
+      margin-left: 0;
+    }
+  }
+}

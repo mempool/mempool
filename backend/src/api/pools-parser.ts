@@ -127,7 +127,7 @@ class PoolsParser {
         if (!equals(JSON.parse(existingPool.addresses), poolObj.addresses) || !equals(JSON.parse(existingPool.regexes), poolObj.regexes)) {
           finalPoolDataUpdate.push(poolObj);
         }
-      } else {
+      } else if (config.DATABASE.ENABLED) {
         // Double check that if we're not just renaming a pool (same address same regex)
         const [poolToRename]: any[] = await DB.query(`
           SELECT * FROM pools

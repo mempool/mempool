@@ -21,6 +21,12 @@ code {
   font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
+.math {
+  font-family: monospace;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
 tr {
   white-space: inherit;
 }
@@ -34,6 +40,48 @@ li.nav-item {
   @media (min-width: 676px){
     width: auto;
   }
+}
+
+ul.no-bull {
+  list-style: none;
+}
+
+ul.no-bull.block-audit li code {
+  text-transform: uppercase;
+}
+
+ul.no-bull.block-audit li span {
+  margin-right: 10px;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.added {
+  color: #0099ff;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.removed {
+  color: #f344df;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.recent {
+  color: #8a3480;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.marginal {
+  color: #414127;
+}
+
+ul.no-bull.block-audit li p {
+  margin-left: 25px;
+  margin-top: 5px;
+}
+
+ul.no-bull.block-audit li ul {
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
+ul.no-bull.block-audit code{
+  background-color: inherit;
 }
 
 .doc-welcome-note {

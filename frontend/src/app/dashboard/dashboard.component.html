@@ -122,7 +122,7 @@
             <thead>
               <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
               <th class="table-cell-satoshis" i18n="dashboard.latest-transactions.amount">Amount</th>
-              <th class="table-cell-fiat" *ngIf="(network$ | async) === ''" i18n="dashboard.latest-transactions.USD">USD</th>
+              <th class="table-cell-fiat" *ngIf="(network$ | async) === ''">{{ currency }}</th>
               <th class="table-cell-fees" i18n="transaction.fee|Transaction fee">Fee</th>
             </thead>
             <tbody>
@@ -144,7 +144,14 @@
     </div>
   </div>
 
-  <app-language-selector></app-language-selector>
+  <div class="pref-selectors">
+    <div class="selector">
+      <app-language-selector></app-language-selector>
+    </div>
+    <div class="selector">
+      <app-fiat-selector></app-fiat-selector>
+    </div>
+  </div>
 
   <div class="terms-of-service">
     <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>

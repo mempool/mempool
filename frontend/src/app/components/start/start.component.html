@@ -17,7 +17,7 @@
     <app-blockchain [pageIndex]="pageIndex" [pages]="pages" [blocksPerPage]="blocksPerPage" [minScrollWidth]="minScrollWidth"></app-blockchain>
   </div>
   <div class="reset-scroll" [class.hidden]="pageIndex === 0" (click)="resetScroll()">
-    <fa-icon [icon]="['fas', 'circle-left']" [fixedWidth]="true" i18n-title="blocks.return-to-tip" title="Return to tip"></fa-icon>
+    <fa-icon [icon]="['fas', 'circle-left']" [fixedWidth]="true"></fa-icon>
   </div>
 </div>
 

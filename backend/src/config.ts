@@ -19,7 +19,6 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     INDEXING_BLOCKS_AMOUNT: number;
     BLOCKS_SUMMARIES_INDEXING: boolean;
-    PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
@@ -29,6 +28,7 @@ interface IConfig {
     AUTOMATIC_BLOCK_REINDEXING: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
+    AUDIT: boolean;
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
     CPFP_INDEXING: boolean;
@@ -140,7 +140,6 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'BLOCKS_SUMMARIES_INDEXING': false,
-    'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 1,
@@ -150,6 +149,7 @@ const defaults: IConfig = {
     'AUTOMATIC_BLOCK_REINDEXING': false,
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
+    'AUDIT': false,
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,
     'CPFP_INDEXING': false,

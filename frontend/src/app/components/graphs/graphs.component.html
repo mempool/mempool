@@ -22,7 +22,7 @@
         i18n="mining.block-rewards">Block Rewards</a>
       <a class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-sizes-weights' | relativeUrl]" i18n="mining.block-sizes-weights">Block Sizes and Weights</a>
-      <a class="dropdown-item" routerLinkActive="active"
+      <a *ngIf="stateService.env.AUDIT" class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-prediction' | relativeUrl]" i18n="mining.block-prediction-accuracy">Block Prediction Accuracy</a>
     </div>
   </div>
