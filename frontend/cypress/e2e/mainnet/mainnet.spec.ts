@@ -64,7 +64,7 @@ describe('Mainnet', () => {
     it('loads the status screen', () => {
       cy.visit('/status');
       cy.get('#mempool-block-0').should('be.visible');
-      cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
+      cy.get('[id^="bitcoin-block-"]').should('have.length', 22);
       cy.get('.footer').should('be.visible');
       cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
         expect(text).to.match(/Incoming transactions.* vB\/s/);
@@ -219,11 +219,11 @@ describe('Mainnet', () => {
     describe('blocks navigation', () => {
 
       describe('keyboard events', () => {
-        it('loads first blockchain blocks visible and keypress arrow right', () => {
+        it('loads first blockchain block visible and keypress arrow right', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.waitForPageIdle();
@@ -233,11 +233,11 @@ describe('Mainnet', () => {
           });
         });
 
-        it('loads first blockchain blocks visible and keypress arrow left', () => {
+        it('loads first blockchain block visible and keypress arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -246,11 +246,11 @@ describe('Mainnet', () => {
           });
         });
 
-        it('loads last blockchain blocks and keypress arrow right', () => {
+        it.skip('loads last blockchain block and keypress arrow right', () => { //Skip for now as "last" doesn't really work with infinite scrolling
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-4 > a').click().then(() => {
+          cy.get('bitcoin-block-offset-0-index-7').click().then(() => {
             cy.waitForPageIdle();
 
             // block 6
@@ -309,7 +309,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');

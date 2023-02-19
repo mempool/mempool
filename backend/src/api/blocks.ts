@@ -600,9 +600,11 @@ class Blocks {
    * Index a block if it's missing from the database. Returns the block after indexing
    */
   public async $indexBlock(height: number): Promise<BlockExtended> {
-    const dbBlock = await blocksRepository.$getBlockByHeight(height);
-    if (dbBlock != null) {
-      return prepareBlock(dbBlock);
+    if (Common.indexingEnabled()) {
+      const dbBlock = await blocksRepository.$getBlockByHeight(height);
+      if (dbBlock !== null) {
+        return prepareBlock(dbBlock);
+      }
     }
 
     const blockHash = await bitcoinApi.$getBlockHash(height);

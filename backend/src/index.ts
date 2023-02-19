@@ -36,6 +36,7 @@ import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
+import { AxiosError } from 'axios';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -178,7 +179,7 @@ class Server {
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
-    } catch (e) {
+    } catch (e: any) {
       const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
@@ -186,7 +187,9 @@ class Server {
       } else {
         logger.debug(loggerMsg);
       }
-      logger.debug(JSON.stringify(e));
+      if (e instanceof AxiosError) {
+        logger.debug(`AxiosError: ${e?.message}`);
+      }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
