@@ -53,7 +53,7 @@
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
               <tr *ngIf="auditAvailable">
-                <td i18n="latest-blocks.health">Health <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
+                <td><ng-container i18n="latest-blocks.health">Health</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
                 <td>
                   <span
                     class="health-badge badge"
@@ -143,7 +143,7 @@
           </ng-template>
         </tr>
         <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
-          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
+          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees</td>
           <td>
             <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             <span class="fiat">
@@ -158,7 +158,7 @@
           <td style="width: 75%;"><span class="skeleton-loader"></span></td>
         </tr>
         <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
-          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees:</td>
+          <td i18n="block.subsidy-and-fees|Total subsidy and fees in a block">Subsidy + fees</td>
           <td><span class="skeleton-loader"></span></td>
         </tr>
       </ng-template>
@@ -206,13 +206,13 @@
   <div class="box" *ngIf="!error && webGlEnabled && showAudit">
     <div class="nav nav-tabs" *ngIf="isMobile && showAudit">
       <a class="nav-link" [class.active]="mode === 'projected'"
-        fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.projected">Projected</ng-container>&nbsp;&nbsp;<span class="badge badge-pill badge-warning" i18n="beta">beta</span></a>
+        fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.expected">Expected</ng-container>&nbsp;&nbsp;<span class="badge badge-pill badge-warning" i18n="beta">beta</span></a>
       <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
         fragment="actual" (click)="changeMode('actual')">Actual</a>
     </div>
     <div class="row">
       <div class="col-sm">
-        <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.projected-block">Projected Block</ng-container> <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h3>
+        <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container> <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
@@ -221,7 +221,7 @@
         </div>
       </div>
       <div class="col-sm" *ngIf="!isMobile">
-        <h3 class="block-subtitle" *ngIf="!isMobile" i18n="block.actual-block">Actual Block</h3>
+        <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"

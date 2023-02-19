@@ -151,6 +151,19 @@ export interface RewardStats {
   totalTx: number;
 }
 
+export interface BlockSizesAndWeights {
+  sizes: {
+    timestamp: number;
+    avgHeight: number;
+    avgSize: number;
+  }[];
+  weights: {
+    timestamp: number;
+    avgHeight: number;
+    avgWeight: number;
+  }[];
+}
+
 export interface AuditScore {
   hash: string;
   matchRate?: number;

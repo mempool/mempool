@@ -5,11 +5,10 @@
       <div class="card-text" i18n-ngbTooltip="mining.percentage-change-last-week" ngbTooltip="Percentage change past week"
         [disableTooltip]="!statistics.previous" placement="bottom">
         <div class="fee-text" [class]="!statistics.previous ? 'no-border' : ''">
-          <app-amount [satoshis]="statistics.latest?.total_capacity" digitsInfo="1.2-2"></app-amount>
+          <app-amount [satoshis]="statistics.latest?.total_capacity" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
         </div>
         <span class="fiat" *ngIf="statistics.previous">
-          <app-change [current]="statistics.latest?.total_capacity" [previous]="statistics.previous?.total_capacity">
-          </app-change>
+          <app-fiat [value]="statistics.latest?.total_capacity" digitsInfo="1.0-0" ></app-fiat>
         </span>
       </div>
     </div>
