@@ -1,7 +1,12 @@
 import config from '../../config';
 import axios, { AxiosRequestConfig } from 'axios';
+import http from 'http';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
+
+const axiosConnection = axios.create({
+  httpAgent: new http.Agent({ keepAlive: true })
+});
 
 class ElectrsApi implements AbstractBitcoinApi {
   axiosConfig: AxiosRequestConfig = {
@@ -11,52 +16,52 @@ class ElectrsApi implements AbstractBitcoinApi {
   constructor() { }
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
-    return axios.get<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids', this.axiosConfig)
+    return axiosConnection.get<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {
-    return axios.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
+    return axiosConnection.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getTransactionHex(txId: string): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex', this.axiosConfig)
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return axios.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height', this.axiosConfig)
+    return axiosConnection.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHashTip(): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/blocks/tip/hash', this.axiosConfig)
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/blocks/tip/hash', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return axios.get<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids', this.axiosConfig)
+    return axiosConnection.get<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHash(height: number): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height, this.axiosConfig)
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlockHeader(hash: string): Promise<string> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/header', this.axiosConfig)
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/header', this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getBlock(hash: string): Promise<IEsploraApi.Block> {
-    return axios.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash, this.axiosConfig)
+    return axiosConnection.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getRawBlock(hash: string): Promise<Buffer> {
-    return axios.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", { ...this.axiosConfig, responseType: 'arraybuffer' })
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", { ...this.axiosConfig, responseType: 'arraybuffer' })
       .then((response) => { return Buffer.from(response.data); });
   }
 
@@ -77,12 +82,12 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
-    return axios.get<IEsploraApi.Outspend>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspend/' + vout, this.axiosConfig)
+    return axiosConnection.get<IEsploraApi.Outspend>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspend/' + vout, this.axiosConfig)
       .then((response) => response.data);
   }
 
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
-    return axios.get<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspends', this.axiosConfig)
+    return axiosConnection.get<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspends', this.axiosConfig)
       .then((response) => response.data);
   }
 
