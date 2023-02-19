@@ -7,7 +7,7 @@
   </div>
   <div class="box-right">
     <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: channel.channels }"></ng-container></div>
-    <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2"></app-amount></div>
+    <div class="second-line"><app-amount [satoshis]="channel.capacity" digitsInfo="1.2-2" [noFiat]="true"></app-amount></div>
   </div>
 </div>
 

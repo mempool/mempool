@@ -10,7 +10,6 @@ import memPool from './api/mempool';
 import diskCache from './api/disk-cache';
 import statistics from './api/statistics/statistics';
 import websocketHandler from './api/websocket-handler';
-import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 import logger from './logger';
@@ -36,6 +35,8 @@ import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
+import priceUpdater from './tasks/price-updater';
+import { AxiosError } from 'axios';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -78,25 +79,6 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
-    this.app
-      .use((req: Request, res: Response, next: NextFunction) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        next();
-      })
-      .use(express.urlencoded({ extended: true }))
-      .use(express.text({ type: ['text/plain', 'application/base64'] }))
-      ;
-
-    this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
-
-    this.setUpWebsocketHandling();
-
-    await syncAssets.syncAssets$();
-    if (config.MEMPOOL.ENABLED) {
-      diskCache.loadMempoolCache();
-    }
-
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
@@ -115,6 +97,29 @@ class Server {
       }
     }
 
+    this.app
+      .use((req: Request, res: Response, next: NextFunction) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        next();
+      })
+      .use(express.urlencoded({ extended: true }))
+      .use(express.text({ type: ['text/plain', 'application/base64'] }))
+      ;
+
+    if (config.DATABASE.ENABLED) {
+      await priceUpdater.$initializeLatestPriceWithDb();
+    }
+
+    this.server = http.createServer(this.app);
+    this.wss = new WebSocket.Server({ server: this.server });
+
+    this.setUpWebsocketHandling();
+
+    await syncAssets.syncAssets$();
+    if (config.MEMPOOL.ENABLED) {
+      diskCache.loadMempoolCache();
+    }
+
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
       statistics.startStatistics();
     }
@@ -127,7 +132,7 @@ class Server {
       }
     }
 
-    fiatConversion.startService();
+    priceUpdater.$run();
 
     this.setUpHttpApiRoutes();
 
@@ -174,7 +179,7 @@ class Server {
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
-    } catch (e) {
+    } catch (e: any) {
       const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
@@ -182,7 +187,9 @@ class Server {
       } else {
         logger.debug(loggerMsg);
       }
-      logger.debug(JSON.stringify(e));
+      if (e instanceof AxiosError) {
+        logger.debug(`AxiosError: ${e?.message}`);
+      }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
@@ -221,7 +228,7 @@ class Server {
       memPool.setAsyncMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
       blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
-    fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
   

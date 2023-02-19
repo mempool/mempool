@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Env, StateService } from '../../services/state.service';
 import { restApiDocsData } from './api-docs-data';
 import { faqData } from './api-docs-data';
 
@@ -12,11 +13,17 @@ export class ApiDocsNavComponent implements OnInit {
   @Input() network: any;
   @Input() whichTab: string;
   @Output() navLinkClickEvent: EventEmitter<any> = new EventEmitter();
+  env: Env;
   tabData: any[];
+  auditEnabled: boolean;
 
-  constructor() { }
+  constructor(
+    private stateService: StateService
+  ) { }
 
   ngOnInit(): void {
+    this.env = this.stateService.env;
+    this.auditEnabled = this.env.AUDIT;
     if (this.whichTab === 'rest') {
       this.tabData = restApiDocsData;
     } else if (this.whichTab === 'faq') {

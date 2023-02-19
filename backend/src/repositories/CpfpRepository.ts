@@ -111,7 +111,7 @@ class CpfpRepository {
     }
   }
 
-  public async $getCluster(clusterRoot: string): Promise<Cluster> {
+  public async $getCluster(clusterRoot: string): Promise<Cluster | void> {
     const [clusterRows]: any = await DB.query(
       `
         SELECT *
@@ -121,8 +121,11 @@ class CpfpRepository {
       [clusterRoot]
     );
     const cluster = clusterRows[0];
-    cluster.txs = this.unpack(cluster.txs);
-    return cluster;
+    if (cluster?.txs) {
+      cluster.txs = this.unpack(cluster.txs);
+      return cluster;
+    }
+    return;
   }
 
   public async $deleteClustersFrom(height: number): Promise<void> {
@@ -136,9 +139,9 @@ class CpfpRepository {
         [height]
       ) as RowDataPacket[][];
       if (rows?.length) {
-        for (let clusterToDelete of rows) {
-          const txs = this.unpack(clusterToDelete.txs);
-          for (let tx of txs) {
+        for (const clusterToDelete of rows) {
+          const txs = this.unpack(clusterToDelete?.txs);
+          for (const tx of txs) {
             await transactionRepository.$removeTransaction(tx.txid);
           }
         }
@@ -204,20 +207,25 @@ class CpfpRepository {
       return [];
     }
 
-    const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-    const txs: Ancestor[] = [];
-    const view = new DataView(arrayBuffer);
-    for (let offset = 0; offset < arrayBuffer.byteLength; offset += 44) {
-      const txid = Array.from(new Uint8Array(arrayBuffer, offset, 32)).reverse().map(b => b.toString(16).padStart(2, '0')).join('');
-      const weight = view.getUint32(offset + 32);
-      const fee = Number(view.getBigUint64(offset + 36));
-      txs.push({
-        txid,
-        weight,
-        fee
-      });
+    try {
+      const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+      const txs: Ancestor[] = [];
+      const view = new DataView(arrayBuffer);
+      for (let offset = 0; offset < arrayBuffer.byteLength; offset += 44) {
+        const txid = Array.from(new Uint8Array(arrayBuffer, offset, 32)).reverse().map(b => b.toString(16).padStart(2, '0')).join('');
+        const weight = view.getUint32(offset + 32);
+        const fee = Number(view.getBigUint64(offset + 36));
+        txs.push({
+          txid,
+          weight,
+          fee
+        });
+      }
+      return txs;
+    } catch (e) {
+      logger.warn(`Failed to unpack CPFP cluster. Reason: ` + (e instanceof Error ? e.message : e));
+      return [];
     }
-    return txs;
   }
 }
 
