@@ -19,7 +19,6 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     INDEXING_BLOCKS_AMOUNT: number;
     BLOCKS_SUMMARIES_INDEXING: boolean;
-    PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
@@ -141,7 +140,6 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'BLOCKS_SUMMARIES_INDEXING': false,
-    'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 1,
