@@ -216,8 +216,8 @@
 
 <ng-template type="why-dont-fee-ranges-match">
   <p>Mempool aims to show you the <i>effective feerate</i> range for blocks—how much would you actually need to pay to get a transaction included in a block.</p>
-  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range because it actually required more than 1 s/vb to confirm that transaction in that block.</p>
-  <p>For unconfirmed CPFP transactions, Mempool will show the effective feerate (along with descendent & ancestor transaction information) on the transaction page. For confirmed transactions, CPFP relationships are not stored, so this additional information is not shown.</p>
+  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range since it actually required more than 1 s/vb to confirm that transaction in that block.</p>
+  <p>You can find a transaction's feerate on its transaction details page. If the transaction has any CPFP relationships, the page will also show the transaction's effective feerate along with links to descendent and/or ancestor transactions.</p>
 </ng-template>
 
 <ng-template type="how-do-block-audits-work">
