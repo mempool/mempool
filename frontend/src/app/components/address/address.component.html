@@ -1,4 +1,4 @@
-<div class="container-xl">
+<div class="container-xl" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
   <div class="title-address">
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
@@ -15,7 +15,7 @@
 
       <div class="row">
         <div class="col-md">
-          <table class="table table-borderless table-striped">
+          <table class="table table-borderless table-striped address-table">
             <tbody>
               <tr *ngIf="addressInfo && addressInfo.unconfidential">
                 <td i18n="address.unconfidential">Unconfidential</td>
