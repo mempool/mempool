@@ -90,6 +90,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
                 this.prepareChartOptions({
                   sizes: data.sizes.map(val => [val.timestamp * 1000, val.avgSize / 1000000, val.avgHeight]),
                   weights: data.weights.map(val => [val.timestamp * 1000, val.avgWeight / 1000000, val.avgHeight]),
+                  sizePerWeight: data.weights.map((val, i) => [val.timestamp * 1000, data.sizes[i].avgSize / (val.avgWeight / 4), val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -124,6 +125,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
       color: [
         '#FDD835',
         '#D81B60',
+        '#039BE5',
       ],
       grid: {
         top: 30,
@@ -153,6 +155,8 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
             } else if (tick.seriesIndex === 1) { // Weight
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
+            } else if (tick.seriesIndex === 2) { // Size per weight
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} B/vB`;
             }
             tooltip += `<br>`;
           }
@@ -192,10 +196,19 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             },
             icon: 'roundRect',
           },
+          {
+            name: $localize`Size per weight`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
         ],
         selected: JSON.parse(this.storageService.getValue('sizes_weights_legend'))  ?? {
           'Size': true,
           'Weight': true,
+          'Size per weight': true,
         }
       },
       yAxis: data.sizes.length === 0 ? undefined : [
@@ -258,6 +271,18 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
           showSymbol: false,
           symbol: 'none',
           data: data.weights,
+          type: 'line',
+          lineStyle: {
+            width: 2,
+          }
+        },
+        {
+          zlevel: 1,
+          yAxisIndex: 0,
+          name: $localize`Size per weight`,
+          showSymbol: false,
+          symbol: 'none',
+          data: data.sizePerWeight,
           type: 'line',
           lineStyle: {
             width: 2,
