@@ -218,3 +218,21 @@ Generate block at regular interval (every 10 seconds in this example):
    ```
    watch -n 10 "./src/bitcoin-cli -regtest -rpcport=8332 generatetoaddress 1 $address"
    ```
+
+### Re-index tables
+
+You can manually force the nodejs backend to drop all data from a specified set of tables for future re-index. This is mostly useful for the mining dashboard and the lightning explorer.
+
+Use the `--reindex` command to specify a list of comma separated table which will be truncated at start. Note that a 5 seconds delay will be observed before truncating tables in order to give you a chance to cancel (CTRL+C) in case of misuse of the command.
+
+Usage:
+```
+npm run start --reindex=blocks,hashrates
+```
+Example output:
+```
+Feb 13 14:55:27 [63246] WARN: <lightning> Indexed data for "hashrates" tables will be erased in 5 seconds (using '--reindex')
+Feb 13 14:55:32 [63246] NOTICE: <lightning> Table hashrates has been truncated
+```
+
+Reference: https://github.com/mempool/mempool/pull/1269

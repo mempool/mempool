@@ -1,1 +1,1 @@
-<span class="green-color">{{ (conversions$ | async)?.USD * value / 100000000 | currency:'USD':'symbol':digitsInfo }}</span>
+<span class="green-color" *ngIf="(conversions$ | async) as conversions">{{ (conversions ? conversions[currency] : 0) * value / 100000000 | fiatCurrency : digitsInfo : currency }}</span>

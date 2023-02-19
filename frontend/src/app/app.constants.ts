@@ -72,22 +72,10 @@ export const chartColors = [
 ];
 
 export const poolsColor = {
-   'foundryusa': '#D81B60',
-   'antpool': '#8E24AA',
-   'f2pool': '#5E35B1',
-   'poolin': '#3949AB',
-   'binancepool': '#1E88E5',
-   'viabtc': '#039BE5',
-   'btccom': '#00897B',
-   'braiinspool': '#00ACC1',
-   'sbicrypto': '#43A047',
-   'marapool': '#7CB342',
-   'luxor': '#C0CA33',
-   'unknown': '#FDD835',
-   'okkong': '#FFB300',
-}
+  'unknown': '#9C9C9C',
+};
 
- export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
+export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
   250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000];
 
 export interface Language {
@@ -156,4 +144,42 @@ export const specialBlocks = {
     labelEvent: 'Halving 🥳',
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
+};
+
+export const fiatCurrencies = {
+  AUD: {
+    name: 'Australian Dollar',
+    code: 'AUD',
+    indexed: true,
+  },
+  CAD: {
+    name: 'Canadian Dollar',
+    code: 'CAD',
+    indexed: true,
+  },
+  CHF: {
+    name: 'Swiss Franc',
+    code: 'CHF',
+    indexed: true,
+  },
+  EUR: {
+    name: 'Euro',
+    code: 'EUR',
+    indexed: true,
+  },
+  GBP: {
+    name: 'Pound Sterling',
+    code: 'GBP',
+    indexed: true,
+  },
+  JPY: {
+    name: 'Japanese Yen',
+    code: 'JPY',
+    indexed: true,
+  },
+  USD: {
+    name: 'US Dollar',
+    code: 'USD',
+    indexed: true,
+  },
 };

@@ -15,11 +15,13 @@
         </div>
 
         <div class="doc-item-container" *ngFor="let item of faq">
-          <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
-          <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
-            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
-            <div class="endpoint-content">
-              <ng-container *ngTemplateOutlet="dict[item.fragment]" class="endpoint"></ng-container>
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled )">
+            <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
+            <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+              <div class="endpoint-content">
+                <ng-container *ngTemplateOutlet="dict[item.fragment]" class="endpoint"></ng-container>
+              </div>
             </div>
           </div>
         </div>
@@ -214,21 +216,46 @@
 
 <ng-template type="why-dont-fee-ranges-match">
   <p>Mempool aims to show you the <i>effective feerate</i> range for blocks—how much would you actually need to pay to get a transaction included in a block.</p>
-  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range because it actually required more than 1 s/vb to confirm that transaction in that block.</p>
-  <p>For unconfirmed CPFP transactions, Mempool will show the effective feerate (along with descendent & ancestor transaction information) on the transaction page. For confirmed transactions, CPFP relationships are not stored, so this additional information is not shown.</p>
+  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range since it actually required more than 1 s/vb to confirm that transaction in that block.</p>
+  <p>You can find a transaction's feerate on its transaction details page. If the transaction has any CPFP relationships, the page will also show the transaction's effective feerate along with links to descendent and/or ancestor transactions.</p>
+</ng-template>
+
+<ng-template type="how-do-block-audits-work">
+  <p>A block audit visually compares Mempool's expected block to the actual block for a particular block height.</p>
+  <p>How is the expected block determined? Mempool monitors its view of the mempool and runs a re-implementation of Bitcoin Core's transaction selection algorithm to determine the transactions it expects to see in upcoming blocks (<a href="https://github.com/mempool/mempool/blob/master/backend/src/api/mempool-blocks.ts" target="_blank">source code here</a>). Since there is a continual flow of new transactions, this algorithm runs every 2 seconds, and as a result, you will see the transactions <a href="/mempool-block/0">projected to be in upcoming blocks</a> change in near real-time.</p>
+  <p>At the moment a new block is mined, Mempool saves a snapshot of its projected block template for the next block. We call this snapshot the <b>expected block</b> for the block height in question, and it serves as the basis for the block audit.</p>
+  <p>When details for an expected block and actual block are available, we can compare them. <b>The purpose of block audits is to deduce when miners intentionally include or exclude transactions from blocks they mine.</b> Since this information cannot be precisely known, Mempool uses a handful of heuristics to accomplish this.</p>
+  <p>Block audits highlight transactions in different colors to convey these heuristics:</p>
+  <ul class="no-bull block-audit">
+    <li><span class="block-audit-highlight-color added">■</span><code>Added</code><p>A transaction is highlighted blue if it is not present in the expected block, present in the actual block, and also either:</p>
+    <ul>
+      <li>far out of the expected feerate range, meaning the miner may have intentionally prioritized the transaction</li>
+      <li>not in the mempool at all, meaning the miner may have accepted the transaction out-of-band</li>
+    </ul>
+    <p>Added transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color recent">■</span><code>Recently broadcasted</code><p>A transaction is highlighted dark pink if it is present in the expected block, not present in the actual block, and was first seen by Mempool's Bitcoin node within 3 minutes of the block being mined.</p><p>Due to network latency and other factors, it can take time for a miner's Bitcoin nodes to receive a transaction, so we do not assume a miner has intentionally excluded such a transaction from a block.</p><p>Recently-broadcasted transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color marginal">■</span><code>Marginal fee</code>
+    <p>A transaction is darkened if it is in the low end of the expected feerate range and missing in either the expected block or the actual block.</p><p>Such a transaction may have been displaced by an added transaction, or it may have been displaced by another transaction from the mempool that was also at the low end of the expected feerate range for the block. In either case, the deviation is not considered notable.</p>
+    <p>Marginal fee transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color removed">■</span><code>Removed</code><p>A transaction is highlighted bright pink if it is present in the expected block, not present in the actual block, and qualifies as neither recently-broadcasted nor marginal-fee. In other words, it has been in the mempool long enough to be widely propagated and has a feerate that is well within the range expected for the block. There is a chance such a transaction may have been intentionally excluded from the block.<p>Removed transactions do negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+  </ul>
+  <p>See how results of the block audit are used to devise the block health score <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">below</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
 </ng-template>
 
 <ng-template type="what-is-block-health">
-  <p>Block health indicates the extent of <i>potential</i> censorship in a block. This is determined by counting how many expected transactions a block is missing—a block that is not missing any expected transactions will have 100% health, while a block missing 1 or more expected transactions will have sub-100% health.</p>
-  <p>How does this work? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions Mempool expected to be in a block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions actually in a block. Let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
-  <p>Then let <span class='math'>r</span> be the number of removed transactions—all transactions expected to be in <span class='math'>s<sub>actual</sub></span> but not actually in it (excluding those that have been recently broadcast; see below).</p>
+  <p>Block health is a measure of how many transactions appear to be intentionally excluded from a block—a block without any transactions that appear intentionally excluded will have 100% health, while a block with 1 or more transactions that appear intentionally excluded will have sub-100% health.</p>
+  <p>How is it calculated? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions in Mempool's expected block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions in the actual block. Then let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
+  <p>Furthermore, let <span class='math'>r</span> be the number of transactions Mempool deduces were <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">intentionally excluded</a> from <span class='math'>s<sub>actual</sub></span>.</p>
   <p>Block health is calculated as <span class='math'>n / ( n + r</span> ).</p>
-  <p>Transactions appearing in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span> are used (instead of a block's full transaction count) in order to minimize chances that block health is impacted by missing transactions that don't imply censorship:</p>
+  <p>The number of transactions appearing in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span> is used (instead of a block's full transaction count) in order to minimize chances that block health is inadvertently impacted by transactions that were most likely not intentionally excluded:</p>
   <ul>
     <li>recently-broadcast transactions, since the miner may simply not have received them</li>
     <li>certain low-feerate transactions, since the miner may have opted to replace them with more profitable out-of-band transactions</li>
   </ul>
-  <p>Mempool uses a re-implementation of Bitcoin Core's transaction selection algorithm to determine the transactions it expects to see in the next block.</p>
+  <p>As a result, block health is <i>not</i> intended to be a measure of how closely an expected block resembles an actual block. The actual block can be vastly different from the expected block, but if no transactions appear to be intentionally excluded, it will have a high health rating (<a [routerLink]="['/block/0000000000000000000515e202c8ae73c8155fc472422d7593af87aa74f2cf3d']">extreme example</a>).</p>
+  <p>See more context in our FAQ on <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">block audits</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
 </ng-template>
 
 <ng-template type="who-runs-this-website">

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
-import { Observable, merge, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, merge, of, Subject } from 'rxjs';
+import { tap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
 import { FaqTemplateDirective } from '../faq-template/faq-template.component';
@@ -12,6 +12,7 @@ import { FaqTemplateDirective } from '../faq-template/faq-template.component';
   styleUrls: ['./api-docs.component.scss']
 })
 export class ApiDocsComponent implements OnInit, AfterViewInit {
+  private destroy$: Subject<any> = new Subject<any>();
   plainHostname = document.location.hostname;
   electrsPort = 0;
   hostname = document.location.hostname;
@@ -27,6 +28,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   wsDocs: any;
   screenWidth: number;
   officialMempoolInstance: boolean;
+  auditEnabled: boolean;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -59,6 +61,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
     this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
+    this.auditEnabled = this.env.AUDIT;
     this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
       tap((network: string) => {
         if (this.env.BASE_MODULE === 'mempool' && network !== '') {
@@ -82,7 +85,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     this.restDocs = restApiDocsData;
     this.wsDocs = wsApiDocsData;
 
-    this.network$.subscribe((network) => {
+    this.network$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
       this.active = (network === 'liquid' || network === 'liquidtestnet') ? 2 : 0;
       switch( network ) {
         case "":
@@ -102,6 +105,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
     window.removeEventListener('scroll', this.onDocScroll);
   }
 
