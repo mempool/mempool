@@ -207,9 +207,11 @@ class Blocks {
 
     blk.extras.blockTime = 0; // TODO
 
-    blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
-    if (blk.extras.feePercentiles !== null) {
-      blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
+    if (Common.indexingEnabled()) {
+      blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
+      if (blk.extras.feePercentiles !== null) {
+        blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
+      }
     }
   
     blk.extras.virtualSize = block.weight / 4.0;
