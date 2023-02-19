@@ -176,7 +176,7 @@ export class PoolRankingComponent implements OnInit {
     // 'Other'
     data.push({
       itemStyle: {
-        color: 'grey',
+        color: '#6b6b6b',
       },
       value: totalShareOther,
       name: 'Other' + (isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
