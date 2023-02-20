@@ -123,8 +123,10 @@
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>
 
-    <div class="clearfix"></div>
-    <br>
+    <ng-template [ngIf]="!widget">
+      <div class="clearfix"></div>
+      <br>
+    </ng-template>
   </div>
   
 </div>
