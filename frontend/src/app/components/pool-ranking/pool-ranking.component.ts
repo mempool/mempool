@@ -98,7 +98,6 @@ export class PoolRankingComponent implements OnInit {
       )
       .pipe(
         map(data => {
-          data.pools = data.pools.map((pool: SinglePoolStats) => this.formatPoolUI(pool));
           data['minersLuck'] = (100 * (data.blockCount / 1008)).toFixed(2); // luck 1w
           return data;
         }),
@@ -108,11 +107,6 @@ export class PoolRankingComponent implements OnInit {
         }),
         share()
       );
-  }
-
-  formatPoolUI(pool: SinglePoolStats) {
-    pool['blockText'] = pool.blockCount.toString() + ` (${pool.share}%)`;
-    return pool;
   }
 
   generatePoolsChartSerieData(miningStats) {
