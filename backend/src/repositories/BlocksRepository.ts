@@ -74,7 +74,7 @@ class BlocksRepository {
         block.extras.totalOutputs,
         block.extras.totalInputAmt,
         block.extras.totalOutputAmt,
-        JSON.stringify(block.extras.feePercentiles),
+        block.extras.feePercentiles ? JSON.stringify(block.extras.feePercentiles) : null,
         block.extras.segwitTotalTxs,
         block.extras.segwitTotalSize,
         block.extras.segwitTotalWeight,
