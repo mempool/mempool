@@ -106,7 +106,9 @@
           <td class=""><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
           <td class="" *ngIf="this.miningWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{
             miningStats.miningUnits.hashrateUnit }}</td>
-          <td class="">{{ pool['blockText'] }}</td>
+          <td class="d-flex justify-content-center">
+            {{ pool.blockCount }}<span class="d-none d-md-block">&nbsp;({{ pool.share }}%)</span>
+          </td>
           <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <a
               class="health-badge badge"
