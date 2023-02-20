@@ -26,6 +26,8 @@ export class PoolRankingComponent implements OnInit {
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
+  auditAvailable = false;
+  indexingAvailable = false;
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -59,6 +61,10 @@ export class PoolRankingComponent implements OnInit {
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
+
+    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
+      this.stateService.env.MINING_DASHBOARD === true);
+    this.auditAvailable = this.indexingAvailable && this.stateService.env.AUDIT;
 
     this.route
       .fragment
