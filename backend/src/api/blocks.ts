@@ -212,6 +212,9 @@ class Blocks {
       if (blk.extras.feePercentiles !== null) {
         blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
       }
+    } else {
+      blk.extras.feePercentiles = null;
+      blk.extras.medianFeeAmt = null;
     }
   
     blk.extras.virtualSize = block.weight / 4.0;
@@ -681,7 +684,7 @@ class Blocks {
     // Block has already been indexed
     if (Common.indexingEnabled()) {
       const dbBlock = await blocksRepository.$getBlockByHash(hash);
-      if (dbBlock != null) {
+      if (dbBlock !== null) {
         return prepareBlock(dbBlock);
       }
     }
@@ -691,18 +694,8 @@ class Blocks {
       return await bitcoinApi.$getBlock(hash);
     }
 
-    let block = await bitcoinClient.getBlock(hash);
-    block = prepareBlock(block);
-
-    // Bitcoin network, add our custom data on top
-    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
-    const blockExtended = await this.$getBlockExtended(block, transactions);
-    if (Common.indexingEnabled()) {
-      delete(blockExtended['coinbaseTx']);
-      await blocksRepository.$saveBlockInDatabase(blockExtended);
-    }
-
-    return blockExtended;
+    const block = await bitcoinClient.getBlock(hash);
+    return await this.$indexBlock(block.height);
   }
 
   public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
@@ -765,7 +758,7 @@ class Blocks {
       } else if (Common.indexingEnabled()) {
         block = await this.$indexBlock(currentHeight);
         returnBlocks.push(block);
-      } else if (nextHash != null) {
+      } else if (nextHash !== null) {
         block = await this.$indexBlock(currentHeight);
         nextHash = block.previousblockhash;
         returnBlocks.push(block);
