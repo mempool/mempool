@@ -8,10 +8,11 @@ import {
   retryWhen,
   delay,
   map,
-  mergeMap
+  mergeMap,
+  tap
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, combineLatest, from, throwError } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, timer, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -21,6 +22,7 @@ import { SeoService } from '../../services/seo.service';
 import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { Price, PriceService } from 'src/app/services/price.service';
 
 @Component({
   selector: 'app-transaction',
@@ -69,7 +71,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
-
+  blockConversion: Price;
   tooltipPosition: { x: number, y: number };
 
   @ViewChild('graphContainer')
@@ -85,7 +87,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    private priceService: PriceService,
   ) {}
 
   ngOnInit() {
@@ -323,6 +326,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.fetchRbfHistory$.next(this.tx.txid);
           }
+
+          this.priceService.getPrices().pipe(
+            tap(() => {
+              this.blockConversion = this.priceService.getPriceForTimestamp(tx.status.block_time);
+            })
+          ).subscribe();
+      
           setTimeout(() => { this.applyFragment(); }, 0);
         },
         (error) => {
