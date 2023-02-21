@@ -362,7 +362,12 @@ class NodesApi {
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
       const publicKeySearch = search.replace('%', '') + '%';
-      const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
+      const aliasSearch = search
+        .replace(/[-_.]/g, ' ')
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .split(' ')
+        .filter(key => key.length)
+        .map((search) => '+' + search + '*').join(' ');
       const query = `SELECT public_key, alias, capacity, channels, status FROM nodes WHERE public_key LIKE ? OR MATCH alias_search AGAINST (? IN BOOLEAN MODE) ORDER BY capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [publicKeySearch, aliasSearch]);
       return rows;
