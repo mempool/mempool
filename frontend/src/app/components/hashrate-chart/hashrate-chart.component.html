@@ -31,7 +31,7 @@
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(hashrateObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
+      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 12960" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
           <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" [attr.data-cy]="'3m'" formControlName="dateSpan"> 3M
         </label>
