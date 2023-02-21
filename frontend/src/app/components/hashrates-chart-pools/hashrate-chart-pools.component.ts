@@ -5,7 +5,7 @@ import { delay, map, retryWhen, share, startWith, switchMap, tap } from 'rxjs/op
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { poolsColor } from '../../app.constants';
+import { chartColors, poolsColor } from '../../app.constants';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
@@ -173,6 +173,7 @@ export class HashrateChartPoolsComponent implements OnInit {
     this.chartOptions = {
       title: title,
       animation: false,
+      color: chartColors,
       grid: {
         right: this.right,
         left: this.left,
