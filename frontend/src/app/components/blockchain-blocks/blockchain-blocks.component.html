@@ -14,7 +14,7 @@
             }}</a>
         </div>
         <div class="block-body">
-          <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
+          <div *ngIf="block?.extras" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
             ~{{ block?.extras?.medianFee | number:feeRounding }} <ng-container
               i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
           </div>
