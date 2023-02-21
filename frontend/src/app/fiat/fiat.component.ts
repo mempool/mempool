@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
+import { Price } from '../services/price.service';
 import { StateService } from '../services/state.service';
 
 @Component({
@@ -15,6 +16,7 @@ export class FiatComponent implements OnInit, OnDestroy {
 
   @Input() value: number;
   @Input() digitsInfo = '1.2-2';
+  @Input() blockConversion: Price;
 
   constructor(
     private stateService: StateService,
