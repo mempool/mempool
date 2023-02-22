@@ -11,7 +11,7 @@
     </div>  
   
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
+      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 4320" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
           <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
@@ -31,7 +31,7 @@
           <input type="radio" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]" formControlName="dateSpan"> 3Y
         </label>
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
-          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]"> ALL
+          <input type="radio" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]" formControlName="dateSpan"> ALL
         </label>
       </div>
     </form>
