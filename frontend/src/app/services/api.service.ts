@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
+import { Conversion } from './price.service';
 
 @Injectable({
   providedIn: 'root'
@@ -302,5 +303,9 @@ export class ApiService {
         (publicKey !== undefined ? `/${publicKey}`   : '') +
         (style     !== undefined ? `?style=${style}` : '')
     );
+  }
+
+  getHistoricalPrice$(): Observable<Conversion> {
+    return this.httpClient.get<Conversion>( this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price');
   }
 }

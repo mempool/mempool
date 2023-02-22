@@ -79,6 +79,7 @@ export class PoolRankingComponent implements OnInit {
         .pipe(
           startWith(this.radioGroupForm.controls.dateSpan.value), // (trigger when the page loads)
           tap((value) => {
+            this.isLoading = true;
             this.timespan = value;
             if (!this.widget) {
               this.storageService.setValue('miningWindowPreference', value);
