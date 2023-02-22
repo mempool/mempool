@@ -28,12 +28,30 @@ export interface Conversion {
   exchangeRates: ExchangeRates;
 }
 
+export const MAX_PRICES = {
+  USD: 100000000,
+  EUR: 100000000,
+  GBP: 100000000,
+  CAD: 100000000,
+  CHF: 100000000,
+  AUD: 100000000,
+  JPY: 10000000000,
+};
+
 class PricesRepository {
   public async $savePrices(time: number, prices: IConversionRates): Promise<void> {
     if (prices.USD === 0) {
       // Some historical price entries have no USD prices, so we just ignore them to avoid future UX issues
-      // As of today there are only 4 (on 2013-09-05, 2013-0909, 2013-09-12 and 2013-09-26) so that's fine
+      // since we use USD as default/fallback when we don't have a price for another currency
       return;
+    }
+
+    // Sanity check
+    for (const currency of Object.keys(prices)) {
+      if (prices[currency] < 0 || prices[currency] > MAX_PRICES[currency]) {
+        logger.info(`Ignore BTC${currency} price of ${prices[currency]}`);
+        prices[currency] = 0;
+      }
     }
 
     try {

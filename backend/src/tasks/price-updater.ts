@@ -3,7 +3,7 @@ import path from 'path';
 import config from '../config';
 import logger from '../logger';
 import { IConversionRates } from '../mempool.interfaces';
-import PricesRepository from '../repositories/PricesRepository';
+import PricesRepository, { MAX_PRICES } from '../repositories/PricesRepository';
 import BitfinexApi from './price-feeds/bitfinex-api';
 import BitflyerApi from './price-feeds/bitflyer-api';
 import CoinbaseApi from './price-feeds/coinbase-api';
@@ -104,6 +104,8 @@ class PriceUpdater {
       return;
     }
 
+    logger.debug(`Update latest BTC prices`, logger.tags.mining);
+
     const previousRun = this.lastRun;
     this.lastRun = new Date().getTime() / 1000;
 
@@ -115,10 +117,12 @@ class PriceUpdater {
         if (feed.currencies.includes(currency)) {
           try {
             const price = await feed.$fetchPrice(currency);
-            if (price > 0) {
+            if (price > 0 && price < MAX_PRICES[currency]) {
+              logger.debug(`${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
               prices.push(price);
+            } else {
+              logger.info(`Ignored ${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
             }
-            logger.debug(`${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
           } catch (e) {
             logger.debug(`Could not fetch BTC/${currency} price at ${feed.name}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
           }
@@ -239,8 +243,10 @@ class PriceUpdater {
 
         for (const currency of this.currencies) {
           const price = historicalEntry[time][currency];
-          if (price > 0) {
+          if (price > 0 && price < MAX_PRICES[currency]) {
             grouped[time][currency].push(typeof price === 'string' ? parseInt(price, 10) : price);
+          } else if (price > MAX_PRICES[currency]) {
+            logger.info(`Ignored historical BTC/${currency} price: ${price}`, logger.tags.mining);
           }
         }
       }
