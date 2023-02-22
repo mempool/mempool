@@ -4,9 +4,9 @@ import { Observable, Subscription } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { download, formatterXAxis } from '../../shared/graphs.utils';
 import { StateService } from '../../services/state.service';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
@@ -92,6 +92,7 @@ export class BlockFeesGraphComponent implements OnInit {
       .pipe(
         startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
+          this.isLoading = true;
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
