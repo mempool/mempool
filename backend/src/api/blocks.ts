@@ -218,9 +218,11 @@ class Blocks {
     if (blk.extras.coinbaseTx.vout.length > 0) {
       blk.extras.coinbaseAddress = blk.extras.coinbaseTx.vout[0].scriptpubkey_address ?? null;
       blk.extras.coinbaseSignature = blk.extras.coinbaseTx.vout[0].scriptpubkey_asm ?? null;
+      blk.extras.coinbaseSignatureAscii = transactionUtils.hex2ascii(blk.extras.coinbaseTx.vin[0].scriptsig) ?? null;
     } else {
       blk.extras.coinbaseAddress = null;
       blk.extras.coinbaseSignature = null;
+      blk.extras.coinbaseSignatureAscii = null;
     }
 
     const header = await bitcoinClient.getBlockHeader(block.id, false);

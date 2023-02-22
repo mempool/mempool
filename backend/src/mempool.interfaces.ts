@@ -167,6 +167,7 @@ export interface BlockExtension {
   orphans?: OrphanedBlock[] | null;
   coinbaseAddress?: string | null;
   coinbaseSignature?: string | null;
+  coinbaseSignatureAscii?: string | null;
   virtualSize?: number;
   avgTxSize?: number;
   totalInputs?: number;

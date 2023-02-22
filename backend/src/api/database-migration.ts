@@ -767,6 +767,7 @@ class DatabaseMigration {
       ADD block_time int unsigned NOT NULL,
       ADD coinbase_address varchar(100) NULL,
       ADD coinbase_signature varchar(500) NULL,
+      ADD coinbase_signature_ascii varchar(500) NULL,
       ADD avg_tx_size double unsigned NOT NULL,
       ADD total_inputs int unsigned NOT NULL,
       ADD total_outputs int unsigned NOT NULL,

@@ -27,7 +27,7 @@ class BlocksRepository {
         coinbase_signature, utxoset_size,        utxoset_change,    avg_tx_size,
         total_inputs,       total_outputs,       total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,    segwit_total_size, segwit_total_weight,
-        median_fee_amt
+        median_fee_amt,     coinbase_signature_ascii
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -38,7 +38,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?
+        ?, ?
       )`;
 
       const params: any[] = [
@@ -79,6 +79,7 @@ class BlocksRepository {
         block.extras.segwitTotalSize,
         block.extras.segwitTotalWeight,
         block.extras.medianFeeAmt,
+        block.extras.coinbaseSignatureAscii,
       ];
 
       await DB.query(query, params);
