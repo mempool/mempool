@@ -40,7 +40,7 @@
     </div>  
     <form [formGroup]="radioGroupForm" class="formRadioGroup"
       *ngIf="!widget && (miningStatsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
+      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
         <label class="btn btn-primary btn-sm" *ngIf="stats.totalBlockCount >= 144" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
           <input type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/pools' | relativeUrl]" [attr.data-cy]="'24h'" formControlName="dateSpan"> 24h
         </label>
@@ -104,7 +104,7 @@
             <img width="25" height="25" src="{{ pool.logo }}" [alt]="pool.name + ' mining pool logo'" onError="this.src = '/resources/mining-pools/default.svg'">
           </td>
           <td class=""><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
-          <td class="" *ngIf="this.miningWindowPreference === '24h' && !isLoading">{{ pool.lastEstimatedHashrate }} {{
+          <td class="" *ngIf="this.miningWindowPreference === '24h'">{{ pool.lastEstimatedHashrate }} {{
             miningStats.miningUnits.hashrateUnit }}</td>
           <td class="d-flex justify-content-center">
             {{ pool.blockCount }}<span class="d-none d-md-block">&nbsp;({{ pool.share }}%)</span>

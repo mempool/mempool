@@ -3,6 +3,31 @@ import logger from '../logger';
 import { IConversionRates } from '../mempool.interfaces';
 import priceUpdater from '../tasks/price-updater';
 
+export interface ApiPrice {
+  time?: number,
+  USD: number,
+  EUR: number,
+  GBP: number,
+  CAD: number,
+  CHF: number,
+  AUD: number,
+  JPY: number,
+}
+
+export interface ExchangeRates {
+  USDEUR: number,
+  USDGBP: number,
+  USDCAD: number,
+  USDCHF: number,
+  USDAUD: number,
+  USDJPY: number,
+}
+
+export interface Conversion {
+  prices: ApiPrice[],
+  exchangeRates: ExchangeRates;
+}
+
 class PricesRepository {
   public async $savePrices(time: number, prices: IConversionRates): Promise<void> {
     if (prices.USD === 0) {
@@ -59,6 +84,34 @@ class PricesRepository {
       return priceUpdater.getEmptyPricesObj();
     }
     return rates[0];
+  }
+
+  public async $getHistoricalPrice(): Promise<Conversion | null> {
+    try {
+      const [rates]: any[] = await DB.query(`SELECT *, UNIX_TIMESTAMP(time) as time FROM prices ORDER BY time DESC`);
+      if (!rates) {
+        throw Error(`Cannot get average historical price from the database`);
+      }
+
+      // Compute fiat exchange rates
+      const latestPrice: ApiPrice = rates[0];
+      const exchangeRates: ExchangeRates = {
+        USDEUR: Math.round(latestPrice.EUR / latestPrice.USD * 100) / 100,
+        USDGBP: Math.round(latestPrice.GBP / latestPrice.USD * 100) / 100,
+        USDCAD: Math.round(latestPrice.CAD / latestPrice.USD * 100) / 100,
+        USDCHF: Math.round(latestPrice.CHF / latestPrice.USD * 100) / 100,
+        USDAUD: Math.round(latestPrice.AUD / latestPrice.USD * 100) / 100,
+        USDJPY: Math.round(latestPrice.JPY / latestPrice.USD * 100) / 100,
+      };
+
+      return {
+        prices: rates,
+        exchangeRates: exchangeRates
+      };
+    } catch (e) {
+      logger.err(`Cannot fetch averaged historical prices from the db. Reason ${e instanceof Error ? e.message : e}`);
+      return null;
+    }
   }
 }
 
