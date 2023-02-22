@@ -1,13 +1,13 @@
 import { Application, Request, Response } from 'express';
 import config from "../../config";
 import logger from '../../logger';
-import audits from '../audit';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import mining from "./mining";
+import PricesRepository from '../../repositories/PricesRepository';
 
 class MiningRoutes {
   public initRoutes(app: Application) {
@@ -32,7 +32,16 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/score/:hash', this.$getBlockAuditScore)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'historical-price', this.$getHistoricalPrice)
     ;
+  }
+
+  private async $getHistoricalPrice(req: Request, res: Response): Promise<void> {
+    try {
+      res.status(200).send(await PricesRepository.$getHistoricalPrice());
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
   }
 
   private async $getPool(req: Request, res: Response): Promise<void> {

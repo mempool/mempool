@@ -10,7 +10,7 @@
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
+      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 4320" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
           <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
