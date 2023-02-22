@@ -1,3 +1,4 @@
+import { Price } from '../services/price.service';
 import { IChannel } from './node-api.interface';
 
 export interface Transaction {
@@ -23,6 +24,7 @@ export interface Transaction {
   _deduced?: boolean;
   _outspends?: Outspend[];
   _channels?: TransactionChannels;
+  price?: Price;
 }
 
 export interface TransactionChannels {
