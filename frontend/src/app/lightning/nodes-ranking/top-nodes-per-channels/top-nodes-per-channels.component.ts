@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { StateService } from 'src/app/services/state.service';
 import { INodesRanking, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
 import { isMobile } from '../../../shared/common.utils';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
@@ -17,12 +18,16 @@ export class TopNodesPerChannels implements OnInit {
   
   topNodesPerChannels$: Observable<ITopNodesPerChannels[]>;
   skeletonRows: number[] = [];
+  currency$: Observable<string>;
 
   constructor(
     private apiService: LightningApiService,
+    private stateService: StateService,
   ) {}
 
   ngOnInit(): void {
+    this.currency$ = this.stateService.fiatCurrency$;
+    
     for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 6) : 100); ++i) {
       this.skeletonRows.push(i);
     }
