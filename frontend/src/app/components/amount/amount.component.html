@@ -3,7 +3,7 @@
     {{ addPlus && satoshis >= 0 ? '+' : '' }}
     {{
       (
-        (blockConversion.price[currency] > 0 ? blockConversion.price[currency] : null) ??
+        (blockConversion.price[currency] >= 0 ? blockConversion.price[currency] : null) ??
         (blockConversion.price['USD'] * blockConversion.exchangeRates['USD' + currency]) ?? 0
       ) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency
     }}
