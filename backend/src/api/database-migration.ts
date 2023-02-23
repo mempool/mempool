@@ -479,6 +479,7 @@ class DatabaseMigration {
       this.uniqueLog(logger.notice, `'blocks_prices' table has been truncated`);
       await this.$executeQuery(`TRUNCATE prices`);
       await this.$executeQuery(`TRUNCATE blocks_prices`);
+      await this.updateToSchemaVersion(54);
     }
   }
 
