@@ -27,16 +27,25 @@ class PoolsRepository {
   public async $getPoolsInfo(interval: string | null = null): Promise<PoolInfo[]> {
     interval = Common.getSqlInterval(interval);
 
-    let query = `SELECT COUNT(height) as blockCount, pool_id as poolId, pools.name as name, pools.link as link, slug
+    let query = `
+      SELECT
+        COUNT(blocks.height) As blockCount,
+          pool_id AS poolId,
+          pools.name AS name,
+          pools.link AS link,
+          slug,
+          AVG(blocks_audits.match_rate) AS avgMatchRate
       FROM blocks
-      JOIN pools on pools.id = pool_id`;
+      JOIN pools on pools.id = pool_id
+      LEFT JOIN blocks_audits ON blocks_audits.height = blocks.height
+    `;
 
     if (interval) {
       query += ` WHERE blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
     }
 
     query += ` GROUP BY pool_id
-      ORDER BY COUNT(height) DESC`;
+      ORDER BY COUNT(blocks.height) DESC`;
 
     try {
       const [rows] = await DB.query(query);
