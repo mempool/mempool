@@ -471,6 +471,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.auditSubscription?.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
+    this.priceSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {
