@@ -93,6 +93,10 @@ export class PriceService {
    * @param blockTimestamp 
    */
   getPriceForTimestamp(blockTimestamp: number): Price | null {
+    if (!blockTimestamp) {
+      return undefined;
+    }
+
     const priceTimestamps = Object.keys(this.historicalPrice.prices);
     priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
     priceTimestamps.sort().reverse();

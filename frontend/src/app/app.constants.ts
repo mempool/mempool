@@ -72,7 +72,7 @@ export const chartColors = [
 ];
 
 export const poolsColor = {
-  'unknown': '#9C9C9C',
+  'unknown': '#FDD835',
 };
 
 export const feeLevels = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200,
