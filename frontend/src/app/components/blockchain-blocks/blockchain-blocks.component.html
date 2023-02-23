@@ -71,7 +71,7 @@
       <ng-container *ngIf="!connected || loadingTip || (block && block.loading)">
         <div class="flashing loading">
           <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
-            [ngStyle]="emptyBlockStyles[i]"></div>
+            [ngStyle]="convertStyleForLoadingBlock(blockStyles[i])"></div>
         </div>
       </ng-container>
     </ng-template>
