@@ -45,6 +45,6 @@
     "PORT": 3306,
     "USERNAME": "__MEMPOOL_MAINNET_LIGHTNING_USER__",
     "PASSWORD": "__MEMPOOL_MAINNET_LIGHTNING_PASS__",
-    "PASSWORD": "mempool_mainnet_lightning"
+    "DATABASE": "mempool_mainnet_lightning"
   }
 }

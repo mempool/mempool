@@ -9,6 +9,7 @@ import { AssetsService } from '../../services/assets.service';
 import { filter, map, tap, switchMap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
+import { PriceService } from 'src/app/services/price.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -50,6 +51,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private apiService: ApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
+    private priceService: PriceService,
   ) { }
 
   ngOnInit(): void {
@@ -147,6 +149,12 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
           tx['addressValue'] = addressIn - addressOut;
         }
+
+        this.priceService.getPrices().pipe(
+          tap(() => {
+            tx['price'] = this.priceService.getPriceForTimestamp(tx.status.block_time);
+          })
+        ).subscribe();
       });
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
       if (txIds.length) {
