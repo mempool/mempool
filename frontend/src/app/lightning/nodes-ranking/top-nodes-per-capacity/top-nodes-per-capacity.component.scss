@@ -1,91 +1,70 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
 .container-xl {
   max-width: 1400px;
-  padding-bottom: 100px;
-  @media (min-width: 960px) {
-    padding-left: 50px;
-    padding-right: 50px;
-  }
+}
+.container-xl.widget {
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-bottom: 0px;
+}
+.container-xl.legacy {
+  max-width: 1140px;
 }
 
-.table td, .table th {
-  padding: 0.5rem;
+.container {
+  max-width: 100%;
 }
 
-.full .rank {
-  width: 5%;
-}
-.widget .rank {
-  @media (min-width: 960px) {
-    width: 13%;
-  }
-  @media (max-width: 960px) {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.7rem !important;
 }
 
-.full .alias {
-  width: 20%;
+.clear-link {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.pool {
+  width: 15%;
+  @media (max-width: 576px) {
+    width: 75%;
+  }
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 350px;
-  @media (max-width: 960px) {
-    width: 40%;
-    max-width: 500px;
-  }
+  white-space: nowrap;
+  max-width: 160px;
 }
-.widget .alias {
-  width: 60%;
-  overflow: hidden;
+.pool-name {
+  display: inline-block;
+  vertical-align: text-top;
   text-overflow: ellipsis;
-  max-width: 350px;
-  @media (max-width: 960px) {
-    max-width: 175px;
-  }
+  overflow: hidden;
 }
 
-.full .capacity {
+.liquidity {
   width: 10%;
-  @media (max-width: 960px) {
-    width: 30%;
-  }
-}
-.widget .capacity {
-  width: 32%;
-  @media (max-width: 960px) {
-    padding-left: 0px;
-    padding-right: 0px;
+  @media (max-width: 576px) {
+    width: 25%;
   }
 }
 
-.full .channels {
+.fiat {
   width: 15%;
-  padding-right: 50px;
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
-.full .timestamp-first {
-  width: 10%;
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
-.full .timestamp-update {
-  width: 10%;
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
-.full .location {
-  width: 15%;
-  @media (max-width: 960px) {
-    width: 30%;
-  }
-  @media (max-width: 600px) {
-    display: none;
-  }
+  font-family: monospace;
+  font-size: 14px;
 }
