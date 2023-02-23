@@ -82,6 +82,9 @@ export class PriceService {
 
       return this.singlePriceObservable$.pipe(
         map((conversion) => {
+          if (conversion.prices.length <= 0) {
+            return this.getEmptyPrice();
+          }
           return {
             price: {
               USD: conversion.prices[0].USD, EUR: conversion.prices[0].EUR, GBP: conversion.prices[0].GBP, CAD: conversion.prices[0].CAD,
