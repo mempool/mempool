@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { concat, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { SinglePoolStats } from '../../interfaces/node-api.interface';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
@@ -220,7 +219,7 @@ export class PoolRankingComponent implements OnInit {
 
     this.chartOptions = {
       animation: false,
-      color: chartColors,
+      color: chartColors.filter(color => color !== '#FDD835'),
       tooltip: {
         trigger: 'item',
         textStyle: {
