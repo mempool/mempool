@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { map, Observable, Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { StateService } from 'src/app/services/state.service';
 import { INodesRanking, ITopNodesPerCapacity } from '../../../interfaces/node-api.interface';
 import { SeoService } from '../../../services/seo.service';
-import { isMobile } from '../../../shared/common.utils';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../../lightning-api.service';
 
@@ -13,7 +12,7 @@ import { LightningApiService } from '../../lightning-api.service';
   styleUrls: ['./top-nodes-per-capacity.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TopNodesPerCapacity implements OnInit, OnDestroy {
+export class TopNodesPerCapacity implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;
   @Input() widget: boolean = false;
   
@@ -26,9 +25,6 @@ export class TopNodesPerCapacity implements OnInit, OnDestroy {
     private seoService: SeoService,
     private stateService: StateService,
   ) {}
-
-  ngOnDestroy(): void {
-  }
 
   ngOnInit(): void {
     this.currency$ = this.stateService.fiatCurrency$;
