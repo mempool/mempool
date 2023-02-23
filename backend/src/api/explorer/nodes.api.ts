@@ -362,7 +362,13 @@ class NodesApi {
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
       const publicKeySearch = search.replace('%', '') + '%';
-      const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
+      const aliasSearch = search
+        .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".  
+        .replace(/[^a-zA-Z0-9 ]/g, '') // Remove all special characters and keep just A to Z, 0 to 9.
+        .split(' ')
+        .filter(key => key.length)
+        .map((search) => '+' + search + '*').join(' ');
+      // %keyword% is wildcard search and can't be indexed so it's slower as the node database grow. keyword% can be indexed but then you can't search for "Nicehash" and get result for ln.nicehash.com. So we use fulltext index for words "ln, nicehash, com" and nicehash* will find it instantly.
       const query = `SELECT public_key, alias, capacity, channels, status FROM nodes WHERE public_key LIKE ? OR MATCH alias_search AGAINST (? IN BOOLEAN MODE) ORDER BY capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [publicKeySearch, aliasSearch]);
       return rows;
