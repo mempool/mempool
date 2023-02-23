@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, of, shareReplay } from 'rxjs';
+import { map, Observable, of, share, shareReplay, tap } from 'rxjs';
 import { ApiService } from './api.service';
 
 // nodejs backend interfaces
@@ -40,6 +40,8 @@ export interface ConversionDict {
   providedIn: 'root'
 })
 export class PriceService {
+  priceObservable$: Observable<Conversion>;
+
   historicalPrice: ConversionDict = {
     prices: null,
     exchangeRates: null,
@@ -61,65 +63,53 @@ export class PriceService {
     };
   }
 
-  /**
-   * Fetch prices from the nodejs backend only once
-   */
-  getPrices(): Observable<void> {
-    if (this.historicalPrice.prices) {
-      return of(null);
+  getBlockPrice$(blockTimestamp: number): Observable<Price | undefined> {
+    if (!this.priceObservable$) {
+      this.priceObservable$ = this.apiService.getHistoricalPrice$().pipe(shareReplay());
     }
 
-    return this.apiService.getHistoricalPrice$().pipe(
-      map((conversion: Conversion) => {
-        if (!this.historicalPrice.prices) {
-          this.historicalPrice.prices = Object();
+    return this.priceObservable$.pipe(
+      map((conversion) => {
+        if (!blockTimestamp) {
+          return undefined;
         }
+
+        const historicalPrice = {
+          prices: {},
+          exchangeRates: conversion.exchangeRates,
+        };
         for (const price of conversion.prices) {
-          this.historicalPrice.prices[price.time] = {
+          historicalPrice.prices[price.time] = {
             USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD,
             CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
           };
         }
-        this.historicalPrice.exchangeRates = conversion.exchangeRates;
-        return;
-      }),
-      shareReplay(),
-    );
-  }
 
-  /**
-   * Note: The first block with a price we have is block 68952 (using MtGox price history)
-   * 
-   * @param blockTimestamp 
-   */
-  getPriceForTimestamp(blockTimestamp: number): Price | null {
-    if (!blockTimestamp) {
-      return undefined;
-    }
-
-    const priceTimestamps = Object.keys(this.historicalPrice.prices);
-    priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
-    priceTimestamps.sort().reverse();
+        const priceTimestamps = Object.keys(historicalPrice.prices);
+        priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
+        priceTimestamps.sort().reverse();
+        
+        // Small trick here. Because latest blocks have higher timestamps than our
+        // latest price timestamp (we only insert once every hour), we have no price for them.
+        // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
+        // Since historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
+        // it will return `undefined` and automatically use the websocket price.
+        // This way we can differenciate blocks without prices like the genesis block
+        // vs ones without a price (yet) like the latest blocks
     
-    // Small trick here. Because latest blocks have higher timestamps than our
-    // latest price timestamp (we only insert once every hour), we have no price for them.
-    // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
-    // Since this.historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
-    // it will return `undefined` and automatically use the websocket price.
-    // This way we can differenciate blocks without prices like the genesis block
-    // vs ones without a price (yet) like the latest blocks
-
-    for (const t of priceTimestamps) {
-      const priceTimestamp = parseInt(t, 10);
-      if (blockTimestamp > priceTimestamp) {
-        return {
-          price: this.historicalPrice.prices[priceTimestamp],
-          exchangeRates: this.historicalPrice.exchangeRates,
-        };
-      }
-    }
-
-    return this.getEmptyPrice();
+        for (const t of priceTimestamps) {
+          const priceTimestamp = parseInt(t, 10);
+          if (blockTimestamp > priceTimestamp) {
+            return {
+              price: historicalPrice.prices[priceTimestamp],
+              exchangeRates: historicalPrice.exchangeRates,
+            };
+          }
+        }
+    
+        return this.getEmptyPrice();    
+      })
+    );
   }
 }
 

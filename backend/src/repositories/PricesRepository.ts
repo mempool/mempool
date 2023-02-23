@@ -28,6 +28,16 @@ export interface Conversion {
   exchangeRates: ExchangeRates;
 }
 
+export const MAX_PRICES = {
+  USD: 100000000,
+  EUR: 100000000,
+  GBP: 100000000,
+  CAD: 100000000,
+  CHF: 100000000,
+  AUD: 100000000,
+  JPY: 10000000000,
+};
+
 class PricesRepository {
   public async $savePrices(time: number, prices: IConversionRates): Promise<void> {
     if (prices.USD === 0) {
@@ -36,6 +46,14 @@ class PricesRepository {
       return;
     }
 
+    // Sanity check
+    for (const currency of Object.keys(prices)) {
+      if (prices[currency] < -1 || prices[currency] > MAX_PRICES[currency]) { // We use -1 to mark a "missing data, so it's a valid entry"
+        logger.info(`Ignore BTC${currency} price of ${prices[currency]}`);
+        prices[currency] = 0;
+      }
+    }
+    
     try {
       await DB.query(`
         INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY)
