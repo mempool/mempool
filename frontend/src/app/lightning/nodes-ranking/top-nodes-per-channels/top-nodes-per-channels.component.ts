@@ -23,7 +23,7 @@ export class TopNodesPerChannels implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 7) : 100); ++i) {
+    for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 6) : 100); ++i) {
       this.skeletonRows.push(i);
     }
 
@@ -44,7 +44,7 @@ export class TopNodesPerChannels implements OnInit {
     } else {
       this.topNodesPerChannels$ = this.nodes$.pipe(
         map((ranking) => {
-          return ranking.topByChannels.slice(0, isMobile() ? 8 : 7);
+          return ranking.topByChannels.slice(0, isMobile() ? 8 : 6);
         })
       );
     }
