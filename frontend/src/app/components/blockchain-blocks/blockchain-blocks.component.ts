@@ -290,6 +290,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
+  convertStyleForLoadingBlock(style) {
+    return {
+      ...style,
+      background: "#2d3348",
+    };
+  }
+
   getStyleForLoadingBlock(index: number, animateEnterFrom: number = 0) {
     const addLeft = animateEnterFrom || 0;
 
