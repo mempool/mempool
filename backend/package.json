@@ -27,7 +27,7 @@
     "package": "npm run build && rm -rf package && mv dist package && mv node_modules package && npm run package-rm-build-deps",
     "package-rm-build-deps": "(cd package/node_modules; rm -r typescript @typescript-eslint)",
     "start": "node --max-old-space-size=2048 dist/index.js",
-    "start-production": "node --max-old-space-size=4096 dist/index.js",
+    "start-production": "node --max-old-space-size=16384 dist/index.js",
     "test": "./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
