@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 52;
+  private static currentVersion = 53;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -467,6 +467,11 @@ class DatabaseMigration {
       } catch(e) {
         logger.warn('' + (e instanceof Error ? e.message : e));
       }
+    }
+
+    if (databaseSchemaVersion < 53) {
+      await this.$executeQuery('ALTER TABLE statistics MODIFY mempool_byte_weight bigint(20) UNSIGNED NOT NULL');
+      await this.updateToSchemaVersion(53);
     }
   }
 
