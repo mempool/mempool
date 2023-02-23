@@ -56,7 +56,7 @@
           </ng-container>
       </ng-container>
       <p *ngIf="line.value == null && line.confidential" i18n="shared.confidential">Confidential</p>
-      <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
+      <p *ngIf="line.value != null"><app-amount [blockConversion]="blockConversion" [satoshis]="line.value"></app-amount></p>
       <p *ngIf="line.type !== 'fee' && line.address" class="address">
         <app-truncate [text]="line.address"></app-truncate>
       </p>

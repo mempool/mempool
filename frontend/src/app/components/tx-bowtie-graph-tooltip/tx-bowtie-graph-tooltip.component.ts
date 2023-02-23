@@ -1,5 +1,6 @@
-import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { Component, ElementRef, ViewChild, Input, OnChanges, OnInit } from '@angular/core';
+import { tap } from 'rxjs';
+import { Price, PriceService } from 'src/app/services/price.service';
 
 interface Xput {
   type: 'input' | 'output' | 'fee';
@@ -14,6 +15,7 @@ interface Xput {
   pegin?: boolean;
   pegout?: string;
   confidential?: boolean;
+  timestamp?: number;
 }
 
 @Component({
@@ -27,12 +29,21 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
   @Input() isConnector: boolean = false;
 
   tooltipPosition = { x: 0, y: 0 };
+  blockConversion: Price;
 
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
 
-  constructor() {}
+  constructor(private priceService: PriceService) {}
 
   ngOnChanges(changes): void {
+    if (changes.line?.currentValue) {
+      this.priceService.getBlockPrice$(changes.line?.currentValue.timestamp, true).pipe(
+        tap((price) => {
+          this.blockConversion = price;
+        })
+      ).subscribe();
+    }
+
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
       let x = Math.max(10, changes.cursorPosition.currentValue.x - 50);
       let y = changes.cursorPosition.currentValue.y + 20;
