@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 53;
+  private static currentVersion = 54;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -472,6 +472,14 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 53) {
       await this.$executeQuery('ALTER TABLE statistics MODIFY mempool_byte_weight bigint(20) UNSIGNED NOT NULL');
       await this.updateToSchemaVersion(53);
+    }
+
+    if (databaseSchemaVersion < 54) {
+      this.uniqueLog(logger.notice, `'prices' table has been truncated`);
+      this.uniqueLog(logger.notice, `'blocks_prices' table has been truncated`);
+      await this.$executeQuery(`TRUNCATE prices`);
+      await this.$executeQuery(`TRUNCATE blocks_prices`);
+      await this.updateToSchemaVersion(54);
     }
   }
 
