@@ -1,19 +1,17 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { download, formatterXAxis } from '../../shared/graphs.utils';
 import { MiningService } from '../../services/mining.service';
-import { StateService } from '../../services/state.service';
 import { StorageService } from '../../services/storage.service';
 import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
-import { fiatCurrencies } from '../../app.constants';
 
 @Component({
   selector: 'app-block-rewards-graph',
@@ -47,7 +45,6 @@ export class BlockRewardsGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
-  currencySubscription: Subscription;
   currency: string;
 
   constructor(
@@ -56,19 +53,12 @@ export class BlockRewardsGraphComponent implements OnInit {
     private apiService: ApiService,
     private formBuilder: UntypedFormBuilder,
     private miningService: MiningService,
-    private stateService: StateService,
     private storageService: StorageService,
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
     private fiatCurrencyPipe: FiatCurrencyPipe,
   ) {
-    this.currencySubscription = this.stateService.fiatCurrency$.subscribe((fiat) => {
-      if (fiat && fiatCurrencies[fiat]?.indexed) {
-        this.currency = fiat;
-      } else {
-        this.currency = 'USD';
-      }
-    });
+    this.currency = 'USD';
   }
 
   ngOnInit(): void {
