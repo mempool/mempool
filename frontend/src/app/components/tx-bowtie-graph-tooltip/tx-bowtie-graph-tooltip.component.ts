@@ -37,7 +37,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
 
   ngOnChanges(changes): void {
     if (changes.line?.currentValue) {
-      this.priceService.getBlockPrice$(changes.line?.currentValue.timestamp).pipe(
+      this.priceService.getBlockPrice$(changes.line?.currentValue.timestamp, true).pipe(
         tap((price) => {
           this.blockConversion = price;
         })

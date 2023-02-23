@@ -104,9 +104,48 @@ class PricesRepository {
     return rates[0];
   }
 
-  public async $getHistoricalPrice(): Promise<Conversion | null> {
+  public async $getNearestHistoricalPrice(timestamp: number | undefined): Promise<Conversion | null> {
     try {
-      const [rates]: any[] = await DB.query(`SELECT *, UNIX_TIMESTAMP(time) as time FROM prices ORDER BY time DESC`);
+      const [rates]: any[] = await DB.query(`
+        SELECT *, UNIX_TIMESTAMP(time) AS time
+        FROM prices
+        WHERE UNIX_TIMESTAMP(time) < ?
+        ORDER BY time DESC
+        LIMIT 1`,
+        [timestamp]
+      );
+      if (!rates) {
+        throw Error(`Cannot get single historical price from the database`);
+      }
+
+      // Compute fiat exchange rates
+      const latestPrice = await this.$getLatestConversionRates();
+      const exchangeRates: ExchangeRates = {
+        USDEUR: Math.round(latestPrice.EUR / latestPrice.USD * 100) / 100,
+        USDGBP: Math.round(latestPrice.GBP / latestPrice.USD * 100) / 100,
+        USDCAD: Math.round(latestPrice.CAD / latestPrice.USD * 100) / 100,
+        USDCHF: Math.round(latestPrice.CHF / latestPrice.USD * 100) / 100,
+        USDAUD: Math.round(latestPrice.AUD / latestPrice.USD * 100) / 100,
+        USDJPY: Math.round(latestPrice.JPY / latestPrice.USD * 100) / 100,
+      };
+
+      return {
+        prices: rates,
+        exchangeRates: exchangeRates
+      };
+    } catch (e) {
+      logger.err(`Cannot fetch single historical prices from the db. Reason ${e instanceof Error ? e.message : e}`);
+      return null;
+    }
+  }
+
+  public async $getHistoricalPrices(): Promise<Conversion | null> {
+    try {
+      const [rates]: any[] = await DB.query(`
+        SELECT *, UNIX_TIMESTAMP(time) AS time
+        FROM prices
+        ORDER BY time DESC
+      `);
       if (!rates) {
         throw Error(`Cannot get average historical price from the database`);
       }
@@ -127,7 +166,7 @@ class PricesRepository {
         exchangeRates: exchangeRates
       };
     } catch (e) {
-      logger.err(`Cannot fetch averaged historical prices from the db. Reason ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot fetch historical prices from the db. Reason ${e instanceof Error ? e.message : e}`);
       return null;
     }
   }

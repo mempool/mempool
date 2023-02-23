@@ -41,6 +41,10 @@ export interface ConversionDict {
 })
 export class PriceService {
   priceObservable$: Observable<Conversion>;
+  singlePriceObservable$: Observable<Conversion>;
+
+  lastQueriedTimestamp: number;
+  lastPriceHistoryUpdate: number;
 
   historicalPrice: ConversionDict = {
     prices: null,
@@ -63,53 +67,83 @@ export class PriceService {
     };
   }
 
-  getBlockPrice$(blockTimestamp: number): Observable<Price | undefined> {
-    if (!this.priceObservable$) {
-      this.priceObservable$ = this.apiService.getHistoricalPrice$().pipe(shareReplay());
+  getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
+    const now = new Date().getTime() / 1000;
+
+    /**
+     * Query nearest price for a specific blockTimestamp. The observable is invalidated if we
+     * query a different timestamp than the last one
+     */
+    if (singlePrice) {
+      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && blockTimestamp !== this.lastQueriedTimestamp)) {
+        this.singlePriceObservable$ = this.apiService.getHistoricalPrice$(blockTimestamp).pipe(shareReplay());
+        this.lastQueriedTimestamp = blockTimestamp;
+      }
+
+      return this.singlePriceObservable$.pipe(
+        map((conversion) => {
+          return {
+            price: {
+              USD: conversion.prices[0].USD, EUR: conversion.prices[0].EUR, GBP: conversion.prices[0].GBP, CAD: conversion.prices[0].CAD,
+              CHF: conversion.prices[0].CHF, AUD: conversion.prices[0].AUD, JPY: conversion.prices[0].JPY
+            },
+            exchangeRates: conversion.exchangeRates,
+          };
+        })
+      );
     }
 
-    return this.priceObservable$.pipe(
-      map((conversion) => {
-        if (!blockTimestamp) {
-          return undefined;
-        }
+    /**
+     * Query all price history only once. The observable is invalidated after 1 hour
+     */
+    else {
+      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600))) {
+        this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined).pipe(shareReplay());
+        this.lastPriceHistoryUpdate = new Date().getTime() / 1000;
+      }
 
-        const historicalPrice = {
-          prices: {},
-          exchangeRates: conversion.exchangeRates,
-        };
-        for (const price of conversion.prices) {
-          historicalPrice.prices[price.time] = {
-            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD,
-            CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
+      return this.priceObservable$.pipe(
+        map((conversion) => {
+          if (!blockTimestamp) {
+            return undefined;
+          }
+
+          const historicalPrice = {
+            prices: {},
+            exchangeRates: conversion.exchangeRates,
           };
-        }
-
-        const priceTimestamps = Object.keys(historicalPrice.prices);
-        priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
-        priceTimestamps.sort().reverse();
-        
-        // Small trick here. Because latest blocks have higher timestamps than our
-        // latest price timestamp (we only insert once every hour), we have no price for them.
-        // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
-        // Since historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
-        // it will return `undefined` and automatically use the websocket price.
-        // This way we can differenciate blocks without prices like the genesis block
-        // vs ones without a price (yet) like the latest blocks
-    
-        for (const t of priceTimestamps) {
-          const priceTimestamp = parseInt(t, 10);
-          if (blockTimestamp > priceTimestamp) {
-            return {
-              price: historicalPrice.prices[priceTimestamp],
-              exchangeRates: historicalPrice.exchangeRates,
+          for (const price of conversion.prices) {
+            historicalPrice.prices[price.time] = {
+              USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD,
+              CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
             };
           }
-        }
-    
-        return this.getEmptyPrice();    
-      })
-    );
+
+          const priceTimestamps = Object.keys(historicalPrice.prices);
+          priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
+          priceTimestamps.sort().reverse();
+
+          // Small trick here. Because latest blocks have higher timestamps than our
+          // latest price timestamp (we only insert once every hour), we have no price for them.
+          // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
+          // Since historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
+          // it will return `undefined` and automatically use the websocket price.
+          // This way we can differenciate blocks without prices like the genesis block
+          // vs ones without a price (yet) like the latest blocks
+
+          for (const t of priceTimestamps) {
+            const priceTimestamp = parseInt(t, 10);
+            if (blockTimestamp > priceTimestamp) {
+              return {
+                price: historicalPrice.prices[priceTimestamp],
+                exchangeRates: historicalPrice.exchangeRates,
+              };
+            }
+          }
+
+          return this.getEmptyPrice();
+        })
+      );
+    }
   }
 }
-
