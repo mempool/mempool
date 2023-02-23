@@ -28,7 +28,7 @@ export class TopNodesPerChannels implements OnInit {
   ngOnInit(): void {
     this.currency$ = this.stateService.fiatCurrency$;
     
-    for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 6) : 100); ++i) {
+    for (let i = 1; i <= (this.widget ? 6 : 100); ++i) {
       this.skeletonRows.push(i);
     }
 
@@ -49,7 +49,16 @@ export class TopNodesPerChannels implements OnInit {
     } else {
       this.topNodesPerChannels$ = this.nodes$.pipe(
         map((ranking) => {
-          return ranking.topByChannels.slice(0, isMobile() ? 8 : 6);
+          for (const i in ranking.topByChannels) {
+            ranking.topByChannels[i].geolocation = <GeolocationData>{
+              country: ranking.topByChannels[i].country?.en,
+              city: ranking.topByChannels[i].city?.en,
+              subdivision: ranking.topByChannels[i].subdivision?.en,
+              iso: ranking.topByChannels[i].iso_code,
+            };
+            console.log(ranking.topByChannels[i].geolocation);
+          }
+          return ranking.topByChannels;
         })
       );
     }

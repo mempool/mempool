@@ -33,6 +33,9 @@ tr, td, th {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.pool.widget {
+  width: 45%;
+}
 
 .liquidity {
   width: 10%;
