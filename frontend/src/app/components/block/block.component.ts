@@ -443,9 +443,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     }
     this.priceSubscription = block$.pipe(
       switchMap((block) => {
-        return this.priceService.getPrices().pipe(
-          tap(() => {
-            this.blockConversion = this.priceService.getPriceForTimestamp(block.timestamp);
+        return this.priceService.getBlockPrice$(block.timestamp).pipe(
+          tap((price) => {
+            this.blockConversion = price;
           })
         );
       })
