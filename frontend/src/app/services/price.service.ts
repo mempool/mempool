@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, of, shareReplay } from 'rxjs';
+import { map, Observable, of, share, shareReplay, tap } from 'rxjs';
 import { ApiService } from './api.service';
 
 // nodejs backend interfaces
@@ -40,6 +40,12 @@ export interface ConversionDict {
   providedIn: 'root'
 })
 export class PriceService {
+  priceObservable$: Observable<Conversion>;
+  singlePriceObservable$: Observable<Conversion>;
+
+  lastQueriedTimestamp: number;
+  lastPriceHistoryUpdate: number;
+
   historicalPrice: ConversionDict = {
     prices: null,
     exchangeRates: null,
@@ -61,65 +67,86 @@ export class PriceService {
     };
   }
 
-  /**
-   * Fetch prices from the nodejs backend only once
-   */
-  getPrices(): Observable<void> {
-    if (this.historicalPrice.prices) {
-      return of(null);
-    }
+  getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
+    const now = new Date().getTime() / 1000;
 
-    return this.apiService.getHistoricalPrice$().pipe(
-      map((conversion: Conversion) => {
-        if (!this.historicalPrice.prices) {
-          this.historicalPrice.prices = Object();
-        }
-        for (const price of conversion.prices) {
-          this.historicalPrice.prices[price.time] = {
-            USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD,
-            CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
-          };
-        }
-        this.historicalPrice.exchangeRates = conversion.exchangeRates;
-        return;
-      }),
-      shareReplay(),
-    );
-  }
-
-  /**
-   * Note: The first block with a price we have is block 68952 (using MtGox price history)
-   * 
-   * @param blockTimestamp 
-   */
-  getPriceForTimestamp(blockTimestamp: number): Price | null {
-    if (!blockTimestamp) {
-      return undefined;
-    }
-
-    const priceTimestamps = Object.keys(this.historicalPrice.prices);
-    priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
-    priceTimestamps.sort().reverse();
-    
-    // Small trick here. Because latest blocks have higher timestamps than our
-    // latest price timestamp (we only insert once every hour), we have no price for them.
-    // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
-    // Since this.historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
-    // it will return `undefined` and automatically use the websocket price.
-    // This way we can differenciate blocks without prices like the genesis block
-    // vs ones without a price (yet) like the latest blocks
-
-    for (const t of priceTimestamps) {
-      const priceTimestamp = parseInt(t, 10);
-      if (blockTimestamp > priceTimestamp) {
-        return {
-          price: this.historicalPrice.prices[priceTimestamp],
-          exchangeRates: this.historicalPrice.exchangeRates,
-        };
+    /**
+     * Query nearest price for a specific blockTimestamp. The observable is invalidated if we
+     * query a different timestamp than the last one
+     */
+    if (singlePrice) {
+      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && blockTimestamp !== this.lastQueriedTimestamp)) {
+        this.singlePriceObservable$ = this.apiService.getHistoricalPrice$(blockTimestamp).pipe(shareReplay());
+        this.lastQueriedTimestamp = blockTimestamp;
       }
+
+      return this.singlePriceObservable$.pipe(
+        map((conversion) => {
+          if (conversion.prices.length <= 0) {
+            return this.getEmptyPrice();
+          }
+          return {
+            price: {
+              USD: conversion.prices[0].USD, EUR: conversion.prices[0].EUR, GBP: conversion.prices[0].GBP, CAD: conversion.prices[0].CAD,
+              CHF: conversion.prices[0].CHF, AUD: conversion.prices[0].AUD, JPY: conversion.prices[0].JPY
+            },
+            exchangeRates: conversion.exchangeRates,
+          };
+        })
+      );
     }
 
-    return this.getEmptyPrice();
+    /**
+     * Query all price history only once. The observable is invalidated after 1 hour
+     */
+    else {
+      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600))) {
+        this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined).pipe(shareReplay());
+        this.lastPriceHistoryUpdate = new Date().getTime() / 1000;
+      }
+
+      return this.priceObservable$.pipe(
+        map((conversion) => {
+          if (!blockTimestamp) {
+            return undefined;
+          }
+
+          const historicalPrice = {
+            prices: {},
+            exchangeRates: conversion.exchangeRates,
+          };
+          for (const price of conversion.prices) {
+            historicalPrice.prices[price.time] = {
+              USD: price.USD, EUR: price.EUR, GBP: price.GBP, CAD: price.CAD,
+              CHF: price.CHF, AUD: price.AUD, JPY: price.JPY
+            };
+          }
+
+          const priceTimestamps = Object.keys(historicalPrice.prices);
+          priceTimestamps.push(Number.MAX_SAFE_INTEGER.toString());
+          priceTimestamps.sort().reverse();
+
+          // Small trick here. Because latest blocks have higher timestamps than our
+          // latest price timestamp (we only insert once every hour), we have no price for them.
+          // Therefore we want to fallback to the websocket price by returning an undefined `price` field.
+          // Since historicalPrice.prices[Number.MAX_SAFE_INTEGER] does not exists
+          // it will return `undefined` and automatically use the websocket price.
+          // This way we can differenciate blocks without prices like the genesis block
+          // vs ones without a price (yet) like the latest blocks
+
+          for (const t of priceTimestamps) {
+            const priceTimestamp = parseInt(t, 10);
+            if (blockTimestamp > priceTimestamp) {
+              return {
+                price: historicalPrice.prices[priceTimestamp],
+                exchangeRates: historicalPrice.exchangeRates,
+              };
+            }
+          }
+
+          return this.getEmptyPrice();
+        })
+      );
+    }
   }
 }
-

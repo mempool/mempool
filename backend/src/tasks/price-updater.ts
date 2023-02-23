@@ -3,7 +3,7 @@ import path from 'path';
 import config from '../config';
 import logger from '../logger';
 import { IConversionRates } from '../mempool.interfaces';
-import PricesRepository from '../repositories/PricesRepository';
+import PricesRepository, { MAX_PRICES } from '../repositories/PricesRepository';
 import BitfinexApi from './price-feeds/bitfinex-api';
 import BitflyerApi from './price-feeds/bitflyer-api';
 import CoinbaseApi from './price-feeds/coinbase-api';
@@ -46,13 +46,13 @@ class PriceUpdater {
 
   public getEmptyPricesObj(): IConversionRates {
     return {
-      USD: 0,
-      EUR: 0,
-      GBP: 0,
-      CAD: 0,
-      CHF: 0,
-      AUD: 0,
-      JPY: 0,
+      USD: -1,
+      EUR: -1,
+      GBP: -1,
+      CAD: -1,
+      CHF: -1,
+      AUD: -1,
+      JPY: -1,
     };
   }
 
@@ -115,7 +115,7 @@ class PriceUpdater {
         if (feed.currencies.includes(currency)) {
           try {
             const price = await feed.$fetchPrice(currency);
-            if (price > 0) {
+            if (price > -1 && price < MAX_PRICES[currency]) {
               prices.push(price);
             }
             logger.debug(`${feed.name} BTC/${currency} price: ${price}`, logger.tags.mining);
@@ -239,7 +239,7 @@ class PriceUpdater {
 
         for (const currency of this.currencies) {
           const price = historicalEntry[time][currency];
-          if (price > 0) {
+          if (price > -1 && price < MAX_PRICES[currency]) {
             grouped[time][currency].push(typeof price === 'string' ? parseInt(price, 10) : price);
           }
         }
