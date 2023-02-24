@@ -75,7 +75,7 @@ class PoolsUpdater {
 
       try {
         await DB.query('START TRANSACTION;');
-        await poolsParser.migratePoolsJson(poolsJson);
+        await poolsParser.migratePoolsJson();
         await this.updateDBSha(githubSha);
         await DB.query('START TRANSACTION;');
         await DB.query('COMMIT;');

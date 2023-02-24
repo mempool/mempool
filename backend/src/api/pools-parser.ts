@@ -13,24 +13,32 @@ class PoolsParser {
     'addresses': '[]',
     'slug': 'unknown'
   };
+  private uniqueLogs: string[] = [];
+
+  private uniqueLog(loggerFunction: any, msg: string): void {
+    if (this.uniqueLogs.includes(msg)) {
+      return;
+    }
+    this.uniqueLogs.push(msg);
+    loggerFunction(msg);
+  }
 
   public setMiningPools(pools): void {
-    this.miningPools = pools;
-    for (const pool of this.miningPools) {
-      pool.regexes = JSON.stringify(pool.tags);
-      pool.addresses = JSON.stringify(pool.addresses);
-      delete pool.tags;
+    for (const pool of pools) {
+      pool.regexes = pool.tags;
+      delete(pool.tags);
     }
+    this.miningPools = pools;
   }
 
   /**
    * Populate our db with updated mining pool definition
    * @param pools 
    */
-  public async migratePoolsJson(pools: any[]): Promise<void> {
+  public async migratePoolsJson(): Promise<void> {
     await this.$insertUnknownPool();
 
-    for (const pool of pools) {
+    for (const pool of this.miningPools) {
       if (!pool.id) {
         logger.info(`Mining pool ${pool.name} has no unique 'id' defined. Skipping.`);
         continue;
@@ -56,10 +64,10 @@ class PoolsParser {
           await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link);
         }
         if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
-          JSON.stringify(pool.tags) !== poolDB.regexes) {
+          JSON.stringify(pool.regexes) !== poolDB.regexes) {
           // Pool addresses changed or coinbase tags changed
           logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool. If 'AUTOMATIC_BLOCK_REINDEXING' is enabled, we will re-index its blocks and 'unknown' blocks`);
-          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.tags);
+          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes);
           await this.$deleteBlocksForPool(poolDB);
         }
       }
@@ -119,7 +127,7 @@ class PoolsParser {
     );
     const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : 130635;
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    logger.notice(`Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
     await DB.query(`
       DELETE FROM blocks
       WHERE pool_id = ? AND height >= ${oldestBlockHeight}`,
@@ -135,7 +143,7 @@ class PoolsParser {
 
   private async $deleteUnknownBlocks(): Promise<void> {
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    logger.notice(`Deleting blocks with unknown mining pool from height 130635 for re-indexing`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height 130635 for re-indexing`);
     await DB.query(`
       DELETE FROM blocks
       WHERE pool_id = ? AND height >= 130635`,
