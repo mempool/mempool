@@ -805,7 +805,7 @@ class Blocks {
         hash: block.id ?? null,
         timestamp: block.blockTimestamp ?? null,
         median_timestamp: block.medianTime ?? null,
-        previousblockhash: block.previousblockhash ?? null,
+        previous_block_hash: block.previousblockhash ?? null,
         difficulty: block.difficulty ?? null,
         header: block.header ?? null,
         version: block.version ?? null,
