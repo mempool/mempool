@@ -56,7 +56,6 @@ export class TopNodesPerChannels implements OnInit {
               subdivision: ranking.topByChannels[i].subdivision?.en,
               iso: ranking.topByChannels[i].iso_code,
             };
-            console.log(ranking.topByChannels[i].geolocation);
           }
           return ranking.topByChannels;
         })
