@@ -10,7 +10,7 @@
       <thead>
         <th class="text-left" i18n="nodes.alias">Alias</th>
         <th class="liquidity text-right" i18n="node.liquidity">Liquidity</th>
-        <th class="d-none d-md-table-cell text-right" i18n="node.liquidity">{{ currency$ | async }}</th>
+        <th class="d-table-cell fiat text-right" [class]="{'widget': widget}">{{ currency$ | async }}</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell channels text-right" i18n="lightning.channels">Channels</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="transaction.first-seen|Transaction first seen">First seen</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="lightning.last_update">Last update</th>
@@ -28,7 +28,7 @@
           <td class="text-right">
             <app-amount [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
           </td>
-          <td class="fiat d-none d-md-table-cell text-right">
+          <td class="d-table-cell fiat text-right" [ngClass]="{'widget': widget}">
             <app-fiat [value]="node.capacity"></app-fiat>
           </td>
           <td *ngIf="!widget" class="d-none d-md-table-cell text-right">

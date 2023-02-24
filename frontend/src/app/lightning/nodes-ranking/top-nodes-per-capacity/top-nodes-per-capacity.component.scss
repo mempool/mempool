@@ -45,4 +45,7 @@ tr, td, th {
   width: 15%;
   font-family: monospace;
   font-size: 14px;
+  @media (max-width: 991px) {
+    display: none !important;
+  }
 }
