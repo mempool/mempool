@@ -409,20 +409,26 @@ class BitcoinRoutes {
       if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) { // Liquid, Bisq - Not implemented
         return res.status(404).send(`This API is only available for Bitcoin networks`);
       }
+      if (config.MEMPOOL.MAX_BLOCKS_BULK_QUERY <= 0) {
+        return res.status(404).send(`This API is disabled. Set config.MEMPOOL.MAX_BLOCKS_BULK_QUERY to a positive number to enable it.`);
+      }
       if (!Common.indexingEnabled()) {
         return res.status(404).send(`Indexing is required for this API`);
       }
 
       const from = parseInt(req.params.from, 10);
-      if (!from) {
+      if (!req.params.from || from < 0) {
         return res.status(400).send(`Parameter 'from' must be a block height (integer)`);
       }
       const to = req.params.to === undefined ? await bitcoinApi.$getBlockHeightTip() : parseInt(req.params.to, 10);
-      if (!to) {
+      if (to < 0) {
         return res.status(400).send(`Parameter 'to' must be a block height (integer)`);
       }
       if (from > to) {
         return res.status(400).send(`Parameter 'to' must be a higher block height than 'from'`);
+      }
+      if ((to - from + 1) > config.MEMPOOL.MAX_BLOCKS_BULK_QUERY) {
+        return res.status(400).send(`You can only query ${config.MEMPOOL.MAX_BLOCKS_BULK_QUERY} blocks at once.`);
       }
 
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
