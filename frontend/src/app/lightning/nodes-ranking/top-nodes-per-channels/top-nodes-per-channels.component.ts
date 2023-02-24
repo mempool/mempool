@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { map, Observable } from 'rxjs';
 import { StateService } from 'src/app/services/state.service';
 import { INodesRanking, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
-import { isMobile } from '../../../shared/common.utils';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../../lightning-api.service';
 
