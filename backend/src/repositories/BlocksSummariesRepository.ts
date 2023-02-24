@@ -108,13 +108,13 @@ class BlocksSummariesRepository {
       const fees = transactions.map((t: any) => t.fee);
 
       return [
-        fees[0], // min
-        fees[Math.max(0, Math.floor(fees.length * 0.1) - 1)], // 10th
-        fees[Math.max(0, Math.floor(fees.length * 0.25) - 1)], // 25th
-        fees[Math.max(0, Math.floor(fees.length * 0.5) - 1)], // median
-        fees[Math.max(0, Math.floor(fees.length * 0.75) - 1)], // 75th
-        fees[Math.max(0, Math.floor(fees.length * 0.9) - 1)], // 90th
-        fees[fees.length - 1], // max
+        fees[0] ?? 0, // min
+        fees[Math.max(0, Math.floor(fees.length * 0.1) - 1)] ?? 0, // 10th
+        fees[Math.max(0, Math.floor(fees.length * 0.25) - 1)] ?? 0, // 25th
+        fees[Math.max(0, Math.floor(fees.length * 0.5) - 1)] ?? 0, // median
+        fees[Math.max(0, Math.floor(fees.length * 0.75) - 1)] ?? 0, // 75th
+        fees[Math.max(0, Math.floor(fees.length * 0.9) - 1)] ?? 0, // 90th
+        fees[fees.length - 1] ?? 0, // max
       ];
 
     } catch (e) {
