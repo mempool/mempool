@@ -836,6 +836,7 @@ class Blocks {
         coinbase_raw: block.coinbase_raw ?? null,
         coinbase_address: block.coinbase_address ?? null,
         coinbase_signature: block.coinbase_signature ?? null,
+        coinbase_signature_ascii: block.coinbase_signature_ascii ?? null,
         pool_slug: block.pool_slug ?? null,
       };
 
