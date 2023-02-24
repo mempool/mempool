@@ -24,7 +24,7 @@ class ChainTips {
       this.orphanedBlocks = [];
 
       for (const chain of this.chainTips) {
-        if (chain.status === 'valid-fork' || chain.status === 'valid-headers' || chain.status === 'headers-only') {
+        if (chain.status === 'valid-fork' || chain.status === 'valid-headers') {
           let block = await bitcoinClient.getBlock(chain.hash);
           while (block && block.confirmations === -1) {
             this.orphanedBlocks.push({
