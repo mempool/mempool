@@ -205,8 +205,6 @@ class Blocks {
       blk.extras.segwitTotalWeight = stats.swtotal_weight;
     }
 
-    blk.extras.blockTime = 0; // TODO
-
     if (Common.indexingEnabled()) {
       blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
       if (blk.extras.feePercentiles !== null) {

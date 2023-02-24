@@ -764,7 +764,6 @@ class DatabaseMigration {
   private getAdditionalBlocksDataQuery(): string {
     return `ALTER TABLE blocks
       ADD median_timestamp timestamp NOT NULL,
-      ADD block_time int unsigned NOT NULL,
       ADD coinbase_address varchar(100) NULL,
       ADD coinbase_signature varchar(500) NULL,
       ADD coinbase_signature_ascii varchar(500) NULL,
