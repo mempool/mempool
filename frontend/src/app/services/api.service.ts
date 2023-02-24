@@ -305,7 +305,10 @@ export class ApiService {
     );
   }
 
-  getHistoricalPrice$(): Observable<Conversion> {
-    return this.httpClient.get<Conversion>( this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price');
+  getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+    return this.httpClient.get<Conversion>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
+        (timestamp ? `?timestamp=${timestamp}` : '')
+    );
   }
 }

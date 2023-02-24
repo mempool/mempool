@@ -130,7 +130,7 @@ export class NodesNetworksChartComponent implements OnInit {
         },
         text: $localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`,
         left: 'center',
-        top: 11,
+        top: 0,
         zlevel: 10,
       };
     }
@@ -227,8 +227,8 @@ export class NodesNetworksChartComponent implements OnInit {
       title: title,
       animation: false,
       grid: {
-        height: this.widget ? 100 : undefined,
-        top: this.widget ? 10 : 40,
+        height: this.widget ? 90 : undefined,
+        top: this.widget ? 20 : 40,
         bottom: this.widget ? 0 : 70,
         right: (isMobile() && this.widget) ? 35 : this.right,
         left: (isMobile() && this.widget) ? 40 :this.left,
