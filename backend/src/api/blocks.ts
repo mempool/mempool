@@ -205,7 +205,7 @@ class Blocks {
       blk.extras.segwitTotalWeight = stats.swtotal_weight;
     }
 
-    if (Common.indexingEnabled()) {
+    if (Common.blocksSummariesIndexingEnabled()) {
       blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
       if (blk.extras.feePercentiles !== null) {
         blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
@@ -798,29 +798,65 @@ class Blocks {
           continue;
         }
       }
-      delete(block.hash);
-      delete(block.previous_block_hash);
-      delete(block.pool_name);
-      delete(block.pool_link);
-      delete(block.pool_addresses);
-      delete(block.pool_regexes);
-      delete(block.median_timestamp);
 
-      // This requires `blocks_summaries` to be available. It takes a very long
-      // time to index this table so we just try to serve the data the best we can
-      if (block.fee_percentiles === null) {
-        block.fee_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id); 
-        if (block.fee_percentiles !== null) {
-          block.median_fee_amt = block.fee_percentiles[3];
-          await blocksRepository.$saveFeePercentilesForBlockId(block.id, block.fee_percentiles);
+      // Cleanup fields before sending the response
+      const cleanBlock: any = {
+        height: block.height ?? null,
+        hash: block.id ?? null,
+        timestamp: block.blockTimestamp ?? null,
+        median_timestamp: block.medianTime ?? null,
+        previousblockhash: block.previousblockhash ?? null,
+        difficulty: block.difficulty ?? null,
+        header: block.header ?? null,
+        version: block.version ?? null,
+        bits: block.bits ?? null,
+        nonce: block.nonce ?? null,
+        size: block.size ?? null,
+        weight: block.weight ?? null,
+        tx_count: block.tx_count ?? null,
+        merkle_root: block.merkle_root ?? null,
+        reward: block.reward ?? null,
+        total_fee_amt: block.fees ?? null,
+        avg_fee_amt: block.avg_fee ?? null,
+        median_fee_amt: block.median_fee_amt ?? null,
+        fee_amt_percentiles: block.fee_percentiles ?? null,
+        avg_fee_rate: block.avg_fee_rate ?? null,
+        median_fee_rate: block.median_fee ?? null,
+        fee_rate_percentiles: block.fee_span ?? null,
+        total_inputs: block.total_inputs ?? null,
+        total_input_amt: block.total_input_amt ?? null,
+        total_outputs: block.total_outputs ?? null,
+        total_output_amt: block.total_output_amt ?? null,
+        segwit_total_txs: block.segwit_total_txs ?? null,
+        segwit_total_size: block.segwit_total_size ?? null,
+        segwit_total_weight: block.segwit_total_weight ?? null,
+        avg_tx_size: block.avg_tx_size ?? null,
+        utxoset_change: block.utxoset_change ?? null,
+        utxoset_size: block.utxoset_size ?? null,
+        coinbase_raw: block.coinbase_raw ?? null,
+        coinbase_address: block.coinbase_address ?? null,
+        coinbase_signature: block.coinbase_signature ?? null,
+        pool_slug: block.pool_slug ?? null,
+      };
+
+      if (Common.blocksSummariesIndexingEnabled() && cleanBlock.fee_amt_percentiles === null) {
+        cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
+        if (cleanBlock.fee_amt_percentiles === null) {
+          const block = await bitcoinClient.getBlock(cleanBlock.hash, 2);
+          const summary = this.summarizeBlock(block);
+          await BlocksSummariesRepository.$saveSummary({ height: block.height, mined: summary });
+          cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
+        }
+        if (cleanBlock.fee_amt_percentiles !== null) {
+          cleanBlock.median_fee_amt = cleanBlock.fee_amt_percentiles[3];
         }
       }
 
       // Re-org can happen after indexing so we need to always get the
       // latest state from core
-      block.orphans = chainTips.getOrphanedBlocksAtHeight(block.height);
+      cleanBlock.orphans = chainTips.getOrphanedBlocksAtHeight(cleanBlock.height);
 
-      blocks.push(block);
+      blocks.push(cleanBlock);
       fromHeight++;
     }
 
