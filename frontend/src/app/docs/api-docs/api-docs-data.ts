@@ -2919,6 +2919,54 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "blocks",
     httpRequestMethod: "GET",
+    fragment: "get-blocks-bulk",
+    title: "GET Blocks (Bulk)",
+    description: {
+      default: "Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 100 blocks. If <code>:maxHeight</code> is not specified, <code>:maxHeight</code> defaults to the current tip."
+    },
+    urlString: "/v1/blocks-bulk/:minHeight[/:maxHeight]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/blocks-bulk/%{1}/%{2}`,
+          commonJS: ``,
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [730000, 730100],
+          response: `[
+
+]`,
+        },
+        codeSampleTestnet: {
+          esModule: ['2091187'],
+          commonJS: ['2091187'],
+          curl: ['2091187'],
+          response: `[
+
+]`
+        },
+        codeSampleSignet: {
+          esModule: ['53783'],
+          commonJS: ['53783'],
+          curl: ['53783'],
+          response: `[
+
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+        codeSampleBisq: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: "endpoint",
+    category: "blocks",
+    httpRequestMethod: "GET",
     fragment: "get-blocks",
     title: "GET Blocks",
     description: {
