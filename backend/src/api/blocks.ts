@@ -853,6 +853,25 @@ class Blocks {
         }
       }
 
+      cleanBlock.fee_amt_percentiles = {
+        'min': cleanBlock.fee_amt_percentiles[0],
+        'perc_10': cleanBlock.fee_amt_percentiles[1],
+        'perc_25': cleanBlock.fee_amt_percentiles[2],
+        'perc_50': cleanBlock.fee_amt_percentiles[3],
+        'perc_75': cleanBlock.fee_amt_percentiles[4],
+        'perc_90': cleanBlock.fee_amt_percentiles[5],
+        'max': cleanBlock.fee_amt_percentiles[6],
+      };
+      cleanBlock.fee_rate_percentiles = {
+        'min': cleanBlock.fee_rate_percentiles[0],
+        'perc_10': cleanBlock.fee_rate_percentiles[1],
+        'perc_25': cleanBlock.fee_rate_percentiles[2],
+        'perc_50': cleanBlock.fee_rate_percentiles[3],
+        'perc_75': cleanBlock.fee_rate_percentiles[4],
+        'perc_90': cleanBlock.fee_rate_percentiles[5],
+        'max': cleanBlock.fee_rate_percentiles[6],
+      };
+
       // Re-org can happen after indexing so we need to always get the
       // latest state from core
       cleanBlock.orphans = chainTips.getOrphanedBlocksAtHeight(cleanBlock.height);
