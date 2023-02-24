@@ -56,7 +56,7 @@ export class TopNodesPerChannels implements OnInit {
               iso: ranking.topByChannels[i].iso_code,
             };
           }
-          return ranking.topByChannels;
+          return ranking.topByChannels.slice(0, 6);
         })
       );
     }
