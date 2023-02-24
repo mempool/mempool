@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map, Observable, of, share, shareReplay, tap } from 'rxjs';
 import { ApiService } from './api.service';
+import { StateService } from './state.service';
 
 // nodejs backend interfaces
 export interface ApiPrice {
@@ -52,7 +53,8 @@ export class PriceService {
   };
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private stateService: StateService
   ) {
   }
 
@@ -68,6 +70,10 @@ export class PriceService {
   }
 
   getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
+    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+      return of(undefined);
+    }
+
     const now = new Date().getTime() / 1000;
 
     /**
