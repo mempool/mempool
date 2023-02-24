@@ -5,7 +5,7 @@ import { StateService } from '../../services/state.service';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { IBackendInfo } from '../../interfaces/websocket.interface';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { ITranslators } from '../../interfaces/node-api.interface';
 
@@ -31,6 +31,7 @@ export class AboutComponent implements OnInit {
     public stateService: StateService,
     private apiService: ApiService,
     private router: Router,
+    private route: ActivatedRoute,
     @Inject(LOCALE_ID) public locale: string,
   ) { }
 
@@ -60,6 +61,17 @@ export class AboutComponent implements OnInit {
       })
     );
   }
+  
+    ngAfterViewInit() {
+      const that = this;
+      setTimeout( () => {
+        if( this.route.snapshot.fragment ) {
+          if (document.getElementById( this.route.snapshot.fragment )) {
+            document.getElementById( this.route.snapshot.fragment ).scrollIntoView({behavior: "smooth", block: "center"});
+          }
+        }
+      }, 1 );
+    }
 
   sponsor(): void {
     if (this.officialMempoolSpace && this.stateService.env.BASE_MODULE === 'mempool') {
