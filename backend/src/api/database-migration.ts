@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 53;
+  private static currentVersion = 54;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -86,7 +86,7 @@ class DatabaseMigration {
       try {
         await this.$migrateTableSchemaFromVersion(databaseSchemaVersion);
         if (databaseSchemaVersion === 0) {
-          logger.notice(`MIGRATIONS: OK. Database schema has been properly initialized to version ${DatabaseMigration.currentVersion} (latest version)`);          
+          logger.notice(`MIGRATIONS: OK. Database schema has been properly initialized to version ${DatabaseMigration.currentVersion} (latest version)`);
         } else {
           logger.notice(`MIGRATIONS: OK. Database schema have been migrated from version ${databaseSchemaVersion} to ${DatabaseMigration.currentVersion} (latest version)`);
         }
@@ -300,7 +300,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `lightning_stats` ADD med_base_fee_mtokens bigint(20) unsigned NOT NULL DEFAULT "0"');
       await this.updateToSchemaVersion(27);
     }
-    
+
     if (databaseSchemaVersion < 28 && isBitcoin === true) {
       if (config.LIGHTNING.ENABLED) {
         this.uniqueLog(logger.notice, `'lightning_stats' and 'node_stats' tables have been truncated.`);
@@ -464,7 +464,7 @@ class DatabaseMigration {
         await this.$executeQuery('DROP TABLE IF EXISTS `transactions`');
         await this.$executeQuery('DROP TABLE IF EXISTS `cpfp_clusters`');
         await this.updateToSchemaVersion(52);
-      } catch(e) {
+      } catch (e) {
         logger.warn('' + (e instanceof Error ? e.message : e));
       }
     }
@@ -472,6 +472,16 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 53) {
       await this.$executeQuery('ALTER TABLE statistics MODIFY mempool_byte_weight bigint(20) UNSIGNED NOT NULL');
       await this.updateToSchemaVersion(53);
+    }
+
+    if (databaseSchemaVersion < 54) {
+      this.uniqueLog(logger.notice, `'prices' table has been truncated`);
+      await this.$executeQuery(`TRUNCATE prices`);
+      if (isBitcoin === true) {
+        this.uniqueLog(logger.notice, `'blocks_prices' table has been truncated`);
+        await this.$executeQuery(`TRUNCATE blocks_prices`);
+      }
+      await this.updateToSchemaVersion(54);
     }
   }
 
@@ -596,7 +606,7 @@ class DatabaseMigration {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_hashrates_indexing', 0, NULL)`);
     }
 
-    if (version < 9  && isBitcoin === true) {
+    if (version < 9 && isBitcoin === true) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
     }
 

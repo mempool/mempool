@@ -38,7 +38,16 @@ class MiningRoutes {
 
   private async $getHistoricalPrice(req: Request, res: Response): Promise<void> {
     try {
-      res.status(200).send(await PricesRepository.$getHistoricalPrice());
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      if (req.query.timestamp) {
+        res.status(200).send(await PricesRepository.$getNearestHistoricalPrice(
+          parseInt(<string>req.query.timestamp ?? 0, 10)
+        ));
+      } else {
+        res.status(200).send(await PricesRepository.$getHistoricalPrices());
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
