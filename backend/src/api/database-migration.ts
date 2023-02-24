@@ -979,7 +979,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
-  private getCreateCPFPTableQuery(): string {
+  public getCreateCPFPTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS cpfp_clusters (
       root varchar(65) NOT NULL,
       height int(10) NOT NULL,
@@ -989,7 +989,7 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
-  private getCreateTransactionsTableQuery(): string {
+  public getCreateTransactionsTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS transactions (
       txid varchar(65) NOT NULL,
       cluster varchar(65) DEFAULT NULL,

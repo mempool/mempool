@@ -56,6 +56,32 @@ export async function rollbackDbToVersion(versionTarget: number): Promise<void> 
 
 const methods = [];
 
+methods['rollback53'] = async function (): Promise<void> {
+  await databaseMigration.$executeQuery('ALTER TABLE statistics MODIFY mempool_byte_weight int(10) UNSIGNED NOT NULL');
+  await databaseMigration.updateToSchemaVersion(52);
+};
+
+methods['rollback52'] = async function (): Promise<void> {
+  logger.warn(`!!! CPFP data will be lost !!! You can safely abort by killing this script within 10 seconds from now`);
+  await Common.sleep$(10000);
+
+  await databaseMigration.$executeQuery(databaseMigration.getCreateCPFPTableQuery());
+  await databaseMigration.$executeQuery(databaseMigration.getCreateTransactionsTableQuery());
+  await databaseMigration.$executeQuery('DROP TABLE IF EXISTS compact_cpfp_clusters');
+  await databaseMigration.$executeQuery('DROP TABLE IF EXISTS compact_transactions');
+  await databaseMigration.updateToSchemaVersion(51);
+};
+
+methods['rollback51'] = async function (): Promise<void> {
+  await databaseMigration.$executeQuery('ALTER TABLE IF EXISTS `cpfp_clusters` DROP INDEX IF EXISTS `height`');
+  await databaseMigration.updateToSchemaVersion(50);
+};
+
+methods['rollback50'] = async function (): Promise<void> {
+  await databaseMigration.$executeQuery('ALTER TABLE `blocks` ADD cpfp_indexed tinyint(1) DEFAULT 0');
+  await databaseMigration.updateToSchemaVersion(49);
+};
+
 methods['rollback49'] = async function (): Promise<void> {
   // Nothing to do
   await databaseMigration.updateToSchemaVersion(48);
