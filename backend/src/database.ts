@@ -24,7 +24,8 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
 
   private checkDBFlag() {
     if (config.DATABASE.ENABLED === false) {
-      logger.err('Trying to use DB feature but config.DATABASE.ENABLED is set to false, please open an issue');
+      const stack = new Error().stack;
+      logger.err(`Trying to use DB feature but config.DATABASE.ENABLED is set to false, please open an issue.\nStack trace: ${stack}}`);
     }
   }
 
