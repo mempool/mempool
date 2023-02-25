@@ -486,6 +486,8 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 55) {
       await this.$executeQuery(this.getAdditionalBlocksDataQuery());
+      this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
+      await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
       await this.updateToSchemaVersion(55);
     }
   }
