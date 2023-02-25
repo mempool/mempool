@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 55;
+  private static currentVersion = 56;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -62,8 +62,8 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion <= 2) {
       // Disable some spam logs when they're not relevant
-      this.uniqueLogs.push(this.blocksTruncatedMessage);
-      this.uniqueLogs.push(this.hashratesTruncatedMessage);
+      this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
+      this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
     }
 
     logger.debug('MIGRATIONS: Current state.schema_version ' + databaseSchemaVersion);
@@ -489,6 +489,16 @@ class DatabaseMigration {
       this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
       await this.$executeQuery('TRUNCATE blocks;'); // Need to re-index
       await this.updateToSchemaVersion(55);
+    }
+
+    if (databaseSchemaVersion < 56) {
+      await this.$executeQuery('ALTER TABLE pools ADD unique_id int NOT NULL DEFAULT -1');
+      await this.$executeQuery('TRUNCATE TABLE `blocks`');
+      this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
+      await this.$executeQuery('DELETE FROM `pools`');
+      await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
+      this.uniqueLog(logger.notice, '`pools` table has been truncated`');
+      await this.updateToSchemaVersion(56);
     }
   }
 
