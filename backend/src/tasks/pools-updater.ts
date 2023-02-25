@@ -79,14 +79,14 @@ class PoolsUpdater {
         await this.updateDBSha(githubSha);
         await DB.query('COMMIT;');
       } catch (e) {
-        logger.err(`Could not migrate mining pools, rolling back. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
         await DB.query('ROLLBACK;');
       }
       logger.notice('PoolsUpdater completed');
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
-      logger.err(`PoolsUpdater failed. Will try again in 24h. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
+      logger.err(`PoolsUpdater failed. Will try again in 24h. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
     }
   }
 
