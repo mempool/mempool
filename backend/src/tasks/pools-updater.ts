@@ -77,7 +77,6 @@ class PoolsUpdater {
         await DB.query('START TRANSACTION;');
         await poolsParser.migratePoolsJson();
         await this.updateDBSha(githubSha);
-        await DB.query('START TRANSACTION;');
         await DB.query('COMMIT;');
       } catch (e) {
         logger.err(`Could not migrate mining pools, rolling back. Reason: ${e instanceof Error ? e.message : e}`);
