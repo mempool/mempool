@@ -5,9 +5,11 @@ import * as https from 'https';
 import config from './config';
 import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
+import ReusableSSRPage from './concurrency/ReusablePage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute } from './routes';
 import logger from './logger';
+import { TimeoutError } from "puppeteer";
 const puppeteerConfig = require('../puppeteer.config.json');
 
 if (config.PUPPETEER.EXEC_PATH) {
@@ -20,13 +22,16 @@ class Server {
   private server: http.Server | undefined;
   private app: Application;
   cluster?: Cluster;
+  ssrCluster?: Cluster;
   mempoolHost: string;
+  mempoolUrl: URL;
   network: string;
   secureHost = true;
 
   constructor() {
     this.app = express();
     this.mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
+    this.mempoolUrl = new URL(this.mempoolHost);
     this.secureHost = config.SERVER.HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
     this.startServer();
@@ -49,6 +54,12 @@ class Server {
           puppeteerOptions: puppeteerConfig,
       });
       await this.cluster?.task(async (args) => { return this.clusterTask(args) });
+      this.ssrCluster = await Cluster.launch({
+        concurrency: ReusableSSRPage,
+        maxConcurrency: config.PUPPETEER.CLUSTER_SIZE,
+        puppeteerOptions: puppeteerConfig,
+      });
+      await this.ssrCluster?.task(async (args) => { return this.ssrClusterTask(args) });
     }
 
     this.setUpRoutes();
@@ -64,6 +75,10 @@ class Server {
     if (this.cluster) {
       await this.cluster.idle();
       await this.cluster.close();
+    }
+    if (this.ssrCluster) {
+      await this.ssrCluster.idle();
+      await this.ssrCluster.close();
     }
     if (this.server) {
       await this.server.close();
@@ -102,8 +117,8 @@ class Server {
       }
 
       // wait for preview component to initialize
-      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
       let success;
+      await page.waitForSelector('meta[property="og:preview:loading"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 })
       success = await Promise.race([
         page.waitForSelector('meta[property="og:preview:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => true),
         page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
@@ -121,6 +136,44 @@ class Server {
     } catch (e) {
       logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
+    }
+  }
+
+  async ssrClusterTask({ page, data: { url, path, action } }) {
+    try {
+      const urlParts = parseLanguageUrl(path);
+      if (page.language !== urlParts.lang) {
+        // switch language
+        page.language = urlParts.lang;
+        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}` ;
+        await page.goto(localizedUrl, { waitUntil: "load" });
+      } else {
+        const loaded = await page.evaluate(async (path) => {
+          if (window['ogService']) {
+            window['ogService'].loadPage(path);
+            return true;
+          } else {
+            return false;
+          }
+        }, urlParts.path);
+        if (!loaded) {
+          throw new Error('failed to access open graph service');
+        }
+      }
+
+      await page.waitForNetworkIdle({
+        timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000,
+      });
+      let html = await page.content();
+      return html;
+    } catch (e) {
+      if (e instanceof TimeoutError) {
+        let html = await page.content();
+        return html;
+      } else {
+        logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+        page.repairRequested = true;
+      }
     }
   }
 
@@ -163,11 +216,44 @@ class Server {
     // drop requests for static files
     const rawPath = req.params[0];
     const match = rawPath.match(/\.[\w]+$/);
-    if (match?.length && match[0] !== '.html') {
-      res.status(404).send();
-      return;
+    if (match?.length && match[0] !== '.html'
+      || rawPath.startsWith('/api/v1/donations/images')
+      || rawPath.startsWith('/api/v1/contributors/images')
+      || rawPath.startsWith('/api/v1/translators/images')
+      || rawPath.startsWith('/resources/profile')
+    ) {
+      if (req.headers['user-agent'] === 'googlebot') {
+        if (this.secureHost) {
+          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
+        } else {
+          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
+        }
+        return;
+      } else {
+        res.status(404).send();
+        return;
+      }
     }
 
+    let result = '';
+    try {
+      if (req.headers['user-agent'] === 'googlebot') {
+        result = await this.renderSEOPage(rawPath);
+      } else {
+        result = await this.renderUnfurlMeta(rawPath);
+      }
+      if (result && result.length) {
+        res.send(result);
+      } else {
+        res.status(500).send();
+      }
+    } catch (e) {
+      logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  async renderUnfurlMeta(rawPath: string): Promise<string> {
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path);
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
@@ -178,7 +264,7 @@ class Server {
       ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
     }
 
-    res.send(`
+    return `
       <!doctype html>
       <html lang="en-US" dir="ltr">
       <head>
@@ -199,7 +285,16 @@ class Server {
         <meta property="twitter:domain" content="mempool.space">
       <body></body>
       </html>
-    `);
+    `;
+  }
+
+  async renderSEOPage(rawPath: string): Promise<string> {
+    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr' });
+    // remove javascript to prevent double hydration
+    if (html && html.length) {
+      html = html.replace(/<script.*<\/script>/g, "");
+    }
+    return html;
   }
 }
 
