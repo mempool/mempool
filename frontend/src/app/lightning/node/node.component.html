@@ -17,7 +17,7 @@
   <div class="clearfix"></div>
 
   <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
-    <span i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
+    <span class="text-center" i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
   </div>
 
   <div class="box" *ngIf="!error">
