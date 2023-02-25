@@ -268,7 +268,7 @@ class Mining {
       }
       this.lastWeeklyHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
-        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
+        logger.info(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       } else {
         logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       }
@@ -373,7 +373,7 @@ class Mining {
 
       this.lastHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
-        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
+        logger.info(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       } else {
         logger.debug(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       }
@@ -452,7 +452,7 @@ class Mining {
     }
 
     if (totalIndexed > 0) {
-      logger.notice(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
+      logger.info(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     } else {
       logger.debug(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     }
