@@ -2927,6 +2927,7 @@ export const restApiDocsData = [
     urlString: "/v1/blocks-bulk/:minHeight[/:maxHeight]",
     showConditions: bitcoinNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
+    specialAvailability: { enterprise: true },
     codeExample: {
       default: {
         codeTemplate: {
