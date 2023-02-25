@@ -326,6 +326,10 @@
           <context context-type="linenumber">310,311</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
@@ -344,6 +348,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">311,312</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
+          <context context-type="linenumber">47,48</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-blocks/mempool-blocks.component.html</context>
@@ -2746,25 +2754,6 @@
           <context context-type="linenumber">384,390</context>
         </context-group>
         <note priority="1" from="description">block.empty-block-explanation</note>
-      </trans-unit>
-      <trans-unit id="9ad9918c6f76f1a93cfaafc087583db8baf07a4f" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="transaction&lt;/ng-template&gt;
-            &lt;ng-template #transactionsPlural let-i i18n=&quot;sha"/> transaction</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">47</context>
-        </context-group>
-        <note priority="1" from="description">shared.transaction-count.singular</note>
-      </trans-unit>
-      <trans-unit id="a831c45d74e3d1a7c69872bbd7f813ace6a9ec41" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="transactions&lt;/ng-template&gt;
-          &lt;/div&gt;
-          &lt;div [attr.data-cy]=&quot;&apos;bitcoin-"/> transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <note priority="1" from="description">shared.transaction-count.plural</note>
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
