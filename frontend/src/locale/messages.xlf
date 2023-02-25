@@ -2386,16 +2386,6 @@
         </context-group>
         <note priority="1" from="description">shared.block-title</note>
       </trans-unit>
-      <trans-unit id="445c243f1d1cd2c7f0df430cdb2fa25639600396" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;/ng-template&gt;
-          &lt;/h1&gt;
-          &lt;div class=&quot;blockhash&quot; *ngIf=&quot;block"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
-          <context context-type="linenumber">11,12</context>
-        </context-group>
-        <note priority="1" from="description">shared.block-title</note>
-      </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
         <source>Median fee</source>
         <context-group purpose="location">
@@ -5817,6 +5807,28 @@
           <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">lightning.node-fee-distribution</note>
+      </trans-unit>
+      <trans-unit id="7254919336112973896" datatype="html">
+        <source>Outgoing Fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
+          <context context-type="linenumber">208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="484887099976974152" datatype="html">
+        <source>Incoming Fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
+          <context context-type="linenumber">222</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
