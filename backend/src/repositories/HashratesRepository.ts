@@ -1,5 +1,6 @@
 import { escape } from 'mysql2';
 import { Common } from '../api/common';
+import mining from '../api/mining/mining';
 import DB from '../database';
 import logger from '../logger';
 import PoolsRepository from './PoolsRepository';
@@ -178,20 +179,6 @@ class HashratesRepository {
   }
 
   /**
-   * Set latest run timestamp
-   */
-  public async $setLatestRun(key: string, val: number) {
-    const query = `UPDATE state SET number = ? WHERE name = ?`;
-
-    try {
-      await DB.query(query, [val, key]);
-    } catch (e) {
-      logger.err(`Cannot set last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Get latest run timestamp
    */
   public async $getLatestRun(key: string): Promise<number> {
@@ -222,8 +209,8 @@ class HashratesRepository {
         await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp = ?`, [row.timestamp]);
       }
       // Re-run the hashrate indexing to fill up missing data
-      await this.$setLatestRun('last_hashrates_indexing', 0);
-      await this.$setLatestRun('last_weekly_hashrates_indexing', 0);
+      mining.lastHashrateIndexingDate = null;
+      mining.lastWeeklyHashrateIndexingDate = null;
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
@@ -238,8 +225,8 @@ class HashratesRepository {
     try {
       await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp >= FROM_UNIXTIME(?)`, [timestamp]);
       // Re-run the hashrate indexing to fill up missing data
-      await this.$setLatestRun('last_hashrates_indexing', 0);
-      await this.$setLatestRun('last_weekly_hashrates_indexing', 0);
+      mining.lastHashrateIndexingDate = null;
+      mining.lastWeeklyHashrateIndexingDate = null;
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
     }
