@@ -13,10 +13,9 @@ import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
 
 class Mining {
-  blocksPriceIndexingRunning = false;
-
-  constructor() {
-  }
+  private blocksPriceIndexingRunning = false;
+  public lastHashrateIndexingDate: number | null = null;
+  public lastWeeklyHashrateIndexingDate: number | null = null;
 
   /**
    * Get historical block predictions match rate
@@ -176,13 +175,14 @@ class Mining {
    */
   public async $generatePoolHashrateHistory(): Promise<void> {
     const now = new Date();
-    const lastestRunDate = await HashratesRepository.$getLatestRun('last_weekly_hashrates_indexing');
 
     // Run only if:
-    // * lastestRunDate is set to 0 (node backend restart, reorg)
+    // * this.lastWeeklyHashrateIndexingDate is set to null (node backend restart, reorg)
     // * we started a new week (around Monday midnight)
-    const runIndexing = lastestRunDate === 0 || now.getUTCDay() === 1 && lastestRunDate !== now.getUTCDate();
+    const runIndexing = this.lastWeeklyHashrateIndexingDate === null ||
+      now.getUTCDay() === 1 && this.lastWeeklyHashrateIndexingDate !== now.getUTCDate();
     if (!runIndexing) {
+      logger.debug(`Pool hashrate history indexing is up to date, nothing to do`, logger.tags.mining);
       return;
     }
 
@@ -264,7 +264,7 @@ class Mining {
         ++indexedThisRun;
         ++totalIndexed;
       }
-      await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', new Date().getUTCDate());
+      this.lastWeeklyHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
         logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`, logger.tags.mining);
       } else {
@@ -283,9 +283,9 @@ class Mining {
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
     // We only run this once a day around midnight
-    const latestRunDate = await HashratesRepository.$getLatestRun('last_hashrates_indexing');
-    const now = new Date().getUTCDate();
-    if (now === latestRunDate) {
+    const today = new Date().getUTCDate();
+    if (today === this.lastHashrateIndexingDate) {
+      logger.debug(`Network hashrate history indexing is up to date, nothing to do`, logger.tags.mining);
       return;
     }
 
@@ -369,7 +369,7 @@ class Mining {
       newlyIndexed += hashrates.length;
       await HashratesRepository.$saveHashrates(hashrates);
 
-      await HashratesRepository.$setLatestRun('last_hashrates_indexing', new Date().getUTCDate());
+      this.lastHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
         logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       } else {
