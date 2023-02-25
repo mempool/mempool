@@ -25,7 +25,7 @@ class HashratesRepository {
     try {
       await DB.query(query);
     } catch (e: any) {
-      logger.err('Cannot save indexed hashrate into db. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot save indexed hashrate into db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -51,7 +51,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query);
       return rows;
     } catch (e) {
-      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -78,7 +78,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query);
       return rows;
     } catch (e) {
-      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch network hashrate history. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -93,7 +93,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query);
       return rows.map(row => row.timestamp);
     } catch (e) {
-      logger.err('Cannot retreive indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot retreive indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -128,7 +128,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query);
       return rows;
     } catch (e) {
-      logger.err('Cannot fetch weekly pools hashrate history. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch weekly pools hashrate history. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -158,7 +158,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query, [pool.id]);
       boundaries = rows[0];
     } catch (e) {
-      logger.err('Cannot fetch hashrate start/end timestamps for this pool. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch hashrate start/end timestamps for this pool. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
 
     // Get hashrates entries between boundaries
@@ -173,7 +173,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query, [boundaries.firstTimestamp, boundaries.lastTimestamp, pool.id]);
       return rows;
     } catch (e) {
-      logger.err('Cannot fetch pool hashrate history for this pool. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot fetch pool hashrate history for this pool. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -192,7 +192,7 @@ class HashratesRepository {
       }
       return rows[0]['number'];
     } catch (e) {
-      logger.err(`Cannot retrieve last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot retrieve last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -201,7 +201,7 @@ class HashratesRepository {
    * Delete most recent data points for re-indexing
    */
   public async $deleteLastEntries() {
-    logger.info(`Delete latest hashrates data points from the database`);
+    logger.info(`Delete latest hashrates data points from the database`, logger.tags.mining);
 
     try {
       const [rows]: any[] = await DB.query(`SELECT MAX(hashrate_timestamp) as timestamp FROM hashrates GROUP BY type`);
@@ -212,7 +212,7 @@ class HashratesRepository {
       mining.lastHashrateIndexingDate = null;
       mining.lastWeeklyHashrateIndexingDate = null;
     } catch (e) {
-      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
   }
   
@@ -228,7 +228,7 @@ class HashratesRepository {
       mining.lastHashrateIndexingDate = null;
       mining.lastWeeklyHashrateIndexingDate = null;
     } catch (e) {
-      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
   }
 }
