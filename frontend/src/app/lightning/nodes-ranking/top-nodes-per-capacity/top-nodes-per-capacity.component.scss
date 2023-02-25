@@ -19,7 +19,7 @@ tr, td, th {
 
 .pool {
   width: 15%;
-  @media (max-width: 576px) {
+  @media (max-width: 575px) {
     width: 75%;
   }
   overflow: hidden;
@@ -36,14 +36,17 @@ tr, td, th {
 
 .liquidity {
   width: 10%;
-  @media (max-width: 576px) {
+  @media (max-width: 575px) {
     width: 25%;
   }
 }
 
 .fiat {
   width: 15%;
-  @media (max-width: 991px) {
+  @media (min-width: 768px) and (max-width: 991px) {
+    display: none !important;
+  }
+  @media (max-width: 575px) {
     display: none !important;
   }
 }
