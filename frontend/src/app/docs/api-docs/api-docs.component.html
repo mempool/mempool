@@ -46,6 +46,8 @@
           <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
             <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
             <div class="endpoint-content">
+              <div *ngIf="item.hasOwnProperty('specialAvailability') && item.specialAvailability.hasOwnProperty('enterprise') && item.specialAvailability.enterprise" class="special-availability enterprise"><table><tr><td><fa-icon [icon]="['fas', 'star']" [fixedWidth]="true"></fa-icon></td><td><p>This endpoint is available to <a [routerLink]="['/enterprise']">enterprise sponsors</a>.</p></td></tr></table></div>
+              <div *ngIf="item.hasOwnProperty('specialAvailability') && item.specialAvailability.hasOwnProperty('mempoolspace') && item.specialAvailability.mempoolspace" class="special-availability mempoolspace"><table><tr><td><fa-icon [icon]="['fas', 'star']" [fixedWidth]="true"></fa-icon></td><td><p>This endpoint is only supported on official mempool.space instances.</p></td></tr></table></div>
               <div class="endpoint">
                 <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
                 <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_link_example" #bisq_link_example>
