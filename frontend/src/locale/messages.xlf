@@ -4870,6 +4870,14 @@
         </context-group>
         <note priority="1" from="description">dashboard.lbtc-pegs-in-circulation</note>
       </trans-unit>
+      <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
+        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">faq.big-disclaimer</note>
+      </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
         <context-group purpose="location">
