@@ -29,6 +29,17 @@ tr, td, th {
   color: white;
 }
 
+.info-link {
+  color: #fff;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+}
+
+.info-link:hover {
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+}
+
 .disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -215,7 +226,7 @@ tr, td, th {
 
 /* Tooltip text */
 .tooltip-custom {
-  position: relative; 
+  position: relative;
 }
 
 .tooltip-custom .tooltiptext {
