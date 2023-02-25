@@ -7,7 +7,7 @@ import { StateService } from './state.service';
 })
 export class SeoService {
   network = '';
-  baseTitle = 'mempool';
+  baseTitle = 'Mempool';
 
   constructor(
     private titleService: Title,
