@@ -21,6 +21,7 @@ export class StartComponent implements OnInit, OnDestroy {
   timeLtr: boolean = this.stateService.timeLtr.value;
   chainTipSubscription: Subscription;
   chainTip: number = -1;
+  tipIsSet: boolean = false;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
@@ -58,6 +59,7 @@ export class StartComponent implements OnInit, OnDestroy {
     });
     this.chainTipSubscription = this.stateService.chainTip$.subscribe((height) => {
       this.chainTip = height;
+      this.tipIsSet = true;
       this.updatePages();
       if (this.pendingMark != null) {
         this.scrollToBlock(this.pendingMark);
@@ -66,7 +68,7 @@ export class StartComponent implements OnInit, OnDestroy {
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
       if (mark?.blockHeight != null) {
-        if (this.chainTip >=0) {
+        if (this.tipIsSet) {
           if (!this.blockInViewport(mark.blockHeight)) {
             this.scrollToBlock(mark.blockHeight);
           }
