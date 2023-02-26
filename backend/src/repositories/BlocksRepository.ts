@@ -16,6 +16,9 @@ class BlocksRepository {
    * Save indexed block data in the database
    */
   public async $saveBlockInDatabase(block: BlockExtended) {
+    const truncatedCoinbaseSignature = block?.extras?.coinbaseSignature?.substring(0, 500);
+    const truncatedCoinbaseSignatureAscii = block?.extras?.coinbaseSignatureAscii?.substring(0, 500);
+
     try {
       const query = `INSERT INTO blocks(
         height,             hash,                blockTimestamp,    size,
@@ -65,7 +68,7 @@ class BlocksRepository {
         block.extras.medianTimestamp,
         block.extras.header,
         block.extras.coinbaseAddress,
-        block.extras.coinbaseSignature,
+        truncatedCoinbaseSignature,
         block.extras.utxoSetSize,
         block.extras.utxoSetChange,
         block.extras.avgTxSize,
@@ -78,7 +81,7 @@ class BlocksRepository {
         block.extras.segwitTotalSize,
         block.extras.segwitTotalWeight,
         block.extras.medianFeeAmt,
-        block.extras.coinbaseSignatureAscii,
+        truncatedCoinbaseSignatureAscii,
       ];
 
       await DB.query(query, params);
