@@ -160,7 +160,7 @@ npm install -g ts-node nodemon
 Then, run the watcher:
 
 ```
-nodemon src/index.ts --ignore cache/ --ignore pools.json
+nodemon src/index.ts --ignore cache/
 ```
 
 `nodemon` should be in npm's global binary folder. If needed, you can determine where that is with `npm -g bin`.
