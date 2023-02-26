@@ -9,7 +9,7 @@
     "INDEXING_BLOCKS_AMOUNT": -1,
     "AUDIT": true,
     "ADVANCED_GBT_AUDIT": true,
-    "ADVANCED_GBT_MEMPOOL": false,
+    "ADVANCED_GBT_MEMPOOL": true,
     "POLL_RATE_MS": 1000
   },
   "SYSLOG" : {
