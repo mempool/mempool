@@ -108,6 +108,7 @@
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
             [flip]="false"
+            [blockConversion]="blockConversion"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>

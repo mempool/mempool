@@ -25,6 +25,7 @@ import mining from './mining/mining';
 import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmentsRepository';
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
+import chainTips from './chain-tips';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -165,33 +166,80 @@ class Blocks {
    * @returns BlockExtended
    */
   private async $getBlockExtended(block: IEsploraApi.Block, transactions: TransactionExtended[]): Promise<BlockExtended> {
-    const blockExtended: BlockExtended = Object.assign({ extras: {} }, block);
-    blockExtended.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
-    blockExtended.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
-    blockExtended.extras.coinbaseRaw = blockExtended.extras.coinbaseTx.vin[0].scriptsig;
-    blockExtended.extras.usd = priceUpdater.latestPrices.USD;
+    const blk: BlockExtended = Object.assign({ extras: {} }, block);
+    blk.extras.reward = transactions[0].vout.reduce((acc, curr) => acc + curr.value, 0);
+    blk.extras.coinbaseTx = transactionUtils.stripCoinbaseTransaction(transactions[0]);
+    blk.extras.coinbaseRaw = blk.extras.coinbaseTx.vin[0].scriptsig;
+    blk.extras.usd = priceUpdater.latestPrices.USD;
+    blk.extras.medianTimestamp = block.medianTime;
+    blk.extras.orphans = chainTips.getOrphanedBlocksAtHeight(blk.height);
 
     if (block.height === 0) {
-      blockExtended.extras.medianFee = 0; // 50th percentiles
-      blockExtended.extras.feeRange = [0, 0, 0, 0, 0, 0, 0];
-      blockExtended.extras.totalFees = 0;
-      blockExtended.extras.avgFee = 0;
-      blockExtended.extras.avgFeeRate = 0;
+      blk.extras.medianFee = 0; // 50th percentiles
+      blk.extras.feeRange = [0, 0, 0, 0, 0, 0, 0];
+      blk.extras.totalFees = 0;
+      blk.extras.avgFee = 0;
+      blk.extras.avgFeeRate = 0;
+      blk.extras.utxoSetChange = 0;
+      blk.extras.avgTxSize = 0;
+      blk.extras.totalInputs = 0;
+      blk.extras.totalOutputs = 1;
+      blk.extras.totalOutputAmt = 0;
+      blk.extras.segwitTotalTxs = 0;
+      blk.extras.segwitTotalSize = 0;
+      blk.extras.segwitTotalWeight = 0;
     } else {
-      const stats = await bitcoinClient.getBlockStats(block.id, [
-        'feerate_percentiles', 'minfeerate', 'maxfeerate', 'totalfee', 'avgfee', 'avgfeerate'
-      ]);
-      blockExtended.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
-      blockExtended.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
-      blockExtended.extras.totalFees = stats.totalfee;
-      blockExtended.extras.avgFee = stats.avgfee;
-      blockExtended.extras.avgFeeRate = stats.avgfeerate;
+      const stats = await bitcoinClient.getBlockStats(block.id);
+      blk.extras.medianFee = stats.feerate_percentiles[2]; // 50th percentiles
+      blk.extras.feeRange = [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat();
+      blk.extras.totalFees = stats.totalfee;
+      blk.extras.avgFee = stats.avgfee;
+      blk.extras.avgFeeRate = stats.avgfeerate;
+      blk.extras.utxoSetChange = stats.utxo_increase;
+      blk.extras.avgTxSize = Math.round(stats.total_size / stats.txs * 100) * 0.01;
+      blk.extras.totalInputs = stats.ins;
+      blk.extras.totalOutputs = stats.outs;
+      blk.extras.totalOutputAmt = stats.total_out;
+      blk.extras.segwitTotalTxs = stats.swtxs;
+      blk.extras.segwitTotalSize = stats.swtotal_size;
+      blk.extras.segwitTotalWeight = stats.swtotal_weight;
+    }
+
+    if (Common.blocksSummariesIndexingEnabled()) {
+      blk.extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(block.id);
+      if (blk.extras.feePercentiles !== null) {
+        blk.extras.medianFeeAmt = blk.extras.feePercentiles[3];
+      }
+    }
+  
+    blk.extras.virtualSize = block.weight / 4.0;
+    if (blk.extras.coinbaseTx.vout.length > 0) {
+      blk.extras.coinbaseAddress = blk.extras.coinbaseTx.vout[0].scriptpubkey_address ?? null;
+      blk.extras.coinbaseSignature = blk.extras.coinbaseTx.vout[0].scriptpubkey_asm ?? null;
+      blk.extras.coinbaseSignatureAscii = transactionUtils.hex2ascii(blk.extras.coinbaseTx.vin[0].scriptsig) ?? null;
+    } else {
+      blk.extras.coinbaseAddress = null;
+      blk.extras.coinbaseSignature = null;
+      blk.extras.coinbaseSignatureAscii = null;
+    }
+
+    const header = await bitcoinClient.getBlockHeader(block.id, false);
+    blk.extras.header = header;
+
+    const coinStatsIndex = indexer.isCoreIndexReady('coinstatsindex');
+    if (coinStatsIndex !== null && coinStatsIndex.best_block_height >= block.height) {
+      const txoutset = await bitcoinClient.getTxoutSetinfo('none', block.height);
+      blk.extras.utxoSetSize = txoutset.txouts,
+      blk.extras.totalInputAmt = Math.round(txoutset.block_info.prevout_spent * 100000000);
+    } else {
+      blk.extras.utxoSetSize = null;
+      blk.extras.totalInputAmt = null;
     }
 
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
-      if (blockExtended.extras?.coinbaseTx !== undefined) {
-        pool = await this.$findBlockMiner(blockExtended.extras?.coinbaseTx);
+      if (blk.extras?.coinbaseTx !== undefined) {
+        pool = await this.$findBlockMiner(blk.extras?.coinbaseTx);
       } else {
         if (config.DATABASE.ENABLED === true) {
           pool = await poolsRepository.$getUnknownPool();
@@ -201,10 +249,10 @@ class Blocks {
       }
 
       if (!pool) { // We should never have this situation in practise
-        logger.warn(`Cannot assign pool to block ${blockExtended.height} and 'unknown' pool does not exist. ` +
+        logger.warn(`Cannot assign pool to block ${blk.height} and 'unknown' pool does not exist. ` +
           `Check your "pools" table entries`);
       } else {
-        blockExtended.extras.pool = {
+        blk.extras.pool = {
           id: pool.id,
           name: pool.name,
           slug: pool.slug,
@@ -214,12 +262,12 @@ class Blocks {
       if (config.MEMPOOL.AUDIT) {
         const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
         if (auditScore != null) {
-          blockExtended.extras.matchRate = auditScore.matchRate;
+          blk.extras.matchRate = auditScore.matchRate;
         }
       }
     }
 
-    return blockExtended;
+    return blk;
   }
 
   /**
@@ -500,6 +548,7 @@ class Blocks {
       } else {
         this.currentBlockHeight++;
         logger.debug(`New block found (#${this.currentBlockHeight})!`);
+        await chainTips.updateOrphanedBlocks();
       }
 
       const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
@@ -688,7 +737,6 @@ class Blocks {
   }
 
   public async $getBlocks(fromHeight?: number, limit: number = 15): Promise<BlockExtended[]> {
-
     let currentHeight = fromHeight !== undefined ? fromHeight : this.currentBlockHeight;
     if (currentHeight > this.currentBlockHeight) {
       limit -= currentHeight - this.currentBlockHeight;
@@ -726,6 +774,113 @@ class Blocks {
     }
 
     return returnBlocks;
+  }
+
+  /**
+   * Used for bulk block data query
+   * 
+   * @param fromHeight 
+   * @param toHeight 
+   */
+  public async $getBlocksBetweenHeight(fromHeight: number, toHeight: number): Promise<any> {
+    if (!Common.indexingEnabled()) {
+      return [];
+    }
+
+    const blocks: any[] = [];
+
+    while (fromHeight <= toHeight) {
+      let block: any = await blocksRepository.$getBlockByHeight(fromHeight);
+      if (!block) {
+        await this.$indexBlock(fromHeight);
+        block = await blocksRepository.$getBlockByHeight(fromHeight);
+        if (!block) {
+          continue;
+        }
+      }
+
+      // Cleanup fields before sending the response
+      const cleanBlock: any = {
+        height: block.height ?? null,
+        hash: block.id ?? null,
+        timestamp: block.blockTimestamp ?? null,
+        median_timestamp: block.medianTime ?? null,
+        previous_block_hash: block.previousblockhash ?? null,
+        difficulty: block.difficulty ?? null,
+        header: block.header ?? null,
+        version: block.version ?? null,
+        bits: block.bits ?? null,
+        nonce: block.nonce ?? null,
+        size: block.size ?? null,
+        weight: block.weight ?? null,
+        tx_count: block.tx_count ?? null,
+        merkle_root: block.merkle_root ?? null,
+        reward: block.reward ?? null,
+        total_fee_amt: block.fees ?? null,
+        avg_fee_amt: block.avg_fee ?? null,
+        median_fee_amt: block.median_fee_amt ?? null,
+        fee_amt_percentiles: block.fee_percentiles ?? null,
+        avg_fee_rate: block.avg_fee_rate ?? null,
+        median_fee_rate: block.median_fee ?? null,
+        fee_rate_percentiles: block.fee_span ?? null,
+        total_inputs: block.total_inputs ?? null,
+        total_input_amt: block.total_input_amt ?? null,
+        total_outputs: block.total_outputs ?? null,
+        total_output_amt: block.total_output_amt ?? null,
+        segwit_total_txs: block.segwit_total_txs ?? null,
+        segwit_total_size: block.segwit_total_size ?? null,
+        segwit_total_weight: block.segwit_total_weight ?? null,
+        avg_tx_size: block.avg_tx_size ?? null,
+        utxoset_change: block.utxoset_change ?? null,
+        utxoset_size: block.utxoset_size ?? null,
+        coinbase_raw: block.coinbase_raw ?? null,
+        coinbase_address: block.coinbase_address ?? null,
+        coinbase_signature: block.coinbase_signature ?? null,
+        coinbase_signature_ascii: block.coinbase_signature_ascii ?? null,
+        pool_slug: block.pool_slug ?? null,
+      };
+
+      if (Common.blocksSummariesIndexingEnabled() && cleanBlock.fee_amt_percentiles === null) {
+        cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
+        if (cleanBlock.fee_amt_percentiles === null) {
+          const block = await bitcoinClient.getBlock(cleanBlock.hash, 2);
+          const summary = this.summarizeBlock(block);
+          await BlocksSummariesRepository.$saveSummary({ height: block.height, mined: summary });
+          cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
+        }
+        if (cleanBlock.fee_amt_percentiles !== null) {
+          cleanBlock.median_fee_amt = cleanBlock.fee_amt_percentiles[3];
+        }
+      }
+
+      cleanBlock.fee_amt_percentiles = {
+        'min': cleanBlock.fee_amt_percentiles[0],
+        'perc_10': cleanBlock.fee_amt_percentiles[1],
+        'perc_25': cleanBlock.fee_amt_percentiles[2],
+        'perc_50': cleanBlock.fee_amt_percentiles[3],
+        'perc_75': cleanBlock.fee_amt_percentiles[4],
+        'perc_90': cleanBlock.fee_amt_percentiles[5],
+        'max': cleanBlock.fee_amt_percentiles[6],
+      };
+      cleanBlock.fee_rate_percentiles = {
+        'min': cleanBlock.fee_rate_percentiles[0],
+        'perc_10': cleanBlock.fee_rate_percentiles[1],
+        'perc_25': cleanBlock.fee_rate_percentiles[2],
+        'perc_50': cleanBlock.fee_rate_percentiles[3],
+        'perc_75': cleanBlock.fee_rate_percentiles[4],
+        'perc_90': cleanBlock.fee_rate_percentiles[5],
+        'max': cleanBlock.fee_rate_percentiles[6],
+      };
+
+      // Re-org can happen after indexing so we need to always get the
+      // latest state from core
+      cleanBlock.orphans = chainTips.getOrphanedBlocksAtHeight(cleanBlock.height);
+
+      blocks.push(cleanBlock);
+      fromHeight++;
+    }
+
+    return blocks;
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<any> {

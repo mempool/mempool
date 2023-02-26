@@ -327,9 +327,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.fetchRbfHistory$.next(this.tx.txid);
           }
 
-          this.priceService.getPrices().pipe(
-            tap(() => {
-              this.blockConversion = this.priceService.getPriceForTimestamp(tx.status.block_time);
+          this.priceService.getBlockPrice$(tx.status.block_time, true).pipe(
+            tap((price) => {
+              this.blockConversion = price;
             })
           ).subscribe();
       

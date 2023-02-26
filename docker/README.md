@@ -102,15 +102,16 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "MEMPOOL_BLOCKS_AMOUNT": 8,
     "BLOCKS_SUMMARIES_INDEXING": false,
     "USE_SECOND_NODE_FOR_MINFEE": false,
-    "EXTERNAL_ASSETS": ["https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json"],
+    "EXTERNAL_ASSETS": [],
     "STDOUT_LOG_MIN_PRIORITY": "info",
     "INDEXING_BLOCKS_AMOUNT": false,
     "AUTOMATIC_BLOCK_REINDEXING": false,
-    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json",
+    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
     "ADVANCED_GBT_AUDIT": false,
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
+    "MAX_BLOCKS_BULK_QUERY": 0,
   },
 ```
 
@@ -141,6 +142,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
+      MAX_BLOCKS_BULK_QUERY: ""
       ...
 ```
 

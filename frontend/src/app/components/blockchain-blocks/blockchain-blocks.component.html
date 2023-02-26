@@ -1,8 +1,8 @@
 <div class="blocks-container blockchain-blocks-container" [class.time-ltr]="timeLtr"
   [style.left]="static ? (offset || 0) + 'px' : null"
-  *ngIf="(loadingBlocks$ | async) === false; else loadingBlocksTemplate">
+  *ngIf="static || (loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn">
-    <ng-container *ngIf="block && !block.loading && !block.placeholder; else placeholderBlock">
+    <ng-container *ngIf="connected && block && !block.loading && !block.placeholder; else placeholderBlock">
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
@@ -43,10 +43,8 @@
           <div [attr.data-cy]="'bitcoin-block-' + i + '-transactions'" class="transaction-count">
             <ng-container
               *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
-            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }}
-              transaction</ng-template>
-            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }}
-              transactions</ng-template>
+            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </div>
           <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
@@ -59,19 +57,19 @@
       </div>
     </ng-container>
     <ng-template #placeholderBlock>
-      <ng-container *ngIf="block && block.placeholder; else loadingBlock">
+      <ng-container *ngIf="block && block.placeholder && connected && !loadingTip; else loadingBlock">
         <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i"
           class="text-center bitcoin-block mined-block placeholder-block blockchain-blocks-{{ i }}"
           id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
-
+ 
         </div>
       </ng-container>
     </ng-template>
     <ng-template #loadingBlock>
-      <ng-container *ngIf="block && block.loading">
-        <div class="flashing">
+      <ng-container *ngIf="!connected || loadingTip || (block && block.loading)">
+        <div class="flashing loading">
           <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
-            [ngStyle]="blockStyles[i]"></div>
+            [ngStyle]="convertStyleForLoadingBlock(blockStyles[i])"></div>
         </div>
       </ng-container>
     </ng-template>
