@@ -6,7 +6,7 @@
         <app-mempool-blocks [hidden]="pageIndex > 0"></app-mempool-blocks>
         <app-blockchain-blocks [hidden]="pageIndex > 0"></app-blockchain-blocks>
         <ng-container *ngFor="let page of pages; trackBy: trackByPageFn">
-          <app-blockchain-blocks [static]="true" [offset]="page.offset" [height]="page.height" [count]="blocksPerPage"></app-blockchain-blocks>
+          <app-blockchain-blocks [static]="true" [offset]="page.offset" [height]="page.height" [count]="blocksPerPage" [loadingTip]="loadingTip" [connected]="connected"></app-blockchain-blocks>
         </ng-container>
       </div>
       <div id="divider" [hidden]="pageIndex > 0">

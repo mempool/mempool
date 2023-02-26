@@ -22,6 +22,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() offset: number = 0;
   @Input() height: number = 0;
   @Input() count: number = 8;
+  @Input() loadingTip: boolean = false;
+  @Input() connected: boolean = true;
   
   specialBlocks = specialBlocks;
   network = '';
@@ -285,6 +287,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         ${this.gradientColors[this.network][1]} 100%
       )`,
       transition: animateEnterFrom ? 'background 2s, transform 1s' : null,
+    };
+  }
+
+  convertStyleForLoadingBlock(style) {
+    return {
+      ...style,
+      background: "#2d3348",
     };
   }
 
