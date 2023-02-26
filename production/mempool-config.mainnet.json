@@ -13,7 +13,7 @@
     "AUDIT": true,
     "CPFP_INDEXING": true,
     "ADVANCED_GBT_AUDIT": true,
-    "ADVANCED_GBT_MEMPOOL": false,
+    "ADVANCED_GBT_MEMPOOL": true,
     "USE_SECOND_NODE_FOR_MINFEE": true
   },
   "SYSLOG" : {
