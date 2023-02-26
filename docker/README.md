@@ -111,6 +111,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "ADVANCED_GBT_AUDIT": false,
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
+    "MAX_BLOCKS_BULK_QUERY": 0,
   },
 ```
 
@@ -141,6 +142,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
+      MAX_BLOCKS_BULK_QUERY: ""
       ...
 ```
 

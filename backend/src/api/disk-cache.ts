@@ -9,7 +9,7 @@ import { TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 
 class DiskCache {
-  private cacheSchemaVersion = 1;
+  private cacheSchemaVersion = 2;
 
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
   private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
