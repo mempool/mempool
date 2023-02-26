@@ -62,6 +62,7 @@ class DiskCache {
   }
 
   wipeCache() {
+    logger.notice(`Wipping nodejs backend cache/cache*.json files`);
     fs.unlinkSync(DiskCache.FILE_NAME);
     for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
       fs.unlinkSync(DiskCache.FILE_NAMES.replace('{number}', i.toString()));
