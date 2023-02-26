@@ -63,9 +63,23 @@ class DiskCache {
 
   wipeCache() {
     logger.notice(`Wipping nodejs backend cache/cache*.json files`);
-    fs.unlinkSync(DiskCache.FILE_NAME);
+    try {
+      fs.unlinkSync(DiskCache.FILE_NAME);
+    } catch (e: any) {
+      if (e?.code !== 'ENOENT') {
+        logger.err(`Cannot wipe cache file ${DiskCache.FILE_NAME}. Exception ${JSON.stringify(e)}`);
+      }
+    }
+
     for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-      fs.unlinkSync(DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+      const filename = DiskCache.FILE_NAMES.replace('{number}', i.toString());
+      try {
+        fs.unlinkSync(filename);
+      } catch (e: any) {
+        if (e?.code !== 'ENOENT') {
+          logger.err(`Cannot wipe cache file ${filename}. Exception ${JSON.stringify(e)}`);
+        }
+      }
     }
   }
 
