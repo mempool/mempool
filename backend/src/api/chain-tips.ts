@@ -43,7 +43,11 @@ class ChainTips {
     }
   }
 
-  public getOrphanedBlocksAtHeight(height: number): OrphanedBlock[] {
+  public getOrphanedBlocksAtHeight(height: number | undefined): OrphanedBlock[] {
+    if (height === undefined) {
+      return [];
+    }
+
     const orphans: OrphanedBlock[] = [];
     for (const block of this.orphanedBlocks) {
       if (block.height === height) {
