@@ -222,7 +222,7 @@ class Server {
       || rawPath.startsWith('/api/v1/translators/images')
       || rawPath.startsWith('/resources/profile')
     ) {
-      if (req.headers['user-agent'] === 'googlebot') {
+      if (isSearchCrawler(req.headers['user-agent'])) {
         if (this.secureHost) {
           https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
         } else {
@@ -237,7 +237,7 @@ class Server {
 
     let result = '';
     try {
-      if (req.headers['user-agent'] === 'googlebot') {
+      if (isSearchCrawler(req.headers['user-agent'])) {
         result = await this.renderSEOPage(rawPath);
       } else {
         result = await this.renderUnfurlMeta(rawPath);
@@ -312,4 +312,8 @@ function capitalize(str) {
   } else {
     return str;
   }
+}
+
+function isSearchCrawler(useragent: string): boolean {
+  return /googlebot/i.test(useragent);
 }
