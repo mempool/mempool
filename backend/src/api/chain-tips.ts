@@ -1,5 +1,5 @@
-import logger from "../logger";
-import bitcoinClient from "./bitcoin/bitcoin-client";
+import logger from '../logger';
+import bitcoinClient from './bitcoin/bitcoin-client';
 
 export interface ChainTip {
   height: number;
