@@ -11,6 +11,7 @@ import bitcoinClient from '../api/bitcoin/bitcoin-client';
 import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
+import BlocksAuditsRepository from './BlocksAuditsRepository';
 
 const BLOCK_DB_FIELDS = `
   blocks.hash AS id,
@@ -909,6 +910,15 @@ class BlocksRepository {
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
     extras.orphans = chainTips.getOrphanedBlocksAtHeight(dbBlk.height);
+
+    // Match rate is not part of the blocks table, but it is part of APIs so we must include it
+    extras.matchRate = null;
+    if (config.MEMPOOL.AUDIT) {
+      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
+      if (auditScore != null) {
+        extras.matchRate = auditScore.matchRate;
+      }
+    }
 
     // If we're missing block summary related field, check if we can populate them on the fly now
     if (Common.blocksSummariesIndexingEnabled() &&
