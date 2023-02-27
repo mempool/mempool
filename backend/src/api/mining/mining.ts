@@ -11,6 +11,8 @@ import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjust
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
+import bitcoinApiFactory from '../bitcoin/bitcoin-api-factory';
+import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 class Mining {
   blocksPriceIndexingRunning = false;
@@ -189,8 +191,8 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
-      const genesisTimestamp = genesisBlock.time * 1000;
+      const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
@@ -292,8 +294,8 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
-      const genesisTimestamp = genesisBlock.time * 1000;
+      const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
@@ -394,13 +396,13 @@ class Mining {
     }
 
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+    const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
       await DifficultyAdjustmentsRepository.$saveAdjustments({
-        time: genesisBlock.time,
+        time: genesisBlock.timestamp,
         height: 0,
         difficulty: currentDifficulty,
         adjustment: 0.0,
