@@ -22,7 +22,7 @@ import { SeoService } from '../../services/seo.service';
 import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { Price, PriceService } from 'src/app/services/price.service';
+import { Price, PriceService } from '../../services/price.service';
 
 @Component({
   selector: 'app-transaction',
