@@ -2922,12 +2922,11 @@ export const restApiDocsData = [
     fragment: "get-blocks-bulk",
     title: "GET Blocks (Bulk)",
     description: {
-      default: "Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 100 blocks. If <code>:maxHeight</code> is not specified, <code>:maxHeight</code> defaults to the current tip."
+      default: "<p>Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 10 blocks. If <code>:maxHeight</code> is not specified, it defaults to the current tip.</p><p>To return data for more than 10 blocks, consider becoming an <a href='/enterprise'>enterprise sponsor</a>.</p>"
     },
     urlString: "/v1/blocks-bulk/:minHeight[/:maxHeight]",
     showConditions: bitcoinNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
-    specialAvailability: { enterprise: true },
     codeExample: {
       default: {
         codeTemplate: {
