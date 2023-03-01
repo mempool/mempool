@@ -40,7 +40,7 @@ export const MAX_PRICES = {
 
 class PricesRepository {
   public async $savePrices(time: number, prices: IConversionRates): Promise<void> {
-    if (prices.USD === 0) {
+    if (prices.USD === -1) {
       // Some historical price entries have no USD prices, so we just ignore them to avoid future UX issues
       // As of today there are only 4 (on 2013-09-05, 2013-0909, 2013-09-12 and 2013-09-26) so that's fine
       return;
