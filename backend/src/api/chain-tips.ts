@@ -1,5 +1,5 @@
-import logger from "../logger";
-import bitcoinClient from "./bitcoin/bitcoin-client";
+import logger from '../logger';
+import bitcoinClient from './bitcoin/bitcoin-client';
 
 export interface ChainTip {
   height: number;
@@ -43,7 +43,11 @@ class ChainTips {
     }
   }
 
-  public getOrphanedBlocksAtHeight(height: number): OrphanedBlock[] {
+  public getOrphanedBlocksAtHeight(height: number | undefined): OrphanedBlock[] {
+    if (height === undefined) {
+      return [];
+    }
+
     const orphans: OrphanedBlock[] = [];
     for (const block of this.orphanedBlocks) {
       if (block.height === height) {
