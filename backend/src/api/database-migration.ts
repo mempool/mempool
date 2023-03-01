@@ -1017,26 +1017,16 @@ class DatabaseMigration {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
-  public async $truncateIndexedData(tables: string[]) {
-    const allowedTables = ['blocks', 'hashrates', 'prices'];
+  public async $blocksReindexingTruncate(): Promise<void> {
+    logger.warn(`Truncating pools, blocks and hashrates for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
+    await Common.sleep$(5000);
 
-    try {
-      for (const table of tables) {
-        if (!allowedTables.includes(table)) {
-          logger.debug(`Table ${table} cannot to be re-indexed (not allowed)`);
-          continue;
-        }
-
-        await this.$executeQuery(`TRUNCATE ${table}`, true);
-        if (table === 'hashrates') {
-          await this.$executeQuery('UPDATE state set number = 0 where name = "last_hashrates_indexing"', true);
-        }
-        logger.notice(`Table ${table} has been truncated`);
-      }
-    } catch (e) {
-      logger.warn(`Unable to erase indexed data`);
-    }
-  }
+    await this.$executeQuery(`TRUNCATE blocks`);
+    await this.$executeQuery(`TRUNCATE hashrates`);
+    await this.$executeQuery('DELETE FROM `pools`');
+    await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
+    await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
+}
 
   private async $convertCompactCpfpTables(): Promise<void> {
     try {
