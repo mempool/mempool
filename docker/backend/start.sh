@@ -24,7 +24,7 @@ __MEMPOOL_USER_AGENT__=${MEMPOOL_USER_AGENT:=mempool}
 __MEMPOOL_STDOUT_LOG_MIN_PRIORITY__=${MEMPOOL_STDOUT_LOG_MIN_PRIORITY:=info}
 __MEMPOOL_INDEXING_BLOCKS_AMOUNT__=${MEMPOOL_INDEXING_BLOCKS_AMOUNT:=false}
 __MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__=${MEMPOOL_AUTOMATIC_BLOCK_REINDEXING:=false}
-__MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json}
+__MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json}
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
 __MEMPOOL_AUDIT__=${MEMPOOL_AUDIT:=false}
 __MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}

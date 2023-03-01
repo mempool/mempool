@@ -36,7 +36,6 @@ import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
-import mining from './api/mining/mining';
 import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 
@@ -84,11 +83,8 @@ class Server {
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
-        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
-          const tables = process.env.npm_config_reindex.split(',');
-          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep$(5000);
-          await databaseMigration.$truncateIndexedData(tables);
+        if (process.env.npm_config_reindex_blocks === 'true') { // Re-index requests
+          await databaseMigration.$blocksReindexingTruncate();
         }
         await databaseMigration.$initializeOrMigrateDatabase();
         if (Common.indexingEnabled()) {

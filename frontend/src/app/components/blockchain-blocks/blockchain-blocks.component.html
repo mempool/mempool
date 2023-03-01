@@ -43,10 +43,8 @@
           <div [attr.data-cy]="'bitcoin-block-' + i + '-transactions'" class="transaction-count">
             <ng-container
               *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
-            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }}
-              transaction</ng-template>
-            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }}
-              transactions</ng-template>
+            <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+            <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </div>
           <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
             <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
