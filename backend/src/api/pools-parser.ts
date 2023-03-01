@@ -7,6 +7,7 @@ import { PoolTag } from '../mempool.interfaces';
 class PoolsParser {
   miningPools: any[] = [];
   unknownPool: any = {
+    'id': 0,
     'name': 'Unknown',
     'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
     'regexes': '[]',
@@ -26,6 +27,7 @@ class PoolsParser {
   public setMiningPools(pools): void {
     for (const pool of pools) {
       pool.regexes = pool.tags;
+      pool.slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
       delete(pool.tags);
     }
     this.miningPools = pools;
