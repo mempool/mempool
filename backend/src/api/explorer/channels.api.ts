@@ -559,6 +559,17 @@ class ChannelsApi {
     const policy1: Partial<ILightningApi.RoutingPolicy> = channel.node1_policy || {};
     const policy2: Partial<ILightningApi.RoutingPolicy> = channel.node2_policy || {};
 
+    // https://github.com/mempool/mempool/issues/3006
+    if ((channel.last_update ?? 0) < 1514736061) { // January 1st 2018
+      channel.last_update = null;
+    }
+    if ((policy1.last_update ?? 0) < 1514736061) { // January 1st 2018
+      policy1.last_update = null;
+    }
+    if ((policy2.last_update ?? 0) < 1514736061) { // January 1st 2018
+      policy2.last_update = null;
+    }
+
     const query = `INSERT INTO channels
       (
         id,

@@ -642,6 +642,11 @@ class NodesApi {
    */
   public async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
+      // https://github.com/mempool/mempool/issues/3006
+      if ((node.last_update ?? 0) < 1514736061) { // January 1st 2018
+        node.last_update = null;
+      }
+  
       const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
       const query = `INSERT INTO nodes(
           public_key,

@@ -5,7 +5,7 @@ import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
 import { Position } from './sprite-types';
-import { Price } from 'src/app/services/price.service';
+import { Price } from '../../services/price.service';
 
 @Component({
   selector: 'app-block-overview-graph',
