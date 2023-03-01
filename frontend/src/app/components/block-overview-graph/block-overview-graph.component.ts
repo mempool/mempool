@@ -5,6 +5,7 @@ import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
 import { Position } from './sprite-types';
+import { Price } from '../../services/price.service';
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -21,6 +22,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
+  @Input() blockConversion: Price;
   @Output() txClickEvent = new EventEmitter<TransactionStripped>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();

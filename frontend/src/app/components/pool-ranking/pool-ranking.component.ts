@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
 import { concat, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { SinglePoolStats } from '../../interfaces/node-api.interface';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
 import { MiningService, MiningStats } from '../../services/mining.service';
@@ -26,6 +25,8 @@ export class PoolRankingComponent implements OnInit {
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
+  auditAvailable = false;
+  indexingAvailable = false;
   isLoading = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -60,6 +61,10 @@ export class PoolRankingComponent implements OnInit {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
+    this.indexingAvailable = (this.stateService.env.BASE_MODULE === 'mempool' &&
+      this.stateService.env.MINING_DASHBOARD === true);
+    this.auditAvailable = this.indexingAvailable && this.stateService.env.AUDIT;
+
     this.route
       .fragment
       .subscribe((fragment) => {
@@ -73,6 +78,7 @@ export class PoolRankingComponent implements OnInit {
         .pipe(
           startWith(this.radioGroupForm.controls.dateSpan.value), // (trigger when the page loads)
           tap((value) => {
+            this.isLoading = true;
             this.timespan = value;
             if (!this.widget) {
               this.storageService.setValue('miningWindowPreference', value);
@@ -92,7 +98,6 @@ export class PoolRankingComponent implements OnInit {
       )
       .pipe(
         map(data => {
-          data.pools = data.pools.map((pool: SinglePoolStats) => this.formatPoolUI(pool));
           data['minersLuck'] = (100 * (data.blockCount / 1008)).toFixed(2); // luck 1w
           return data;
         }),
@@ -102,11 +107,6 @@ export class PoolRankingComponent implements OnInit {
         }),
         share()
       );
-  }
-
-  formatPoolUI(pool: SinglePoolStats) {
-    pool['blockText'] = pool.blockCount.toString() + ` (${pool.share}%)`;
-    return pool;
   }
 
   generatePoolsChartSerieData(miningStats) {
@@ -219,7 +219,7 @@ export class PoolRankingComponent implements OnInit {
 
     this.chartOptions = {
       animation: false,
-      color: chartColors,
+      color: chartColors.filter(color => color !== '#FDD835'),
       tooltip: {
         trigger: 'item',
         textStyle: {

@@ -1,1 +1,14 @@
-<span class="green-color" *ngIf="(conversions$ | async) as conversions">{{ (conversions ? conversions[currency] : 0) * value / 100000000 | fiatCurrency : digitsInfo : currency }}</span>
+<span class="green-color" *ngIf="blockConversion; else noblockconversion">
+  {{
+    (
+      (blockConversion.price[currency] >= 0 ? blockConversion.price[currency] : null) ??
+      (blockConversion.price['USD'] * blockConversion.exchangeRates['USD' + currency]) ?? 0
+    ) * value / 100000000 | fiatCurrency : digitsInfo : currency
+  }}
+</span>
+
+<ng-template #noblockconversion>
+  <span class="green-color" *ngIf="(conversions$ | async) as conversions">
+    {{ (conversions[currency] ?? conversions['USD'] ?? 0) * value / 100000000 | fiatCurrency : digitsInfo : currency }}
+  </span>
+</ng-template>
