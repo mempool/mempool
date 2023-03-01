@@ -228,7 +228,7 @@ class NodesApi {
             nodes.capacity
           FROM nodes
           ORDER BY capacity DESC
-          LIMIT 100
+          LIMIT 6
         `;
 
         [rows] = await DB.query(query);
@@ -269,14 +269,26 @@ class NodesApi {
       let query: string;
       if (full === false) {
         query = `
-          SELECT nodes.public_key as publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
-            nodes.channels
+          SELECT
+            nodes.public_key as publicKey,
+            IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+            nodes.channels,
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM nodes
+          LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+          LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           ORDER BY channels DESC
-          LIMIT 100;
+          LIMIT 6;
         `;
 
         [rows] = await DB.query(query);
+        for (let i = 0; i < rows.length; ++i) {
+          rows[i].country = JSON.parse(rows[i].country);
+          rows[i].city = JSON.parse(rows[i].city);
+        }
       } else {
         query = `
           SELECT nodes.public_key AS publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
