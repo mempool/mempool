@@ -199,8 +199,8 @@ class Server {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
-      await forensicsService.$startService();
       await lightningStatsUpdater.$startService();
+      await forensicsService.$startService();
     } catch(e) {
       logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);
