@@ -501,7 +501,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(56);
     }
 
-    if (databaseSchemaVersion < 57) {
+    if (databaseSchemaVersion < 57 && isBitcoin === true) {
       await this.$executeQuery(`ALTER TABLE nodes MODIFY updated_at datetime NULL`);
       await this.updateToSchemaVersion(57);
     }
