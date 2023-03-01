@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, OnInit } from '@angular/core';
 import { tap } from 'rxjs';
-import { Price, PriceService } from 'src/app/services/price.service';
+import { Price, PriceService } from '../../services/price.service';
 
 interface Xput {
   type: 'input' | 'output' | 'fee';
