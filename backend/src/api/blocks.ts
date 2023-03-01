@@ -570,18 +570,18 @@ class Blocks {
       if (Common.indexingEnabled()) {
         if (!fastForwarded) {
           const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
-          if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock['hash']) {
-            logger.warn(`Chain divergence detected at block ${lastBlock['height']}, re-indexing most recent data`);
+          if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock.id) {
+            logger.warn(`Chain divergence detected at block ${lastBlock.height}, re-indexing most recent data`);
             // We assume there won't be a reorg with more than 10 block depth
-            await BlocksRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
+            await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
             await HashratesRepository.$deleteLastEntries();
-            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock['height'] - 10);
-            await cpfpRepository.$deleteClustersFrom(lastBlock['height'] - 10);
+            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock.height - 10);
+            await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
             for (let i = 10; i >= 0; --i) {
-              const newBlock = await this.$indexBlock(lastBlock['height'] - i);
+              const newBlock = await this.$indexBlock(lastBlock.height - i);
               await this.$getStrippedBlockTransactions(newBlock.id, true, true);
               if (config.MEMPOOL.CPFP_INDEXING) {
-                await this.$indexCPFP(newBlock.id, lastBlock['height'] - i);
+                await this.$indexCPFP(newBlock.id, lastBlock.height - i);
               }
             }
             await mining.$indexDifficultyAdjustments();

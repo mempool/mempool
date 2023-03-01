@@ -525,8 +525,15 @@ class BlocksRepository {
   public async $validateChain(): Promise<boolean> {
     try {
       const start = new Date().getTime();
-      const [blocks]: any[] = await DB.query(`SELECT height, hash, previous_block_hash,
-        UNIX_TIMESTAMP(blockTimestamp) as timestamp FROM blocks ORDER BY height`);
+      const [blocks]: any[] = await DB.query(`
+        SELECT
+          height,
+          hash,
+          previous_block_hash,
+          UNIX_TIMESTAMP(blockTimestamp) AS timestamp
+        FROM blocks
+        ORDER BY height
+      `);
 
       let partialMsg = false;
       let idx = 1;
