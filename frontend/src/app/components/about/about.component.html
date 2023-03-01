@@ -187,7 +187,7 @@
         <ng-container>
           <ng-template ngFor let-sponsor [ngForOf]="whaleSponsors">
             <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-              <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" />
+              <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             </a>
           </ng-template>
         </ng-container>
@@ -202,7 +202,7 @@
       <div class="wrapper">
         <ng-template ngFor let-sponsor [ngForOf]="chadSponsors">
           <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-            <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" />
+            <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
@@ -215,7 +215,7 @@
     <div class="wrapper">
       <ng-container *ngIf="ogSponsors$ | async as ogSponsors; else loadingSponsors">
         <a *ngFor="let ogSponsor of ogSponsors" [href]="'https://twitter.com/' + ogSponsor" target="_blank" rel="sponsored" [title]="ogSponsor">
-          <img class="image" [src]="'/api/v1/sponsors/og/images/' + ogSponsor" />
+          <img class="image" [src]="'/api/v1/sponsors/og/images/' + ogSponsor" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
         </a>
       </ng-container>
     </div>
@@ -356,7 +356,7 @@
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
           <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
-            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" />
+            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
@@ -370,7 +370,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -382,7 +382,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.core">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
