@@ -72,7 +72,7 @@ class NetworkSyncService {
     const graphNodesPubkeys: string[] = [];
     for (const node of nodes) {
       const latestUpdated = await channelsApi.$getLatestChannelUpdateForNode(node.pub_key);
-      node.last_update = Math.max(node.last_update, latestUpdated);
+      node.last_update = Math.max(node.last_update ?? 0, latestUpdated);
 
       await nodesApi.$saveNode(node);
       graphNodesPubkeys.push(node.pub_key);

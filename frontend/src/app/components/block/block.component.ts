@@ -13,7 +13,7 @@ import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
-import { PriceService, Price } from 'src/app/services/price.service';
+import { PriceService, Price } from '../../services/price.service';
 
 @Component({
   selector: 'app-block',
