@@ -237,7 +237,10 @@ export class Common {
     ].join('x');
   }
 
-  static utcDateToMysql(date?: number): string {
+  static utcDateToMysql(date?: number | null): string | null {
+    if (date === null) {
+      return null;
+    }
     const d = new Date((date || 0) * 1000);
     return d.toISOString().split('T')[0] + ' ' + d.toTimeString().split(' ')[0];
   }
