@@ -217,7 +217,15 @@ class BitcoinRoutes {
       res.json(cpfpInfo);
       return;
     } else {
-      const cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      let cpfpInfo;
+      if (config.DATABASE.ENABLED) {
+        cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      } else {
+        res.json({
+          ancestors: []
+        });
+        return;
+      }
       if (cpfpInfo) {
         res.json(cpfpInfo);
         return;
