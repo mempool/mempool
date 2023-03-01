@@ -73,7 +73,7 @@ class PoolsParser {
       }
     }
 
-    logger.info('Mining pools.json import completed');
+    logger.info('Mining pools-v2.json import completed');
   }
 
   /**
@@ -115,7 +115,7 @@ class PoolsParser {
       return;
     }
 
-    // Get oldest blocks mined by the pool and assume pools.json updates only concern most recent years
+    // Get oldest blocks mined by the pool and assume pools-v2.json updates only concern most recent years
     // Ignore early days of Bitcoin as there were no mining pool yet
     const [oldestPoolBlock]: any[] = await DB.query(`
       SELECT height
