@@ -1,4 +1,5 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
+import { OrphanedBlock } from './api/chain-tips';
 import { HeapNode } from "./utils/pairing-heap";
 
 export interface PoolTag {
@@ -16,6 +17,7 @@ export interface PoolInfo {
   link: string;
   blockCount: number;
   slug: string;
+  avgMatchRate: number | null;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -63,6 +65,7 @@ interface VinStrippedToScriptsig {
 
 interface VoutStrippedToScriptPubkey {
   scriptpubkey_address: string | undefined;
+  scriptpubkey_asm: string | undefined;
   value: number;
 }
 
@@ -159,6 +162,27 @@ export interface BlockExtension {
   avgFeeRate?: number;
   coinbaseRaw?: string;
   usd?: number | null;
+  medianTimestamp?: number;
+  blockTime?: number;
+  orphans?: OrphanedBlock[] | null;
+  coinbaseAddress?: string | null;
+  coinbaseSignature?: string | null;
+  coinbaseSignatureAscii?: string | null;
+  virtualSize?: number;
+  avgTxSize?: number;
+  totalInputs?: number;
+  totalOutputs?: number;
+  totalOutputAmt?: number;
+  medianFeeAmt?: number | null;
+  feePercentiles?: number[] | null,
+  segwitTotalTxs?: number;
+  segwitTotalSize?: number;
+  segwitTotalWeight?: number;
+  header?: string;
+  utxoSetChange?: number;
+  // Requires coinstatsindex, will be set to NULL otherwise
+  utxoSetSize?: number | null;
+  totalInputAmt?: number | null;
 }
 
 export interface BlockExtended extends IEsploraApi.Block {

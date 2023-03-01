@@ -119,7 +119,8 @@ class Audit {
     }
 
     const numCensored = Object.keys(isCensored).length;
-    const score = matches.length > 0 ? (matches.length / (matches.length + numCensored)) : 0;
+    const numMatches = matches.length - 1; // adjust for coinbase tx
+    const score = numMatches > 0 ? (numMatches / (numMatches + numCensored)) : 0;
 
     return {
       censored: Object.keys(isCensored),

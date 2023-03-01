@@ -62,7 +62,12 @@ export class CacheService {
       for (let i = 0; i < chunkSize; i++) {
         this.blockLoading[maxHeight - i] = true;
       }
-      const result = await firstValueFrom(this.apiService.getBlocks$(maxHeight));
+      let result;
+      try {
+        result = await firstValueFrom(this.apiService.getBlocks$(maxHeight));
+      } catch (e) {
+        console.log("failed to load blocks: ", e.message);
+      }
       for (let i = 0; i < chunkSize; i++) {
         delete this.blockLoading[maxHeight - i];
       }

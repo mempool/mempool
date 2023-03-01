@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
+import { Conversion } from './price.service';
 
 @Injectable({
   providedIn: 'root'
@@ -301,6 +302,13 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/channels-geo' +
         (publicKey !== undefined ? `/${publicKey}`   : '') +
         (style     !== undefined ? `?style=${style}` : '')
+    );
+  }
+
+  getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+    return this.httpClient.get<Conversion>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
+        (timestamp ? `?timestamp=${timestamp}` : '')
     );
   }
 }

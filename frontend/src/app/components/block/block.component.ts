@@ -13,6 +13,7 @@ import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
+import { PriceService, Price } from '../../services/price.service';
 
 @Component({
   selector: 'app-block',
@@ -81,6 +82,9 @@ export class BlockComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   childChangeSubscription: Subscription;
   auditPrefSubscription: Subscription;
+  
+  priceSubscription: Subscription;
+  blockConversion: Price;
 
   @ViewChildren('blockGraphProjected') blockGraphProjected: QueryList<BlockOverviewGraphComponent>;
   @ViewChildren('blockGraphActual') blockGraphActual: QueryList<BlockOverviewGraphComponent>;
@@ -94,7 +98,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private websocketService: WebsocketService,
     private relativeUrlPipe: RelativeUrlPipe,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private priceService: PriceService,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -432,6 +437,19 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    if (this.priceSubscription) {
+      this.priceSubscription.unsubscribe();
+    }
+    this.priceSubscription = block$.pipe(
+      switchMap((block) => {
+        return this.priceService.getBlockPrice$(block.timestamp).pipe(
+          tap((price) => {
+            this.blockConversion = price;
+          })
+        );
+      })
+    ).subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -453,6 +471,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.auditSubscription?.unsubscribe();
     this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
+    this.priceSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {

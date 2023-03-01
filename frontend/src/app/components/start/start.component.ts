@@ -21,6 +21,7 @@ export class StartComponent implements OnInit, OnDestroy {
   timeLtr: boolean = this.stateService.timeLtr.value;
   chainTipSubscription: Subscription;
   chainTip: number = -1;
+  tipIsSet: boolean = false;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
@@ -58,6 +59,7 @@ export class StartComponent implements OnInit, OnDestroy {
     });
     this.chainTipSubscription = this.stateService.chainTip$.subscribe((height) => {
       this.chainTip = height;
+      this.tipIsSet = true;
       this.updatePages();
       if (this.pendingMark != null) {
         this.scrollToBlock(this.pendingMark);
@@ -66,7 +68,7 @@ export class StartComponent implements OnInit, OnDestroy {
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
       if (mark?.blockHeight != null) {
-        if (this.chainTip >=0) {
+        if (this.tipIsSet) {
           if (!this.blockInViewport(mark.blockHeight)) {
             this.scrollToBlock(mark.blockHeight);
           }
@@ -123,7 +125,7 @@ export class StartComponent implements OnInit, OnDestroy {
     this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
-      this.scrollToBlock(firstVisibleBlock, offset);
+      this.scrollToBlock(firstVisibleBlock, offset + (this.isMobile ? this.blockWidth : 0));
     } else {
       this.updatePages();
     }
@@ -178,8 +180,10 @@ export class StartComponent implements OnInit, OnDestroy {
       setTimeout(() => { this.scrollToBlock(height, blockOffset); }, 50);
       return;
     }
-    const targetHeight = this.isMobile ? height - 1 : height;
-    const viewingPageIndex = this.getPageIndexOf(targetHeight);
+    if (this.isMobile) {
+      blockOffset -= this.blockWidth;
+    }
+    const viewingPageIndex = this.getPageIndexOf(height);
     const pages = [];
     this.pageIndex = Math.max(viewingPageIndex - 1, 0);
     let viewingPage = this.getPageAt(viewingPageIndex);
@@ -189,7 +193,7 @@ export class StartComponent implements OnInit, OnDestroy {
       viewingPage = this.getPageAt(viewingPageIndex);
     }
     const left = viewingPage.offset - this.getConvertedScrollOffset();
-    const blockIndex = viewingPage.height - targetHeight;
+    const blockIndex = viewingPage.height - height;
     const targetOffset = (this.blockWidth * blockIndex) + left;
     let deltaOffset = targetOffset - blockOffset;
 

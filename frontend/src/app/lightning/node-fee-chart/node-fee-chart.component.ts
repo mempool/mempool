@@ -167,7 +167,7 @@ export class NodeFeeChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: 'Outgoing Fees',
+            name: $localize`Outgoing Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -175,7 +175,7 @@ export class NodeFeeChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Incoming Fees',
+            name: $localize`Incoming Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -205,7 +205,7 @@ export class NodeFeeChartComponent implements OnInit {
       series: outgoingData.length === 0 ? undefined : [
         {
           zlevel: 0,
-          name: 'Outgoing Fees',
+          name: $localize`Outgoing Fees`,
           data: outgoingData.map(bucket => ({
             value: bucket.capacity,
             label: bucket.label,
@@ -219,7 +219,7 @@ export class NodeFeeChartComponent implements OnInit {
         },
         {
           zlevel: 0,
-          name: 'Incoming Fees',
+          name: $localize`Incoming Fees`,
           data: incomingData.map(bucket => ({
             value: -bucket.capacity,
             label: bucket.label,
