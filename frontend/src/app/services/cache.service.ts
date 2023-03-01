@@ -17,6 +17,7 @@ export class CacheService {
 
   txCache: { [txid: string]: Transaction } = {};
 
+  network: string;
   blockCache: { [height: number]: BlockExtended } = {};
   blockLoading: { [height: number]: boolean } = {};
   copiesInBlockQueue: { [height: number]: number } = {};
@@ -32,6 +33,10 @@ export class CacheService {
     });
     this.stateService.chainTip$.subscribe((height) => {
       this.tip = height;
+    });
+    this.stateService.networkChanged$.subscribe((network) => {
+      this.network = network;
+      this.resetBlockCache();
     });
   }
 
@@ -68,14 +73,16 @@ export class CacheService {
       } catch (e) {
         console.log("failed to load blocks: ", e.message);
       }
-      for (let i = 0; i < chunkSize; i++) {
-        delete this.blockLoading[maxHeight - i];
-      }
       if (result && result.length) {
         result.forEach(block => {
-          this.addBlockToCache(block);
-          this.loadedBlocks$.next(block);
+          if (this.blockLoading[block.height]) {
+            this.addBlockToCache(block);
+            this.loadedBlocks$.next(block);
+          }
         });
+      }
+      for (let i = 0; i < chunkSize; i++) {
+        delete this.blockLoading[maxHeight - i];
       }
       this.clearBlocks();
     } else {
@@ -102,6 +109,14 @@ export class CacheService {
         delete this.copiesInBlockQueue[height];
       }
     }
+  }
+
+  // remove all blocks from the cache
+  resetBlockCache() {
+    this.blockCache = {};
+    this.blockLoading = {};
+    this.copiesInBlockQueue = {};
+    this.blockPriorities = [];
   }
 
   getCachedBlock(height) {
