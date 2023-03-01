@@ -56,6 +56,46 @@ export async function rollbackDbToVersion(versionTarget: number): Promise<void> 
 
 const methods = [];
 
+methods['rollback57'] = async function (): Promise<void> {
+  if (isBitcoin === true) {
+    await databaseMigration.$executeQuery(`ALTER TABLE nodes MODIFY updated_at datetime NOT NULL`);
+  }
+  await databaseMigration.updateToSchemaVersion(56);
+};
+
+methods['rollback56'] = async function (): Promise<void> {
+  await databaseMigration.$executeQuery(`ALTER TABLE pools DROP COLUMN IF EXISTS unique_id`);
+  await databaseMigration.updateToSchemaVersion(55);
+};
+
+methods['rollback55'] = async function (): Promise<void> {
+  await databaseMigration.$executeQuery(`ALTER TABLE blocks
+    DROP COLUMN IF EXISTS median_timestamp,
+    DROP COLUMN IF EXISTS coinbase_address,
+    DROP COLUMN IF EXISTS coinbase_signature,
+    DROP COLUMN IF EXISTS coinbase_signature_ascii,
+    DROP COLUMN IF EXISTS avg_tx_size,
+    DROP COLUMN IF EXISTS total_inputs,
+    DROP COLUMN IF EXISTS total_outputs,
+    DROP COLUMN IF EXISTS total_output_amt,
+    DROP COLUMN IF EXISTS fee_percentiles,
+    DROP COLUMN IF EXISTS median_fee_amt,
+    DROP COLUMN IF EXISTS segwit_total_txs,
+    DROP COLUMN IF EXISTS segwit_total_size,
+    DROP COLUMN IF EXISTS segwit_total_weight,
+    DROP COLUMN IF EXISTS header,
+    DROP COLUMN IF EXISTS utxoset_change,
+    DROP COLUMN IF EXISTS utxoset_size,
+    DROP COLUMN IF EXISTS total_input_amt
+  `);
+  await databaseMigration.updateToSchemaVersion(54);
+};
+
+methods['rollback54'] = async function (): Promise<void> {
+  // Nothing to do
+  await databaseMigration.updateToSchemaVersion(53);
+};
+
 methods['rollback53'] = async function (): Promise<void> {
   await databaseMigration.$executeQuery('ALTER TABLE statistics MODIFY mempool_byte_weight int(10) UNSIGNED NOT NULL');
   await databaseMigration.updateToSchemaVersion(52);
