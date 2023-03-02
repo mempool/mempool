@@ -92,8 +92,9 @@ console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
 console.log('Downloading testnet assets minimal');
 download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
-console.log('Downloading promo video');
-if (!fs.existsSync(promoVideo))
+if (!fs.existsSync(promoVideo)) {
+  console.log('Downloading promo video');
   download(promoVideo, promoVideoUrl);
+}
 console.log('Downloading mining pool logos');
 downloadMiningPoolLogos();
