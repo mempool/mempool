@@ -748,29 +748,14 @@ class Blocks {
       return returnBlocks;
     }
 
-    // Check if block height exist in local cache to skip the hash lookup
-    const blockByHeight = this.getBlocks().find((b) => b.height === currentHeight);
-    let startFromHash: string | null = null;
-    if (blockByHeight) {
-      startFromHash = blockByHeight.id;
-    } else if (!Common.indexingEnabled()) {
-      startFromHash = await bitcoinApi.$getBlockHash(currentHeight);
-    }
-
-    let nextHash = startFromHash;
     for (let i = 0; i < limit && currentHeight >= 0; i++) {
       let block = this.getBlocks().find((b) => b.height === currentHeight);
       if (block) {
         // Using the memory cache (find by height)
         returnBlocks.push(block);
-      } else if (Common.indexingEnabled()) {
+      } else {
         // Using indexing (find by height, index on the fly, save in database)
         block = await this.$indexBlock(currentHeight);
-        returnBlocks.push(block);
-      } else if (nextHash !== null) {
-        // Without indexing, query block on the fly using bitoin backend, follow previous hash links
-        block = await this.$indexBlock(currentHeight);
-        nextHash = block.previousblockhash;
         returnBlocks.push(block);
       }
       currentHeight--;
