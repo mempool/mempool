@@ -34,6 +34,10 @@
     padding: 10px 15px 15px;
   }
 
+  video {
+    margin-top: 48px;
+  }
+
   .social-icons {
     a {
       margin: auto 10px;
@@ -184,6 +188,11 @@
       margin: 15px auto 0px;
       &:last-child {
         margin: 20px auto 30px;
+      }
+    }
+    .social-icons {
+      a {
+        margin: 45px 10px;
       }
     }
   }
