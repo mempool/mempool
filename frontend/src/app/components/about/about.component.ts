@@ -6,8 +6,9 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { IBackendInfo } from '../../interfaces/websocket.interface';
 import { Router, ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { ITranslators } from '../../interfaces/node-api.interface';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-about',
@@ -33,6 +34,7 @@ export class AboutComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     @Inject(LOCALE_ID) public locale: string,
+    @Inject(DOCUMENT) private document: Document,
   ) { }
 
   ngOnInit() {
@@ -40,17 +42,21 @@ export class AboutComponent implements OnInit {
     this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.websocketService.want(['blocks']);
 
-    this.sponsors$ = this.apiService.getDonation$();
+    this.sponsors$ = this.apiService.getDonation$()
+      .pipe(
+        tap(() => this.goToAnchor())
+      );
     this.translators$ = this.apiService.getTranslators$()
       .pipe(
         map((translators) => {
           for (const t in translators) {
             if (translators[t] === '') {
-              delete translators[t]
+              delete translators[t];
             }
           }
           return translators;
-        })
+        }),
+        tap(() => this.goToAnchor())
       );
     this.allContributors$ = this.apiService.getContributor$().pipe(
       map((contributors) => {
@@ -58,20 +64,24 @@ export class AboutComponent implements OnInit {
           regular: contributors.filter((user) => !user.core_constributor),
           core: contributors.filter((user) => user.core_constributor),
         };
-      })
+      }),
+      tap(() => this.goToAnchor())
     );
   }
   
-    ngAfterViewInit() {
-      const that = this;
-      setTimeout( () => {
-        if( this.route.snapshot.fragment ) {
-          if (document.getElementById( this.route.snapshot.fragment )) {
-            document.getElementById( this.route.snapshot.fragment ).scrollIntoView({behavior: "smooth", block: "center"});
-          }
+  ngAfterViewInit() {
+    this.goToAnchor();
+  }
+
+  goToAnchor() {
+    setTimeout(() => {
+      if (this.route.snapshot.fragment) {
+        if (this.document.getElementById(this.route.snapshot.fragment)) {
+          this.document.getElementById(this.route.snapshot.fragment).scrollIntoView({behavior: 'smooth'});
         }
-      }, 1 );
-    }
+      }
+    }, 1);
+  }
 
   sponsor(): void {
     if (this.officialMempoolSpace && this.stateService.env.BASE_MODULE === 'mempool') {
