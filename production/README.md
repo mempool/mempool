@@ -2,7 +2,7 @@
 
 These instructions are for setting up a serious production Mempool website for Bitcoin (mainnet, testnet, signet), Liquid (mainnet, testnet), and Bisq.
 
-Again, this setup is no joke—home users should use [one of the other installation methods](../#installation-methods).
+Again, this setup is no joke—home users should use [one of the other installation methods](../#installation-methods). Support is only provided to [enterprise sponsors](https://mempool.space/enterprise).
 
 ### Server Hardware
 
