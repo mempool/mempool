@@ -50,6 +50,7 @@
   .maintainers {
     margin-top: 68px;
     margin-bottom: 68px;
+    scroll-margin: 30px;
   }
 
   .maintainers {
@@ -121,6 +122,7 @@
   .project-translators,
   .community-integrations-sponsor,
   .maintainers {
+    scroll-margin: 30px;
     .wrapper {
       display: inline-block;
       a {
