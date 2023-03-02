@@ -70,7 +70,7 @@ export class PriceService {
   }
 
   getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
-    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+    if (this.stateService.env.BASE_MODULE !== 'mempool' || !this.stateService.env.HISTORICAL_PRICE) {
       return of(undefined);
     }
 
