@@ -15,7 +15,7 @@
 
   <video style="width: 638px; height: 360px;" src="/resources/mempool-promo.mp4" poster="/resources/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true"></video>
 
-  <div class="enterprise-sponsor">
+  <div class="enterprise-sponsor" id="enterprise-sponsors">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
     <div class="wrapper">
       <a href="https://spiral.xyz/" target="_blank" title="Spiral">
@@ -163,7 +163,7 @@
     </div>
   </div>
 
-  <div class="community-sponsor">
+  <div class="community-sponsor" id="community-sponsors">
     <h3 i18n="about.sponsors.withHeart">Community Sponsors ❤️</h3>
 
     <div class="wrapper">
@@ -177,7 +177,7 @@
     </div>
   </div>
 
-  <div class="community-integrations-sponsor">
+  <div class="community-integrations-sponsor" id="community-integrations">
     <h3 i18n="about.community-integrations">Community Integrations</h3>
     <div class="wrapper">
       <a href="https://github.com/getumbrel/umbrel" target="_blank" title="Umbrel">
@@ -271,7 +271,7 @@
     </div>
   </div>
 
-  <div class="alliances">
+  <div class="alliances" id="community-alliances">
     <h3 i18n="about.alliances">Community Alliances</h3>
     <div class="wrapper">
       <a href="https://liquid.net/" title="Liquid Network">
@@ -287,7 +287,7 @@
   </div>
 
   <ng-container *ngIf="translators$ | async | keyvalue as translators else loadingSponsors">
-    <div class="project-translators">
+    <div class="project-translators" id="project-translators">
       <h3 i18n="about.translators">Project Translators</h3>
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
@@ -301,7 +301,7 @@
   </ng-container>
 
   <ng-container *ngIf="allContributors$ | async as contributors else loadingSponsors">
-    <div class="contributors">
+    <div class="contributors" id="project-contributors">
       <h3 i18n="about.contributors">Project Contributors</h3>
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
@@ -313,7 +313,7 @@
       </div>
     </div>
 
-    <div class="maintainers" *ngIf="contributors.core.length">
+    <div class="maintainers" *ngIf="contributors.core.length" id="project-members">
       <h3 i18n="about.project_members">Project Members</h3>
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.core">
@@ -326,7 +326,7 @@
     </div>
   </ng-container>
 
-  <div class="maintainers">
+  <div class="maintainers" id="project-maintainers">
     <h3 i18n="about.maintainers">Project Maintainers</h3>
     <div class="wrapper">
         <a href="https://twitter.com/softsimon_" target="_blank" title="softsimon">
