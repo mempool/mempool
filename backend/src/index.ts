@@ -113,6 +113,7 @@ class Server {
 
     this.setUpWebsocketHandling();
 
+    await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
       diskCache.loadMempoolCache();
@@ -171,7 +172,6 @@ class Server {
           logger.debug(msg);
         }
       }
-      await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
