@@ -8,6 +8,7 @@ import diskCache from './disk-cache';
 class PoolsParser {
   miningPools: any[] = [];
   unknownPool: any = {
+    'id': 0,
     'name': 'Unknown',
     'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
     'regexes': '[]',
@@ -27,6 +28,7 @@ class PoolsParser {
   public setMiningPools(pools): void {
     for (const pool of pools) {
       pool.regexes = pool.tags;
+      pool.slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
       delete(pool.tags);
     }
     this.miningPools = pools;
@@ -74,7 +76,7 @@ class PoolsParser {
       }
     }
 
-    logger.info('Mining pools.json import completed');
+    logger.info('Mining pools-v2.json import completed');
   }
 
   /**
@@ -116,7 +118,7 @@ class PoolsParser {
       return;
     }
 
-    // Get oldest blocks mined by the pool and assume pools.json updates only concern most recent years
+    // Get oldest blocks mined by the pool and assume pools-v2.json updates only concern most recent years
     // Ignore early days of Bitcoin as there were no mining pool yet
     const [oldestPoolBlock]: any[] = await DB.query(`
       SELECT height

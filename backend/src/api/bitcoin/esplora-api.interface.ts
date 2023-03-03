@@ -88,7 +88,7 @@ export namespace IEsploraApi {
     size: number;
     weight: number;
     previousblockhash: string;
-    medianTime?: number;
+    mediantime: number;
   }
 
   export interface Address {

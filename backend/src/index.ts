@@ -36,7 +36,6 @@ import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
 import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
 import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
-import mining from './api/mining/mining';
 import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 
@@ -84,11 +83,8 @@ class Server {
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
-        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
-          const tables = process.env.npm_config_reindex.split(',');
-          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep$(5000);
-          await databaseMigration.$truncateIndexedData(tables);
+        if (process.env.npm_config_reindex_blocks === 'true') { // Re-index requests
+          await databaseMigration.$blocksReindexingTruncate();
         }
         await databaseMigration.$initializeOrMigrateDatabase();
         if (Common.indexingEnabled()) {
@@ -183,7 +179,14 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e: any) {
-      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      let loggerMsg = `Exception in runMainUpdateLoop(). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
+      if (e?.stack) {
+        loggerMsg += ` Stack trace: ${e.stack}`;
+      }
+      // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
+      // From the second Exception, `logger.warn` the Exception and increase the retry delay
+      // Maximum retry delay is 60 seconds
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
@@ -203,8 +206,8 @@ class Server {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
-      await forensicsService.$startService();
       await lightningStatsUpdater.$startService();
+      await forensicsService.$startService();
     } catch(e) {
       logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);
