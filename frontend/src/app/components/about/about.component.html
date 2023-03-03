@@ -179,13 +179,12 @@
     </div>
   </div>
 
-  <div *ngIf="whaleSponsors$ | async as whaleSponsors" id="community-sponsors">
-    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="whaleSponsors.length > 0">
+  <div *ngIf="profiles$ | async as profiles" id="community-sponsors">
+    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
       <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
-
       <div class="wrapper">
         <ng-container>
-          <ng-template ngFor let-sponsor [ngForOf]="whaleSponsors">
+          <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
             <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
               <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             </a>
@@ -193,32 +192,27 @@
         </ng-container>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="chadSponsors$ | async as chadSponsors">
-    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="chadSponsors.length > 0">
+    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.chads.length > 0">
       <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
-
       <div class="wrapper">
-        <ng-template ngFor let-sponsor [ngForOf]="chadSponsors">
+        <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
           <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
             <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
     </div>
-  </div>
 
-  <div class="community-sponsor" style="margin-bottom: 68px">
-    <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
-
-    <div class="wrapper">
-      <ng-container *ngIf="ogSponsors$ | async as ogSponsors; else loadingSponsors">
-        <a *ngFor="let ogSponsor of ogSponsors" [href]="'https://twitter.com/' + ogSponsor" target="_blank" rel="sponsored" [title]="ogSponsor">
-          <img class="image" [src]="'/api/v1/sponsors/og/images/' + ogSponsor" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
-        </a>
-      </ng-container>
-    </div>
+    <div class="community-sponsor" style="margin-bottom: 68px">
+      <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
+      <div class="wrapper">
+        <ng-container *ngIf="profiles.ogs; else loadingSponsors">
+          <a *ngFor="let ogSponsor of profiles.ogs" [href]="'https://twitter.com/' + ogSponsor" target="_blank" rel="sponsored" [title]="ogSponsor">
+            <img class="image" [src]="'/api/v1/about-page/og/images/' + ogSponsor" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+          </a>
+        </ng-container>
+      </div>
   </div>
 
   <div class="community-integrations-sponsor" id="community-integrations">
