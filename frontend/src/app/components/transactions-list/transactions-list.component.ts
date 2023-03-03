@@ -9,7 +9,7 @@ import { AssetsService } from '../../services/assets.service';
 import { filter, map, tap, switchMap, shareReplay } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
-import { PriceService } from 'src/app/services/price.service';
+import { PriceService } from '../../services/price.service';
 
 @Component({
   selector: 'app-transactions-list',

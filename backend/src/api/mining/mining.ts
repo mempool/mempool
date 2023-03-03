@@ -11,6 +11,8 @@ import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjust
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
+import bitcoinApiFactory from '../bitcoin/bitcoin-api-factory';
+import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 
 class Mining {
   blocksPriceIndexingRunning = false;
@@ -172,7 +174,7 @@ class Mining {
   }
 
   /**
-   * [INDEXING] Generate weekly mining pool hashrate history
+   * Generate weekly mining pool hashrate history
    */
   public async $generatePoolHashrateHistory(): Promise<void> {
     const now = new Date();
@@ -189,8 +191,8 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
-      const genesisTimestamp = genesisBlock.time * 1000;
+      const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
       const hashrates: any[] = [];
@@ -279,7 +281,7 @@ class Mining {
   }
 
   /**
-   * [INDEXING] Generate daily hashrate data
+   * Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
     // We only run this once a day around midnight
@@ -292,8 +294,8 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
-      const genesisTimestamp = genesisBlock.time * 1000;
+      const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisTimestamp = genesisBlock.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
       let toTimestamp = Math.round(lastMidnight.getTime());
@@ -394,13 +396,13 @@ class Mining {
     }
 
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock = await bitcoinClient.getBlock(await bitcoinClient.getBlockHash(0));
+    const genesisBlock: IEsploraApi.Block = await bitcoinApiFactory.$getBlock(await bitcoinClient.getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
       await DifficultyAdjustmentsRepository.$saveAdjustments({
-        time: genesisBlock.time,
+        time: genesisBlock.timestamp,
         height: 0,
         difficulty: currentDifficulty,
         adjustment: 0.0,
@@ -459,7 +461,7 @@ class Mining {
   /**
    * Create a link between blocks and the latest price at when they were mined
    */
-  public async $indexBlockPrices() {
+  public async $indexBlockPrices(): Promise<void> {
     if (this.blocksPriceIndexingRunning === true) {
       return;
     }
@@ -518,6 +520,41 @@ class Mining {
     }
 
     this.blocksPriceIndexingRunning = false;
+  }
+
+  /**
+   * Index core coinstatsindex
+   */
+  public async $indexCoinStatsIndex(): Promise<void> {
+    let timer = new Date().getTime() / 1000;
+    let totalIndexed = 0;
+
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    let currentBlockHeight = blockchainInfo.blocks;
+
+    while (currentBlockHeight > 0) {
+      const indexedBlocks = await BlocksRepository.$getBlocksMissingCoinStatsIndex(
+        currentBlockHeight, currentBlockHeight - 10000);
+        
+      for (const block of indexedBlocks) {
+        const txoutset = await bitcoinClient.getTxoutSetinfo('none', block.height);
+        await BlocksRepository.$updateCoinStatsIndexData(block.hash, txoutset.txouts,
+          Math.round(txoutset.block_info.prevout_spent * 100000000));        
+        ++totalIndexed;
+
+        const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
+        if (elapsedSeconds > 5) {
+          logger.info(`Indexing coinstatsindex data for block #${block.height}. Indexed ${totalIndexed} blocks.`, logger.tags.mining);
+          timer = new Date().getTime() / 1000;
+        }
+      }
+
+      currentBlockHeight -= 10000;
+    }
+
+    if (totalIndexed) {
+      logger.info(`Indexing missing coinstatsindex data completed`, logger.tags.mining);
+    }
   }
 
   private getDateMidnight(date: Date): Date {

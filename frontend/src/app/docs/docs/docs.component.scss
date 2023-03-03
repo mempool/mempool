@@ -7,3 +7,9 @@
 #footer {
   clear: both;
 }
+
+@media (max-width: 992px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}

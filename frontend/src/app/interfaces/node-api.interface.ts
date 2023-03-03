@@ -114,7 +114,6 @@ export interface BlockExtension {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
-  coinbaseTx?: Transaction;
   coinbaseRaw?: string;
   matchRate?: number;
   pool?: {
