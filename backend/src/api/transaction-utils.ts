@@ -14,6 +14,7 @@ class TransactionUtils {
       vout: tx.vout
         .map((vout) => ({
           scriptpubkey_address: vout.scriptpubkey_address,
+          scriptpubkey_asm: vout.scriptpubkey_asm,
           value: vout.value
         }))
         .filter((vout) => vout.value)

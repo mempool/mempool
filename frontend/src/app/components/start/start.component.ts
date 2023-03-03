@@ -267,6 +267,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   resetScroll(): void {
     this.scrollToBlock(this.chainTip);
+    this.blockchainContainer.nativeElement.scrollLeft = 0;
   }
 
   getPageIndexOf(height: number): number {

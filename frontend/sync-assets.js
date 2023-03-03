@@ -51,7 +51,7 @@ function downloadMiningPoolLogos() {
     response.on('data', (fragments) => {
       chunks_of_data.push(fragments);
     });
-  
+
     response.on('end', () => {
       let response_body = Buffer.concat(chunks_of_data);
       try {
@@ -63,7 +63,7 @@ function downloadMiningPoolLogos() {
         console.error(`Unable to download mining pool logos. Trying again at next restart. Reason: ${e instanceof Error ? e.message : e}`);
       }
     });
-  
+
     response.on('error', (error) => {
       throw new Error(error);
     });
@@ -81,6 +81,9 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
 const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
 const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
+const promoVideo = PATH + 'mempool-promo.mp4';
+const promoVideoUrl = 'https://raw.githubusercontent.com/mempool/mempool-promo/master/promo.mp4';
+
 console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
 console.log('Downloading assets minimal');
@@ -89,5 +92,9 @@ console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
 console.log('Downloading testnet assets minimal');
 download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
+if (!fs.existsSync(promoVideo)) {
+  console.log('Downloading promo video');
+  download(promoVideo, promoVideoUrl);
+}
 console.log('Downloading mining pool logos');
 downloadMiningPoolLogos();
