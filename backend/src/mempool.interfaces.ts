@@ -1,9 +1,10 @@
 import { IEsploraApi } from './api/bitcoin/esplora-api.interface';
 import { OrphanedBlock } from './api/chain-tips';
-import { HeapNode } from "./utils/pairing-heap";
+import { HeapNode } from './utils/pairing-heap';
 
 export interface PoolTag {
-  id: number; // mysql row id
+  id: number;
+  uniqueId: number;
   name: string;
   link: string;
   regexes: string; // JSON array
@@ -147,44 +148,44 @@ export interface TransactionStripped {
 }
 
 export interface BlockExtension {
-  totalFees?: number;
-  medianFee?: number;
-  feeRange?: number[];
-  reward?: number;
-  coinbaseTx?: TransactionMinerInfo;
-  matchRate?: number;
-  pool?: {
-    id: number;
+  totalFees: number;
+  medianFee: number; // median fee rate
+  feeRange: number[]; // fee rate percentiles
+  reward: number;
+  matchRate: number | null;
+  pool: {
+    id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`
     name: string;
     slug: string;
   };
-  avgFee?: number;
-  avgFeeRate?: number;
-  coinbaseRaw?: string;
-  usd?: number | null;
-  medianTimestamp?: number;
-  blockTime?: number;
-  orphans?: OrphanedBlock[] | null;
-  coinbaseAddress?: string | null;
-  coinbaseSignature?: string | null;
-  coinbaseSignatureAscii?: string | null;
-  virtualSize?: number;
-  avgTxSize?: number;
-  totalInputs?: number;
-  totalOutputs?: number;
-  totalOutputAmt?: number;
-  medianFeeAmt?: number | null;
-  feePercentiles?: number[] | null,
-  segwitTotalTxs?: number;
-  segwitTotalSize?: number;
-  segwitTotalWeight?: number;
-  header?: string;
-  utxoSetChange?: number;
+  avgFee: number;
+  avgFeeRate: number;
+  coinbaseRaw: string;
+  orphans: OrphanedBlock[] | null;
+  coinbaseAddress: string | null;
+  coinbaseSignature: string | null;
+  coinbaseSignatureAscii: string | null;
+  virtualSize: number;
+  avgTxSize: number;
+  totalInputs: number;
+  totalOutputs: number;
+  totalOutputAmt: number;
+  medianFeeAmt: number | null; // median fee in sats
+  feePercentiles: number[] | null, // fee percentiles in sats
+  segwitTotalTxs: number;
+  segwitTotalSize: number;
+  segwitTotalWeight: number;
+  header: string;
+  utxoSetChange: number;
   // Requires coinstatsindex, will be set to NULL otherwise
-  utxoSetSize?: number | null;
-  totalInputAmt?: number | null;
+  utxoSetSize: number | null;
+  totalInputAmt: number | null;
 }
 
+/**
+ * Note: Everything that is added in here will be automatically returned through
+ * /api/v1/block and /api/v1/blocks APIs
+ */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
 }

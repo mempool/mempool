@@ -17,11 +17,6 @@ class PoolsUpdater {
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
   public async updatePoolsJson(): Promise<void> {
-    if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
-      logger.info(`Not updating mining pools to avoid inconsistency because AUTOMATIC_BLOCK_REINDEXING is set to false`)
-      return;
-    }
-
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
       return;
     }
@@ -35,12 +30,6 @@ class PoolsUpdater {
     }
 
     this.lastRun = now;
-
-    if (config.SOCKS5PROXY.ENABLED) {
-      logger.info(`Updating latest mining pools from ${this.poolsUrl} over the Tor network`, logger.tags.mining);
-    } else {
-      logger.info(`Updating latest mining pools from ${this.poolsUrl} over clearnet`, logger.tags.mining);
-    }
 
     try {
       const githubSha = await this.fetchPoolsSha(); // Fetch pools-v2.json sha from github
@@ -57,10 +46,21 @@ class PoolsUpdater {
         return;
       }
 
+      // See backend README for more details about the mining pools update process
+      if (this.currentSha !== undefined && // If we don't have any mining pool, download it at least once
+        config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING !== true && // Automatic pools update is disabled
+        !process.env.npm_config_update_pools // We're not manually updating mining pool
+      ) {
+        logger.warn(`Updated mining pools data is available (${githubSha}) but AUTOMATIC_BLOCK_REINDEXING is disabled`);
+        logger.info(`You can update your mining pools using the --update-pools command flag. You may want to clear your nginx cache as well if applicable`);
+        return;
+      }
+
+      const network = config.SOCKS5PROXY.ENABLED ? 'tor' : 'clearnet';
       if (this.currentSha === undefined) {
-        logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl}`, logger.tags.mining);
+        logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       } else {
-        logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl}`, logger.tags.mining);
+        logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
