@@ -1,4 +1,5 @@
 {
   "editor.tabSize": 2,
+  "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.tsdk": "./backend/node_modules/typescript/lib"
 }
