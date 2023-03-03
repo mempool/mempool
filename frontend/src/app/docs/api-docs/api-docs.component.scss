@@ -274,6 +274,11 @@ h3 {
   margin: 24px 0;
 }
 
+#disclaimer > div svg {
+  display: block;
+  margin: 2px auto 16px;
+}
+
 #disclaimer svg {
   width: 50px;
   height: auto;
@@ -331,6 +336,10 @@ h3 {
 
   .doc-welcome-note {
     font-size: 0.85rem;
+  }
+
+  #disclaimer table {
+    display: none;
   }
 }
 
