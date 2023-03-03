@@ -1,5 +1,5 @@
 describe('Liquid', () => {
-  const baseModule = Cypress.env("BASE_MODULE");
+  const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '';
 
   beforeEach(() => {
