@@ -3,6 +3,7 @@ import logger from '../logger';
 import config from '../config';
 import PoolsRepository from '../repositories/PoolsRepository';
 import { PoolTag } from '../mempool.interfaces';
+import diskCache from './disk-cache';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -141,6 +142,10 @@ class PoolsParser {
       WHERE pool_id = ?`,
       [pool.id]
     );
+
+    // We also need to wipe the backend cache to make sure we don't serve blocks with
+    // the wrong mining pool (usually happen with unknown blocks)
+    diskCache.wipeCache();
   }
 
   private async $deleteUnknownBlocks(): Promise<void> {
@@ -151,6 +156,10 @@ class PoolsParser {
       WHERE pool_id = ? AND height >= 130635`,
       [unknownPool[0].id]
     );
+
+    // We also need to wipe the backend cache to make sure we don't serve blocks with
+    // the wrong mining pool (usually happen with unknown blocks)
+    diskCache.wipeCache();
   }
 }
 
