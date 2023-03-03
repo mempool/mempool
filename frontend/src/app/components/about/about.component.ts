@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { IBackendInfo } from '../../interfaces/websocket.interface';
 import { Router, ActivatedRoute } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
+import { map, share, tap } from 'rxjs/operators';
 import { ITranslators } from '../../interfaces/node-api.interface';
 import { DOCUMENT } from '@angular/common';
 
@@ -23,9 +23,7 @@ export class AboutComponent implements OnInit {
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   showNavigateToSponsor = false;
 
-  ogSponsors$: Observable<any>;
-  whaleSponsors$: Observable<any>;
-  chadSponsors$: Observable<any>;
+  profiles$: Observable<any>;
   translators$: Observable<ITranslators>;
   allContributors$: Observable<any>;
 
@@ -45,9 +43,12 @@ export class AboutComponent implements OnInit {
     this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.websocketService.want(['blocks']);
 
-    this.ogSponsors$ = this.apiService.getOgSponsors$();
-    this.whaleSponsors$ = this.apiService.getWhaleSponsors$();
-    this.chadSponsors$ = this.apiService.getChadSponsors$();
+    this.profiles$ = this.apiService.getAboutPageProfiles$().pipe(
+      tap(() => {
+        this.goToAnchor()
+      }),
+      share(),
+    )
 
     this.translators$ = this.apiService.getTranslators$()
       .pipe(

@@ -88,16 +88,8 @@ export class ApiService {
     return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
   }
 
-  getWhaleSponsors$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/sponsors/whale');
-  }
-
-  getChadSponsors$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/sponsors/chad');
-  }
-
-  getOgSponsors$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/sponsors/og');
+  getAboutPageProfiles$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/about-page');
   }
 
   getTranslators$(): Observable<ITranslators> {
