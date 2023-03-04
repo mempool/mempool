@@ -3,10 +3,12 @@ import logger from '../logger';
 import config from '../config';
 import PoolsRepository from '../repositories/PoolsRepository';
 import { PoolTag } from '../mempool.interfaces';
+import diskCache from './disk-cache';
 
 class PoolsParser {
   miningPools: any[] = [];
   unknownPool: any = {
+    'id': 0,
     'name': 'Unknown',
     'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
     'regexes': '[]',
@@ -26,6 +28,7 @@ class PoolsParser {
   public setMiningPools(pools): void {
     for (const pool of pools) {
       pool.regexes = pool.tags;
+      pool.slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
       delete(pool.tags);
     }
     this.miningPools = pools;
@@ -36,6 +39,10 @@ class PoolsParser {
    * @param pools 
    */
   public async migratePoolsJson(): Promise<void> {
+    // We also need to wipe the backend cache to make sure we don't serve blocks with
+    // the wrong mining pool (usually happen with unknown blocks)
+    diskCache.wipeCache();
+
     await this.$insertUnknownPool();
 
     for (const pool of this.miningPools) {

@@ -110,6 +110,7 @@ class Server {
 
     this.setUpWebsocketHandling();
 
+    await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
       diskCache.loadMempoolCache();
@@ -168,7 +169,6 @@ class Server {
           logger.debug(msg);
         }
       }
-      await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
@@ -176,7 +176,14 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e: any) {
-      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      let loggerMsg = `Exception in runMainUpdateLoop(). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
+      if (e?.stack) {
+        loggerMsg += ` Stack trace: ${e.stack}`;
+      }
+      // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
+      // From the second Exception, `logger.warn` the Exception and increase the retry delay
+      // Maximum retry delay is 60 seconds
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
@@ -196,8 +203,8 @@ class Server {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
-      await forensicsService.$startService();
       await lightningStatsUpdater.$startService();
+      await forensicsService.$startService();
     } catch(e) {
       logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);

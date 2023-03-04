@@ -1,6 +1,6 @@
-import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
+import { emitMempoolInfo, dropWebSocket } from '../../support/websocket';
 
-const baseModule = Cypress.env("BASE_MODULE");
+const baseModule = Cypress.env('BASE_MODULE');
 
 
 //Credit: https://github.com/bahmutov/cypress-examples/blob/6cedb17f83a3bb03ded13cf1d6a3f0656ca2cdf5/docs/recipes/overlapping-elements.md
@@ -339,14 +339,14 @@ describe('Mainnet', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
 
-      cy.changeNetwork("testnet");
-      cy.changeNetwork("signet");
-      cy.changeNetwork("mainnet");
+      cy.changeNetwork('testnet');
+      cy.changeNetwork('signet');
+      cy.changeNetwork('mainnet');
     });
 
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
-      cy.visit("/");
+      cy.visit('/');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
