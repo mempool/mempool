@@ -3,7 +3,6 @@ import blocks from './api/blocks';
 import mempool from './api/mempool';
 import mining from './api/mining/mining';
 import logger from './logger';
-import HashratesRepository from './repositories/HashratesRepository';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
@@ -131,7 +130,6 @@ class Indexer {
 
       this.runSingleTask('blocksPrices');
       await mining.$indexDifficultyAdjustments();
-      await this.$resetHashratesIndexingState(); // TODO - Remove this as it's not efficient
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
@@ -149,16 +147,6 @@ class Indexer {
     const runEvery = 1000 * 3600; // 1 hour
     logger.debug(`Indexing completed. Next run planned at ${new Date(new Date().getTime() + runEvery).toUTCString()}`);
     setTimeout(() => this.reindex(), runEvery);
-  }
-
-  async $resetHashratesIndexingState(): Promise<void> {
-    try {
-      await HashratesRepository.$setLatestRun('last_hashrates_indexing', 0);
-      await HashratesRepository.$setLatestRun('last_weekly_hashrates_indexing', 0);
-    } catch (e) {
-      logger.err(`Cannot reset hashrate indexing timestamps. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
   }
 }
 
