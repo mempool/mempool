@@ -637,7 +637,7 @@ class DatabaseMigration {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
     }
 
-    if (version < 55) {
+    if (version < 58) {
       queries.push(`DELETE FROM state WHERE name = 'last_hashrates_indexing'`);
       queries.push(`DELETE FROM state WHERE name = 'last_weekly_hashrates_indexing'`);
     }
