@@ -160,7 +160,7 @@ npm install -g ts-node nodemon
 Then, run the watcher:
 
 ```
-nodemon src/index.ts --ignore cache/ --ignore pools.json
+nodemon src/index.ts --ignore cache/
 ```
 
 `nodemon` should be in npm's global binary folder. If needed, you can determine where that is with `npm -g bin`.
@@ -218,6 +218,16 @@ Generate block at regular interval (every 10 seconds in this example):
    ```
    watch -n 10 "./src/bitcoin-cli -regtest -rpcport=8332 generatetoaddress 1 $address"
    ```
+
+### Mining pools update
+
+By default, mining pools will be not automatically updated regularly (`config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` is set to `false`). 
+
+To manually update your mining pools, you can use the `--update-pools` command line flag when you run the nodejs backend. For example `npm run start --update-pools`. This will trigger the mining pools update and automatically re-index appropriate blocks.
+
+You can enabled the automatic mining pools update by settings `config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING` to `true` in your `mempool-config.json`.
+
+When a `coinbase tag` or `coinbase address` change is detected, all blocks tagged to the `unknown` mining pools (starting from height 130635) will be deleted from the `blocks` table. Additionaly, all blocks which were tagged to the pool which has been updated will also be deleted from the `blocks` table. Of course, those blocks will be automatically reindexed.
 
 ### Re-index tables
 

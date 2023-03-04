@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { INodesRanking, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
-import { isMobile } from '../../../shared/common.utils';
+import { StateService } from '../../../services/state.service';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../../lightning-api.service';
 
@@ -17,13 +17,17 @@ export class TopNodesPerChannels implements OnInit {
   
   topNodesPerChannels$: Observable<ITopNodesPerChannels[]>;
   skeletonRows: number[] = [];
+  currency$: Observable<string>;
 
   constructor(
     private apiService: LightningApiService,
+    private stateService: StateService,
   ) {}
 
   ngOnInit(): void {
-    for (let i = 1; i <= (this.widget ? (isMobile() ? 8 : 7) : 100); ++i) {
+    this.currency$ = this.stateService.fiatCurrency$;
+    
+    for (let i = 1; i <= (this.widget ? 6 : 100); ++i) {
       this.skeletonRows.push(i);
     }
 
@@ -44,7 +48,15 @@ export class TopNodesPerChannels implements OnInit {
     } else {
       this.topNodesPerChannels$ = this.nodes$.pipe(
         map((ranking) => {
-          return ranking.topByChannels.slice(0, isMobile() ? 8 : 7);
+          for (const i in ranking.topByChannels) {
+            ranking.topByChannels[i].geolocation = <GeolocationData>{
+              country: ranking.topByChannels[i].country?.en,
+              city: ranking.topByChannels[i].city?.en,
+              subdivision: ranking.topByChannels[i].subdivision?.en,
+              iso: ranking.topByChannels[i].iso_code,
+            };
+          }
+          return ranking.topByChannels.slice(0, 6);
         })
       );
     }

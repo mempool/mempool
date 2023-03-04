@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 
 @Component({
@@ -18,6 +18,9 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   ltrTransitionEnabled = false;
+  connectionStateSubscription: Subscription;
+  loadingTip: boolean = true;
+  connected: boolean = true;
 
   constructor(
     public stateService: StateService,
@@ -28,10 +31,17 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
     });
+    this.connectionStateSubscription = this.stateService.connectionState$.subscribe(state => {
+      this.connected = (state === 2);
+    })
+    firstValueFrom(this.stateService.chainTip$).then(tip => {
+      this.loadingTip = false;
+    });
   }
 
   ngOnDestroy() {
     this.timeLtrSubscription.unsubscribe();
+    this.connectionStateSubscription.unsubscribe();
   }
 
   trackByPageFn(index: number, item: { index: number }) {

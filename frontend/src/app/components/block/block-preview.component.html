@@ -8,7 +8,7 @@
         <div class="block-titles">
           <h1 class="title">
             <ng-template [ngIf]="blockHeight === 0"><ng-container i18n="@@2303359202781425764">Genesis</ng-container></ng-template>
-            <ng-template [ngIf]="blockHeight" i18n="shared.block-title">{{ blockHeight }}</ng-template>
+            <ng-template [ngIf]="blockHeight">{{ blockHeight }}</ng-template>
           </h1>
           <div class="blockhash" *ngIf="blockHash">
             <h2 class="truncate right">{{ blockHash.slice(0,32) }}</h2>

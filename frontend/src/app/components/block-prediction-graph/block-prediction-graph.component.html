@@ -10,7 +10,7 @@
     </div>  
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
-      <div class="btn-group btn-group-toggle" name="radioBasic">
+      <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
         <label class="btn btn-primary btn-sm" *ngIf="stats.blockCount >= 144" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
           <input type="radio" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/block-prediction' | relativeUrl]" formControlName="dateSpan"> 24h
         </label>

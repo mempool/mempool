@@ -88,5 +88,7 @@ module.exports = {
   verifyTxOutProof: 'verifytxoutproof', // bitcoind v0.11.0+
   walletLock: 'walletlock',
   walletPassphrase: 'walletpassphrase',
-  walletPassphraseChange: 'walletpassphrasechange'
-}
+  walletPassphraseChange: 'walletpassphrasechange',
+  getTxoutSetinfo: 'gettxoutsetinfo',
+  getIndexInfo: 'getindexinfo',
+};
