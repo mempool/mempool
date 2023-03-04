@@ -78,21 +78,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       map(([mempoolInfo, vbytesPerSecond]) => {
         const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
-        let progressColor = '#7CB342';
+        let progressColor = 'bg-success';
         if (vbytesPerSecond > 1667) {
-          progressColor = '#FDD835';
-        }
-        if (vbytesPerSecond > 2000) {
-          progressColor = '#FFB300';
-        }
-        if (vbytesPerSecond > 2500) {
-          progressColor = '#FB8C00';
+          progressColor = 'bg-warning';
         }
         if (vbytesPerSecond > 3000) {
-          progressColor = '#F4511E';
-        }
-        if (vbytesPerSecond > 3500) {
-          progressColor = '#D81B60';
+          progressColor = 'bg-danger';
         }
 
         const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
