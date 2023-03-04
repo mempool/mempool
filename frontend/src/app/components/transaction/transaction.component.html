@@ -97,7 +97,7 @@
                     </tr>
                   </ng-template>
                 </ng-template>
-                <tr *ngIf="!replaced">
+                <tr *ngIf="!replaced && !isCached">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
                     <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
