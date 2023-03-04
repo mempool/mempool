@@ -28,7 +28,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       size: block.size,
       weight: block.weight,
       previousblockhash: block.previousblockhash,
-      medianTime: block.mediantime,
+      mediantime: block.mediantime,
     };
   }
 

@@ -27,6 +27,7 @@ export class StartComponent implements OnInit, OnDestroy {
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
 
   isMobile: boolean = false;
+  isiOS: boolean = false;
   blockWidth = 155;
   dynamicBlocksAmount: number = 8;
   blockCount: number = 0;
@@ -40,7 +41,9 @@ export class StartComponent implements OnInit, OnDestroy {
 
   constructor(
     private stateService: StateService,
-  ) { }
+  ) {
+    this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
+  }
 
   ngOnInit() {
     this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
@@ -135,8 +138,20 @@ export class StartComponent implements OnInit, OnDestroy {
     this.mouseDragStartX = event.clientX;
     this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
   }
+  onPointerDown(event: PointerEvent) {
+    if (this.isiOS) {
+      event.preventDefault();
+      this.onMouseDown(event);
+    }
+  }
   onDragStart(event: MouseEvent) { // Ignore Firefox annoying default drag behavior
     event.preventDefault();
+  }
+  onTouchMove(event: TouchEvent) {
+    // disable native scrolling on iOS
+    if (this.isiOS) {
+      event.preventDefault();
+    }
   }
 
   // We're catching the whole page event here because we still want to scroll blocks
@@ -154,6 +169,20 @@ export class StartComponent implements OnInit, OnDestroy {
     this.mouseDragStartX = null;
     this.stateService.setBlockScrollingInProgress(false);
   }
+  @HostListener('document:pointermove', ['$event'])
+  onPointerMove(event: PointerEvent): void {
+    if (this.isiOS) {
+      this.onMouseMove(event);
+    }
+  }
+  @HostListener('document:pointerup', [])
+  @HostListener('document:pointercancel', [])
+  onPointerUp() {
+    if (this.isiOS) {
+      this.onMouseUp();
+    }
+  }
+
 
   onScroll(e) {
     const middlePage = this.pageIndex === 0 ? this.pages[0] : this.pages[1];

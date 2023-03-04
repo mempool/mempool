@@ -161,28 +161,7 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Reachable on Clearnet Only`,
-        showSymbol: false,
-        symbol: 'none',
-        data: data.clearnet_nodes,
-        type: 'line',
-        lineStyle: {
-          width: 2,
-        },
-        areaStyle: {
-          opacity: 0.5,
-        },
-        stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
-          { offset: 0, color: '#FFB300' },
-          { offset: 1, color: '#FFB300AA' },
-        ]),
-        smooth: false,
-      },
-      {
-        zlevel: 1,
-        yAxisIndex: 0,
-        name: $localize`Reachable on Clearnet and Darknet`,
+        name: $localize`Clearnet and Darknet`,
         showSymbol: false,
         symbol: 'none',
         data: data.clearnet_tor_nodes,
@@ -203,7 +182,28 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Reachable on Darknet Only`,
+        name: $localize`Clearnet (IPv4, IPv6)`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.clearnet_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#FFB300' },
+          { offset: 1, color: '#FFB300AA' },
+        ]),
+        smooth: false,
+      },
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Darknet Only (Tor, I2P, cjdns)`,
         showSymbol: false,
         symbol: 'none',
         data: data.tor_nodes,
@@ -284,7 +284,7 @@ export class NodesNetworksChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: $localize`Reachable on Darknet Only`,
+            name: $localize`Darknet Only (Tor, I2P, cjdns)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -292,7 +292,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Reachable on Clearnet and Darknet`,
+            name: $localize`Clearnet (IPv4, IPv6)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -300,7 +300,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Reachable on Clearnet Only`,
+            name: $localize`Clearnet and Darknet`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -317,9 +317,9 @@ export class NodesNetworksChartComponent implements OnInit {
           },
         ],
         selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
-          '$localize`Reachable on Darknet Only`': true,
-          '$localize`Reachable on Clearnet Only`': true,
-          '$localize`Reachable on Clearnet and Darknet`': true,
+          '$localize`Darknet Only (Tor, I2P, cjdns)`': true,
+          '$localize`Clearnet (IPv4, IPv6)`': true,
+          '$localize`Clearnet and Darknet`': true,
           '$localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`': true,
         }
       },
