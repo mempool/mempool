@@ -38,6 +38,9 @@ export class StartComponent implements OnInit, OnDestroy {
   pageIndex: number = 0;
   pages: any[] = [];
   pendingMark: number | void = null;
+  lastUpdate: number = 0;
+  lastMouseX: number;
+  velocity: number = 0;
 
   constructor(
     private stateService: StateService,
@@ -136,6 +139,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   onMouseDown(event: MouseEvent) {
     this.mouseDragStartX = event.clientX;
+    this.resetMomentum(event.clientX);
     this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
   }
   onPointerDown(event: PointerEvent) {
@@ -159,6 +163,7 @@ export class StartComponent implements OnInit, OnDestroy {
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
     if (this.mouseDragStartX != null) {
+      this.updateVelocity(event.clientX);
       this.stateService.setBlockScrollingInProgress(true);
       this.blockchainContainer.nativeElement.scrollLeft =
         this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX;
@@ -167,7 +172,7 @@ export class StartComponent implements OnInit, OnDestroy {
   @HostListener('document:mouseup', [])
   onMouseUp() {
     this.mouseDragStartX = null;
-    this.stateService.setBlockScrollingInProgress(false);
+    this.animateMomentum();
   }
   @HostListener('document:pointermove', ['$event'])
   onPointerMove(event: PointerEvent): void {
@@ -183,6 +188,43 @@ export class StartComponent implements OnInit, OnDestroy {
     }
   }
 
+  resetMomentum(x: number) {
+    this.lastUpdate = performance.now();
+    this.lastMouseX = x;
+    this.velocity = 0;
+  }
+
+  updateVelocity(x: number) {
+    const now = performance.now();
+    const dt = now - this.lastUpdate;
+    this.lastUpdate = now;
+    const velocity = (x - this.lastMouseX) / dt;
+    this.velocity = (0.8 * this.velocity) + (0.2 * velocity);
+    this.lastMouseX = x;
+  }
+
+  animateMomentum() {
+    this.lastUpdate = performance.now();
+    requestAnimationFrame(() => {
+      const now = performance.now();
+      const dt = now - this.lastUpdate;
+      this.lastUpdate = now;
+      if (Math.abs(this.velocity) < 0.005) {
+        this.stateService.setBlockScrollingInProgress(false);
+      } else {
+        const deceleration = Math.max(0.0025, 0.001 * this.velocity * this.velocity) * (this.velocity > 0 ? -1 : 1);
+        const displacement = (this.velocity * dt) - (0.5 * (deceleration * dt * dt));
+        const dv = (deceleration * dt);
+        if ((this.velocity < 0 && dv + this.velocity > 0) || (this.velocity > 0 && dv + this.velocity < 0)) {
+          this.velocity = 0;
+        } else {
+          this.velocity += dv;
+        }
+        this.blockchainContainer.nativeElement.scrollLeft -= displacement;
+        this.animateMomentum();
+      }
+    });
+  }
 
   onScroll(e) {
     const middlePage = this.pageIndex === 0 ? this.pages[0] : this.pages[1];
