@@ -170,7 +170,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
 
-        if (!this.tx.status.confirmed) {
+        if (!this.tx?.status?.confirmed) {
           this.stateService.markBlock$.next({
             txFeePerVSize: this.tx.effectiveFeePerVsize,
           });
@@ -218,16 +218,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.error = undefined;
         this.waitingForTransaction = false;
         this.graphExpanded = false;
+        this.transactionTime = 0;
         this.setupGraph();
 
-        if (!this.tx?.status?.confirmed) {
-          this.fetchRbfHistory$.next(this.tx.txid);
-          this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
-            if (this.tx) {
-              this.rbfInfo = rbfInfo;
-            }
-          });
-        }
+        this.fetchRbfHistory$.next(this.tx.txid);
+        this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
+          if (this.tx) {
+            this.rbfInfo = rbfInfo;
+          }
+        });
       }
     });
 
@@ -268,7 +267,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             of(true),
             this.stateService.connectionState$.pipe(
               filter(
-                (state) => state === 2 && this.tx && !this.tx.status.confirmed
+                (state) => state === 2 && this.tx && !this.tx.status?.confirmed
               )
             )
           );
@@ -305,6 +304,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       )
       .subscribe((tx: Transaction) => {
           if (!tx) {
+            this.fetchCachedTx$.next(this.txId);
             return;
           }
 
@@ -323,13 +323,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.graphExpanded = false;
           this.setupGraph();
 
-          if (!tx.status.confirmed && tx.firstSeen) {
-            this.transactionTime = tx.firstSeen;
+          if (!tx.status?.confirmed) {
+            if (tx.firstSeen) {
+              this.transactionTime = tx.firstSeen;
+            } else {
+              this.transactionTime = 0;
+            }
           } else {
             this.getTransactionTime();
           }
 
-          if (this.tx.status.confirmed) {
+          if (this.tx?.status?.confirmed) {
             this.stateService.markBlock$.next({
               blockHeight: tx.status.block_height,
             });
@@ -346,10 +350,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
-            this.fetchRbfHistory$.next(this.tx.txid);
           }
+          this.fetchRbfHistory$.next(this.tx.txid);
 
-          this.priceService.getBlockPrice$(tx.status.block_time, true).pipe(
+          this.priceService.getBlockPrice$(tx.status?.block_time, true).pipe(
             tap((price) => {
               this.blockConversion = price;
             })
@@ -383,10 +387,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.error = new Error();
         this.waitingForTransaction = false;
       }
-      this.rbfTransaction = rbfTransaction;
-      this.replaced = true;
-      if (rbfTransaction && !this.tx) {
-        this.fetchCachedTx$.next(this.txId);
+      if (!this.tx?.status?.confirmed) {
+        this.rbfTransaction = rbfTransaction;
+        this.replaced = true;
+        if (rbfTransaction && !this.tx) {
+          this.fetchCachedTx$.next(this.txId);
+        }
       }
     });
 

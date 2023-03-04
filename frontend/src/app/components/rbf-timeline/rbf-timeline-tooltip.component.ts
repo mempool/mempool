@@ -10,7 +10,7 @@ export class RbfTimelineTooltipComponent implements OnChanges {
   @Input() rbfInfo: RbfInfo | void;
   @Input() cursorPosition: { x: number, y: number };
 
-  tooltipPosition = { x: 0, y: 0 };
+  tooltipPosition = null;
 
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
 

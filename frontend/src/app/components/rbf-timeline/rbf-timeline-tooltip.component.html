@@ -1,6 +1,6 @@
 <div
   #tooltip
-  *ngIf="rbfInfo"
+  *ngIf="rbfInfo && tooltipPosition !== null"
   class="rbf-tooltip"
   [style.left]="tooltipPosition.x + 'px'"
   [style.top]="tooltipPosition.y + 'px'"

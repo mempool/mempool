@@ -438,7 +438,6 @@ class WebsocketHandler {
         }
       }
 
-      console.log(client['track-rbf']);
       if (client['track-rbf'] === 'all' && rbfReplacements) {
         response['rbfLatest'] = rbfReplacements;
       } else if (client['track-rbf'] === 'fullRbf' && fullRbfReplacements) {
