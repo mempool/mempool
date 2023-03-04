@@ -21,6 +21,7 @@ export const formatterXAxis = (
       return date.toLocaleTimeString(locale, { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
     case '2y':
     case '3y':
+    case '4y':
     case 'all':
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
   }
@@ -45,6 +46,7 @@ export const formatterXAxisLabel = (
     case '1y':
     case '2y':
     case '3y':
+    case '4y':
       return null;
   }
 };
@@ -71,6 +73,7 @@ export const formatterXAxisTimeCategory = (
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
     case '2y':
     case '3y':
+    case '4y':
     case 'all':
       return date.toLocaleDateString(locale, { year: 'numeric', month: 'long' });
   }

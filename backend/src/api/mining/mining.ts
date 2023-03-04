@@ -568,6 +568,7 @@ class Mining {
 
   private getTimeRange(interval: string | null, scale = 1): number {
     switch (interval) {
+      case '4y': return 43200 * scale; // 12h
       case '3y': return 43200 * scale; // 12h
       case '2y': return 28800 * scale; // 8h
       case '1y': return 28800 * scale; // 8h
