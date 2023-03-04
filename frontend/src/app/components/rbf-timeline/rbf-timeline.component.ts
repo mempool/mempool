@@ -23,7 +23,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   rows: TimelineCell[][] = [];
 
   hoverInfo: RbfInfo | void = null;
-  tooltipPosition = { x: 0, y: 0 };
+  tooltipPosition = null;
 
   dir: 'rtl' | 'ltr' = 'ltr';
 
