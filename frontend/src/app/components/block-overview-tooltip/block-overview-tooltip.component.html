@@ -16,11 +16,11 @@
       </tr>
       <tr>
         <td class="td-width" i18n="dashboard.latest-transactions.amount">Amount</td>
-        <td><app-amount [satoshis]="value"></app-amount></td>
+        <td><app-amount [blockConversion]="blockConversion" [satoshis]="value" [noFiat]="true"></app-amount></td>
       </tr>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> &nbsp; <span class="fiat"><app-fiat [value]="fee"></app-fiat></span></td>
+        <td>{{ fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> &nbsp; <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="fee"></app-fiat></span></td>
       </tr>
       <tr>
         <td class="td-width" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>

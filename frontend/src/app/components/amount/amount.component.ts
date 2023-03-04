@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { Observable, Subscription } from 'rxjs';
+import { Price } from '../../services/price.service';
 
 @Component({
   selector: 'app-amount',
@@ -21,6 +22,7 @@ export class AmountComponent implements OnInit, OnDestroy {
   @Input() digitsInfo = '1.8-8';
   @Input() noFiat = false;
   @Input() addPlus = false;
+  @Input() blockConversion: Price;
 
   constructor(
     private stateService: StateService,

@@ -108,6 +108,7 @@
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
             [flip]="false"
+            [blockConversion]="blockConversion"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
@@ -124,7 +125,13 @@
       </tr>
       <tr *ngIf="block?.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
-        <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
+        <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          <span class="fiat">
+            <app-fiat [blockConversion]="blockConversion" [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2"
+              i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes"
+              placement="bottom"></app-fiat>
+          </span>
+        </td>
       </tr>
       <ng-template [ngIf]="fees !== undefined" [ngIfElse]="loadingFees">
         <tr>
@@ -132,13 +139,13 @@
           <td *ngIf="network !== 'liquid' && network !== 'liquidtestnet'; else liquidTotalFees">
             <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             <span class="fiat">
-              <app-fiat [value]="block.extras.totalFees" digitsInfo="1.0-0"></app-fiat>
+              <app-fiat [blockConversion]="blockConversion" [value]="block.extras.totalFees" digitsInfo="1.0-0"></app-fiat>
             </span>
           </td>
           <ng-template #liquidTotalFees>
             <td>
               <app-amount [satoshis]="fees * 100000000" digitsInfo="1.2-2" [noFiat]="true"></app-amount>&nbsp; <app-fiat
-                [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>
+              [blockConversion]="blockConversion" [value]="fees * 100000000" digitsInfo="1.2-2"></app-fiat>
             </td>
           </ng-template>
         </tr>
@@ -147,7 +154,7 @@
           <td>
             <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             <span class="fiat">
-              <app-fiat [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>
+              <app-fiat [blockConversion]="blockConversion" [value]="(blockSubsidy + fees) * 100000000" digitsInfo="1.0-0"></app-fiat>
             </span>
           </td>
         </tr>

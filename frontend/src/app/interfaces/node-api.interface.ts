@@ -73,6 +73,7 @@ export interface SinglePoolStats {
   emptyBlockRatio: string;
   logo: string;
   slug: string;
+  avgMatchRate: number;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -113,7 +114,6 @@ export interface BlockExtension {
   medianFee?: number;
   feeRange?: number[];
   reward?: number;
-  coinbaseTx?: Transaction;
   coinbaseRaw?: string;
   matchRate?: number;
   pool?: {

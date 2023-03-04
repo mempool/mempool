@@ -6,9 +6,10 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap } from 'rxjs/operators';
+import { filter, map, tap, switchMap, shareReplay } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
+import { PriceService } from '../../services/price.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -50,6 +51,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private apiService: ApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
+    private priceService: PriceService,
   ) { }
 
   ngOnInit(): void {
@@ -147,6 +149,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
           tx['addressValue'] = addressIn - addressOut;
         }
+
+        this.priceService.getBlockPrice$(tx.status.block_time).pipe(
+          tap((price) => tx['price'] = price)
+        ).subscribe();
       });
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
       if (txIds.length) {
