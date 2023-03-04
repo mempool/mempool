@@ -196,11 +196,13 @@ export class StartComponent implements OnInit, OnDestroy {
 
   updateVelocity(x: number) {
     const now = performance.now();
-    const dt = now - this.lastUpdate;
-    this.lastUpdate = now;
-    const velocity = (x - this.lastMouseX) / dt;
-    this.velocity = (0.8 * this.velocity) + (0.2 * velocity);
-    this.lastMouseX = x;
+    let dt = now - this.lastUpdate;
+    if (dt > 0) {
+      this.lastUpdate = now;
+      const velocity = (x - this.lastMouseX) / dt;
+      this.velocity = (0.8 * this.velocity) + (0.2 * velocity);
+      this.lastMouseX = x;
+    }
   }
 
   animateMomentum() {
