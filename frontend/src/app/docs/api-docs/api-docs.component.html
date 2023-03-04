@@ -266,8 +266,9 @@
   We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, RoninDojo, and Start9's Embassy.
 </ng-template>
 
-<ng-template type="host-my-own-instance-linux-server">
-  You can manually install Mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We only provide support for manual deployments to <a [routerLink]="['/enterprise']">enterprise sponsors</a>.
+<ng-template type="host-my-own-instance-server">
+  <p>You can manually install Mempool on your own server, but this requires advanced sysadmin skills since you will be manually configuring everything. You could also use our <a href="https://github.com/mempool/mempool/tree/master/docker" target="_blank">Docker images</a>.</p><p>In any case, we only provide support for manual deployments to <a [routerLink]="['/enterprise']">enterprise sponsors</a>.</p>
+  <p>For casual users, we strongly suggest installing Mempool using one of the <a href="https://github.com/mempool/mempool#one-click-installation" target="_blank">1-click install methods</a>.</p>
 </ng-template>
 
 <ng-template type="install-mempool-with-docker">
