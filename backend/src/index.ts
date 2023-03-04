@@ -87,9 +87,6 @@ class Server {
           await databaseMigration.$blocksReindexingTruncate();
         }
         await databaseMigration.$initializeOrMigrateDatabase();
-        if (Common.indexingEnabled()) {
-          await indexer.$resetHashratesIndexingState();
-        }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
