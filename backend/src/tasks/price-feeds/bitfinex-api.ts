@@ -8,9 +8,6 @@ class BitfinexApi implements PriceFeed {
   public url: string = 'https://api.bitfinex.com/v1/pubticker/BTC';
   public urlHist: string = 'https://api-pub.bitfinex.com/v2/candles/trade:{GRANULARITY}:tBTC{CURRENCY}/hist';
 
-  constructor() {
-  }
-
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
     if (response && response['last_price']) {
