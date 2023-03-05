@@ -1,5 +1,5 @@
 import config from '../config';
-import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
 import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo } from '../mempool.interfaces';
@@ -484,7 +484,7 @@ class Blocks {
             loadingIndicators.setProgress('block-indexing', progress, false);
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
-          const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
+          const block: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(blockHash);
           const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
 
@@ -532,13 +532,13 @@ class Blocks {
       if (blockchainInfo.blocks === blockchainInfo.headers) {
         const heightDiff = blockHeightTip % 2016;
         const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
-        const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
+        const block: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(blockHash);
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentDifficulty = block.difficulty;
 
         if (blockHeightTip >= 2016) {
           const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
-          const previousPeriodBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(previousPeriodBlockHash);
+          const previousPeriodBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(previousPeriodBlockHash);
           this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
           logger.debug(`Initial difficulty adjustment data set.`);
         }
@@ -662,7 +662,7 @@ class Blocks {
     }
 
     const blockHash = await bitcoinApi.$getBlockHash(height);
-    const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
+    const block: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(blockHash);
     const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
@@ -685,11 +685,11 @@ class Blocks {
 
     // Not Bitcoin network, return the block as it from the bitcoin backend
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return await bitcoinApi.$getBlock(hash);
+      return await bitcoinCoreApi.$getBlock(hash);
     }
 
     // Bitcoin network, add our custom data on top
-    const block: IEsploraApi.Block = await bitcoinApi.$getBlock(hash);
+    const block: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(hash);
     return await this.$indexBlock(block.height);
   }
 

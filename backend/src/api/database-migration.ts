@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 57;
+  private static currentVersion = 58;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -505,6 +505,11 @@ class DatabaseMigration {
       await this.$executeQuery(`ALTER TABLE nodes MODIFY updated_at datetime NULL`);
       await this.updateToSchemaVersion(57);
     }
+
+    if (databaseSchemaVersion < 58) {
+      // We only run some migration queries for this version
+      await this.updateToSchemaVersion(58);
+    }
   }
 
   /**
@@ -630,6 +635,11 @@ class DatabaseMigration {
 
     if (version < 9 && isBitcoin === true) {
       queries.push(`INSERT INTO state(name, number, string) VALUES ('last_weekly_hashrates_indexing', 0, NULL)`);
+    }
+
+    if (version < 58) {
+      queries.push(`DELETE FROM state WHERE name = 'last_hashrates_indexing'`);
+      queries.push(`DELETE FROM state WHERE name = 'last_weekly_hashrates_indexing'`);
     }
 
     return queries;
@@ -1023,6 +1033,7 @@ class DatabaseMigration {
 
     await this.$executeQuery(`TRUNCATE blocks`);
     await this.$executeQuery(`TRUNCATE hashrates`);
+    await this.$executeQuery(`TRUNCATE difficulty_adjustments`);
     await this.$executeQuery('DELETE FROM `pools`');
     await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
     await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);

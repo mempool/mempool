@@ -97,14 +97,14 @@ class MempoolBlocks {
         blockSize += tx.size;
         transactions.push(tx);
       } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, mempoolBlocks.length));
         blockWeight = tx.weight;
         blockSize = tx.size;
         transactions = [tx];
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, mempoolBlocks.length));
     }
 
     return mempoolBlocks;
@@ -281,7 +281,7 @@ class MempoolBlocks {
     const mempoolBlocks = blocks.map((transactions, blockIndex) => {
       return this.dataToMempoolBlocks(transactions.map(tx => {
         return mempool[tx.txid] || null;
-      }).filter(tx => !!tx), undefined, undefined, blockIndex);
+      }).filter(tx => !!tx), blockIndex);
     });
 
     if (saveResults) {
@@ -293,18 +293,17 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactions: TransactionExtended[],
-    blockSize: number | undefined, blockWeight: number | undefined, blocksIndex: number): MempoolBlockWithTransactions {
-    let totalSize = blockSize || 0;
-    let totalWeight = blockWeight || 0;
-    if (blockSize === undefined && blockWeight === undefined) {
-      totalSize = 0;
-      totalWeight = 0;
-      transactions.forEach(tx => {
-        totalSize += tx.size;
-        totalWeight += tx.weight;
-      });
-    }
+  private dataToMempoolBlocks(transactions: TransactionExtended[], blocksIndex: number): MempoolBlockWithTransactions {
+    let totalSize = 0;
+    let totalWeight = 0;
+    const fitTransactions: TransactionExtended[] = [];
+    transactions.forEach(tx => {
+      totalSize += tx.size;
+      totalWeight += tx.weight;
+      if ((totalWeight + tx.weight) <= config.MEMPOOL.BLOCK_WEIGHT_UNITS * 1.2) {
+        fitTransactions.push(tx);
+      }
+    });
     let rangeLength = 4;
     if (blocksIndex === 0) {
       rangeLength = 8;
@@ -322,7 +321,7 @@ class MempoolBlocks {
       medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
       feeRange: Common.getFeesInRange(transactions, rangeLength),
       transactionIds: transactions.map((tx) => tx.txid),
-      transactions: transactions.map((tx) => Common.stripTransaction(tx)),
+      transactions: fitTransactions.map((tx) => Common.stripTransaction(tx)),
     };
   }
 }
