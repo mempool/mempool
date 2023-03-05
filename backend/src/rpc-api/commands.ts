@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   addMultiSigAddress: 'addmultisigaddress',
   addNode: 'addnode', // bitcoind v0.8.0+
   backupWallet: 'backupwallet',

@@ -26,4 +26,7 @@ export interface BitcoinRpcCredentials {
   pass: string;
   timeout: number;
   cookie?: string;
+  ssl: boolean;
+  sslStrict: boolean;
+  sslCa?: string | Buffer | (string | Buffer)[];
 }

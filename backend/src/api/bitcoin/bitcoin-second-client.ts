@@ -1,5 +1,5 @@
 import config from '../../config';
-const bitcoin = require('../../rpc-api/index');
+import Client from '../../rpc-api/index';
 import { BitcoinRpcCredentials } from './bitcoin-api-abstract-factory';
 
 import { defaultCookiePath } from './bitcoin-client';
@@ -11,6 +11,8 @@ const nodeRpcCredentials: BitcoinRpcCredentials = {
   pass: config.SECOND_CORE_RPC.PASSWORD,
   timeout: 60000,
   cookie: config.SECOND_CORE_RPC.COOKIE ? config.SECOND_CORE_RPC.COOKIE_PATH || defaultCookiePath : undefined,
+  ssl: false,
+  sslStrict: false,
 };
 
-export default new bitcoin.Client(nodeRpcCredentials);
+export default new Client(nodeRpcCredentials);
