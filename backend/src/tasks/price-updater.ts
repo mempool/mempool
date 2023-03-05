@@ -2,8 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import config from '../config';
 import logger from '../logger';
-import { IConversionRates } from '../mempool.interfaces';
-import PricesRepository, { MAX_PRICES } from '../repositories/PricesRepository';
+import PricesRepository, { ApiPrice, MAX_PRICES } from '../repositories/PricesRepository';
 import BitfinexApi from './price-feeds/bitfinex-api';
 import BitflyerApi from './price-feeds/bitflyer-api';
 import CoinbaseApi from './price-feeds/coinbase-api';
@@ -21,18 +20,18 @@ export interface PriceFeed {
 }
 
 export interface PriceHistory {
-  [timestamp: number]: IConversionRates;
+  [timestamp: number]: ApiPrice;
 }
 
 class PriceUpdater {
   public historyInserted = false;
-  lastRun = 0;
-  lastHistoricalRun = 0;
-  running = false;
-  feeds: PriceFeed[] = [];
-  currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
-  latestPrices: IConversionRates;
-  private ratesChangedCallback: ((rates: IConversionRates) => void) | undefined;
+  private lastRun = 0;
+  private lastHistoricalRun = 0;
+  private running = false;
+  private feeds: PriceFeed[] = [];
+  private currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
+  private latestPrices: ApiPrice;
+  private ratesChangedCallback: ((rates: ApiPrice) => void) | undefined;
 
   constructor() {
     this.latestPrices = this.getEmptyPricesObj();
@@ -44,8 +43,13 @@ class PriceUpdater {
     this.feeds.push(new GeminiApi());
   }
 
-  public getEmptyPricesObj(): IConversionRates {
+  public getLatestPrices(): ApiPrice {
+    return this.latestPrices;
+  }
+
+  public getEmptyPricesObj(): ApiPrice {
     return {
+      time: 0,
       USD: -1,
       EUR: -1,
       GBP: -1,
@@ -56,7 +60,7 @@ class PriceUpdater {
     };
   }
 
-  public setRatesChangedCallback(fn: (rates: IConversionRates) => void) {
+  public setRatesChangedCallback(fn: (rates: ApiPrice) => void): void {
     this.ratesChangedCallback = fn;
   }
 
@@ -156,6 +160,10 @@ class PriceUpdater {
     }
 
     this.lastRun = new Date().getTime() / 1000;
+
+    if (this.latestPrices.USD === -1) {
+      this.latestPrices = await PricesRepository.$getLatestConversionRates();
+    }
   }
 
   /**
@@ -224,7 +232,7 @@ class PriceUpdater {
 
     // Group them by timestamp and currency, for example
     // grouped[123456789]['USD'] = [1, 2, 3, 4];
-    const grouped: any = {};
+    const grouped = {};
     for (const historicalEntry of historicalPrices) {
       for (const time in historicalEntry) {
         if (existingPriceTimes.includes(parseInt(time, 10))) {
@@ -249,7 +257,7 @@ class PriceUpdater {
     // Average prices and insert everything into the db
     let totalInserted = 0;
     for (const time in grouped) {
-      const prices: IConversionRates = this.getEmptyPricesObj();
+      const prices: ApiPrice = this.getEmptyPricesObj();
       for (const currency in grouped[time]) {
         if (grouped[time][currency].length === 0) {
           continue;

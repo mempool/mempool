@@ -1,8 +1,8 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
-  BlockExtended, TransactionExtended, WebsocketResponse, MempoolBlock, MempoolBlockDelta,
-  OptimizedStatistic, ILoadingIndicators, IConversionRates
+  BlockExtended, TransactionExtended, WebsocketResponse,
+  OptimizedStatistic, ILoadingIndicators
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -20,6 +20,7 @@ import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository
 import Audit from './audit';
 import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
+import { ApiPrice } from '../repositories/PricesRepository';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -193,7 +194,7 @@ class WebsocketHandler {
     });
   }
 
-  handleNewConversionRates(conversionRates: IConversionRates) {
+  handleNewConversionRates(conversionRates: ApiPrice) {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -214,7 +215,7 @@ class WebsocketHandler {
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
       'blocks': _blocks,
-      'conversions': priceUpdater.latestPrices,
+      'conversions': priceUpdater.getLatestPrices(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
       'transactions': memPool.getLatestTransactions(),
       'backendInfo': backendInfo.getBackendInfo(),
