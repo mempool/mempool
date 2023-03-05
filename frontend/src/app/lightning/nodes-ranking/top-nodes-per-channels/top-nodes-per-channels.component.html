@@ -11,7 +11,7 @@
         <th class="pool text-left" i18n="nodes.alias" [ngClass]="{'widget': widget}">Alias</th>
         <th class="liquidity text-right" i18n="node.channels">Channels</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell channels text-right" i18n="lightning.channels">Capacity</th>
-        <th *ngIf="!widget" class="d-none d-md-table-cell text-right" i18n="node.liquidity">{{ currency$ | async }}</th>
+        <th *ngIf="!widget" class="d-none d-md-table-cell text-right">{{ currency$ | async }}</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="transaction.first-seen|Transaction first seen">First seen</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="lightning.last_update">Last update</th>
         <th class="geolocation d-table-cell text-right" i18n="lightning.location">Location</th>
