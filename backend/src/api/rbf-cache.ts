@@ -1,5 +1,5 @@
-import { runInNewContext } from "vm";
 import { TransactionExtended, TransactionStripped } from "../mempool.interfaces";
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { Common } from "./common";
 
 interface RbfTransaction extends TransactionStripped {
@@ -217,6 +217,104 @@ class RbfCache {
         this.setTreeMined(subtree, txid);
       });
     }
+  }
+
+  public dump(): any {
+    const trees = Array.from(this.rbfTrees.values()).map((tree: RbfTree) => { return this.exportTree(tree); });
+
+    return {
+      txs: Array.from(this.txs.entries()),
+      trees,
+      expiring: Array.from(this.expiring.entries()),
+    };
+  }
+
+  public async load({ txs, trees, expiring }): Promise<void> {
+    txs.forEach(txEntry => {
+      this.txs.set(txEntry[0], txEntry[1]);
+    });
+    for (const deflatedTree of trees) {
+      await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
+    }
+    expiring.forEach(expiringEntry => {
+      this.expiring.set(expiringEntry[0], expiringEntry[1]);
+    });
+    this.cleanup();
+  }
+
+  exportTree(tree: RbfTree, deflated: any = null) {
+    if (!deflated) {
+      deflated = {
+        root: tree.tx.txid,
+      };
+    }
+    deflated[tree.tx.txid] = {
+      tx: tree.tx.txid,
+      txMined: tree.tx.mined,
+      time: tree.time,
+      interval: tree.interval,
+      mined: tree.mined,
+      fullRbf: tree.fullRbf,
+      replaces: tree.replaces.map(child => child.tx.txid),
+    };
+    tree.replaces.forEach(child => {
+      this.exportTree(child, deflated);
+    });
+    return deflated;
+  }
+
+  async importTree(root, txid, deflated, txs: Map<string, TransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+    const treeInfo = deflated[txid];
+    const replaces: RbfTree[] = [];
+
+    // check if any transactions in this tree have already been confirmed
+    mined = mined || treeInfo.mined;
+    if (!mined) {
+      try {
+        const apiTx = await bitcoinApi.$getRawTransaction(txid);
+        if (apiTx?.status?.confirmed) {
+          mined = true;
+          this.evict(txid);
+        }
+      } catch (e) {
+        // most transactions do not exist
+      }
+    }
+
+    // recursively reconstruct child trees
+    for (const childId of treeInfo.replaces) {
+      const replaced = await this.importTree(root, childId, deflated, txs, mined);
+      if (replaced) {
+        this.replacedBy.set(replaced.tx.txid, txid);
+        replaces.push(replaced);
+        if (replaced.mined) {
+          mined = true;
+        }
+      }
+    }
+    this.replaces.set(txid, replaces.map(t => t.tx.txid));
+
+    const tx = txs.get(txid);
+    if (!tx) {
+      return;
+    }
+    const strippedTx = Common.stripTransaction(tx) as RbfTransaction;
+    strippedTx.rbf = tx.vin.some((v) => v.sequence < 0xfffffffe);
+    strippedTx.mined = treeInfo.txMined;
+    const tree = {
+      tx: strippedTx,
+      time: treeInfo.time,
+      interval: treeInfo.interval,
+      mined: mined,
+      fullRbf: treeInfo.fullRbf,
+      replaces,
+    };
+    this.treeMap.set(txid, root);
+    if (root === txid) {
+      this.rbfTrees.set(root, tree);
+      this.dirtyTrees.add(root);
+    }
+    return tree;
   }
 }
 
