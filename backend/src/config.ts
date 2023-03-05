@@ -65,12 +65,16 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -168,13 +172,17 @@ const defaults: IConfig = {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'COOKIE': false,
+    'COOKIE_PATH': '' // default value depends on network, see src/api/bitcoin/bitcoin-client
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'COOKIE': false,
+    'COOKIE_PATH': ''
   },
   'DATABASE': {
     'ENABLED': true,

@@ -33,7 +33,9 @@
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
@@ -47,7 +49,9 @@
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "DATABASE": {
     "ENABLED": true,

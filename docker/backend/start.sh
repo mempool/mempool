@@ -37,6 +37,8 @@ __CORE_RPC_HOST__=${CORE_RPC_HOST:=127.0.0.1}
 __CORE_RPC_PORT__=${CORE_RPC_PORT:=8332}
 __CORE_RPC_USERNAME__=${CORE_RPC_USERNAME:=mempool}
 __CORE_RPC_PASSWORD__=${CORE_RPC_PASSWORD:=mempool}
+__CORE_RPC_COOKIE__=${CORE_RPC_COOKIE:=false}
+__CORE_RPC_COOKIE_PATH__=${CORE_RPC_COOKIE:=""}
 
 # ELECTRUM
 __ELECTRUM_HOST__=${ELECTRUM_HOST:=127.0.0.1}
@@ -51,6 +53,8 @@ __SECOND_CORE_RPC_HOST__=${SECOND_CORE_RPC_HOST:=127.0.0.1}
 __SECOND_CORE_RPC_PORT__=${SECOND_CORE_RPC_PORT:=8332}
 __SECOND_CORE_RPC_USERNAME__=${SECOND_CORE_RPC_USERNAME:=mempool}
 __SECOND_CORE_RPC_PASSWORD__=${SECOND_CORE_RPC_PASSWORD:=mempool}
+__SECOND_CORE_RPC_COOKIE__=${SECOND_CORE_RPC_COOKIE:=false}
+__SECOND_CORE_RPC_COOKIE_PATH__=${SECOND_CORE_RPC_COOKIE:=""}
 
 # DATABASE
 __DATABASE_ENABLED__=${DATABASE_ENABLED:=true}
@@ -149,6 +153,8 @@ sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_USERNAME__/${__CORE_RPC_USERNAME__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PASSWORD__/${__CORE_RPC_PASSWORD__}/g" mempool-config.json
+sed -i "s/__CORE_RPC_COOKIE__/${__CORE_RPC_COOKIE__}/g" mempool-config.json
+sed -i "s!__CORE_RPC_COOKIE_PATH__!${__CORE_RPC_COOKIE_PATH__}!g" mempool-config.json
 
 sed -i "s/__ELECTRUM_HOST__/${__ELECTRUM_HOST__}/g" mempool-config.json
 sed -i "s/__ELECTRUM_PORT__/${__ELECTRUM_PORT__}/g" mempool-config.json
@@ -160,6 +166,8 @@ sed -i "s/__SECOND_CORE_RPC_HOST__/${__SECOND_CORE_RPC_HOST__}/g" mempool-config
 sed -i "s/__SECOND_CORE_RPC_PORT__/${__SECOND_CORE_RPC_PORT__}/g" mempool-config.json
 sed -i "s/__SECOND_CORE_RPC_USERNAME__/${__SECOND_CORE_RPC_USERNAME__}/g" mempool-config.json
 sed -i "s/__SECOND_CORE_RPC_PASSWORD__/${__SECOND_CORE_RPC_PASSWORD__}/g" mempool-config.json
+sed -i "s/__SECOND_CORE_RPC_COOKIE__/${__SECOND_CORE_RPC_COOKIE__}/g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_COOKIE_PATH__!${__SECOND_CORE_RPC_COOKIE_PATH__}!g" mempool-config.json
 
 sed -i "s/__DATABASE_ENABLED__/${__DATABASE_ENABLED__}/g" mempool-config.json
 sed -i "s/__DATABASE_HOST__/${__DATABASE_HOST__}/g" mempool-config.json

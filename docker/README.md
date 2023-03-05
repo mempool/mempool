@@ -158,7 +158,9 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "COOKIE": "false",
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -170,6 +172,8 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
+      CORE_RPC_COOKIE: ""
+      CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
@@ -219,7 +223,9 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "COOKIE": "false",
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -231,6 +237,8 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_PORT: ""
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_COOKIE: ""
+      SECOND_CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
