@@ -38,12 +38,19 @@ import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
 import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
+import v8 from 'v8';
+import { formatBytes, getBytesUnit } from './utils/format';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Application;
   private currentBackendRetryInterval = 5;
+
+  private maxHeapSize: number = 0;
+  private heapLogInterval: number = 60;
+  private warnedHeapCritical: boolean = false;
+  private lastHeapLogTime: number | null = null;
 
   constructor() {
     this.app = express();
@@ -136,6 +143,8 @@ class Server {
     if (config.MEMPOOL.ENABLED) {
       this.runMainUpdateLoop();
     }
+
+    setInterval(() => { this.healthCheck(); }, 2500);
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
@@ -253,6 +262,26 @@ class Server {
       generalLightningRoutes.initRoutes(this.app);
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
+    }
+  }
+
+  healthCheck(): void {
+    const now = Date.now();
+    const stats = v8.getHeapStatistics();
+    this.maxHeapSize = Math.max(stats.used_heap_size, this.maxHeapSize);
+    const warnThreshold = 0.95 * stats.heap_size_limit;
+
+    const byteUnits = getBytesUnit(Math.max(this.maxHeapSize, stats.heap_size_limit));
+
+    if (!this.warnedHeapCritical && this.maxHeapSize > warnThreshold) {
+      this.warnedHeapCritical = true;
+      logger.warn(`Used ${(this.maxHeapSize / stats.heap_size_limit).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`);
+    }
+    if (this.lastHeapLogTime === null || (now - this.lastHeapLogTime) > (this.heapLogInterval * 1000)) {
+      logger.debug(`Memory usage: ${formatBytes(this.maxHeapSize, byteUnits)} / ${formatBytes(stats.heap_size_limit, byteUnits)}`);
+      this.warnedHeapCritical = false;
+      this.maxHeapSize = 0;
+      this.lastHeapLogTime = now;
     }
   }
 }
