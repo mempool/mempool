@@ -82,7 +82,7 @@ class PoolsUpdater {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
         await DB.query('ROLLBACK;');
       }
-      logger.notice('PoolsUpdater completed');
+      logger.info('PoolsUpdater completed');
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
