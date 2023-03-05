@@ -182,7 +182,7 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Clearnet (IPv4, IPv6)`,
+        name: $localize`Clearnet Only (IPv4, IPv6)`,
         showSymbol: false,
         symbol: 'none',
         data: data.clearnet_nodes,
