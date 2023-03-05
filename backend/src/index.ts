@@ -269,7 +269,7 @@ class Server {
     const now = Date.now();
     const stats = v8.getHeapStatistics();
     this.maxHeapSize = Math.max(stats.used_heap_size, this.maxHeapSize);
-    const warnThreshold = 0.95 * stats.heap_size_limit;
+    const warnThreshold = 0.8 * stats.heap_size_limit;
 
     const byteUnits = getBytesUnit(Math.max(this.maxHeapSize, stats.heap_size_limit));
 
