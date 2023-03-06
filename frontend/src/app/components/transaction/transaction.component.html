@@ -210,6 +210,7 @@
         <div class="graph-container" #graphContainer>
           <tx-bowtie-graph
             [tx]="tx"
+            [cached]="isCached"
             [width]="graphWidth"
             [height]="graphHeight"
             [lineLimit]="inOutLimit"
@@ -250,7 +251,7 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
     <div class="title text-left">
       <h2 i18n="transaction.details">Details</h2>
