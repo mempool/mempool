@@ -387,12 +387,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.error = new Error();
         this.waitingForTransaction = false;
       }
-      if (!this.tx?.status?.confirmed) {
-        this.rbfTransaction = rbfTransaction;
-        this.replaced = true;
-        if (rbfTransaction && !this.tx) {
-          this.fetchCachedTx$.next(this.txId);
-        }
+      this.rbfTransaction = rbfTransaction;
+      this.replaced = true;
+      if (rbfTransaction && !this.tx) {
+        this.fetchCachedTx$.next(this.txId);
       }
     });
 
