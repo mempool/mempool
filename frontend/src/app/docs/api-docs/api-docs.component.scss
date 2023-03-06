@@ -274,10 +274,8 @@ h3 {
   margin: 24px 0;
 }
 
-#disclaimer svg {
-  width: 50px;
-  height: auto;
-  margin-right: 32px;
+.disclaimer-warning {
+  margin-right: 50px;
 }
 
 #disclaimer p:last-child {
@@ -292,6 +290,12 @@ h3 {
 
   .hide-on-mobile {
     display: none;
+  }
+
+  .disclaimer-warning {
+    display: block;
+    margin: 2px auto 16px;
+    text-align: center;
   }
 
   .doc-content {
@@ -331,6 +335,10 @@ h3 {
 
   .doc-welcome-note {
     font-size: 0.85rem;
+  }
+
+  #disclaimer table {
+    display: none;
   }
 }
 
