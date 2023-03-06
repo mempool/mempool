@@ -61,10 +61,14 @@
       align-items: flex-end;
     }
 
+    .interval {
+      overflow: visible;
+    }
+
     .interval-time {
       font-size: 12px;
       line-height: 16px;
-      padding: 0 10px;
+      white-space: nowrap;
     }
   }
 
