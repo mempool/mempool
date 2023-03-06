@@ -17,6 +17,7 @@
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <ng-container *ngIf="cell.replacement; else nonNode">
             <div class="node"
+              [id]="'node-'+cell.replacement.tx.txid"
               [class.selected]="txid === cell.replacement.tx.txid"
               [class.mined]="cell.replacement.tx.mined"
               [class.first-node]="cell.first"
