@@ -47,7 +47,7 @@
             <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
           </div>
           <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
-            <app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></div>
+            <app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></div>
         </div>
         <div class="animated" [class]="showMiningInfo ? 'show' : 'hide'" *ngIf="block.extras?.pool != undefined">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
