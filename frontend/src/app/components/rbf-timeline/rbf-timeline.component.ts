@@ -42,8 +42,11 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     this.rows = this.buildTimelines(this.replacements);
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
+    if (changes.txid) {
+      setTimeout(() => { this.scrollToSelected(); });
+    }
   }
 
   // converts a tree of RBF events into a format that can be more easily rendered in HTML
@@ -164,6 +167,13 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       });
     });
     return rows;
+  }
+
+  scrollToSelected() {
+    const node = document.getElementById('node-' + this.txid);
+    if (node) {
+      node.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
   }
 
   @HostListener('pointermove', ['$event'])
