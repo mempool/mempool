@@ -37,7 +37,7 @@
             {{ calculateTotalOutput(tx.outputs) / 100 | number: '1.2-2' }} <span class="d-none d-md-inline symbol">BSQ</span>
           </ng-template>
         </td>
-        <td><app-time-since [time]="tx.time / 1000" [fastRender]="true"></app-time-since></td>
+        <td><app-time kind="since" [time]="tx.time / 1000" [fastRender]="true"></app-time></td>
         <td class="d-none d-md-block"><a [routerLink]="['/block/' | relativeUrl, tx.blockHash]" [state]="{ data: { blockHeight: tx.blockHeight } }">{{ tx.blockHeight }}</a></td>
       </tr>
     </tbody>
