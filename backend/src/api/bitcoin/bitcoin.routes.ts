@@ -220,18 +220,17 @@ class BitcoinRoutes {
       let cpfpInfo;
       if (config.DATABASE.ENABLED) {
         cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      }
+      if (cpfpInfo) {
+        res.json(cpfpInfo);
+        return;
       } else {
         res.json({
           ancestors: []
         });
         return;
       }
-      if (cpfpInfo) {
-        res.json(cpfpInfo);
-        return;
-      }
     }
-    res.status(404).send(`Transaction has no CPFP info available.`);
   }
 
   private getBackendInfo(req: Request, res: Response) {
@@ -652,7 +651,7 @@ class BitcoinRoutes {
       if (result) {
         res.json(result);
       } else {
-        res.status(404).send('not found');
+        res.status(204).send();
       }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);

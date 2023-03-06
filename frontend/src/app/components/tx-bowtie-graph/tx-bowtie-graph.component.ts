@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } 
 import { StateService } from '../../services/state.service';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
-import { ReplaySubject, merge, Subscription } from 'rxjs';
+import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -40,6 +40,7 @@ interface Xput {
 export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;
   @Input() network: string;
+  @Input() cached: boolean = false;
   @Input() width = 1200;
   @Input() height = 600;
   @Input() lineLimit = 250;
@@ -107,7 +108,13 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
-          switchMap((txid) => this.apiService.getOutspendsBatched$([txid])),
+          switchMap((txid) => {
+            if (!this.cached) {
+              return this.apiService.getOutspendsBatched$([txid]);
+            } else {
+              return of(null);
+            }
+          }),
           tap((outspends: Outspend[][]) => {
             if (!this.tx || !outspends || !outspends.length) {
               return;
@@ -132,7 +139,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.initGraph();
-    this.refreshOutspends$.next(this.tx.txid);
+    if (!this.cached) {
+      this.refreshOutspends$.next(this.tx.txid);
+    }
   }
 
   initGraph(): void {
