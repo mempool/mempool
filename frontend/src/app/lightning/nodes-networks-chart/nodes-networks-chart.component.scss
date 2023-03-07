@@ -53,31 +53,6 @@
   height: 145px;
 }
 
-.formRadioGroup {
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  @media (min-width: 991px) {
-    position: relative;
-    top: -100px;
-  }
-  @media (min-width: 830px) and (max-width: 991px) {
-    position: relative;
-    top: 0px;
-  }
-  @media (min-width: 830px) {
-    flex-direction: row;
-    float: right;
-    margin-top: 0px;
-  }
-  .btn-sm {
-    font-size: 9px;
-    @media (min-width: 830px) {
-      font-size: 14px;
-    }
-  }
-}
-
 .pool-distribution {
   min-height: 56px;
   display: block;

@@ -92,7 +92,7 @@
               </ng-template>
               <input type="text" class="form-control" aria-label="Text input with dropdown button"
                 [value]="node.socketsObject[selectedSocketIndex].socket">
-              <button class="btn btn-secondary ml-1" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible[i] = 1"
+              <button class="btn btn-secondary" type="button" id="inputGroupFileAddon04" (mouseover)="qrCodeVisible[i] = 1"
                 (mouseout)="qrCodeVisible[i] = 0">
                 <fa-icon [icon]="['fas', 'qrcode']" [fixedWidth]="true"></fa-icon>
                 <div class="qr-wrapper" [hidden]="!qrCodeVisible[i]">
