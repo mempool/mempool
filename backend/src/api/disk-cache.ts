@@ -62,7 +62,7 @@ class DiskCache {
   }
 
   wipeCache() {
-    logger.notice(`Wipping nodejs backend cache/cache*.json files`);
+    logger.notice(`Wiping nodejs backend cache/cache*.json files`);
     try {
       fs.unlinkSync(DiskCache.FILE_NAME);
     } catch (e: any) {

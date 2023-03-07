@@ -76,13 +76,13 @@ class Indexer {
       this.tasksRunning.push(task);
       const lastestPriceId = await PricesRepository.$getLatestPriceId();
       if (priceUpdater.historyInserted === false || lastestPriceId === null) {
-        logger.debug(`Blocks prices indexer is waiting for the price updater to complete`);
+        logger.debug(`Blocks prices indexer is waiting for the price updater to complete`, logger.tags.mining);
         setTimeout(() => {
           this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask !== task);
           this.runSingleTask('blocksPrices');
         }, 10000);
       } else {
-        logger.debug(`Blocks prices indexer will run now`);
+        logger.debug(`Blocks prices indexer will run now`, logger.tags.mining);
         await mining.$indexBlockPrices();
         this.tasksRunning = this.tasksRunning.filter(runningTask => runningTask !== task);
       }
@@ -112,7 +112,7 @@ class Indexer {
     this.runIndexer = false;
     this.indexerRunning = true;
 
-    logger.info(`Running mining indexer`);
+    logger.debug(`Running mining indexer`);
 
     await this.checkAvailableCoreIndexes();
 
@@ -122,7 +122,7 @@ class Indexer {
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
-        logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`);
+        logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`, logger.tags.mining);
         setTimeout(() => this.reindex(), 10000);
         this.indexerRunning = false;
         return;

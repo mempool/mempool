@@ -57,14 +57,14 @@
                   <td>
                     &lrm;{{ tx.status.block_time * 1000 | date:'yyyy-MM-dd HH:mm' }}
                     <div class="lg-inline">
-                      <i class="symbol">(<app-time-since [time]="tx.status.block_time" [fastRender]="true"></app-time-since>)</i>
+                      <i class="symbol">(<app-time kind="since" [time]="tx.status.block_time" [fastRender]="true"></app-time>)</i>
                     </div>
                   </td>
                 </tr>
                 <ng-template [ngIf]="transactionTime > 0">
                   <tr>
                     <td i18n="transaction.confirmed|Transaction Confirmed state">Confirmed</td>
-                    <td><app-time-span [time]="tx.status.block_time - transactionTime" [fastRender]="true"></app-time-span></td>
+                    <td><app-time kind="span" [time]="tx.status.block_time - transactionTime" [fastRender]="true" [relative]="true"></app-time></td>
                   </tr>
                 </ng-template>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
@@ -100,7 +100,7 @@
                   <ng-template #firstSeenTmpl>
                     <tr>
                       <td i18n="transaction.first-seen|Transaction first seen">First seen</td>
-                      <td><i><app-time-since [time]="transactionTime" [fastRender]="true"></app-time-since></i></td>
+                      <td><i><app-time kind="since" [time]="transactionTime" [fastRender]="true"></app-time></i></td>
                     </tr>
                   </ng-template>
                 </ng-template>
@@ -116,10 +116,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
-                          <app-time-until [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time-until>
+                          <app-time kind="until" [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time-until *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time-until>
+                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -210,6 +210,7 @@
         <div class="graph-container" #graphContainer>
           <tx-bowtie-graph
             [tx]="tx"
+            [cached]="isCached"
             [width]="graphWidth"
             [height]="graphHeight"
             [lineLimit]="inOutLimit"
@@ -250,7 +251,7 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
 
     <div class="title text-left">
       <h2 i18n="transaction.details">Details</h2>

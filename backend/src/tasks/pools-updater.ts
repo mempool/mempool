@@ -12,7 +12,7 @@ import * as https from 'https';
  */
 class PoolsUpdater {
   lastRun: number = 0;
-  currentSha: string | undefined = undefined;
+  currentSha: string | null = null;
   poolsUrl: string = config.MEMPOOL.POOLS_JSON_URL;
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
@@ -33,7 +33,7 @@ class PoolsUpdater {
 
     try {
       const githubSha = await this.fetchPoolsSha(); // Fetch pools-v2.json sha from github
-      if (githubSha === undefined) {
+      if (githubSha === null) {
         return;
       }
 
@@ -42,12 +42,12 @@ class PoolsUpdater {
       }
 
       logger.debug(`pools-v2.json sha | Current: ${this.currentSha} | Github: ${githubSha}`);
-      if (this.currentSha !== undefined && this.currentSha === githubSha) {
+      if (this.currentSha !== null && this.currentSha === githubSha) {
         return;
       }
 
       // See backend README for more details about the mining pools update process
-      if (this.currentSha !== undefined && // If we don't have any mining pool, download it at least once
+      if (this.currentSha !== null && // If we don't have any mining pool, download it at least once
         config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING !== true && // Automatic pools update is disabled
         !process.env.npm_config_update_pools // We're not manually updating mining pool
       ) {
@@ -57,7 +57,7 @@ class PoolsUpdater {
       }
 
       const network = config.SOCKS5PROXY.ENABLED ? 'tor' : 'clearnet';
-      if (this.currentSha === undefined) {
+      if (this.currentSha === null) {
         logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       } else {
         logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
@@ -82,7 +82,7 @@ class PoolsUpdater {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
         await DB.query('ROLLBACK;');
       }
-      logger.notice('PoolsUpdater completed');
+      logger.info('PoolsUpdater completed');
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
@@ -108,20 +108,20 @@ class PoolsUpdater {
   /**
    * Fetch our latest pools-v2.json sha from the db
    */
-  private async getShaFromDb(): Promise<string | undefined> {
+  private async getShaFromDb(): Promise<string | null> {
     try {
       const [rows]: any[] = await DB.query('SELECT string FROM state WHERE name="pools_json_sha"');
-      return (rows.length > 0 ? rows[0].string : undefined);
+      return (rows.length > 0 ? rows[0].string : null);
     } catch (e) {
       logger.err('Cannot fetch pools-v2.json sha from db. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
-      return undefined;
+      return null;
     }
   }
 
   /**
    * Fetch our latest pools-v2.json sha from github
    */
-  private async fetchPoolsSha(): Promise<string | undefined> {
+  private async fetchPoolsSha(): Promise<string | null> {
     const response = await this.query(this.treeUrl);
 
     if (response !== undefined) {
@@ -133,7 +133,7 @@ class PoolsUpdater {
     }
 
     logger.err(`Cannot find "pools-v2.json" in git tree (${this.treeUrl})`, logger.tags.mining);
-    return undefined;
+    return null;
   }
 
   /**

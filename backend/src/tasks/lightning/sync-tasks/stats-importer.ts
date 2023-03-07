@@ -411,7 +411,7 @@ class LightningStatsImporter {
       }
 
       if (totalProcessed > 0) {
-        logger.notice(`Lightning network stats historical import completed`, logger.tags.ln);
+        logger.info(`Lightning network stats historical import completed`, logger.tags.ln);
       }
     } catch (e) {
       logger.err(`Lightning network stats historical failed. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
