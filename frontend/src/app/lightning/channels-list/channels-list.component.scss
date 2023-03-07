@@ -19,6 +19,14 @@
   }
 }
 
+:host-context(.rtl-layout) .formRadioGroup {
+  direction: ltr;
+  @media (min-width: 435px) {
+    right: unset;
+    left: 0;
+  }
+}
+
 .btn-group {
   @media (max-width: 435px) {
     flex-grow: 1;
