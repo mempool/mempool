@@ -1,6 +1,5 @@
 import DB from '../database';
 import logger from '../logger';
-import { IConversionRates } from '../mempool.interfaces';
 import priceUpdater from '../tasks/price-updater';
 
 export interface ApiPrice {
@@ -13,6 +12,16 @@ export interface ApiPrice {
   AUD: number,
   JPY: number,
 }
+const ApiPriceFields = `
+  UNIX_TIMESTAMP(time) as time,
+  USD,
+  EUR,
+  GBP,
+  CAD,
+  CHF,
+  AUD,
+  JPY
+`;
 
 export interface ExchangeRates {
   USDEUR: number,
@@ -39,7 +48,7 @@ export const MAX_PRICES = {
 };
 
 class PricesRepository {
-  public async $savePrices(time: number, prices: IConversionRates): Promise<void> {
+  public async $savePrices(time: number, prices: ApiPrice): Promise<void> {
     if (prices.USD === -1) {
       // Some historical price entries have no USD prices, so we just ignore them to avoid future UX issues
       // As of today there are only 4 (on 2013-09-05, 2013-0909, 2013-09-12 and 2013-09-26) so that's fine
@@ -60,77 +69,115 @@ class PricesRepository {
         VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?  )`,
         [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY]
       );
-    } catch (e: any) {
+    } catch (e) {
       logger.err(`Cannot save exchange rate into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
 
   public async $getOldestPriceTime(): Promise<number> {
-    const [oldestRow] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != 0 ORDER BY time LIMIT 1`);
+    const [oldestRow] = await DB.query(`
+      SELECT UNIX_TIMESTAMP(time) AS time
+      FROM prices
+      ORDER BY time
+      LIMIT 1
+    `);
     return oldestRow[0] ? oldestRow[0].time : 0;
   }
 
   public async $getLatestPriceId(): Promise<number | null> {
-    const [oldestRow] = await DB.query(`SELECT id from prices WHERE USD != 0 ORDER BY time DESC LIMIT 1`);
-    return oldestRow[0] ? oldestRow[0].id : null;
-  }
-
-  public async $getLatestPriceTime(): Promise<number> {
-    const [oldestRow] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != 0 ORDER BY time DESC LIMIT 1`);
-    return oldestRow[0] ? oldestRow[0].time : 0;
-  }
-
-  public async $getPricesTimes(): Promise<number[]> {
-    const [times]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time from prices WHERE USD != 0 ORDER BY time`);
-    return times.map(time => time.time);
-  }
-
-  public async $getPricesTimesAndId(): Promise<number[]> {
-    const [times]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(time) as time, id, USD from prices ORDER BY time`);
-    return times;
-  }
-
-  public async $getLatestConversionRates(): Promise<any> {
-    const [rates]: any[] = await DB.query(`
-      SELECT USD, EUR, GBP, CAD, CHF, AUD, JPY
+    const [oldestRow] = await DB.query(`
+      SELECT id
       FROM prices
       ORDER BY time DESC
       LIMIT 1`
     );
-    if (!rates || rates.length === 0) {
+    return oldestRow[0] ? oldestRow[0].id : null;
+  }
+
+  public async $getLatestPriceTime(): Promise<number> {
+    const [oldestRow] = await DB.query(`
+      SELECT UNIX_TIMESTAMP(time) AS time
+      FROM prices
+      ORDER BY time DESC
+      LIMIT 1`
+    );
+    return oldestRow[0] ? oldestRow[0].time : 0;
+  }
+
+  public async $getPricesTimes(): Promise<number[]> {
+    const [times] = await DB.query(`
+      SELECT UNIX_TIMESTAMP(time) AS time
+      FROM prices
+      WHERE USD != -1
+      ORDER BY time
+    `);
+    if (!Array.isArray(times)) {
+      return [];
+    }
+    return times.map(time => time.time);
+  }
+
+  public async $getPricesTimesAndId(): Promise<{time: number, id: number, USD: number}[]> {
+    const [times] = await DB.query(`
+      SELECT
+        UNIX_TIMESTAMP(time) AS time,
+        id,
+        USD
+      FROM prices
+      ORDER BY time
+    `);
+    return times as {time: number, id: number, USD: number}[];
+  }
+
+  public async $getLatestConversionRates(): Promise<ApiPrice> {
+    const [rates] = await DB.query(`
+      SELECT ${ApiPriceFields}
+      FROM prices
+      ORDER BY time DESC
+      LIMIT 1`
+    );
+
+    if (!Array.isArray(rates) || rates.length === 0) {
       return priceUpdater.getEmptyPricesObj();
     }
-    return rates[0];
+    return rates[0] as ApiPrice;
   }
 
   public async $getNearestHistoricalPrice(timestamp: number | undefined): Promise<Conversion | null> {
     try {
-      const [rates]: any[] = await DB.query(`
-        SELECT *, UNIX_TIMESTAMP(time) AS time
+      const [rates] = await DB.query(`
+        SELECT ${ApiPriceFields}
         FROM prices
         WHERE UNIX_TIMESTAMP(time) < ?
         ORDER BY time DESC
         LIMIT 1`,
         [timestamp]
       );
-      if (!rates) {
+      if (!Array.isArray(rates)) {
         throw Error(`Cannot get single historical price from the database`);
       }
 
       // Compute fiat exchange rates
-      const latestPrice = await this.$getLatestConversionRates();
+      let latestPrice = rates[0] as ApiPrice;
+      if (latestPrice.USD === -1) {
+        latestPrice = priceUpdater.getEmptyPricesObj();
+      }
+
+      const computeFx = (usd: number, other: number): number =>
+        Math.round(Math.max(other, 0) / Math.max(usd, 1) * 100) / 100;
+      
       const exchangeRates: ExchangeRates = {
-        USDEUR: Math.round(latestPrice.EUR / latestPrice.USD * 100) / 100,
-        USDGBP: Math.round(latestPrice.GBP / latestPrice.USD * 100) / 100,
-        USDCAD: Math.round(latestPrice.CAD / latestPrice.USD * 100) / 100,
-        USDCHF: Math.round(latestPrice.CHF / latestPrice.USD * 100) / 100,
-        USDAUD: Math.round(latestPrice.AUD / latestPrice.USD * 100) / 100,
-        USDJPY: Math.round(latestPrice.JPY / latestPrice.USD * 100) / 100,
+        USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
+        USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
+        USDCAD: computeFx(latestPrice.USD, latestPrice.CAD),
+        USDCHF: computeFx(latestPrice.USD, latestPrice.CHF),
+        USDAUD: computeFx(latestPrice.USD, latestPrice.AUD),
+        USDJPY: computeFx(latestPrice.USD, latestPrice.JPY),
       };
 
       return {
-        prices: rates,
+        prices: rates as ApiPrice[],
         exchangeRates: exchangeRates
       };
     } catch (e) {
@@ -141,28 +188,35 @@ class PricesRepository {
 
   public async $getHistoricalPrices(): Promise<Conversion | null> {
     try {
-      const [rates]: any[] = await DB.query(`
-        SELECT *, UNIX_TIMESTAMP(time) AS time
+      const [rates] = await DB.query(`
+        SELECT ${ApiPriceFields}
         FROM prices
         ORDER BY time DESC
       `);
-      if (!rates) {
+      if (!Array.isArray(rates)) {
         throw Error(`Cannot get average historical price from the database`);
       }
 
       // Compute fiat exchange rates
-      const latestPrice: ApiPrice = rates[0];
+      let latestPrice = rates[0] as ApiPrice;
+      if (latestPrice.USD === -1) {
+        latestPrice = priceUpdater.getEmptyPricesObj();
+      }
+
+      const computeFx = (usd: number, other: number): number =>
+        Math.round(Math.max(other, 0) / Math.max(usd, 1) * 100) / 100;
+      
       const exchangeRates: ExchangeRates = {
-        USDEUR: Math.round(latestPrice.EUR / latestPrice.USD * 100) / 100,
-        USDGBP: Math.round(latestPrice.GBP / latestPrice.USD * 100) / 100,
-        USDCAD: Math.round(latestPrice.CAD / latestPrice.USD * 100) / 100,
-        USDCHF: Math.round(latestPrice.CHF / latestPrice.USD * 100) / 100,
-        USDAUD: Math.round(latestPrice.AUD / latestPrice.USD * 100) / 100,
-        USDJPY: Math.round(latestPrice.JPY / latestPrice.USD * 100) / 100,
+        USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
+        USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
+        USDCAD: computeFx(latestPrice.USD, latestPrice.CAD),
+        USDCHF: computeFx(latestPrice.USD, latestPrice.CHF),
+        USDAUD: computeFx(latestPrice.USD, latestPrice.AUD),
+        USDJPY: computeFx(latestPrice.USD, latestPrice.JPY),
       };
 
       return {
-        prices: rates,
+        prices: rates as ApiPrice[],
         exchangeRates: exchangeRates
       };
     } catch (e) {
