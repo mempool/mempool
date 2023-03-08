@@ -748,6 +748,7 @@ class BlocksRepository {
         SELECT height
         FROM compact_cpfp_clusters
         WHERE height <= ? AND height >= ?
+        GROUP BY height
         ORDER BY height DESC;
       `, [currentBlockHeight, minHeight]);
 
