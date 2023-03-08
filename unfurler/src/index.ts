@@ -264,28 +264,27 @@ class Server {
       ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
     }
 
-    return `
-      <!doctype html>
-      <html lang="en-US" dir="ltr">
-      <head>
-        <meta charset="utf-8">
-        <title>${ogTitle}</title>
-        <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
-        <meta property="og:image" content="${ogImageUrl}"/>
-        <meta property="og:image:type" content="image/png"/>
-        <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>
-        <meta property="og:image:height" content="${matchedRoute.render ? 600 : 500}"/>
-        <meta property="og:title" content="${ogTitle}">
-        <meta property="twitter:card" content="summary_large_image">
-        <meta property="twitter:site" content="@mempool">
-        <meta property="twitter:creator" content="@mempool">
-        <meta property="twitter:title" content="${ogTitle}">
-        <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
-        <meta property="twitter:image:src" content="${ogImageUrl}"/>
-        <meta property="twitter:domain" content="mempool.space">
-      <body></body>
-      </html>
-    `;
+    return `<!doctype html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>${ogTitle}</title>
+    <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
+    <meta property="og:image" content="${ogImageUrl}"/>
+    <meta property="og:image:type" content="image/png"/>
+    <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>
+    <meta property="og:image:height" content="${matchedRoute.render ? 600 : 500}"/>
+    <meta property="og:title" content="${ogTitle}">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@mempool">
+    <meta property="twitter:creator" content="@mempool">
+    <meta property="twitter:title" content="${ogTitle}">
+    <meta property="twitter:description" content="Explore the full Bitcoin ecosystem with mempool.space"/>
+    <meta property="twitter:image:src" content="${ogImageUrl}"/>
+    <meta property="twitter:domain" content="mempool.space">
+  </head>
+  <body></body>
+</html>`;
   }
 
   async renderSEOPage(rawPath: string): Promise<string> {
