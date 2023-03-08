@@ -315,5 +315,5 @@ function capitalize(str) {
 }
 
 function isSearchCrawler(useragent: string): boolean {
-  return /googlebot/i.test(useragent);
+  return /googlebot|applebot|bingbot/i.test(useragent);
 }
