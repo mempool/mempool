@@ -58,6 +58,8 @@ import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.c
 import { StatusViewComponent } from '../components/status-view/status-view.component';
 import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
+import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
+import { DifficultyMiningComponent } from '../components/difficulty-mining/difficulty-mining.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
 import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
@@ -133,6 +135,8 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StatusViewComponent,
     FeesBoxComponent,
     DifficultyComponent,
+    DifficultyMiningComponent,
+    DifficultyTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
@@ -234,6 +238,8 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     StatusViewComponent,
     FeesBoxComponent,
     DifficultyComponent,
+    DifficultyMiningComponent,
+    DifficultyTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
