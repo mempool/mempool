@@ -93,7 +93,7 @@
             <tbody>
               <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
                 <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                <td *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" ><app-time-since [time]="block.timestamp" [fastRender]="true"></app-time-since></td>
+                <td *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></td>
                 <td *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4">
                   <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
                     <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
@@ -250,7 +250,7 @@
     </span>
     <ng-template #inSync>
       <div class="progress inc-tx-progress-bar">
-        <div class="progress-bar" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth, 'background-color': mempoolInfoData.value.progressColor}">&nbsp;</div>
+        <div class="progress-bar {{ mempoolInfoData.value.progressColor }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
         <div class="progress-text">&lrm;{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
       </div>
     </ng-template>

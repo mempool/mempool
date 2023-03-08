@@ -57,6 +57,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
+  isCached: boolean = false;
   now = new Date().getTime();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
@@ -196,6 +197,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.tx = tx;
+      this.isCached = true;
       if (tx.fee === undefined) {
         this.tx.fee = 0;
       }
@@ -289,6 +291,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           this.tx = tx;
+          this.isCached = false;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
           }
@@ -362,7 +365,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
-      this.cacheService.setTxCache([this.rbfTransaction]);
       this.replaced = true;
       if (rbfTransaction && !this.tx) {
         this.fetchCachedTx$.next(this.txId);
