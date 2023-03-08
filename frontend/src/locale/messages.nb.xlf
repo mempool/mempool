@@ -2347,7 +2347,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
-        <target>lik</target>
+        <target>Identisk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2944,7 +2944,7 @@
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
-        <target>Gruppe</target>
+        <target>Utvinningsgruppe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3739,7 +3739,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
-        <target>Grupper flaks</target>
+        <target>Utvinningsgrupper flaks</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3757,7 +3757,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
-        <target>Antall grupper (1uke)</target>
+        <target>Antall utvinningsgrupper (1uke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3766,7 +3766,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
-        <target>Antall grupper</target>
+        <target>Antall utvinningsgrupper</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3858,7 +3858,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
-        <target>Grupper flaks (1uke)</target>
+        <target>Utvinningsgrupper flaks (1uke)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">146,148</context>
