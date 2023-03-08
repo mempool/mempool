@@ -49,6 +49,9 @@
               <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
                 <input type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan"> 3Y
               </label>
+              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '4y'">
+                <input type="radio" [value]="'4y'" [routerLink]="['/graphs' | relativeUrl]" fragment="4y" formControlName="dateSpan"> 4Y
+              </label>
             </div>
             <div class="small-buttons">
               <div ngbDropdown #myDrop="ngbDropdown">

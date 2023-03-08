@@ -14,10 +14,11 @@ class StatisticsRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/1y', this.$getStatisticsByTime.bind(this, '1y'))
       .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/2y', this.$getStatisticsByTime.bind(this, '2y'))
       .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/3y', this.$getStatisticsByTime.bind(this, '3y'))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'statistics/4y', this.$getStatisticsByTime.bind(this, '4y'))
     ;
   }
 
-  private async $getStatisticsByTime(time: '2h' | '24h' | '1w' | '1m' | '3m' | '6m' | '1y' | '2y' | '3y', req: Request, res: Response) {
+  private async $getStatisticsByTime(time: '2h' | '24h' | '1w' | '1m' | '3m' | '6m' | '1y' | '2y' | '3y' | '4y', req: Request, res: Response) {
     res.header('Pragma', 'public');
     res.header('Cache-control', 'public');
     res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
@@ -53,6 +54,9 @@ class StatisticsRoutes {
           break;
         case '3y':
           result = await statisticsApi.$list3Y();
+          break;
+        case '4y':
+          result = await statisticsApi.$list4Y();
           break;
         default:
           result = await statisticsApi.$list2H();
