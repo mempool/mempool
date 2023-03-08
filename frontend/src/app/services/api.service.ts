@@ -68,6 +68,10 @@ export class ApiService {
     return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3y');
   }
 
+  list4YStatistics$(): Observable<OptimizedMempoolStats[]> {
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/4y');
+  }
+
   getTransactionTimes$(txIds: string[]): Observable<number[]> {
     let params = new HttpParams();
     txIds.forEach((txId: string) => {
