@@ -70,7 +70,7 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -109,7 +109,10 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '2y') {
           return this.apiService.list2YStatistics$();
         }
-        return this.apiService.list3YStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '3y') {
+          return this.apiService.list3YStatistics$();
+        }
+        return this.apiService.list4YStatistics$();
       })
     )
     .subscribe((mempoolStats: any) => {
@@ -181,7 +184,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     let capRatio = 10;
-    if (['1m', '3m',  '6m', '1y', '2y', '3y'].includes(this.graphWindowPreference)) {
+    if (['1m', '3m',  '6m', '1y', '2y', '3y', '4y'].includes(this.graphWindowPreference)) {
       capRatio = 4;
     }
 
