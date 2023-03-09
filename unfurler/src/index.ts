@@ -179,8 +179,15 @@ class Server {
       await page.waitForNetworkIdle({
         timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000,
       });
-      let html = await page.content();
-      return html;
+      const is404 = await page.evaluate(async () => {
+        return !!window['soft404'];
+      });
+      if (is404) {
+        return '404';
+      } else {
+        let html = await page.content();
+        return html;
+      }
     } catch (e) {
       if (e instanceof TimeoutError) {
         let html = await page.content();
@@ -258,7 +265,11 @@ class Server {
         result = await this.renderUnfurlMeta(rawPath);
       }
       if (result && result.length) {
-        res.send(result);
+        if (result === '404') {
+          res.status(404).send();
+        } else {
+          res.send(result);
+        }
       } else {
         res.status(500).send();
       }

@@ -82,6 +82,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
       )
       .subscribe((block: BisqBlock) => {
         if (!block) {
+          this.seoService.logSoft404();
           return;
         }
         this.isLoading = false;
@@ -97,6 +98,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
 
   caughtHttpError(err: HttpErrorResponse){
     this.error = err;
+    this.seoService.logSoft404();
     return of(null);
   }
 }

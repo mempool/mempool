@@ -81,6 +81,7 @@ export class NodePreviewComponent implements OnInit {
         }),
         catchError(err => {
           this.error = err;
+          this.seoService.logSoft404();
           this.openGraphService.fail('node-map-' + this.publicKey);
           this.openGraphService.fail('node-data-' + this.publicKey);
           return [{
