@@ -7,3 +7,8 @@ source_file = frontend/src/locale/messages.en-US.xlf
 source_lang = en-US
 type        = XLIFF
 
+[o:mempool:p:mempool-promo:r:mempool-promo-captionssrt]
+file_filter = frontend/src/resources/mempool-promo-captions.<lang>.srt
+source_file = frontend/src/resources/mempool-promo-captions.en-US.srt
+source_lang = en-US
+type        = SRT
