@@ -87,9 +87,9 @@ export const languages: Language[] = [
    { code: 'ar', name: 'العربية' },         // Arabic
 // { code: 'bg', name: 'Български' },       // Bulgarian
 // { code: 'bs', name: 'Bosanski' },        // Bosnian
-   { code: 'ca', name: 'Català' },          // Catalan
+// { code: 'ca', name: 'Català' },          // Catalan
    { code: 'cs', name: 'Čeština' },         // Czech
-// { code: 'da', name: 'Dansk' },           // Danish
+   { code: 'da', name: 'Dansk' },           // Danish
    { code: 'de', name: 'Deutsch' },         // German
 // { code: 'et', name: 'Eesti' },           // Estonian
 // { code: 'el', name: 'Ελληνικά' },        // Greek
