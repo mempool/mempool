@@ -133,6 +133,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
       )
       .subscribe((tx: Transaction) => {
           if (!tx) {
+            this.seoService.logSoft404();
             this.openGraphService.fail('tx-data-' + this.txId);
             return;
           }
@@ -182,6 +183,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.openGraphService.waitOver('tx-data-' + this.txId);
         },
         (error) => {
+          this.seoService.logSoft404();
           this.openGraphService.fail('tx-data-' + this.txId);
           this.error = error;
           this.isLoadingTx = false;

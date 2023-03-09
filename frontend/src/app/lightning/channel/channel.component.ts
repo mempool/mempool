@@ -38,6 +38,7 @@ export class ChannelComponent implements OnInit {
               }),
               catchError((err) => {
                 this.error = err;
+                this.seoService.logSoft404();
                 return [{
                   short_id: params.get('short_id')
                 }];

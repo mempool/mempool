@@ -121,6 +121,7 @@ export class NodeComponent implements OnInit {
         }),
         catchError(err => {
           this.error = err;
+          this.seoService.logSoft404();
           return [{
             alias: this.publicKey,
             public_key: this.publicKey,

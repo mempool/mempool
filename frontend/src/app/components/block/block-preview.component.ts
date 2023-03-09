@@ -82,6 +82,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               }),
               catchError((err) => {
                 this.error = err;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('block-data-' + this.rawId);
                 this.openGraphService.fail('block-viz-' + this.rawId);
                 return of(null);
@@ -138,6 +139,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     (error) => {
       this.error = error;
       this.isLoadingOverview = false;
+      this.seoService.logSoft404();
       this.openGraphService.fail('block-viz-' + this.rawId);
       this.openGraphService.fail('block-data-' + this.rawId);
       if (this.blockGraph) {
