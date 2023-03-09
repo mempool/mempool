@@ -199,7 +199,8 @@ Corresponding `docker-compose.yml` overrides:
 `mempool-config.json`:
 ```json
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:3000"
+    "REST_API_URL": "http://127.0.0.1:3000",
+    "UNIX_SOCKET_PATH": "/tmp/esplora-socket"
   },
 ```
 
@@ -208,6 +209,7 @@ Corresponding `docker-compose.yml` overrides:
   api:
     environment:
       ESPLORA_REST_API_URL: ""
+      ESPLORA_UNIX_SOCKET_PATH: ""
       ...
 ```
 

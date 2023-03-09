@@ -45,6 +45,7 @@ __ELECTRUM_TLS_ENABLED__=${ELECTRUM_TLS_ENABLED:=false}
 
 # ESPLORA
 __ESPLORA_REST_API_URL__=${ESPLORA_REST_API_URL:=http://127.0.0.1:3000}
+__ESPLORA_UNIX_SOCKET_PATH__=${ESPLORA_UNIX_SOCKET_PATH:=null}
 
 # SECOND_CORE_RPC
 __SECOND_CORE_RPC_HOST__=${SECOND_CORE_RPC_HOST:=127.0.0.1}
@@ -155,6 +156,7 @@ sed -i "s/__ELECTRUM_PORT__/${__ELECTRUM_PORT__}/g" mempool-config.json
 sed -i "s/__ELECTRUM_TLS_ENABLED__/${__ELECTRUM_TLS_ENABLED__}/g" mempool-config.json
 
 sed -i "s!__ESPLORA_REST_API_URL__!${__ESPLORA_REST_API_URL__}!g" mempool-config.json
+sed -i "s!__ESPLORA_UNIX_SOCKET_PATH__!${__ESPLORA_UNIX_SOCKET_PATH__}!g" mempool-config.json
 
 sed -i "s/__SECOND_CORE_RPC_HOST__/${__SECOND_CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__SECOND_CORE_RPC_PORT__/${__SECOND_CORE_RPC_PORT__}/g" mempool-config.json

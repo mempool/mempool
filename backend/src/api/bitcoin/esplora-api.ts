@@ -5,11 +5,14 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 
 const axiosConnection = axios.create({
-  httpAgent: new http.Agent({ keepAlive: true })
+  httpAgent: new http.Agent({ keepAlive: true, })
 });
 
 class ElectrsApi implements AbstractBitcoinApi {
-  axiosConfig: AxiosRequestConfig = {
+  axiosConfig: AxiosRequestConfig = config.ESPLORA.UNIX_SOCKET_PATH ? {
+    socketPath: config.ESPLORA.UNIX_SOCKET_PATH,
+    timeout: 10000,
+  } : {
     timeout: 10000,
   };
 
