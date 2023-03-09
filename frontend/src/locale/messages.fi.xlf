@@ -3182,7 +3182,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
-        <target>Seuraava puoliintuminen</target>
+        <target>Puoliintuminen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -3827,7 +3827,7 @@
       </trans-unit>
       <trans-unit id="c16d236667af327bd474b149cb909d1cd06fa50c" datatype="html">
         <source>Avg Health</source>
-        <target>Keskimääräinen terveys</target>
+        <target>keskim. Terveys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -4147,7 +4147,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
-        <target>Keskimääräiset lohkomaksut</target>
+        <target>keskim. Lohkomaksut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4179,7 +4179,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
-        <target>Keskimääräinen siirtomaksu</target>
+        <target>keskim. Siirtomaksu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -5867,7 +5867,7 @@
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
-        <target>keskimääräinen</target>
+        <target>keskim.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5885,7 +5885,7 @@
       </trans-unit>
       <trans-unit id="ab456546aa39de3328fcfdf077f410b5ff1aa773" datatype="html">
         <source>Avg Capacity</source>
-        <target>Keskimääräinen kapasiteetti</target>
+        <target>keskim. Kapasiteetti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -5898,7 +5898,7 @@
       </trans-unit>
       <trans-unit id="f68705670e611f13da1a43e90f9c97d8761dd9ef" datatype="html">
         <source>Avg Fee Rate</source>
-        <target>Keskimääräinen siirtomaksu prosentti</target>
+        <target>keskim. Siirtomaksu prosentti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -5920,7 +5920,7 @@
       </trans-unit>
       <trans-unit id="140fb39368f210ec945417f3eb23bf9564396e5c" datatype="html">
         <source>Avg Base Fee</source>
-        <target>Keskimääräinen perus siirtomaksu</target>
+        <target>keskim. Perus siirtomaksu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -6361,7 +6361,7 @@
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
-        <target>Keskimääräinen kanavaetäisyys</target>
+        <target>keskim. Kanavaetäisyys</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">59,60</context>
@@ -6667,7 +6667,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
-        <target>Clearnetin kapasiteetti</target>
+        <target>Julkinen kapasiteetti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -6680,7 +6680,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
-        <target>Kuinka paljon likviditeettiä on käytössä solmuissa, jotka mainostavat vähintään yhtä clearnet-IP-osoitetta</target>
+        <target>Kuinka paljon likviditeettiä on käytössä solmuissa, jotka mainostavat vähintään yhtä julkista IP-osoitetta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -6689,7 +6689,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
-        <target>Tuntematon kapasiteetti</target>
+        <target>Tuntematon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
