@@ -27,6 +27,7 @@ class Server {
   mempoolUrl: URL;
   network: string;
   secureHost = true;
+  canonicalHost: string;
 
   constructor() {
     this.app = express();
@@ -34,6 +35,20 @@ class Server {
     this.mempoolUrl = new URL(this.mempoolHost);
     this.secureHost = config.SERVER.HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
+
+    let canonical;
+    switch(config.MEMPOOL.NETWORK) {
+      case "liquid":
+        canonical = "https://liquid.network"
+        break;
+      case "bisq":
+        canonical = "https://bisq.markets"
+        break;
+      default:
+        canonical = "https://mempool.space"
+    }
+    this.canonicalHost = canonical;
+
     this.startServer();
   }
 
@@ -259,6 +274,8 @@ class Server {
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
     let ogTitle = 'The Mempool Open Source Project™';
 
+    const canonical = this.canonicalHost + rawPath;
+
     if (matchedRoute.render) {
       ogImageUrl = `${config.SERVER.HOST}/render/${lang || 'en'}/preview${path}`;
       ogTitle = `${this.network ? capitalize(this.network) + ' ' : ''}${matchedRoute.networkMode !== 'mainnet' ? capitalize(matchedRoute.networkMode) + ' ' : ''}${matchedRoute.title}`;
@@ -269,6 +286,7 @@ class Server {
   <head>
     <meta charset="utf-8">
     <title>${ogTitle}</title>
+    <link rel="canonical" href="${canonical}" />
     <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
     <meta property="og:image" content="${ogImageUrl}"/>
     <meta property="og:image:type" content="image/png"/>
@@ -291,7 +309,8 @@ class Server {
     let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr' });
     // remove javascript to prevent double hydration
     if (html && html.length) {
-      html = html.replace(/<script.*<\/script>/g, "");
+      html = html.replaceAll(/<script.*<\/script>/g, "");
+      html = html.replaceAll(this.mempoolHost, this.canonicalHost);
     }
     return html;
   }
