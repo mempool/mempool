@@ -11,6 +11,8 @@ import { Common } from './common';
 class DiskCache {
   private cacheSchemaVersion = 3;
 
+  private static TMP_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/tmp-cache.json';
+  private static TMP_FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/tmp-cache{number}.json';
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
   private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
   private static CHUNK_FILES = 25;
@@ -95,7 +97,7 @@ class DiskCache {
 
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
-      fs.writeFileSync(DiskCache.FILE_NAME, JSON.stringify({
+      fs.writeFileSync(DiskCache.TMP_FILE_NAME, JSON.stringify({
         cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
         blockSummaries: blocks.getBlockSummaries(),
@@ -103,11 +105,17 @@ class DiskCache {
         mempoolArray: mempoolArray.splice(0, chunkSize),
       }), { flag: 'w' });
       for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-        fs.writeFileSync(DiskCache.FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+        fs.writeFileSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
           mempool: {},
           mempoolArray: mempoolArray.splice(0, chunkSize),
         }), { flag: 'w' });
       }
+
+      fs.renameSync(DiskCache.TMP_FILE_NAME, DiskCache.FILE_NAME);
+      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+        fs.renameSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+      }
+
       logger.debug('Mempool and blocks data saved to disk cache');
       this.isWritingCache = false;
     } catch (e) {
