@@ -11,6 +11,10 @@
     line-height: 32px;
   }
 
+  .image.not-rounded {
+    border-radius: 0;
+  }
+
   .intro {
     margin: 25px auto 30px;
     width: 250px;
