@@ -488,7 +488,7 @@
           <div class="effective-fee-container">
             {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
             <ng-template [ngIf]="tx.status.confirmed">
-              <app-tx-fee-rating class="d-none d-lg-inline ml-2" *ngIf="tx.fee" [tx]="tx"></app-tx-fee-rating>
+              <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>
           <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>

@@ -23,9 +23,11 @@ describe('Mempool Difficulty Adjustment', () => {
           remainingBlocks: 1834,
           remainingTime: 977591692,
           previousRetarget: 0.6280047707459726,
+          previousTime: 1660820820,
           nextRetargetHeight: 751968,
           timeAvg: 533038,
           timeOffset: 0,
+          expectedBlocks: 161.68833333333333,
         },
       ],
       [ // Vector 2 (testnet)
@@ -43,11 +45,13 @@ describe('Mempool Difficulty Adjustment', () => {
           estimatedRetargetDate: 1661895424692,
           remainingBlocks: 1834,
           remainingTime: 977591692,
+          previousTime: 1660820820,
           previousRetarget: 0.6280047707459726,
           nextRetargetHeight: 751968,
           timeAvg: 533038,
           timeOffset: -667000, // 11 min 7 seconds since last block (testnet only)
           // If we add time avg to abs(timeOffset) it makes exactly 1200000 ms, or 20 minutes
+          expectedBlocks: 161.68833333333333,
         },
       ],
     ] as [[number, number, number, number, string, number], DifficultyAdjustment][];

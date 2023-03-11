@@ -19,6 +19,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fixedRender = false;
   @Input() relative = false;
   @Input() forceFloorOnTimeIntervals: string[];
+  @Input() fractionDigits: number = 0;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -88,7 +89,12 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         counter = Math.round(seconds / this.intervals[i]);
       }
-      const dateStrings = dates(counter);
+      let rounded = counter;
+      if (this.fractionDigits) {
+        const roundFactor = Math.pow(10,this.fractionDigits);
+        rounded = Math.round((seconds / this.intervals[i]) * roundFactor) / roundFactor;
+      }
+      const dateStrings = dates(rounded);
       if (counter > 0) {
         switch (this.kind) {
           case 'since':
