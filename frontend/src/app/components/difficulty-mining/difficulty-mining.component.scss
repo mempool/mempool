@@ -1,14 +1,8 @@
 .difficulty-adjustment-container {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.difficulty-stats {
-  display: flex;
   flex-direction: row;
   justify-content: space-around;
-  height: 50.5px;
+  height: 76px;
   .shared-block {
     color: #ffffff66;
     font-size: 12px;
@@ -30,8 +24,8 @@
     }
   }
   .card-text {
-    font-size: 20px;
-    margin: auto;
+    font-size: 22px;
+    margin-top: -9px;
     position: relative;
   }
 }
@@ -39,9 +33,7 @@
 
 .difficulty-skeleton {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  height: 50.5px;
+  justify-content: space-between;
   @media (min-width: 376px) {
     flex-direction: row;
   }
@@ -73,7 +65,7 @@
       width: 100%;
       display: block;
       &:first-child {
-        margin: 10px auto 4px;
+        margin: 14px auto 0;
         max-width: 80px;
       }
       &:last-child {
@@ -117,7 +109,7 @@
 }
 
 .loading-container {
-  min-height: 50.5px;
+  min-height: 76px;
 }
 
 .main-title {
@@ -141,7 +133,7 @@
     text-align: center;
     flex-direction: column;
     justify-content: space-around;
-    padding: 20px;
+    padding: 24px 20px;
   }
 }
 
@@ -159,50 +151,4 @@
 
 .symbol {
   font-size: 13px;
-}
-
-.epoch-progress {
-  width: 100%;
-  height: 22px;
-  margin-bottom: 12px;
-}
-
-.epoch-blocks {
-  display: block;
-  width: 100%;
-  background: #2d3348;
-
-  .rect {
-    fill: #2d3348;
-
-    &.behind {
-      fill: #D81B60;
-    }
-    &.mined {
-      fill: url(#diff-gradient);
-    }
-    &.ahead {
-      fill: #1a9436;
-    }
-
-    &.hover {
-      fill: #535e84;
-      &.behind {
-        fill: #e94d86;
-      }
-      &.mined {
-        fill: url(#diff-hover-gradient);
-      }
-      &.ahead {
-        fill: #29d951;
-      }
-    }
-  }
-}
-
-.blocks-ahead {
-  color: #3bcc49;
-}
-.blocks-behind {
-  color: #D81B60;
 }

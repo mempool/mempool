@@ -9,9 +9,11 @@ export interface DifficultyAdjustment {
   remainingBlocks: number;       // Block count
   remainingTime: number;         // Duration of time in ms
   previousRetarget: number;      // Percent: -75 to 300
+  previousTime: number;          // Unix time in ms
   nextRetargetHeight: number;    // Block Height
   timeAvg: number;               // Duration of time in ms
   timeOffset: number;            // (Testnet) Time since last block (cap @ 20min) in ms
+  expectedBlocks: number;         // Block count
 }
 
 export function calcDifficultyAdjustment(
@@ -32,12 +34,12 @@ export function calcDifficultyAdjustment(
   const progressPercent = (blockHeight >= 0) ? blocksInEpoch / EPOCH_BLOCK_LENGTH * 100 : 100;
   const remainingBlocks = EPOCH_BLOCK_LENGTH - blocksInEpoch;
   const nextRetargetHeight = (blockHeight >= 0) ? blockHeight + remainingBlocks : 0;
+  const expectedBlocks = diffSeconds / BLOCK_SECONDS_TARGET;
 
   let difficultyChange = 0;
-  let timeAvgSecs = BLOCK_SECONDS_TARGET;
+  let timeAvgSecs = diffSeconds / blocksInEpoch;
   // Only calculate the estimate once we have 7.2% of blocks in current epoch
   if (blocksInEpoch >= ESTIMATE_LAG_BLOCKS) {
-    timeAvgSecs = diffSeconds / blocksInEpoch;
     difficultyChange = (BLOCK_SECONDS_TARGET / timeAvgSecs - 1) * 100;
     // Max increase is x4 (+300%)
     if (difficultyChange > 300) {
@@ -74,9 +76,11 @@ export function calcDifficultyAdjustment(
     remainingBlocks,
     remainingTime,
     previousRetarget,
+    previousTime: DATime,
     nextRetargetHeight,
     timeAvg,
     timeOffset,
+    expectedBlocks,
   };
 }
 

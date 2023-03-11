@@ -417,24 +417,24 @@ class NodesApi {
 
         if (!ispList[isp1]) {
           ispList[isp1] = {
-            id: channel.isp1ID.toString(),
+            ids: [channel.isp1ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp1].id.indexOf(channel.isp1ID) === -1) {
-          ispList[isp1].id += ',' + channel.isp1ID.toString();
+        } else if (ispList[isp1].ids.includes(channel.isp1ID) === false) {
+          ispList[isp1].ids.push(channel.isp1ID);
         }
 
         if (!ispList[isp2]) {
           ispList[isp2] = {
-            id: channel.isp2ID.toString(),
+            ids: [channel.isp2ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp2].id.indexOf(channel.isp2ID) === -1) {
-          ispList[isp2].id += ',' + channel.isp2ID.toString();
+        } else if (ispList[isp2].ids.includes(channel.isp2ID) === false) {
+          ispList[isp2].ids.push(channel.isp2ID);
         }
         
         ispList[isp1].capacity += channel.capacity;
@@ -444,11 +444,11 @@ class NodesApi {
         ispList[isp2].channels += 1;
         ispList[isp2].nodes[channel.node2PublicKey] = true;
       }
-
+      
       const ispRanking: any[] = [];
       for (const isp of Object.keys(ispList)) {
         ispRanking.push([
-          ispList[isp].id,
+          ispList[isp].ids.sort((a, b) => a - b).join(','),
           isp,
           ispList[isp].capacity,
           ispList[isp].channels,
