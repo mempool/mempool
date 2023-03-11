@@ -53,3 +53,8 @@ form {
   margin-top: 1px;
   margin-right: 2px;
 }
+
+input:focus {
+  box-shadow: none;
+  border-color: #1b1f2c;
+}
