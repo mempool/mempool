@@ -4,7 +4,7 @@
     <div class="card-body more-padding">
       <div class="difficulty-adjustment-container" *ngIf="(isLoadingWebSocket$ | async) === false && (difficultyEpoch$ | async) as epochData; else loadingDifficulty">
         <div class="epoch-progress">
-          <svg class="epoch-blocks" height="22px" width="100%" viewBox="0 0 234 9" shape-rendering="crispEdges" preserveAspectRatio="none">
+          <svg class="epoch-blocks" height="22px" width="100%" viewBox="0 0 224 9" shape-rendering="crispEdges" preserveAspectRatio="none">
             <defs>
               <linearGradient id="diff-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stop-color="#105fb0" />
