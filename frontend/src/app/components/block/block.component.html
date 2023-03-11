@@ -121,7 +121,7 @@
     <ng-container *ngIf="!isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><span>{{ block.extras.feeRange[0] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+        <td><span>{{ block.extras.feeRange[1] | number:'1.0-0' }} - {{ block.extras.feeRange[block.extras.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
       </tr>
       <tr *ngIf="block?.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
