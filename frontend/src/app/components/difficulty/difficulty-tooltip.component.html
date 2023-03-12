@@ -1,0 +1,41 @@
+<div
+  #tooltip
+  *ngIf="status"
+  class="difficulty-tooltip"
+  [style.visibility]="status ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + 'px'"
+>
+<ng-container [ngSwitch]="status">
+  <ng-container *ngSwitchCase="'mined'">
+    <ng-container *ngIf="isAhead">
+      <ng-container *ngTemplateOutlet="expected === 1 ? blocksSingular : blocksPlural; context: {$implicit: expected }"></ng-container>
+      <ng-template #blocksPlural let-i i18n="difficulty-box.expected-blocks">{{ i }} blocks expected</ng-template>
+      <ng-template #blocksSingular let-i i18n="difficulty-box.expected-block">{{ i }} block expected</ng-template>
+    </ng-container>
+    <ng-container *ngIf="!isAhead">
+      <ng-container *ngTemplateOutlet="mined === 1 ? blocksSingular : blocksPlural; context: {$implicit: mined }"></ng-container>
+      <ng-template #blocksPlural let-i i18n="difficulty-box.mined-blocks">{{ i }} blocks mined</ng-template>
+      <ng-template #blocksSingular let-i i18n="difficulty-box.mined-block">{{ i }} block mined</ng-template>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'remaining'">
+    <ng-container *ngTemplateOutlet="remaining === 1 ? blocksSingular : blocksPlural; context: {$implicit: remaining }"></ng-container>
+    <ng-template #blocksPlural let-i i18n="difficulty-box.remaining-blocks">{{ i }} blocks remaining</ng-template>
+    <ng-template #blocksSingular let-i i18n="difficulty-box.remaining-block">{{ i }} block remaining</ng-template>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ahead'">
+    <ng-container *ngTemplateOutlet="ahead === 1 ? blocksSingular : blocksPlural; context: {$implicit: ahead }"></ng-container>
+    <ng-template #blocksPlural let-i i18n="difficulty-box.blocks-ahead">{{ i }} blocks ahead</ng-template>
+    <ng-template #blocksSingular let-i i18n="difficulty-box.block-ahead">{{ i }} block ahead</ng-template>
+  </ng-container>
+  <ng-container *ngSwitchCase="'behind'">
+    <ng-container *ngTemplateOutlet="behind === 1 ? blocksSingular : blocksPlural; context: {$implicit: behind }"></ng-container>
+    <ng-template #blocksPlural let-i i18n="difficulty-box.blocks-behind">{{ i }} blocks behind</ng-template>
+    <ng-template #blocksSingular let-i i18n="difficulty-box.block-behind">{{ i }} block behind</ng-template>
+  </ng-container>
+  <ng-container *ngSwitchCase="'next'">
+    <span class="next-block" i18n="@@bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">Next Block</span>
+  </ng-container>
+</ng-container>
+</div>
