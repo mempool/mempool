@@ -34,6 +34,13 @@
     padding: 10px 15px 15px;
   }
 
+  video {
+    width: 640px;
+    height: 360px;
+    max-width: 90%;
+    margin-top: 0;
+  }
+
   .social-icons {
     a {
       margin: auto 10px;
@@ -46,6 +53,7 @@
   .maintainers {
     margin-top: 68px;
     margin-bottom: 68px;
+    scroll-margin: 30px;
   }
 
   .maintainers {
@@ -117,6 +125,7 @@
   .project-translators,
   .community-integrations-sponsor,
   .maintainers {
+    scroll-margin: 30px;
     .wrapper {
       display: inline-block;
       a {
@@ -184,6 +193,21 @@
       margin: 15px auto 0px;
       &:last-child {
         margin: 20px auto 30px;
+      }
+    }
+    .social-icons {
+      a {
+        margin: 45px 10px;
+      }
+      .bitcointv svg {
+        width: 36px;
+        height: auto;
+        vertical-align: bottom;
+        margin-bottom: 2px;
+        margin-left: 5px;
+      }
+      .bitcointv svg:hover {
+        opacity: 0.75;
       }
     }
   }

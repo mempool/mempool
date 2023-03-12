@@ -1,8 +1,11 @@
 name: Cypress Tests
 
 on:
+  push:
+    branches: [master]
   pull_request:
-    types: [opened, review_requested, synchronize]
+    types: [opened, synchronize]
+
 jobs:
   cypress:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"

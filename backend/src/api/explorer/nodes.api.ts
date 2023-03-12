@@ -228,7 +228,7 @@ class NodesApi {
             nodes.capacity
           FROM nodes
           ORDER BY capacity DESC
-          LIMIT 100
+          LIMIT 6
         `;
 
         [rows] = await DB.query(query);
@@ -269,14 +269,26 @@ class NodesApi {
       let query: string;
       if (full === false) {
         query = `
-          SELECT nodes.public_key as publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
-            nodes.channels
+          SELECT
+            nodes.public_key as publicKey,
+            IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+            nodes.channels,
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM nodes
+          LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+          LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           ORDER BY channels DESC
-          LIMIT 100;
+          LIMIT 6;
         `;
 
         [rows] = await DB.query(query);
+        for (let i = 0; i < rows.length; ++i) {
+          rows[i].country = JSON.parse(rows[i].country);
+          rows[i].city = JSON.parse(rows[i].city);
+        }
       } else {
         query = `
           SELECT nodes.public_key AS publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
@@ -405,24 +417,24 @@ class NodesApi {
 
         if (!ispList[isp1]) {
           ispList[isp1] = {
-            id: channel.isp1ID.toString(),
+            ids: [channel.isp1ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp1].id.indexOf(channel.isp1ID) === -1) {
-          ispList[isp1].id += ',' + channel.isp1ID.toString();
+        } else if (ispList[isp1].ids.includes(channel.isp1ID) === false) {
+          ispList[isp1].ids.push(channel.isp1ID);
         }
 
         if (!ispList[isp2]) {
           ispList[isp2] = {
-            id: channel.isp2ID.toString(),
+            ids: [channel.isp2ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp2].id.indexOf(channel.isp2ID) === -1) {
-          ispList[isp2].id += ',' + channel.isp2ID.toString();
+        } else if (ispList[isp2].ids.includes(channel.isp2ID) === false) {
+          ispList[isp2].ids.push(channel.isp2ID);
         }
         
         ispList[isp1].capacity += channel.capacity;
@@ -432,11 +444,11 @@ class NodesApi {
         ispList[isp2].channels += 1;
         ispList[isp2].nodes[channel.node2PublicKey] = true;
       }
-
+      
       const ispRanking: any[] = [];
       for (const isp of Object.keys(ispList)) {
         ispRanking.push([
-          ispList[isp].id,
+          ispList[isp].ids.sort((a, b) => a - b).join(','),
           isp,
           ispList[isp].capacity,
           ispList[isp].channels,
@@ -630,6 +642,11 @@ class NodesApi {
    */
   public async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
+      // https://github.com/mempool/mempool/issues/3006
+      if ((node.last_update ?? 0) < 1514736061) { // January 1st 2018
+        node.last_update = null;
+      }
+  
       const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
       const query = `INSERT INTO nodes(
           public_key,

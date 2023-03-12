@@ -229,6 +229,7 @@ export class NodesChannelsMap implements OnInit {
       title: title ?? undefined,
       tooltip: {},
       geo: {
+        top: 75,
         animation: false,
         silent: true,
         center: this.center,

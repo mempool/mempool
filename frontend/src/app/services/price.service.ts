@@ -70,7 +70,7 @@ export class PriceService {
   }
 
   getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
-    if (this.stateService.env.BASE_MODULE !== 'mempool') {
+    if (this.stateService.env.BASE_MODULE !== 'mempool' || !this.stateService.env.HISTORICAL_PRICE) {
       return of(undefined);
     }
 
@@ -89,7 +89,7 @@ export class PriceService {
       return this.singlePriceObservable$.pipe(
         map((conversion) => {
           if (conversion.prices.length <= 0) {
-            return this.getEmptyPrice();
+            return undefined;
           }
           return {
             price: {
@@ -113,7 +113,7 @@ export class PriceService {
 
       return this.priceObservable$.pipe(
         map((conversion) => {
-          if (!blockTimestamp) {
+          if (!blockTimestamp || !conversion) {
             return undefined;
           }
 

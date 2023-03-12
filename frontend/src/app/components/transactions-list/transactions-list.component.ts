@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
-import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
+import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
@@ -23,6 +23,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
+  @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
@@ -67,8 +68,21 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
-          switchMap((txIds) => this.apiService.getOutspendsBatched$(txIds)),
-          tap((outspends: Outspend[][]) => {
+          switchMap((txIds) => {
+            if (!this.cached) {
+              // break list into batches of 50 (maximum supported by esplora)
+              const batches = [];
+              for (let i = 0; i < txIds.length; i += 50) {
+                batches.push(txIds.slice(i, i + 50));
+              }
+              return forkJoin(batches.map(batch => this.apiService.getOutspendsBatched$(batch)));
+            } else {
+              return of([]);
+            }
+          }),
+          tap((batchedOutspends: Outspend[][][]) => {
+            // flatten batched results back into a single array
+            const outspends = batchedOutspends.flat(1);
             if (!this.transactions) {
               return;
             }
@@ -155,7 +169,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         ).subscribe();
       });
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
-      if (txIds.length) {
+      if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
       }
       if (this.stateService.env.LIGHTNING) {

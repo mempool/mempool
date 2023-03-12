@@ -38,12 +38,19 @@ import forensicsService from './tasks/lightning/forensics.service';
 import priceUpdater from './tasks/price-updater';
 import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
+import v8 from 'v8';
+import { formatBytes, getBytesUnit } from './utils/format';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Application;
   private currentBackendRetryInterval = 5;
+
+  private maxHeapSize: number = 0;
+  private heapLogInterval: number = 60;
+  private warnedHeapCritical: boolean = false;
+  private lastHeapLogTime: number | null = null;
 
   constructor() {
     this.app = express();
@@ -87,9 +94,6 @@ class Server {
           await databaseMigration.$blocksReindexingTruncate();
         }
         await databaseMigration.$initializeOrMigrateDatabase();
-        if (Common.indexingEnabled()) {
-          await indexer.$resetHashratesIndexingState();
-        }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
@@ -113,6 +117,7 @@ class Server {
 
     this.setUpWebsocketHandling();
 
+    await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
       diskCache.loadMempoolCache();
@@ -138,6 +143,8 @@ class Server {
     if (config.MEMPOOL.ENABLED) {
       this.runMainUpdateLoop();
     }
+
+    setInterval(() => { this.healthCheck(); }, 2500);
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
@@ -171,7 +178,6 @@ class Server {
           logger.debug(msg);
         }
       }
-      await poolsUpdater.updatePoolsJson();
       await blocks.$updateBlocks();
       await memPool.$updateMempool();
       indexer.$run();
@@ -179,7 +185,14 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
       this.currentBackendRetryInterval = 5;
     } catch (e: any) {
-      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
+      let loggerMsg = `Exception in runMainUpdateLoop(). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
+      if (e?.stack) {
+        loggerMsg += ` Stack trace: ${e.stack}`;
+      }
+      // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
+      // From the second Exception, `logger.warn` the Exception and increase the retry delay
+      // Maximum retry delay is 60 seconds
       if (this.currentBackendRetryInterval > 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
@@ -199,8 +212,8 @@ class Server {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
-      await forensicsService.$startService();
       await lightningStatsUpdater.$startService();
+      await forensicsService.$startService();
     } catch(e) {
       logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);
@@ -249,6 +262,26 @@ class Server {
       generalLightningRoutes.initRoutes(this.app);
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
+    }
+  }
+
+  healthCheck(): void {
+    const now = Date.now();
+    const stats = v8.getHeapStatistics();
+    this.maxHeapSize = Math.max(stats.used_heap_size, this.maxHeapSize);
+    const warnThreshold = 0.8 * stats.heap_size_limit;
+
+    const byteUnits = getBytesUnit(Math.max(this.maxHeapSize, stats.heap_size_limit));
+
+    if (!this.warnedHeapCritical && this.maxHeapSize > warnThreshold) {
+      this.warnedHeapCritical = true;
+      logger.warn(`Used ${(this.maxHeapSize / stats.heap_size_limit).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`);
+    }
+    if (this.lastHeapLogTime === null || (now - this.lastHeapLogTime) > (this.heapLogInterval * 1000)) {
+      logger.debug(`Memory usage: ${formatBytes(this.maxHeapSize, byteUnits)} / ${formatBytes(stats.heap_size_limit, byteUnits)}`);
+      this.warnedHeapCritical = false;
+      this.maxHeapSize = 0;
+      this.lastHeapLogTime = now;
     }
   }
 }

@@ -10,7 +10,7 @@ class PoolsRepository {
    * Get all pools tagging info
    */
   public async $getPools(): Promise<PoolTag[]> {
-    const [rows] = await DB.query('SELECT id, name, addresses, regexes, slug FROM pools;');
+    const [rows] = await DB.query('SELECT id, unique_id as uniqueId, name, addresses, regexes, slug FROM pools');
     return <PoolTag[]>rows;
   }
 
@@ -18,10 +18,10 @@ class PoolsRepository {
    * Get unknown pool tagging info
    */
   public async $getUnknownPool(): Promise<PoolTag> {
-    let [rows]: any[] = await DB.query('SELECT id, name, slug FROM pools where name = "Unknown"');
+    let [rows]: any[] = await DB.query('SELECT id, unique_id as uniqueId, name, slug FROM pools where name = "Unknown"');
     if (rows && rows.length === 0 && config.DATABASE.ENABLED) {
       await poolsParser.$insertUnknownPool();
-      [rows] = await DB.query('SELECT id, name, slug FROM pools where name = "Unknown"');
+      [rows] = await DB.query('SELECT id, unique_id as uniqueId, name, slug FROM pools where name = "Unknown"');
     }
     return <PoolTag>rows[0];
   }

@@ -6,7 +6,7 @@ import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
 import feeApi from '../fee-api';
 import mempoolBlocks from '../mempool-blocks';
-import bitcoinApi from './bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin-api-factory';
 import { Common } from '../common';
 import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
@@ -217,13 +217,20 @@ class BitcoinRoutes {
       res.json(cpfpInfo);
       return;
     } else {
-      const cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      let cpfpInfo;
+      if (config.DATABASE.ENABLED) {
+        cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+      }
       if (cpfpInfo) {
         res.json(cpfpInfo);
         return;
+      } else {
+        res.json({
+          ancestors: []
+        });
+        return;
       }
     }
-    res.status(404).send(`Transaction has no CPFP info available.`);
   }
 
   private getBackendInfo(req: Request, res: Response) {
@@ -461,7 +468,7 @@ class BitcoinRoutes {
           returnBlocks.push(localBlock);
           nextHash = localBlock.previousblockhash;
         } else {
-          const block = await bitcoinApi.$getBlock(nextHash);
+          const block = await bitcoinCoreApi.$getBlock(nextHash);
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
@@ -644,7 +651,7 @@ class BitcoinRoutes {
       if (result) {
         res.json(result);
       } else {
-        res.status(404).send('not found');
+        res.status(204).send();
       }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
