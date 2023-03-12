@@ -11,6 +11,12 @@
     line-height: 32px;
   }
 
+  .image.not-rounded {
+    border-radius: 0;
+    width: 74px;
+    height: 74px;
+  }
+
   .intro {
     margin: 25px auto 30px;
     width: 250px;
@@ -199,6 +205,16 @@
       a {
         margin: 45px 10px;
       }
+      .bitcointv svg {
+        width: 36px;
+        height: auto;
+        vertical-align: bottom;
+        margin-bottom: 2px;
+        margin-left: 5px;
+      }
+      .bitcointv svg:hover {
+        opacity: 0.75;
+      }
     }
   }
 
@@ -214,4 +230,9 @@
 .community-integrations-sponsor {
   max-width: 965px;
   margin: auto;
+}
+
+.community-integrations-sponsor img.image {
+  width: 78px;
+  height: 78px;
 }
