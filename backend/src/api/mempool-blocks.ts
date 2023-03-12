@@ -59,7 +59,7 @@ class MempoolBlocks {
     // Loop through and traverse all ancestors and sum up all the sizes + fees
     // Pass down size + fee to all unconfirmed children
     let sizes = 0;
-    memPoolArray.forEach((tx, i) => {
+    memPoolArray.forEach((tx) => {
       sizes += tx.weight;
       if (sizes > 4000000 * 8) {
         return;
@@ -74,7 +74,7 @@ class MempoolBlocks {
     const time = end - start;
     logger.debug('Mempool blocks calculated in ' + time / 1000 + ' seconds');
 
-    const blocks = this.calculateMempoolBlocks(memPoolArray, this.mempoolBlocks);
+    const blocks = this.calculateMempoolBlocks(memPoolArray);
 
     if (saveResults) {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, blocks);
@@ -85,26 +85,23 @@ class MempoolBlocks {
     return blocks;
   }
 
-  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[], prevBlocks: MempoolBlockWithTransactions[]): MempoolBlockWithTransactions[] {
+  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let blockWeight = 0;
-    let blockSize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
         blockWeight += tx.weight;
-        blockSize += tx.size;
         transactions.push(tx);
       } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, mempoolBlocks.length));
+        mempoolBlocks.push(this.dataToMempoolBlocks(transactions));
         blockWeight = tx.weight;
-        blockSize = tx.size;
         transactions = [tx];
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, mempoolBlocks.length));
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactions));
     }
 
     return mempoolBlocks;
@@ -298,10 +295,10 @@ class MempoolBlocks {
     });
 
     // unpack the condensed blocks into proper mempool blocks
-    const mempoolBlocks = blocks.map((transactions, blockIndex) => {
+    const mempoolBlocks = blocks.map((transactions) => {
       return this.dataToMempoolBlocks(transactions.map(tx => {
         return mempool[tx.txid] || null;
-      }).filter(tx => !!tx), blockIndex);
+      }).filter(tx => !!tx));
     });
 
     if (saveResults) {
@@ -313,7 +310,7 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactions: TransactionExtended[], blocksIndex: number): MempoolBlockWithTransactions {
+  private dataToMempoolBlocks(transactions: TransactionExtended[]): MempoolBlockWithTransactions {
     let totalSize = 0;
     let totalWeight = 0;
     const fitTransactions: TransactionExtended[] = [];
