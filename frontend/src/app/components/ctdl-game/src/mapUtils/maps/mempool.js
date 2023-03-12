@@ -1,7 +1,6 @@
 import stage from './stage/mempool';
 
 import { addHook, CTDLGAME, getTimeOfDay } from '../../gameUtils';
-import { changeMap } from '../changeMap';
 import { mapTile } from '../mapTile';
 import { parsePattern } from '../parsePattern';
 import GameObject from '../../GameObject';
@@ -28,9 +27,13 @@ import everitt from '../../sprites/everitt.sprite';
 import des from '../../sprites/des.sprite';
 import soulexporter from '../../sprites/soulexporter.sprite';
 import soulexBoy from '../../sprites/soulexBoy.sprite';
+import bitcoinLabrador from '../../sprites/bitcoinLabrador.sprite';
+import bisq from '../../sprites/bisq.sprite';
 import Wiz from '../../npcs/Wiz';
 import { hexToRgb } from '../../stringUtils';
 import NPC from '../../npcs/NPC';
+import BitcoinLabrador from '../../npcs/BitcoinLabrador';
+import Cat from '../../npcs/Cat';
 
 const worldWidth = 76;
 const worldHeight = 45;
@@ -306,6 +309,22 @@ export default {
         y: 24 * tileSize - 2
       }
     ),
+    new BitcoinLabrador(
+      'bitcoinLabrador',
+      {
+        x: 63 * tileSize,
+        y: 23 * tileSize - 5,
+        direction: 'right'
+      }
+    ),
+    new Cat('bisq',
+      {
+        spriteId: 'bisq',
+        x: 66 * tileSize,
+        y: 27 * tileSize + 1,
+        direction: 'right'
+      }
+    ),
     new Soulexporter(
       'soulexporter',
       {
@@ -362,7 +381,9 @@ export default {
     soulexporter,
     soulexBoy,
     citizen1,
-    wiz
+    wiz,
+    bitcoinLabrador,
+    bisq,
   },
   track: () => 'mempool',
   bgColor: () => '#250d07',
