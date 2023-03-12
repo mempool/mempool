@@ -102,7 +102,7 @@ export class DifficultyComponent implements OnInit {
           this.expectedHeight = newExpectedHeight;
           this.currentHeight = this.stateService.latestBlockHeight;
           this.currentIndex = this.currentHeight - this.epochStart;
-          this.expectedIndex = Math.min(this.expectedHeight - this.epochStart, 2106) - 1;
+          this.expectedIndex = Math.min(this.expectedHeight - this.epochStart, 2016) - 1;
           this.difference = this.currentIndex - this.expectedIndex;
 
           this.shapes = [];
@@ -115,7 +115,7 @@ export class DifficultyComponent implements OnInit {
           this.shapes = this.shapes.concat(this.blocksToShapes(
             this.expectedIndex + 1, this.currentIndex, 'ahead', false
           ));
-          if (this.currentIndex < 2105) {
+          if (this.currentIndex < 2015) {
             this.shapes = this.shapes.concat(this.blocksToShapes(
               this.currentIndex + 1, this.currentIndex + 1, 'next', (this.expectedIndex > this.currentIndex)
             ));
