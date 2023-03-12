@@ -199,6 +199,16 @@
       a {
         margin: 45px 10px;
       }
+      .bitcointv svg {
+        width: 36px;
+        height: auto;
+        vertical-align: bottom;
+        margin-bottom: 2px;
+        margin-left: 5px;
+      }
+      .bitcointv svg:hover {
+        opacity: 0.75;
+      }
     }
   }
 
