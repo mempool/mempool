@@ -6,6 +6,7 @@ import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
+import { AssetsService } from '../../services/assets.service';
 
 interface SvgLine {
   path: string;
@@ -30,6 +31,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  asset?: string;
 }
 
 @Component({
@@ -71,6 +73,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   zeroValueWidth = 60;
   zeroValueThickness = 20;
   hasLine: boolean;
+  assetsMinimal: any;
 
   outspendsSubscription: Subscription;
   refreshOutspends$: ReplaySubject<string> = new ReplaySubject();
@@ -95,6 +98,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     private relativeUrlPipe: RelativeUrlPipe,
     private stateService: StateService,
     private apiService: ApiService,
+    private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,
   ) {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
@@ -104,6 +108,12 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.initGraph();
+
+    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
+      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
+        this.assetsMinimal = assets;
+      });
+    }
 
     this.outspendsSubscription = merge(
       this.refreshOutspends$
@@ -162,7 +172,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         index: i,
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
-        timestamp: this.tx.status.block_time
+        timestamp: this.tx.status.block_time,
+        asset: v?.asset,
       } as Xput;
     });
 
@@ -182,7 +193,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         coinbase: v?.is_coinbase,
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
-        timestamp: this.tx.status.block_time
+        timestamp: this.tx.status.block_time,
+        asset: v?.prevout?.asset,
       } as Xput;
     });
 
