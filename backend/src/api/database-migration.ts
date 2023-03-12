@@ -1037,7 +1037,7 @@ class DatabaseMigration {
     await this.$executeQuery('DELETE FROM `pools`');
     await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
     await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
-}
+  }
 
   private async $convertCompactCpfpTables(): Promise<void> {
     try {

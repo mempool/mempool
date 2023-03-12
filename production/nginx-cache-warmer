@@ -20,6 +20,7 @@ do for url in / \
 	'/api/v1/statistics/1y' \
 	'/api/v1/statistics/2y' \
 	'/api/v1/statistics/3y' \
+	'/api/v1/statistics/4y' \
 	'/api/v1/mining/pools/24h' \
 	'/api/v1/mining/pools/3d' \
 	'/api/v1/mining/pools/1w' \
@@ -94,7 +95,7 @@ do for url in / \
 	'/api/v1/lightning/statistics/3y' \
 	'/api/v1/lightning/statistics/all' \
 	'/api/v1/lightning/nodes/isp-ranking' \
-	'/api/v1/lightning/nodes/isp/396982,15169' `# Google` \
+	'/api/v1/lightning/nodes/isp/15169,396982' `# Google` \
 	'/api/v1/lightning/nodes/isp/14618,16509' `# Amazon` \
 	'/api/v1/lightning/nodes/isp/39572' `# DataWeb` \
 	'/api/v1/lightning/nodes/isp/14061' `# Digital Ocean` \
@@ -106,12 +107,15 @@ do for url in / \
 	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL` \
 	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU` \
 	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS` \
-	'/api/v1/lightning/nodes/isp/11426,11427,20001,20115,11351,10796,33363,12271' `# Spectrum` \
+	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,20115,33363' `# Spectrum` \
 	'/api/v1/lightning/nodes/isp/701' `# Verizon` \
 	'/api/v1/lightning/nodes/isp/12876' `# Scaleway` \
 	'/api/v1/lightning/nodes/isp/33915' `# Ziggo` \
 	'/api/v1/lightning/nodes/isp/3320' `# Deutsche Telekom AG` \
 	'/api/v1/lightning/nodes/isp/8075' `# Microsoft Azure` \
+	'/api/v1/lightning/nodes/isp/212531', `# UAB Interneto vizija` \
+	'/api/v1/lightning/nodes/isp/63949', `# Linode` \
+	'/api/v1/lightning/nodes/isp/51167', `# Contabo GmbH` \
 	'/api/v1/lightning/nodes/countries' \
 	'/api/v1/lightning/nodes/rankings' \
 	'/api/v1/lightning/nodes/rankings/liquidity' \
