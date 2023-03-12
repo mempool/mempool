@@ -31,6 +31,11 @@ class Mempool {
   private mempoolProtection = 0;
   private latestTransactions: any[] = [];
 
+  private ESPLORA_MISSING_TX_WARNING_THRESHOLD = 100; 
+  private SAMPLE_TIME = 10000; // In ms
+  private timer = new Date().getTime();
+  private missingTxCount = 0;
+
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
     setInterval(this.deleteExpiredTransactions.bind(this), 20000);
@@ -128,6 +133,16 @@ class Mempool {
       loadingIndicators.setProgress('mempool', Object.keys(this.mempoolCache).length / transactions.length * 100);
     }
 
+    // https://github.com/mempool/mempool/issues/3283
+    const logEsplora404 = (missingTxCount, threshold, time) => {
+      const log = `In the past ${time / 1000} seconds, esplora tx API replied ${missingTxCount} times with a 404 error code while updating nodejs backend mempool`;
+      if (missingTxCount >= threshold) {
+        logger.warn(log);
+      } else if (missingTxCount > 0) {
+        logger.debug(log);
+      }
+    };
+
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         try {
@@ -142,7 +157,10 @@ class Mempool {
           }
           hasChange = true;
           newTransactions.push(transaction);
-        } catch (e) {
+        } catch (e: any) {
+          if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
+            this.missingTxCount++;
+          }
           logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
         }
       }
@@ -150,6 +168,14 @@ class Mempool {
       if ((new Date().getTime()) - start > Mempool.WEBSOCKET_REFRESH_RATE_MS) {
         break;
       }
+    }
+
+    // Reset esplora 404 counter and log a warning if needed
+    const elapsedTime = new Date().getTime() - this.timer;
+    if (elapsedTime > this.SAMPLE_TIME) {
+      logEsplora404(this.missingTxCount, this.ESPLORA_MISSING_TX_WARNING_THRESHOLD, elapsedTime);
+      this.timer = new Date().getTime();
+      this.missingTxCount = 0;
     }
 
     // Prevent mempool from clear on bitcoind restart by delaying the deletion

@@ -4,7 +4,6 @@
 
   <div class="row row-cols-1 row-cols-md-2">
 
-    <!-- Temporary stuff here - Will be moved to a component once we have more useful data to show -->
     <div class="col">
       <div class="main-title">
         <span [attr.data-cy]="'reward-stats'" i18n="mining.reward-stats">Reward stats</span>&nbsp;
@@ -22,7 +21,7 @@
     <!-- difficulty adjustment -->
     <div class="col">
       <div class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
-      <app-difficulty [attr.data-cy]="'difficulty-adjustment'" [showTitle]="false" [showProgress]="false" [showHalving]="true"></app-difficulty>
+      <app-difficulty-mining [attr.data-cy]="'difficulty-adjustment'" [showTitle]="false" [showProgress]="false" [showHalving]="true"></app-difficulty-mining>
     </div>
 
     <!-- pool distribution -->

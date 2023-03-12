@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, HostListener, Inject, LOCALE_ID } 
 import { StateService } from '../../services/state.service';
 import { Outspend, Transaction } from '../../interfaces/electrs.interface';
 import { Router } from '@angular/router';
-import { ReplaySubject, merge, Subscription } from 'rxjs';
+import { ReplaySubject, merge, Subscription, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -40,6 +40,7 @@ interface Xput {
 export class TxBowtieGraphComponent implements OnInit, OnChanges {
   @Input() tx: Transaction;
   @Input() network: string;
+  @Input() cached: boolean = false;
   @Input() width = 1200;
   @Input() height = 600;
   @Input() lineLimit = 250;
@@ -107,7 +108,13 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
-          switchMap((txid) => this.apiService.getOutspendsBatched$([txid])),
+          switchMap((txid) => {
+            if (!this.cached) {
+              return this.apiService.getOutspendsBatched$([txid]);
+            } else {
+              return of(null);
+            }
+          }),
           tap((outspends: Outspend[][]) => {
             if (!this.tx || !outspends || !outspends.length) {
               return;
@@ -132,7 +139,9 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.initGraph();
-    this.refreshOutspends$.next(this.tx.txid);
+    if (!this.cached) {
+      this.refreshOutspends$.next(this.tx.txid);
+    }
   }
 
   initGraph(): void {
@@ -199,8 +208,8 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     this.outputs = this.initLines('out', voutWithFee, totalValue, this.maxStrands);
 
     this.middle = {
-      path: `M ${(this.width / 2) - this.midWidth} ${(this.height / 2) + 0.5} L ${(this.width / 2) + this.midWidth} ${(this.height / 2) + 0.5}`,
-      style: `stroke-width: ${this.combinedWeight + 1}; stroke: ${this.gradient[1]}`
+      path: `M ${(this.width / 2) - this.midWidth} ${(this.height / 2) + 0.25} L ${(this.width / 2) + this.midWidth} ${(this.height / 2) + 0.25}`,
+      style: `stroke-width: ${this.combinedWeight + 0.5}; stroke: ${this.gradient[1]}`
     };
 
     this.hasLine = this.inputs.reduce((line, put) => line || !put.zeroValue, false)
@@ -257,7 +266,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     const lineParams = weights.map((w, i) => {
       return {
         weight: w,
-        thickness: xputs[i].value === 0 ? this.zeroValueThickness : Math.max(this.minWeight - 1, w) + 1,
+        thickness: xputs[i].value === 0 ? this.zeroValueThickness : Math.min(this.combinedWeight + 0.5, Math.max(this.minWeight - 1, w) + 1),
         offset: 0,
         innerY: 0,
         outerY: 0,
@@ -269,7 +278,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
     // bounds of the middle segment
     const innerTop = (this.height / 2) - (this.combinedWeight / 2);
-    const innerBottom = innerTop + this.combinedWeight;
+    const innerBottom = innerTop + this.combinedWeight + 0.5;
     // tracks the visual bottom of the endpoints of the previous line
     let lastOuter = 0;
     let lastInner = innerTop;
@@ -294,7 +303,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
       // set the vertical position of the (center of the) outer side of the line
       line.outerY = lastOuter + (line.thickness / 2);
-      line.innerY = Math.min(innerBottom + (line.thickness / 2), Math.max(innerTop + (line.thickness / 2), lastInner + (line.weight / 2)));
+      line.innerY = Math.min(innerBottom - (line.thickness / 2), Math.max(innerTop + (line.thickness / 2), lastInner + (line.weight / 2)));
 
       // special case to center single input/outputs
       if (xputs.length === 1) {

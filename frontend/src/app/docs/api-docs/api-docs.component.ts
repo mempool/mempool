@@ -29,6 +29,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   screenWidth: number;
   officialMempoolInstance: boolean;
   auditEnabled: boolean;
+  mobileViewport: boolean = false;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -43,6 +44,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
       this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }
     this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+    this.mobileViewport = window.innerWidth <= 992;
   }
 
   ngAfterViewInit() {
