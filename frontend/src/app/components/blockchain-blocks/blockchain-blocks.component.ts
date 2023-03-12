@@ -20,8 +20,8 @@ interface BlockchainBlock extends BlockExtended {
 export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() static: boolean = false;
   @Input() offset: number = 0;
-  @Input() height: number = 0;
-  @Input() count: number = 8;
+  @Input() height: number = 0; // max height of blocks in chunk (dynamic blocks only)
+  @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
   
@@ -109,7 +109,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.blocks.unshift(block);
           this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
 
-          if (txConfirmed && this.height === block.height) {
+          if (txConfirmed && block.height > this.chainTip) {
             this.markHeight = block.height;
             this.moveArrowToPosition(true, true);
           } else {
