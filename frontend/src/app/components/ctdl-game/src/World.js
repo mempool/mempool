@@ -2,17 +2,7 @@ import constants from './constants';
 import { CTDLGAME, loadAsset, showProgressBar } from './gameUtils';
 import { intersects } from './geometryUtils';
 import { canDrawOn } from './performanceUtils';
-import Moon from './Moon';
-import Sun from './Sun';
 
-const sun = new Sun({
-  x: CTDLGAME.viewport.x + constants.WIDTH / 2,
-  y: CTDLGAME.viewport.y + 10
-});
-const moon = new Moon({
-  x: CTDLGAME.viewport.x + constants.WIDTH / 2,
-  y: CTDLGAME.viewport.y + 10
-});
 class World {
   constructor(id, map) {
     this.id = id;
@@ -46,8 +36,6 @@ class World {
     const sprite = CTDLGAME.assets[this.id];
 
     if (this.map.overworld) {
-      sun.update();
-      moon.update();
     } else if (this.map.bgColor) {
       constants.skyContext.globalAlpha = 1;
       constants.skyContext.fillStyle = CTDLGAME.world.map.bgColor();

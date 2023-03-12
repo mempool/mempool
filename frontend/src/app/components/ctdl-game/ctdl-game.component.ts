@@ -8,7 +8,6 @@ import {
   loadAsset,
   showStartGameScreen,
   showStartScreen,
-  showGameOverScreen,
   showProgressBar,
   showOverlay,
   updateViewport,
@@ -17,17 +16,14 @@ import {
   getTimeOfDay,
   clearCanvas,
   saveStateExists,
-  fadeIntoGameOver,
-  circadianRhythm,
   cleanUpStage,
-  showShop,
   showSettings,
   executeHooks,
 } from './src/gameUtils';
 import { prompt, writeMenu } from './src/textUtils';
 import { applyGravity } from './src/physicsUtils';
 import { isSoundLoaded, toggleSounds } from './src/sounds';
-import { toggleSoundtrack, stopMusic, startMusic } from './src/soundtrack';
+import { toggleSoundtrack, stopMusic } from './src/soundtrack';
 import { showFrameRate } from './src/debugUtils';
 
 let isFocused = false;
@@ -142,34 +138,12 @@ export class CTDLGAMEComponent {
         return $window.requestAnimationFrame(tick);
       }
 
-      if (CTDLGAME.gameOver) {
-        if ((CTDLGAME.frame / constants.FRAMERATE) % 16 === 0)
-          CTDLGAME.frame = 0;
-        clearCanvas();
-        showGameOverScreen();
-
-        showFrameRate();
-        return $window.requestAnimationFrame(tick);
-      }
-
-      if ((CTDLGAME.frame * 1.5) % constants.FRAMERATE === 0) {
-        circadianRhythm(time);
-      }
-
       time = getTimeOfDay();
       if (
         CTDLGAME.frame !== 0 &&
         CTDLGAME.frame % constants.CHECKBLOCKTIME === 0
       )
         checkBlocks();
-
-      if (CTDLGAME.showShop) {
-        showShop();
-        showMenu(CTDLGAME.inventory);
-        writeMenu();
-
-        return $window.requestAnimationFrame(tick);
-      }
 
       if (CTDLGAME.prompt) {
         prompt(CTDLGAME.prompt);
@@ -208,10 +182,6 @@ export class CTDLGAMEComponent {
 
       if (CTDLGAME.frame > constants.FRAMERESET) {
         CTDLGAME.frame = 0;
-      }
-
-      if (!CTDLGAME.hodlonaut.health && !CTDLGAME.katoshi.health) {
-        fadeIntoGameOver();
       }
 
       showFrameRate();

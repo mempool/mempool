@@ -534,7 +534,6 @@ function mouseMove (e) {
     return;
   }
 
-  if (CTDLGAME.showShop) return;
 
   CTDLGAME.showOverlay = true;
 }
