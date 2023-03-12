@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, EffectiveFeeStats, CpfpSummary } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -205,7 +205,7 @@ class Blocks {
         feeRange: [stats.minfeerate, stats.feerate_percentiles, stats.maxfeerate].flat(),
       };
       if (transactions?.length > 1) {
-        feeStats = this.calcEffectiveFeeStatistics(transactions);
+        feeStats = Common.calcEffectiveFeeStatistics(transactions);
       }
       extras.medianFee = feeStats.medianFee;
       extras.feeRange = feeStats.feeRange;
@@ -578,7 +578,7 @@ class Blocks {
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
-      const cpfpSummary: CpfpSummary = this.calculateCpfp(block.height, transactions);
+      const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
 
@@ -925,53 +925,12 @@ class Blocks {
       return tx;
     });
 
-    const summary = this.calculateCpfp(height, transactions);
+    const summary = Common.calculateCpfp(height, transactions);
 
     await this.$saveCpfp(hash, height, summary);
 
-    const effectiveFeeStats = this.calcEffectiveFeeStatistics(summary.transactions);
+    const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
     await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
-  }
-
-  public calculateCpfp(height: number, transactions: TransactionExtended[]): CpfpSummary {
-    const clusters: any[] = [];
-    let cluster: TransactionExtended[] = [];
-    let ancestors: { [txid: string]: boolean } = {};
-    const txMap = {};
-    for (let i = transactions.length - 1; i >= 0; i--) {
-      const tx = transactions[i];
-      txMap[tx.txid] = tx;
-      if (!ancestors[tx.txid]) {
-        let totalFee = 0;
-        let totalVSize = 0;
-        cluster.forEach(tx => {
-          totalFee += tx?.fee || 0;
-          totalVSize += (tx.weight / 4);
-        });
-        const effectiveFeePerVsize = totalFee / totalVSize;
-        if (cluster.length > 1) {
-          clusters.push({
-            root: cluster[0].txid,
-            height,
-            txs: cluster.map(tx => { return { txid: tx.txid, weight: tx.weight, fee: tx.fee || 0 }; }),
-            effectiveFeePerVsize,
-          });
-        }
-        cluster.forEach(tx => {
-          txMap[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
-        })
-        cluster = [];
-        ancestors = {};
-      }
-      cluster.push(tx);
-      tx.vin.forEach(vin => {
-        ancestors[vin.txid] = true;
-      });
-    }
-    return {
-      transactions,
-      clusters,
-    };
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {
@@ -980,60 +939,6 @@ class Blocks {
       await cpfpRepository.$insertProgressMarker(height);
     }
   }
-
-  private calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string }[]): EffectiveFeeStats {
-    const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
-    const halfTotalWeight = transactions.reduce((total, tx) => total += tx.weight, 0) / 2;
-    let weightCount = 0;
-    let medianFee = 0;
-    let medianWeight = 0;
-
-    // calculate the "medianFee" as the weighted-average fee rate of the middle 10000 weight units of transactions
-    const leftBound = halfTotalWeight - 5000;
-    const rightBound = halfTotalWeight + 5000;
-    for (let i = 0; i < sortedTxs.length && weightCount < rightBound; i++) {
-      const left = weightCount;
-      const right = weightCount + sortedTxs[i].weight;
-      if (right > leftBound) {
-        const weight = Math.min(right, rightBound) - Math.max(left, leftBound);
-        medianFee += (sortedTxs[i].rate * (weight / 4) );
-        medianWeight += weight;
-      }
-      weightCount += sortedTxs[i].weight;
-    }
-    const medianFeeRate = medianFee / (medianWeight / 4);
-
-    // minimum effective fee heuristic:
-    // lowest of
-    // a) the 1st percentile of effective fee rates
-    // b) the minimum effective fee rate in the last 2% of transactions (in block order)
-    const minFee = Math.min(
-      getNthPercentile(1, sortedTxs).rate,
-      transactions.slice(-transactions.length / 50).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
-    );
-
-    // maximum effective fee heuristic:
-    // highest of
-    // a) the 99th percentile of effective fee rates
-    // b) the maximum effective fee rate in the first 2% of transactions (in block order)
-    const maxFee = Math.max(
-      getNthPercentile(99, sortedTxs).rate,
-      transactions.slice(0, transactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
-    );
-
-    return {
-      medianFee: medianFeeRate,
-      feeRange: [
-        minFee,
-        [10,25,50,75,90].map(n => getNthPercentile(n, sortedTxs).rate),
-        maxFee,
-      ].flat(),
-    };
-  }
-}
-
-function getNthPercentile(n: number, sortedDistribution: any[]): any {
-  return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
 }
 
 export default new Blocks();
