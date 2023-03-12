@@ -80,6 +80,7 @@
     "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^13.1.1",
     "@types/qrcode": "~1.5.0",
+    "behaviortree": "^3.0.0-beta.1",
     "bootstrap": "~4.6.1",
     "browserify": "^17.0.0",
     "clipboard": "^2.0.11",
@@ -93,6 +94,7 @@
     "rxjs": "~7.8.0",
     "tinyify": "^3.1.0",
     "tlite": "^0.1.9",
+    "tone": "^14.7.77",
     "tslib": "~2.4.1",
     "zone.js": "~0.12.0"
   },

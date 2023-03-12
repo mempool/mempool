@@ -1,0 +1,1 @@
+export { applyGravity } from './applyGravity';

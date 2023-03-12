@@ -1,0 +1,1 @@
+export { showFrameRate } from './showFrameRate';

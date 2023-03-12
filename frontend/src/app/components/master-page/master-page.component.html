@@ -29,6 +29,10 @@
       <a [href]="env.BISQ_WEBSITE_URL + urlLanguage + (networkPaths['bisq'] || '')" ngbDropdownItem *ngIf="env.BISQ_ENABLED" class="bisq"><app-svg-images name="bisq" width="20" height="20" viewBox="0 0 75 75" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Bisq</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + (networkPaths['liquid'] || '')" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage  + (networkPaths['liquidtestnet'] || '/testnet')" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Liquid Testnet</a>
+      <div>
+        <h6 class="dropdown-header" i18n="master-page.easterEgg-header">Special</h6>
+        <a [href]="'/ctdl-game'" ngbDropdownItem class="ctdl-game" ><img style="width: 41px;" class="mainnet mr-1" src="/resources/ctdl-game/logo.png" /></a>
+      </div>
     </div>
   </div>
 

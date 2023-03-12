@@ -1,0 +1,1 @@
+export { canDrawOn } from './canDrawOn';

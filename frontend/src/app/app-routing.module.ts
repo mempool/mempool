@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AppPreloadingStrategy } from './app.preloading-strategy'
+import { AppPreloadingStrategy } from './app.preloading-strategy';
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
@@ -15,6 +15,7 @@ import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-mast
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
+import { CTDLGAMEComponent } from './components/ctdl-game/ctdl-game.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
@@ -32,7 +33,8 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+        loadChildren: () =>
+          import('./graphs/graphs.module').then((m) => m.GraphsModule),
         data: { preload: true },
       },
       {
@@ -42,7 +44,7 @@ let routes: Routes = [
           {
             path: 'mining/blocks',
             redirectTo: 'blocks',
-            pathMatch: 'full'
+            pathMatch: 'full',
           },
           {
             path: 'tx/push',
@@ -58,15 +60,15 @@ let routes: Routes = [
           },
           {
             path: 'terms-of-service',
-            component: TermsOfServiceComponent
+            component: TermsOfServiceComponent,
           },
           {
             path: 'privacy-policy',
-            component: PrivacyPolicyComponent
+            component: PrivacyPolicyComponent,
           },
           {
             path: 'trademark-policy',
-            component: TrademarkPolicyComponent
+            component: TrademarkPolicyComponent,
           },
           {
             path: 'address/:id',
@@ -75,7 +77,7 @@ let routes: Routes = [
             data: {
               ogImage: true,
               networkSpecific: true,
-            }
+            },
           },
           {
             path: 'tx',
@@ -84,7 +86,7 @@ let routes: Routes = [
             children: [
               {
                 path: ':id',
-                component: TransactionComponent
+                component: TransactionComponent,
               },
             ],
           },
@@ -92,46 +94,55 @@ let routes: Routes = [
             path: 'block',
             component: StartComponent,
             data: { networkSpecific: true },
-              children: [
+            children: [
               {
                 path: ':id',
                 component: BlockComponent,
                 data: {
-                  ogImage: true
-                }
+                  ogImage: true,
+                },
               },
             ],
           },
           {
             path: 'docs',
-            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule),
+            loadChildren: () =>
+              import('./docs/docs.module').then((m) => m.DocsModule),
             data: { preload: true },
           },
           {
             path: 'api',
-            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+            loadChildren: () =>
+              import('./docs/docs.module').then((m) => m.DocsModule),
           },
           {
             path: 'lightning',
-            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
-            data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true, networks: ['bitcoin'] },
+            loadChildren: () =>
+              import('./lightning/lightning.module').then(
+                (m) => m.LightningModule
+              ),
+            data: {
+              preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true,
+              networks: ['bitcoin'],
+            },
           },
         ],
       },
       {
         path: 'status',
         data: { networks: ['bitcoin', 'liquid'] },
-        component: StatusViewComponent
+        component: StatusViewComponent,
       },
       {
         path: '',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () =>
+          import('./graphs/graphs.module').then((m) => m.GraphsModule),
       },
       {
         path: '**',
-        redirectTo: '/testnet'
+        redirectTo: '/testnet',
       },
-    ]
+    ],
   },
   {
     path: 'signet',
@@ -139,12 +150,13 @@ let routes: Routes = [
       {
         path: 'mining/blocks',
         redirectTo: 'blocks',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () =>
+          import('./graphs/graphs.module').then((m) => m.GraphsModule),
       },
       {
         path: '',
@@ -164,15 +176,15 @@ let routes: Routes = [
           },
           {
             path: 'terms-of-service',
-            component: TermsOfServiceComponent
+            component: TermsOfServiceComponent,
           },
           {
             path: 'privacy-policy',
-            component: PrivacyPolicyComponent
+            component: PrivacyPolicyComponent,
           },
           {
             path: 'trademark-policy',
-            component: TrademarkPolicyComponent
+            component: TrademarkPolicyComponent,
           },
           {
             path: 'address/:id',
@@ -181,7 +193,7 @@ let routes: Routes = [
             data: {
               ogImage: true,
               networkSpecific: true,
-            }
+            },
           },
           {
             path: 'tx',
@@ -190,7 +202,7 @@ let routes: Routes = [
             children: [
               {
                 path: ':id',
-                component: TransactionComponent
+                component: TransactionComponent,
               },
             ],
           },
@@ -203,45 +215,52 @@ let routes: Routes = [
                 path: ':id',
                 component: BlockComponent,
                 data: {
-                  ogImage: true
-                }
+                  ogImage: true,
+                },
               },
             ],
           },
           {
             path: 'docs',
-            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+            loadChildren: () =>
+              import('./docs/docs.module').then((m) => m.DocsModule),
           },
           {
             path: 'api',
-            loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+            loadChildren: () =>
+              import('./docs/docs.module').then((m) => m.DocsModule),
           },
           {
             path: 'lightning',
             data: { networks: ['bitcoin'] },
-            loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+            loadChildren: () =>
+              import('./lightning/lightning.module').then(
+                (m) => m.LightningModule
+              ),
           },
         ],
       },
       {
         path: 'status',
         data: { networks: ['bitcoin', 'liquid'] },
-        component: StatusViewComponent
+        component: StatusViewComponent,
       },
       {
         path: '',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () =>
+          import('./graphs/graphs.module').then((m) => m.GraphsModule),
       },
       {
         path: '**',
-        redirectTo: '/signet'
+        redirectTo: '/signet',
       },
-    ]
+    ],
   },
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+    loadChildren: () =>
+      import('./graphs/graphs.module').then((m) => m.GraphsModule),
   },
   {
     path: '',
@@ -250,7 +269,7 @@ let routes: Routes = [
       {
         path: 'mining/blocks',
         redirectTo: 'blocks',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'tx/push',
@@ -266,15 +285,15 @@ let routes: Routes = [
       },
       {
         path: 'terms-of-service',
-        component: TermsOfServiceComponent
+        component: TermsOfServiceComponent,
       },
       {
         path: 'privacy-policy',
-        component: PrivacyPolicyComponent
+        component: PrivacyPolicyComponent,
       },
       {
         path: 'trademark-policy',
-        component: TrademarkPolicyComponent
+        component: TrademarkPolicyComponent,
       },
       {
         path: 'address/:id',
@@ -283,7 +302,7 @@ let routes: Routes = [
         data: {
           ogImage: true,
           networkSpecific: true,
-        }
+        },
       },
       {
         path: 'tx',
@@ -292,7 +311,7 @@ let routes: Routes = [
         children: [
           {
             path: ':id',
-            component: TransactionComponent
+            component: TransactionComponent,
           },
         ],
       },
@@ -305,23 +324,31 @@ let routes: Routes = [
             path: ':id',
             component: BlockComponent,
             data: {
-              ogImage: true
-            }
+              ogImage: true,
+            },
           },
         ],
       },
       {
         path: 'docs',
-        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+        loadChildren: () =>
+          import('./docs/docs.module').then((m) => m.DocsModule),
       },
       {
         path: 'api',
-        loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+        loadChildren: () =>
+          import('./docs/docs.module').then((m) => m.DocsModule),
       },
       {
         path: 'lightning',
         data: { networks: ['bitcoin'] },
-        loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule)
+        loadChildren: () =>
+          import('./lightning/lightning.module').then((m) => m.LightningModule),
+      },
+
+      {
+        path: 'ctdl-game',
+        component: CTDLGAMEComponent,
       },
     ],
   },
@@ -330,39 +357,46 @@ let routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () =>
+          import('./previews.module').then((m) => m.PreviewsModule),
       },
       {
         path: 'testnet',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () =>
+          import('./previews.module').then((m) => m.PreviewsModule),
       },
       {
         path: 'signet',
-        loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+        loadChildren: () =>
+          import('./previews.module').then((m) => m.PreviewsModule),
       },
     ],
   },
   {
     path: 'status',
     data: { networks: ['bitcoin', 'liquid'] },
-    component: StatusViewComponent
+    component: StatusViewComponent,
   },
   {
     path: '',
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+    loadChildren: () =>
+      import('./graphs/graphs.module').then((m) => m.GraphsModule),
   },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '',
   },
 ];
 
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'bisq') {
-  routes = [{
-    path: '',
-    component: BisqMasterPageComponent,
-    loadChildren: () => import('./bisq/bisq.module').then(m => m.BisqModule)
-  }];
+  routes = [
+    {
+      path: '',
+      component: BisqMasterPageComponent,
+      loadChildren: () =>
+        import('./bisq/bisq.module').then((m) => m.BisqModule),
+    },
+  ];
 }
 
 if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
@@ -373,7 +407,8 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: '',
           pathMatch: 'full',
-          loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+          loadChildren: () =>
+            import('./graphs/graphs.module').then((m) => m.GraphsModule),
         },
         {
           path: '',
@@ -393,15 +428,15 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: 'terms-of-service',
-              component: TermsOfServiceComponent
+              component: TermsOfServiceComponent,
             },
             {
               path: 'privacy-policy',
-              component: PrivacyPolicyComponent
+              component: PrivacyPolicyComponent,
             },
             {
               path: 'trademark-policy',
-              component: TrademarkPolicyComponent
+              component: TrademarkPolicyComponent,
             },
             {
               path: 'address/:id',
@@ -410,7 +445,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               data: {
                 ogImage: true,
                 networkSpecific: true,
-              }
+              },
             },
             {
               path: 'tx',
@@ -419,7 +454,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               children: [
                 {
                   path: ':id',
-                  component: TransactionComponent
+                  component: TransactionComponent,
                 },
               ],
             },
@@ -432,8 +467,8 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
                   path: ':id',
                   component: BlockComponent,
                   data: {
-                    ogImage: true
-                  }
+                    ogImage: true,
+                  },
                 },
               ],
             },
@@ -450,48 +485,52 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
                 {
                   path: 'asset/:id',
                   data: { networkSpecific: true },
-                  component: AssetComponent
+                  component: AssetComponent,
                 },
                 {
                   path: 'group/:id',
                   data: { networkSpecific: true },
-                  component: AssetGroupComponent
+                  component: AssetGroupComponent,
                 },
                 {
                   path: '**',
-                  redirectTo: 'all'
-                }
-              ]
+                  redirectTo: 'all',
+                },
+              ],
             },
             {
               path: 'docs',
-              loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+              loadChildren: () =>
+                import('./docs/docs.module').then((m) => m.DocsModule),
             },
             {
               path: 'api',
-              loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+              loadChildren: () =>
+                import('./docs/docs.module').then((m) => m.DocsModule),
             },
           ],
         },
         {
           path: 'status',
           data: { networks: ['bitcoin', 'liquid'] },
-          component: StatusViewComponent
+          component: StatusViewComponent,
         },
         {
           path: '',
-          loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+          loadChildren: () =>
+            import('./graphs/graphs.module').then((m) => m.GraphsModule),
         },
         {
           path: '**',
-          redirectTo: '/signet'
+          redirectTo: '/signet',
         },
-      ]
+      ],
     },
     {
       path: '',
       pathMatch: 'full',
-      loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+      loadChildren: () =>
+        import('./graphs/graphs.module').then((m) => m.GraphsModule),
     },
     {
       path: '',
@@ -511,15 +550,15 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'terms-of-service',
-          component: TermsOfServiceComponent
+          component: TermsOfServiceComponent,
         },
         {
           path: 'privacy-policy',
-          component: PrivacyPolicyComponent
+          component: PrivacyPolicyComponent,
         },
         {
           path: 'trademark-policy',
-          component: TrademarkPolicyComponent
+          component: TrademarkPolicyComponent,
         },
         {
           path: 'address/:id',
@@ -528,7 +567,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           data: {
             ogImage: true,
             networkSpecific: true,
-          }
+          },
         },
         {
           path: 'tx',
@@ -537,7 +576,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           children: [
             {
               path: ':id',
-              component: TransactionComponent
+              component: TransactionComponent,
             },
           ],
         },
@@ -550,8 +589,8 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
               path: ':id',
               component: BlockComponent,
               data: {
-                ogImage: true
-              }
+                ogImage: true,
+              },
             },
           ],
         },
@@ -573,26 +612,28 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             {
               path: 'asset/:id',
               data: { networkSpecific: true },
-              component: AssetComponent
+              component: AssetComponent,
             },
             {
               path: 'group/:id',
               data: { networkSpecific: true },
-              component: AssetGroupComponent
+              component: AssetGroupComponent,
             },
             {
               path: '**',
-              redirectTo: 'featured'
-            }
-          ]
+              redirectTo: 'featured',
+            },
+          ],
         },
         {
           path: 'docs',
-          loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+          loadChildren: () =>
+            import('./docs/docs.module').then((m) => m.DocsModule),
         },
         {
           path: 'api',
-          loadChildren: () => import('./docs/docs.module').then(m => m.DocsModule)
+          loadChildren: () =>
+            import('./docs/docs.module').then((m) => m.DocsModule),
         },
       ],
     },
@@ -601,36 +642,41 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       children: [
         {
           path: '',
-          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+          loadChildren: () =>
+            import('./previews.module').then((m) => m.PreviewsModule),
         },
         {
           path: 'testnet',
-          loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
+          loadChildren: () =>
+            import('./previews.module').then((m) => m.PreviewsModule),
         },
       ],
     },
     {
       path: 'status',
-      data: { networks: ['bitcoin', 'liquid']},
-      component: StatusViewComponent
+      data: { networks: ['bitcoin', 'liquid'] },
+      component: StatusViewComponent,
     },
     {
       path: '',
-      loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+      loadChildren: () =>
+        import('./graphs/graphs.module').then((m) => m.GraphsModule),
     },
     {
       path: '**',
-      redirectTo: ''
+      redirectTo: '',
     },
   ];
 }
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabledBlocking',
-    scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
-    preloadingStrategy: AppPreloadingStrategy
-  })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabledBlocking',
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled',
+      preloadingStrategy: AppPreloadingStrategy,
+    }),
+  ],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
