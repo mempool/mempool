@@ -20,8 +20,8 @@ interface BlockchainBlock extends BlockExtended {
 export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() static: boolean = false;
   @Input() offset: number = 0;
-  @Input() height: number = 0;
-  @Input() count: number = 8;
+  @Input() height: number = 0; // max height of blocks in chunk (dynamic blocks only)
+  @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
   
@@ -31,6 +31,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   dynamicBlocksAmount: number = 8;
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
+  chainTip: number;
   blocksSubscription: Subscription;
   blockPageSubscription: Subscription;
   networkSubscription: Subscription;
@@ -73,6 +74,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    this.chainTip = this.stateService.latestBlockHeight;
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
@@ -107,7 +109,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.blocks.unshift(block);
           this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
 
-          if (txConfirmed) {
+          if (txConfirmed && block.height > this.chainTip) {
             this.markHeight = block.height;
             this.moveArrowToPosition(true, true);
           } else {
@@ -115,7 +117,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.blockStyles = [];
-          if (this.blocksFilled) {
+          if (this.blocksFilled && block.height > this.chainTip) {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -155 : -205)));
             setTimeout(() => {
               this.blockStyles = [];
@@ -129,6 +131,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           if (this.blocks.length === this.dynamicBlocksAmount) {
             this.blocksFilled = true;
           }
+
+          this.chainTip = Math.max(this.chainTip, block.height);
           this.cd.markForCheck();
         });
     } else {

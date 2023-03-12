@@ -1,0 +1,22 @@
+.difficulty-tooltip {
+  position: fixed;
+  background: rgba(#11131f, 0.95);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+  color: #b1b1b1;
+  padding: 10px 15px;
+  text-align: left;
+  pointer-events: none;
+  max-width: 300px;
+  min-width: 200px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+.next-block {
+  text-transform: lowercase;
+}

@@ -17,7 +17,7 @@
   <div class="clearfix"></div>
 
   <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
-    <span class="text-center" i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
+    <span class="text-center">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
   </div>
 
   <div class="box" *ngIf="!error">
@@ -57,7 +57,7 @@
             </tr>
             <tr *ngIf="(avgChannelDistance$ | async) as avgDistance;">
               <td i18n="lightning.avg-distance" class="text-truncate">Avg channel distance</td>
-              <td>{{ avgDistance | number : '1.0-0' }} <span class="symbol">km</span> <span class="separator">/</span> {{ kmToMiles(avgDistance) | number : '1.0-0' }} <span class="symbol">mi</span></td>
+              <td class="direction-ltr">{{ avgDistance | amountShortener: 1 }} <span class="symbol">km</span> <span class="separator">·</span>{{ kmToMiles(avgDistance) | amountShortener: 1 }} <span class="symbol">mi</span></td>
             </tr>
           </tbody>
         </table>

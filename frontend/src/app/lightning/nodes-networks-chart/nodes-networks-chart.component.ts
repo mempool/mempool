@@ -182,7 +182,7 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Clearnet (IPv4, IPv6)`,
+        name: $localize`Clearnet Only (IPv4, IPv6)`,
         showSymbol: false,
         symbol: 'none',
         data: data.clearnet_nodes,
@@ -292,7 +292,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Clearnet (IPv4, IPv6)`,
+            name: $localize`Clearnet Only (IPv4, IPv6)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -318,7 +318,7 @@ export class NodesNetworksChartComponent implements OnInit {
         ],
         selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
           '$localize`Darknet Only (Tor, I2P, cjdns)`': true,
-          '$localize`Clearnet (IPv4, IPv6)`': true,
+          '$localize`Clearnet Only (IPv4, IPv6)`': true,
           '$localize`Clearnet and Darknet`': true,
           '$localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`': true,
         }

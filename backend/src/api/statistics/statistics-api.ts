@@ -375,6 +375,17 @@ class StatisticsApi {
     }
   }
 
+  public async $list4Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const query = this.getQueryForDays(43200, '4 YEAR'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
+    } catch (e) {
+      logger.err('$list4Y() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
       return {

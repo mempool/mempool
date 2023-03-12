@@ -20,7 +20,7 @@
   <div class="clearfix"></div>
 
   <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
-    <span class="text-center" i18n="lightning.channel-not-found">No channel found for short id "{{ channel.short_id }}"</span>
+    <span class="text-center">No channel found for ID "{{ channel.short_id }}"</span>
   </div>
 
   <app-nodes-channels-map *ngIf="!error && (channelGeo$ | async) as channelGeo" [style]="'channelpage'"
