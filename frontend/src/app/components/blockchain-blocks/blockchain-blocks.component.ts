@@ -107,7 +107,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.blocks.unshift(block);
           this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
 
-          if (txConfirmed) {
+          if (txConfirmed && this.height === block.height) {
             this.markHeight = block.height;
             this.moveArrowToPosition(true, true);
           } else {
