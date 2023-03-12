@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding 
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { concat, Observable } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
@@ -73,7 +73,7 @@ export class PoolRankingComponent implements OnInit {
         }
       });
 
-    this.miningStatsObservable$ = concat(
+    this.miningStatsObservable$ = merge(
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
           startWith(this.radioGroupForm.controls.dateSpan.value), // (trigger when the page loads)
@@ -89,7 +89,7 @@ export class PoolRankingComponent implements OnInit {
             return this.miningService.getMiningStats(this.miningWindowPreference);
           })
         ),
-        this.stateService.blocks$
+        this.stateService.chainTip$
           .pipe(
             switchMap(() => {
               return this.miningService.getMiningStats(this.miningWindowPreference);

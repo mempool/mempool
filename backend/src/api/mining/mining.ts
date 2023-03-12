@@ -117,7 +117,7 @@ class Mining {
       poolsStatistics['lastEstimatedHashrate'] = await bitcoinClient.getNetworkHashPs(totalBlock24h);
     } catch (e) {
       poolsStatistics['lastEstimatedHashrate'] = 0;
-      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate');
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
     }
 
     return poolsStatistics;
@@ -145,7 +145,7 @@ class Mining {
     try {
       currentEstimatedHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
     } catch (e) {
-      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate');
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
     }
 
     return {
@@ -208,7 +208,7 @@ class Mining {
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
-      logger.debug(`Indexing weekly mining pool hashrate`);
+      logger.debug(`Indexing weekly mining pool hashrate`, logger.tags.mining);
       loadingIndicators.setProgress('weekly-hashrate-indexing', 0);
 
       while (toTimestamp > genesisTimestamp && toTimestamp > oldestConsecutiveBlockTimestamp) {
@@ -245,7 +245,7 @@ class Mining {
             });
           }
 
-          newlyIndexed += hashrates.length;
+          newlyIndexed += hashrates.length / Math.max(1, pools.length);
           await HashratesRepository.$saveHashrates(hashrates);
           hashrates.length = 0;
         }
@@ -256,7 +256,7 @@ class Mining {
           const weeksPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
           const progress = Math.round(totalIndexed / totalWeekIndexed * 10000) / 100;
           const formattedDate = new Date(fromTimestamp).toUTCString();
-          logger.debug(`Getting weekly pool hashrate for ${formattedDate} | ~${weeksPerSeconds.toFixed(2)} weeks/sec | total: ~${totalIndexed}/${Math.round(totalWeekIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`);
+          logger.debug(`Getting weekly pool hashrate for ${formattedDate} | ~${weeksPerSeconds.toFixed(2)} weeks/sec | total: ~${totalIndexed}/${Math.round(totalWeekIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
           loadingIndicators.setProgress('weekly-hashrate-indexing', progress, false);
@@ -268,14 +268,14 @@ class Mining {
       }
       this.lastWeeklyHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
-        logger.notice(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`, logger.tags.mining);
+        logger.info(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       } else {
-        logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed}`, logger.tags.mining);
+        logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       }
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('weekly-hashrate-indexing', 100);
-      logger.err(`Weekly mining pools hashrates indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Weekly mining pools hashrates indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
   }
@@ -308,7 +308,7 @@ class Mining {
       const startedAt = new Date().getTime() / 1000;
       let timer = new Date().getTime() / 1000;
 
-      logger.debug(`Indexing daily network hashrate`);
+      logger.debug(`Indexing daily network hashrate`, logger.tags.mining);
       loadingIndicators.setProgress('daily-hashrate-indexing', 0);
 
       while (toTimestamp > genesisTimestamp && toTimestamp > oldestConsecutiveBlockTimestamp) {
@@ -346,7 +346,7 @@ class Mining {
           const daysPerSeconds = Math.max(1, Math.round(indexedThisRun / elapsedSeconds));
           const progress = Math.round(totalIndexed / totalDayIndexed * 10000) / 100;
           const formattedDate = new Date(fromTimestamp).toUTCString();
-          logger.debug(`Getting network daily hashrate for ${formattedDate} | ~${daysPerSeconds.toFixed(2)} days/sec | total: ~${totalIndexed}/${Math.round(totalDayIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`);
+          logger.debug(`Getting network daily hashrate for ${formattedDate} | ~${daysPerSeconds.toFixed(2)} days/sec | total: ~${totalIndexed}/${Math.round(totalDayIndexed)} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
           timer = new Date().getTime() / 1000;
           indexedThisRun = 0;
           loadingIndicators.setProgress('daily-hashrate-indexing', progress);
@@ -373,14 +373,14 @@ class Mining {
 
       this.lastHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
-        logger.notice(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
+        logger.info(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       } else {
         logger.debug(`Daily network hashrate indexing completed: indexed ${newlyIndexed} days`, logger.tags.mining);
       }
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
     } catch (e) {
       loadingIndicators.setProgress('daily-hashrate-indexing', 100);
-      logger.err(`Daily network hashrate indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+      logger.err(`Daily network hashrate indexing failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
   }
@@ -446,13 +446,13 @@ class Mining {
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
       if (elapsedSeconds > 5) {
         const progress = Math.round(totalBlockChecked / blocks.length * 100);
-        logger.info(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`);
+        logger.info(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`, logger.tags.mining);
         timer = new Date().getTime() / 1000;
       }
     }
 
     if (totalIndexed > 0) {
-      logger.notice(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
+      logger.info(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     } else {
       logger.debug(`Indexed ${totalIndexed} difficulty adjustments`, logger.tags.mining);
     }
@@ -499,7 +499,7 @@ class Mining {
           if (blocksWithoutPrices.length > 200000) {
             logStr += ` | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`;
           }
-          logger.debug(logStr);
+          logger.debug(logStr, logger.tags.mining);
           await BlocksRepository.$saveBlockPrices(blocksPrices);
           blocksPrices.length = 0;
         }
@@ -511,7 +511,7 @@ class Mining {
         if (blocksWithoutPrices.length > 200000) {
           logStr += ` | Progress ${Math.round(totalInserted / blocksWithoutPrices.length * 100)}%`;
         }
-        logger.debug(logStr);
+        logger.debug(logStr, logger.tags.mining);
         await BlocksRepository.$saveBlockPrices(blocksPrices);
       }
     } catch (e) {
@@ -568,6 +568,7 @@ class Mining {
 
   private getTimeRange(interval: string | null, scale = 1): number {
     switch (interval) {
+      case '4y': return 43200 * scale; // 12h
       case '3y': return 43200 * scale; // 12h
       case '2y': return 28800 * scale; // 8h
       case '1y': return 28800 * scale; // 8h

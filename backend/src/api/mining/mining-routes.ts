@@ -263,7 +263,7 @@ class MiningRoutes {
       const audit = await BlocksAuditsRepository.$getBlockAudit(req.params.hash);
 
       if (!audit) {
-        res.status(404).send(`This block has not been audited.`);
+        res.status(204).send(`This block has not been audited.`);
         return;
       }
 

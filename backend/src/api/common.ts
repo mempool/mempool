@@ -175,6 +175,7 @@ export class Common {
       case '1y': return '1 YEAR';
       case '2y': return '2 YEAR';
       case '3y': return '3 YEAR';
+      case '4y': return '4 YEAR';
       default: return null;
     }
   }

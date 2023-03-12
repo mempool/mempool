@@ -87,9 +87,9 @@ export const languages: Language[] = [
    { code: 'ar', name: 'العربية' },         // Arabic
 // { code: 'bg', name: 'Български' },       // Bulgarian
 // { code: 'bs', name: 'Bosanski' },        // Bosnian
-   { code: 'ca', name: 'Català' },          // Catalan
+// { code: 'ca', name: 'Català' },          // Catalan
    { code: 'cs', name: 'Čeština' },         // Czech
-// { code: 'da', name: 'Dansk' },           // Danish
+   { code: 'da', name: 'Dansk' },           // Danish
    { code: 'de', name: 'Deutsch' },         // German
 // { code: 'et', name: 'Eesti' },           // Estonian
 // { code: 'el', name: 'Ελληνικά' },        // Greek
@@ -136,12 +136,28 @@ export const languages: Language[] = [
 ];
 
 export const specialBlocks = {
+  '0': {
+    labelEvent: 'Genesis',
+    labelEventCompleted: 'The Genesis of Bitcoin',
+  },
+  '210000': {
+    labelEvent: 'Bitcoin\'s 1st Halving',
+    labelEventCompleted: 'Block Subsidy has halved to 25 BTC per block',
+  },
+  '420000': {
+    labelEvent: 'Bitcoin\'s 2nd Halving',
+    labelEventCompleted: 'Block Subsidy has halved to 12.5 BTC per block',
+  },
+  '630000': {
+    labelEvent: 'Bitcoin\'s 3rd Halving',
+    labelEventCompleted: 'Block Subsidy has halved to 6.25 BTC per block',
+  },
   '709632': {
     labelEvent: 'Taproot 🌱 activation',
     labelEventCompleted: 'Taproot 🌱 has been activated!',
   },
   '840000': {
-    labelEvent: 'Halving 🥳',
+    labelEvent: 'Bitcoin\'s 4th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BTC per block',
   }
 };
