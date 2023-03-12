@@ -324,22 +324,14 @@ class MempoolBlocks {
         fitTransactions.push(tx);
       }
     });
-    let rangeLength = 4;
-    if (blocksIndex === 0) {
-      rangeLength = 8;
-    }
-    if (transactions.length > 4000) {
-      rangeLength = 6;
-    } else if (transactions.length > 10000) {
-      rangeLength = 8;
-    }
+    const feeStats = Common.calcEffectiveFeeStatistics(transactions);
     return {
       blockSize: totalSize,
       blockVSize: totalWeight / 4,
       nTx: transactions.length,
       totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-      medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
-      feeRange: Common.getFeesInRange(transactions, rangeLength),
+      medianFee: feeStats.medianFee, // Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
+      feeRange: feeStats.feeRange, //Common.getFeesInRange(transactions, rangeLength),
       transactionIds: transactions.map((tx) => tx.txid),
       transactions: fitTransactions.map((tx) => Common.stripTransaction(tx)),
     };
