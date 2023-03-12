@@ -1,4 +1,4 @@
-import { CpfpInfo, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
@@ -344,5 +344,100 @@ export class Common {
         addr: formatted.url,
       };
     }
+  }
+
+  static calculateCpfp(height: number, transactions: TransactionExtended[]): CpfpSummary {
+    const clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[] = [];
+    let cluster: TransactionExtended[] = [];
+    let ancestors: { [txid: string]: boolean } = {};
+    const txMap = {};
+    for (let i = transactions.length - 1; i >= 0; i--) {
+      const tx = transactions[i];
+      txMap[tx.txid] = tx;
+      if (!ancestors[tx.txid]) {
+        let totalFee = 0;
+        let totalVSize = 0;
+        cluster.forEach(tx => {
+          totalFee += tx?.fee || 0;
+          totalVSize += (tx.weight / 4);
+        });
+        const effectiveFeePerVsize = totalFee / totalVSize;
+        if (cluster.length > 1) {
+          clusters.push({
+            root: cluster[0].txid,
+            height,
+            txs: cluster.map(tx => { return { txid: tx.txid, weight: tx.weight, fee: tx.fee || 0 }; }),
+            effectiveFeePerVsize,
+          });
+        }
+        cluster.forEach(tx => {
+          txMap[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
+        });
+        cluster = [];
+        ancestors = {};
+      }
+      cluster.push(tx);
+      tx.vin.forEach(vin => {
+        ancestors[vin.txid] = true;
+      });
+    }
+    return {
+      transactions,
+      clusters,
+    };
+  }
+
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string }[]): EffectiveFeeStats {
+    const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+
+    let weightCount = 0;
+    let medianFee = 0;
+    let medianWeight = 0;
+
+    // calculate the "medianFee" as the average fee rate of the middle 10000 weight units of transactions
+    const leftBound = 1995000;
+    const rightBound = 2005000;
+    for (let i = 0; i < sortedTxs.length && weightCount < rightBound; i++) {
+      const left = weightCount;
+      const right = weightCount + sortedTxs[i].weight;
+      if (right > leftBound) {
+        const weight = Math.min(right, rightBound) - Math.max(left, leftBound);
+        medianFee += (sortedTxs[i].rate * (weight / 4) );
+        medianWeight += weight;
+      }
+      weightCount += sortedTxs[i].weight;
+    }
+    const medianFeeRate = medianWeight ? (medianFee / (medianWeight / 4)) : 0;
+
+    // minimum effective fee heuristic:
+    // lowest of
+    // a) the 1st percentile of effective fee rates
+    // b) the minimum effective fee rate in the last 2% of transactions (in block order)
+    const minFee = Math.min(
+      Common.getNthPercentile(1, sortedTxs).rate,
+      transactions.slice(-transactions.length / 50).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
+    );
+
+    // maximum effective fee heuristic:
+    // highest of
+    // a) the 99th percentile of effective fee rates
+    // b) the maximum effective fee rate in the first 2% of transactions (in block order)
+    const maxFee = Math.max(
+      Common.getNthPercentile(99, sortedTxs).rate,
+      transactions.slice(0, transactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
+    );
+
+    return {
+      medianFee: medianFeeRate,
+      feeRange: [
+        minFee,
+        [10,25,50,75,90].map(n => Common.getNthPercentile(n, sortedTxs).rate),
+        maxFee,
+      ].flat(),
+    };
+  }
+
+  static getNthPercentile(n: number, sortedDistribution: any[]): any {
+    return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
   }
 }
