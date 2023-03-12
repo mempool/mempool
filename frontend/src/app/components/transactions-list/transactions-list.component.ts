@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
-import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of } from 'rxjs';
+import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
@@ -70,12 +70,19 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txIds) => {
             if (!this.cached) {
-              return this.apiService.getOutspendsBatched$(txIds);
+              // break list into batches of 50 (maximum supported by esplora)
+              const batches = [];
+              for (let i = 0; i < txIds.length; i += 50) {
+                batches.push(txIds.slice(i, i + 50));
+              }
+              return forkJoin(batches.map(batch => this.apiService.getOutspendsBatched$(batch)));
             } else {
               return of([]);
             }
           }),
-          tap((outspends: Outspend[][]) => {
+          tap((batchedOutspends: Outspend[][][]) => {
+            // flatten batched results back into a single array
+            const outspends = batchedOutspends.flat(1);
             if (!this.transactions) {
               return;
             }
