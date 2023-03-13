@@ -2,7 +2,7 @@
   <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" *ngIf="(difficultyAdjustments$ | async) as da;">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
-        <div [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
+        <div @blockEntryTrigger [@.disabled]="!animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
           <a draggable="false" [routerLink]="['/mempool-block/' | relativeUrl, i]"
             class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
           <div class="block-body">
