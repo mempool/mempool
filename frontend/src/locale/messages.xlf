@@ -691,11 +691,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
@@ -715,11 +715,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">375,378</context>
+          <context context-type="linenumber">391,394</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -744,7 +744,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">89</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1380,7 +1380,7 @@
         <source>Community Alliances</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">275,277</context>
+          <context context-type="linenumber">291,293</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
@@ -1388,7 +1388,7 @@
         <source>Project Translators</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">291,293</context>
+          <context context-type="linenumber">307,309</context>
         </context-group>
         <note priority="1" from="description">about.translators</note>
       </trans-unit>
@@ -1396,7 +1396,7 @@
         <source>Project Contributors</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">305,307</context>
+          <context context-type="linenumber">321,323</context>
         </context-group>
         <note priority="1" from="description">about.contributors</note>
       </trans-unit>
@@ -1404,7 +1404,7 @@
         <source>Project Members</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">317,319</context>
+          <context context-type="linenumber">333,335</context>
         </context-group>
         <note priority="1" from="description">about.project_members</note>
       </trans-unit>
@@ -1412,7 +1412,7 @@
         <source>Project Maintainers</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">330,332</context>
+          <context context-type="linenumber">346,348</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -2056,7 +2056,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
         <note priority="1" from="description">Transaction fee rate</note>
         <note priority="1" from="meaning">transaction.fee-rate</note>
@@ -2884,7 +2884,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -3513,7 +3513,7 @@
         <source>Reward stats</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">mining.reward-stats</note>
       </trans-unit>
@@ -3521,7 +3521,7 @@
         <source>(144 blocks)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">mining.144-blocks</note>
       </trans-unit>
@@ -3529,7 +3529,7 @@
         <source>Latest blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -3541,7 +3541,7 @@
         <source>Adjustments</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
@@ -3549,7 +3549,7 @@
         <source>Broadcast Transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
@@ -5372,7 +5372,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
         <note priority="1" from="description">lightning.closing_date</note>
       </trans-unit>
@@ -5500,7 +5500,7 @@
         <source>sats</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">63,67</context>
+          <context context-type="linenumber">63,68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
