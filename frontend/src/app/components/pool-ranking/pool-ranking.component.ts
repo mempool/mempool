@@ -162,10 +162,10 @@ export class PoolRankingComponent implements OnInit {
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
-                `<br>` + $localize`${i} blocks`;
+                `<br>` + $localize`:@@1bb6965f8e1bbe40c076528ffd841da86f57f119:${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                $localize`${i} blocks`;
+                $localize`:@@1bb6965f8e1bbe40c076528ffd841da86f57f119:${ i }:INTERPOLATION: blocks`;
             }
           }
         },
@@ -195,13 +195,14 @@ export class PoolRankingComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
+          const percentage = totalShareOther.toFixed(2) + '%';
           if (this.miningWindowPreference === '24h') {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
               totalEstimatedHashrateOther.toString() + ' PH/s' +
-              `<br>` + totalBlockOther.toString() + ` blocks`;
+              `<br>` + $localize`:@@1bb6965f8e1bbe40c076528ffd841da86f57f119:${ totalBlockOther.toString() }:INTERPOLATION: blocks`;
           } else {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
-              totalBlockOther.toString() + ` blocks`;
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
+              $localize`:@@1bb6965f8e1bbe40c076528ffd841da86f57f119:${ totalBlockOther.toString() }:INTERPOLATION: blocks`;
           }
         }
       },
