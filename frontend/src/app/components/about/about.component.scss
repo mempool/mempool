@@ -42,9 +42,11 @@
 
   video {
     width: 640px;
-    height: 360px;
     max-width: 90%;
     margin-top: 0;
+    @media (min-width: 768px) {
+      height: 360px;
+    }
   }
 
   .social-icons {
@@ -57,9 +59,13 @@
   .enterprise-sponsor,
   .community-integrations-sponsor,
   .maintainers {
-    margin-top: 68px;
+    margin-top: 30px;
     margin-bottom: 68px;
     scroll-margin: 30px;
+
+    @media (min-width: 768px) {
+      margin-top: 68px;
+    }
   }
 
   .maintainers {
