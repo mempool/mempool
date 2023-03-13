@@ -1440,7 +1440,7 @@
       </trans-unit>
       <trans-unit id="4b137ec8bf73a47063740b75c0c40d5fd3c48015" datatype="html">
         <source>The Mempool Open Source Project</source>
-        <target>O Projeto de código aberto da Mempool</target>
+        <target>O Projeto de código aberto Mempool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">12,13</context>
@@ -3921,7 +3921,7 @@
       </trans-unit>
       <trans-unit id="3c3a423d91e36ac6624e909fcd2669a25685f847" datatype="html">
         <source>Rank</source>
-        <target>Rank</target>
+        <target>Ranking</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">90,92</context>
@@ -4416,7 +4416,7 @@
       </trans-unit>
       <trans-unit id="2abc4d0d3ae0b49fa9e94a2efb8c2e1a47e680f4" datatype="html">
         <source>Go to &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</source>
-        <target>Go to &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</target>
+        <target>Ir para &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">52</context>
@@ -6812,7 +6812,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
-        <target>Capacidade Desconhecida</target>
+        <target>Capacidade Oculta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
