@@ -21,12 +21,19 @@ export class TxFeaturesComponent implements OnChanges {
   isRbfTransaction: boolean;
   isTaproot: boolean;
 
+  segwitEnabled: boolean;
+  rbfEnabled: boolean;
+  taprootEnabled: boolean;
+
   constructor() { }
 
   ngOnChanges() {
     if (!this.tx) {
       return;
     }
+    this.segwitEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 477120;
+    this.taprootEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 709632;
+    this.rbfEnabled = !this.tx.status.confirmed || this.tx.status.block_height > 399700;
     this.segwitGains = calcSegwitFeeGains(this.tx);
     this.isRbfTransaction = this.tx.vin.some((v) => v.sequence < 0xfffffffe);
     this.isTaproot = this.tx.vin.some((v) => v.prevout && v.prevout.scriptpubkey_type === 'v1_p2tr');
