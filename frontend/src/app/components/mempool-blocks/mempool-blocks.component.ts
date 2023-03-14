@@ -116,9 +116,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           mempoolBlocks.forEach((block, i) => {
             block.index = this.blockIndex + i;
             block.height = lastBlock.height + i + 1;
-            if (this.stateService.network === '') {
-              block.blink = specialBlocks[block.height] ? true : false;
-            }
+            block.blink = specialBlocks[block.height]?.networks.includes(this.stateService.network || 'mainnet') ? true : false;
           });
 
           const stringifiedBlocks = JSON.stringify(mempoolBlocks);
