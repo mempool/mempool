@@ -1,4 +1,4 @@
-import { CpfpInfo, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
+import { CpfpInfo, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
@@ -162,6 +162,30 @@ export class Common {
       }
     });
     return parents;
+  }
+
+  // calculates the ratio of matched transactions to projected transactions by weight
+  static getSimilarity(projectedBlock: MempoolBlockWithTransactions, transactions: TransactionExtended[]): number {
+    let matchedWeight = 0;
+    let projectedWeight = 0;
+    const inBlock = {};
+
+    for (const tx of transactions) {
+      inBlock[tx.txid] = tx;
+    }
+
+    // look for transactions that were expected in the template, but missing from the mined block
+    for (const tx of projectedBlock.transactions) {
+      if (inBlock[tx.txid]) {
+        matchedWeight += tx.vsize * 4;
+      }
+      projectedWeight += tx.vsize * 4;
+    }
+
+    projectedWeight += transactions[0].weight;
+    matchedWeight += transactions[0].weight;
+
+    return projectedWeight ? matchedWeight / projectedWeight : 1;
   }
 
   static getSqlInterval(interval: string | null): string | null {
