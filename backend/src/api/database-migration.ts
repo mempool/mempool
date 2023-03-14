@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 58;
+  private static currentVersion = 59;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -509,6 +509,11 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 58) {
       // We only run some migration queries for this version
       await this.updateToSchemaVersion(58);
+    }
+
+    if (databaseSchemaVersion < 59 && (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet')) {
+      // https://github.com/mempool/mempool/issues/3360
+      await this.$executeQuery(`TRUNCATE prices`);
     }
   }
 
