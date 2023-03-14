@@ -81,6 +81,13 @@
             </div>
           </form>
           <div class="spinner-border text-light bootstrap-spinner" *ngIf="spinnerLoading && mempoolStats.length"></div>
+          <div *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === ''" class="d-flex align-items-center" [style]="radioGroupForm.controls.dateSpan.value === '2h' ? 'display:none !important' : ''">
+            <label class="switch">
+              <input type="checkbox" (change)="onSwitchChanged($event)">
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-label" i18n="statistics.show-default-mempool">Show default mempool</span>
+          </div>            
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">

@@ -32,44 +32,84 @@ export class ApiService {
     });
   }
 
-  list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/2h');
+  list2HStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/2h');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/2h');
+    }
   }
 
-  list24HStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/24h');
+  list24HStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/24h');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/24h');
+    }
   }
 
-  list1WStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1w');
+  list1WStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/1w');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1w');
+    }
   }
 
-  list1MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1m');
+  list1MStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/1m');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1m');
+    }
   }
 
-  list3MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3m');
+  list3MStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/3m');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3m');
+    }
   }
 
-  list6MStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/6m');
+  list6MStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/6m');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/6m');
+    }
   }
 
-  list1YStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1y');
+  list1YStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/1y');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/1y');
+    }
   }
 
-  list2YStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/2y');
+  list2YStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/2y');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/2y');
+    }
   }
 
-  list3YStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3y');
+  list3YStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/3y');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/3y');
+    }
   }
 
-  list4YStatistics$(): Observable<OptimizedMempoolStats[]> {
-    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/4y');
+  list4YStatistics$(useAlternateServer: boolean = false): Observable<OptimizedMempoolStats[]> {
+    if (useAlternateServer === true) {
+      return this.httpClient.get<OptimizedMempoolStats[]>('https://node100.bitcoin.wiz.biz/api/v1/statistics/4y');
+    } else {
+      return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/4y');
+    }
   }
 
   getTransactionTimes$(txIds: string[]): Observable<number[]> {
