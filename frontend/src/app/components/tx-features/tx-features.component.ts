@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnChanges, Input } from '@angular/core';
-import { calcSegwitFeeGains } from '../../bitcoin.utils';
+import { calcSegwitFeeGains, isFeatureActive } from '../../bitcoin.utils';
 import { Transaction } from '../../interfaces/electrs.interface';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-tx-features',
@@ -25,15 +26,17 @@ export class TxFeaturesComponent implements OnChanges {
   rbfEnabled: boolean;
   taprootEnabled: boolean;
 
-  constructor() { }
+  constructor(
+    private stateService: StateService,
+  ) { }
 
   ngOnChanges() {
     if (!this.tx) {
       return;
     }
-    this.segwitEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 477120;
-    this.taprootEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 709632;
-    this.rbfEnabled = !this.tx.status.confirmed || this.tx.status.block_height > 399700;
+    this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
+    this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
+    this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
     this.segwitGains = calcSegwitFeeGains(this.tx);
     this.isRbfTransaction = this.tx.vin.some((v) => v.sequence < 0xfffffffe);
     this.isTaproot = this.tx.vin.some((v) => v.prevout && v.prevout.scriptpubkey_type === 'v1_p2tr');
