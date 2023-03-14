@@ -67,7 +67,7 @@
                     <td><app-time kind="span" [time]="tx.status.block_time - transactionTime" [fastRender]="true" [relative]="true"></app-time></td>
                   </tr>
                 </ng-template>
-                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && featuresEnabled">
                   <td class="td-width" i18n="transaction.features|Transaction features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
@@ -468,6 +468,7 @@
 <ng-template #feeTable>
   <table class="table table-borderless table-striped">
     <tbody>
+      <tr *ngIf="isMobile && (network === 'liquid' || network === 'liquidtestnet' || !featuresEnabled)"></tr>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
         <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="tx.fee"></app-fiat></span></td>
