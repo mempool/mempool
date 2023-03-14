@@ -641,7 +641,7 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
       }
-      if (!memPool.hasPriority()) {
+      if (!memPool.hasPriority() && (block.height % 6 === 0)) {
         diskCache.$saveCacheToDisk();
       }
 

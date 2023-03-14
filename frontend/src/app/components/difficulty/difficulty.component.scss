@@ -46,6 +46,7 @@
     flex-direction: row;
   }
   .item {
+    min-width: 120px;
     max-width: 150px;
     margin: 0;
     width: -webkit-fill-available;

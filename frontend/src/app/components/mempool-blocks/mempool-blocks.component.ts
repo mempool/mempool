@@ -214,6 +214,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
       lastBlock.feeRange.sort((a, b) => a - b);
       lastBlock.medianFee = this.median(lastBlock.feeRange);
+      lastBlock.totalFees += block.totalFees;
     }
     return blocks;
   }
