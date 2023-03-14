@@ -174,7 +174,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
         }
 
         this.chainTip = this.stateService.latestBlockHeight;
-        if (block?.extras?.matchRate >= 66 && !this.tabHidden) {
+        if ((block?.extras?.similarity == null || block?.extras?.similarity > 0.5) && !this.tabHidden) {
           this.blockIndex++;
         }
       });
@@ -225,7 +225,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   trackByFn(index: number, block: MempoolBlock) {
-    return (block.isStack) ? 'stack' : block.height;
+    return (block.isStack) ? 'stack' : block.index;
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {

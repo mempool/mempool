@@ -118,6 +118,7 @@ export interface BlockExtension {
   reward?: number;
   coinbaseRaw?: string;
   matchRate?: number;
+  similarity?: number;
   pool?: {
     id: number;
     name: string;
