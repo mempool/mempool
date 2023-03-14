@@ -74,6 +74,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   flowEnabled: boolean;
   blockConversion: Price;
   tooltipPosition: { x: number, y: number };
+  isMobile: boolean;
+
+  featuresEnabled: boolean;
+  segwitEnabled: boolean;
+  rbfEnabled: boolean;
+  taprootEnabled: boolean;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -197,6 +203,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.tx = tx;
+      this.setFeatures();
       this.isCached = true;
       if (tx.fee === undefined) {
         this.tx.fee = 0;
@@ -291,6 +298,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           this.tx = tx;
+          this.setFeatures();
           this.isCached = false;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
@@ -428,9 +436,23 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  setFeatures(): void {
+    if (this.tx) {
+      this.segwitEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 477120;
+      this.taprootEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 709632;
+      this.rbfEnabled = !this.tx.status.confirmed || this.tx.status.block_height > 399700;
+    } else {
+      this.segwitEnabled = false;
+      this.taprootEnabled = false;
+      this.rbfEnabled = false;
+    }
+    this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
+  }
+
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
+    this.setFeatures();
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
     this.rbfTransaction = undefined;
@@ -495,6 +517,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
+    this.isMobile = window.innerWidth < 850;
     if (this.graphContainer) {
       setTimeout(() => {
         this.graphWidth = this.graphContainer.nativeElement.clientWidth;
