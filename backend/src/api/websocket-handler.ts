@@ -467,6 +467,9 @@ class WebsocketHandler {
           block.extras.similarity = similarity;
         }
       }
+    } else if (block.extras) {
+      const mBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+      block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
     }
 
     const removed: string[] = [];
