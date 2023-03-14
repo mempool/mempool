@@ -164,7 +164,7 @@ class DiskCache {
             }
           }
         } catch (e) {
-          logger.info('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+          logger.err('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
         }
       }
 
