@@ -7,6 +7,7 @@ import logger from '../logger';
 import config from '../config';
 import { TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
+import mempool from './mempool';
 
 class DiskCache {
   private cacheSchemaVersion = 3;
@@ -38,6 +39,10 @@ class DiskCache {
 
   async $saveCacheToDisk(): Promise<void> {
     if (!cluster.isPrimary) {
+      return;
+    }
+    if (!mempool.isInSync()) {
+      logger.debug('Mempool is not in sync, so will not write disk cache.');
       return;
     }
     if (this.isWritingCache) {
@@ -82,6 +87,10 @@ class DiskCache {
 
   saveCacheToDiskSync(): void {
     if (!cluster.isPrimary) {
+      return;
+    }
+    if (!mempool.isInSync()) {
+      logger.debug('Mempool is not in sync, so will not write disk cache.');
       return;
     }
     if (this.isWritingCache) {
