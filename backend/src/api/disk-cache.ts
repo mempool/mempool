@@ -30,6 +30,10 @@ class DiskCache {
       this.saveCacheToDiskSync();
       process.exit(2);
     });
+    process.on('SIGHUP', (e) => {
+      this.saveCacheToDiskSync();
+      process.exit(2);
+    });
   }
 
   async $saveCacheToDisk(): Promise<void> {
