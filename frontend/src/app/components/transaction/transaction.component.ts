@@ -23,6 +23,7 @@ import { BlockExtended, CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
+import { isFeatureActive } from '../../bitcoin.utils';
 
 @Component({
   selector: 'app-transaction',
@@ -438,9 +439,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setFeatures(): void {
     if (this.tx) {
-      this.segwitEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 477120;
-      this.taprootEnabled = !this.tx.status.confirmed || this.tx.status.block_height >= 709632;
-      this.rbfEnabled = !this.tx.status.confirmed || this.tx.status.block_height > 399700;
+      this.segwitEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'segwit');
+      this.taprootEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'taproot');
+      this.rbfEnabled = !this.tx.status.confirmed || isFeatureActive(this.stateService.network, this.tx.status.block_height, 'rbf');
     } else {
       this.segwitEnabled = false;
       this.taprootEnabled = false;
