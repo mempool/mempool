@@ -68,7 +68,7 @@ export class AboutComponent implements OnInit {
       tap(() => this.goToAnchor())
     );
   }
-  
+
   ngAfterViewInit() {
     this.goToAnchor();
   }
@@ -88,6 +88,15 @@ export class AboutComponent implements OnInit {
       this.router.navigateByUrl('/enterprise');
     } else {
       this.showNavigateToSponsor = true;
+    }
+  }
+
+  showSubtitles(language) {
+    console.log(this.locale);
+    if( this.locale.startsWith( language ) ) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
