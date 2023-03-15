@@ -24,15 +24,15 @@ class DiskCache {
     }
     process.on('SIGINT', (e) => {
       this.saveCacheToDiskSync();
-      process.exit(2);
+      process.exit(0);
     });
     process.on('SIGTERM', (e) => {
       this.saveCacheToDiskSync();
-      process.exit(2);
+      process.exit(0);
     });
     process.on('SIGHUP', (e) => {
       this.saveCacheToDiskSync();
-      process.exit(2);
+      process.exit(0);
     });
   }
 
