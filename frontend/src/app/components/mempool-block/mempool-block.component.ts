@@ -17,6 +17,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
+  mempoolBlockTransactions$: Observable<TransactionStripped[]>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
   previewTx: TransactionStripped | void;
   webGlEnabled: boolean;
@@ -61,6 +62,8 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
         })
       );
+
+    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(txMap => Object.values(txMap)));
 
     this.network$ = this.stateService.networkChanged$;
   }

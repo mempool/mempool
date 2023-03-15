@@ -1,5 +1,8 @@
 import { OnChanges } from '@angular/core';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TransactionStripped } from '../../interfaces/websocket.interface';
+import { StateService } from '../../services/state.service';
+import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
 
 @Component({
   selector: 'app-fee-distribution-graph',
@@ -7,25 +10,67 @@ import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeeDistributionGraphComponent implements OnInit, OnChanges {
-  @Input() data: any;
+  @Input() transactions: TransactionStripped[];
   @Input() height: number | string = 210;
   @Input() top: number | string = 20;
   @Input() right: number | string = 22;
   @Input() left: number | string = 30;
+  @Input() numSamples: number = 200;
+  @Input() numLabels: number = 10;
+
+  data: number[][];
+  labelInterval: number = 50;
 
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesInitOptions = {
     renderer: 'svg'
   };
 
-  constructor() { }
+  constructor(
+    private stateService: StateService,
+    private vbytesPipe: VbytesPipe,
+  ) { }
 
   ngOnInit() {
     this.mountChart();
   }
 
   ngOnChanges() {
+    this.prepareChart();
     this.mountChart();
+  }
+
+  prepareChart() {
+    this.data = [];
+    if (!this.transactions?.length) {
+      return;
+    }
+    const samples = [];
+    const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
+    const maxBlockVSize = this.stateService.env.BLOCK_WEIGHT_UNITS / 4;
+    const sampleInterval = maxBlockVSize / this.numSamples;
+    let cumVSize = 0;
+    let sampleIndex = 0;
+    let nextSample = 0;
+    let txIndex = 0;
+    this.labelInterval = this.numSamples / this.numLabels;
+    while (nextSample <= maxBlockVSize) {
+      if (txIndex >= txs.length) {
+        samples.push([1 - (sampleIndex / this.numSamples), 0]);
+        nextSample += sampleInterval;
+        sampleIndex++;
+        break;
+      }
+
+      while (txs[txIndex] && nextSample < cumVSize + txs[txIndex].vsize) {
+        samples.push([1 - (sampleIndex / this.numSamples), txs[txIndex].rate]);
+        nextSample += sampleInterval;
+        sampleIndex++;
+      }
+      cumVSize += txs[txIndex].vsize;
+      txIndex++;
+    }
+    this.data = samples.reverse();
   }
 
   mountChart() {
@@ -34,14 +79,30 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
         height: '210',
         right: '20',
         top: '22',
-        left: '30',
+        left: '40',
       },
       xAxis: {
         type: 'category',
         boundaryGap: false,
+        name: 'MvB',
+        nameLocation: 'middle',
+        nameGap: 0,
+        nameTextStyle: {
+          verticalAlign: 'top',
+          padding: [30, 0, 0, 0],
+        },
+        axisLabel: {
+          interval: (index: number): boolean => { return index && (index % this.labelInterval === 0); },
+          formatter: (value: number): string => { return Number(value).toFixed(1); },
+        },
+        axisTick: {
+          interval: (index:number): boolean => { return (index % this.labelInterval === 0); },
+        },
       },
       yAxis: {
         type: 'value',
+        // name: 'Effective Fee Rate s/vb',
+        // nameLocation: 'middle',
         splitLine: {
           lineStyle: {
             type: 'dotted',
@@ -58,14 +119,13 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
           position: 'top',
           color: '#ffffff',
           textShadowBlur: 0,
-          formatter: (label: any) => {
-            return Math.floor(label.data);
-          },
+          formatter: (label: any): string => '' + Math.floor(label.data[1]),
         },
+        showAllSymbol: false,
         smooth: true,
         lineStyle: {
           color: '#D81B60',
-          width: 4,
+          width: 1,
         },
         itemStyle: {
           color: '#b71c1c',
