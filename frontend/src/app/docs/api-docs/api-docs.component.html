@@ -207,6 +207,18 @@
   <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>By default, Bitcoin Core allocates 300MB of memory for its mempool, so when a node's mempool grows big enough to use all 300MB of allocated memory, we say it's "full".</p><p>Once a node's mempool is using all of its allocated memory, it will start rejecting new transactions below a certain feerate threshold—so when this is the case, be extra sure to set a feerate that (at a minimum) exceeds that threshold. The current threshold feerate (and memory usage) are displayed right on Mempool's front page.</p>
 </ng-template>
 
+<ng-template type="how-big-is-mempool.space-mempool">
+  <p>mempool.space uses 2 Bitcoin nodes to obtain data: one with a standard 300MB memory allocation for its mempool (call this Node A), and another with a much larger memory allocation for its mempool (call this Node B).</p>
+  <p>Most nodes on the Bitcoin network are configured to run like Node A. When all 300MB of memory are used up, the node will start rejecting transactions below a certain feerate from entering its mempool. Running a standard node allows mempool.space to tell you what this feerate is, so you can use a feerate that is high enough to get your transaction widely propagated (i.e. accepted into as many nodes' mempools as possible).</p>
+  <p>Node B's mempool is so big that it doesn't ever fill up, so it never rejects transactions. This allows for mempool.space to provide you with information on any pending transaction it has received—no matter how congested the mempool is, and no matter how deep in the queue the transaction is.</p>
+</ng-template>
+
+<ng-template type="what-is-memory-usage">
+  <p>Memory usage on the front page indicates the amount of system memory used by a Bitcoin node's mempool at a particular moment in time. The amount of memory used by a node's mempool is always more than the total size of all pending transactions in its mempool due to indexes, pointers, and other overhead for storage and processing.</p>
+  <p>When mempools fill up, you may notice memory usage on mempool.space go beyond 300MB. This is because, as <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-big-is-mempool.space-mempool">explained above</a>, mempool.space runs a node with a very high mempool memory allocation—so it never rejects (or evicts) transactions. If memory usage shows 600MB, for example, this just means that a node that stores all the transactions it receives will use about 600MB of memory for its mempool at that moment in time. It's another data point to give you an idea of how congested the network is.</p>
+  <p>A Bitcoin node running the default 300MB setting for mempool memory allocation, like most Raspberry Pi nodes, will never go past 300MB of memory usage.</p>
+</ng-template>
+
 <ng-template type="why-empty-blocks">
   <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
 </ng-template>
