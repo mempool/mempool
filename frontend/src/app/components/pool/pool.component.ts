@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption, graphic } from 'echarts';
-import { BehaviorSubject, Observable, timer } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
@@ -35,6 +35,8 @@ export class PoolComponent implements OnInit {
   blocks: BlockExtended[] = [];
   slug: string = undefined;
 
+  auditAvailable = false;
+
   loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.blocks[this.blocks.length - 1]?.height);
 
   constructor(
@@ -44,6 +46,7 @@ export class PoolComponent implements OnInit {
     public stateService: StateService,
     private seoService: SeoService,
   ) {
+    this.auditAvailable = this.stateService.env.AUDIT;
   }
 
   ngOnInit(): void {
@@ -74,11 +77,6 @@ export class PoolComponent implements OnInit {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
-          poolStats.pool.addresses = poolStats.pool.addresses;
-
-          if (poolStats.reportedHashrate) {
-            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
-          }
 
           return Object.assign({
             logo: `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'

@@ -331,6 +331,55 @@ class BlocksRepository {
   }
 
   /**
+   * Get average block health for all blocks for a single pool
+   */
+  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number> {
+    const params: any[] = [];
+    const query = `
+      SELECT AVG(blocks_audits.match_rate) AS avg_match_rate
+      FROM blocks
+      JOIN blocks_audits ON blocks.height = blocks_audits.height
+      WHERE blocks.pool_id = ?
+    `;
+    params.push(poolId);
+
+    try {
+      const [rows] = await DB.query(query, params);
+      if (!rows[0] || !rows[0].avg_match_rate) {
+        return 0;
+      }
+      return Math.round(rows[0].avg_match_rate * 100) / 100;
+    } catch (e) {
+      logger.err(`Cannot get average block health for pool id ${poolId}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get average block health for all blocks for a single pool
+   */
+  public async $getTotalRewardForPoolId(poolId: number): Promise<number> {
+    const params: any[] = [];
+    const query = `
+      SELECT sum(reward) as total_reward
+      FROM blocks
+      WHERE blocks.pool_id = ?
+    `;
+    params.push(poolId);
+
+    try {
+      const [rows] = await DB.query(query, params);
+      if (!rows[0] || !rows[0].total_reward) {
+        return 0;
+      }
+      return rows[0].total_reward;
+    } catch (e) {
+      logger.err(`Cannot get total reward for pool id ${poolId}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get the oldest indexed block
    */
   public async $oldestBlockTimestamp(): Promise<number> {
