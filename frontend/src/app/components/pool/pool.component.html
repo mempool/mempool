@@ -37,7 +37,7 @@
               <!-- Addresses desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label addresses" i18n="mining.addresses">Addresses</td>
-                <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 15px">
+                <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 25px">
                   <a  class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
                     {{ poolStats.pool.addresses[0] }}
                   </a>
@@ -378,24 +378,23 @@
 
               <!-- Hashrate desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.hashrate-24h">Hashrate (24h)</td>
                 <td class="data">
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.luck">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -405,23 +404,22 @@
               <!-- Hashrate mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan="2">
-                  <span class="label" i18n="mining.hashrate-24h">Hashrate (24h)</span>
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.luck">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -431,24 +429,23 @@
 
               <!-- Mined blocks desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.mined-blocks">Mined blocks</td>
                 <td class="data">
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -458,23 +455,22 @@
               <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined blocks</span>
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
