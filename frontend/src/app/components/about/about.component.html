@@ -14,9 +14,9 @@
   </div>
 
   <video src="/resources/promo-video/mempool-promo.mp4" poster="/resources/promo-video/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true">
-    <track label="English" kind="subtitles" srclang="en" src="/resources/promo-video/en.vtt" [default]="showSubtitles('en')">
-    <track label="日本語" kind="subtitles" srclang="ja" src="/resources/promo-video/ja.vtt" [default]="showSubtitles('ja')">
-    <track label="Svenska" kind="subtitles" srclang="sv" src="/resources/promo-video/sv.vtt" [default]="showSubtitles('sv')">
+    <track label="English" kind="captions" srclang="en" src="/resources/promo-video/en.vtt" [attr.default]="showSubtitles('en') ? '' : null">
+    <track label="日本語" kind="captions" srclang="ja" src="/resources/promo-video/ja.vtt" [attr.default]="showSubtitles('ja') ? '' : null">
+    <track label="Svenska" kind="captions" srclang="sv" src="/resources/promo-video/sv.vtt" [attr.default]="showSubtitles('sv') ? '' : null">
   </video>
 
   <div class="enterprise-sponsor" id="enterprise-sponsors">

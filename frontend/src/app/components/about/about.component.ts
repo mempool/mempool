@@ -92,11 +92,6 @@ export class AboutComponent implements OnInit {
   }
 
   showSubtitles(language) {
-    console.log(this.locale);
-    if( this.locale.startsWith( language ) ) {
-      return true;
-    } else {
-      return false;
-    }
+    return ( this.locale.startsWith( language ) && !this.locale.startsWith('en') );
   }
 }
