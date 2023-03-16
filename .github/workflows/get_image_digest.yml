@@ -1,7 +1,6 @@
 name: 'Print images digest'
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       version:
