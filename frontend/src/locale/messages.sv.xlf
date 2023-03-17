@@ -3993,9 +3993,9 @@
           <context context-type="linenumber">58</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6095122426142344316" datatype="html">
-        <source><x id="PH" equiv-text="i"/> blocks</source>
-        <target><x id="PH" equiv-text="i"/> block</target>
+      <trans-unit id="312539377512157124" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/> block</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -4003,6 +4003,42 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">168,167</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">203,201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">206,205</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3666195172774554282" datatype="html">
+        <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>Övriga (<x id="PH" equiv-text="percentage"/>)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">205</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">119,114</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">173,168</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2158ea60725d3a97aed6f0f00aa7df48d7bb42ff" datatype="html">
@@ -5551,6 +5587,10 @@
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">123,124</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
+          <context context-type="linenumber">211,208</context>
+        </context-group>
         <note priority="1" from="description">lightning.x-channels</note>
       </trans-unit>
       <trans-unit id="4e64e04c01e8f5fc09c41cb8942dcc3af0398b28" datatype="html">
@@ -6250,6 +6290,10 @@
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">194,193</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">259,257</context>
+        </context-group>
         <note priority="1" from="description">lightning.channels</note>
       </trans-unit>
       <trans-unit id="e4706894b195010f6814e54bf6570c729d69aaca" datatype="html">
@@ -6730,19 +6774,23 @@
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
-        <source><x id="PH" equiv-text="country.count.toString()"/> nodes</source>
-        <target><x id="PH" equiv-text="country.count.toString()"/> noder</target>
+        <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/> noder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">103,102</context>
+          <context context-type="linenumber">104,103</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">137,136</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">157,156</context>
+          <context context-type="linenumber">158,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">189,188</context>
+          <context context-type="linenumber">191,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
@@ -6750,7 +6798,7 @@
         <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC-kapacitet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">104,102</context>
+          <context context-type="linenumber">105,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7ede3edfacd291eb9db08e11845d9efdf197f417" datatype="html">
@@ -6868,11 +6916,11 @@
         <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">158,156</context>
+          <context context-type="linenumber">159,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">190,188</context>
+          <context context-type="linenumber">192,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
