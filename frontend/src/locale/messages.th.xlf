@@ -1475,6 +1475,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
+        <target>การร่วมมือกับคอมมูนิตี้</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -2134,6 +2135,7 @@
       </trans-unit>
       <trans-unit id="86c50fc2171298179283e3c9b6d79b57b821599b" datatype="html">
         <source>not available</source>
+        <target>ไม่สามารถใช้ได้</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2336,6 +2338,7 @@
       </trans-unit>
       <trans-unit id="1a8035ac608b083c29407327290b7cc9d6cbb95d" datatype="html">
         <source>Audit status</source>
+        <target>สถานะการตรวจสอบ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2344,6 +2347,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
+        <target>ตรงกัน</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2352,6 +2356,7 @@
       </trans-unit>
       <trans-unit id="1aa4883bc4f1352f7a0bdd94810a9bf6dc22bd02" datatype="html">
         <source>Removed</source>
+        <target>ถูกลบ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">39</context>
@@ -2360,6 +2365,7 @@
       </trans-unit>
       <trans-unit id="f0136f1a1d77aa656e0ebd0f3c023118dd2a2776" datatype="html">
         <source>Marginal fee rate</source>
+        <target>อัตราค่าธรรมเนียมเพิ่มเติม</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2372,6 +2378,7 @@
       </trans-unit>
       <trans-unit id="d702ad6f00c620c9658ac1ad8184d5fe5bc099fb" datatype="html">
         <source>Recently broadcasted</source>
+        <target>ที่ประกาศไปล่าสุด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2380,6 +2387,7 @@
       </trans-unit>
       <trans-unit id="80e3b490720757978c99a7b5af3885faf202b955" datatype="html">
         <source>Added</source>
+        <target>ถูกเพิ่ม</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">42</context>
@@ -2388,6 +2396,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>ความแม่นยำในการทำนายบล็อก</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2404,6 +2413,7 @@
       </trans-unit>
       <trans-unit id="80065834848189518" datatype="html">
         <source>No data to display yet. Try again later.</source>
+        <target>ไม่มีข้อมูลที่จะแสดง โปรดลองอีกครั้งในภายหลัง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">108,103</context>
@@ -2419,6 +2429,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>เรทตรงกัน</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">189,187</context>
@@ -2528,6 +2539,7 @@
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
         <source>Size per weight</source>
+        <target>ขนาดต่อน้ำหนัก</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">200,199</context>
@@ -2539,6 +2551,7 @@
       </trans-unit>
       <trans-unit id="7f5d0c10614e8a34f0e2dad33a0568277c50cf69" datatype="html">
         <source>Block</source>
+        <target>บล็อก</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -2641,6 +2654,7 @@
       </trans-unit>
       <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
         <source>Health</source>
+        <target>สถานะ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">56</context>
@@ -2657,6 +2671,7 @@
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
+        <target>ไม่ทราบ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">67,70</context>
@@ -2735,6 +2750,7 @@
       </trans-unit>
       <trans-unit id="a1c8a44428c774facdd0b1e3ae42468c25666367" datatype="html">
         <source>Subsidy + fees</source>
+        <target>เงินอุดหนุน + ค่าธรรมเนียม</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">153,156</context>
@@ -2748,6 +2764,7 @@
       </trans-unit>
       <trans-unit id="23fa95fce7b4badf5ad584d4a1712d558266266f" datatype="html">
         <source>Expected</source>
+        <target>ที่คาดหวัง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216</context>
@@ -2756,6 +2773,7 @@
       </trans-unit>
       <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
         <source>beta</source>
+        <target>เบต้า</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216,217</context>
@@ -2768,6 +2786,7 @@
       </trans-unit>
       <trans-unit id="1da6d9283e3222148d76c10c8e37abeeb66c93cb" datatype="html">
         <source>Actual</source>
+        <target>ความจริง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">218,222</context>
@@ -2776,6 +2795,7 @@
       </trans-unit>
       <trans-unit id="97577daae15cc7f30ab4d0f4f4dfb8045477aefd" datatype="html">
         <source>Expected Block</source>
+        <target>บล็อกที่คาดหวัง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">222</context>
@@ -2784,6 +2804,7 @@
       </trans-unit>
       <trans-unit id="6efa73f0d6f0844a1e0c341c9b88323f51852d91" datatype="html">
         <source>Actual Block</source>
+        <target>บล็อกจริง</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">231</context>
@@ -2857,6 +2878,7 @@
       </trans-unit>
       <trans-unit id="ccf00caac258749fa1c5fd488fb15368fa6fce37" datatype="html">
         <source>Audit</source>
+        <target>การตรวจสอบ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">297,301</context>
@@ -3260,6 +3282,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>เวลาบล็อกโดยเฉลี่ย</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3489,6 +3512,7 @@
       </trans-unit>
       <trans-unit id="ea8db27e6db64f8b940711948c001a1100e5fe9f" datatype="html">
         <source>Lightning Network Capacity</source>
+        <target>ความจุเน็ตเวิร์ค Lightning</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3509,6 +3533,7 @@
       </trans-unit>
       <trans-unit id="8573a1576789bd2c4faeaed23037c4917812c6cf" datatype="html">
         <source>Lightning Nodes Per ISP</source>
+        <target>จำนวนโหนด Lightning ต่อ ISP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">37</context>
@@ -3521,6 +3546,7 @@
       </trans-unit>
       <trans-unit id="9d3ad4c6623870d96b65fb7a708fed6ce7c20044" datatype="html">
         <source>Lightning Nodes Per Country</source>
+        <target>จำนวนโหนด Lightning ต่อประเทศ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">39</context>
@@ -3537,6 +3563,7 @@
       </trans-unit>
       <trans-unit id="af8560ca50882114be16c951650f83bca73161a7" datatype="html">
         <source>Lightning Nodes World Map</source>
+        <target>แผนที่โหนด Ligntning</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">41</context>
@@ -6533,6 +6560,7 @@
       </trans-unit>
       <trans-unit id="6391724349488018234" datatype="html">
         <source>Indexing in progress</source>
+        <target>กำลังทำการจัดเรียงข้อมูล</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -6544,6 +6572,7 @@
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
         <source>Clearnet and Darknet</source>
+        <target>Clearnet และ Darknet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6555,6 +6584,7 @@
       </trans-unit>
       <trans-unit id="1282458597026430784" datatype="html">
         <source>Clearnet Only (IPv4, IPv6)</source>
+        <target>Clearnet เท่านั้น (IPv4, IPv6)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6566,6 +6596,7 @@
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
+        <target>Darknet เท่านั้น (Tor, I2P, cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -6577,6 +6608,7 @@
       </trans-unit>
       <trans-unit id="0bd8b27f60a1f098a53e06328426d818e3508ff9" datatype="html">
         <source>Share</source>
+        <target>แชร์</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -6608,6 +6640,7 @@
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
+        <target>ความจุ <x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">105,103</context>
@@ -6615,6 +6648,7 @@
       </trans-unit>
       <trans-unit id="7ede3edfacd291eb9db08e11845d9efdf197f417" datatype="html">
         <source>Lightning nodes in <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></source>
+        <target>โหนด lightning ใน <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">3,4</context>
@@ -6623,6 +6657,7 @@
       </trans-unit>
       <trans-unit id="4498ec29c37744fef46809ebc3db67c5fb789917" datatype="html">
         <source>ISP Count</source>
+        <target>จำนวน ISP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">34,38</context>
@@ -6631,6 +6666,7 @@
       </trans-unit>
       <trans-unit id="90a6a964ba53464578003e3b4b2873ef5d2132a1" datatype="html">
         <source>Top ISP</source>
+        <target>ISP ชั้นนำ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">38,40</context>
@@ -6646,6 +6682,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
+        <target>ความจุ clearnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -6666,6 +6703,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
+        <target>ไม่ทราบความจุ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6686,6 +6724,7 @@
       </trans-unit>
       <trans-unit id="df3728b721159d25e68f5daf44aaab7fa25f1415" datatype="html">
         <source>Tor Capacity</source>
+        <target>ความจุของ Tor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -6714,6 +6753,7 @@
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">159,157</context>
@@ -6725,6 +6765,7 @@
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
         <source>Lightning ISP</source>
+        <target>Lightning ISP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6772,6 +6813,7 @@
       </trans-unit>
       <trans-unit id="ca0b795795658155d44ddca02e95f1feeeb4a88f" datatype="html">
         <source>ASN</source>
+        <target>ASN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">11,14</context>
@@ -6780,6 +6822,7 @@
       </trans-unit>
       <trans-unit id="e422817608e8d55e08b45a1da2e118eb42815af4" datatype="html">
         <source>Active nodes</source>
+        <target>โหนดที่ใช้งานอยู่</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">14,18</context>
@@ -6803,6 +6846,7 @@
       </trans-unit>
       <trans-unit id="47a30fc5a836252f8fe03e2949756b150684d934" datatype="html">
         <source>Oldest nodes</source>
+        <target>โหนดที่เก่าที่สุด</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -6818,6 +6862,7 @@
       </trans-unit>
       <trans-unit id="af1176facd00a0580509fb2900ab0cf7f9b39ae7" datatype="html">
         <source>Indexing in progress</source>
+        <target>กำลังทำการจัดเรียงข้อมูล</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
           <context context-type="linenumber">52,55</context>

@@ -3194,7 +3194,7 @@
       </trans-unit>
       <trans-unit id="df71fa93f0503396ea2bb3ba5161323330314d6c" datatype="html">
         <source>Next Halving</source>
-        <target>Наступне зменшення винагороди</target>
+        <target>Наступний халвінг</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">50,52</context>
@@ -3203,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блоків очікується</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3211,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блок очікується</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3219,6 +3221,7 @@
       </trans-unit>
       <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блоків знайдено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3227,6 +3230,7 @@
       </trans-unit>
       <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блок знайдено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">19</context>
@@ -3235,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блоків лишається</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3243,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блок лишається</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3251,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блоків попереду</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3259,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блок попереду</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3267,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блоків позаду</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3275,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> блок позаду</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3283,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>Середній час блоків</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3517,7 +3528,7 @@
       </trans-unit>
       <trans-unit id="ea8db27e6db64f8b940711948c001a1100e5fe9f" datatype="html">
         <source>Lightning Network Capacity</source>
-        <target>Пропускна спроможність Lightning</target>
+        <target>Місткість Lightning</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3984,6 +3995,7 @@
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/> блоків</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -4003,6 +4015,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>Інші (<x id="PH" equiv-text="percentage"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">201</context>
@@ -4565,6 +4578,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>Через ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">126</context>
@@ -5678,7 +5692,7 @@
       </trans-unit>
       <trans-unit id="ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa" datatype="html">
         <source>Capacity</source>
-        <target>Пропускна спроможність</target>
+        <target>Місткість</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">27,28</context>
@@ -6026,7 +6040,7 @@
       </trans-unit>
       <trans-unit id="ab456546aa39de3328fcfdf077f410b5ff1aa773" datatype="html">
         <source>Avg Capacity</source>
-        <target>Середня пропускна спроможність</target>
+        <target>Середня місткість</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6039,7 +6053,7 @@
       </trans-unit>
       <trans-unit id="f68705670e611f13da1a43e90f9c97d8761dd9ef" datatype="html">
         <source>Avg Fee Rate</source>
-        <target>Середня ставка комісії</target>
+        <target>Середній тариф</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -6052,7 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
-        <target>Середня ставка комісії, що стягується нодами маршрутизації, без урахування ставок комісії &gt; 0.5% або 5000ppm</target>
+        <target>Середній тариф, що стягується нодами маршрутизації, без урахування ставок комісії &gt; 0.5% або 5000ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -6061,7 +6075,7 @@
       </trans-unit>
       <trans-unit id="140fb39368f210ec945417f3eb23bf9564396e5c" datatype="html">
         <source>Avg Base Fee</source>
-        <target>Середня базова комісія</target>
+        <target>Середня комісія</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -6074,7 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
-        <target>Середня базова комісія, що стягується нодами маршрутизації, без урахування базової комісії &gt; 5000ppm</target>
+        <target>Середня комісія, що стягується нодами маршрутизації, без урахування комісії &gt; 5000ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -6470,7 +6484,7 @@
       </trans-unit>
       <trans-unit id="af15c87bfed273bc095ba572cf27e3aaffc33b22" datatype="html">
         <source>Active capacity</source>
-        <target>Активна пропускна спроможність</target>
+        <target>Активна місткість</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -6712,6 +6726,7 @@
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
         <source>Clearnet and Darknet</source>
+        <target>Клірнет та Даркнет</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6723,6 +6738,7 @@
       </trans-unit>
       <trans-unit id="1282458597026430784" datatype="html">
         <source>Clearnet Only (IPv4, IPv6)</source>
+        <target>Тільки Клірнет (IPv4, IPv6)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6734,6 +6750,7 @@
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
+        <target>Тільки Даркнет (Tor, I2P, cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -6758,6 +6775,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/> нод</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,103</context>
@@ -6820,7 +6838,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
-        <target>Пропускна спроможність Клірнету</target>
+        <target>Місткість Клірнету</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -6842,7 +6860,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
-        <target>Пропускна спроможність невідома</target>
+        <target>Місткість невідома</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6864,7 +6882,7 @@
       </trans-unit>
       <trans-unit id="df3728b721159d25e68f5daf44aaab7fa25f1415" datatype="html">
         <source>Tor Capacity</source>
-        <target>Пропускна спроможність Tor</target>
+        <target>Місткість Tor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">20,22</context>
