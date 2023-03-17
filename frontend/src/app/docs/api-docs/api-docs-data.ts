@@ -8865,6 +8865,7 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: "how-big-is-mempool-used-by-mempool.space",
     title: "How big is the mempool used by mempool.space?",
+    options: { officialOnly: true },
   },
   {
     type: "endpoint",
