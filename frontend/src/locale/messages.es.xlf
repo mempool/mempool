@@ -3203,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloques esperados</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3211,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloque esperado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3237,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloques restantes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3245,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloque restante</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3253,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloques por delante</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3261,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloque por delante</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3269,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloques por detrás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3277,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bloque por detrás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3285,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>Tiempo medio de bloque</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3929,7 +3938,7 @@
       </trans-unit>
       <trans-unit id="c16d236667af327bd474b149cb909d1cd06fa50c" datatype="html">
         <source>Avg Health</source>
-        <target>El promedio de salud</target>
+        <target>Promedio de salud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3986,6 +3995,7 @@
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/> bloques</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -5352,7 +5362,7 @@
       </trans-unit>
       <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
-        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>memepool.space simplemente proporciona datos sobre la red Bitcoin. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>No puede ayudarle a recuperar fondos, confirmar su transacción más rápdio, etc. </target>
+        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space simplemente proporciona datos sobre la red Bitcoin. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>No puede ayudarle a recuperar fondos, confirmar su transacción más rápido, etc. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">13</context>
@@ -5870,7 +5880,7 @@
       </trans-unit>
       <trans-unit id="4610828009441770083" datatype="html">
         <source>Force closed</source>
-        <target>Forzar cierre</target>
+        <target>Cierre forzado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">24</context>
@@ -5878,7 +5888,7 @@
       </trans-unit>
       <trans-unit id="96508700250272816" datatype="html">
         <source>Force closed with penalty</source>
-        <target>Fuerza cerrada con sanción</target>
+        <target>Cierre forzado con sanción</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -6012,7 +6022,7 @@
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
-        <target>El promedio</target>
+        <target>Promedio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6021,7 +6031,7 @@
       </trans-unit>
       <trans-unit id="ba9117dcc11814c44437cf9d7561874ba8b98a2a" datatype="html">
         <source>med</source>
-        <target>Media</target>
+        <target>Med</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -6416,7 +6426,7 @@
       </trans-unit>
       <trans-unit id="7254919336112973896" datatype="html">
         <source>Outgoing Fees</source>
-        <target>Gastos de salida</target>
+        <target>Tasas de salida</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">170</context>
@@ -6428,7 +6438,7 @@
       </trans-unit>
       <trans-unit id="484887099976974152" datatype="html">
         <source>Incoming Fees</source>
-        <target>Gastos de entrada</target>
+        <target>Tasas de entrada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">178</context>
