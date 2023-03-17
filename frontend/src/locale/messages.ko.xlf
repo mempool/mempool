@@ -1475,6 +1475,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
+        <target>커뮤니티 통합</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -2134,6 +2135,7 @@
       </trans-unit>
       <trans-unit id="86c50fc2171298179283e3c9b6d79b57b821599b" datatype="html">
         <source>not available</source>
+        <target>사용할 수 없음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2336,6 +2338,7 @@
       </trans-unit>
       <trans-unit id="1a8035ac608b083c29407327290b7cc9d6cbb95d" datatype="html">
         <source>Audit status</source>
+        <target>감사 상태</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2344,6 +2347,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
+        <target>일치</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2352,6 +2356,7 @@
       </trans-unit>
       <trans-unit id="1aa4883bc4f1352f7a0bdd94810a9bf6dc22bd02" datatype="html">
         <source>Removed</source>
+        <target>제거됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">39</context>
@@ -2360,6 +2365,7 @@
       </trans-unit>
       <trans-unit id="f0136f1a1d77aa656e0ebd0f3c023118dd2a2776" datatype="html">
         <source>Marginal fee rate</source>
+        <target>한계 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2372,6 +2378,7 @@
       </trans-unit>
       <trans-unit id="d702ad6f00c620c9658ac1ad8184d5fe5bc099fb" datatype="html">
         <source>Recently broadcasted</source>
+        <target>최근 전파됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2380,6 +2387,7 @@
       </trans-unit>
       <trans-unit id="80e3b490720757978c99a7b5af3885faf202b955" datatype="html">
         <source>Added</source>
+        <target>추가됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">42</context>
@@ -2388,6 +2396,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>블록 예측 정확도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2404,6 +2413,7 @@
       </trans-unit>
       <trans-unit id="80065834848189518" datatype="html">
         <source>No data to display yet. Try again later.</source>
+        <target>아직 표시할 데이터가 없습니다. 나중에 다시 시도해주세요.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">108,103</context>
@@ -2419,6 +2429,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>일치율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">189,187</context>
@@ -2528,6 +2539,7 @@
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
         <source>Size per weight</source>
+        <target>무게당 사이즈</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">200,199</context>
@@ -2642,6 +2654,7 @@
       </trans-unit>
       <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
         <source>Health</source>
+        <target>건강도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">56</context>
@@ -2658,6 +2671,7 @@
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
+        <target>알 수 없음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">67,70</context>
@@ -2736,6 +2750,7 @@
       </trans-unit>
       <trans-unit id="a1c8a44428c774facdd0b1e3ae42468c25666367" datatype="html">
         <source>Subsidy + fees</source>
+        <target>보상금 + 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">153,156</context>
@@ -2749,6 +2764,7 @@
       </trans-unit>
       <trans-unit id="23fa95fce7b4badf5ad584d4a1712d558266266f" datatype="html">
         <source>Expected</source>
+        <target>예상</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216</context>
@@ -2757,6 +2773,7 @@
       </trans-unit>
       <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
         <source>beta</source>
+        <target>베타</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216,217</context>
@@ -2769,6 +2786,7 @@
       </trans-unit>
       <trans-unit id="1da6d9283e3222148d76c10c8e37abeeb66c93cb" datatype="html">
         <source>Actual</source>
+        <target>실제</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">218,222</context>
@@ -2860,6 +2878,7 @@
       </trans-unit>
       <trans-unit id="ccf00caac258749fa1c5fd488fb15368fa6fce37" datatype="html">
         <source>Audit</source>
+        <target>감사</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">297,301</context>
@@ -3184,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target>예상한 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3192,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target>예상한 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3200,6 +3221,7 @@
       </trans-unit>
       <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target>채굴된 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3208,6 +3230,7 @@
       </trans-unit>
       <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target>채굴된 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">19</context>
@@ -3216,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target>남은 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3224,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target>남은 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3232,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target>앞서있는 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3240,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target>앞서있는 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3248,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target>뒤처진 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3256,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target>뒤처진 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3264,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>평균 블록 생성 시간</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3801,6 +3831,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>채굴 풀들의 운 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3809,6 +3840,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>채굴 풀들의 운</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3817,6 +3849,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>지난 한 주 동안의 모든 채굴 풀의 전반적인 운입니다. 운이 100%보다 크면 현재 에포크의 평균 블록 생성 시간이 10분 미만이라는 뜻입니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3825,6 +3858,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>채굴 풀 개수 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3833,6 +3867,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
+        <target>채굴 풀 개수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3930,7 +3965,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
-        <target>채굴 풀 개수</target>
+        <target>채굴 풀 개수 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">158,160</context>
@@ -4243,6 +4278,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
+        <target>평균 블록 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4272,6 +4308,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
+        <target>평균 거래 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4316,6 +4353,7 @@
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
         <source>Explore the full Bitcoin ecosystem</source>
+        <target>비트코인 생태계 전체를 탐험하세요.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -4760,6 +4798,7 @@
       </trans-unit>
       <trans-unit id="53fbdc20554c4e68ae509f652b38ab80021c0739" datatype="html">
         <source>Flow</source>
+        <target>흐름</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">202,205</context>
@@ -4773,6 +4812,7 @@
       </trans-unit>
       <trans-unit id="d0fd8887b50687cfc0fc1f6569f6fd6c5db4ffc0" datatype="html">
         <source>Hide diagram</source>
+        <target>도표 숨기기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">205,210</context>
