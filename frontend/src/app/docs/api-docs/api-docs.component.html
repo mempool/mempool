@@ -16,7 +16,7 @@
         </div>
 
         <div class="doc-item-container" *ngFor="let item of faq">
-          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled )">
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ) || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled )">
             <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
             <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
               <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
@@ -215,7 +215,7 @@
 
 <ng-template type="what-is-memory-usage">
   <p>Memory usage on the front page refers to the real-time amount of system memory used by a Bitcoin node's mempool. This memory usage number is always higher than the total size of all pending transactions in the mempool due to indexes, pointers, and other overhead used by Bitcoin Core for storage and processing.</p>
-  <p>mempool.space shows memory usage of a node that has a very high mempool memory limit (more on this <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-big-is-mempool-used-by-mempool.space">above</a>). As a result, when mempools fill up, you may notice memory usage on mempool.space go beyond 300MB. This is not a mistake—this memory usage figure is high because it's for Bitcoin node that isn't rejecting (or evicting) transactions. Consider it to be another data point to give you an idea of how congested the mempool is relative to the default memory limit of 300MB.</p>
+  <p>mempool.space shows the memory usage of a Bitcoin node that has a very high mempool memory limit. As a result, when mempools fill up, you may notice memory usage on mempool.space go beyond 300MB. This is not a mistake—this memory usage figure is high because it's for a Bitcoin node that isn't rejecting (or evicting) transactions. Consider it to be another data point to give you an idea of how congested the mempool is relative to the default memory limit of 300MB.</p>
   <p>A Bitcoin node running the default 300MB mempool memory limit, like most Raspberry Pi nodes, will never go past 300MB of memory usage.</p>
 </ng-template>
 
