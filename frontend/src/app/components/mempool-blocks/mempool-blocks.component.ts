@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
-import { Subscription, Observable, fromEvent, merge, of, combineLatest, timer } from 'rxjs';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
@@ -9,11 +9,18 @@ import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
 import { DifficultyAdjustment } from '../../interfaces/node-api.interface';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-mempool-blocks',
   templateUrl: './mempool-blocks.component.html',
   styleUrls: ['./mempool-blocks.component.scss'],
+  animations: [trigger('blockEntryTrigger', [
+    transition(':enter', [
+      style({ transform: 'translateX(-155px)' }),
+      animate('2s 0s ease', style({ transform: '' })),
+    ]),
+  ])],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
@@ -32,12 +39,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   isLoadingWebsocketSubscription: Subscription;
   blockSubscription: Subscription;
   networkSubscription: Subscription;
+  chainTipSubscription: Subscription;
   network = '';
   now = new Date().getTime();
   timeOffset = 0;
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
+  animateEntry: boolean = false;
 
   blockWidth = 125;
   blockPadding = 30;
@@ -53,6 +62,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   resetTransitionTimeout: number;
 
+  chainTip: number = -1;
   blockIndex = 1;
 
   constructor(
@@ -69,6 +79,8 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.chainTip = this.stateService.latestBlockHeight;
+
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
@@ -153,10 +165,23 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.blockSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
-        if (block?.extras?.matchRate >= 66 && !this.tabHidden) {
+        if (this.chainTip === -1) {
+          this.animateEntry = block.height === this.stateService.latestBlockHeight;
+        } else {
+          this.animateEntry = block.height > this.chainTip;
+        }
+
+        this.chainTip = this.stateService.latestBlockHeight;
+        if ((block?.extras?.similarity == null || block?.extras?.similarity > 0.5) && !this.tabHidden) {
           this.blockIndex++;
         }
       });
+
+    this.chainTipSubscription = this.stateService.chainTip$.subscribe((height) => {
+      if (this.chainTip === -1) {
+        this.chainTip = height;
+      }
+    });
 
     this.networkSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
@@ -193,11 +218,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.blockSubscription.unsubscribe();
     this.networkSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
+    this.chainTipSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
   trackByFn(index: number, block: MempoolBlock) {
-    return block.index;
+    return (block.isStack) ? 'stack' : block.index;
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
@@ -213,6 +239,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
       lastBlock.feeRange.sort((a, b) => a - b);
       lastBlock.medianFee = this.median(lastBlock.feeRange);
       lastBlock.totalFees += block.totalFees;
+    }
+    if (blocks.length) {
+      blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
     }
     return blocks;
   }
