@@ -6,6 +6,7 @@ import backendInfo from '../api/backend-info';
 import logger from '../logger';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
+import { query } from '../utils/http-query';
 
 /**
  * Maintain the most recent version of pools-v2.json
@@ -64,7 +65,7 @@ class PoolsUpdater {
       } else {
         logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       }
-      const poolsJson = await this.query(this.poolsUrl);
+      const poolsJson = await query(this.poolsUrl);
       if (poolsJson === undefined) {
         return;
       }
@@ -124,7 +125,7 @@ class PoolsUpdater {
    * Fetch our latest pools-v2.json sha from github
    */
   private async fetchPoolsSha(): Promise<string | null> {
-    const response = await this.query(this.treeUrl);
+    const response = await query(this.treeUrl);
 
     if (response !== undefined) {
       for (const file of response['tree']) {
@@ -136,62 +137,6 @@ class PoolsUpdater {
 
     logger.err(`Cannot find "pools-v2.json" in git tree (${this.treeUrl})`, logger.tags.mining);
     return null;
-  }
-
-  /**
-   * Http request wrapper
-   */
-  private async query(path): Promise<any[] | undefined> {
-    type axiosOptions = {
-      headers: {
-        'User-Agent': string
-      };
-      timeout: number;
-      httpsAgent?: https.Agent;
-    };
-    const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
-    const axiosOptions: axiosOptions = {
-      headers: {
-        'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
-      },
-      timeout: config.SOCKS5PROXY.ENABLED ? 30000 : 10000
-    };
-    let retry = 0;
-
-    while (retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
-      try {
-        if (config.SOCKS5PROXY.ENABLED) {
-          const socksOptions: any = {
-            agentOptions: {
-              keepAlive: true,
-            },
-            hostname: config.SOCKS5PROXY.HOST,
-            port: config.SOCKS5PROXY.PORT
-          };
-
-          if (config.SOCKS5PROXY.USERNAME && config.SOCKS5PROXY.PASSWORD) {
-            socksOptions.username = config.SOCKS5PROXY.USERNAME;
-            socksOptions.password = config.SOCKS5PROXY.PASSWORD;
-          } else {
-            // Retry with different tor circuits https://stackoverflow.com/a/64960234
-            socksOptions.username = `circuit${retry}`;
-          }
-
-          axiosOptions.httpsAgent = new SocksProxyAgent(socksOptions);
-        }
-
-        const data: AxiosResponse = await axios.get(path, axiosOptions);
-        if (data.statusText === 'error' || !data.data) {
-          throw new Error(`Could not fetch data from ${path}, Error: ${data.status}`);
-        }
-        return data.data;
-      } catch (e) {
-        logger.err('Could not connect to Github. Reason: ' + (e instanceof Error ? e.message : e));
-        retry++;
-      }
-      await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
-    }
-    return undefined;
   }
 }
 

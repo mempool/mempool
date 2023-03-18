@@ -1,4 +1,4 @@
-import { query } from '../../utils/axios-query';
+import { query } from '../../utils/http-query';
 import priceUpdater, { PriceFeed, PriceHistory } from '../price-updater';
 
 class BitfinexApi implements PriceFeed {

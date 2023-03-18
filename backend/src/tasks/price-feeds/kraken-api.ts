@@ -1,6 +1,6 @@
+import { query } from '../../utils/http-query';
 import logger from '../../logger';
 import PricesRepository from '../../repositories/PricesRepository';
-import { query } from '../../utils/axios-query';
 import priceUpdater, { PriceFeed, PriceHistory } from '../price-updater';
 
 class KrakenApi implements PriceFeed {
