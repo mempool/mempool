@@ -84,7 +84,7 @@ const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstre
 const promoPrefix = PATH + 'promo-video/';
 const promoVideoFile = promoPrefix + 'mempool-promo.mp4';
 const promoVideoUrl = 'https://raw.githubusercontent.com/mempool/mempool-promo/master/promo.mp4';
-const promoVideoLanguages = ['en','sv','ja'];
+const promoVideoLanguages = ['en','sv','ja','zh','cs','fi','fr','de','it','lt','nb','fa','pl','ro','pt'];
 
 console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
