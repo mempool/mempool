@@ -5578,7 +5578,7 @@
       </trans-unit>
       <trans-unit id="205c1b86ac1cc419c4d0cca51fdde418c4ffdc20" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> channels</source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> canaux</target>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> canaux</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">79</context>
@@ -5864,7 +5864,7 @@
       </trans-unit>
       <trans-unit id="6008566722612122663" datatype="html">
         <source>Channel: <x id="PH" equiv-text="value.short_id"/></source>
-        <target>Canal : <x id="PH" equiv-text="value.short_id"/></target>
+        <target>Canal: <x id="PH" equiv-text="value.short_id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.ts</context>
           <context context-type="linenumber">37</context>
