@@ -269,6 +269,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.cd.markForCheck();
   }
 
+  isSpecial(height: number): boolean {
+    return this.specialBlocks[height]?.networks.includes(this.stateService.network || 'mainnet') ? true : false;
+  }
+
   getStyleForBlock(block: BlockchainBlock, index: number, animateEnterFrom: number = 0) {
     if (!block || block.placeholder) {
       return this.getStyleForPlaceholderBlock(index, animateEnterFrom);
