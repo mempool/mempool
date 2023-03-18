@@ -55,6 +55,7 @@ class DiskCache {
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
       await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
+        network: config.MEMPOOL.NETWORK,
         cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
         blockSummaries: blocks.getBlockSummaries(),
@@ -98,6 +99,7 @@ class DiskCache {
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
       fs.writeFileSync(DiskCache.TMP_FILE_NAME, JSON.stringify({
+        network: config.MEMPOOL.NETWORK,
         cacheSchemaVersion: this.cacheSchemaVersion,
         blocks: blocks.getBlocks(),
         blockSummaries: blocks.getBlockSummaries(),
@@ -158,6 +160,10 @@ class DiskCache {
         data = JSON.parse(cacheData);
         if (data.cacheSchemaVersion === undefined || data.cacheSchemaVersion !== this.cacheSchemaVersion) {
           logger.notice('Disk cache contains an outdated schema version. Clearing it and skipping the cache loading.');
+          return this.wipeCache();
+        }
+        if (data.network && data.network !== config.MEMPOOL.NETWORK) {
+          logger.notice('Disk cache contains data from a different network. Clearing it and skipping the cache loading.');
           return this.wipeCache();
         }
 

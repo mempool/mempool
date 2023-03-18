@@ -207,8 +207,8 @@ export class NodesMap implements OnInit, OnChanges {
 
               return `
                 <b style="color: white">${alias}</b><br>
-                ${liquidity}<br>
-                ${data[5]} channels<br>
+                ${liquidity}<br>` +
+                $localize`:@@205c1b86ac1cc419c4d0cca51fdde418c4ffdc20:${data[5]}:INTERPOLATION: channels` + `<br>
                 ${getFlagEmoji(data[7])} ${data[6]}
               `;
             }
