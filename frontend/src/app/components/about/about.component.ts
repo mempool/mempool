@@ -68,7 +68,7 @@ export class AboutComponent implements OnInit {
       tap(() => this.goToAnchor())
     );
   }
-  
+
   ngAfterViewInit() {
     this.goToAnchor();
   }
@@ -89,5 +89,9 @@ export class AboutComponent implements OnInit {
     } else {
       this.showNavigateToSponsor = true;
     }
+  }
+
+  showSubtitles(language) {
+    return ( this.locale.startsWith( language ) && !this.locale.startsWith('en') );
   }
 }
