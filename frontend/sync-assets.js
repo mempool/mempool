@@ -81,8 +81,10 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
 const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
 const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
-const promoVideo = PATH + 'mempool-promo.mp4';
+const promoPrefix = PATH + 'promo-video/';
+const promoVideoFile = promoPrefix + 'mempool-promo.mp4';
 const promoVideoUrl = 'https://raw.githubusercontent.com/mempool/mempool-promo/master/promo.mp4';
+const promoVideoLanguages = ['en','sv','ja','zh','cs','fi','fr','de','it','lt','nb','fa','pl','ro','pt'];
 
 console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
@@ -92,9 +94,13 @@ console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
 console.log('Downloading testnet assets minimal');
 download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
-if (!fs.existsSync(promoVideo)) {
+if (!fs.existsSync(promoVideoFile)) {
   console.log('Downloading promo video');
-  download(promoVideo, promoVideoUrl);
+  download(promoVideoFile, promoVideoUrl);
+}
+console.log('Downloading promo video subtitles');
+for( const l of promoVideoLanguages ) {
+  download(promoPrefix + l + ".vtt", "https://raw.githubusercontent.com/mempool/mempool-promo/master/subtitles/" + l + ".vtt");
 }
 console.log('Downloading mining pool logos');
 downloadMiningPoolLogos();
