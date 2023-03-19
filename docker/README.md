@@ -450,8 +450,8 @@ Corresponding `docker-compose.yml` overrides:
   api:
     environment:
       MAXMIND_ENABLED: true,
-      MAXMIND_GEOLITE2_CITY: "./backend/GeoIP/GeoLite2-City.mmdb",
-      MAXMIND_GEOLITE2_ASN": "./backend/GeoIP/GeoLite2-ASN.mmdb",
-      MAXMIND_GEOIP2_ISP": "./backend/GeoIP/GeoIP2-ISP.mmdb"
+      MAXMIND_GEOLITE2_CITY: "/GeoIP/GeoLite2-City.mmdb",
+      MAXMIND_GEOLITE2_ASN": "/GeoIP/GeoLite2-ASN.mmdb",
+      MAXMIND_GEOIP2_ISP": "/GeoIP/GeoIP2-ISP.mmdb"
       ...
 ```
