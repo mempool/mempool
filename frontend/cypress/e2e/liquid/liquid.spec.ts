@@ -158,10 +158,10 @@ describe('Liquid', () => {
       it('show empty unblinded TX', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=`);
         cy.waitForSkeletonGone();
-        cy.get('.table-tx-vin tr:nth-child(1)').should('have.class', '');
+        cy.get('.table-tx-vin tr:nth-child(1)').should('have.class', 'ng-star-inserted');
         cy.get('.table-tx-vin tr:nth-child(1) .amount').should('contain.text', 'Confidential');
-        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', '');
-        cy.get('.table-tx-vout tr:nth-child(2)').should('have.class', '');
+        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', 'ng-star-inserted');
+        cy.get('.table-tx-vout tr:nth-child(2)').should('have.class', 'ng-star-inserted');
         cy.get('.table-tx-vout tr:nth-child(1) .amount').should('contain.text', 'Confidential');
         cy.get('.table-tx-vout tr:nth-child(2) .amount').should('contain.text', 'Confidential');
       });
@@ -169,8 +169,8 @@ describe('Liquid', () => {
       it('show invalid unblinded TX hex', () => {
         cy.visit(`${basePath}/tx/f2f41c0850e8e7e3f1af233161fd596662e67c11ef10ed15943884186fbb7f46#blinded=123`);
         cy.waitForSkeletonGone();
-        cy.get('.table-tx-vin tr').should('have.class', '');
-        cy.get('.table-tx-vout tr').should('have.class', '');
+        cy.get('.table-tx-vin tr').should('have.class', 'ng-star-inserted');
+        cy.get('.table-tx-vout tr').should('have.class', 'ng-star-inserted');
         cy.get('.error-unblinded').contains('Error: Invalid blinding data (invalid hex)');
       });
 
