@@ -51,7 +51,12 @@ tr, td, th {
 .pool.widget {
   width: 40%;
   padding-left: 24px;
-  @media (max-width: 376px) {
+  @media (min-width: 768px) AND (max-width: 926px) {
+    padding-left: 0px;
+    width: 60%;
+  }
+  @media (max-width: 430px) {
+    padding-left: 0px;
     width: 60%;
   }
 }
@@ -59,6 +64,10 @@ tr, td, th {
   display: inline-block;
   vertical-align: text-top;
   padding-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
 }
 
 .height {
@@ -68,6 +77,12 @@ tr, td, th {
   width: 15%;
   @media (max-width: 576px) {
     width: 10%;
+  }
+  @media (min-width: 768px) AND (max-width: 926px) {
+    width: 30%;
+  }
+  @media (max-width: 430px) {
+    width: 30%;
   }
 }
 .height.legacy {
@@ -92,7 +107,7 @@ tr, td, th {
 
 .mined {
   width: 13%;
-  @media (max-width: 576px) {
+  @media (max-width: 730px) {
     display: none;
   }
 }
@@ -138,7 +153,7 @@ tr, td, th {
 
 .fees {
   width: 8%;
-  @media (max-width: 650px) {
+  @media (max-width: 820px) {
     display: none;
   }
 }
@@ -162,6 +177,16 @@ tr, td, th {
   @media (max-width: 576px) {
     width: 30%;
     padding-right: 0;
+  }
+  @media (min-width: 768px) AND (max-width: 926px) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+  }
+  @media (max-width: 430px) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
   }
 }
 
@@ -189,10 +214,10 @@ tr, td, th {
 
 .health {
   width: 10%;
-  @media (max-width: 1000px) {
+  @media (max-width: 1105px) {
     width: 13%;
   }
-  @media (max-width: 950px) {
+  @media (max-width: 560px) {
     display: none;
   }
 
@@ -202,7 +227,7 @@ tr, td, th {
 }
 .health.widget {
   width: 25%;
-  @media (max-width: 1000px) {
+  @media (max-width: 1105px) {
     display: none;
   }
   @media (max-width: 767px) {
