@@ -22,7 +22,6 @@ __MEMPOOL_EXTERNAL_MAX_RETRY__=${MEMPOOL_EXTERNAL_MAX_RETRY:=1}
 __MEMPOOL_EXTERNAL_RETRY_INTERVAL__=${MEMPOOL_EXTERNAL_RETRY_INTERVAL:=0}
 __MEMPOOL_USER_AGENT__=${MEMPOOL_USER_AGENT:=mempool}
 __MEMPOOL_STDOUT_LOG_MIN_PRIORITY__=${MEMPOOL_STDOUT_LOG_MIN_PRIORITY:=info}
-__MEMPOOL_INDEXING_BLOCKS_AMOUNT__=${MEMPOOL_INDEXING_BLOCKS_AMOUNT:=false}
 __MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__=${MEMPOOL_AUTOMATIC_BLOCK_REINDEXING:=false}
 __MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json}
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
@@ -112,6 +111,13 @@ __LND_REST_API_URL__=${LND_REST_API_URL:="https://localhost:8080"}
 # CLN
 __CLIGHTNING_SOCKET__=${CLIGHTNING_SOCKET:=""}
 
+# MAXMIND
+__MAXMIND_ENABLED__=${MAXMIND_ENABLED:=true}
+__MAXMIND_GEOLITE2_CITY__=${MAXMIND_GEOLITE2_CITY:="/backend/GeoIP/GeoLite2-City.mmdb"}
+__MAXMIND_GEOLITE2_ASN__=${MAXMIND_GEOLITE2_ASN:="/backend/GeoIP/GeoLite2-ASN.mmdb"}
+__MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
+
+
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
 sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
@@ -135,7 +141,6 @@ sed -i "s!__MEMPOOL_EXTERNAL_MAX_RETRY__!${__MEMPOOL_EXTERNAL_MAX_RETRY__}!g" me
 sed -i "s!__MEMPOOL_EXTERNAL_RETRY_INTERVAL__!${__MEMPOOL_EXTERNAL_RETRY_INTERVAL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_USER_AGENT__!${__MEMPOOL_USER_AGENT__}!g" mempool-config.json
 sed -i "s/__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__/${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_INDEXING_BLOCKS_AMOUNT__/${__MEMPOOL_INDEXING_BLOCKS_AMOUNT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
@@ -214,5 +219,12 @@ sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
 
 # CLN
 sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
+
+# MAXMIND
+sed -i "s!__MAXMIND_ENABLED__!${__MAXMIND_ENABLED__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOLITE2_CITY__!${__MAXMIND_GEOLITE2_CITY__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOLITE2_ASN__!${__MAXMIND_GEOLITE2_ASN__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOIP2_ISP__!${__MAXMIND_GEOIP2_ISP__}!g" mempool-config.json
+
 
 node /backend/package/index.js
