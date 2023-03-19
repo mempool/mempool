@@ -432,3 +432,26 @@ Corresponding `docker-compose.yml` overrides:
       CLIGHTNING_SOCKET: ""
       ...
 ```
+
+<br/>
+
+`mempool-config.json`:
+```json
+  "MAXMIND": {
+    "ENABLED": true,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```yaml
+  api:
+    environment:
+      MAXMIND_ENABLED: true,
+      MAXMIND_GEOLITE2_CITY: "/backend/GeoIP/GeoLite2-City.mmdb",
+      MAXMIND_GEOLITE2_ASN": "/backend/GeoIP/GeoLite2-ASN.mmdb",
+      MAXMIND_GEOIP2_ISP": "/backend/GeoIP/GeoIP2-ISP.mmdb"
+      ...
+```

@@ -106,6 +106,13 @@ describe('Mempool Backend Config', () => {
         BISQ_URL: 'https://bisq.markets/api',
         BISQ_ONION: 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
       });
+
+      expect(config.MAXMIND).toStrictEqual({
+        ENABLED: true,
+        GEOLITE2_CITY: './backend/GeoIP/GeoLite2-City.mmdb',
+        GEOLITE2_ASN: './backend/GeoIP/GeoLite2-ASN.mmdb',
+        GEOIP2_ISP: ''
+      });
     });
   });
 
