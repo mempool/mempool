@@ -467,30 +467,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get one block by hash
-   */
-  public async $getBlockByHash(hash: string): Promise<object | null> {
-    try {
-      const query = `
-        SELECT ${BLOCK_DB_FIELDS}
-        FROM blocks
-        JOIN pools ON blocks.pool_id = pools.id
-        WHERE hash = ?;
-      `;
-      const [rows]: any[] = await DB.query(query, [hash]);
-
-      if (rows.length <= 0) {
-        return null;
-      }
- 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);
-    } catch (e) {
-      logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Return blocks difficulty
    */
   public async $getBlocksDifficulty(): Promise<object[]> {
@@ -599,7 +575,7 @@ class BlocksRepository {
         if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
           logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}`);
           await this.$deleteBlocksFrom(blocks[idx - 1].height);
-          await BlocksSummariesRepository.$deleteBlocksFrom(blocks[idx - 1].height);
+          await BlocksSummariesRepository.$deleteTransactionsFrom(blocks[idx - 1].height);
           await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(blocks[idx - 1].height);
           return false;
@@ -619,7 +595,7 @@ class BlocksRepository {
    * Delete blocks from the database from blockHeight
    */
   public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks from height ${blockHeight} from the database`);
+    logger.info(`Delete newer blocks from height ${blockHeight} from the database`, logger.tags.mining);
 
     try {
       await DB.query(`DELETE FROM blocks where height >= ${blockHeight}`);
@@ -978,6 +954,7 @@ class BlocksRepository {
     }
 
     // If we're missing block summary related field, check if we can populate them on the fly now
+    // This is for example triggered upon re-org
     if (Common.blocksSummariesIndexingEnabled() &&
       (extras.medianFeeAmt === null || extras.feePercentiles === null))
     {

@@ -583,11 +583,11 @@ class Blocks {
         if (!fastForwarded) {
           const lastBlock = await blocksRepository.$getBlockByHeight(blockExtended.height - 1);
           if (lastBlock !== null && blockExtended.previousblockhash !== lastBlock.id) {
-            logger.warn(`Chain divergence detected at block ${lastBlock.height}, re-indexing most recent data`);
+            logger.warn(`Chain divergence detected at block ${lastBlock.height}, re-indexing most recent data`, logger.tags.mining);
             // We assume there won't be a reorg with more than 10 block depth
             await BlocksRepository.$deleteBlocksFrom(lastBlock.height - 10);
             await HashratesRepository.$deleteLastEntries();
-            await BlocksSummariesRepository.$deleteBlocksFrom(lastBlock.height - 10);
+            await BlocksSummariesRepository.$deleteTransactionsFrom(lastBlock.height - 10); // Will be re-index in formatDbBlockIntoExtendedBlock()
             await cpfpRepository.$deleteClustersFrom(lastBlock.height - 10);
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock.height - i);
@@ -598,7 +598,7 @@ class Blocks {
             }
             await mining.$indexDifficultyAdjustments();
             await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
-            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`);
+            logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
             indexer.reindex();
           }
           await blocksRepository.$saveBlockInDatabase(blockExtended);
