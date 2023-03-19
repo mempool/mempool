@@ -111,7 +111,7 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Spanish @maxhodler @bisqes
 * Persian @techmix
 * French @Bayernatoor
-* Korean @kcalvinalvinn
+* Korean @kcalvinalvinn @sogoagain
 * Italian @HodlBits
 * Hebrew @rapidlab309
 * Georgian @wyd_idk
