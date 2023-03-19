@@ -17,7 +17,7 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveSummary(params: { height: number, mined?: BlockSummary}) {
+  public async $saveSummary(params: { height: number, mined?: BlockSummary}): Promise<void> {
     const blockId = params.mined?.id;
     try {
       const transactions = JSON.stringify(params.mined?.transactions || []);
@@ -71,13 +71,17 @@ class BlocksSummariesRepository {
   /**
    * Delete blocks from the database from blockHeight
    */
-  public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks summary from height ${blockHeight} from the database`);
+  public async $deleteTransactionsFrom(blockHeight: number): Promise<void> {
+    logger.info(`Delete blocks summaries transactions from height ${blockHeight} from the database, but keep templates`, logger.tags.mining);
 
     try {
-      await DB.query(`DELETE FROM blocks_summaries where height >= ${blockHeight}`);
+      await DB.query(`
+        UPDATE blocks_summaries
+        SET transactions = '[]'
+        WHERE height >= ${blockHeight}
+      `);
     } catch (e) {
-      logger.err('Cannot delete indexed blocks summaries. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.err('Cannot delete blocks summaries transactions. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 
