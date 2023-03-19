@@ -85,6 +85,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
+import { FiatShortenerPipe } from './pipes/fiat-shortener.pipe';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     Decimal2HexPipe,
     FeeRoundingPipe,
     FiatCurrencyPipe,
+    FiatShortenerPipe,
     ColoredPriceDirective,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -214,6 +216,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     VbytesPipe,
     WuBytesPipe,
     FiatCurrencyPipe,
+    FiatShortenerPipe,
     CeilPipe,
     ShortenStringPipe,
     CapAddressPipe,

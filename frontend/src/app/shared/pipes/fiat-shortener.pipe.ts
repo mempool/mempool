@@ -31,17 +31,27 @@ export class FiatShortenerPipe implements PipeTransform {
       { value: 1, symbol: '' },
       { value: 1e3, symbol: 'k' },
       { value: 1e6, symbol: 'M' },
-      { value: 1e9, symbol: 'G' },
+      { value: 1e9, symbol: 'B' },
       { value: 1e12, symbol: 'T' },
       { value: 1e15, symbol: 'P' },
       { value: 1e18, symbol: 'E' }
     ];
-    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
     const item = lookup.slice().reverse().find((item) => num >= item.value);
 
-    let result = item ? (num / item.value).toFixed(digits).replace(rx, '$1') : '0';
-    result = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(item ? num / item.value : 0);
+    const format = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 2 });
+    const parts = format.formatToParts(item ? num / item.value : 0);
+
+    let final = '';
+    let powerTenSymbolAdded = false;
+    for (const part of parts.reverse()) {
+      if ((part.type === 'integer' || part.type === 'fraction') && powerTenSymbolAdded === false) {
+        final = part.value + item.symbol + final;
+        powerTenSymbolAdded = true;
+      } else {
+        final = part.value + final;
+      }
+    }
     
-    return result + item.symbol;
+    return final;
   }
 }
