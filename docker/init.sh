@@ -3,6 +3,10 @@
 #backend
 cp ./docker/backend/* ./backend/
 
+#geoip-data
+wget -O ./backend/GeoIP/GeoLite2-City.mmdb https://raw.githubusercontent.com/mempool/geoip-data/master/GeoLite2-City.mmdb
+wget -O ./backend/GeoIP/GeoLite2-ASN.mmdb https://raw.githubusercontent.com/mempool/geoip-data/master/GeoLite2-ASN.mmdb
+
 #frontend
 localhostIP="127.0.0.1"
 cp ./docker/frontend/* ./frontend
