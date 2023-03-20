@@ -23,16 +23,16 @@ class DiskCache {
       return;
     }
     process.on('SIGINT', (e) => {
-      this.saveCacheToDiskSync();
+      this.$saveCacheToDisk(true);
       process.exit(2);
     });
     process.on('SIGTERM', (e) => {
-      this.saveCacheToDiskSync();
+      this.$saveCacheToDisk(true);
       process.exit(2);
     });
   }
 
-  async $saveCacheToDisk(): Promise<void> {
+  async $saveCacheToDisk(sync: boolean = false): Promise<void> {
     if (!cluster.isPrimary) {
       return;
     }
@@ -41,7 +41,7 @@ class DiskCache {
       return;
     }
     try {
-      logger.debug('Writing mempool and blocks data to disk cache (async)...');
+      logger.debug(`Writing mempool and blocks data to disk cache (${ sync ? 'sync' : 'async' })...`);
       this.isWritingCache = true;
 
       const mempool = memPool.getMempool();
@@ -54,68 +54,46 @@ class DiskCache {
 
       const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
 
-      await fsPromises.writeFile(DiskCache.FILE_NAME, JSON.stringify({
-        network: config.MEMPOOL.NETWORK,
-        cacheSchemaVersion: this.cacheSchemaVersion,
-        blocks: blocks.getBlocks(),
-        blockSummaries: blocks.getBlockSummaries(),
-        mempool: {},
-        mempoolArray: mempoolArray.splice(0, chunkSize),
-      }), { flag: 'w' });
-      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-        await fsPromises.writeFile(DiskCache.FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+      if (sync) {
+        fs.writeFileSync(DiskCache.TMP_FILE_NAME, JSON.stringify({
+          network: config.MEMPOOL.NETWORK,
+          cacheSchemaVersion: this.cacheSchemaVersion,
+          blocks: blocks.getBlocks(),
+          blockSummaries: blocks.getBlockSummaries(),
           mempool: {},
           mempoolArray: mempoolArray.splice(0, chunkSize),
         }), { flag: 'w' });
-      }
-      logger.debug('Mempool and blocks data saved to disk cache');
-      this.isWritingCache = false;
-    } catch (e) {
-      logger.warn('Error writing to cache file: ' + (e instanceof Error ? e.message : e));
-      this.isWritingCache = false;
-    }
-  }
+        for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+          fs.writeFileSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+            mempool: {},
+            mempoolArray: mempoolArray.splice(0, chunkSize),
+          }), { flag: 'w' });
+        }
 
-  saveCacheToDiskSync(): void {
-    if (!cluster.isPrimary) {
-      return;
-    }
-    if (this.isWritingCache) {
-      logger.debug('Saving cache already in progress. Skipping.');
-      return;
-    }
-    try {
-      logger.debug('Writing mempool and blocks data to disk cache (sync)...');
-      this.isWritingCache = true;
-
-      const mempool = memPool.getMempool();
-      const mempoolArray: TransactionExtended[] = [];
-      for (const tx in mempool) {
-        mempoolArray.push(mempool[tx]);
-      }
-
-      Common.shuffleArray(mempoolArray);
-
-      const chunkSize = Math.floor(mempoolArray.length / DiskCache.CHUNK_FILES);
-
-      fs.writeFileSync(DiskCache.TMP_FILE_NAME, JSON.stringify({
-        network: config.MEMPOOL.NETWORK,
-        cacheSchemaVersion: this.cacheSchemaVersion,
-        blocks: blocks.getBlocks(),
-        blockSummaries: blocks.getBlockSummaries(),
-        mempool: {},
-        mempoolArray: mempoolArray.splice(0, chunkSize),
-      }), { flag: 'w' });
-      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-        fs.writeFileSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+        fs.renameSync(DiskCache.TMP_FILE_NAME, DiskCache.FILE_NAME);
+        for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+          fs.renameSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+        }
+      } else {
+        await fsPromises.writeFile(DiskCache.TMP_FILE_NAME, JSON.stringify({
+          network: config.MEMPOOL.NETWORK,
+          cacheSchemaVersion: this.cacheSchemaVersion,
+          blocks: blocks.getBlocks(),
+          blockSummaries: blocks.getBlockSummaries(),
           mempool: {},
           mempoolArray: mempoolArray.splice(0, chunkSize),
         }), { flag: 'w' });
-      }
+        for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+          await fsPromises.writeFile(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
+            mempool: {},
+            mempoolArray: mempoolArray.splice(0, chunkSize),
+          }), { flag: 'w' });
+        }
 
-      fs.renameSync(DiskCache.TMP_FILE_NAME, DiskCache.FILE_NAME);
-      for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
-        fs.renameSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+        await fsPromises.rename(DiskCache.TMP_FILE_NAME, DiskCache.FILE_NAME);
+        for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+          await fsPromises.rename(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), DiskCache.FILE_NAMES.replace('{number}', i.toString()));
+        }
       }
 
       logger.debug('Mempool and blocks data saved to disk cache');
