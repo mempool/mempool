@@ -33,6 +33,7 @@ interface IConfig {
     ADVANCED_GBT_MEMPOOL: boolean;
     CPFP_INDEXING: boolean;
     MAX_BLOCKS_BULK_QUERY: number;
+    DISK_CACHE_BLOCK_INTERVAL: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -155,6 +156,7 @@ const defaults: IConfig = {
     'ADVANCED_GBT_MEMPOOL': false,
     'CPFP_INDEXING': false,
     'MAX_BLOCKS_BULK_QUERY': 0,
+    'DISK_CACHE_BLOCK_INTERVAL': 6,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
