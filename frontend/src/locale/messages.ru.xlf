@@ -7070,7 +7070,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
-        <target> <x id="DATE" equiv-text="counter"/> неделя</target>
+        <target><x id="DATE" equiv-text="counter"/> неделя</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -7078,7 +7078,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
-        <target> <x id="DATE" equiv-text="counter"/> недель</target>
+        <target><x id="DATE" equiv-text="counter"/> недель</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
