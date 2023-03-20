@@ -34,6 +34,7 @@ If you want to use different credentials, specify them in the `docker-compose.ym
       CORE_RPC_PORT: "8332"
       CORE_RPC_USERNAME: "customuser"
       CORE_RPC_PASSWORD: "custompassword"
+      CORE_RPC_TIMEOUT: "60000"
 ```
 
 The IP address in the example above refers to Docker's default gateway IP address so that the container can hit the `bitcoind` instance running on the host machine. If your setup is different, update it accordingly.
@@ -160,7 +161,8 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
@@ -172,6 +174,7 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
+      CORE_RPC_TIMEOUT: 60000
       ...
 ```
 
@@ -221,7 +224,8 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
@@ -233,6 +237,7 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_PORT: ""
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_TIMEOUT: ""
       ...
 ```
 
@@ -405,6 +410,7 @@ Corresponding `docker-compose.yml` overrides:
     "TLS_CERT_PATH": ""
     "MACAROON_PATH": ""
     "REST_API_URL": "https://localhost:8080"
+    "TIMEOUT": 10000
   }
 ```
 
@@ -415,6 +421,7 @@ Corresponding `docker-compose.yml` overrides:
       LND_TLS_CERT_PATH: ""
       LND_MACAROON_PATH: ""
       LND_REST_API_URL: "https://localhost:8080"
+      LND_TIMEOUT: 10000
       ...
 ```
 
