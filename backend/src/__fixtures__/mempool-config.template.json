@@ -109,7 +109,8 @@
   "LND": {
     "TLS_CERT_PATH": "",
     "MACAROON_PATH": "",
-    "REST_API_URL": "https://localhost:8080"
+    "REST_API_URL": "https://localhost:8080",
+    "TIMEOUT": 10000
   },
   "CLIGHTNING": {
     "SOCKET": "__CLIGHTNING_SOCKET__"

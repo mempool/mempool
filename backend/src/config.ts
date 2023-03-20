@@ -51,6 +51,7 @@ interface IConfig {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
     REST_API_URL: string;
+    TIMEOUT: number;
   };
   CLIGHTNING: {
     SOCKET: string;
@@ -218,6 +219,7 @@ const defaults: IConfig = {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
     'REST_API_URL': 'https://localhost:8080',
+    'TIMEOUT': 10000,
   },
   'CLIGHTNING': {
     'SOCKET': '',
