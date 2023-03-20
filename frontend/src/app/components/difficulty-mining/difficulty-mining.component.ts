@@ -83,4 +83,8 @@ export class DifficultyMiningComponent implements OnInit {
       })
     );
   }
+
+  isEllipsisActive(e): boolean {
+    return (e.offsetWidth < e.scrollWidth);
+  }
 }
