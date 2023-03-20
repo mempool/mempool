@@ -1,12 +1,12 @@
 # The Mempool Open Source Project™ [![mempool](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/ry4br7/master&style=flat-square)](https://dashboard.cypress.io/projects/ry4br7/runs)
 
-https://user-images.githubusercontent.com/232186/222445818-234aa6c9-c233-4c52-b3f0-e32b8232893b.mp4
+https://user-images.githubusercontent.com/93150691/226236121-375ea64f-b4a1-4cc0-8fad-a6fb33226840.mp4
+
+<br>
 
 Mempool is the fully-featured mempool visualizer, explorer, and API service running at [mempool.space](https://mempool.space/). 
 
 It is an open-source project developed and operated for the benefit of the Bitcoin community, with a focus on the emerging transaction fee market that is evolving Bitcoin into a multi-layer ecosystem.
-
-![mempool](https://mempool.space/resources/screenshots/v2.4.0-dashboard.png)
 
 # Installation Methods
 
