@@ -7,7 +7,7 @@ const nodeRpcCredentials: BitcoinRpcCredentials = {
   port: config.SECOND_CORE_RPC.PORT,
   user: config.SECOND_CORE_RPC.USERNAME,
   pass: config.SECOND_CORE_RPC.PASSWORD,
-  timeout: 60000,
+  timeout: config.SECOND_CORE_RPC.TIMEOUT,
 };
 
 export default new bitcoin.Client(nodeRpcCredentials);

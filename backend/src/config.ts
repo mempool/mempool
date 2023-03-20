@@ -52,6 +52,7 @@ interface IConfig {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
     REST_API_URL: string;
+    TIMEOUT: number;
   };
   CLIGHTNING: {
     SOCKET: string;
@@ -66,12 +67,14 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -170,13 +173,15 @@ const defaults: IConfig = {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'DATABASE': {
     'ENABLED': true,
@@ -216,6 +221,7 @@ const defaults: IConfig = {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
     'REST_API_URL': 'https://localhost:8080',
+    'TIMEOUT': 10000,
   },
   'CLIGHTNING': {
     'SOCKET': '',
