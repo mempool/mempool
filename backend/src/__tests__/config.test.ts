@@ -52,14 +52,16 @@ describe('Mempool Backend Config', () => {
         HOST: '127.0.0.1',
         PORT: 8332,
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 60000
       });
 
       expect(config.SECOND_CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
         PORT: 8332,
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 60000
       });
 
       expect(config.DATABASE).toStrictEqual({
