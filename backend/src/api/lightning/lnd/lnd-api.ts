@@ -17,7 +17,7 @@ class LndApi implements AbstractLightningApi {
         httpsAgent: new Agent({
           ca: fs.readFileSync(config.LND.TLS_CERT_PATH)
         }),
-        timeout: 10000
+        timeout: config.LND.TIMEOUT
       };
     }
   }
