@@ -19,16 +19,12 @@ class DiskCache {
   private isWritingCache = false;
 
   constructor() {
-    if (!cluster.isMaster) {
+    if (!cluster.isPrimary) {
       return;
     }
     process.on('SIGINT', (e) => {
       this.$saveCacheToDisk(true);
-      process.exit(2);
-    });
-    process.on('SIGTERM', (e) => {
-      this.$saveCacheToDisk(true);
-      process.exit(2);
+      process.exit(0);
     });
   }
 

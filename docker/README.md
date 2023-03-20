@@ -112,6 +112,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
     "MAX_BLOCKS_BULK_QUERY": 0,
+    "DISK_CACHE_BLOCK_INTERVAL": 6
   },
 ```
 
@@ -143,6 +144,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
       MAX_BLOCKS_BULK_QUERY: ""
+      DISK_CACHE_BLOCK_INTERVAL: ""
       ...
 ```
 
