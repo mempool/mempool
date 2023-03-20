@@ -7070,7 +7070,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
-        <target> <x id="DATE" equiv-text="counter"/> неделя</target>
+        <target><x id="DATE" equiv-text="counter"/> неделя</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -7078,7 +7078,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
-        <target> <x id="DATE" equiv-text="counter"/> недель</target>
+        <target><x id="DATE" equiv-text="counter"/> недель</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -7102,7 +7102,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
-        <target> <x id="DATE" equiv-text="counter"/> час</target>
+        <target><x id="DATE" equiv-text="counter"/> час</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -7110,7 +7110,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
-        <target> <x id="DATE" equiv-text="counter"/> часов</target>
+        <target><x id="DATE" equiv-text="counter"/> часов</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -7134,7 +7134,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
-        <target> <x id="DATE" equiv-text="counter"/> секунда</target>
+        <target><x id="DATE" equiv-text="counter"/> секунда</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -7142,7 +7142,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
-        <target> <x id="DATE" equiv-text="counter"/> секунд</target>
+        <target><x id="DATE" equiv-text="counter"/> секунд</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
