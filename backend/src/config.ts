@@ -65,12 +65,14 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -168,13 +170,15 @@ const defaults: IConfig = {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'DATABASE': {
     'ENABLED': true,
