@@ -172,7 +172,7 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
-      CORE_RPC_TIMEOUT: ""
+      CORE_RPC_TIMEOUT: 60000
       ...
 ```
 
@@ -408,6 +408,7 @@ Corresponding `docker-compose.yml` overrides:
     "TLS_CERT_PATH": ""
     "MACAROON_PATH": ""
     "REST_API_URL": "https://localhost:8080"
+    "TIMEOUT": 10000
   }
 ```
 
@@ -418,6 +419,7 @@ Corresponding `docker-compose.yml` overrides:
       LND_TLS_CERT_PATH: ""
       LND_MACAROON_PATH: ""
       LND_REST_API_URL: "https://localhost:8080"
+      LND_TIMEOUT: 10000
       ...
 ```
 

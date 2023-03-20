@@ -93,7 +93,8 @@
   "LND": {
     "TLS_CERT_PATH": "tls.cert",
     "MACAROON_PATH": "readonly.macaroon",
-    "REST_API_URL": "https://localhost:8080"
+    "REST_API_URL": "https://localhost:8080",
+    "TIMEOUT": 10000
   },
   "CLIGHTNING": {
     "SOCKET": "lightning-rpc"

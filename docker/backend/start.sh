@@ -109,6 +109,7 @@ __LIGHTNING_LOGGER_UPDATE_INTERVAL__=${LIGHTNING_LOGGER_UPDATE_INTERVAL:=30}
 __LND_TLS_CERT_PATH__=${LND_TLS_CERT_PATH:=""}
 __LND_MACAROON_PATH__=${LND_MACAROON_PATH:=""}
 __LND_REST_API_URL__=${LND_REST_API_URL:="https://localhost:8080"}
+__LND_TIMEOUT__=${LND_TIMEOUT:=10000}
 
 # CLN
 __CLIGHTNING_SOCKET__=${CLIGHTNING_SOCKET:=""}
@@ -220,6 +221,7 @@ sed -i "s!__LIGHTNING_LOGGER_UPDATE_INTERVAL__!${__LIGHTNING_LOGGER_UPDATE_INTER
 sed -i "s!__LND_TLS_CERT_PATH__!${__LND_TLS_CERT_PATH__}!g" mempool-config.json
 sed -i "s!__LND_MACAROON_PATH__!${__LND_MACAROON_PATH__}!g" mempool-config.json
 sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
+sed -i "s!__LND_TIMEOUT__!${__LND_TIMEOUT__}!g" mempool-config.json
 
 # CLN
 sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
