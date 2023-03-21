@@ -30,7 +30,7 @@
     }
   }
   .card-text {
-    font-size: 20px;
+    font-size: 18px;
     margin: auto;
     position: relative;
   }
@@ -160,6 +160,7 @@
 
 .symbol {
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .epoch-progress {
