@@ -33,8 +33,10 @@
     font-size: 18px;
     margin: auto;
     position: relative;
+    margin-bottom: 0.2rem;
     &.bigger {
       font-size: 20px;
+      margin-bottom: 0;
     }
   }
 }
