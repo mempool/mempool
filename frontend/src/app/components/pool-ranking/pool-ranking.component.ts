@@ -162,10 +162,10 @@ export class PoolRankingComponent implements OnInit {
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
-                `<br>` + $localize`${i} blocks`;
+                `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                $localize`${i} blocks`;
+                $localize`${ i }:INTERPOLATION: blocks`;
             }
           }
         },
@@ -195,13 +195,15 @@ export class PoolRankingComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
+          const percentage = totalShareOther.toFixed(2) + '%';
+          const i = totalBlockOther.toString();
           if (this.miningWindowPreference === '24h') {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
               totalEstimatedHashrateOther.toString() + ' PH/s' +
-              `<br>` + totalBlockOther.toString() + ` blocks`;
+              `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
           } else {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
-              totalBlockOther.toString() + ` blocks`;
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
+              $localize`${ i }:INTERPOLATION: blocks`;
           }
         }
       },

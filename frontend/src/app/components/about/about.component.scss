@@ -13,8 +13,8 @@
 
   .image.not-rounded {
     border-radius: 0;
-    width: 74px;
-    height: 74px;
+    width: 60px;
+    height: 60px;
   }
 
   .intro {
@@ -42,9 +42,11 @@
 
   video {
     width: 640px;
-    height: 360px;
     max-width: 90%;
     margin-top: 0;
+    @media (min-width: 768px) {
+      height: 360px;
+    }
   }
 
   .social-icons {
@@ -57,9 +59,13 @@
   .enterprise-sponsor,
   .community-integrations-sponsor,
   .maintainers {
-    margin-top: 68px;
+    margin-top: 30px;
     margin-bottom: 68px;
     scroll-margin: 30px;
+
+    @media (min-width: 768px) {
+      margin-top: 68px;
+    }
   }
 
   .maintainers {
@@ -228,11 +234,11 @@
 }
 
 .community-integrations-sponsor {
-  max-width: 965px;
+  max-width: 1110px;
   margin: auto;
 }
 
 .community-integrations-sponsor img.image {
-  width: 78px;
-  height: 78px;
+  width: 64px;
+  height: 64px;
 }

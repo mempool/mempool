@@ -14,7 +14,8 @@
     "CPFP_INDEXING": true,
     "ADVANCED_GBT_AUDIT": true,
     "ADVANCED_GBT_MEMPOOL": true,
-    "USE_SECOND_NODE_FOR_MINFEE": true
+    "USE_SECOND_NODE_FOR_MINFEE": true,
+    "DISK_CACHE_BLOCK_INTERVAL": 1
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"

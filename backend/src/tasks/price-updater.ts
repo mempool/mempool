@@ -73,6 +73,11 @@ class PriceUpdater {
   }
 
   public async $run(): Promise<void> {
+    if (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet') {
+      // Coins have no value on testnet/signet, so we want to always show 0
+      return;
+    }
+
     if (this.running === true) {
       return;
     }
@@ -88,7 +93,7 @@ class PriceUpdater {
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
       }
-    } catch (e) {
+    } catch (e: any) {
       logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
     }
 

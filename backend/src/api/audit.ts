@@ -5,9 +5,9 @@ const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first
 
 class Audit {
   auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
-   : { censored: string[], added: string[], fresh: string[], score: number } {
+   : { censored: string[], added: string[], fresh: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], fresh: [], score: 0 };
+      return { censored: [], added: [], fresh: [], score: 0, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
@@ -16,6 +16,8 @@ class Audit {
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
     let displacedWeight = 0;
+    let matchedWeight = 0;
+    let projectedWeight = 0;
 
     const inBlock = {};
     const inTemplate = {};
@@ -38,11 +40,16 @@ class Audit {
           isCensored[txid] = true;
         }
         displacedWeight += mempool[txid].weight;
+      } else {
+        matchedWeight += mempool[txid].weight;
       }
+      projectedWeight += mempool[txid].weight;
       inTemplate[txid] = true;
     }
 
     displacedWeight += (4000 - transactions[0].weight);
+    projectedWeight += transactions[0].weight;
+    matchedWeight += transactions[0].weight;
 
     // we can expect an honest miner to include 'displaced' transactions in place of recent arrivals and censored txs
     // these displaced transactions should occupy the first N weight units of the next projected block
@@ -121,12 +128,14 @@ class Audit {
     const numCensored = Object.keys(isCensored).length;
     const numMatches = matches.length - 1; // adjust for coinbase tx
     const score = numMatches > 0 ? (numMatches / (numMatches + numCensored)) : 0;
+    const similarity = projectedWeight ? matchedWeight / projectedWeight : 1;
 
     return {
       censored: Object.keys(isCensored),
       added,
       fresh,
-      score
+      score,
+      similarity,
     };
   }
 }
