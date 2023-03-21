@@ -254,3 +254,30 @@ export function selectPowerOfTen(val: number): { divider: number, unit: string }
 
   return selectedPowerOfTen;
 }
+
+const featureActivation = {
+  mainnet: {
+    rbf: 399701,
+    segwit: 477120,
+    taproot: 709632,
+  },
+  testnet: {
+    rbf: 720255,
+    segwit: 872730,
+    taproot: 2032291,
+  },
+  signet: {
+    rbf: 0,
+    segwit: 0,
+    taproot: 0,
+  },
+};
+
+export function isFeatureActive(network: string, height: number, feature: 'rbf' | 'segwit' | 'taproot'): boolean {
+  const activationHeight = featureActivation[network || 'mainnet']?.[feature];
+  if (activationHeight != null) {
+    return height >= activationHeight;
+  } else {
+    return false;
+  }
+}

@@ -34,6 +34,7 @@ If you want to use different credentials, specify them in the `docker-compose.ym
       CORE_RPC_PORT: "8332"
       CORE_RPC_USERNAME: "customuser"
       CORE_RPC_PASSWORD: "custompassword"
+      CORE_RPC_TIMEOUT: "60000"
 ```
 
 The IP address in the example above refers to Docker's default gateway IP address so that the container can hit the `bitcoind` instance running on the host machine. If your setup is different, update it accordingly.
@@ -112,6 +113,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
     "MAX_BLOCKS_BULK_QUERY": 0,
+    "DISK_CACHE_BLOCK_INTERVAL": 6
   },
 ```
 
@@ -143,6 +145,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
       MAX_BLOCKS_BULK_QUERY: ""
+      DISK_CACHE_BLOCK_INTERVAL: ""
       ...
 ```
 
@@ -158,7 +161,8 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
@@ -170,6 +174,7 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
+      CORE_RPC_TIMEOUT: 60000
       ...
 ```
 
@@ -221,7 +226,8 @@ Corresponding `docker-compose.yml` overrides:
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
@@ -233,6 +239,7 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_PORT: ""
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_TIMEOUT: ""
       ...
 ```
 
@@ -405,6 +412,7 @@ Corresponding `docker-compose.yml` overrides:
     "TLS_CERT_PATH": ""
     "MACAROON_PATH": ""
     "REST_API_URL": "https://localhost:8080"
+    "TIMEOUT": 10000
   }
 ```
 
@@ -415,6 +423,7 @@ Corresponding `docker-compose.yml` overrides:
       LND_TLS_CERT_PATH: ""
       LND_MACAROON_PATH: ""
       LND_REST_API_URL: "https://localhost:8080"
+      LND_TIMEOUT: 10000
       ...
 ```
 
@@ -432,5 +441,28 @@ Corresponding `docker-compose.yml` overrides:
   api:
     environment:
       CLIGHTNING_SOCKET: ""
+      ...
+```
+
+<br/>
+
+`mempool-config.json`:
+```json
+  "MAXMIND": {
+    "ENABLED": true,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```yaml
+  api:
+    environment:
+      MAXMIND_ENABLED: true,
+      MAXMIND_GEOLITE2_CITY: "/backend/GeoIP/GeoLite2-City.mmdb",
+      MAXMIND_GEOLITE2_ASN": "/backend/GeoIP/GeoLite2-ASN.mmdb",
+      MAXMIND_GEOIP2_ISP": "/backend/GeoIP/GeoIP2-ISP.mmdb"
       ...
 ```

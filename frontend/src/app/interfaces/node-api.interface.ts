@@ -107,8 +107,8 @@ export interface PoolStat {
     '1w': number,
   };
   estimatedHashrate: number;
-  reportedHashrate: number;
-  luck?: number;
+  avgBlockHealth: number;
+  totalReward: number;
 }
 
 export interface BlockExtension {
@@ -118,6 +118,7 @@ export interface BlockExtension {
   reward?: number;
   coinbaseRaw?: string;
   matchRate?: number;
+  similarity?: number;
   pool?: {
     id: number;
     name: string;

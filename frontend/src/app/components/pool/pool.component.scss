@@ -68,6 +68,11 @@ div.scrollable {
   vertical-align: top;
   padding-top: 25px;
 }
+.addresses-data {
+  vertical-align: top;
+  font-family: monospace;
+  font-size: 14px;
+}
 
 .data {
   text-align: right;
@@ -100,7 +105,7 @@ div.scrollable {
   @media (max-width: 875px) {
     padding-left: 50px;
   }
-  @media (max-width: 650px) {
+  @media (max-width: 685px) {
     display: none;
   }
 }
@@ -118,7 +123,7 @@ div.scrollable {
     padding-right: 10px;
   }
   @media (max-width: 875px) {
-    padding-right: 50px;
+    padding-right: 20px;
   }
   @media (max-width: 567px) {
     padding-right: 10px;
@@ -186,10 +191,6 @@ div.scrollable {
 .block-count-title {
   color: #4a68b9;
   font-size: 14px;
-  text-align: left;
-  @media (max-width: 767.98px) {
-    text-align: center;
-  }
 }
 
 .table-data tr {

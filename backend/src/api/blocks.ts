@@ -143,7 +143,10 @@ class Blocks {
    * @returns BlockSummary
    */
   public summarizeBlock(block: IBitcoinApi.VerboseBlock): BlockSummary {
-    const stripped = block.tx.map((tx) => {
+    if (Common.isLiquid()) {
+      block = this.convertLiquidFees(block);
+    }
+    const stripped = block.tx.map((tx: IBitcoinApi.VerboseTransaction) => {
       return {
         txid: tx.txid,
         vsize: tx.weight / 4,
@@ -156,6 +159,13 @@ class Blocks {
       id: block.hash,
       transactions: stripped
     };
+  }
+
+  private convertLiquidFees(block: IBitcoinApi.VerboseBlock): IBitcoinApi.VerboseBlock {
+    block.tx.forEach(tx => {
+      tx.fee = Object.values(tx.fee || {}).reduce((total, output) => total + output, 0);
+    });
+    return block;
   }
 
   /**
@@ -641,7 +651,7 @@ class Blocks {
       if (this.newBlockCallbacks.length) {
         this.newBlockCallbacks.forEach((cb) => cb(blockExtended, txIds, transactions));
       }
-      if (!memPool.hasPriority() && (block.height % 6 === 0)) {
+      if (!memPool.hasPriority() && (block.height % config.MEMPOOL.DISK_CACHE_BLOCK_INTERVAL === 0)) {
         diskCache.$saveCacheToDisk();
       }
 

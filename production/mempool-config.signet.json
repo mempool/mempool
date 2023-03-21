@@ -10,7 +10,8 @@
     "AUDIT": true,
     "ADVANCED_GBT_AUDIT": true,
     "ADVANCED_GBT_MEMPOOL": true,
-    "POLL_RATE_MS": 1000
+    "POLL_RATE_MS": 1000,
+    "DISK_CACHE_BLOCK_INTERVAL": 1
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"

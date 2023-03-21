@@ -22,7 +22,6 @@ __MEMPOOL_EXTERNAL_MAX_RETRY__=${MEMPOOL_EXTERNAL_MAX_RETRY:=1}
 __MEMPOOL_EXTERNAL_RETRY_INTERVAL__=${MEMPOOL_EXTERNAL_RETRY_INTERVAL:=0}
 __MEMPOOL_USER_AGENT__=${MEMPOOL_USER_AGENT:=mempool}
 __MEMPOOL_STDOUT_LOG_MIN_PRIORITY__=${MEMPOOL_STDOUT_LOG_MIN_PRIORITY:=info}
-__MEMPOOL_INDEXING_BLOCKS_AMOUNT__=${MEMPOOL_INDEXING_BLOCKS_AMOUNT:=false}
 __MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__=${MEMPOOL_AUTOMATIC_BLOCK_REINDEXING:=false}
 __MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json}
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
@@ -31,12 +30,14 @@ __MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}
 __MEMPOOL_ADVANCED_GBT_MEMPOOL__=${MEMPOOL_ADVANCED_GBT_MEMPOOL:=false}
 __MEMPOOL_CPFP_INDEXING__=${MEMPOOL_CPFP_INDEXING:=false}
 __MEMPOOL_MAX_BLOCKS_BULK_QUERY__=${MEMPOOL_MAX_BLOCKS_BULK_QUERY:=0}
+__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__=${MEMPOOL_DISK_CACHE_BLOCK_INTERVAL:=6}
 
 # CORE_RPC
 __CORE_RPC_HOST__=${CORE_RPC_HOST:=127.0.0.1}
 __CORE_RPC_PORT__=${CORE_RPC_PORT:=8332}
 __CORE_RPC_USERNAME__=${CORE_RPC_USERNAME:=mempool}
 __CORE_RPC_PASSWORD__=${CORE_RPC_PASSWORD:=mempool}
+__CORE_RPC_TIMEOUT__=${CORE_RPC_TIMEOUT:=60000}
 
 # ELECTRUM
 __ELECTRUM_HOST__=${ELECTRUM_HOST:=127.0.0.1}
@@ -52,6 +53,7 @@ __SECOND_CORE_RPC_HOST__=${SECOND_CORE_RPC_HOST:=127.0.0.1}
 __SECOND_CORE_RPC_PORT__=${SECOND_CORE_RPC_PORT:=8332}
 __SECOND_CORE_RPC_USERNAME__=${SECOND_CORE_RPC_USERNAME:=mempool}
 __SECOND_CORE_RPC_PASSWORD__=${SECOND_CORE_RPC_PASSWORD:=mempool}
+__SECOND_CORE_RPC_TIMEOUT__=${SECOND_CORE_RPC_TIMEOUT:=60000}
 
 # DATABASE
 __DATABASE_ENABLED__=${DATABASE_ENABLED:=true}
@@ -109,9 +111,17 @@ __LIGHTNING_LOGGER_UPDATE_INTERVAL__=${LIGHTNING_LOGGER_UPDATE_INTERVAL:=30}
 __LND_TLS_CERT_PATH__=${LND_TLS_CERT_PATH:=""}
 __LND_MACAROON_PATH__=${LND_MACAROON_PATH:=""}
 __LND_REST_API_URL__=${LND_REST_API_URL:="https://localhost:8080"}
+__LND_TIMEOUT__=${LND_TIMEOUT:=10000}
 
 # CLN
 __CLIGHTNING_SOCKET__=${CLIGHTNING_SOCKET:=""}
+
+# MAXMIND
+__MAXMIND_ENABLED__=${MAXMIND_ENABLED:=true}
+__MAXMIND_GEOLITE2_CITY__=${MAXMIND_GEOLITE2_CITY:="/backend/GeoIP/GeoLite2-City.mmdb"}
+__MAXMIND_GEOLITE2_ASN__=${MAXMIND_GEOLITE2_ASN:="/backend/GeoIP/GeoLite2-ASN.mmdb"}
+__MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
+
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -136,7 +146,6 @@ sed -i "s!__MEMPOOL_EXTERNAL_MAX_RETRY__!${__MEMPOOL_EXTERNAL_MAX_RETRY__}!g" me
 sed -i "s!__MEMPOOL_EXTERNAL_RETRY_INTERVAL__!${__MEMPOOL_EXTERNAL_RETRY_INTERVAL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_USER_AGENT__!${__MEMPOOL_USER_AGENT__}!g" mempool-config.json
 sed -i "s/__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__/${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_INDEXING_BLOCKS_AMOUNT__/${__MEMPOOL_INDEXING_BLOCKS_AMOUNT__}/g" mempool-config.json
 sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__}/g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
@@ -145,11 +154,13 @@ sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g
 sed -i "s!__MEMPOOL_ADVANCED_GBT_AUDIT__!${__MEMPOOL_ADVANCED_GBT_AUDIT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_MAX_BLOCKS_BULK_QUERY__!${__MEMPOOL_MAX_BLOCKS_BULK_QUERY__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__!${__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__}!g" mempool-config.json
 
 sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_USERNAME__/${__CORE_RPC_USERNAME__}/g" mempool-config.json
 sed -i "s/__CORE_RPC_PASSWORD__/${__CORE_RPC_PASSWORD__}/g" mempool-config.json
+sed -i "s/__CORE_RPC_TIMEOUT__/${__CORE_RPC_TIMEOUT__}/g" mempool-config.json
 
 sed -i "s/__ELECTRUM_HOST__/${__ELECTRUM_HOST__}/g" mempool-config.json
 sed -i "s/__ELECTRUM_PORT__/${__ELECTRUM_PORT__}/g" mempool-config.json
@@ -162,6 +173,7 @@ sed -i "s/__SECOND_CORE_RPC_HOST__/${__SECOND_CORE_RPC_HOST__}/g" mempool-config
 sed -i "s/__SECOND_CORE_RPC_PORT__/${__SECOND_CORE_RPC_PORT__}/g" mempool-config.json
 sed -i "s/__SECOND_CORE_RPC_USERNAME__/${__SECOND_CORE_RPC_USERNAME__}/g" mempool-config.json
 sed -i "s/__SECOND_CORE_RPC_PASSWORD__/${__SECOND_CORE_RPC_PASSWORD__}/g" mempool-config.json
+sed -i "s/__SECOND_CORE_RPC_TIMEOUT__/${__SECOND_CORE_RPC_TIMEOUT__}/g" mempool-config.json
 
 sed -i "s/__DATABASE_ENABLED__/${__DATABASE_ENABLED__}/g" mempool-config.json
 sed -i "s/__DATABASE_HOST__/${__DATABASE_HOST__}/g" mempool-config.json
@@ -213,8 +225,16 @@ sed -i "s!__LIGHTNING_LOGGER_UPDATE_INTERVAL__!${__LIGHTNING_LOGGER_UPDATE_INTER
 sed -i "s!__LND_TLS_CERT_PATH__!${__LND_TLS_CERT_PATH__}!g" mempool-config.json
 sed -i "s!__LND_MACAROON_PATH__!${__LND_MACAROON_PATH__}!g" mempool-config.json
 sed -i "s!__LND_REST_API_URL__!${__LND_REST_API_URL__}!g" mempool-config.json
+sed -i "s!__LND_TIMEOUT__!${__LND_TIMEOUT__}!g" mempool-config.json
 
 # CLN
 sed -i "s!__CLIGHTNING_SOCKET__!${__CLIGHTNING_SOCKET__}!g" mempool-config.json
+
+# MAXMIND
+sed -i "s!__MAXMIND_ENABLED__!${__MAXMIND_ENABLED__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOLITE2_CITY__!${__MAXMIND_GEOLITE2_CITY__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOLITE2_ASN__!${__MAXMIND_GEOLITE2_ASN__}!g" mempool-config.json
+sed -i "s!__MAXMIND_GEOIP2_ISP__!${__MAXMIND_GEOIP2_ISP__}!g" mempool-config.json
+
 
 node /backend/package/index.js

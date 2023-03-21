@@ -6,7 +6,7 @@
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
-        [class.blink-bg]="(specialBlocks[block.height] !== undefined)">
+        [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
         <div [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
