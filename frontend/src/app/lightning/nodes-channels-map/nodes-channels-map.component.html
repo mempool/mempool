@@ -18,5 +18,8 @@
     <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading && !disableSpinner">
       <div class="spinner-border text-light"></div>
     </div>
+    <div *ngIf="showIndexingInProgress" class="indexing-message">
+      <span class="badge badge-pill badge-warning" i18n="lightning.indexing-in-progress">Indexing in progress</span>
+    </div>
   </ng-container>
 </div>
