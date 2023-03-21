@@ -36,6 +36,7 @@ export class NodesChannelsMap implements OnInit {
   channelCurve = 0;
   nodeSize = 4;
   isLoading = false;
+  showIndexingInProgress = false;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
@@ -206,6 +207,8 @@ export class NodesChannelsMap implements OnInit {
     let title: object;
     if (channels.length === 0 && !this.placeholder) {
       this.chartOptions = null;
+      this.showIndexingInProgress = true;
+      this.isLoading = false;
       return;
     }
 
