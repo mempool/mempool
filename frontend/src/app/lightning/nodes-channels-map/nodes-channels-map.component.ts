@@ -36,7 +36,6 @@ export class NodesChannelsMap implements OnInit {
   channelCurve = 0;
   nodeSize = 4;
   isLoading = false;
-  showIndexingInProgress = false;
 
   chartInstance = undefined;
   chartOptions: EChartsOption = {};
