@@ -10,7 +10,7 @@ cp /etc/nginx/nginx.conf /patch/nginx.conf
 sed -i "s/__MEMPOOL_FRONTEND_HTTP_PORT__/${__MEMPOOL_FRONTEND_HTTP_PORT__}/g" /patch/nginx.conf
 cat /patch/nginx.conf > /etc/nginx/nginx.conf
 
-if [ "${LIGHTNING_DETECTED_PORT}" = "9735" ];then
+if [ "${LIGHTNING_DETECTED_PORT}" != "" ];then
   export LIGHTNING=true
 fi
 
