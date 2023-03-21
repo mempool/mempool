@@ -29,6 +29,7 @@ export class NodesPerISPChartComponent implements OnInit {
   sortBy = 'capacity';
   showUnknown = false;
   chartInstance = undefined;
+  indexingInProgress = false;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
@@ -87,6 +88,8 @@ export class NodesPerISPChartComponent implements OnInit {
                 }
 
                 this.prepareChartOptions(data.ispRanking);
+
+                this.indexingInProgress = !data.ispRanking.length;
 
                 return {
                   taggedISP: data.ispRanking.length,
