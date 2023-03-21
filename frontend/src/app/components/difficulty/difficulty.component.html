@@ -42,7 +42,7 @@
             <div class="symbol" i18n="difficulty-box.average-block-time">Average block time</div>
           </div>
           <div class="item">
-            <div *ngIf="epochData.remainingBlocks < 1870; else recentlyAdjusted" class="card-text" [ngStyle]="{'color': epochData.colorAdjustments}">
+            <div *ngIf="epochData.remainingBlocks < 1870; else recentlyAdjusted" class="card-text bigger" [ngStyle]="{'color': epochData.colorAdjustments}">
               <span *ngIf="epochData.change > 0; else arrowDownDifficulty" >
                 <fa-icon class="retarget-sign" [icon]="['fas', 'caret-up']" [fixedWidth]="true"></fa-icon>
               </span>
