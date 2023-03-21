@@ -81,7 +81,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: `Loading`,
+        text: $localize`No data to display yet. Try again later.`,
         left: 'center',
         top: 'center'
       };
