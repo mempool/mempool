@@ -3203,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker forventet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3211,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk forventet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3219,6 +3221,7 @@
       </trans-unit>
       <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker utvunnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3227,6 +3230,7 @@
       </trans-unit>
       <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk utvunnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">19</context>
@@ -3235,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker gjenstår</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3243,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk gjenstår</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3251,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker foran</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3259,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk foran</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3267,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker bak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3275,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk bak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3283,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>Gjennomsnittlig blokktid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3984,6 +3995,7 @@
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target> <x id="INTERPOLATION" equiv-text="i"/> blokker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -4003,6 +4015,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>Annet ( <x id="PH" equiv-text="percentage"/> )</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">201</context>
@@ -4565,6 +4578,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>Om ~ <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">126</context>
@@ -6761,6 +6775,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target> <x id="PH" equiv-text="nodeCount"/> noder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,103</context>
@@ -7071,7 +7086,7 @@
       </trans-unit>
       <trans-unit id="date-base.day" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> day</source>
-        <target> <x id="DATE" equiv-text="counter"/> dag</target>
+        <target><x id="DATE" equiv-text="counter"/> dag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -7079,7 +7094,7 @@
       </trans-unit>
       <trans-unit id="date-base.days" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> days</source>
-        <target> <x id="DATE" equiv-text="counter"/> dager</target>
+        <target><x id="DATE" equiv-text="counter"/> dager</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -7087,7 +7102,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
-        <target> <x id="DATE" equiv-text="counter"/> time</target>
+        <target><x id="DATE" equiv-text="counter"/> time</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -7095,7 +7110,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
-        <target> <x id="DATE" equiv-text="counter"/> timer</target>
+        <target><x id="DATE" equiv-text="counter"/> timer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -7103,7 +7118,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
-        <target> <x id="DATE" equiv-text="counter"/> minutt</target>
+        <target><x id="DATE" equiv-text="counter"/> minutt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -7111,7 +7126,7 @@
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minutes</source>
-        <target> <x id="DATE" equiv-text="counter"/> minutter</target>
+        <target><x id="DATE" equiv-text="counter"/> minutter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -7119,7 +7134,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
-        <target> <x id="DATE" equiv-text="counter"/> sekund</target>
+        <target><x id="DATE" equiv-text="counter"/> sekund</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -7127,7 +7142,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
-        <target> <x id="DATE" equiv-text="counter"/> sekunder</target>
+        <target><x id="DATE" equiv-text="counter"/> sekunder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
