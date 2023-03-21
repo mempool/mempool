@@ -33,6 +33,9 @@
     font-size: 18px;
     margin: auto;
     position: relative;
+    &.bigger {
+      font-size: 20px;
+    }
   }
 }
 
