@@ -24,8 +24,9 @@ class LndApi implements AbstractLightningApi {
         timeout: config.LND.TIMEOUT
       };
     } catch (e) {
-      logger.err(`Could not initialize LND Macaroon/TLS Cert. Disabling LIGHTNING. ` + (e instanceof Error ? e.message : e));
       config.LIGHTNING.ENABLED = false;
+      logger.updateNetwork();
+      logger.err(`Could not initialize LND Macaroon/TLS Cert. Disabling LIGHTNING. ` + (e instanceof Error ? e.message : e));
     }
   }
 
