@@ -3203,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker forventet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3211,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk forventet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3219,6 +3221,7 @@
       </trans-unit>
       <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker utvunnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3227,6 +3230,7 @@
       </trans-unit>
       <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk utvunnet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">19</context>
@@ -3235,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker gjenstår</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3243,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk gjenstår</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3251,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker foran</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3259,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk foran</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3267,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokker bak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3275,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk bak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3283,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>Gjennomsnittlig blokktid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3984,6 +3995,7 @@
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target> <x id="INTERPOLATION" equiv-text="i"/> blokker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -4003,6 +4015,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>Annet ( <x id="PH" equiv-text="percentage"/> )</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">201</context>
@@ -4565,6 +4578,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>Om ~ <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">126</context>
@@ -5053,7 +5067,7 @@
       </trans-unit>
       <trans-unit id="ea7c261363dc5f6134b7bacba2a1ef97f4ff7859" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> remaining</source>
-        <target> <x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> gjenstår</target>
+        <target><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> gjenstår</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">332,333</context>
@@ -5106,7 +5120,7 @@
       </trans-unit>
       <trans-unit id="25d58cd5c18fd9c1c89d6062d67dcc2482161410" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit</source>
-        <target>Denne transaksjonen sparte <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/> % på avgifter ved å bruke native SegWit</target>
+        <target>Denne transaksjonen sparte <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% på avgifter ved å bruke native SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">2</context>
@@ -5133,7 +5147,7 @@
       </trans-unit>
       <trans-unit id="b6a3f6afdac6873e2d261647d834c02c91376893" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit</source>
-        <target>Denne transaksjonen sparte <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/> % på avgifter ved å bruke SegWit og kunne spart <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/> % mer ved å fullstendig oppgradere til native SegWit</target>
+        <target>Denne transaksjonen sparte <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% på avgifter ved å bruke SegWit og kunne spart <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% mer ved å fullstendig oppgradere til native SegWit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">4</context>
@@ -5142,7 +5156,7 @@
       </trans-unit>
       <trans-unit id="a67530e246368aa7e5d010061fd84c3c4fe755c2" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
-        <target>Denne transaksjonen kan spare <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/> % på avgifter ved å oppgradere til native SegWit eller <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/> % ved å oppgradere til SegWit-P2SH</target>
+        <target>Denne transaksjonen kan spare <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% på avgifter ved å oppgradere til native SegWit eller <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% ved å oppgradere til SegWit-P2SH</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">6</context>
@@ -5151,7 +5165,7 @@
       </trans-unit>
       <trans-unit id="17e9c05e053cbd29d3835d8ecb19508d0f07241b" datatype="html">
         <source>This transaction uses Taproot and thereby saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees</source>
-        <target>Denne transaksjonen bruker Taproot og sparer dermed minst <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/> % på avgifter</target>
+        <target>Denne transaksjonen bruker Taproot og sparer dermed minst <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% på avgifter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5186,7 +5200,7 @@
       </trans-unit>
       <trans-unit id="47b821c7df420c96de0b22844a88c04d52628540" datatype="html">
         <source>This transaction uses Taproot and already saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees, but could save an additional <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% by fully using Taproot</source>
-        <target>Denne transaksjonen bruker Taproot og har allerede spart minst <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/> % på avgifter, men kan spare ytterligere <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/> % ved å bruke Taproot fullt ut</target>
+        <target>Denne transaksjonen bruker Taproot og har allerede spart minst <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% på avgifter, men kan spare ytterligere <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% ved å bruke Taproot fullt ut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">14</context>
@@ -5195,7 +5209,7 @@
       </trans-unit>
       <trans-unit id="aa31fc4d29f35b2fd36080bb6ff84be8eaab66fd" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% on fees by using Taproot</source>
-        <target>Denne transaksjonen kunne spart <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/> % på avgifter ved å bruke Taproot</target>
+        <target>Denne transaksjonen kunne spart <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% på avgifter ved å bruke Taproot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">16</context>
@@ -5264,7 +5278,7 @@
       </trans-unit>
       <trans-unit id="60601e02e7c1f6c4dbabd0ef0bb8946003db8dec" datatype="html">
         <source>Only ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB was needed to get into this block</source>
-        <target>Bare ~ <x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB var nødvendig for å komme inn i denne blokken</target>
+        <target>Bare ~<x id="INTERPOLATION" equiv-text="{{ medianFeeNeeded | feeRounding }}"/> sat/vB var nødvendig for å komme inn i denne blokken</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -5277,7 +5291,7 @@
       </trans-unit>
       <trans-unit id="0fa66b0c410bef320d3f370d7c98c51754b5f28f" datatype="html">
         <source>Overpaid <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</source>
-        <target>Overbetalt <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/> x</target>
+        <target>Overbetalt <x id="INTERPOLATION" equiv-text="{{ overpaidTimes }}"/>x</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-fee-rating/tx-fee-rating.component.html</context>
           <context context-type="linenumber">2</context>
@@ -5348,7 +5362,7 @@
       </trans-unit>
       <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
-        <target> <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/> mempool.space gir bare data om Bitcoin-nettverket. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Den kan ikke hjelpe deg med å hente verdier, bekrefte transaksjonen raskere osv.</target>
+        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/> mempool.space gir bare data om Bitcoin-nettverket. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Den kan ikke hjelpe deg med å hente verdier, bekrefte transaksjonen raskere osv.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">13</context>
@@ -5564,7 +5578,7 @@
       </trans-unit>
       <trans-unit id="205c1b86ac1cc419c4d0cca51fdde418c4ffdc20" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> channels</source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> kanaler</target>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> kanaler</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">79</context>
@@ -6761,6 +6775,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/> noder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,103</context>
@@ -6780,7 +6795,7 @@
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
-        <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC-kapasitet</target>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC-kapasitet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">105,103</context>
@@ -6898,7 +6913,7 @@
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
-        <target> <x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">159,157</context>
@@ -6941,7 +6956,7 @@
       </trans-unit>
       <trans-unit id="5735693498020397727" datatype="html">
         <source>Lightning nodes on ISP: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</source>
-        <target>Lightning-noder på ISP: <x id="PH" equiv-text="response.isp"/> [AS <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/> ]</target>
+        <target>Lightning-noder på ISP: <x id="PH" equiv-text="response.isp"/> [AS <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -7023,7 +7038,7 @@
       </trans-unit>
       <trans-unit id="date-base.year" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> year</source>
-        <target> <x id="DATE" equiv-text="counter"/> år</target>
+        <target><x id="DATE" equiv-text="counter"/> år</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">3</context>
@@ -7031,7 +7046,7 @@
       </trans-unit>
       <trans-unit id="date-base.years" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> years</source>
-        <target> <x id="DATE" equiv-text="counter"/> år</target>
+        <target><x id="DATE" equiv-text="counter"/> år</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">4</context>
@@ -7039,7 +7054,7 @@
       </trans-unit>
       <trans-unit id="date-base.month" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> month</source>
-        <target> <x id="DATE" equiv-text="counter"/> måned</target>
+        <target><x id="DATE" equiv-text="counter"/> måned</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">5</context>
@@ -7047,7 +7062,7 @@
       </trans-unit>
       <trans-unit id="date-base.months" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> months</source>
-        <target> <x id="DATE" equiv-text="counter"/> måneder</target>
+        <target><x id="DATE" equiv-text="counter"/> måneder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">6</context>
@@ -7055,7 +7070,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
-        <target> <x id="DATE" equiv-text="counter"/> uke</target>
+        <target><x id="DATE" equiv-text="counter"/> uke</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
@@ -7063,7 +7078,7 @@
       </trans-unit>
       <trans-unit id="date-base.weeks" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> weeks</source>
-        <target> <x id="DATE" equiv-text="counter"/> uker</target>
+        <target><x id="DATE" equiv-text="counter"/> uker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">8</context>
@@ -7071,7 +7086,7 @@
       </trans-unit>
       <trans-unit id="date-base.day" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> day</source>
-        <target> <x id="DATE" equiv-text="counter"/> dag</target>
+        <target><x id="DATE" equiv-text="counter"/> dag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">9</context>
@@ -7079,7 +7094,7 @@
       </trans-unit>
       <trans-unit id="date-base.days" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> days</source>
-        <target> <x id="DATE" equiv-text="counter"/> dager</target>
+        <target><x id="DATE" equiv-text="counter"/> dager</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">10</context>
@@ -7087,7 +7102,7 @@
       </trans-unit>
       <trans-unit id="date-base.hour" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hour</source>
-        <target> <x id="DATE" equiv-text="counter"/> time</target>
+        <target><x id="DATE" equiv-text="counter"/> time</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">11</context>
@@ -7095,7 +7110,7 @@
       </trans-unit>
       <trans-unit id="date-base.hours" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> hours</source>
-        <target> <x id="DATE" equiv-text="counter"/> timer</target>
+        <target><x id="DATE" equiv-text="counter"/> timer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">12</context>
@@ -7103,7 +7118,7 @@
       </trans-unit>
       <trans-unit id="date-base.minute" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minute</source>
-        <target> <x id="DATE" equiv-text="counter"/> minutt</target>
+        <target><x id="DATE" equiv-text="counter"/> minutt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">13</context>
@@ -7111,7 +7126,7 @@
       </trans-unit>
       <trans-unit id="date-base.minutes" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> minutes</source>
-        <target> <x id="DATE" equiv-text="counter"/> minutter</target>
+        <target><x id="DATE" equiv-text="counter"/> minutter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">14</context>
@@ -7119,7 +7134,7 @@
       </trans-unit>
       <trans-unit id="date-base.second" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> second</source>
-        <target> <x id="DATE" equiv-text="counter"/> sekund</target>
+        <target><x id="DATE" equiv-text="counter"/> sekund</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">15</context>
@@ -7127,7 +7142,7 @@
       </trans-unit>
       <trans-unit id="date-base.seconds" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> seconds</source>
-        <target> <x id="DATE" equiv-text="counter"/> sekunder</target>
+        <target><x id="DATE" equiv-text="counter"/> sekunder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">16</context>
