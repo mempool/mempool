@@ -5757,7 +5757,7 @@
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
         <source>ppm</source>
-        <target>частей на миллион</target>
+        <target>ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -6066,7 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
-        <target>Средняя комиссия, взимаемая узлами маршрутизации, без учета ставок комиссии &gt; 0,5% или 5000 ppm.</target>
+        <target>Средняя комиссия, взимаемая узлами маршрутизации, без учета ставок комиссии &gt;0,5% или 5000 частей на миллион.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -6088,7 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
-        <target>Средняя базовая комиссия, взимаемая узлами маршрутизации, без учета базовых комиссий &gt; 5000 ppm</target>
+        <target>Средняя базовая комиссия, взимаемая узлами маршрутизации, без учета базовых комиссий &gt; 5000 частей на миллион</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -6115,7 +6115,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
-        <target>Медианная комиссия, взимаемая узлами маршрутизации, без учета ставок комиссии &gt; 0,5% или 5000 ppm.</target>
+        <target>Медианная комиссия, взимаемая узлами маршрутизации, без учета ставок комиссии &gt; 0,5% или 5000 частей на миллион.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -6133,7 +6133,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
-        <target>Медианная базовая комиссия, взимаемая узлами маршрутизации, без учета базовых комиссий &gt; 5000 ppm</target>
+        <target>Медианная базовая комиссия, взимаемая узлами маршрутизации, без учета базовых комиссий &gt; 5000 частей на миллион</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
