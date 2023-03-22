@@ -75,7 +75,7 @@ export class NodeStatisticsChartComponent implements OnInit {
 
   prepareChartOptions(data) {
     let title: object;
-    if (data.channels.length === 0) {
+    if (data.channels.length < 2) {
       title = {
         textStyle: {
           color: 'grey',
@@ -135,14 +135,14 @@ export class NodeStatisticsChartComponent implements OnInit {
           return tooltip;
         }
       },
-      xAxis: data.channels.length === 0 ? undefined : {
+      xAxis: data.channels.length < 2 ? undefined : {
         type: 'time',
         splitNumber: this.isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      legend: data.channels.length === 0 ? undefined : {
+      legend: data.channels.length < 2 ? undefined : {
         padding: 10,
         data: [
           {
@@ -167,7 +167,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           'Capacity': true,
         }
       },
-      yAxis: data.channels.length === 0 ? undefined : [
+      yAxis: data.channels.length < 2 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -198,7 +198,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           }
         }
       ],
-      series: data.channels.length === 0 ? [] : [
+      series: data.channels.length < 2 ? [] : [
         {
           zlevel: 1,
           name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,
