@@ -6084,6 +6084,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
+        <target>Közép Díj Ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -6100,6 +6101,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
+        <target>Közép Alapdíj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87,89</context>
@@ -6116,6 +6118,7 @@
       </trans-unit>
       <trans-unit id="de1c07e9943fc284461bb8fb4860faecf52a1568" datatype="html">
         <source>Lightning node group</source>
+        <target>Villám node csoport</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6325,6 +6328,7 @@
       </trans-unit>
       <trans-unit id="29c05e9a540827cdfa8e3b2e5e2f27aeb478916c" datatype="html">
         <source>Network Statistics</source>
+        <target>Hálózati Statisztikák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -6333,6 +6337,7 @@
       </trans-unit>
       <trans-unit id="066e05b9a5db60850d907783fde6913e2e47cd5b" datatype="html">
         <source>Channels Statistics</source>
+        <target>Csatorna Statisztika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -6341,6 +6346,7 @@
       </trans-unit>
       <trans-unit id="0f33aeb084ac4d83cb0fe6f72648a8585b1b5e88" datatype="html">
         <source>Lightning Network History</source>
+        <target>Villámhálózati Események</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">49</context>
@@ -6349,6 +6355,7 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
+        <target>Likviditási Besorolás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
@@ -6373,6 +6380,7 @@
       </trans-unit>
       <trans-unit id="c50bf442cf99f6fc5f8b687c460f33234b879869" datatype="html">
         <source>Connectivity Ranking</source>
+        <target>Csatlakozottsági Besorolás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">76</context>
