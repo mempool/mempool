@@ -3203,6 +3203,7 @@
       </trans-unit>
       <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> الكتل المتوقعة </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -3211,6 +3212,7 @@
       </trans-unit>
       <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>الكتله المتوقعه </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">14</context>
@@ -3219,6 +3221,7 @@
       </trans-unit>
       <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>الكتل المعدنه </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">18</context>
@@ -3227,6 +3230,7 @@
       </trans-unit>
       <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>الكتله المعدنه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">19</context>
