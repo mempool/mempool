@@ -16,7 +16,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     super(bitcoinClient);
 
     const electrumConfig = { client: 'mempool-v2', version: '1.4' };
-    const electrumPersistencePolicy = { retryPeriod: 10000, maxRetry: 1000, callback: null };
+    const electrumPersistencePolicy = { retryPeriod: 1000, maxRetry: Number.MAX_SAFE_INTEGER, callback: null };
 
     const electrumCallbacks = {
       onConnect: (client, versionInfo) => { logger.info(`Connected to Electrum Server at ${config.ELECTRUM.HOST}:${config.ELECTRUM.PORT} (${JSON.stringify(versionInfo)})`); },
