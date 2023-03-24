@@ -43,7 +43,9 @@ class DiskCache {
       const mempool = memPool.getMempool();
       const mempoolArray: TransactionExtended[] = [];
       for (const tx in mempool) {
-        mempoolArray.push(mempool[tx]);
+        if (mempool[tx] && !mempool[tx].deleteAfter) {
+          mempoolArray.push(mempool[tx]);
+        }
       }
 
       Common.shuffleArray(mempoolArray);
