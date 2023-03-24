@@ -65,9 +65,30 @@
 <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
 <br />
+<main>
+  <router-outlet></router-outlet>
+</main>
 
-<router-outlet></router-outlet>
+<footer *ngIf="networkPaths['mainnet'] !== '/about'">
+  <div class="pref-selectors">
+    <div class="selector">
+      <app-language-selector></app-language-selector>
+    </div>
+    <div class="selector">
+      <app-fiat-selector></app-fiat-selector>
+    </div>
+  </div>
 
-<br>
-
+  <div class="terms-of-service">
+    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
+    |
+    <a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a>
+    |
+    <a *ngIf="officialMempoolSpace && networkPaths['mainnet'] === '/lightning' else broadcastTransaction" [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]">Connect to our nodes</a>
+    <ng-template #broadcastTransaction>
+      <a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a>
+    </ng-template>
+  </div>
+  <br>
+</footer>
 </ng-container>

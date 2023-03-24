@@ -193,3 +193,27 @@ nav {
     font-size: 7px;
   }
 }
+
+footer {
+  text-align: center;
+  margin-top: auto;
+}
+
+.terms-of-service {
+  margin-top: 1rem;
+}
+
+.pref-selectors {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .selector {
+    margin-left: .5em;
+    margin-bottom: .5em;
+    &:first {
+      margin-left: 0;
+    }
+  }
+}
