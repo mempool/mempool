@@ -1143,4 +1143,8 @@ app-master-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-bottom: 60px;
+  @media (min-width: 992px) {
+    padding-bottom: 0px;
+  }
 }
