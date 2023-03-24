@@ -1,10 +1,6 @@
 .dashboard-container {
-  padding-bottom: 60px;
   text-align: center;
   margin-top: 0.5rem;
-  @media (min-width: 992px) {
-    padding-bottom: 0px;
-  }
   .col {
     margin-bottom: 1.5rem;
   }
@@ -103,23 +99,4 @@
   margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
-}
-
-.terms-of-service {
-  margin-top: 1rem;
-}
-
-.pref-selectors {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-
-  .selector {
-    margin-left: .5em;
-    margin-bottom: .5em;
-    &:first {
-      margin-left: 0;
-    }
-  }
 }

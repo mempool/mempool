@@ -60,11 +60,8 @@ body {
 
 .container {
   position: relative;
-  padding-bottom: 60px;
 }
-.container-xl {
-  padding-bottom: 60px;
-}
+
 .full-height {
   @media (max-width: 767.98px) {
     min-height: 100vh;
@@ -1140,4 +1137,10 @@ th {
 
 .visually-hidden {
   display: none;
+}
+
+app-master-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
