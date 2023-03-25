@@ -3850,7 +3850,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
-        <target>Utvinningsgrupper flaks</target>
+        <target>Flaks</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -4294,7 +4294,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
-        <target>Gjennomsnittlig blokkavgift</target>
+        <target>Gj.sn. blokkavgift</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
