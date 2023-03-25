@@ -188,7 +188,12 @@ class MempoolBlocks {
       this.txSelectionWorker.postMessage({ type: 'set', mempool: strippedMempool });
       let { blocks, clusters } = await workerResultPromise;
       // filter out stale transactions
+      const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
       blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
+      const filteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      if (filteredCount < unfilteredCount) {
+        logger.warn(`tx selection worker thread returned ${unfilteredCount - filteredCount} stale transactions from makeBlockTemplates`);
+      }
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -232,7 +237,12 @@ class MempoolBlocks {
       this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed });
       let { blocks, clusters } = await workerResultPromise;
       // filter out stale transactions
+      const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
       blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
+      const filteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      if (filteredCount < unfilteredCount) {
+        logger.warn(`tx selection worker thread returned ${unfilteredCount - filteredCount} stale transactions from updateBlockTemplates`);
+      }
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -258,6 +268,7 @@ class MempoolBlocks {
             let matched = false;
             cluster.forEach(txid => {
               if (!txid || !mempool[txid]) {
+                logger.warn('projected transaction ancestor missing from mempool cache');
                 return;
               }
               if (txid === tx.txid) {
@@ -280,6 +291,8 @@ class MempoolBlocks {
             mempool[tx.txid].bestDescendant = null;
           }
           mempool[tx.txid].cpfpChecked = tx.cpfpChecked;
+        } else {
+          logger.warn('projected transaction missing from mempool cache');
         }
       });
     });

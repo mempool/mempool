@@ -1,4 +1,5 @@
 import config from '../config';
+import logger from '../logger';
 import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
@@ -77,6 +78,8 @@ class Audit {
         } else {
           failures++;
         }
+      } else {
+        logger.warn('projected transaction missing from mempool cache');
       }
       index++;
     }
@@ -129,6 +132,8 @@ class Audit {
           }
         }
         overflowWeightRemaining -= (mempool[txid]?.weight || 0);
+      } else {
+        logger.warn('projected transaction missing from mempool cache');
       }
       index--;
     }
