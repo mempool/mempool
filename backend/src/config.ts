@@ -70,6 +70,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
@@ -77,6 +79,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -180,6 +184,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '' // default value depends on network, see src/api/bitcoin/bitcoin-client
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -187,6 +193,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': ''
   },
   'DATABASE': {
     'ENABLED': true,
