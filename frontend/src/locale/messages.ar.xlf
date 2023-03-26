@@ -3239,6 +3239,7 @@
       </trans-unit>
       <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>الكتل المتبقية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3247,6 +3248,7 @@
       </trans-unit>
       <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>الكتلة المتبقية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3255,6 +3257,7 @@
       </trans-unit>
       <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>كتل قادمه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">29</context>
@@ -3263,6 +3266,7 @@
       </trans-unit>
       <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>كتله قادمه</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3271,6 +3275,7 @@
       </trans-unit>
       <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>كتل وراء</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">34</context>
@@ -3279,6 +3284,7 @@
       </trans-unit>
       <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/>كتله وراء</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3287,6 +3293,7 @@
       </trans-unit>
       <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
         <source>Average block time</source>
+        <target>متوسط وقت الكتل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">42,45</context>
@@ -3988,6 +3995,7 @@
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/>كتل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -4007,6 +4015,7 @@
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>اخرى (<x id="PH" equiv-text="percentage"/>)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">201</context>
@@ -4569,6 +4578,7 @@
       </trans-unit>
       <trans-unit id="time-until" datatype="html">
         <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>في  ~ <x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">126</context>
@@ -5352,6 +5362,7 @@
       </trans-unit>
       <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
+        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>يوفر mempool.space بيانات حول شبكة البتكوين. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> لا يمكننا مساعدتك في استرداد الأموال ، وتأكيد معاملتك بشكل أسرع ، وما إلى ذلك.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">13</context>
@@ -5877,6 +5888,7 @@
       </trans-unit>
       <trans-unit id="96508700250272816" datatype="html">
         <source>Force closed with penalty</source>
+        <target>أغلقت بالقوة هناك خطآ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -6010,6 +6022,7 @@
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
+        <target>متوسط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6018,6 +6031,7 @@
       </trans-unit>
       <trans-unit id="ba9117dcc11814c44437cf9d7561874ba8b98a2a" datatype="html">
         <source>med</source>
+        <target>متوسط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -6412,6 +6426,7 @@
       </trans-unit>
       <trans-unit id="7254919336112973896" datatype="html">
         <source>Outgoing Fees</source>
+        <target>الرسوم الصادرة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">170</context>
@@ -6423,6 +6438,7 @@
       </trans-unit>
       <trans-unit id="484887099976974152" datatype="html">
         <source>Incoming Fees</source>
+        <target>رسوم واردة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">178</context>
@@ -6710,6 +6726,7 @@
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
         <source>Clearnet and Darknet</source>
+        <target>كليرنت ودارك نت</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6721,6 +6738,7 @@
       </trans-unit>
       <trans-unit id="1282458597026430784" datatype="html">
         <source>Clearnet Only (IPv4, IPv6)</source>
+        <target>كليرنت فقط (IPv4 ، IPv6)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6732,6 +6750,7 @@
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
+        <target>الداركنت فقط (Tor، I2P، cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -6756,6 +6775,7 @@
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
         <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/>العقد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,103</context>
