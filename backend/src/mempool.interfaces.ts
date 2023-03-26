@@ -309,9 +309,11 @@ export interface IDifficultyAdjustment {
   remainingBlocks: number;
   remainingTime: number;
   previousRetarget: number;
+  previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
   timeOffset: number;
+  expectedBlocks: number;
 }
 
 export interface IndexedDifficultyAdjustment {
