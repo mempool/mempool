@@ -211,6 +211,7 @@ class WebsocketHandler {
     if (!_blocks) {
       _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
     }
+    const da = difficultyAdjustment.getDifficultyAdjustment();
     return {
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
@@ -220,7 +221,7 @@ class WebsocketHandler {
       'transactions': memPool.getLatestTransactions(),
       'backendInfo': backendInfo.getBackendInfo(),
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
-      'da': difficultyAdjustment.getDifficultyAdjustment(),
+      'da': da?.previousTime ? da : undefined,
       'fees': feeApi.getRecommendedFee(),
       ...this.extraInitProperties
     };
@@ -278,7 +279,9 @@ class WebsocketHandler {
         response['mempoolInfo'] = mempoolInfo;
         response['vBytesPerSecond'] = vBytesPerSecond;
         response['transactions'] = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
-        response['da'] = da;
+        if (da?.previousTime) {
+          response['da'] = da;
+        }
         response['fees'] = recommendedFees;
       }
 
@@ -505,7 +508,7 @@ class WebsocketHandler {
       const response = {
         'block': block,
         'mempoolInfo': memPool.getMempoolInfo(),
-        'da': da,
+        'da': da?.previousTime ? da : undefined,
         'fees': fees,
       };
 
