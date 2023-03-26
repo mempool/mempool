@@ -24,7 +24,6 @@ export function calcDifficultyAdjustment(
   network: string,
   latestBlockTimestamp: number,
 ): DifficultyAdjustment {
-  const ESTIMATE_LAG_BLOCKS = 146; // For first 7.2% of epoch, don't estimate.
   const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   const BLOCK_SECONDS_TARGET = 600; // Bitcoin mainnet
   const TESTNET_MAX_BLOCK_SECONDS = 1200; // Bitcoin testnet
@@ -38,17 +37,15 @@ export function calcDifficultyAdjustment(
 
   let difficultyChange = 0;
   let timeAvgSecs = blocksInEpoch ? diffSeconds / blocksInEpoch : BLOCK_SECONDS_TARGET;
-  // Only calculate the estimate once we have 7.2% of blocks in current epoch
-  if (blocksInEpoch >= ESTIMATE_LAG_BLOCKS) {
-    difficultyChange = (BLOCK_SECONDS_TARGET / timeAvgSecs - 1) * 100;
-    // Max increase is x4 (+300%)
-    if (difficultyChange > 300) {
-      difficultyChange = 300;
-    }
-    // Max decrease is /4 (-75%)
-    if (difficultyChange < -75) {
-      difficultyChange = -75;
-    }
+
+  difficultyChange = (BLOCK_SECONDS_TARGET / timeAvgSecs - 1) * 100;
+  // Max increase is x4 (+300%)
+  if (difficultyChange > 300) {
+    difficultyChange = 300;
+  }
+  // Max decrease is /4 (-75%)
+  if (difficultyChange < -75) {
+    difficultyChange = -75;
   }
 
   // Testnet difficulty is set to 1 after 20 minutes of no blocks,
