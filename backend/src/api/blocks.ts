@@ -558,7 +558,7 @@ class Blocks {
     }
 
     while (this.currentBlockHeight < blockHeightTip) {
-      if (this.currentBlockHeight < blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT) {
+      if (this.currentBlockHeight === 0) {
         this.currentBlockHeight = blockHeightTip;
       } else {
         this.currentBlockHeight++;
