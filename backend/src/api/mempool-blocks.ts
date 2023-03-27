@@ -151,7 +151,7 @@ class MempoolBlocks {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
-    Object.values(newMempool).forEach(entry => {
+    Object.values(newMempool).filter(tx => !tx.deleteAfter).forEach(entry => {
       strippedMempool[entry.txid] = {
         txid: entry.txid,
         fee: entry.fee,
@@ -186,7 +186,14 @@ class MempoolBlocks {
         this.txSelectionWorker?.once('error', reject);
       });
       this.txSelectionWorker.postMessage({ type: 'set', mempool: strippedMempool });
-      const { blocks, clusters } = await workerResultPromise;
+      let { blocks, clusters } = await workerResultPromise;
+      // filter out stale transactions
+      const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
+      const filteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      if (filteredCount < unfilteredCount) {
+        logger.warn(`tx selection worker thread returned ${unfilteredCount - filteredCount} stale transactions from makeBlockTemplates`);
+      }
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -228,7 +235,14 @@ class MempoolBlocks {
         this.txSelectionWorker?.once('error', reject);
       });
       this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed });
-      const { blocks, clusters } = await workerResultPromise;
+      let { blocks, clusters } = await workerResultPromise;
+      // filter out stale transactions
+      const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
+      const filteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
+      if (filteredCount < unfilteredCount) {
+        logger.warn(`tx selection worker thread returned ${unfilteredCount - filteredCount} stale transactions from updateBlockTemplates`);
+      }
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -243,7 +257,7 @@ class MempoolBlocks {
     // update this thread's mempool with the results
     blocks.forEach(block => {
       block.forEach(tx => {
-        if (tx.txid in mempool) {
+        if (tx.txid && tx.txid in mempool) {
           if (tx.effectiveFeePerVsize != null) {
             mempool[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
           }
@@ -253,6 +267,10 @@ class MempoolBlocks {
             const cluster = clusters[tx.cpfpRoot];
             let matched = false;
             cluster.forEach(txid => {
+              if (!txid || !mempool[txid]) {
+                logger.warn('projected transaction ancestor missing from mempool cache');
+                return;
+              }
               if (txid === tx.txid) {
                 matched = true;
               } else {
@@ -273,6 +291,8 @@ class MempoolBlocks {
             mempool[tx.txid].bestDescendant = null;
           }
           mempool[tx.txid].cpfpChecked = tx.cpfpChecked;
+        } else {
+          logger.warn('projected transaction missing from mempool cache');
         }
       });
     });
