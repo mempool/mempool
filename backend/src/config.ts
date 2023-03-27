@@ -185,7 +185,7 @@ const defaults: IConfig = {
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
     'COOKIE': false,
-    'COOKIE_PATH': '' // default value depends on network, see src/api/bitcoin/bitcoin-client
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -194,7 +194,7 @@ const defaults: IConfig = {
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
     'COOKIE': false,
-    'COOKIE_PATH': ''
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'DATABASE': {
     'ENABLED': true,
