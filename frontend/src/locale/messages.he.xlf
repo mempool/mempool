@@ -3549,7 +3549,7 @@
       </trans-unit>
       <trans-unit id="8573a1576789bd2c4faeaed23037c4917812c6cf" datatype="html">
         <source>Lightning Nodes Per ISP</source>
-        <target>צמתי ברק לפי ספקי תשתית</target>
+        <target>צמתי ברק לפי ספקיות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">37</context>
@@ -3717,6 +3717,7 @@
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>
+        <target>חוקר רשת הברק</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">44,47</context>
@@ -4370,6 +4371,7 @@
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
         <source>Explore the full Bitcoin ecosystem</source>
+        <target>חקור את מרחב רשתות הביטקוין</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -5373,6 +5375,7 @@
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
+        <target>שירותי API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">42,43</context>
@@ -5491,6 +5494,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
+        <target>מיליסאטס</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">35</context>
@@ -5547,6 +5551,7 @@
       </trans-unit>
       <trans-unit id="055060668d0b9902c37abfb6168a08a36eba4496" datatype="html">
         <source>Min HTLC</source>
+        <target>HTLC מינימלי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">57</context>
@@ -5555,6 +5560,7 @@
       </trans-unit>
       <trans-unit id="c3d94c1a5aef6211f4a902027bd08540d7222b0d" datatype="html">
         <source>Max HTLC</source>
+        <target>HTLC מקסימלי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">63</context>
@@ -5751,6 +5757,7 @@
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
         <source>ppm</source>
+        <target>פפ&quot;מ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -6059,6 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>ממוצע העמלות שנגבה בידי צמתי ניתוב, בהתעלמות מתעריף העמלה &gt; 0.5% או 5000 פפ&quot;מ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -6080,6 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>ממוצע העמלות שנגבה בידי צמתי ניתוב, בהתעלמות מתעריף העמלה &gt; 5000 פפ&quot;מ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -6106,6 +6115,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>חציון העמלות שנגבה בידי צמתי ניתוב, בהתעלמות תעריף העמלה &gt; 0.5% או 5000 פפ&quot;מ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -6123,6 +6133,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>חציון העמלות שנגבה על ידי צמתי ניתוב, בהתעלמות מבסיס העמלה &gt; 5000 פפ&quot;מ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -6368,6 +6379,7 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
+        <target>דירוג נזילות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
@@ -6392,6 +6404,7 @@
       </trans-unit>
       <trans-unit id="c50bf442cf99f6fc5f8b687c460f33234b879869" datatype="html">
         <source>Connectivity Ranking</source>
+        <target>דירוג חיבוריות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">76</context>
@@ -6533,7 +6546,7 @@
       </trans-unit>
       <trans-unit id="5b9904cb31f6f28314443f6385dc5facab7ea851" datatype="html">
         <source>ISP</source>
-        <target>ספק אינטרנט</target>
+        <target>רשת גלויה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">89,90</context>
@@ -6555,6 +6568,7 @@
       </trans-unit>
       <trans-unit id="e128630e07a4c467f51b246a31c5734d5fb1a2c2" datatype="html">
         <source>Liquidity ad</source>
+        <target>פרסומת ליקווידיטי</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">141,144</context>
@@ -6563,6 +6577,7 @@
       </trans-unit>
       <trans-unit id="bc84b5a9a70217104a53c7139e30b392be6520b7" datatype="html">
         <source>Lease fee rate</source>
+        <target>שיעור עמלת שכירות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">147,150</context>
@@ -6572,6 +6587,7 @@
       </trans-unit>
       <trans-unit id="ee807dd54b4a45eeba284744c64774de1ab5e4f1" datatype="html">
         <source>Lease base fee</source>
+        <target>עמלת בסיס לשכירות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">155,157</context>
@@ -6608,6 +6624,7 @@
       </trans-unit>
       <trans-unit id="e8e09fa12864e94f094a2a7c8c97cfdf0cff8aab" datatype="html">
         <source>Compact lease</source>
+        <target>שכירות קומפקטית</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">191,193</context>
@@ -6616,6 +6633,7 @@
       </trans-unit>
       <trans-unit id="aa687f4987e2d4e0010be692d402174962ece70e" datatype="html">
         <source>TLV extension records</source>
+        <target>תיעוד TLV מורחב</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">202,205</context>
@@ -6671,6 +6689,7 @@
       </trans-unit>
       <trans-unit id="8199511328474154549" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>מפת ערוצי רשת הברק העולמית</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -6793,6 +6812,7 @@
       </trans-unit>
       <trans-unit id="4498ec29c37744fef46809ebc3db67c5fb789917" datatype="html">
         <source>ISP Count</source>
+        <target>כמות ספקיות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">34,38</context>
@@ -6801,6 +6821,7 @@
       </trans-unit>
       <trans-unit id="90a6a964ba53464578003e3b4b2873ef5d2132a1" datatype="html">
         <source>Top ISP</source>
+        <target>ספקיות מובילות</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">38,40</context>
@@ -6830,6 +6851,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
+        <target>כמה ליקווידיטי רץ על צמתים המפרסמים לפחות כתובת IP גלויה אחת</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -6851,6 +6873,7 @@
       </trans-unit>
       <trans-unit id="26fb07e8754b87bba4bf12c5137ffa77dac389a8" datatype="html">
         <source>How much liquidity is running on nodes which ISP was not identifiable</source>
+        <target>כמה ליקווידיטי רץ על צמתים ללא ספקית רשת מזוהה</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -6872,6 +6895,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
+        <target>כמה ליקווידיטי רץ על צמתים המפרסמים כתובות תור בלבד</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -6880,6 +6904,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>100 הספקיות המובילות באיחסון צמתי רשת הברק</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -6900,6 +6925,7 @@
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
         <source>Lightning ISP</source>
+        <target>ספקיות ברק</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6930,6 +6956,7 @@
       </trans-unit>
       <trans-unit id="5735693498020397727" datatype="html">
         <source>Lightning nodes on ISP: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</source>
+        <target>צמתי ברק אצל ספקיות: <x id="PH" equiv-text="response.isp"/> [כ <x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -6941,6 +6968,7 @@
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
         <source>Lightning nodes on ISP: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></source>
+        <target>צמתי ברק ברשת הגלויה: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">2,4</context>
@@ -6949,6 +6977,7 @@
       </trans-unit>
       <trans-unit id="ca0b795795658155d44ddca02e95f1feeeb4a88f" datatype="html">
         <source>ASN</source>
+        <target>ASN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">11,14</context>
