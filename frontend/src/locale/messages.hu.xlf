@@ -6066,6 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított átlagos díjtétel, figyelmen kívül hagyva a &gt; 0,5% -os vagy 5000ppm-es díjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -6087,6 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított átlagos alapdíj, figyelmen kívül hagyva az alapdíjakat &gt; 5000ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -6113,6 +6115,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított medián díjtétel, figyelmen kívül hagyva a &gt; 0,5% vagy 5000 ppm díjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -6130,6 +6133,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított medián alapdíj, figyelmen kívül hagyva a &gt; 5000ppm alapdíjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -6446,6 +6450,7 @@
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
+        <target>Százalékos változás a múlt héten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -6563,6 +6568,7 @@
       </trans-unit>
       <trans-unit id="e128630e07a4c467f51b246a31c5734d5fb1a2c2" datatype="html">
         <source>Liquidity ad</source>
+        <target>Likviditási hirdetés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">141,144</context>
@@ -6590,6 +6596,7 @@
       </trans-unit>
       <trans-unit id="5e348f3d51c3bb283c16572bee1e293ea991cf49" datatype="html">
         <source>Funding weight</source>
+        <target>A finanszírozás súlya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">161,162</context>
@@ -6844,6 +6851,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
+        <target>Mennyi likviditás fut a legalább egy clearnet IP-címet hirdető nódokon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -6865,6 +6873,7 @@
       </trans-unit>
       <trans-unit id="26fb07e8754b87bba4bf12c5137ffa77dac389a8" datatype="html">
         <source>How much liquidity is running on nodes which ISP was not identifiable</source>
+        <target>Mennyi likviditás fut azon nódokon, amelyek internetszolgáltatója nem volt azonosítható</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -6886,6 +6895,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
+        <target>Mennyi likviditás fut a csak Tor-címeket hirdető nódokon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -6894,6 +6904,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>A 100 legjobb LN-nódot szolgáltató internetszolgáltató</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -6957,6 +6968,7 @@
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
         <source>Lightning nodes on ISP: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></source>
+        <target>Villámnódok az internetszolgáltatón: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">2,4</context>
