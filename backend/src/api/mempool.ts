@@ -38,7 +38,6 @@ class Mempool {
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
-    setInterval(this.deleteExpiredTransactions.bind(this), 20000);
   }
 
   /**
@@ -256,7 +255,7 @@ class Mempool {
     }
   }
 
-  private deleteExpiredTransactions() {
+  public deleteExpiredTransactions() {
     const now = new Date().getTime();
     for (const tx in this.mempoolCache) {
       const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
