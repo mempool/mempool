@@ -97,7 +97,10 @@ export class BlocksList implements OnInit, OnDestroy {
     ])
       .pipe(
         scan((acc, blocks) => {
-          if (this.page > 1 || acc.length === 0 || (this.page === 1 && this.lastPage !== 1)) {
+          // TODO - Rewrite this weird thing I made
+          if (this.widget && acc.length === 0 || !this.widget && (this.page === 1 && this.lastPage !== 1)) {
+            acc = blocks[0];
+          } else if (this.page > 1 || acc.length === 0 || (this.page === 1 && this.lastPage !== 1)) {
             this.lastPage = this.page;
             return blocks[0];
           }
@@ -108,7 +111,9 @@ export class BlocksList implements OnInit, OnDestroy {
               blocks[1][0].extras.pool.logo = `/resources/mining-pools/` +
                 blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
             }
-            acc.unshift(blocks[1][0]);
+            if (blocks[1][0].height > acc[0].height) {
+              acc.unshift(blocks[1][0]);
+            }
             acc = acc.slice(0, this.widget ? 6 : 15);
           }
           return acc;
