@@ -5,7 +5,7 @@ services:
     environment:
       FRONTEND_HTTP_PORT: "8080"
       BACKEND_MAINNET_HTTP_HOST: "api"
-    image: mempool/frontend:latest
+    image: mempool/frontend:v2.4.0
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
@@ -25,7 +25,7 @@ services:
       DATABASE_USERNAME: "mempool"
       DATABASE_PASSWORD: "mempool"
       STATISTICS_ENABLED: "true"
-    image: mempool/backend:latest
+    image: mempool/backend:v2.4.0
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
