@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
+  displayValue?: number;
   index?: number;
   txid?: string;
   vin?: number;
