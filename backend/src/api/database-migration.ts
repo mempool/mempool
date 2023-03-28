@@ -497,6 +497,7 @@ class DatabaseMigration {
       this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
       await this.$executeQuery('DELETE FROM `pools`');
       await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
+      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
       this.uniqueLog(logger.notice, '`pools` table has been truncated`');
       await this.updateToSchemaVersion(56);
     }
