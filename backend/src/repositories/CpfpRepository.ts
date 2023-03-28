@@ -48,7 +48,7 @@ class CpfpRepository {
     }
   }
 
-  public async $batchSaveClusters(clusters: { root: string, height: number, txs: any, effectiveFeePerVsize: number}[]): Promise<boolean> {
+  public async $batchSaveClusters(clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[]): Promise<boolean> {
     try {
       const clusterValues: any[] = [];
       const txs: any[] = [];
