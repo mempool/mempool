@@ -127,7 +127,7 @@ describe('Mainnet', () => {
 
         cy.get('.search-box-container > .form-control').type('S').then(() => {
           cy.wait('@search-1wizS');
-          cy.get('app-search-results button.dropdown-item').should('have.length', 5);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 6);
         });
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
