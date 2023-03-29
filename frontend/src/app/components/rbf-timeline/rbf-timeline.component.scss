@@ -118,7 +118,7 @@
           height: 100%;
           border-radius: 10%;
           background: white;
-          transition: background-color 300ms;
+          transition: background-color 300ms, border 300ms;
         }
 
         &.rbf, &.rbf .shape {
@@ -147,6 +147,26 @@
         padding: 0px;
         .shape {
           background: #1bd8f4;
+        }
+      }
+
+      &.selected.mined {
+        .shape-border {
+          background: #1a9436;
+          height: calc(1em + 16px);
+          width: calc(1em + 16px);
+
+          .shape {
+            border: solid 4px #9339f4;
+          }
+
+          &:hover {
+            padding: 4px;
+            .shape {
+              border-width: 1px;
+              border-color: #1bd8f4
+            }
+          }
         }
       }
     }
