@@ -83,23 +83,6 @@ class BlocksSummariesRepository {
   }
 
   /**
-   * Delete blocks from the database from blockHeight
-   */
-  public async $deleteTransactionsFrom(blockHeight: number): Promise<void> {
-    logger.info(`Delete blocks summaries transactions from height ${blockHeight} from the database, but keep templates`, logger.tags.mining);
-
-    try {
-      await DB.query(`
-        UPDATE blocks_summaries
-        SET transactions = '[]'
-        WHERE height >= ${blockHeight}
-      `);
-    } catch (e) {
-      logger.err('Cannot delete blocks summaries transactions. Reason: ' + (e instanceof Error ? e.message : e));
-    }
-  }
-
-  /**
    * Get the fee percentiles if the block has already been indexed, [] otherwise
    * 
    * @param id 
