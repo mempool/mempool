@@ -962,7 +962,7 @@ class BlocksRepository {
       if (extras.feePercentiles === null) {
         const block = await bitcoinClient.getBlock(dbBlk.id, 2);
         const summary = blocks.summarizeBlock(block);
-        await BlocksSummariesRepository.$saveSummary({ height: block.height, mined: summary });
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.hash, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
