@@ -62,7 +62,7 @@ class PoolsUpdater {
       if (this.currentSha === null) {
         logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       } else {
-        logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
+        logger.warn(`pools-v2.json is outdated, fetching latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {

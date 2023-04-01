@@ -283,7 +283,7 @@ class NetworkSyncService {
       } else {
         log += ` for the first time`;
       }
-      logger.info(`${log}`, logger.tags.ln);
+      logger.debug(`${log}`, logger.tags.ln);
 
       const channels = await channelsApi.$getChannelsByStatus([0, 1]);
       for (const channel of channels) {
