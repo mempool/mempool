@@ -8,6 +8,8 @@ import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 
+const SERVICES_API_PREFIX = `/api/v1/services`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -310,5 +312,14 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
     );
+  }
+
+  /**
+   * Services
+   */
+  getNodeOwner$(publicKey: string) {
+    let params = new HttpParams()
+      .set('node_public_key', publicKey);
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/liquidity/claim/current`, { params });
   }
 }
