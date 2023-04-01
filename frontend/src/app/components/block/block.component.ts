@@ -612,9 +612,13 @@ export class BlockComponent implements OnInit, OnDestroy {
     });
   }
 
-  onTxClick(event: TransactionStripped): void {
-    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
-    this.router.navigate([url]);
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 
   onTxHover(txid: string): void {
