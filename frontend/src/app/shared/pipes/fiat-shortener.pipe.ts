@@ -1,4 +1,3 @@
-import { formatCurrency, getCurrencySymbol } from '@angular/common';
 import { Inject, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -20,11 +19,10 @@ export class FiatShortenerPipe implements PipeTransform {
   }
 
   transform(num: number, ...args: any[]): unknown {
-    const digits = args[0] || 1;
     const currency = args[1] || this.currency || 'USD';
 
-    if (num < 1000) {
-      return new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 1 }).format(num);
+    if (num < 100000) {
+      return new Intl.NumberFormat(this.locale, { style: 'currency', currency }).format(num);
     }
 
     const lookup = [
@@ -38,7 +36,7 @@ export class FiatShortenerPipe implements PipeTransform {
     ];
     const item = lookup.slice().reverse().find((item) => num >= item.value);
 
-    const format = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 2 });
+    const format = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumSignificantDigits: 3 });
     const parts = format.formatToParts(item ? num / item.value : 0);
 
     let final = '';
