@@ -410,11 +410,12 @@ class Blocks {
     try {
       // Get all indexed block hash
       const unindexedBlockHeights = await blocksRepository.$getCPFPUnindexedBlocks();
-      logger.info(`Indexing cpfp data for ${unindexedBlockHeights.length} blocks`);
 
       if (!unindexedBlockHeights?.length) {
         return;
       }
+
+      logger.info(`Indexing cpfp data for ${unindexedBlockHeights.length} blocks`);
 
       // Logging
       let count = 0;
@@ -616,7 +617,7 @@ class Blocks {
               priceId: lastestPriceId,
             }]);
           } else {
-            logger.info(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
+            logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
             setTimeout(() => {
               indexer.runSingleTask('blocksPrices');
             }, 10000);

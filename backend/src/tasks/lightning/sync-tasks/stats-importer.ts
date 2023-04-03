@@ -15,16 +15,20 @@ class LightningStatsImporter {
   topologiesFolder = config.LIGHTNING.TOPOLOGY_FOLDER;
 
   async $run(): Promise<void> {
-    const [channels]: any[] = await DB.query('SELECT short_id from channels;');
-    logger.info(`Caching funding txs for currently existing channels`, logger.tags.ln);
-    await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
+    try {
+      const [channels]: any[] = await DB.query('SELECT short_id from channels;');
+      logger.info(`Caching funding txs for currently existing channels`, logger.tags.ln);
+      await fundingTxFetcher.$fetchChannelsFundingTxs(channels.map(channel => channel.short_id));
 
-    if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
-      return;
+      if (config.MEMPOOL.NETWORK !== 'mainnet' || config.DATABASE.ENABLED === false) {
+        return;
+      }
+
+      await this.$importHistoricalLightningStats();
+      await this.$cleanupIncorrectSnapshot();
+    } catch (e) {
+      logger.err(`Exception in LightningStatsImporter::$run(). ${e}`);
     }
-
-    await this.$importHistoricalLightningStats();
-    await this.$cleanupIncorrectSnapshot();
   }
 
   /**
