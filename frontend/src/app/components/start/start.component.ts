@@ -137,9 +137,11 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(event: MouseEvent) {
-    this.mouseDragStartX = event.clientX;
-    this.resetMomentum(event.clientX);
-    this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+    if (!(event.which > 1 || event.button > 0)) {
+      this.mouseDragStartX = event.clientX;
+      this.resetMomentum(event.clientX);
+      this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+    }
   }
   onPointerDown(event: PointerEvent) {
     if (this.isiOS) {
