@@ -37,6 +37,7 @@ interface IConfig {
   };
   ESPLORA: {
     REST_API_URL: string;
+    UNIX_SOCKET_PATH: string | void | null;
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -163,6 +164,7 @@ const defaults: IConfig = {
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
+    'UNIX_SOCKET_PATH': null,
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
