@@ -222,7 +222,7 @@ class PriceUpdater {
   private async $insertMissingRecentPrices(type: 'hour' | 'day'): Promise<void> {
     const existingPriceTimes = await PricesRepository.$getPricesTimes();
 
-    logger.info(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database`, logger.tags.mining);
+    logger.debug(`Fetching ${type === 'day' ? 'dai' : 'hour'}ly price history from exchanges and saving missing ones into the database`, logger.tags.mining);
 
     const historicalPrices: PriceHistory[] = [];
 
