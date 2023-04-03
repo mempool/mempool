@@ -5067,7 +5067,7 @@
       </trans-unit>
       <trans-unit id="ea7c261363dc5f6134b7bacba2a1ef97f4ff7859" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> remaining</source>
-        <target> <x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> restantes</target>
+        <target><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> restantes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">332,333</context>

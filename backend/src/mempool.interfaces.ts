@@ -214,6 +214,16 @@ export interface MempoolStats {
   tx_count: number;
 }
 
+export interface EffectiveFeeStats {
+  medianFee: number; // median effective fee rate
+  feeRange: number[]; // 2nd, 10th, 25th, 50th, 75th, 90th, 98th percentiles
+}
+
+export interface CpfpSummary {
+  transactions: TransactionExtended[];
+  clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[];
+}
+
 export interface Statistic {
   id?: number;
   added: string;
@@ -309,9 +319,11 @@ export interface IDifficultyAdjustment {
   remainingBlocks: number;
   remainingTime: number;
   previousRetarget: number;
+  previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
   timeOffset: number;
+  expectedBlocks: number;
 }
 
 export interface IndexedDifficultyAdjustment {

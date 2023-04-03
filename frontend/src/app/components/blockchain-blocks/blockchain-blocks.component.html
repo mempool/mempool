@@ -25,7 +25,7 @@
           </ng-template>
           <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
             *ngIf="block?.extras?.feeRange; else emptyfeespan">
-            {{ block?.extras?.feeRange?.[1] | number:feeRounding }} - {{
+            {{ block?.extras?.feeRange?.[0] | number:feeRounding }} - {{
             block?.extras?.feeRange[block?.extras?.feeRange?.length - 1] | number:feeRounding }} <ng-container
               i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
           </div>

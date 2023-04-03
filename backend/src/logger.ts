@@ -69,6 +69,10 @@ class Logger {
     this.network = this.getNetwork();
   }
 
+  public updateNetwork(): void {
+    this.network = this.getNetwork();
+  }
+
   private addprio(prio): void {
     this[prio] = (function(_this) {
       return function(msg, tag?: string) {

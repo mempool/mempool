@@ -1,4 +1,5 @@
 import config from '../config';
+import logger from '../logger';
 import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
@@ -39,17 +40,19 @@ class Audit {
         } else {
           isCensored[txid] = true;
         }
-        displacedWeight += mempool[txid].weight;
+        displacedWeight += mempool[txid]?.weight || 0;
       } else {
-        matchedWeight += mempool[txid].weight;
+        matchedWeight += mempool[txid]?.weight || 0;
       }
-      projectedWeight += mempool[txid].weight;
+      projectedWeight += mempool[txid]?.weight || 0;
       inTemplate[txid] = true;
     }
 
-    displacedWeight += (4000 - transactions[0].weight);
-    projectedWeight += transactions[0].weight;
-    matchedWeight += transactions[0].weight;
+    if (transactions[0]) {
+      displacedWeight += (4000 - transactions[0].weight);
+      projectedWeight += transactions[0].weight;
+      matchedWeight += transactions[0].weight;
+    }
 
     // we can expect an honest miner to include 'displaced' transactions in place of recent arrivals and censored txs
     // these displaced transactions should occupy the first N weight units of the next projected block
@@ -59,19 +62,24 @@ class Audit {
     let failures = 0;
     while (projectedBlocks[1] && index < projectedBlocks[1].transactionIds.length && failures < 500) {
       const txid = projectedBlocks[1].transactionIds[index];
-      const fits = (mempool[txid].weight - displacedWeightRemaining) < 4000;
-      const feeMatches = mempool[txid].effectiveFeePerVsize >= lastFeeRate;
-      if (fits || feeMatches) {
-        isDisplaced[txid] = true;
-        if (fits) {
-          lastFeeRate = Math.min(lastFeeRate, mempool[txid].effectiveFeePerVsize);
+      const tx = mempool[txid];
+      if (tx) {
+        const fits = (tx.weight - displacedWeightRemaining) < 4000;
+        const feeMatches = tx.effectiveFeePerVsize >= lastFeeRate;
+        if (fits || feeMatches) {
+          isDisplaced[txid] = true;
+          if (fits) {
+            lastFeeRate = Math.min(lastFeeRate, tx.effectiveFeePerVsize);
+          }
+          if (tx.firstSeen == null || (now - (tx?.firstSeen || 0)) > PROPAGATION_MARGIN) {
+            displacedWeightRemaining -= tx.weight;
+          }
+          failures = 0;
+        } else {
+          failures++;
         }
-        if (mempool[txid].firstSeen == null || (now - (mempool[txid]?.firstSeen || 0)) > PROPAGATION_MARGIN) {
-          displacedWeightRemaining -= mempool[txid].weight;
-        }
-        failures = 0;
       } else {
-        failures++;
+        logger.warn('projected transaction missing from mempool cache');
       }
       index++;
     }
@@ -108,20 +116,25 @@ class Audit {
     index = projectedBlocks[0].transactionIds.length - 1;
     while (index >= 0) {
       const txid = projectedBlocks[0].transactionIds[index];
-      if (overflowWeightRemaining > 0) {
-        if (isCensored[txid]) {
-          delete isCensored[txid];
+      const tx = mempool[txid];
+      if (tx) {
+        if (overflowWeightRemaining > 0) {
+          if (isCensored[txid]) {
+            delete isCensored[txid];
+          }
+          if (tx.effectiveFeePerVsize > maxOverflowRate) {
+            maxOverflowRate = tx.effectiveFeePerVsize;
+            rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005;
+          }
+        } else if (tx.effectiveFeePerVsize <= rateThreshold) { // tolerance of 0.01 sat/vb + rounding
+          if (isCensored[txid]) {
+            delete isCensored[txid];
+          }
         }
-        if (mempool[txid].effectiveFeePerVsize > maxOverflowRate) {
-          maxOverflowRate = mempool[txid].effectiveFeePerVsize;
-          rateThreshold = (Math.ceil(maxOverflowRate * 100) / 100) + 0.005;
-        }
-      } else if (mempool[txid].effectiveFeePerVsize <= rateThreshold) { // tolerance of 0.01 sat/vb + rounding
-        if (isCensored[txid]) {
-          delete isCensored[txid];
-        }
+        overflowWeightRemaining -= (mempool[txid]?.weight || 0);
+      } else {
+        logger.warn('projected transaction missing from mempool cache');
       }
-      overflowWeightRemaining -= (mempool[txid]?.weight || 0);
       index--;
     }
 

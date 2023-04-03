@@ -43,7 +43,9 @@ class DiskCache {
       const mempool = memPool.getMempool();
       const mempoolArray: TransactionExtended[] = [];
       for (const tx in mempool) {
-        mempoolArray.push(mempool[tx]);
+        if (mempool[tx] && !mempool[tx].deleteAfter) {
+          mempoolArray.push(mempool[tx]);
+        }
       }
 
       Common.shuffleArray(mempoolArray);
@@ -162,7 +164,7 @@ class DiskCache {
             }
           }
         } catch (e) {
-          logger.info('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+          logger.err('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
         }
       }
 
