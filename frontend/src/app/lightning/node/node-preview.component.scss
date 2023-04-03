@@ -18,6 +18,10 @@
   }
 }
 
+.table-col {
+  max-width: calc(100% - 470px);
+}
+
 .map-col {
   flex-grow: 0;
   flex-shrink: 0;

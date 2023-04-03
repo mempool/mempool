@@ -160,7 +160,7 @@ class PricesRepository {
 
       // Compute fiat exchange rates
       let latestPrice = rates[0] as ApiPrice;
-      if (latestPrice.USD === -1) {
+      if (!latestPrice || latestPrice.USD === -1) {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }
 
