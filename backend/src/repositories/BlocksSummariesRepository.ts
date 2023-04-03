@@ -1,6 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import { BlockSummary } from '../mempool.interfaces';
+import { BlockSummary, TransactionStripped } from '../mempool.interfaces';
 
 class BlocksSummariesRepository {
   public async $getByBlockId(id: string): Promise<BlockSummary | undefined> {
@@ -17,7 +17,7 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveSummary(params: { height: number, mined?: BlockSummary}) {
+  public async $saveSummary(params: { height: number, mined?: BlockSummary}): Promise<void> {
     const blockId = params.mined?.id;
     try {
       const transactions = JSON.stringify(params.mined?.transactions || []);
@@ -34,6 +34,20 @@ class BlocksSummariesRepository {
         logger.debug(`Cannot save block summary for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
         throw e;
       }
+    }
+  }
+
+  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionStripped[]): Promise<void> {
+    try {
+      const transactionsStr = JSON.stringify(transactions);
+      await DB.query(`
+        INSERT INTO blocks_summaries
+        SET height = ?, transactions = ?, id = ?
+        ON DUPLICATE KEY UPDATE transactions = ?`,
+        [blockHeight, transactionsStr, blockId, transactionsStr]);
+    } catch (e: any) {
+      logger.debug(`Cannot save block summary transactions for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
     }
   }
 
@@ -66,19 +80,6 @@ class BlocksSummariesRepository {
     }
 
     return [];
-  }
-
-  /**
-   * Delete blocks from the database from blockHeight
-   */
-  public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks summary from height ${blockHeight} from the database`);
-
-    try {
-      await DB.query(`DELETE FROM blocks_summaries where height >= ${blockHeight}`);
-    } catch (e) {
-      logger.err('Cannot delete indexed blocks summaries. Reason: ' + (e instanceof Error ? e.message : e));
-    }
   }
 
   /**
