@@ -1,10 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
-import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-master-page',
@@ -27,7 +26,6 @@ export class MasterPageComponent implements OnInit {
     private languageService: LanguageService,
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
-    public storageService: StorageService
   ) { }
 
   ngOnInit() {
@@ -47,9 +45,5 @@ export class MasterPageComponent implements OnInit {
 
   onResize(event: any) {
     this.isMobile = window.innerWidth <= 767.98;
-  }
-
-  dismissWarning() {
-    this.storageService.setValue('hideWarning', 'hidden');
   }
 }
