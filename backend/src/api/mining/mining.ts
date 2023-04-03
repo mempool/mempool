@@ -452,7 +452,7 @@ class Mining {
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
       if (elapsedSeconds > 5) {
         const progress = Math.round(totalBlockChecked / blocks.length * 100);
-        logger.info(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`, logger.tags.mining);
+        logger.debug(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`, logger.tags.mining);
         timer = new Date().getTime() / 1000;
       }
     }
@@ -558,8 +558,10 @@ class Mining {
       currentBlockHeight -= 10000;
     }
 
-    if (totalIndexed) {
-      logger.info(`Indexing missing coinstatsindex data completed`, logger.tags.mining);
+    if (totalIndexed > 0) {
+      logger.info(`Indexing missing coinstatsindex data completed. Indexed ${totalIndexed}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing missing coinstatsindex data completed. Indexed 0.`, logger.tags.mining);
     }
   }
 
