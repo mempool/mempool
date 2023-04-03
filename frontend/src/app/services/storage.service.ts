@@ -12,20 +12,22 @@ export class StorageService {
 
   setDefaultValueIfNeeded(key: string, defaultValue: string) {
     const graphWindowPreference: string = this.getValue(key);
+    const fragment = window.location.hash.replace('#', '');
+
     if (graphWindowPreference === null) { // First visit to mempool.space
-      if (this.router.url.includes('graphs') && key === 'graphWindowPreference' ||
-        this.router.url.includes('pools') && key === 'miningWindowPreference'
+      if (window.location.pathname.includes('graphs') && key === 'graphWindowPreference' ||
+        window.location.pathname.includes('pools') && key === 'miningWindowPreference'
       ) {
-        this.setValue(key, this.route.snapshot.fragment ? this.route.snapshot.fragment : defaultValue);
+        this.setValue(key, fragment ? fragment : defaultValue);
       } else {
         this.setValue(key, defaultValue);
       }
-    } else if (this.router.url.includes('graphs') && key === 'graphWindowPreference' ||
-      this.router.url.includes('pools') && key === 'miningWindowPreference'
+    } else if (window.location.pathname.includes('graphs') && key === 'graphWindowPreference' ||
+      window.location.pathname.includes('pools') && key === 'miningWindowPreference'
     ) {
       // Visit a different graphs#fragment from last visit
-      if (this.route.snapshot.fragment !== null && graphWindowPreference !== this.route.snapshot.fragment) {
-        this.setValue(key, this.route.snapshot.fragment);
+      if (fragment !== null && graphWindowPreference !== fragment) {
+        this.setValue(key, fragment);
       }
     }
   }

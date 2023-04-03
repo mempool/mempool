@@ -193,3 +193,18 @@ nav {
     font-size: 7px;
   }
 }
+
+.close {
+  position: absolute;
+  color: black;
+  right: 10px;
+  top: 17px;
+  @media (max-width: 620px) {
+    right: 10px;
+    top: 0px;
+  };
+  @media (min-width: 992px) {
+    right: 10px;
+    top: 13px;
+  };
+}
