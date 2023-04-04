@@ -1,7 +1,7 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <div *ngIf="rbfTransaction && !tx.status.confirmed" class="alert alert-mempool" role="alert">
+    <div *ngIf="rbfTransaction && !tx?.status?.confirmed" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
@@ -38,7 +38,7 @@
 
   <ng-template [ngIf]="!isLoadingTx && !error">
 
-    <ng-template [ngIf]="tx.status.confirmed" [ngIfElse]="unconfirmedTemplate">
+    <ng-template [ngIf]="tx?.status?.confirmed" [ngIfElse]="unconfirmedTemplate">
 
       <div class="box">
         <div class="row">
@@ -479,7 +479,7 @@
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-          <ng-template [ngIf]="tx.status.confirmed">
+          <ng-template [ngIf]="tx?.status?.confirmed">
             &nbsp;
             <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo?.descendants?.length && !cpfpInfo?.bestDescendant && !cpfpInfo?.ancestors?.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
@@ -490,7 +490,7 @@
         <td>
           <div class="effective-fee-container">
             {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-            <ng-template [ngIf]="tx.status.confirmed">
+            <ng-template [ngIf]="tx?.status?.confirmed">
               <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>
