@@ -540,9 +540,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   setGraphSize(): void {
     this.isMobile = window.innerWidth < 850;
-    if (this.graphContainer) {
+    if (this.graphContainer?.nativeElement) {
       setTimeout(() => {
-        this.graphWidth = this.graphContainer.nativeElement.clientWidth;
+        if (this.graphContainer?.nativeElement) {
+          this.graphWidth = this.graphContainer.nativeElement.clientWidth;
+        } else {
+          setTimeout(() => { this.setGraphSize(); }, 1);
+        }
       }, 1);
     }
   }
