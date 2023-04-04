@@ -58,6 +58,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[];
   removed: string[];
+  changed: { txid: string, rate: number | undefined }[];
 }
 
 interface VinStrippedToScriptsig {
