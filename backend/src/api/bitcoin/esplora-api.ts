@@ -29,9 +29,10 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   fallbackToTcpSocket() {
     if (!this.unixSocketRetryTimeout) {
-      logger.err(`Unable to connect to esplora unix socket. Falling back to tcp socket. Retrying unix socket in ${config.ESPLORA.RETRY_UNIX_SOCKET_AFTER} seconds`);
+      logger.err(`Unable to connect to esplora unix socket. Falling back to tcp socket. Retrying unix socket in ${config.ESPLORA.RETRY_UNIX_SOCKET_AFTER / 1000} seconds`);
       // Retry the unix socket after a few seconds
       this.unixSocketRetryTimeout = setTimeout(() => {
+        logger.info(`Retrying to use unix socket for esplora now (applied for the next query)`);
         this.activeAxiosConfig = this.axiosConfigWithUnixSocket;
       }, config.ESPLORA.RETRY_UNIX_SOCKET_AFTER);
     }
@@ -44,7 +45,7 @@ class ElectrsApi implements AbstractBitcoinApi {
     return axiosConnection.get<T>(url, { ...this.activeAxiosConfig, responseType: responseType })
       .then((response) => response.data)
       .catch((e) => {
-        if (e?.code === 'ECONNREFUSED' || e?.code === 'ETIMEDOUT') {
+        if (e?.code === 'ECONNREFUSED') {
           this.fallbackToTcpSocket();
           // Retry immediately
           return axiosConnection.get<T>(url, this.activeAxiosConfig)
