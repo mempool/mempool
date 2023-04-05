@@ -107,7 +107,7 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
 
     if (nextTx && !nextTx?.used) {
       // Check if the package fits into this block
-      if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
+      if (blocks.length >= 7 || (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS)) {
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
@@ -175,34 +175,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
       overflow = [];
     }
   }
-  // pack any leftover transactions into the last block
-  for (const tx of overflow) {
-    if (!tx || tx?.used) {
-      continue;
-    }
-    blockWeight += tx.weight;
-    const mempoolTx = mempool[tx.txid];
-    // update original copy of this tx with effective fee rate & relatives data
-    mempoolTx.effectiveFeePerVsize = tx.score;
-    if (tx.ancestorMap.size > 0) {
-      cpfpClusters[tx.txid] = Array.from(tx.ancestorMap?.values()).map(a => a.txid);
-      mempoolTx.cpfpRoot = tx.txid;
-    }
-    mempoolTx.cpfpChecked = true;
-    transactions.push(tx);
-    tx.used = true;
+
+  if (overflow.length > 0) {
+    logger.warn('GBT overflow list unexpectedly non-empty after final block constructed');
   }
-  const blockTransactions = transactions.map(t => mempool[t.txid]);
-  restOfArray.forEach(tx => {
-    blockWeight += tx.weight;
-    tx.effectiveFeePerVsize = tx.feePerVsize;
-    tx.cpfpChecked = false;
-    blockTransactions.push(tx);
-  });
-  if (blockTransactions.length) {
-    blocks.push(blockTransactions);
+  // add the final unbounded block if it contains any transactions
+  if (transactions.length > 0) {
+    blocks.push(transactions.map(t => mempool[t.txid]));
   }
-  transactions = [];
 
   const end = Date.now();
   const time = end - start;
