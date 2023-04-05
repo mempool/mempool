@@ -23,6 +23,10 @@ class ElectrsApi implements AbstractBitcoinApi {
   unixSocketRetryTimeout;
   activeAxiosConfig;
 
+  constructor() {
+    this.activeAxiosConfig = this.axiosConfigWithUnixSocket;
+  }
+
   fallbackToTcpSocket() {
     if (!this.unixSocketRetryTimeout) {
       logger.err(`Unable to connect to esplora unix socket. Falling back to tcp socket. Retrying unix socket in ${config.ESPLORA.RETRY_UNIX_SOCKET_AFTER} seconds`);
