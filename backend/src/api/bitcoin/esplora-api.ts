@@ -34,6 +34,7 @@ class ElectrsApi implements AbstractBitcoinApi {
       this.unixSocketRetryTimeout = setTimeout(() => {
         logger.info(`Retrying to use unix socket for esplora now (applied for the next query)`);
         this.activeAxiosConfig = this.axiosConfigWithUnixSocket;
+        this.unixSocketRetryTimeout = undefined;
       }, config.ESPLORA.RETRY_UNIX_SOCKET_AFTER);
     }
 
