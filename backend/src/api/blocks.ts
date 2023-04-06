@@ -857,6 +857,7 @@ class Blocks {
         }
         if (cleanBlock.fee_amt_percentiles !== null) {
           cleanBlock.median_fee_amt = cleanBlock.fee_amt_percentiles[3];
+          await blocksRepository.$updateFeeAmounts(cleanBlock.hash, cleanBlock.fee_amt_percentiles, cleanBlock.median_fee_amt);
         }
       }
 
