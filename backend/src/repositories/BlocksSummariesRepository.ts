@@ -17,26 +17,6 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveSummary(params: { height: number, mined?: BlockSummary}): Promise<void> {
-    const blockId = params.mined?.id;
-    try {
-      const transactions = JSON.stringify(params.mined?.transactions || []);
-      await DB.query(`
-        INSERT INTO blocks_summaries (height, id, transactions, template)
-        VALUE (?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          transactions = ?
-      `, [params.height, blockId, transactions, '[]', transactions]);
-    } catch (e: any) {
-      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
-        logger.debug(`Cannot save block summary for ${blockId} because it has already been indexed, ignoring`);
-      } else {
-        logger.debug(`Cannot save block summary for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
-        throw e;
-      }
-    }
-  }
-
   public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionStripped[]): Promise<void> {
     try {
       const transactionsStr = JSON.stringify(transactions);
