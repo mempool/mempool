@@ -105,7 +105,6 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
 
     this.mempoolBlocks$ = merge(
       of(true),
@@ -140,6 +139,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           return this.mempoolBlocks;
         })
       );
+
+    this.loadingBlocks$ = combineLatest([
+      this.stateService.isLoadingWebSocket$,
+      this.mempoolBlocks$
+    ]).pipe(map(([loading, mempoolBlocks]) => {
+      return loading || !mempoolBlocks.length;
+    }));
 
     this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(

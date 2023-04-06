@@ -29,7 +29,7 @@ export class StartComponent implements OnInit, OnDestroy {
   isMobile: boolean = false;
   isiOS: boolean = false;
   blockWidth = 155;
-  dynamicBlocksAmount: number = 8;
+  dynamicBlocksAmount: number = 0;
   blockCount: number = 0;
   blocksPerPage: number = 1;
   pageWidth: number;

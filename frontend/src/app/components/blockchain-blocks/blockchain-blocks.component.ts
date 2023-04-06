@@ -22,6 +22,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() offset: number = 0;
   @Input() height: number = 0; // max height of blocks in chunk (dynamic blocks only)
   @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
+  @Input() dynamicBlockCount: number = 8; // number of blocks in the dynamic block chunk
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
   
@@ -45,7 +46,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   feeRounding = '1.0-0';
   arrowVisible = false;
   arrowLeftPx = 30;
-  blocksFilled = false;
   arrowTransition = '1s';
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
@@ -96,14 +96,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     if (!this.static) {
       this.blocksSubscription = this.stateService.blocks$
-        .subscribe(([block, txConfirmed]) => {
+        .subscribe(([block, txConfirmed, batch]) => {
           if (this.blocks.some((b) => b.height === block.height)) {
             return;
           }
 
           if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
             this.blocks = [];
-            this.blocksFilled = false;
           }
 
           this.blocks.unshift(block);
@@ -117,7 +116,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.blockStyles = [];
-          if (this.blocksFilled && block.height > this.chainTip) {
+          if (!batch && block.height > this.chainTip) {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -155 : -205)));
             setTimeout(() => {
               this.blockStyles = [];
@@ -126,10 +125,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             }, 50);
           } else {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
-          }
-
-          if (this.blocks.length === this.dynamicBlocksAmount) {
-            this.blocksFilled = true;
           }
 
           this.chainTip = Math.max(this.chainTip, block.height);
@@ -160,7 +155,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.static) {
-      const animateSlide = changes.height && (changes.height.currentValue === changes.height.previousValue + 1);
+      const animateSlide = !!changes.dynamicBlockCount || (changes.height && (changes.height.currentValue === changes.height.previousValue + 1));
       this.updateStaticBlocks(animateSlide);
     }
   }
