@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild } fro
 import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
+import { BlockExtended } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-start',
@@ -29,7 +30,8 @@ export class StartComponent implements OnInit, OnDestroy {
   isMobile: boolean = false;
   isiOS: boolean = false;
   blockWidth = 155;
-  dynamicBlocksAmount: number = 0;
+  blocks: BlockExtended[] = [];
+  dynamicBlocksAmount: number;
   blockCount: number = 0;
   blocksPerPage: number = 1;
   pageWidth: number;
@@ -49,15 +51,28 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
-    this.blockCounterSubscription = this.stateService.blocks$.subscribe(() => {
-      this.blockCount++;
-      this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
+    this.firstPageWidth = 40 + (this.blockWidth * (this.dynamicBlocksAmount || 0));
+
+    this.blockCounterSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed, batch]) => {
+      if (this.blocks.some((b) => b.height === block.height)) {
+        return;
+      }
+
+      if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
+        this.blocks = [];
+      }
+
+      this.blocks.unshift(block);
+      this.blocks = this.blocks.slice(0, Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT));
+
+      this.dynamicBlocksAmount = this.blocks.length;
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
-      if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
+
+      if (this.blocks.length <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
         this.onResize();
       }
     });
+
     this.onResize();
     this.updatePages();
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
