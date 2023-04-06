@@ -13,6 +13,48 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 
+interface DatabaseBlock {
+  id: string;
+  height: number;
+  version: number;
+  timestamp: number;
+  bits: number;
+  nonce: number;
+  difficulty: number;
+  merkle_root: string;
+  tx_count: number;
+  size: number;
+  weight: number;
+  previousblockhash: string;
+  mediantime: number;
+  totalFees: number;
+  medianFee: number;
+  feeRange: string;
+  reward: number;
+  poolId: number;
+  poolName: string;
+  poolSlug: string;
+  avgFee: number;
+  avgFeeRate: number;
+  coinbaseRaw: string;
+  coinbaseAddress: string;
+  coinbaseSignature: string;
+  coinbaseSignatureAscii: string;
+  avgTxSize: number;
+  totalInputs: number;
+  totalOutputs: number;
+  totalOutputAmt: number;
+  medianFeeAmt: number;
+  feePercentiles: string;
+  segwitTotalTxs: number;
+  segwitTotalSize: number;
+  segwitTotalWeight: number;
+  header: string;
+  utxoSetChange: number;
+  utxoSetSize: number;
+  totalInputAmt: number;
+}
+
 const BLOCK_DB_FIELDS = `
   blocks.hash AS id,
   blocks.height,
@@ -52,7 +94,7 @@ const BLOCK_DB_FIELDS = `
   blocks.header,
   blocks.utxoset_change AS utxoSetChange,
   blocks.utxoset_size AS utxoSetSize,
-  blocks.total_input_amt AS totalInputAmts
+  blocks.total_input_amt AS totalInputAmt
 `;
 
 class BlocksRepository {
@@ -432,7 +474,7 @@ class BlocksRepository {
 
       const blocks: BlockExtended[] = [];
       for (const block of rows) {
-        blocks.push(await this.formatDbBlockIntoExtendedBlock(block));
+        blocks.push(await this.formatDbBlockIntoExtendedBlock(block as DatabaseBlock));
       }
 
       return blocks;
@@ -459,7 +501,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -908,7 +950,7 @@ class BlocksRepository {
    * 
    * @param dbBlk 
    */
-  private async formatDbBlockIntoExtendedBlock(dbBlk: any): Promise<BlockExtended> {
+  private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
     const extras: Partial<BlockExtension> = {};
 
@@ -980,7 +1022,7 @@ class BlocksRepository {
       if (extras.feePercentiles === null) {
         const block = await bitcoinClient.getBlock(dbBlk.id, 2);
         const summary = blocks.summarizeBlock(block);
-        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.hash, summary.transactions);
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
