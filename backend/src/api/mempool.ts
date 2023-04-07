@@ -12,7 +12,6 @@ import rbfCache from './rbf-cache';
 
 class Mempool {
   private static WEBSOCKET_REFRESH_RATE_MS = 10000;
-  private static LAZY_DELETE_AFTER_SECONDS = 30;
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
@@ -119,7 +118,7 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool(): Promise<void> {
+  public async $updateMempool(transactions: string[]): Promise<void> {
     logger.debug(`Updating mempool...`);
 
     // warn if this run stalls the main loop for more than 2 minutes
@@ -128,7 +127,6 @@ class Mempool {
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
-    const transactions = await bitcoinApi.$getRawMempool();
     this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
@@ -207,12 +205,14 @@ class Mempool {
       const transactionsObject = {};
       transactions.forEach((txId) => transactionsObject[txId] = true);
 
-      // Flag transactions for lazy deletion
+      // Delete evicted transactions from mempool
       for (const tx in this.mempoolCache) {
-        if (!transactionsObject[tx] && !this.mempoolCache[tx].deleteAfter) {
+        if (!transactionsObject[tx]) {
           deletedTransactions.push(this.mempoolCache[tx]);
-          this.mempoolCache[tx].deleteAfter = new Date().getTime() + Mempool.LAZY_DELETE_AFTER_SECONDS * 1000;
         }
+      }
+      for (const tx of deletedTransactions) {
+        delete this.mempoolCache[tx.txid];
       }
     }
 
@@ -270,10 +270,6 @@ class Mempool {
       if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
         // Store replaced transactions
         rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
-        // Erase the replaced transactions from the local mempool
-        for (const replaced of rbfTransactions[rbfTransaction]) {
-          delete this.mempoolCache[replaced.txid];
-        }
       }
     }
   }
@@ -288,17 +284,6 @@ class Mempool {
       this.vBytesPerSecond = Math.round(
         this.vBytesPerSecondArray.map((data) => data.vSize).reduce((a, b) => a + b) / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD
       );
-    }
-  }
-
-  public deleteExpiredTransactions() {
-    const now = new Date().getTime();
-    for (const tx in this.mempoolCache) {
-      const lazyDeleteAt = this.mempoolCache[tx].deleteAfter;
-      if (lazyDeleteAt && lazyDeleteAt < now) {
-        delete this.mempoolCache[tx];
-        rbfCache.evict(tx);
-      }
     }
   }
 
