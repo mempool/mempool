@@ -178,7 +178,7 @@ class MempoolBlocks {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
-    Object.values(newMempool).filter(tx => !tx.deleteAfter).forEach(entry => {
+    Object.values(newMempool).forEach(entry => {
       strippedMempool[entry.txid] = {
         txid: entry.txid,
         fee: entry.fee,
