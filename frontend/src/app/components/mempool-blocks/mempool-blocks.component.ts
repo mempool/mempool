@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
@@ -222,8 +222,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     clearTimeout(this.resetTransitionTimeout);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.animateEntry = false;
+  }
+
   trackByFn(index: number, block: MempoolBlock) {
-    return (block.isStack) ? 'stack' : block.index;
+    return (block.isStack) ? `stack-${block.index}` : block.index;
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
