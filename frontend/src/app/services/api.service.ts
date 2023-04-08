@@ -92,6 +92,10 @@ export class ApiService {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/about-page');
   }
 
+  getOgs$(): Observable<any> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations');
+  }
+
   getTranslators$(): Observable<ITranslators> {
     return this.httpClient.get<ITranslators>(this.apiBaseUrl + '/api/v1/translators');
   }

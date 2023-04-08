@@ -26,6 +26,7 @@ export class AboutComponent implements OnInit {
   profiles$: Observable<any>;
   translators$: Observable<ITranslators>;
   allContributors$: Observable<any>;
+  ogs$: Observable<any>;
 
   constructor(
     private websocketService: WebsocketService,
@@ -62,6 +63,9 @@ export class AboutComponent implements OnInit {
         }),
         tap(() => this.goToAnchor())
       );
+
+    this.ogs$ = this.apiService.getOgs$();
+
     this.allContributors$ = this.apiService.getContributor$().pipe(
       map((contributors) => {
         return {
