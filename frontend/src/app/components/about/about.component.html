@@ -199,8 +199,8 @@
     <div class="community-sponsor" style="margin-bottom: 68px">
       <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
       <div class="wrapper">
-        <ng-container *ngIf="profiles.ogs; else loadingSponsors">
-          <a *ngFor="let ogSponsor of profiles.ogs" [href]="'https://twitter.com/' + ogSponsor" target="_blank" rel="sponsored" [title]="ogSponsor">
+        <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
+          <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor" target="_blank" rel="sponsored" [title]="ogSponsor">
             <img class="image" [src]="'/api/v1/about-page/og/images/' + ogSponsor" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-container>
