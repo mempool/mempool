@@ -1,0 +1,111 @@
+#hero {
+  text-align: center;
+  margin: 60px auto;
+  width: 100%;
+  max-width: 2000px;
+}
+
+#hero p {
+  color: rgba(255, 255, 255, 0.568627451);
+}
+
+#hero img {
+  height: auto;
+  width: 50%;
+  max-width: 675px;
+}
+
+h2 {
+  margin: 30px auto;
+  font-size: 2.35rem;
+}
+
+.panel {
+  padding: 50px 80px 40px 80px;
+}
+
+.panel-lead {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+
+.partner.panel {
+  background-color: #1d1f31; //#1d1f31
+  text-align: center;
+}
+
+.partner.panel svg {
+  width: 150px;
+  height: auto;
+}
+
+.explainer.panel {
+  text-align: center;
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.explainer.panel .point {
+  text-align: center;
+  width: 460px;
+  height: 400px;
+  padding: 30px;
+  display: inline-block;
+}
+
+.explainer.panel .point .point-lead {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 26px;
+  font-size: 22px;
+}
+
+.explainer.panel .point svg {
+  height: auto;
+  width: 125px;
+  background: #1d1f31;
+  border-radius: 50%;
+  padding: 20px;
+  filter: sepia(100%);
+}
+
+.panel.faq {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 0;
+}
+
+.endpoint-container {
+  margin-bottom: 5px;
+}
+
+.endpoint-container .section-header {
+  display: block;
+  background-color: #2d3348;
+  color: #1bd8f4;
+  padding: 1rem 1.3rem;
+  font-weight: 700;
+  border-radius: .25rem;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.endpoint-container .section-header:hover {
+  text-decoration: none;
+}
+
+
+
+@media (max-width: 992px) {
+
+  #hero img {
+    width: 80%;
+  }
+
+}

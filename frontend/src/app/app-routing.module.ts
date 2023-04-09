@@ -9,6 +9,7 @@ import { ClockMempoolComponent as ClockMempoolComponent } from './components/clo
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
+import { AcceleratorLandingComponent } from './components/accelerator-landing/accelerator-landing.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -270,6 +271,10 @@ let routes: Routes = [
       {
         path: 'about',
         component: AboutComponent,
+      },
+      {
+        path: 'accelerator',
+        component: AcceleratorLandingComponent,
       },
       {
         path: 'blocks',
