@@ -195,16 +195,17 @@
         </ng-template>
       </div>
     </div>
+  </div>
 
-    <div class="community-sponsor" style="margin-bottom: 68px">
-      <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
-      <div class="wrapper">
-        <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
-          <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
-            <img class="image" [src]="'/api/v1/about-page/og/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
-          </a>
-        </ng-container>
-      </div>
+  <div class="community-sponsor" style="margin-bottom: 68px">
+    <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
+    <div class="wrapper">
+      <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
+        <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
+          <img class="image" [src]="'/api/v1/donations/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+        </a>
+      </ng-container>
+    </div>
   </div>
 
   <div class="community-integrations-sponsor" id="community-integrations">
