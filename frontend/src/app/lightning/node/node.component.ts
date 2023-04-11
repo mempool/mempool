@@ -154,6 +154,12 @@ export class NodeComponent implements OnInit {
       .pipe(
         switchMap((params: ParamMap) => {
           return this.apiService.getNodeOwner$(params.get('public_key')).pipe(
+            switchMap((response) =>  {
+              if (response.status === 204) {
+                return of(false);
+              }
+              return of(response.body);
+            }),
             catchError(() => {
               return of(false);
             })
