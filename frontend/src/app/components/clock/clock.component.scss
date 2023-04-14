@@ -1,0 +1,119 @@
+.clock-wrapper {
+  --clock-width: min(100vw, 100vh);
+  position: relative;
+  width: 100vw;
+  max-width: var(--clock-width);
+  height: 100vh;
+  max-height: var(--clock-width);
+  margin: auto;
+}
+
+.title-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  .block-height {
+    font-size: calc(0.2 * var(--clock-width));
+    padding: 0;
+    margin: 0;
+    background: radial-gradient(rgba(0,0,0,0.5), transparent 67%);
+    padding: calc(0.05 * var(--clock-width)) calc(0.15 * var(--clock-width));
+  }
+}
+
+.block-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+
+  .block-sizer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: radial-gradient(transparent 0%, transparent 55%, #11131f 65%, #11131f 100%);
+  }
+
+  .block-cube {
+    --side-width: calc(0.4 * var(--clock-width));
+    --half-side: calc(0.2 * var(--clock-width));
+    --neg-half-side: calc(-0.2 * var(--clock-width));
+    transform-style: preserve-3d;
+    animation: block-spin 60s infinite linear;
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--side-width);
+    height: var(--side-width);
+
+    .side {
+      width: var(--side-width);
+      height: var(--side-width);
+      line-height: 100px;
+      text-align: center;
+      background: #232838;
+      display: block;
+      position: absolute;
+    }
+
+    .side.top {
+      transform: rotateX(90deg); 
+      margin-top: var(--neg-half-side);
+    }
+
+    .side.bottom {
+      background: #105fb0;
+      transform: rotateX(-90deg); 
+      margin-top: var(--half-side);
+    }
+
+    .side.right {
+      transform: rotateY(90deg); 
+      margin-left: var(--half-side);
+    }
+
+    .side.left {
+      transform: rotateY(-90deg); 
+      margin-left: var(--neg-half-side);
+    }
+
+    .side.front {
+      transform: translateZ(var(--half-side));
+    }
+
+    .side.back {
+      transform: translateZ(var(--neg-half-side));
+    }
+  }
+}
+
+
+
+@keyframes block-spin {
+  0% {transform: translate(-50%, -50%) rotateX(-20deg) rotateY(0deg);}
+  100% {transform: translate(-50%, -50%) rotateX(-20deg) rotateY(-360deg);}
+}

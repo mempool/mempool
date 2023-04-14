@@ -34,7 +34,7 @@ export default class BlockScene {
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
-    this.unitPadding =  width / 500;
+    this.unitPadding =  this.gridSize / 5;
     this.unitWidth = this.gridSize - (this.unitPadding * 2);
 
     this.dirty = true;

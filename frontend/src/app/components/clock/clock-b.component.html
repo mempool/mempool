@@ -1,0 +1,15 @@
+<div class="clock-wrapper">
+  <app-clock-face>
+    <div class="block-wrapper">
+      <ng-container *ngIf="block && block.height >= 0">
+        <div class="block-sizer" [style]="blockSizerStyle">
+          <app-mempool-block-overview [index]="0"></app-mempool-block-overview>
+        </div>
+        <div class="fader"></div>
+        <div class="title-wrapper">
+          <h1 class="block-height">{{ block.height }}</h1>
+        </div>
+      </ng-container>
+    </div>
+  </app-clock-face>
+</div>

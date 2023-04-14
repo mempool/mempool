@@ -4,6 +4,8 @@ import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
+import { ClockAComponent } from './components/clock/clock-a.component';
+import { ClockBComponent } from './components/clock/clock-b.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
@@ -354,6 +356,14 @@ let routes: Routes = [
         loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
     ],
+  },
+  {
+    path: 'clock-face-a',
+    component: ClockAComponent,
+  },
+  {
+    path: 'clock-face-b',
+    component: ClockBComponent,
   },
   {
     path: 'status',
