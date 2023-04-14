@@ -1,0 +1,19 @@
+<div class="clock-wrapper">
+  <app-clock-face>
+    <div class="block-wrapper">
+      <ng-container *ngIf="block && block.height >= 0">
+        <div class="block-cube">
+          <div class="side top"></div>
+          <div class="side bottom"></div>
+          <div class="side right" [style]="blockStyle"></div>
+          <div class="side left" [style]="blockStyle"></div>
+          <div class="side front" [style]="blockStyle"></div>
+          <div class="side back" [style]="blockStyle"></div>
+        </div>
+        <div class="title-wrapper">
+          <h1 class="block-height">{{ block.height }}</h1>
+        </div>
+      </ng-container>
+    </div>
+  </app-clock-face>
+</div>
