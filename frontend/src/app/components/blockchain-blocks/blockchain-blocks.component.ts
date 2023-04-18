@@ -24,6 +24,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
+  @Input() tiny: boolean = false;
   
   specialBlocks = specialBlocks;
   network = '';

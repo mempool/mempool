@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
@@ -24,6 +24,9 @@ import { animate, style, transition, trigger } from '@angular/animations';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolBlocksComponent implements OnInit, OnDestroy {
+  @Input() tiny: boolean = false;
+  @Input() count: number = null;
+  
   specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];
   mempoolEmptyBlocks: MempoolBlock[] = this.mountEmptyBlocks();
@@ -238,7 +241,12 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
-    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    let blocksAmount;
+    if (this.count) {
+      blocksAmount = this.count;
+    } else {
+      blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    }
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
       const lastBlock = blocks[blocks.length - 1];

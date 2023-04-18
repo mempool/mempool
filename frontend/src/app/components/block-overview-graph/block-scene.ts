@@ -34,8 +34,9 @@ export default class BlockScene {
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
-    this.unitPadding =  this.gridSize / 5;
-    this.unitWidth = this.gridSize - (this.unitPadding * 2);
+    this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 2.5));
+    this.unitWidth = this.gridSize - (this.unitPadding);
+    console.log(this.gridSize, this.unitPadding, this.unitWidth);
 
     this.dirty = true;
     if (this.initialised && this.scene) {
@@ -342,7 +343,7 @@ export default class BlockScene {
   private gridToScreen(position: Square | void): Square {
     if (position) {
       const slotSize = (position.s * this.gridSize);
-      const squareSize = slotSize - (this.unitPadding * 2);
+      const squareSize = slotSize - (this.unitPadding);
 
       // The grid is laid out notionally left-to-right, bottom-to-top,
       // so we rotate and/or flip the y axis to match the target configuration.
