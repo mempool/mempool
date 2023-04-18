@@ -1,7 +1,7 @@
 .bitcoin-block {
   width: 125px;
   height: 125px;
-  transition: background 2s, right 2s, transform 1s;
+  transition: background 2s, right 2s, transform 1s, opacity 1s;
 }
 
 .block-size {
@@ -98,6 +98,10 @@
 
 .mempool-block.bitcoin-block::before {
   background-color: #2d2825;
+}
+
+.mempool-block.last-block {
+  opacity: 0;
 }
 
 .black-background {

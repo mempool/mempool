@@ -44,10 +44,9 @@ export class ClockBComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    const screenSize = Math.min(window.innerWidth, window.innerHeight);
-    const baseSize = 0.92 * screenSize;
-    const size = Math.ceil(baseSize / 75) * 75;
-    const margin = screenSize - size;
+    const clockSize = Math.min(window.innerWidth, 0.78125 * window.innerHeight);
+    const size = Math.ceil(clockSize / 75) * 75;
+    const margin = (clockSize - size) / 2;
     this.blockSizerStyle = {
       transform: `translate(${margin}px, ${margin}px)`,
       width: `${size}px`,

@@ -22,7 +22,11 @@
 .mined-block {
   position: absolute;
   top: 0px;
-  transition: background 2s, left 2s, transform 1s;
+  transition: background 2s, left 2s, transform 1s, opacity 1s;
+}
+
+.mined-block.offscreen {
+  opacity: 0;
 }
 
 .mined-block.placeholder-block {

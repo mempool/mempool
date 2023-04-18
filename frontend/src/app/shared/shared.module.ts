@@ -91,6 +91,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
 import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
 
 import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
+import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockAComponent } from '../components/clock/clock-a.component';
 import { ClockBComponent } from '../components/clock/clock-b.component';
@@ -179,6 +180,7 @@ import { ClockBComponent } from '../components/clock/clock-b.component';
     GlobalFooterComponent,
 
     MempoolBlockOverviewComponent,
+    ClockchainComponent,
     ClockAComponent,
     ClockBComponent,
     ClockFaceComponent,
@@ -291,6 +293,7 @@ import { ClockBComponent } from '../components/clock/clock-b.component';
     GlobalFooterComponent,
 
     MempoolBlockOverviewComponent,
+    ClockchainComponent,
     ClockAComponent,
     ClockBComponent,
     ClockFaceComponent,

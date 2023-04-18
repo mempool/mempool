@@ -1,0 +1,11 @@
+<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
+  <div class="position-container" [ngClass]="network ? network : ''">
+    <span>
+      <div class="blocks-wrapper">
+        <app-mempool-blocks [tiny]="true" [count]="3"></app-mempool-blocks>
+        <app-blockchain-blocks [tiny]="true"></app-blockchain-blocks>
+      </div>
+      <div class="divider"></div>
+    </span>
+  </div>
+</div>

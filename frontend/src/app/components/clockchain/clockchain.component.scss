@@ -1,0 +1,120 @@
+.divider {
+  width: 4px;
+  height: 180px;
+  left: 0;
+  top: -40px;
+  position: absolute;
+  margin-bottom: 120px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3cline x1='0' y1='0' x2='0' y2='100%' stroke='white' stroke-width='8' stroke-dasharray='18%2c32' stroke-dashoffset='-5' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
+.blockchain-wrapper {
+  height: 250px;
+
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.position-container {
+  position: absolute;
+  left: 0;
+  top: 75px;
+  transform: translateX(50vw);
+}
+
+.position-container.liquid, .position-container.liquidtestnet {
+  transform: translateX(420px);
+}
+
+.blockchain-wrapper {
+  .position-container {
+    transform: translateX(95vw);
+  }
+  .position-container.liquid, .position-container.liquidtestnet {
+    transform: translateX(50vw);
+  }
+  .position-container.loading {
+    transform: translateX(50vw);
+  }
+}
+.blockchain-wrapper.time-ltr {
+  .position-container {
+    transform: translateX(5vw);
+  }
+  .position-container.liquid, .position-container.liquidtestnet {
+    transform: translateX(50vw);
+  }
+  .position-container.loading {
+    transform: translateX(50vw);
+  }
+}
+
+.black-background {
+  background-color: #11131f;
+  z-index: 100;
+  position: relative;
+}
+
+.scroll-spacer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.loading-block {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  width: 300px;
+  left: -150px;
+  top: 0px;
+}
+
+.time-toggle {
+  color: white;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: -1.8em;
+  left: 1px;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blockchain-wrapper.ltr-transition .blocks-wrapper,
+.blockchain-wrapper.ltr-transition .position-container,
+.blockchain-wrapper.ltr-transition .time-toggle {
+  transition: transform 1s;
+}
+
+.blockchain-wrapper.time-ltr {
+  .blocks-wrapper {
+    transform: scaleX(-1);
+  }
+
+  .time-toggle {
+    transform: translateX(-50%) scaleX(-1);
+  }
+}
+
+:host-context(.ltr-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: ltr;
+  }
+}
+
+:host-context(.rtl-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: rtl;
+  }
+}
