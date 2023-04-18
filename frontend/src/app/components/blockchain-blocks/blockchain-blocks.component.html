@@ -1,21 +1,21 @@
-<div class="blocks-container blockchain-blocks-container" [class.time-ltr]="timeLtr" [class.tiny]="tiny"
-  [style.left]="static ? (offset || 0) + 'px' : null"
+<div class="blocks-container blockchain-blocks-container" [class.time-ltr]="timeLtr" [class.minimal]="minimal"
+  [style.left]="static ? (offset || 0) + 'px' : null" [style.--block-size]="blockWidth+'px'"
   *ngIf="static || (loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn">
     <ng-container *ngIf="connected && block && !block.loading && !block.placeholder; else placeholderBlock">
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
-        [class.offscreen]="tiny && i >= 6"
+        [class.offscreen]="!static && count && i >= count"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
         [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
-        <div *ngIf="!tiny" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
+        <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
           <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height
             }}</a>
         </div>
         <div class="block-body">
-          <ng-container *ngIf="!tiny">
+          <ng-container *ngIf="!minimal">
             <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
               ~{{ block?.extras?.medianFee | number:feeRounding }} <ng-container
                 i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
@@ -82,11 +82,11 @@
 </div>
 
 <ng-template #loadingBlocksTemplate>
-  <div class="blocks-container" [class.time-ltr]="timeLtr">
+  <div class="blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'">
     <div class="flashing">
       <div *ngFor="let block of emptyBlocks; let i = index; trackBy: trackByBlocksFn">
         <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
-          [ngStyle]="emptyBlockStyles[i]"></div>
+          [ngStyle]="emptyBlockStyles[i]" [class.offscreen]="!static && count && i >= count"></div>
       </div>
     </div>
   </div>

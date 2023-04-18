@@ -1,3 +1,44 @@
+.clock-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  --clock-width: 300px;
+
+  .clockchain-bar, .clock-face {
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  .clockchain-bar {
+    position: relative;
+    width: 100%;
+    height: 15.625%;
+    z-index: 2;
+    overflow: hidden;
+    // background: #1d1f31;
+    // box-shadow: 0 0 15px #000;
+  }
+
+  .clock-face {
+    position: relative;
+    height: 84.375%;
+    margin: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+}
+
 .title-wrapper {
   position: absolute;
   left: 0;
@@ -100,8 +141,6 @@
     }
   }
 }
-
-
 
 @keyframes block-spin {
   0% {transform: translate(-50%, -50%) rotateX(-20deg) rotateY(0deg);}

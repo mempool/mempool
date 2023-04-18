@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
@@ -23,8 +23,9 @@ import { animate, style, transition, trigger } from '@angular/animations';
   ])],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MempoolBlocksComponent implements OnInit, OnDestroy {
-  @Input() tiny: boolean = false;
+export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() minimal: boolean = false;
+  @Input() blockWidth: number = 125;
   @Input() count: number = null;
   
   specialBlocks = specialBlocks;
@@ -51,8 +52,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   animateEntry: boolean = false;
 
-  blockWidth = 125;
-  blockPadding = 30;
+  blockOffset: number = 155;
+  blockPadding: number = 30;
+  containerOffset: number = 40;
   arrowVisible = false;
   tabHidden = false;
   feeRounding = '1.0-0';
@@ -221,6 +223,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.blockWidth && this.blockWidth) {
+      this.blockPadding = 0.24 * this.blockWidth;
+      this.containerOffset = 0.32 * this.blockWidth;
+      this.blockOffset = this.blockWidth + this.blockPadding;
+    }
+  }
+
   ngOnDestroy() {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
@@ -243,20 +253,22 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
     let blocksAmount;
     if (this.count) {
-      blocksAmount = this.count;
+      blocksAmount = 8;
     } else {
       blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
     }
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
-      const lastBlock = blocks[blocks.length - 1];
-      lastBlock.blockSize += block.blockSize;
-      lastBlock.blockVSize += block.blockVSize;
-      lastBlock.nTx += block.nTx;
-      lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
-      lastBlock.feeRange.sort((a, b) => a - b);
-      lastBlock.medianFee = this.median(lastBlock.feeRange);
-      lastBlock.totalFees += block.totalFees;
+      if (!this.count) {
+        const lastBlock = blocks[blocks.length - 1];
+        lastBlock.blockSize += block.blockSize;
+        lastBlock.blockVSize += block.blockVSize;
+        lastBlock.nTx += block.nTx;
+        lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
+        lastBlock.feeRange.sort((a, b) => a - b);
+        lastBlock.medianFee = this.median(lastBlock.feeRange);
+        lastBlock.totalFees += block.totalFees;
+      }
     }
     if (blocks.length) {
       blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
@@ -302,14 +314,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
 
     return {
-      'right': 40 + index * 155 + 'px',
+      'right': this.containerOffset + index * this.blockOffset + 'px',
       'background': backgroundGradients.join(',') + ')'
     };
   }
 
   getStyleForMempoolEmptyBlock(index: number) {
     return {
-      'right': 40 + index * 155 + 'px',
+      'right': this.containerOffset + index * this.blockOffset + 'px',
       'background': '#554b45',
     };
   }
