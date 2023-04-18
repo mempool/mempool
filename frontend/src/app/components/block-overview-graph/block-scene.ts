@@ -36,7 +36,6 @@ export default class BlockScene {
     this.gridSize = this.width / this.gridWidth;
     this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 2.5));
     this.unitWidth = this.gridSize - (this.unitPadding);
-    console.log(this.gridSize, this.unitPadding, this.unitWidth);
 
     this.dirty = true;
     if (this.initialised && this.scene) {

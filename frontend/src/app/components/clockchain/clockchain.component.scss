@@ -1,15 +1,17 @@
 .divider {
-  width: 4px;
-  height: 180px;
-  left: 0;
-  top: -40px;
   position: absolute;
-  margin-bottom: 120px;
-  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3cline x1='0' y1='0' x2='0' y2='100%' stroke='white' stroke-width='8' stroke-dasharray='18%2c32' stroke-dashoffset='-5' stroke-linecap='square'/%3e%3c/svg%3e");
+  left: -1px;
+  top: 0;
+  .divider-line {
+    stroke: white;
+    stroke-width: 4px;
+    stroke-linecap: butt;
+    stroke-dasharray: 25px 25px;
+  }
 }
 
 .blockchain-wrapper {
-  height: 250px;
+  height: 100%;
 
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
@@ -20,35 +22,8 @@
 .position-container {
   position: absolute;
   left: 0;
-  top: 75px;
+  top: 0;
   transform: translateX(50vw);
-}
-
-.position-container.liquid, .position-container.liquidtestnet {
-  transform: translateX(420px);
-}
-
-.blockchain-wrapper {
-  .position-container {
-    transform: translateX(95vw);
-  }
-  .position-container.liquid, .position-container.liquidtestnet {
-    transform: translateX(50vw);
-  }
-  .position-container.loading {
-    transform: translateX(50vw);
-  }
-}
-.blockchain-wrapper.time-ltr {
-  .position-container {
-    transform: translateX(5vw);
-  }
-  .position-container.liquid, .position-container.liquidtestnet {
-    transform: translateX(50vw);
-  }
-  .position-container.loading {
-    transform: translateX(50vw);
-  }
 }
 
 .black-background {

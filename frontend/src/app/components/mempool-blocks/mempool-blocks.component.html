@@ -1,12 +1,12 @@
-<ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks" [class.tiny]="tiny">
-  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" *ngIf="(difficultyAdjustments$ | async) as da;">
+<ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks" [class.minimal]="minimal">
+  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'" *ngIf="(difficultyAdjustments$ | async) as da;">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
-        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.last-block]="tiny && i >= count - 1" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
+        <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
           <a draggable="false" [routerLink]="['/mempool-block/' | relativeUrl, i]"
             class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
           <div class="block-body">
-            <ng-container *ngIf="!tiny">
+            <ng-container *ngIf="!minimal">
               <div [attr.data-cy]="'mempool-block-' + i + '-fees'" class="fees">
                 ~{{ projectedBlock.medianFee | number:feeRounding }} <span i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
               </div>
@@ -73,10 +73,10 @@
 </ng-container>
 
 <ng-template #loadingBlocks>
-  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr">
+  <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'">
     <div class="flashing">
       <ng-template ngFor let-projectedBlock [ngForOf]="mempoolEmptyBlocks" let-i="index" [ngForTrackBy]="trackByFn">
-        <div class="bitcoin-block text-center mempool-block" id="mempool-block-{{ i }}" [ngStyle]="mempoolEmptyBlockStyles[i]"></div>
+        <div class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolEmptyBlockStyles[i]"></div>
       </ng-template>
     </div>
   </div>

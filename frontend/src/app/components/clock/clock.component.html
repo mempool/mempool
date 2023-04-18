@@ -1,0 +1,34 @@
+<div class="clock-wrapper" [style]="wrapperStyle">
+  <div class="clockchain-bar" [style.height]="chainHeight + 'px'">
+    <div class="clockchain">
+      <app-clockchain [width]="chainWidth" [height]="chainHeight"></app-clockchain>
+    </div>
+  </div>
+  <div class="clock-face">
+    <app-clock-face [size]="clockSize">
+      <div class="block-wrapper">
+        <ng-container *ngIf="block && block.height >= 0">
+          <ng-container *ngIf="mode === 'block'; else mempoolMode;">
+            <div class="block-cube">
+              <div class="side top"></div>
+              <div class="side bottom"></div>
+              <div class="side right" [style]="blockStyle"></div>
+              <div class="side left" [style]="blockStyle"></div>
+              <div class="side front" [style]="blockStyle"></div>
+              <div class="side back" [style]="blockStyle"></div>
+            </div>
+          </ng-container>
+          <ng-template #mempoolMode>
+            <div class="block-sizer" [style]="blockSizerStyle">
+              <app-mempool-block-overview [index]="0"></app-mempool-block-overview>
+            </div>
+          </ng-template>
+          <div class="fader"></div>
+          <div class="title-wrapper">
+            <h1 class="block-height">{{ block.height }}</h1>
+          </div>
+        </ng-container>
+      </div>
+    </app-clock-face>
+  </div>
+</div>
