@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
+import { MempoolInfo, Recommendedfees } from '../../interfaces/websocket.interface';
 
 @Component({
   selector: 'app-clock',
@@ -11,8 +12,10 @@ import { WebsocketService } from '../../services/websocket.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClockComponent implements OnInit {
-  @Input() mode: string = 'block';
+  @Input() mode: 'block' | 'mempool' = 'block';
   blocksSubscription: Subscription;
+  recommendedFees$: Observable<Recommendedfees>;
+  mempoolInfo$: Observable<MempoolInfo>;
   block: BlockExtended;
   clockSize: number = 300;
   chainWidth: number = 384;
@@ -47,6 +50,8 @@ export class ClockComponent implements OnInit {
           this.cd.markForCheck();
         }
       });
+    this.recommendedFees$ = this.stateService.recommendedFees$;
+    this.mempoolInfo$ = this.stateService.mempoolInfo$;
   }
 
   getStyleForBlock(block: BlockExtended) {
@@ -75,7 +80,8 @@ export class ClockComponent implements OnInit {
       height: `${size}px`,
     };
     this.wrapperStyle = {
-      '--clock-width': `${this.clockSize}px`
+      '--clock-width': `${this.clockSize}px`,
+      '--chain-height': `${this.chainHeight}px`
     };
     this.cd.markForCheck();
   }

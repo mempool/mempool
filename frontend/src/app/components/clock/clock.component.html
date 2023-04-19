@@ -31,4 +31,32 @@
       </div>
     </app-clock-face>
   </div>
+  <div class="stats top left">
+    <p>fiat price</p>
+    <p>
+      <app-fiat [value]="100000000" digitsInfo="1.2-2" colorClass="white-color"></app-fiat>
+    </p>
+  </div>
+  <div class="stats top right">
+    <p>priority rate</p>
+    <p *ngIf="recommendedFees$ | async as recommendedFees;">{{ recommendedFees.fastestFee }} sat/vB</p>
+  </div>
+  <div *ngIf="mode !== 'mempool'" class="stats bottom left">
+    <p [innerHTML]="block.size | bytes: 2"></p>
+    <p>block size</p>
+  </div>
+  <div *ngIf="mode !== 'mempool'" class="stats bottom right">
+    <p>{{ block.tx_count | number }}</p>
+    <p class="label">transactions</p>
+  </div>
+  <ng-container *ngIf="mempoolInfo$ | async as mempoolInfo;">
+    <div *ngIf="mode === 'mempool'" class="stats bottom left">
+      <p [innerHTML]="mempoolInfo.usage | bytes: 0"></p>
+      <p>memory usage</p>
+    </div>
+    <div *ngIf="mode === 'mempool'" class="stats bottom right">
+      <p>{{ mempoolInfo.size | number }}</p>
+      <p class="label">unconfirmed</p>
+    </div>
+  </ng-container>
 </div>

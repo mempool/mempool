@@ -40,6 +40,7 @@
     fill: none;
     stroke: white;
     stroke-width: 2px;
+    stroke-linecap: butt;
 
     &.minor {
       stroke-opacity: 0.5;

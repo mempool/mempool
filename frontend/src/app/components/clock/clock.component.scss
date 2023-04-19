@@ -10,6 +10,7 @@
   flex-direction: column;
   justify-content: flex-start;
 
+  --chain-height: 60px;
   --clock-width: 300px;
 
   .clockchain-bar, .clock-face {
@@ -36,6 +37,38 @@
     justify-content: center;
     align-items: center;
     z-index: 1;
+  }
+
+  .stats {
+    position: absolute;
+    z-index: 3;
+
+    p {
+      margin: 0;
+      font-size: calc(0.05 * var(--clock-width));
+      line-height: calc(0.07 * var(--clock-width));
+      opacity: 0.8;
+
+      ::ng-deep .symbol {
+        font-size: inherit;
+        color: white;
+      }
+    }
+
+    &.top {
+      top: calc(var(--chain-height) + 2%);
+    }
+    &.bottom {
+      bottom: 2%;
+    }
+    &.left {
+      left: 5%;
+    }
+    &.right {
+      right: 5%;
+      text-align: end;
+      text-align: right;
+    }
   }
 }
 
