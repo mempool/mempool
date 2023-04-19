@@ -4,6 +4,7 @@ import { StateService } from '../../services/state.service';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { MempoolInfo, Recommendedfees } from '../../interfaces/websocket.interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-clock',
@@ -13,6 +14,7 @@ import { MempoolInfo, Recommendedfees } from '../../interfaces/websocket.interfa
 })
 export class ClockComponent implements OnInit {
   @Input() mode: 'block' | 'mempool' = 'block';
+  hideStats: boolean = false;
   blocksSubscription: Subscription;
   recommendedFees$: Observable<Recommendedfees>;
   mempoolInfo$: Observable<MempoolInfo>;
@@ -36,12 +38,18 @@ export class ClockComponent implements OnInit {
   constructor(
     public stateService: StateService,
     private websocketService: WebsocketService,
+    private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.resizeCanvas();
     this.websocketService.want(['blocks']);
+
+    this.route.queryParams.subscribe((params) => {
+      this.hideStats = params && params.stats === 'false';
+    });
+
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         if (block) {
@@ -50,6 +58,7 @@ export class ClockComponent implements OnInit {
           this.cd.markForCheck();
         }
       });
+
     this.recommendedFees$ = this.stateService.recommendedFees$;
     this.mempoolInfo$ = this.stateService.mempoolInfo$;
   }
