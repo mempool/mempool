@@ -39,8 +39,8 @@ export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.connectionStateSubscription = this.stateService.connectionState$.subscribe(state => {
       this.connected = (state === 2);
-    })
-    firstValueFrom(this.stateService.chainTip$).then(tip => {
+    });
+    firstValueFrom(this.stateService.chainTip$).then(() => {
       this.loadingTip = false;
     });
   }

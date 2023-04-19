@@ -17,4 +17,52 @@
       fill: #11131f;
     }
   }
+
+  .gnomon {
+    transform-origin: center;
+    stroke-linejoin: round;
+
+    &.minute {
+      fill:#80C2E1;
+      stroke:#80C2E1;
+      stroke-width: 2px;
+    }
+
+    &.hour {
+      fill: #105fb0;
+      stroke: #105fb0;
+      stroke-width: 6px;
+    }
+  }
+
+  .tick {
+    transform-origin: center;
+    fill: none;
+    stroke: white;
+    stroke-width: 2px;
+
+    &.minor {
+      stroke-opacity: 0.5;
+    }
+
+    &.very.major {
+      stroke-width: 4px;
+    }
+  }
+
+  .block-segment {
+    fill: none;
+    stroke: url(#dial-gradient);
+    stroke-width: 18px;
+  }
+
+  .dial-segment {
+    fill: none;
+    stroke: white;
+    stroke-width: 2px;
+  }
+
+  .dial-gradient-img {
+    transform-origin: center;
+  }
 }

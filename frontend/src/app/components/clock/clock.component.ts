@@ -66,7 +66,7 @@ export class ClockComponent implements OnInit {
   resizeCanvas(): void {
     this.chainWidth = window.innerWidth;
     this.chainHeight = Math.max(60, window.innerHeight / 8);
-    this.clockSize = Math.min(500, window.innerWidth, window.innerHeight - (1.4 * this.chainHeight));
+    this.clockSize = Math.min(800, window.innerWidth, window.innerHeight - (1.4 * this.chainHeight));
     const size = Math.ceil(this.clockSize / 75) * 75;
     const margin = (this.clockSize - size) / 2;
     this.blockSizerStyle = {
