@@ -25,6 +25,8 @@ export class ClockComponent implements OnInit {
   blockStyle;
   blockSizerStyle;
   wrapperStyle;
+  limitWidth: number;
+  limitHeight: number;
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -40,15 +42,17 @@ export class ClockComponent implements OnInit {
     private websocketService: WebsocketService,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) {
+    this.route.queryParams.subscribe((params) => {
+      this.hideStats = params && params.stats === 'false';
+      this.limitWidth = Number.parseInt(params.width) || null;
+      this.limitHeight = Number.parseInt(params.height) || null;
+    });
+  }
 
   ngOnInit(): void {
     this.resizeCanvas();
     this.websocketService.want(['blocks']);
-
-    this.route.queryParams.subscribe((params) => {
-      this.hideStats = params && params.stats === 'false';
-    });
 
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
@@ -78,9 +82,11 @@ export class ClockComponent implements OnInit {
   
   @HostListener('window:resize', ['$event'])
   resizeCanvas(): void {
-    this.chainWidth = window.innerWidth;
-    this.chainHeight = Math.max(60, window.innerHeight / 8);
-    this.clockSize = Math.min(800, window.innerWidth, window.innerHeight - (1.4 * this.chainHeight));
+    const windowWidth = this.limitWidth || window.innerWidth;
+    const windowHeight = this.limitHeight || window.innerHeight;
+    this.chainWidth = windowWidth;
+    this.chainHeight = Math.max(60, windowHeight / 8);
+    this.clockSize = Math.min(800, windowWidth, windowHeight - (1.4 * this.chainHeight));
     const size = Math.ceil(this.clockSize / 75) * 75;
     const margin = (this.clockSize - size) / 2;
     this.blockSizerStyle = {
@@ -90,7 +96,9 @@ export class ClockComponent implements OnInit {
     };
     this.wrapperStyle = {
       '--clock-width': `${this.clockSize}px`,
-      '--chain-height': `${this.chainHeight}px`
+      '--chain-height': `${this.chainHeight}px`,
+      'width': this.limitWidth ? `${this.limitWidth}px` : undefined,
+      'height': this.limitHeight ? `${this.limitHeight}px` : undefined,
     };
     this.cd.markForCheck();
   }
