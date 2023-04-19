@@ -49,6 +49,10 @@
       line-height: calc(0.07 * var(--clock-width));
       opacity: 0.8;
 
+      &.force-wrap {
+        word-spacing: 1000px;
+      }
+
       ::ng-deep .symbol {
         font-size: inherit;
         color: white;
