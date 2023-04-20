@@ -44,6 +44,8 @@ describe('Mempool Backend Config', () => {
         CPFP_INDEXING: false,
         MAX_BLOCKS_BULK_QUERY: 0,
         DISK_CACHE_BLOCK_INTERVAL: 6,
+        MAX_PUSH_TX_SIZE_WEIGHT: 400000,
+        ALLOW_UNREACHABLE: true,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
