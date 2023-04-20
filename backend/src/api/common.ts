@@ -1,3 +1,5 @@
+import * as bitcoinjs from 'bitcoinjs-lib';
+import { Request } from 'express';
 import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
@@ -510,6 +512,89 @@ export class Common {
 
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
+  }
+
+  static getTransactionFromRequest(req: Request, form: boolean): string {
+    let rawTx: any = typeof req.body === 'object' && form
+      ? Object.values(req.body)[0] as any
+      : req.body;
+    if (typeof rawTx !== 'string') {
+      throw Object.assign(new Error('Non-string request body'), { code: -1 });
+    }
+
+    // Support both upper and lower case hex
+    // Support both txHash= Form and direct API POST
+    const reg = form ? /^txHash=((?:[a-fA-F0-9]{2})+)$/ : /^((?:[a-fA-F0-9]{2})+)$/;
+    const matches = reg.exec(rawTx);
+    if (!matches || !matches[1]) {
+      throw Object.assign(new Error('Non-hex request body'), { code: -2 });
+    }
+
+    // Guaranteed to be a hex string of multiple of 2
+    // Guaranteed to be lower case
+    // Guaranteed to pass validation (see function below)
+    return this.validateTransactionHex(matches[1].toLowerCase());
+  }
+
+  private static validateTransactionHex(txhex: string): string {
+    // Do not mutate txhex
+
+    // We assume txhex to be valid hex (output of getTransactionFromRequest above)
+
+    // Check 1: Valid transaction parse
+    let tx: bitcoinjs.Transaction;
+    try {
+      tx = bitcoinjs.Transaction.fromHex(txhex);
+    } catch(e) {
+      throw Object.assign(new Error('Invalid transaction (could not parse)'), { code: -4 });
+    }
+
+    // Check 2: Simple size check
+    if (tx.weight() > config.MEMPOOL.MAX_PUSH_TX_SIZE_WEIGHT) {
+      throw Object.assign(new Error(`Transaction too large (max ${config.MEMPOOL.MAX_PUSH_TX_SIZE_WEIGHT} weight units)`), { code: -3 });
+    }
+
+    // Check 3: Check unreachable script in taproot (if not allowed)
+    if (!config.MEMPOOL.ALLOW_UNREACHABLE) {
+      tx.ins.forEach(input => {
+        const witness = input.witness;
+        // See BIP 341: Script validation rules
+        const hasAnnex = witness.length >= 2 &&
+          witness[witness.length - 1].length > 1 &&
+          witness[witness.length - 1][0] === 0x50;
+        const scriptSpendMinLength = hasAnnex ? 3 : 2;
+        const maybeScriptSpend = witness.length >= scriptSpendMinLength;
+
+        if (maybeScriptSpend) {
+          const controlBlock = witness[witness.length - scriptSpendMinLength + 1];
+          if (controlBlock.length === 0 || (controlBlock[0] & 0xfe) < 0xc0) {
+            // Skip this input, it's not taproot
+            return;
+          }
+          // Definitely taproot. Get script
+          const script = witness[witness.length - scriptSpendMinLength];
+          const decompiled = bitcoinjs.script.decompile(script);
+          if (!decompiled || decompiled.length < 2) {
+            // Skip this input
+            return;
+          }
+          // Iterate up to second last (will look ahead 1 item)
+          for (let i = 0; i < decompiled.length - 1; i++) {
+            const first = decompiled[i];
+            const second = decompiled[i + 1];
+            if (
+              first === bitcoinjs.opcodes.OP_FALSE &&
+              second === bitcoinjs.opcodes.OP_IF
+            ) {
+              throw Object.assign(new Error('Unreachable taproot scripts not allowed'), { code: -5 });
+            }
+          }
+        }
+      })
+    }
+
+    // Pass through the input string untouched
+    return txhex;
   }
 }
 
