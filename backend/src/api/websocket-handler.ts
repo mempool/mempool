@@ -66,9 +66,10 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-tx']) {
             if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-tx'])) {
               client['track-tx'] = parsedMessage['track-tx'];
+              const trackTxid = client['track-tx'];
               // Client is telling the transaction wasn't found
               if (parsedMessage['watch-mempool']) {
-                const rbfCacheTxid = rbfCache.getReplacedBy(client['track-tx']);
+                const rbfCacheTxid = rbfCache.getReplacedBy(trackTxid);
                 if (rbfCacheTxid) {
                   response['txReplaced'] = {
                     txid: rbfCacheTxid,
@@ -76,7 +77,7 @@ class WebsocketHandler {
                   client['track-tx'] = null;
                 } else {
                   // It might have appeared before we had the time to start watching for it
-                  const tx = memPool.getMempool()[client['track-tx']];
+                  const tx = memPool.getMempool()[trackTxid];
                   if (tx) {
                     if (config.MEMPOOL.BACKEND === 'esplora') {
                       response['tx'] = tx;
@@ -99,6 +100,13 @@ class WebsocketHandler {
                     }
                   }
                 }
+              }
+              const tx = memPool.getMempool()[trackTxid];
+              if (tx && tx.position) {
+                response['txPosition'] = {
+                  txid: trackTxid,
+                  position: tx.position,
+                };
               }
             } else {
               client['track-tx'] = null;
@@ -401,9 +409,10 @@ class WebsocketHandler {
       }
 
       if (client['track-tx']) {
+        const trackTxid = client['track-tx'];
         const outspends: object = {};
         newTransactions.forEach((tx) => tx.vin.forEach((vin, i) => {
-          if (vin.txid === client['track-tx']) {
+          if (vin.txid === trackTxid) {
             outspends[vin.vout] = {
               vin: i,
               txid: tx.txid,
@@ -425,6 +434,14 @@ class WebsocketHandler {
         const rbfChange = rbfChanges.map[client['track-tx']];
         if (rbfChange) {
           response['rbfInfo'] = rbfChanges.trees[rbfChange];
+        }
+
+        const mempoolTx = newMempool[trackTxid];
+        if (mempoolTx && mempoolTx.position) {
+          response['txPosition'] = {
+            txid: trackTxid,
+            position: mempoolTx.position,
+          };
         }
       }
 
@@ -556,8 +573,19 @@ class WebsocketHandler {
         response['mempool-blocks'] = mBlocks;
       }
 
-      if (client['track-tx'] && txIds.indexOf(client['track-tx']) > -1) {
-        response['txConfirmed'] = true;
+      if (client['track-tx']) {
+        const trackTxid = client['track-tx'];
+        if (txIds.indexOf(trackTxid) > -1) {
+          response['txConfirmed'] = true;
+        } else {
+          const mempoolTx = _memPool[trackTxid];
+          if (mempoolTx && mempoolTx.position) {
+            response['txPosition'] = {
+              txid: trackTxid,
+              position: mempoolTx.position,
+            };
+          }
+        }
       }
 
       if (client['track-address']) {
