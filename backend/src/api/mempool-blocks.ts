@@ -252,9 +252,17 @@ class MempoolBlocks {
 
   private processBlockTemplates(mempool, blocks, clusters, saveResults): MempoolBlockWithTransactions[] {
     // update this thread's mempool with the results
-    blocks.forEach(block => {
+    blocks.forEach((block, blockIndex) => {
+      let runningVsize = 0;
       block.forEach(tx => {
         if (tx.txid && tx.txid in mempool) {
+          // save position in projected blocks
+          mempool[tx.txid].position = {
+            block: blockIndex,
+            vsize: runningVsize + (mempool[tx.txid].vsize / 2),
+          };
+          runningVsize += mempool[tx.txid].vsize;
+
           if (tx.effectiveFeePerVsize != null) {
             mempool[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
           }
