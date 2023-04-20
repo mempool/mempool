@@ -723,12 +723,7 @@ class BitcoinRoutes {
   private async $postTransaction(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
     try {
-      let rawTx;
-      if (typeof req.body === 'object') {
-        rawTx = Object.keys(req.body)[0];
-      } else {
-        rawTx = req.body;
-      }
+      const rawTx = Common.getTransactionFromRequest(req, false);
       const txIdResult = await bitcoinApi.$sendRawTransaction(rawTx);
       res.send(txIdResult);
     } catch (e: any) {
@@ -739,12 +734,8 @@ class BitcoinRoutes {
 
   private async $postTransactionForm(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
-    const matches = /tx=([a-z0-9]+)/.exec(req.body);
-    let txHex = '';
-    if (matches && matches[1]) {
-      txHex = matches[1];
-    }
     try {
+      const txHex = Common.getTransactionFromRequest(req, true);
       const txIdResult = await bitcoinClient.sendRawTransaction(txHex);
       res.send(txIdResult);
     } catch (e: any) {
