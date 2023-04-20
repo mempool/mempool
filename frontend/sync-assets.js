@@ -87,7 +87,7 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
 const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
 const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
-const promoPrefix = PATH + 'promo-video/';
+const promoPrefix = PATH + '/promo-video/';
 const promoVideoFile = promoPrefix + 'mempool-promo.mp4';
 const promoVideoUrl = 'https://raw.githubusercontent.com/mempool/mempool-promo/master/promo.mp4';
 const promoVideoLanguages = ['en','sv','ja','zh','cs','fi','fr','de','it','lt','nb','fa','pl','ro','pt'];
