@@ -18,7 +18,6 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fastRender = false;
   @Input() fixedRender = false;
   @Input() relative = false;
-  @Input() forceFloorOnTimeIntervals: string[];
   @Input() fractionDigits: number = 0;
 
   constructor(
@@ -84,21 +83,17 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
 
     let counter: number;
     for (const i in this.intervals) {
-      if (this.kind !== 'until' || this.forceFloorOnTimeIntervals && this.forceFloorOnTimeIntervals.indexOf(i) > -1) {
-        counter = Math.floor(seconds / this.intervals[i]);
-      } else {
-        counter = Math.round(seconds / this.intervals[i]);
-      }
-      let rounded = counter;
-      if (this.fractionDigits) {
-        const roundFactor = Math.pow(10,this.fractionDigits);
-        rounded = Math.round((seconds / this.intervals[i]) * roundFactor) / roundFactor;
-      }
-      const dateStrings = dates(rounded);
+      counter = Math.floor(seconds / this.intervals[i]);
       if (counter > 0) {
+        let rounded = Math.round(seconds / this.intervals[i]);
+        if (this.fractionDigits) {
+          const roundFactor = Math.pow(10,this.fractionDigits);
+          rounded = Math.round((seconds / this.intervals[i]) * roundFactor) / roundFactor;
+        }
+        const dateStrings = dates(rounded);
         switch (this.kind) {
           case 'since':
-            if (counter === 1) {
+            if (rounded === 1) {
               switch (i) { // singular (1 day)
                 case 'year': return $localize`:@@time-since:${dateStrings.i18nYear}:DATE: ago`; break;
                 case 'month': return $localize`:@@time-since:${dateStrings.i18nMonth}:DATE: ago`; break;
@@ -121,7 +116,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             }
             break;
           case 'until':
-            if (counter === 1) {
+            if (rounded === 1) {
               switch (i) { // singular (In ~1 day)
                 case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYear}:DATE:`; break;
                 case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonth}:DATE:`; break;
@@ -144,7 +139,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             }
             break;
           case 'span':
-            if (counter === 1) {
+            if (rounded === 1) {
               switch (i) { // singular (1 day)
                 case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYear}:DATE:`; break;
                 case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonth}:DATE:`; break;
@@ -167,7 +162,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             }
             break;
           default:
-            if (counter === 1) {
+            if (rounded === 1) {
               switch (i) { // singular (1 day)
                 case 'year': return dateStrings.i18nYear; break;
                 case 'month': return dateStrings.i18nMonth; break;
