@@ -54,7 +54,14 @@ class MempoolBlocks {
     });
 
     // First sort
-    memPoolArray.sort((a, b) => b.feePerVsize - a.feePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.feePerVsize === b.feePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.feePerVsize - a.feePerVsize;
+      }
+    });
 
     // Loop through and traverse all ancestors and sum up all the sizes + fees
     // Pass down size + fee to all unconfirmed children
@@ -68,7 +75,14 @@ class MempoolBlocks {
     });
 
     // Final sort, by effective fee
-    memPoolArray.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.effectiveFeePerVsize === b.effectiveFeePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.effectiveFeePerVsize - a.effectiveFeePerVsize;
+      }
+    });
 
     const end = new Date().getTime();
     const time = end - start;
@@ -88,14 +102,26 @@ class MempoolBlocks {
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let blockWeight = 0;
+    let blockVsize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
         blockWeight += tx.weight;
+        blockVsize += tx.vsize;
         transactions.push(tx);
       } else {
         mempoolBlocks.push(this.dataToMempoolBlocks(transactions));
+        blockVsize = 0;
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
+        blockVsize += tx.vsize;
         blockWeight = tx.weight;
         transactions = [tx];
       }
