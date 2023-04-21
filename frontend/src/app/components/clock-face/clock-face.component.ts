@@ -39,7 +39,6 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
         this.updateTime();
       })
     ).subscribe();
-    this.websocketService.want(['blocks']);
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         if (block) {
