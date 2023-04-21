@@ -10,6 +10,7 @@ import { dates } from '../../shared/i18n/dates';
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
+  units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
   intervals = {};
 
   @Input() time: number;
@@ -18,6 +19,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fastRender = false;
   @Input() fixedRender = false;
   @Input() relative = false;
+  @Input() precision: number = 0;
   @Input() fractionDigits: number = 0;
 
   constructor(
@@ -82,19 +84,20 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     let counter: number;
-    for (const i in this.intervals) {
-      counter = Math.floor(seconds / this.intervals[i]);
+    for (const [index, unit] of this.units.entries()) {
+      const precisionUnit = this.units[Math.min(this.units.length - 1), index + this.precision];
+      counter = Math.floor(seconds / this.intervals[unit]);
       if (counter > 0) {
-        let rounded = Math.round(seconds / this.intervals[i]);
+        let rounded = Math.round(seconds / this.intervals[precisionUnit]);
         if (this.fractionDigits) {
           const roundFactor = Math.pow(10,this.fractionDigits);
-          rounded = Math.round((seconds / this.intervals[i]) * roundFactor) / roundFactor;
+          rounded = Math.round((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
         }
         const dateStrings = dates(rounded);
         switch (this.kind) {
           case 'since':
             if (rounded === 1) {
-              switch (i) { // singular (1 day)
+              switch (precisionUnit) { // singular (1 day)
                 case 'year': return $localize`:@@time-since:${dateStrings.i18nYear}:DATE: ago`; break;
                 case 'month': return $localize`:@@time-since:${dateStrings.i18nMonth}:DATE: ago`; break;
                 case 'week': return $localize`:@@time-since:${dateStrings.i18nWeek}:DATE: ago`; break;
@@ -104,7 +107,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
                 case 'second': return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`; break;
               }
             } else {
-              switch (i) { // plural (2 days)
+              switch (precisionUnit) { // plural (2 days)
                 case 'year': return $localize`:@@time-since:${dateStrings.i18nYears}:DATE: ago`; break;
                 case 'month': return $localize`:@@time-since:${dateStrings.i18nMonths}:DATE: ago`; break;
                 case 'week': return $localize`:@@time-since:${dateStrings.i18nWeeks}:DATE: ago`; break;
@@ -117,7 +120,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             break;
           case 'until':
             if (rounded === 1) {
-              switch (i) { // singular (In ~1 day)
+              switch (precisionUnit) { // singular (In ~1 day)
                 case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYear}:DATE:`; break;
                 case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonth}:DATE:`; break;
                 case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeek}:DATE:`; break;
@@ -127,7 +130,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
                 case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
               }
             } else {
-              switch (i) { // plural (In ~2 days)
+              switch (precisionUnit) { // plural (In ~2 days)
                 case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYears}:DATE:`; break;
                 case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonths}:DATE:`; break;
                 case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
@@ -140,7 +143,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             break;
           case 'span':
             if (rounded === 1) {
-              switch (i) { // singular (1 day)
+              switch (precisionUnit) { // singular (1 day)
                 case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYear}:DATE:`; break;
                 case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonth}:DATE:`; break;
                 case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeek}:DATE:`; break;
@@ -150,7 +153,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
                 case 'second': return $localize`:@@time-span:After ${dateStrings.i18nSecond}:DATE:`; break;
               }
             } else {
-              switch (i) { // plural (2 days)
+              switch (precisionUnit) { // plural (2 days)
                 case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYears}:DATE:`; break;
                 case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonths}:DATE:`; break;
                 case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeeks}:DATE:`; break;
@@ -163,7 +166,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
             break;
           default:
             if (rounded === 1) {
-              switch (i) { // singular (1 day)
+              switch (precisionUnit) { // singular (1 day)
                 case 'year': return dateStrings.i18nYear; break;
                 case 'month': return dateStrings.i18nMonth; break;
                 case 'week': return dateStrings.i18nWeek; break;
@@ -173,7 +176,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
                 case 'second': return dateStrings.i18nSecond; break;
               }
             } else {
-              switch (i) { // plural (2 days)
+              switch (precisionUnit) { // plural (2 days)
                 case 'year': return dateStrings.i18nYears; break;
                 case 'month': return dateStrings.i18nMonths; break;
                 case 'week': return dateStrings.i18nWeeks; break;
