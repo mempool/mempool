@@ -107,8 +107,12 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     this.isLoading$.next(false);
   }
 
-  onTxClick(event: TransactionStripped): void {
-    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
-    this.router.navigate([url]);
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 }

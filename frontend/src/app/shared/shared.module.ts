@@ -84,6 +84,7 @@ import { SearchResultsComponent } from '../components/search-form/search-results
 import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
+import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
 
 @NgModule({
   declarations: [
@@ -162,6 +163,7 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
     TimestampComponent,
     ToggleComponent,
     GeolocationComponent,
+    TestnetAlertComponent,
   ],
   imports: [
     CommonModule,

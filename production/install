@@ -192,6 +192,7 @@ case $OS in
         TOR_USER=_tor
         TOR_GROUP=_tor
         NGINX_USER=www
+        NGINX_GROUP=www
         NGINX_ETC_FOLDER=/usr/local/etc/nginx
         NGINX_CONFIGURATION=/usr/local/etc/nginx/nginx.conf
         CERTBOT_PKG=py39-certbot
@@ -209,6 +210,7 @@ case $OS in
         TOR_GROUP=debian-tor
         CERTBOT_PKG=python3-certbot-nginx
         NGINX_USER=www-data
+        NGINX_GROUP=www-data
         NGINX_ETC_FOLDER=/etc/nginx
         NGINX_CONFIGURATION=/etc/nginx/nginx.conf
     ;;
@@ -301,12 +303,6 @@ BISQ_HOME=/bisq
 # tor HS folder
 BISQ_TOR_HS=bisq
 
-# Unfurl user/group
-UNFURL_USER=unfurl
-UNFURL_GROUP=unfurl
-# Unfurl home folder
-UNFURL_HOME=/unfurl
-
 # liquid user/group
 ELEMENTS_USER=elements
 ELEMENTS_GROUP=elements
@@ -396,7 +392,7 @@ DEBIAN_UNFURL_PKG+=(libxdamage-dev libxrandr-dev libgbm-dev libpango1.0-dev liba
 # packages needed for mempool ecosystem
 FREEBSD_PKG=()
 FREEBSD_PKG+=(zsh sudo git git-lfs screen curl wget calc neovim)
-FREEBSD_PKG+=(openssh-portable py39-pip rust llvm90 jq base64 libzmq4)
+FREEBSD_PKG+=(openssh-portable py39-pip rust llvm10 jq base64 libzmq4)
 FREEBSD_PKG+=(boost-libs autoconf automake gmake gcc libevent libtool pkgconf)
 FREEBSD_PKG+=(nginx rsync py39-certbot-nginx mariadb105-server keybase)
 FREEBSD_PKG+=(geoipupdate)
@@ -547,6 +543,12 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
     zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
 
+    # create /bitcoin/socket with custom ACL for electrs unix sockets
+    zfs create -o "mountpoint=${BITCOIN_HOME}/socket" "${ZPOOL}/bitcoin/socket"
+
+    # create /elements/socket with custom ACL for electrs unix sockets
+    zfs create -o "mountpoint=${ELEMENTS_HOME}/socket" "${ZPOOL}/elements/socket"
+
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
         for folder in chainstate indexes blocks
@@ -630,6 +632,7 @@ zfsCreateFilesystems()
 ext4CreateDir()
 {
     mkdir -p "/backup" "${ELEMENTS_HOME}" "${BITCOIN_HOME}" "${MINFEE_HOME}" "${ELECTRS_HOME}" "${MEMPOOL_HOME}" "${MYSQL_HOME}" "${BITCOIN_ELECTRS_HOME}" "${ELEMENTS_HOME}/liquidv1" "${ELEMENTS_ELECTRS_HOME}"
+
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
         for folder in chainstate indexes blocks
@@ -1019,7 +1022,7 @@ case $OS in
         osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/syslog.d
         osSudo "${ROOT_USER}" install -c -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool-logger" /usr/local/bin/mempool-logger
         osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/syslog.conf" /usr/local/etc/syslog.d/mempool.conf
-        
+
         echo "[*] Installing newsyslog configuration"
         osSudo "${ROOT_USER}" mkdir -p /usr/local/etc/newsyslog.conf.d
         osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/newsyslog-mempool-backend.conf" /usr/local/etc/newsyslog.conf.d/newsyslog-mempool-backend.conf
@@ -1057,17 +1060,8 @@ if [ "${TOR_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" install -c -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/torrc" "${TOR_CONFIGURATION}"
     osSudo "${ROOT_USER}" sed -i.orig "s!__TOR_RESOURCES__!${TOR_RESOURCES}!" "${TOR_CONFIGURATION}"
 
-    echo "[*] Adding Tor HS configuration for Mempool"
-    if [ "${MEMPOOL_ENABLE}" = "ON" ];then
-        if ! grep "${MEMPOOL_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/ >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:81 >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
-        fi
-    fi
-
     echo "[*] Adding Tor HS configuration for Bisq"
-    if [ "${BISQ_ENABLE}" = "ON" ];then
+    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
         if ! grep "${BISQ_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${BISQ_TOR_HS}/ >> ${TOR_CONFIGURATION}"
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:82 >> ${TOR_CONFIGURATION}"
@@ -1076,7 +1070,7 @@ if [ "${TOR_INSTALL}" = ON ];then
     fi
 
     echo "[*] Adding Tor HS configuration for Liquid"
-    if [ "${LIQUID_ENABLE}" = "ON" ];then
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
         if ! grep "${LIQUID_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${LIQUID_TOR_HS}/ >> ${TOR_CONFIGURATION}"
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:83 >> ${TOR_CONFIGURATION}"
@@ -1273,25 +1267,25 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
         osSudo "${ROOT_USER}" chown -R "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELECTRS_LIQUIDTESTNET_DATA}"
     fi
-    
+
     echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
-    
+
     echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
-    
+
     echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone "${LIQUID_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUID_ASSET_REGISTRY_DB_NAME}"
-    
+
     echo "[*] Cloning Liquid Asset Registry testnet repo from ${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}"
     osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
-    
+
     echo "[*] Building Liquid Electrs release binary"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
-    
+
     case $OS in
         FreeBSD)
             echo "[*] Patching Liquid Electrs code for FreeBSD"
@@ -1300,11 +1294,11 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
         Debian)
         ;;
     esac
-    
+
     echo "[*] Building Liquid Electrs release binary"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
 fi
-    
+
 ##############################
 # Core Lightning for Bitcoin #
 ##############################
@@ -1331,10 +1325,10 @@ case $OS in
         public_ipv4=$( ifconfig | grep 'inet ' | awk -F ' ' '{ print $2 }' | grep -v '^103\.165\.192\.' | grep -v '^127\.0\.0\.1' )
         public_ipv6=$( ifconfig | grep 'inet6' | awk -F ' ' '{ print $2 }' | grep -v '^2001:df6:7280::' | grep -v '^fe80::' | grep -v '^::1' )
 
-        crontab_cln+="@reboot sleep 60 ; screen -dmS main lightningd --rpc-file-mode 0660 --alias `hostname` --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
-        crontab_cln+="@reboot sleep 90 ; screen -dmS tes lightningd --rpc-file-mode 0660 --alias `hostname` --network testnet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
-        crontab_cln+="@reboot sleep 120 ; screen -dmS sig lightningd --rpc-file-mode 0660 --alias `hostname` --network signet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6 \n"
-        crontab_cln+="@reboot sleep 180 ; /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
+        crontab_cln+="@reboot sleep 10 ; screen -dmS main lightningd --rpc-file-mode 0660 --alias `hostname` --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+        crontab_cln+="@reboot sleep 10 ; screen -dmS tes lightningd --rpc-file-mode 0660 --alias `hostname` --network testnet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+        crontab_cln+="@reboot sleep 10 ; screen -dmS sig lightningd --rpc-file-mode 0660 --alias `hostname` --network signet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6 \n"
+        crontab_cln+="@reboot sleep 20 ; /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
         crontab_cln+="1 * * * * /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
         echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
     ;;
@@ -1430,16 +1424,6 @@ fi
 
 if [ "${UNFURL_INSTALL}" = ON ];then
 
-    echo "[*] Creating Unfurl user"
-    osGroupCreate "${UNFURL_GROUP}"
-    osUserCreate "${UNFURL_USER}" "${UNFURL_HOME}" "${UNFURL_GROUP}"
-    osSudo "${ROOT_USER}" chsh -s `which zsh` "${UNFURL_USER}"
-
-    echo "[*] Creating Unfurl folder"
-    osSudo "${ROOT_USER}" mkdir -p "${UNFURL_HOME}"
-    osSudo "${ROOT_USER}" chown -R "${UNFURL_USER}:${UNFURL_GROUP}" "${UNFURL_HOME}"
-    osSudo "${UNFURL_USER}" touch "${UNFURL_HOME}/.zshrc"
-
     echo "[*] Insalling Unfurl source"
     case $OS in
 
@@ -1530,7 +1514,6 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Bitcoin Minfee service must be installed manually on FreeBSD"
         ;;
 
         Debian)
@@ -1548,7 +1531,6 @@ if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Bitcoin Testnet service must be installed manually on FreeBSD"
         ;;
 
         Debian)
@@ -1566,7 +1548,6 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Bitcoin Signet service must be installed manually on FreeBSD"
         ;;
 
         Debian)
@@ -1584,7 +1565,6 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Bitcoin Liquid service must be installed manually on FreeBSD"
         ;;
 
         Debian)
@@ -1602,7 +1582,6 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     case $OS in
 
         FreeBSD)
-            echo "[*] FIXME: Bitcoin Liquid service must be installed manually on FreeBSD"
         ;;
 
         Debian)
@@ -1841,6 +1820,9 @@ case $OS in
     ;;
 esac
 
+# wait for mysql to start
+sleep 5
+
 mysql << _EOF_
 create database mempool;
 grant all on mempool.* to '${MEMPOOL_MAINNET_USER}'@'localhost' identified by '${MEMPOOL_MAINNET_PASS}';
@@ -1895,39 +1877,60 @@ chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 ##### nginx
 
+echo "[*] Adding Nginx configuration"
+osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
+mkdir -p /var/cache/nginx/services /var/cache/nginx/api
+chown "${NGINX_USER}:${NGINX_GROUP}" /var/cache/nginx/services /var/cache/nginx/api
+ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
+osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
+
+if [ "${TOR_INSTALL}" = ON ];then
+    echo "[*] Read tor v3 onion hostnames"
+
+    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
+    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
+        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+    fi
+
+    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
+        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+    fi
+fi
+
+##### OS systemd
+
+echo "[*] Setting permissions for electrs sockets"
 case $OS in
 
     FreeBSD)
+        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
+        chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
+        setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
+        chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
     ;;
 
-Debian)
-        echo "[*] Adding Nginx configuration"
-        osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-        mkdir -p /var/cache/nginx/services /var/cache/nginx/api
-        chown ${NGINX_USER}: /var/cache/nginx/services /var/cache/nginx/api
-        ln -s /mempool/mempool /etc/nginx/mempool
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
-        if [ "${TOR_INSTALL}" = ON ];then
-        echo "[*] Read tor v3 onion hostnames"
-            NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
-            NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
-            NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
-            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-        fi
-        echo "[*] Restarting Nginx"
-        osSudo "${ROOT_USER}" service nginx restart
+    Debian)
     ;;
 esac
 
 ##### OS systemd
 
-echo "[*] Updating systemd daemon configuration"
+echo "[*] Updating system startup configuration"
 case $OS in
 
     FreeBSD)
+        echo 'nginx_enable="YES"' >> /etc/rc.conf
+        echo 'bitcoin_enable="YES"' >> /etc/rc.conf
+        echo 'tor_enable="YES"' >> /etc/rc.conf
+        echo 'postfix_enable="YES"' >> /etc/rc.conf
+        echo 'mysql_enable="YES"' >> /etc/rc.conf
+        echo 'mysql_dbdir="/mysql"' >> /etc/rc.conf
+        echo 'tor_enable="YES"' >> /etc/rc.conf
     ;;
 
     Debian)
@@ -1958,6 +1961,9 @@ case $OS in
         fi
     ;;
 esac
+
+echo "[*] Restarting Nginx"
+osSudo "${ROOT_USER}" service nginx restart
 
 ##### OS set Linux user ulimits
 
@@ -2060,20 +2066,12 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 
 ##### finish
 
-case $OS in
-
-    FreeBSD)
-    ;;
-
-    Debian)
-        if [ "${TOR_INSTALL}" = ON ];then
-            echo "This are the generated Tor addresses:"
-            echo "${NGINX_MEMPOOL_ONION}"
-            echo "${NGINX_BISQ_ONION}"
-            echo "${NGINX_LIQUID_ONION}"
-        fi
-    ;;
-esac
+if [ "${TOR_INSTALL}" = ON ];then
+    echo "Your auto-generated Tor addresses are:"
+    echo "${NGINX_MEMPOOL_ONION}"
+    echo "${NGINX_BISQ_ONION}"
+    echo "${NGINX_LIQUID_ONION}"
+fi
 
 echo
 echo 'Please reboot to start all the services.'

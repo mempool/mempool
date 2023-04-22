@@ -1,3 +1,5 @@
+<div infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
     <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
@@ -11,7 +13,7 @@
     </div>
   </div>
 
-  <div class="header-bg box" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [attr.data-cy]="'tx-' + i">
+  <div class="header-bg box" [attr.data-cy]="'tx-' + i">
 
     <div *ngIf="errorUnblinded" class="error-unblinded">{{ errorUnblinded }}</div>
     <div class="row">
@@ -320,6 +322,8 @@
   <br />
 
 </ng-container>
+
+</div>
 
 <ng-template #assetBox let-item>
   {{ item.value / pow(10, assetsMinimal[item.asset][3]) | number: '1.' + assetsMinimal[item.asset][3] + '-' + assetsMinimal[item.asset][3] }} {{ assetsMinimal[item.asset][1] }}

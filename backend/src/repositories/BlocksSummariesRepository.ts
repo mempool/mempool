@@ -1,6 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import { BlockSummary } from '../mempool.interfaces';
+import { BlockSummary, TransactionStripped } from '../mempool.interfaces';
 
 class BlocksSummariesRepository {
   public async $getByBlockId(id: string): Promise<BlockSummary | undefined> {
@@ -17,23 +17,17 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveSummary(params: { height: number, mined?: BlockSummary}) {
-    const blockId = params.mined?.id;
+  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionStripped[]): Promise<void> {
     try {
-      const transactions = JSON.stringify(params.mined?.transactions || []);
+      const transactionsStr = JSON.stringify(transactions);
       await DB.query(`
-        INSERT INTO blocks_summaries (height, id, transactions, template)
-        VALUE (?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          transactions = ?
-      `, [params.height, blockId, transactions, '[]', transactions]);
+        INSERT INTO blocks_summaries
+        SET height = ?, transactions = ?, id = ?
+        ON DUPLICATE KEY UPDATE transactions = ?`,
+        [blockHeight, transactionsStr, blockId, transactionsStr]);
     } catch (e: any) {
-      if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
-        logger.debug(`Cannot save block summary for ${blockId} because it has already been indexed, ignoring`);
-      } else {
-        logger.debug(`Cannot save block summary for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
-        throw e;
-      }
+      logger.debug(`Cannot save block summary transactions for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
     }
   }
 
@@ -66,19 +60,6 @@ class BlocksSummariesRepository {
     }
 
     return [];
-  }
-
-  /**
-   * Delete blocks from the database from blockHeight
-   */
-  public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks summary from height ${blockHeight} from the database`);
-
-    try {
-      await DB.query(`DELETE FROM blocks_summaries where height >= ${blockHeight}`);
-    } catch (e) {
-      logger.err('Cannot delete indexed blocks summaries. Reason: ' + (e instanceof Error ? e.message : e));
-    }
   }
 
   /**

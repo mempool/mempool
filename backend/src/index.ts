@@ -45,7 +45,8 @@ class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Application;
-  private currentBackendRetryInterval = 5;
+  private currentBackendRetryInterval = 1;
+  private backendRetryCount = 0;
 
   private maxHeapSize: number = 0;
   private heapLogInterval: number = 60;
@@ -184,17 +185,17 @@ class Server {
       indexer.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
-      this.currentBackendRetryInterval = 5;
+      this.backendRetryCount = 0;
     } catch (e: any) {
-      let loggerMsg = `Exception in runMainUpdateLoop(). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      this.backendRetryCount++;
+      let loggerMsg = `Exception in runMainUpdateLoop() (count: ${this.backendRetryCount}). Retrying in ${this.currentBackendRetryInterval} sec.`;
       loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
       if (e?.stack) {
         loggerMsg += ` Stack trace: ${e.stack}`;
       }
       // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
       // From the second Exception, `logger.warn` the Exception and increase the retry delay
-      // Maximum retry delay is 60 seconds
-      if (this.currentBackendRetryInterval > 5) {
+      if (this.backendRetryCount >= 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
       } else {
@@ -204,8 +205,6 @@ class Server {
         logger.debug(`AxiosError: ${e?.message}`);
       }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
-      this.currentBackendRetryInterval *= 2;
-      this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
     }
   }
 
@@ -276,7 +275,7 @@ class Server {
 
     if (!this.warnedHeapCritical && this.maxHeapSize > warnThreshold) {
       this.warnedHeapCritical = true;
-      logger.warn(`Used ${(this.maxHeapSize / stats.heap_size_limit).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`);
+      logger.warn(`Used ${(this.maxHeapSize / stats.heap_size_limit * 100).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`);
     }
     if (this.lastHeapLogTime === null || (now - this.lastHeapLogTime) > (this.heapLogInterval * 1000)) {
       logger.debug(`Memory usage: ${formatBytes(this.maxHeapSize, byteUnits)} / ${formatBytes(stats.heap_size_limit, byteUnits)}`);
