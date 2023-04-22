@@ -15,12 +15,13 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:4000"
+    "REST_API_URL": "http://127.0.0.1:5000",
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-mainnet"
   },
   "DATABASE": {
     "ENABLED": false,
     "HOST": "127.0.0.1",
-    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "USERNAME": "__MEMPOOL_BISQ_USER__",
     "PASSWORD": "__MEMPOOL_BISQ_PASS__",
     "DATABASE": "mempool_bisq"

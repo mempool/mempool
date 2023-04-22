@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
