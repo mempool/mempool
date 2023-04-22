@@ -62,6 +62,8 @@
 </nav>
 </header>
 
+<app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
+
 <br />
 
 <router-outlet></router-outlet>
