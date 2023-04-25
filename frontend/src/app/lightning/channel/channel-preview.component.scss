@@ -1,3 +1,8 @@
+.table-col {
+  max-width: calc(100% - 470px);
+  overflow: hidden;
+}
+
 .table {
   font-size: 32px;
   margin-top: 10px;
