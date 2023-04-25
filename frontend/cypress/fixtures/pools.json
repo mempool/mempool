@@ -1,5 +1,9 @@
 {
     "coinbase_tags" : {
+        "/NiceHash/": {
+            "name": "NiceHash",
+            "link": "www.nicehash.com"
+        },
         "/LUXOR/": {
             "name": "Luxor",
             "link": "https://mining.luxor.tech"
