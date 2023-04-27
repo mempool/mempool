@@ -36,6 +36,8 @@ class Mempool {
   private timer = new Date().getTime();
   private missingTxCount = 0;
 
+  private mainLoopTimeout: number = 120000;
+
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
   }
@@ -119,10 +121,15 @@ class Mempool {
 
   public async $updateMempool(): Promise<void> {
     logger.debug(`Updating mempool...`);
+
+    // warn if this run stalls the main loop for more than 2 minutes
+    const timer = this.startTimer();
+
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     const transactions = await bitcoinApi.$getRawMempool();
+    this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
@@ -146,6 +153,7 @@ class Mempool {
       if (!this.mempoolCache[txid]) {
         try {
           const transaction = await transactionUtils.$getTransactionExtended(txid);
+          this.updateTimerProgress(timer, 'fetched new transaction');
           this.mempoolCache[txid] = transaction;
           if (this.inSync) {
             this.txPerSecondArray.push(new Date().getTime());
@@ -223,12 +231,38 @@ class Mempool {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
     if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+      this.updateTimerProgress(timer, 'running async mempool callback');
       await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 
     const end = new Date().getTime();
     const time = end - start;
     logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
+
+    this.clearTimer(timer);
+  }
+
+  private startTimer() {
+    const state: any = {
+      start: Date.now(),
+      progress: 'begin $updateMempool',
+      timer: null,
+    };
+    state.timer = setTimeout(() => {
+      logger.err(`$updateMempool stalled at "${state.progress}`);
+    }, this.mainLoopTimeout);
+    return state;
+  }
+
+  private updateTimerProgress(state, msg) {
+    state.progress = msg;
+  }
+
+  private clearTimer(state) {
+    if (state.timer) {
+      clearTimeout(state.timer);
+    }
   }
 
   public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {
