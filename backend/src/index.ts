@@ -179,8 +179,14 @@ class Server {
         }
       }
       memPool.deleteExpiredTransactions();
-      await blocks.$updateBlocks();
-      await memPool.$updateMempool();
+      await Promise.race([
+        blocks.$updateBlocks(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('$updateBlocks timed out')), 180000))
+      ]);
+      await Promise.race([
+        memPool.$updateMempool(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('$updateMempool timed out')), 180000))
+      ]);
       indexer.$run();
 
       setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);

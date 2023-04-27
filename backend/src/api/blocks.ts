@@ -530,7 +530,7 @@ class Blocks {
   }
 
   public async $updateBlocks() {
-    // warn if this run stalls the main loop for more than 2 minutes
+    // throw an error if this stalls the main loop for more than 2 minutes
     const timer = this.startTimer();
 
     let fastForwarded = false;
@@ -714,6 +714,11 @@ class Blocks {
 
   private updateTimerProgress(state, msg) {
     state.progress = msg;
+    if (Date.now() - state.start > this.mainLoopTimeout) {
+      // abort the function if it already timed out
+      logger.err(`$updateBlocks attempted to resume after "${state.progress}"`);
+      throw new Error(`$updateBlocks attempted to resume after "${state.progress}"`);
+    }
   }
 
   private clearTimer(state) {
