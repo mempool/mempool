@@ -94,6 +94,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
@@ -110,7 +111,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
-          .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', this.getRawBlock)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', this.getTxIdsForBlock)
@@ -589,10 +589,14 @@ class BitcoinRoutes {
     }
   }
 
-  private async getBlockTipHeight(req: Request, res: Response) {
+  private getBlockTipHeight(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlockHeightTip();
-      res.json(result);
+      const result = blocks.getCurrentBlockHeight();
+      if (!result) {
+        return res.status(503).send(`Service Temporarily Unavailable`);
+      }
+      res.setHeader('content-type', 'text/plain');
+      res.send(result.toString());
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
