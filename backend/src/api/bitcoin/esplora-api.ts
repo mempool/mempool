@@ -3,102 +3,68 @@ import axios, { AxiosRequestConfig } from 'axios';
 import http from 'http';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
-import logger from '../../logger';
 
 const axiosConnection = axios.create({
   httpAgent: new http.Agent({ keepAlive: true, })
 });
 
 class ElectrsApi implements AbstractBitcoinApi {
-  private axiosConfigWithUnixSocket: AxiosRequestConfig = config.ESPLORA.UNIX_SOCKET_PATH ? {
+  axiosConfig: AxiosRequestConfig = config.ESPLORA.UNIX_SOCKET_PATH ? {
     socketPath: config.ESPLORA.UNIX_SOCKET_PATH,
     timeout: 10000,
   } : {
     timeout: 10000,
   };
-  private axiosConfigTcpSocketOnly: AxiosRequestConfig = {
-    timeout: 10000,
-  };
 
-  unixSocketRetryTimeout;
-  activeAxiosConfig;
-
-  constructor() {
-    this.activeAxiosConfig = this.axiosConfigWithUnixSocket;
-  }
-
-  fallbackToTcpSocket() {
-    if (!this.unixSocketRetryTimeout) {
-      logger.err(`Unable to connect to esplora unix socket. Falling back to tcp socket. Retrying unix socket in ${config.ESPLORA.RETRY_UNIX_SOCKET_AFTER / 1000} seconds`);
-      // Retry the unix socket after a few seconds
-      this.unixSocketRetryTimeout = setTimeout(() => {
-        logger.info(`Retrying to use unix socket for esplora now (applied for the next query)`);
-        this.activeAxiosConfig = this.axiosConfigWithUnixSocket;
-        this.unixSocketRetryTimeout = undefined;
-      }, config.ESPLORA.RETRY_UNIX_SOCKET_AFTER);
-    }
-
-    // Use the TCP socket (reach a different esplora instance through nginx)
-    this.activeAxiosConfig = this.axiosConfigTcpSocketOnly;
-  }
-
-  $queryWrapper<T>(url, responseType = 'json'): Promise<T> {
-    return axiosConnection.get<T>(url, { ...this.activeAxiosConfig, responseType: responseType })
-      .then((response) => response.data)
-      .catch((e) => {
-        if (e?.code === 'ECONNREFUSED') {
-          this.fallbackToTcpSocket();
-          // Retry immediately
-          return axiosConnection.get<T>(url, this.activeAxiosConfig)
-            .then((response) => response.data)
-            .catch((e) => {
-              logger.warn(`Cannot query esplora through the unix socket nor the tcp socket. Exception ${e}`);
-              throw e;
-            });
-        } else {
-          throw e;
-        }
-      });
-  }
+  constructor() { }
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
-    return this.$queryWrapper<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids');
+    return axiosConnection.get<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {
-    return this.$queryWrapper<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId);
+    return axiosConnection.get<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getTransactionHex(txId: string): Promise<string> {
-    return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex');
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return this.$queryWrapper<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height');
+    return axiosConnection.get<number>(config.ESPLORA.REST_API_URL + '/blocks/tip/height', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getBlockHashTip(): Promise<string> {
-    return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/blocks/tip/hash');
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/blocks/tip/hash', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
-    return this.$queryWrapper<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids');
+    return axiosConnection.get<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getBlockHash(height: number): Promise<string> {
-    return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height);
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getBlockHeader(hash: string): Promise<string> {
-    return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/header');
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/header', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getBlock(hash: string): Promise<IEsploraApi.Block> {
-    return this.$queryWrapper<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash);
+    return axiosConnection.get<IEsploraApi.Block>(config.ESPLORA.REST_API_URL + '/block/' + hash, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getRawBlock(hash: string): Promise<Buffer> {
-    return this.$queryWrapper<any>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", 'arraybuffer')
+    return axiosConnection.get<string>(config.ESPLORA.REST_API_URL + '/block/' + hash + "/raw", { ...this.axiosConfig, responseType: 'arraybuffer' })
       .then((response) => { return Buffer.from(response.data); });
   }
 
@@ -119,11 +85,13 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
-    return this.$queryWrapper<IEsploraApi.Outspend>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspend/' + vout);
+    return axiosConnection.get<IEsploraApi.Outspend>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspend/' + vout, this.axiosConfig)
+      .then((response) => response.data);
   }
 
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
-    return this.$queryWrapper<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspends');
+    return axiosConnection.get<IEsploraApi.Outspend[]>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspends', this.axiosConfig)
+      .then((response) => response.data);
   }
 
   async $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
