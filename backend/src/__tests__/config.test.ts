@@ -72,7 +72,8 @@ describe('Mempool Backend Config', () => {
         PORT: 3306,
         DATABASE: 'mempool',
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 180000,
       });
 
       expect(config.SYSLOG).toStrictEqual({
