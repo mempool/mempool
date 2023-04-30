@@ -707,7 +707,7 @@ class Blocks {
       timer: null,
     };
     state.timer = setTimeout(() => {
-      logger.err(`$updateBlocks stalled at "${state.progress}`);
+      logger.err(`$updateBlocks stalled at "${state.progress}"`);
     }, this.mainLoopTimeout);
     return state;
   }
