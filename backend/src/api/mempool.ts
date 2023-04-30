@@ -250,7 +250,7 @@ class Mempool {
       timer: null,
     };
     state.timer = setTimeout(() => {
-      logger.err(`$updateMempool stalled at "${state.progress}`);
+      logger.err(`$updateMempool stalled at "${state.progress}"`);
     }, this.mainLoopTimeout);
     return state;
   }
