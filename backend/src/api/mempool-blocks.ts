@@ -208,7 +208,7 @@ class MempoolBlocks {
   public async updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      this.makeBlockTemplates(newMempool, saveResults);
+      await this.makeBlockTemplates(newMempool, saveResults);
       return;
     }
     // prepare a stripped down version of the mempool with only the minimum necessary data
