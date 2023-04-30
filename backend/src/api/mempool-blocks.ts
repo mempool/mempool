@@ -147,7 +147,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
@@ -205,10 +205,10 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      await this.makeBlockTemplates(newMempool, saveResults);
+      await this.$makeBlockTemplates(newMempool, saveResults);
       return;
     }
     // prepare a stripped down version of the mempool with only the minimum necessary data
