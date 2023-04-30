@@ -20,7 +20,7 @@ class Mempool {
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
-  private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
@@ -73,20 +73,20 @@ class Mempool {
 
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
     newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => Promise<void>) {
-    this.asyncMempoolChangedCallback = fn;
+    this.$asyncMempoolChangedCallback = fn;
   }
 
   public getMempool(): { [txid: string]: TransactionExtended } {
     return this.mempoolCache;
   }
 
-  public setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
+  public async $setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
-    if (this.asyncMempoolChangedCallback) {
-      this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
+    if (this.$asyncMempoolChangedCallback) {
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
   }
 
@@ -230,9 +230,9 @@ class Mempool {
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
-    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+    if (this.$asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
-      await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
       this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 

@@ -124,7 +124,7 @@ class DiskCache {
     }
   }
 
-  loadMempoolCache(): void {
+  async $loadMempoolCache(): Promise<void> {
     if (!fs.existsSync(DiskCache.FILE_NAME)) {
       return;
     }
@@ -168,7 +168,7 @@ class DiskCache {
         }
       }
 
-      memPool.setMempool(data.mempool);
+      await memPool.$setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
       blocks.setBlockSummaries(data.blockSummaries || []);
     } catch (e) {
