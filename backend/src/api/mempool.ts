@@ -80,13 +80,13 @@ class Mempool {
     return this.mempoolCache;
   }
 
-  public setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
+  public async setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
     if (this.asyncMempoolChangedCallback) {
-      this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
+      await this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
   }
 
