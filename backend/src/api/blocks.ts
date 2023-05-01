@@ -520,6 +520,8 @@ class Blocks {
   }
 
   public async $updateBlocks() {
+    diskCache.lock();
+
     let fastForwarded = false;
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
 
@@ -658,6 +660,8 @@ class Blocks {
       // wait for pending async callbacks to finish
       await Promise.all(callbackPromises);
     }
+
+    diskCache.unlock();
   }
 
   /**

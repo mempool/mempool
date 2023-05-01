@@ -206,6 +206,8 @@ class Server {
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
       this.currentBackendRetryInterval *= 2;
       this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
+    } finally {
+      diskCache.unlock();
     }
   }
 
