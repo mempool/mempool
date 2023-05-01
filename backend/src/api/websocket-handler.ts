@@ -96,7 +96,10 @@ class WebsocketHandler {
 
     this.wss.on('connection', (client: WebSocket) => {
       this.numConnected++;
-      client.on('error', logger.info);
+      client.on('error', (e) => {
+        logger.info('websocket client error: ' + (e instanceof Error ? e.message : e));
+        client.close();
+      });
       client.on('close', () => {
         this.numDisconnected++;
       });
@@ -283,6 +286,7 @@ class WebsocketHandler {
           }
         } catch (e) {
           logger.debug('Error parsing websocket message: ' + (e instanceof Error ? e.message : e));
+          client.close();
         }
       });
     });
