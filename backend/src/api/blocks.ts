@@ -533,6 +533,8 @@ class Blocks {
     // warn if this run stalls the main loop for more than 2 minutes
     const timer = this.startTimer();
 
+    diskCache.lock();
+
     let fastForwarded = false;
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
     this.updateTimerProgress(timer, 'got block height tip');
@@ -696,6 +698,8 @@ class Blocks {
       await Promise.all(callbackPromises);
       this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
     }
+
+    diskCache.unlock();
 
     this.clearTimer(timer);
   }
