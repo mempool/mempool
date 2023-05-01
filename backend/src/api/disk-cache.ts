@@ -22,6 +22,11 @@ class DiskCache {
   private static CHUNK_FILES = 25;
   private isWritingCache = false;
 
+  private semaphore: { resume: (() => void)[], locks: number } = {
+    resume: [],
+    locks: 0,
+  };
+
   constructor() {
     if (!cluster.isPrimary) {
       return;
@@ -77,6 +82,7 @@ class DiskCache {
           fs.renameSync(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), DiskCache.FILE_NAMES.replace('{number}', i.toString()));
         }
       } else {
+        await this.$yield();
         await fsPromises.writeFile(DiskCache.TMP_FILE_NAME, JSON.stringify({
           network: config.MEMPOOL.NETWORK,
           cacheSchemaVersion: this.cacheSchemaVersion,
@@ -86,6 +92,7 @@ class DiskCache {
           mempoolArray: mempoolArray.splice(0, chunkSize),
         }), { flag: 'w' });
         for (let i = 1; i < DiskCache.CHUNK_FILES; i++) {
+          await this.$yield();
           await fsPromises.writeFile(DiskCache.TMP_FILE_NAMES.replace('{number}', i.toString()), JSON.stringify({
             mempool: {},
             mempoolArray: mempoolArray.splice(0, chunkSize),
@@ -238,6 +245,32 @@ class DiskCache {
       }
     } catch (e) {
       logger.warn('Failed to parse rbf cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private $yield(): Promise<void> {
+    if (this.semaphore.locks) {
+      logger.debug('Pause writing mempool and blocks data to disk cache (async)');
+      return new Promise((resolve) => {
+        this.semaphore.resume.push(resolve);
+      });
+    } else {
+      return Promise.resolve();
+    }
+  }
+
+  public lock(): void {
+    this.semaphore.locks++;
+  }
+
+  public unlock(): void {
+    this.semaphore.locks = Math.max(0, this.semaphore.locks - 1);
+    if (!this.semaphore.locks && this.semaphore.resume.length) {
+      const nextResume = this.semaphore.resume.shift();
+      if (nextResume) {
+        logger.debug('Resume writing mempool and blocks data to disk cache (async)');
+        nextResume();
+      }
     }
   }
 }
