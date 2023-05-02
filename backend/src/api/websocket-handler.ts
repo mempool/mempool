@@ -254,7 +254,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
+      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
