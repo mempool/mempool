@@ -93,17 +93,7 @@ class Audit {
       } else {
         if (!isDisplaced[tx.txid]) {
           added.push(tx.txid);
-        } else {
         }
-        let blockIndex = -1;
-        let index = -1;
-        projectedBlocks.forEach((block, bi) => {
-          const i = block.transactionIds.indexOf(tx.txid);
-          if (i >= 0) {
-            blockIndex = bi;
-            index = i;
-          }
-        });
         overflowWeight += tx.weight;
       }
       totalWeight += tx.weight;
