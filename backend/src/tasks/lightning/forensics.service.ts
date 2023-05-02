@@ -152,7 +152,7 @@ class ForensicsService {
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.info(`Updating channel closed channel forensics ${progress}/${channels.length}`);
+          logger.debug(`Updating channel closed channel forensics ${progress}/${channels.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
@@ -257,7 +257,7 @@ class ForensicsService {
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.info(`Updating opened channel forensics ${progress}/${channels?.length}`);
+          logger.debug(`Updating opened channel forensics ${progress}/${channels?.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
           this.truncateTempCache();
         }
