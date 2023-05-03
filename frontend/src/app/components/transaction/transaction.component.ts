@@ -173,12 +173,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
 
-        if (!this.tx?.status?.confirmed) {
-          this.stateService.markBlock$.next({
-            txFeePerVSize: this.tx.effectiveFeePerVsize,
-            mempoolPosition: this.mempoolPosition,
-          });
-        }
         this.cpfpInfo = cpfpInfo;
       });
 
@@ -241,6 +235,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.stateService.markBlock$.next({
             mempoolPosition: this.mempoolPosition
           });
+          this.txInBlockIndex = this.mempoolPosition.block;
         }
       } else {
         this.mempoolPosition = null;
@@ -430,7 +425,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
-      if (!this.tx) {
+      if (!this.tx || this.mempoolPosition) {
         return;
       }
 
@@ -506,6 +501,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
+    this.txInBlockIndex = null;
+    this.mempoolPosition = null;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -587,6 +584,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.urlFragmentSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
+    this.mempoolBlocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
