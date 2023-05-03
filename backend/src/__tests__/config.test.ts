@@ -47,7 +47,7 @@ describe('Mempool Backend Config', () => {
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
 
-      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000', UNIX_SOCKET_PATH: null });
+      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000', UNIX_SOCKET_PATH: null, RETRY_UNIX_SOCKET_AFTER: 30000 });
 
       expect(config.CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
@@ -72,7 +72,8 @@ describe('Mempool Backend Config', () => {
         PORT: 3306,
         DATABASE: 'mempool',
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 180000,
       });
 
       expect(config.SYSLOG).toStrictEqual({

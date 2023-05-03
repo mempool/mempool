@@ -1,16 +1,9 @@
 <div class="container-xl">
 
   <div class="title-block">
-    <div *ngIf="rbfTransaction" class="alert alert-mempool" role="alert">
+    <div *ngIf="rbfTransaction && !tx?.status?.confirmed" class="alert alert-mempool" role="alert">
       <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
-    </div>
-
-    <div *ngIf="rbfReplaces?.length" class="alert alert-mempool" role="alert">
-      <span i18n="transaction.rbf.replaced|RBF replaced">This transaction replaced:</span>
-      <div class="tx-list">
-        <app-truncate [text]="replaced" [lastChars]="12" *ngFor="let replaced of rbfReplaces" [link]="['/tx/' | relativeUrl, replaced]"></app-truncate>
-      </div>
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
@@ -45,7 +38,7 @@
 
   <ng-template [ngIf]="!isLoadingTx && !error">
 
-    <ng-template [ngIf]="tx.status.confirmed" [ngIfElse]="unconfirmedTemplate">
+    <ng-template [ngIf]="tx?.status?.confirmed" [ngIfElse]="unconfirmedTemplate">
 
       <div class="box">
         <div class="row">
@@ -104,22 +97,22 @@
                     </tr>
                   </ng-template>
                 </ng-template>
-                <tr *ngIf="!replaced">
+                <tr *ngIf="!replaced && !isCached">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
-                    <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
+                    <ng-template [ngIf]="this.mempoolPosition?.block == null" [ngIfElse]="estimationTmpl">
                       <span class="skeleton-loader"></span>
                     </ng-template>
                     <ng-template #estimationTmpl>
-                      <ng-template [ngIf]="txInBlockIndex >= 7" [ngIfElse]="belowBlockLimit">
+                      <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
                         <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
-                          <app-time kind="until" [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time>
+                          <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
+                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * this.mempoolPosition.block) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -196,6 +189,15 @@
     </ng-template>
 
     <br>
+
+    <ng-container *ngIf="rbfInfo">
+      <div class="title float-left">
+        <h2 id="rbf" i18n="transaction.rbf-history|RBF History">RBF History</h2>
+      </div>
+      <div class="clearfix"></div>
+      <app-rbf-timeline [txid]="txId" [replacements]="rbfInfo"></app-rbf-timeline>
+      <br>
+    </ng-container>
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
       <div class="title float-left">
@@ -477,7 +479,7 @@
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-          <ng-template [ngIf]="tx.status.confirmed">
+          <ng-template [ngIf]="tx?.status?.confirmed">
             &nbsp;
             <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo?.descendants?.length && !cpfpInfo?.bestDescendant && !cpfpInfo?.ancestors?.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
@@ -488,7 +490,7 @@
         <td>
           <div class="effective-fee-container">
             {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
-            <ng-template [ngIf]="tx.status.confirmed">
+            <ng-template [ngIf]="tx?.status?.confirmed">
               <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>

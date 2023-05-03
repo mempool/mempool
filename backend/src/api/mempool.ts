@@ -20,7 +20,7 @@ class Mempool {
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => void) | undefined;
-  private asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
+  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
     deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
@@ -35,6 +35,8 @@ class Mempool {
   private SAMPLE_TIME = 10000; // In ms
   private timer = new Date().getTime();
   private missingTxCount = 0;
+
+  private mainLoopTimeout: number = 120000;
 
   constructor() {
     setInterval(this.updateTxPerSecond.bind(this), 1000);
@@ -71,20 +73,20 @@ class Mempool {
 
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
     newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => Promise<void>) {
-    this.asyncMempoolChangedCallback = fn;
+    this.$asyncMempoolChangedCallback = fn;
   }
 
   public getMempool(): { [txid: string]: TransactionExtended } {
     return this.mempoolCache;
   }
 
-  public setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
+  public async $setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
-    if (this.asyncMempoolChangedCallback) {
-      this.asyncMempoolChangedCallback(this.mempoolCache, [], []);
+    if (this.$asyncMempoolChangedCallback) {
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
   }
 
@@ -119,10 +121,15 @@ class Mempool {
 
   public async $updateMempool(): Promise<void> {
     logger.debug(`Updating mempool...`);
+
+    // warn if this run stalls the main loop for more than 2 minutes
+    const timer = this.startTimer();
+
     const start = new Date().getTime();
     let hasChange: boolean = false;
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     const transactions = await bitcoinApi.$getRawMempool();
+    this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
     const newTransactions: TransactionExtended[] = [];
 
@@ -146,6 +153,7 @@ class Mempool {
       if (!this.mempoolCache[txid]) {
         try {
           const transaction = await transactionUtils.$getTransactionExtended(txid);
+          this.updateTimerProgress(timer, 'fetched new transaction');
           this.mempoolCache[txid] = transaction;
           if (this.inSync) {
             this.txPerSecondArray.push(new Date().getTime());
@@ -222,22 +230,50 @@ class Mempool {
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
-    if (this.asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-      await this.asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+    if (this.$asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
+      this.updateTimerProgress(timer, 'running async mempool callback');
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 
     const end = new Date().getTime();
     const time = end - start;
     logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
+
+    this.clearTimer(timer);
   }
 
-  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended; }) {
+  private startTimer() {
+    const state: any = {
+      start: Date.now(),
+      progress: 'begin $updateMempool',
+      timer: null,
+    };
+    state.timer = setTimeout(() => {
+      logger.err(`$updateMempool stalled at "${state.progress}"`);
+    }, this.mainLoopTimeout);
+    return state;
+  }
+
+  private updateTimerProgress(state, msg) {
+    state.progress = msg;
+  }
+
+  private clearTimer(state) {
+    if (state.timer) {
+      clearTimeout(state.timer);
+    }
+  }
+
+  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended[]; }): void {
     for (const rbfTransaction in rbfTransactions) {
-      if (this.mempoolCache[rbfTransaction]) {
+      if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
         // Store replaced transactions
-        rbfCache.add(this.mempoolCache[rbfTransaction], rbfTransactions[rbfTransaction].txid);
+        rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
         // Erase the replaced transactions from the local mempool
-        delete this.mempoolCache[rbfTransaction];
+        for (const replaced of rbfTransactions[rbfTransaction]) {
+          delete this.mempoolCache[replaced.txid];
+        }
       }
     }
   }

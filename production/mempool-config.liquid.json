@@ -23,6 +23,7 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:5001",
     "UNIX_SOCKET_PATH": "/elements/socket/esplora-liquid-mainnet"
   },
   "DATABASE": {

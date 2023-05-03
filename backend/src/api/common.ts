@@ -57,11 +57,11 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended } {
-    const matches: { [txid: string]: TransactionExtended } = {};
-    deleted
-      .forEach((deletedTx) => {
-        const foundMatches = added.find((addedTx) => {
+  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended[] } {
+    const matches: { [txid: string]: TransactionExtended[] } = {};
+    added
+      .forEach((addedTx) => {
+        const foundMatches = deleted.filter((deletedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
           return addedTx.fee > deletedTx.fee
             // The new transaction must pay more fee per kB than the replaced tx.
@@ -70,8 +70,8 @@ export class Common {
             && deletedTx.vin.some((deletedVin) =>
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
-        if (foundMatches) {
-          matches[deletedTx.txid] = foundMatches;
+        if (foundMatches?.length) {
+          matches[addedTx.txid] = foundMatches;
         }
       });
     return matches;

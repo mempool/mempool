@@ -26,6 +26,18 @@ export interface CpfpInfo {
   bestDescendant?: BestDescendant | null;
 }
 
+export interface RbfInfo {
+  tx: RbfTransaction;
+  time: number;
+  interval?: number;
+}
+
+export interface RbfTree extends RbfInfo {
+  mined?: boolean;
+  fullRbf: boolean;
+  replaces: RbfTree[];
+}
+
 export interface DifficultyAdjustment {
   progressPercent: number;
   difficultyChange: number;
@@ -144,6 +156,15 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+}
+
+interface RbfTransaction extends TransactionStripped {
+  rbf?: boolean;
+  mined?: boolean,
+}
+export interface MempoolPosition {
+  block: number,
+  vsize: number,
 }
 
 export interface RewardStats {

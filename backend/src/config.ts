@@ -38,6 +38,7 @@ interface IConfig {
   ESPLORA: {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
+    RETRY_UNIX_SOCKET_AFTER: number;
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -85,6 +86,7 @@ interface IConfig {
     DATABASE: string;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -165,6 +167,7 @@ const defaults: IConfig = {
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
+    'RETRY_UNIX_SOCKET_AFTER': 30000,
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
@@ -192,7 +195,8 @@ const defaults: IConfig = {
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 180000,
   },
   'SYSLOG': {
     'ENABLED': true,
