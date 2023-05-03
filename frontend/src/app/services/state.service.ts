@@ -2,7 +2,7 @@ import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
+import { BlockExtended, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
@@ -12,6 +12,7 @@ interface MarkBlockState {
   blockHeight?: number;
   mempoolBlockIndex?: number;
   txFeePerVSize?: number;
+  mempoolPosition?: MempoolPosition;
 }
 
 export interface ILoadingIndicators { [name: string]: number; }
@@ -105,6 +106,7 @@ export class StateService {
   utxoSpent$ = new Subject<object>();
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();
+  mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition}>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   vbytesPerSecond$ = new ReplaySubject<number>(1);

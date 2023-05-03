@@ -100,19 +100,19 @@
                 <tr *ngIf="!replaced && !isCached">
                   <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
-                    <ng-template [ngIf]="txInBlockIndex === undefined" [ngIfElse]="estimationTmpl">
+                    <ng-template [ngIf]="this.mempoolPosition?.block == null" [ngIfElse]="estimationTmpl">
                       <span class="skeleton-loader"></span>
                     </ng-template>
                     <ng-template #estimationTmpl>
-                      <ng-template [ngIf]="txInBlockIndex >= 7" [ngIfElse]="belowBlockLimit">
+                      <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
                         <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
-                          <app-time kind="until" [time]="(60 * 1000 * txInBlockIndex) + now" [fastRender]="false" [fixedRender]="true"></app-time>
+                          <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * txInBlockIndex) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
+                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * this.mempoolPosition.block) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
                         </ng-template>
                       </ng-template>
                     </ng-template>

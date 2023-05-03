@@ -162,6 +162,10 @@ interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean,
 }
+export interface MempoolPosition {
+  block: number,
+  vsize: number,
+}
 
 export interface RewardStats {
   startBlock: number;

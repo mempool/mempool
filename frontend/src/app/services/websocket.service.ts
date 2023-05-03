@@ -249,6 +249,10 @@ export class WebsocketService {
       this.stateService.mempoolTransactions$.next(response.tx);
     }
 
+    if (response['txPosition']) {
+      this.stateService.mempoolTxPosition$.next(response['txPosition']);
+    }
+
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
         this.stateService.updateChainTip(response.block.height);

@@ -2,7 +2,6 @@ import config from '../config';
 import logger from '../logger';
 import { ThreadTransaction, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
 import { PairingHeap } from '../utils/pairing-heap';
-import { Common } from './common';
 import { parentPort } from 'worker_threads';
 
 let mempool: { [txid: string]: ThreadTransaction } = {};
@@ -72,7 +71,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   }
 
   // Sort by descending ancestor score
-  mempoolArray.sort((a, b) => (b.score || 0) - (a.score || 0));
+  mempoolArray.sort((a, b) => {
+    if (b.score === a.score) {
+      // tie-break by lexicographic txid order for stability
+      return a.txid < b.txid ? -1 : 1;
+    } else {
+      return (b.score || 0) - (a.score || 0);
+    }
+  });
 
   // Build blocks by greedily choosing the highest feerate package
   // (i.e. the package rooted in the transaction with the best ancestor score)
@@ -80,7 +86,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   let blockWeight = 4000;
   let blockSize = 0;
   let transactions: AuditTransaction[] = [];
-  const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => (a.score || 0) > (b.score || 0));
+  const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
+    if (a.score === b.score) {
+      // tie-break by lexicographic txid order for stability
+      return a.txid > b.txid;
+    } else {
+      return (a.score || 0) > (b.score || 0);
+    }
+  });
   let overflow: AuditTransaction[] = [];
   let failures = 0;
   let top = 0;
