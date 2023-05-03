@@ -153,6 +153,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription = this.stateService.markBlock$
       .subscribe((state) => {
         this.markIndex = undefined;
+        this.txPosition = undefined;
         this.txFeePerVSize = undefined;
         if (state.mempoolBlockIndex !== undefined) {
           this.markIndex = state.mempoolBlockIndex;
