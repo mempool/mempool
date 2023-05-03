@@ -22,6 +22,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() offset: number = 0;
   @Input() height: number = 0; // max height of blocks in chunk (dynamic blocks only)
   @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
+  @Input() dynamicBlockCount: number = 8; // number of blocks in the dynamic block chunk
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
   
@@ -45,7 +46,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   feeRounding = '1.0-0';
   arrowVisible = false;
   arrowLeftPx = 30;
-  blocksFilled = false;
   arrowTransition = '1s';
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
@@ -96,14 +96,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     if (!this.static) {
       this.blocksSubscription = this.stateService.blocks$
-        .subscribe(([block, txConfirmed]) => {
+        .subscribe(([block, txConfirmed, batch]) => {
           if (this.blocks.some((b) => b.height === block.height)) {
             return;
           }
 
           if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
             this.blocks = [];
-            this.blocksFilled = false;
           }
 
           this.blocks.unshift(block);
@@ -117,20 +116,18 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.blockStyles = [];
-          if (this.blocksFilled && block.height > this.chainTip) {
-            this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -155 : -205)));
-            setTimeout(() => {
-              this.blockStyles = [];
-              this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
-              this.cd.markForCheck();
-            }, 50);
-          } else {
-            this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
-          }
-
-          if (this.blocks.length === this.dynamicBlocksAmount) {
-            this.blocksFilled = true;
-          }
+          this.blocks.forEach((b, i) => {
+            if (i === 0 && !batch && block.height > this.chainTip) {
+              this.blockStyles.push(this.getStyleForBlock(b, i, -205));
+              setTimeout(() => {
+                this.blockStyles = [];
+                this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
+                this.cd.markForCheck();
+              }, 50);
+            } else {
+              this.blockStyles.push(this.getStyleForBlock(b, i));
+            }
+          });
 
           this.chainTip = Math.max(this.chainTip, block.height);
           this.cd.markForCheck();
@@ -160,7 +157,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.static) {
-      const animateSlide = changes.height && (changes.height.currentValue === changes.height.previousValue + 1);
+      const animateSlide = (changes.dynamicBlockCount && changes.dynamicBlockCount.previousValue != null) || (changes.height && (changes.height.currentValue === changes.height.previousValue + 1));
       this.updateStaticBlocks(animateSlide);
     }
   }
@@ -227,8 +224,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         block = this.cacheService.getCachedBlock(height) || null;
       }
       this.blocks.push(block || {
-        placeholder: height < 0,
-        loading: height >= 0,
+        placeholder: !isNaN(height) && height < 0,
+        loading: isNaN(height) || height >= 0,
         id: '',
         height,
         version: 0,
@@ -311,6 +308,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     return {
       left: addLeft + (155 * index) + 'px',
       background: "#2d3348",
+      transition: animateEnterFrom ? 'background 2s, transform 1s' : null,
     };
   }
 
@@ -318,6 +316,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const addLeft = animateEnterFrom || 0;
     return {
       left: addLeft + (155 * index) + 'px',
+      transition: animateEnterFrom ? 'background 2s, transform 1s' : null,
     };
   }
 
@@ -326,6 +325,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     return {
       left: addLeft + 155 * this.emptyBlocks.indexOf(block) + 'px',
+      transition: animateEnterFrom ? 'background 2s, transform 1s' : null,
       background: "#2d3348",
     };
   }
