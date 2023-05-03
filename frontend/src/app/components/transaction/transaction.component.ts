@@ -50,6 +50,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
+  mempoolBlocksSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -61,7 +62,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
   isCached: boolean = false;
-  now = new Date().getTime();
+  now = Date.now();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
@@ -318,7 +319,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isLoadingTx = false;
           this.error = undefined;
           this.waitingForTransaction = false;
-          this.setMempoolBlocksSubscription();
           this.websocketService.startTrackTransaction(tx.txid);
           this.graphExpanded = false;
           this.setupGraph();
@@ -411,6 +411,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setFlowEnabled();
       this.setGraphSize();
     });
+
+    this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
+      if (!this.tx) {
+        return;
+      }
+
+      this.now = Date.now();
+
+      const txFeePerVSize =
+        this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
+
+      let found = false;
+      this.txInBlockIndex = 0;
+      for (const block of mempoolBlocks) {
+        for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
+          if (
+            txFeePerVSize <= block.feeRange[i + 1] &&
+            txFeePerVSize >= block.feeRange[i]
+          ) {
+            this.txInBlockIndex = mempoolBlocks.indexOf(block);
+            found = true;
+          }
+        }
+      }
+      if (!found && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
+        this.txInBlockIndex = 7;
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -425,28 +453,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.error = error;
     this.isLoadingTx = false;
     return of(false);
-  }
-
-  setMempoolBlocksSubscription() {
-    this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
-      if (!this.tx) {
-        return;
-      }
-
-      const txFeePerVSize =
-        this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
-
-      for (const block of mempoolBlocks) {
-        for (let i = 0; i < block.feeRange.length - 1; i++) {
-          if (
-            txFeePerVSize <= block.feeRange[i + 1] &&
-            txFeePerVSize >= block.feeRange[i]
-          ) {
-            this.txInBlockIndex = mempoolBlocks.indexOf(block);
-          }
-        }
-      }
-    });
   }
 
   getTransactionTime() {
@@ -562,6 +568,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
+    this.mempoolBlocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
