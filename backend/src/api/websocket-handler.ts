@@ -26,6 +26,10 @@ class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
   private extraInitProperties = {};
 
+  private numClients = 0;
+  private numConnected = 0;
+  private numDisconnected = 0;
+
   constructor() { }
 
   setWebsocketServer(wss: WebSocket.Server) {
@@ -42,7 +46,11 @@ class WebsocketHandler {
     }
 
     this.wss.on('connection', (client: WebSocket) => {
+      this.numConnected++;
       client.on('error', logger.info);
+      client.on('close', () => {
+        this.numDisconnected++;
+      });
       client.on('message', async (message: string) => {
         try {
           const parsedMessage: WebsocketResponse = JSON.parse(message);
@@ -232,6 +240,8 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    this.printLogs();
+
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
@@ -247,14 +257,16 @@ class WebsocketHandler {
     });
   }
 
-  async handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
+  async $handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
     newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
 
+    this.printLogs();
+
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
+      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -421,6 +433,8 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    this.printLogs();
+
     const _memPool = memPool.getMempool();
 
     if (config.MEMPOOL.AUDIT) {
@@ -429,7 +443,7 @@ class WebsocketHandler {
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : deepClone(_memPool);
       if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-        projectedBlocks = await mempoolBlocks.makeBlockTemplates(auditMempool, false);
+        projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
       } else {
         projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
       }
@@ -486,7 +500,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.updateBlockTemplates(_memPool, [], removed, true);
+      await mempoolBlocks.$updateBlockTemplates(_memPool, [], removed, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
@@ -596,6 +610,17 @@ class WebsocketHandler {
 
       client.send(JSON.stringify(response));
     });
+  }
+
+  private printLogs(): void {
+    if (this.wss) {
+      const count = this.wss?.clients?.size || 0;
+      const diff = count - this.numClients;
+      this.numClients = count;
+      logger.debug(`${count} websocket clients | ${this.numConnected} connected | ${this.numDisconnected} disconnected | (${diff >= 0 ? '+' : ''}${diff})`);
+      this.numConnected = 0;
+      this.numDisconnected = 0;
+    }
   }
 }
 

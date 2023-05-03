@@ -61,7 +61,8 @@
     "SOCKET": "/var/run/mysql/mysql.sock",
     "DATABASE": "mempool",
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 180000
   },
   "SYSLOG": {
     "ENABLED": true,
