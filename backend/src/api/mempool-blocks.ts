@@ -138,6 +138,7 @@ class MempoolBlocks {
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
       let added: TransactionStripped[] = [];
       let removed: string[] = [];
+      const changed: { txid: string, rate: number | undefined }[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
         added = mempoolBlocks[i].transactions;
       } else if (!mempoolBlocks[i] && prevBlocks[i]) {
@@ -146,7 +147,7 @@ class MempoolBlocks {
         const prevIds = {};
         const newIds = {};
         prevBlocks[i].transactions.forEach(tx => {
-          prevIds[tx.txid] = true;
+          prevIds[tx.txid] = tx;
         });
         mempoolBlocks[i].transactions.forEach(tx => {
           newIds[tx.txid] = true;
@@ -159,12 +160,15 @@ class MempoolBlocks {
         mempoolBlocks[i].transactions.forEach(tx => {
           if (!prevIds[tx.txid]) {
             added.push(tx);
+          } else if (tx.rate !== prevIds[tx.txid].rate) {
+            changed.push({ txid: tx.txid, rate: tx.rate });
           }
         });
       }
       mempoolBlockDeltas.push({
         added,
-        removed
+        removed,
+        changed,
       });
     }
     return mempoolBlockDeltas;
