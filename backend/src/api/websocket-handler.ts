@@ -439,13 +439,19 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.AUDIT) {
       let projectedBlocks;
+      let auditMempool = _memPool;
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
-      const auditMempool = (config.MEMPOOL.ADVANCED_GBT_AUDIT === config.MEMPOOL.ADVANCED_GBT_MEMPOOL) ? _memPool : deepClone(_memPool);
-      if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-        projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+      const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
+      if (separateAudit) {
+        auditMempool = deepClone(_memPool);
+        if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+        } else {
+          projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
+        }
       } else {
-        projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
+        projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
@@ -491,16 +497,14 @@ class WebsocketHandler {
       }
     }
 
-    const removed: string[] = [];
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
-      removed.push(txId);
       rbfCache.evict(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(_memPool, [], removed, true);
+      await mempoolBlocks.$makeBlockTemplates(_memPool, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
