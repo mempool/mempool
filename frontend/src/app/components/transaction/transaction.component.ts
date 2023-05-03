@@ -59,7 +59,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
   isCached: boolean = false;
-  now = new Date().getTime();
+  now = Date.now();
   timeAvg$: Observable<number>;
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
@@ -412,6 +412,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!this.tx) {
         return;
       }
+
+      this.now = Date.now();
 
       const txFeePerVSize =
         this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
