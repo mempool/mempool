@@ -179,8 +179,8 @@ class Server {
           logger.debug(msg);
         }
       }
-      memPool.deleteExpiredTransactions();
       await blocks.$updateBlocks();
+      memPool.deleteExpiredTransactions();
       await memPool.$updateMempool();
       indexer.$run();
 
