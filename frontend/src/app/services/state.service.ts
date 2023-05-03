@@ -2,7 +2,7 @@ import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
@@ -43,6 +43,7 @@ export interface Env {
   MAINNET_BLOCK_AUDIT_START_HEIGHT: number;
   TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
+  FULL_RBF_ENABLED: boolean;
   HISTORICAL_PRICE: boolean;
 }
 
@@ -73,6 +74,7 @@ const defaultEnv: Env = {
   'MAINNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'FULL_RBF_ENABLED': false,
   'HISTORICAL_PRICE': true,
 };
 
@@ -98,6 +100,8 @@ export class StateService {
   mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
   mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
   txReplaced$ = new Subject<ReplacedTransaction>();
+  txRbfInfo$ = new Subject<RbfTree>();
+  rbfLatest$ = new Subject<RbfTree[]>();
   utxoSpent$ = new Subject<object>();
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();

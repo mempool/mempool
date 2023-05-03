@@ -140,6 +140,14 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-rbf'] !== undefined) {
+            if (['all', 'fullRbf'].includes(parsedMessage['track-rbf'])) {
+              client['track-rbf'] = parsedMessage['track-rbf'];
+            } else {
+              client['track-rbf'] = false;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
             const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
             if (!_blocks) {
@@ -278,6 +286,13 @@ class WebsocketHandler {
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
     const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
+    const rbfChanges = rbfCache.getRbfChanges();
+    let rbfReplacements;
+    let fullRbfReplacements;
+    if (Object.keys(rbfChanges.trees).length) {
+      rbfReplacements = rbfCache.getRbfTrees(false);
+      fullRbfReplacements = rbfCache.getRbfTrees(true);
+    }
     const recommendedFees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach(async (client) => {
@@ -400,15 +415,16 @@ class WebsocketHandler {
           response['utxoSpent'] = outspends;
         }
 
-        if (rbfTransactions[client['track-tx']]) {
-          for (const rbfTransaction in rbfTransactions) {
-            if (client['track-tx'] === rbfTransaction) {
-              response['rbfTransaction'] = {
-                txid: rbfTransactions[rbfTransaction].txid,
-              };
-              break;
-            }
+        const rbfReplacedBy = rbfCache.getReplacedBy(client['track-tx']);
+        if (rbfReplacedBy) {
+          response['rbfTransaction'] = {
+            txid: rbfReplacedBy,
           }
+        }
+
+        const rbfChange = rbfChanges.map[client['track-tx']];
+        if (rbfChange) {
+          response['rbfInfo'] = rbfChanges.trees[rbfChange];
         }
       }
 
@@ -420,6 +436,12 @@ class WebsocketHandler {
             delta: mBlockDeltas[index],
           };
         }
+      }
+
+      if (client['track-rbf'] === 'all' && rbfReplacements) {
+        response['rbfLatest'] = rbfReplacements;
+      } else if (client['track-rbf'] === 'fullRbf' && fullRbfReplacements) {
+        response['rbfLatest'] = fullRbfReplacements;
       }
 
       if (Object.keys(response).length) {
@@ -500,7 +522,7 @@ class WebsocketHandler {
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
-      rbfCache.evict(txId);
+      rbfCache.mined(txId);
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
