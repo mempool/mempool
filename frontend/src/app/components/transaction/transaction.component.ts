@@ -19,7 +19,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo, RbfTree } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -35,6 +35,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   tx: Transaction;
   txId: string;
   txInBlockIndex: number;
+  mempoolPosition: MempoolPosition;
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
@@ -47,6 +48,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCachedTxSubscription: Subscription;
   txReplacedSubscription: Subscription;
   txRbfInfoSubscription: Subscription;
+  mempoolPositionSubscription: Subscription;
   blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
@@ -171,11 +173,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
 
-        if (!this.tx?.status?.confirmed) {
-          this.stateService.markBlock$.next({
-            txFeePerVSize: this.tx.effectiveFeePerVsize,
-          });
-        }
         this.cpfpInfo = cpfpInfo;
       });
 
@@ -228,6 +225,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.rbfInfo = rbfInfo;
           }
         });
+      }
+    });
+
+    this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
+      if (txPosition && txPosition.txid === this.txId && txPosition.position) {
+        this.mempoolPosition = txPosition.position;
+        if (this.tx && !this.tx.status.confirmed) {
+          this.stateService.markBlock$.next({
+            mempoolPosition: this.mempoolPosition
+          });
+          this.txInBlockIndex = this.mempoolPosition.block;
+        }
+      } else {
+        this.mempoolPosition = null;
       }
     });
 
@@ -342,6 +353,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
                 txFeePerVSize: tx.effectiveFeePerVsize,
+                mempoolPosition: this.mempoolPosition,
               });
               this.cpfpInfo = {
                 ancestors: tx.ancestors,
@@ -413,7 +425,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
-      if (!this.tx) {
+      if (!this.tx || this.mempoolPosition) {
         return;
       }
 
@@ -489,6 +501,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
+    this.txInBlockIndex = null;
+    this.mempoolPosition = null;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -568,6 +582,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
+    this.mempoolBlocksSubscription.unsubscribe();
+    this.mempoolPositionSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
