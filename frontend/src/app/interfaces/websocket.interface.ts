@@ -57,6 +57,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[],
   removed: string[],
+  changed?: { txid: string, rate: number | undefined }[];
 }
 
 export interface MempoolInfo {
@@ -74,6 +75,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  rate?: number; // effective fee rate
   status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
   context?: 'projected' | 'actual';
 }
