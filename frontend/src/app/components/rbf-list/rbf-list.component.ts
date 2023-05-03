@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, merge, Observable, Subscription } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { WebsocketService } from '../../services/websocket.service';
 import { RbfTree } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
