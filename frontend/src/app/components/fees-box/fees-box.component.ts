@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { Recommendedfees } from '../../interfaces/websocket.interface';
 import { feeLevels, mempoolFeeColors } from '../../app.constants';
-import { tap } from 'rxjs/operators';
+import { map, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-fees-box',
@@ -12,7 +12,7 @@ import { tap } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeesBoxComponent implements OnInit {
-  isLoadingWebSocket$: Observable<boolean>;
+  isLoading$: Observable<boolean>;
   recommendedFees$: Observable<Recommendedfees>;
   gradient = 'linear-gradient(to right, #2e324e, #2e324e)';
   noPriority = '#2e324e';
@@ -22,7 +22,12 @@ export class FeesBoxComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
+    this.isLoading$ = combineLatest(
+      this.stateService.isLoadingWebSocket$.pipe(startWith(false)),
+      this.stateService.loadingIndicators$.pipe(startWith({ mempool: 0 })),
+    ).pipe(map(([socket, indicators]) => {
+      return socket || (indicators.mempool != null && indicators.mempool !== 100);
+    }));
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
