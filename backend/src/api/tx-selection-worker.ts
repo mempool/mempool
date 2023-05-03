@@ -2,7 +2,6 @@ import config from '../config';
 import logger from '../logger';
 import { ThreadTransaction, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
 import { PairingHeap } from '../utils/pairing-heap';
-import { Common } from './common';
 import { parentPort } from 'worker_threads';
 
 let mempool: { [txid: string]: ThreadTransaction } = {};
@@ -72,7 +71,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   }
 
   // Sort by descending ancestor score
-  mempoolArray.sort((a, b) => (b.score || 0) - (a.score || 0));
+  mempoolArray.sort((a, b) => {
+    if (b.score === a.score) {
+      // tie-break by lexicographic txid order for stability
+      return a.txid < b.txid ? -1 : 1;
+    } else {
+      return (b.score || 0) - (a.score || 0);
+    }
+  });
 
   // Build blocks by greedily choosing the highest feerate package
   // (i.e. the package rooted in the transaction with the best ancestor score)
@@ -80,7 +86,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   let blockWeight = 4000;
   let blockSize = 0;
   let transactions: AuditTransaction[] = [];
-  const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => (a.score || 0) > (b.score || 0));
+  const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
+    if (a.score === b.score) {
+      // tie-break by lexicographic txid order for stability
+      return a.txid > b.txid;
+    } else {
+      return (a.score || 0) > (b.score || 0);
+    }
+  });
   let overflow: AuditTransaction[] = [];
   let failures = 0;
   let top = 0;
@@ -107,7 +120,7 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
 
     if (nextTx && !nextTx?.used) {
       // Check if the package fits into this block
-      if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
+      if (blocks.length >= 7 || (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS)) {
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
@@ -175,34 +188,14 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
       overflow = [];
     }
   }
-  // pack any leftover transactions into the last block
-  for (const tx of overflow) {
-    if (!tx || tx?.used) {
-      continue;
-    }
-    blockWeight += tx.weight;
-    const mempoolTx = mempool[tx.txid];
-    // update original copy of this tx with effective fee rate & relatives data
-    mempoolTx.effectiveFeePerVsize = tx.score;
-    if (tx.ancestorMap.size > 0) {
-      cpfpClusters[tx.txid] = Array.from(tx.ancestorMap?.values()).map(a => a.txid);
-      mempoolTx.cpfpRoot = tx.txid;
-    }
-    mempoolTx.cpfpChecked = true;
-    transactions.push(tx);
-    tx.used = true;
+
+  if (overflow.length > 0) {
+    logger.warn('GBT overflow list unexpectedly non-empty after final block constructed');
   }
-  const blockTransactions = transactions.map(t => mempool[t.txid]);
-  restOfArray.forEach(tx => {
-    blockWeight += tx.weight;
-    tx.effectiveFeePerVsize = tx.feePerVsize;
-    tx.cpfpChecked = false;
-    blockTransactions.push(tx);
-  });
-  if (blockTransactions.length) {
-    blocks.push(blockTransactions);
+  // add the final unbounded block if it contains any transactions
+  if (transactions.length > 0) {
+    blocks.push(transactions.map(t => mempool[t.txid]));
   }
-  transactions = [];
 
   const end = Date.now();
   const time = end - start;

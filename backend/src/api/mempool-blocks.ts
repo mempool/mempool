@@ -54,7 +54,14 @@ class MempoolBlocks {
     });
 
     // First sort
-    memPoolArray.sort((a, b) => b.feePerVsize - a.feePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.feePerVsize === b.feePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.feePerVsize - a.feePerVsize;
+      }
+    });
 
     // Loop through and traverse all ancestors and sum up all the sizes + fees
     // Pass down size + fee to all unconfirmed children
@@ -68,7 +75,14 @@ class MempoolBlocks {
     });
 
     // Final sort, by effective fee
-    memPoolArray.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.effectiveFeePerVsize === b.effectiveFeePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.effectiveFeePerVsize - a.effectiveFeePerVsize;
+      }
+    });
 
     const end = new Date().getTime();
     const time = end - start;
@@ -88,14 +102,26 @@ class MempoolBlocks {
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let blockWeight = 0;
+    let blockVsize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
         blockWeight += tx.weight;
+        blockVsize += tx.vsize;
         transactions.push(tx);
       } else {
         mempoolBlocks.push(this.dataToMempoolBlocks(transactions));
+        blockVsize = 0;
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
+        blockVsize += tx.vsize;
         blockWeight = tx.weight;
         transactions = [tx];
       }
@@ -148,7 +174,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
@@ -206,10 +232,10 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      this.makeBlockTemplates(newMempool, saveResults);
+      await this.$makeBlockTemplates(newMempool, saveResults);
       return;
     }
     // prepare a stripped down version of the mempool with only the minimum necessary data
@@ -256,9 +282,17 @@ class MempoolBlocks {
 
   private processBlockTemplates(mempool, blocks, clusters, saveResults): MempoolBlockWithTransactions[] {
     // update this thread's mempool with the results
-    blocks.forEach(block => {
+    blocks.forEach((block, blockIndex) => {
+      let runningVsize = 0;
       block.forEach(tx => {
         if (tx.txid && tx.txid in mempool) {
+          // save position in projected blocks
+          mempool[tx.txid].position = {
+            block: blockIndex,
+            vsize: runningVsize + (mempool[tx.txid].vsize / 2),
+          };
+          runningVsize += mempool[tx.txid].vsize;
+
           if (tx.effectiveFeePerVsize != null) {
             mempool[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
           }

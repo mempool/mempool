@@ -1,5 +1,5 @@
-@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet
-@reboot sleep 60 ; /usr/local/bin/bitcoind -testnet >/dev/null 2>&1
-@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/electrs-start-testnet
-@reboot sleep 80 ; /usr/local/bin/bitcoind -signet >/dev/null 2>&1
-@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/electrs-start-signet
+@reboot screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet
+@reboot /usr/local/bin/bitcoind -testnet >/dev/null 2>&1
+@reboot screen -dmS testnet /bitcoin/electrs/electrs-start-testnet
+@reboot /usr/local/bin/bitcoind -signet >/dev/null 2>&1
+@reboot screen -dmS signet /bitcoin/electrs/electrs-start-signet

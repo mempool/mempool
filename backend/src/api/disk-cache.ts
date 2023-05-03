@@ -7,14 +7,18 @@ import logger from '../logger';
 import config from '../config';
 import { TransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
+import rbfCache from './rbf-cache';
 
 class DiskCache {
   private cacheSchemaVersion = 3;
+  private rbfCacheSchemaVersion = 1;
 
   private static TMP_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/tmp-cache.json';
   private static TMP_FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/tmp-cache{number}.json';
   private static FILE_NAME = config.MEMPOOL.CACHE_DIR + '/cache.json';
   private static FILE_NAMES = config.MEMPOOL.CACHE_DIR + '/cache{number}.json';
+  private static TMP_RBF_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/tmp-rbfcache.json';
+  private static RBF_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/rbfcache.json';
   private static CHUNK_FILES = 25;
   private isWritingCache = false;
 
@@ -100,6 +104,32 @@ class DiskCache {
       logger.warn('Error writing to cache file: ' + (e instanceof Error ? e.message : e));
       this.isWritingCache = false;
     }
+
+    try {
+      logger.debug('Writing rbf data to disk cache (async)...');
+      this.isWritingCache = true;
+      const rbfData = rbfCache.dump();
+      if (sync) {
+        fs.writeFileSync(DiskCache.TMP_RBF_FILE_NAME, JSON.stringify({
+          network: config.MEMPOOL.NETWORK,
+          rbfCacheSchemaVersion: this.rbfCacheSchemaVersion,
+          rbf: rbfData,
+        }), { flag: 'w' });
+        fs.renameSync(DiskCache.TMP_RBF_FILE_NAME, DiskCache.RBF_FILE_NAME);
+      } else {
+        await fsPromises.writeFile(DiskCache.TMP_RBF_FILE_NAME, JSON.stringify({
+          network: config.MEMPOOL.NETWORK,
+          rbfCacheSchemaVersion: this.rbfCacheSchemaVersion,
+          rbf: rbfData,
+        }), { flag: 'w' });
+        await fsPromises.rename(DiskCache.TMP_RBF_FILE_NAME, DiskCache.RBF_FILE_NAME);
+      }
+      logger.debug('Rbf data saved to disk cache');
+      this.isWritingCache = false;
+    } catch (e) {
+      logger.warn('Error writing rbf data to cache file: ' + (e instanceof Error ? e.message : e));
+      this.isWritingCache = false;
+    }
   }
 
   wipeCache(): void {
@@ -124,7 +154,19 @@ class DiskCache {
     }
   }
 
-  loadMempoolCache(): void {
+  wipeRbfCache() {
+    logger.notice(`Wipping nodejs backend cache/rbfcache.json file`);
+
+    try {
+      fs.unlinkSync(DiskCache.RBF_FILE_NAME);
+    } catch (e: any) {
+      if (e?.code !== 'ENOENT') {
+        logger.err(`Cannot wipe cache file ${DiskCache.RBF_FILE_NAME}. Exception ${JSON.stringify(e)}`);
+      }
+    }
+  }
+
+  async $loadMempoolCache(): Promise<void> {
     if (!fs.existsSync(DiskCache.FILE_NAME)) {
       return;
     }
@@ -168,11 +210,34 @@ class DiskCache {
         }
       }
 
-      memPool.setMempool(data.mempool);
+      await memPool.$setMempool(data.mempool);
       blocks.setBlocks(data.blocks);
       blocks.setBlockSummaries(data.blockSummaries || []);
     } catch (e) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+
+    try {
+      let rbfData: any = {};
+      const rbfCacheData = fs.readFileSync(DiskCache.RBF_FILE_NAME, 'utf8');
+      if (rbfCacheData) {
+        logger.info('Restoring rbf data from disk cache');
+        rbfData = JSON.parse(rbfCacheData);
+        if (rbfData.rbfCacheSchemaVersion === undefined || rbfData.rbfCacheSchemaVersion !== this.rbfCacheSchemaVersion) {
+          logger.notice('Rbf disk cache contains an outdated schema version. Clearing it and skipping the cache loading.');
+          return this.wipeRbfCache();
+        }
+        if (rbfData.network && rbfData.network !== config.MEMPOOL.NETWORK) {
+          logger.notice('Rbf disk cache contains data from a different network. Clearing it and skipping the cache loading.');
+          return this.wipeRbfCache();
+        }
+      }
+
+      if (rbfData?.rbf) {
+        rbfCache.load(rbfData.rbf);
+      }
+    } catch (e) {
+      logger.warn('Failed to parse rbf cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
 }

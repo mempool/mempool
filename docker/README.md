@@ -205,7 +205,8 @@ Corresponding `docker-compose.yml` overrides:
 ```json
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
-    "UNIX_SOCKET_PATH": "/tmp/esplora-socket"
+    "UNIX_SOCKET_PATH": "/tmp/esplora-socket",
+    "RETRY_UNIX_SOCKET_AFTER": 30000
   },
 ```
 
@@ -215,6 +216,7 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       ESPLORA_REST_API_URL: ""
       ESPLORA_UNIX_SOCKET_PATH: ""
+      ESPLORA_RETRY_UNIX_SOCKET_AFTER: ""
       ...
 ```
 
@@ -267,6 +269,7 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_DATABASE: ""
       DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
+      DATABASE_TIMEOUT: ""
       ...
 ```
 

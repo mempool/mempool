@@ -28,6 +28,7 @@ export class WebsocketService {
   private isTrackingTx = false;
   private trackingTxId: string;
   private isTrackingMempoolBlock = false;
+  private isTrackingRbf = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -173,6 +174,16 @@ export class WebsocketService {
     this.isTrackingMempoolBlock = false
   }
 
+  startTrackRbf(mode: 'all' | 'fullRbf') {
+    this.websocketSubject.next({ 'track-rbf': mode });
+    this.isTrackingRbf = true;
+  }
+
+  stopTrackRbf() {
+    this.websocketSubject.next({ 'track-rbf': 'stop' });
+    this.isTrackingRbf = false;
+  }
+
   startTrackBisqMarket(market: string) {
     this.websocketSubject.next({ 'track-bisq-market': market });
   }
@@ -238,6 +249,10 @@ export class WebsocketService {
       this.stateService.mempoolTransactions$.next(response.tx);
     }
 
+    if (response['txPosition']) {
+      this.stateService.mempoolTxPosition$.next(response['txPosition']);
+    }
+
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
         this.stateService.updateChainTip(response.block.height);
@@ -255,6 +270,14 @@ export class WebsocketService {
 
     if (response.rbfTransaction) {
       this.stateService.txReplaced$.next(response.rbfTransaction);
+    }
+
+    if (response.rbfInfo) {
+      this.stateService.txRbfInfo$.next(response.rbfInfo);
+    }
+
+    if (response.rbfLatest) {
+      this.stateService.rbfLatest$.next(response.rbfLatest);
     }
 
     if (response.txReplaced) {
