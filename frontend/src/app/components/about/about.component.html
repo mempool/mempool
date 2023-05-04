@@ -432,11 +432,12 @@
     {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]
   </div>
 
+  <br><br>
 </div>
 
-<br>
 
 <ng-template #loadingSponsors>
   <br>
   <div class="spinner-border text-light"></div>
 </ng-template>
+
