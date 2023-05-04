@@ -3,6 +3,11 @@
   *ngIf="static || (loadingBlocks$ | async) === false; else loadingBlocksTemplate">
   <div *ngFor="let block of blocks; let i = index; trackBy: trackByBlocksFn">
     <ng-container *ngIf="connected && block && !block.loading && !block.placeholder; else placeholderBlock">
+      <div
+        *ngIf="minimal && spotlight < 0 && chainTip + spotlight + 1 === block.height"
+        class="spotlight-bottom"
+        [style.left]="blockStyles[i].left"
+      ></div>
       <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
         class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         [class.offscreen]="!static && count && i >= count"

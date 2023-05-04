@@ -158,3 +158,15 @@
     transform: translateX(70px);
   }
 }
+
+.spotlight-bottom {
+  position: absolute;
+  width: calc(0.6 * var(--block-size));
+  height: calc(0.25 * var(--block-size));
+  border-left: solid calc(0.3 * var(--block-size)) transparent;
+  border-bottom: solid calc(0.3 * var(--block-size)) white;
+  border-right: solid calc(0.3 * var(--block-size)) transparent;
+  transform: translate(calc(-0.2 * var(--block-size)), calc(1.1 * var(--block-size)));
+  border-radius: 2px;
+  z-index: -1;
+}
