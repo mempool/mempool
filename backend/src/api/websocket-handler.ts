@@ -301,6 +301,9 @@ class WebsocketHandler {
       rbfReplacements = rbfCache.getRbfTrees(false);
       fullRbfReplacements = rbfCache.getRbfTrees(true);
     }
+    for (const deletedTx of deletedTransactions) {
+      rbfCache.evict(deletedTx.txid);
+    }
     const recommendedFees = feeApi.getRecommendedFee();
 
     this.wss.clients.forEach(async (client) => {

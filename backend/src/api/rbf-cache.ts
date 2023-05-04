@@ -163,7 +163,7 @@ class RbfCache {
   }
 
   // flag a transaction as removed from the mempool
-  public evict(txid, fast: boolean = false): void {
+  public evict(txid: string, fast: boolean = false): void {
     if (this.txs.has(txid) && (fast || !this.expiring.has(txid))) {
       this.expiring.set(txid, fast ? Date.now() + (1000 * 60 * 10) : Date.now() + (1000 * 86400)); // 24 hours
     }
