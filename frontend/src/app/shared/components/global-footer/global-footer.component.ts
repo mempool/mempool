@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { NavigationService } from '../../../services/navigation.service';
 import { Env, StateService } from '../../../services/state.service';
 
@@ -12,6 +13,7 @@ export class GlobalFooterComponent implements OnInit {
   env: Env;
   networkPaths: { [network: string]: string };
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
+  networkPaths$: Observable<Record<string, string>>;
 
   constructor(
     public stateService: StateService,
@@ -20,9 +22,7 @@ export class GlobalFooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
-    this.navigationService.subnetPaths.subscribe((paths) => {
-      this.networkPaths = paths;
-    });
+    this.networkPaths$ = this.navigationService.subnetPaths;
   }
 
 }
