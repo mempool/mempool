@@ -1,4 +1,4 @@
-<footer *ngIf="networkPaths['mainnet'] !== '/about'">
+<footer *ngIf="networkPaths$ | async as networkPaths">
   <div class="pref-selectors">
     <div class="selector">
       <app-language-selector></app-language-selector>
