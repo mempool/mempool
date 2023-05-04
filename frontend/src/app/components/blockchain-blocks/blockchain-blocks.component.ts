@@ -26,6 +26,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() connected: boolean = true;
   @Input() minimal: boolean = false;
   @Input() blockWidth: number = 125;
+  @Input() spotlight: number = 0;
   
   specialBlocks = specialBlocks;
   network = '';

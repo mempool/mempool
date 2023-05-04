@@ -11,6 +11,7 @@ import { StateService } from '../../services/state.service';
 export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width: number = 300;
   @Input() height: number = 60;
+  @Input() mode: 'mempool' | 'block';
 
   mempoolBlocks: number = 3;
   blockchainBlocks: number = 6;
