@@ -54,6 +54,7 @@ export class DifficultyComponent implements OnInit {
   expectedHeight: number;
   expectedIndex: number;
   difference: number;
+  lockedIn: boolean = false;
   shapes: DiffShape[];
 
   tooltipPosition = { x: 0, y: 0 };
@@ -104,6 +105,7 @@ export class DifficultyComponent implements OnInit {
           this.currentIndex = this.currentHeight - this.epochStart;
           this.expectedIndex = Math.min(this.expectedHeight - this.epochStart, 2016) - 1;
           this.difference = this.currentIndex - this.expectedIndex;
+          this.lockedIn = this.currentIndex === 2015;
 
           this.shapes = [];
           this.shapes = this.shapes.concat(this.blocksToShapes(
