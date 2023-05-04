@@ -45,8 +45,8 @@
 
     p {
       margin: 0;
-      font-size: calc(0.05 * var(--clock-width));
-      line-height: calc(0.07 * var(--clock-width));
+      font-size: calc(0.055 * var(--clock-width));
+      line-height: calc(0.05 * var(--clock-width));
       opacity: 0.8;
 
       &.force-wrap {
@@ -57,6 +57,11 @@
         font-size: inherit;
         color: white;
       }
+    }
+
+    .label {
+      font-size: calc(0.04 * var(--clock-width));
+      line-height: calc(0.05 * var(--clock-width));
     }
 
     &.top {
