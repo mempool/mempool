@@ -205,6 +205,8 @@ class Server {
         logger.debug(`AxiosError: ${e?.message}`);
       }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
+    } finally {
+      diskCache.unlock();
     }
   }
 
