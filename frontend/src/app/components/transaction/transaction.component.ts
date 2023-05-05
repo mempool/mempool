@@ -216,7 +216,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.error = undefined;
         this.waitingForTransaction = false;
         this.graphExpanded = false;
-        this.transactionTime = 0;
+        this.transactionTime = tx.firstSeen || 0;
         this.setupGraph();
 
         this.fetchRbfHistory$.next(this.tx.txid);
@@ -338,10 +338,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
             } else {
-              this.transactionTime = 0;
+              this.getTransactionTime();
             }
           } else {
-            this.getTransactionTime();
+            this.transactionTime = 0;
           }
 
           if (this.tx?.status?.confirmed) {
@@ -471,7 +471,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService
       .getTransactionTimes$([this.tx.txid])
       .subscribe((transactionTimes) => {
-        this.transactionTime = transactionTimes[0];
+        if (transactionTimes?.length) {
+          this.transactionTime = transactionTimes[0];
+        }
       });
   }
 
