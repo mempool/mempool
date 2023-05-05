@@ -32,15 +32,6 @@
   }
 }
 
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
-}
-
 .rank {
   width: 8%;
   @media (max-width: 576px) {
