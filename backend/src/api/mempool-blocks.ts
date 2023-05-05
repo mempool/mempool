@@ -1,6 +1,7 @@
 import logger from '../logger';
 import { MempoolBlock, TransactionExtended, ThreadTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor } from '../mempool.interfaces';
 import { Common } from './common';
+import Mempool from './mempool';
 import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
@@ -9,6 +10,9 @@ class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
+
+  private filteredTxs: Map<string, TransactionExtended> = new Map();
+  private minFee: number = 0;
 
   constructor() {}
 
@@ -94,6 +98,7 @@ class MempoolBlocks {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, blocks);
       this.mempoolBlocks = blocks;
       this.mempoolBlockDeltas = deltas;
+      this.updateMinFee(this.mempoolBlocks);
     }
 
     return blocks;
@@ -175,18 +180,29 @@ class MempoolBlocks {
   }
 
   public async $makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+    // Identify txs that can't be CPFP'd
+    this.markRelatives(newMempool);
+
+    // Track filtered transactions
+    this.filteredTxs.clear();
+    const filterFee = this.getFilterFee();
+ 
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: { [txid: string]: ThreadTransaction } = {};
     Object.values(newMempool).forEach(entry => {
-      strippedMempool[entry.txid] = {
-        txid: entry.txid,
-        fee: entry.fee,
-        weight: entry.weight,
-        feePerVsize: entry.fee / (entry.weight / 4),
-        effectiveFeePerVsize: entry.fee / (entry.weight / 4),
-        vin: entry.vin.map(v => v.txid),
-      };
+      if (entry.hasRelatives || entry.feePerVsize >= filterFee) {
+        strippedMempool[entry.txid] = {
+          txid: entry.txid,
+          fee: entry.fee,
+          weight: entry.weight,
+          feePerVsize: entry.fee / (entry.weight / 4),
+          effectiveFeePerVsize: entry.fee / (entry.weight / 4),
+          vin: entry.vin.map(v => v.txid),
+        };
+      } else {
+        this.filteredTxs.set(entry.txid, entry);
+      }
     });
 
     // (re)initialize tx selection worker thread
@@ -238,9 +254,14 @@ class MempoolBlocks {
       await this.$makeBlockTemplates(newMempool, saveResults);
       return;
     }
+
+
+    this.updateMarkedRelatives(newMempool, added);
+    const filterDiff = this.updateFilteredTxs(newMempool, this.getFilterFee());
+
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const addedStripped: ThreadTransaction[] = added.map(entry => {
+    const addedStripped: ThreadTransaction[] = added.concat(filterDiff.included).map(entry => {
       return {
         txid: entry.txid,
         fee: entry.fee,
@@ -250,6 +271,7 @@ class MempoolBlocks {
         vin: entry.vin.map(v => v.txid),
       };
     });
+    const removedIds = removed.concat(filterDiff.filtered);
 
     // run the block construction algorithm in a separate thread, and wait for a result
     let threadErrorListener;
@@ -261,7 +283,7 @@ class MempoolBlocks {
         });
         this.txSelectionWorker?.once('error', reject);
       });
-      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed });
+      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedIds });
       let { blocks, clusters } = await workerResultPromise;
       // filter out stale transactions
       const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
@@ -332,6 +354,11 @@ class MempoolBlocks {
       });
     });
 
+    if (blocks.length) {
+      const sortedFiltered = Array.from(this.filteredTxs.values()).sort((a, b) => b.feePerVsize - a.feePerVsize);
+      blocks[blocks.length - 1] = blocks[blocks.length - 1].concat(sortedFiltered);
+    }
+
     // unpack the condensed blocks into proper mempool blocks
     const mempoolBlocks = blocks.map((transactions) => {
       return this.dataToMempoolBlocks(transactions.map(tx => {
@@ -343,6 +370,7 @@ class MempoolBlocks {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
       this.mempoolBlocks = mempoolBlocks;
       this.mempoolBlockDeltas = deltas;
+      this.updateMinFee(this.mempoolBlocks);
     }
 
     return mempoolBlocks;
@@ -370,6 +398,84 @@ class MempoolBlocks {
       transactionIds: transactions.map((tx) => tx.txid),
       transactions: fitTransactions.map((tx) => Common.stripTransaction(tx)),
     };
+  }
+
+  // Mark all transactions with in-mempool relatives
+  private markRelatives(mempool: { [txid: string]: TransactionExtended }): void {
+    for (const tx of Object.values(mempool)) {
+      if (!tx.hasRelatives) {
+        let hasRelatives = false;
+        tx.vin.forEach(parent => {
+          if (mempool[parent.txid] != null) {
+            hasRelatives = true;
+            mempool[parent.txid].hasRelatives = true;
+          } 
+        });
+        tx.hasRelatives = hasRelatives;
+      }
+    }
+  }
+
+  private updateMarkedRelatives(mempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[]): void {
+    const newFiltered: TransactionExtended[] = [];
+    for (const tx of added) {
+      if (!tx.hasRelatives) {
+        let hasRelatives = false;
+        tx.vin.forEach(parent => {
+          if (mempool[parent.txid] != null) {
+            hasRelatives = true;
+            mempool[parent.txid].hasRelatives = true;
+          } 
+        });
+        tx.hasRelatives = hasRelatives;
+      }
+    }
+  }
+
+  private updateFilteredTxs(mempool: { [txid: string]: TransactionExtended }, filterFee: number): { filtered: string[], included: TransactionExtended[] } {
+    const filtered: string[] = [];
+    const included: TransactionExtended[] = [];
+    for (const tx of Object.values(mempool)) {
+      if (!tx.hasRelatives) {
+        if (tx.feePerVsize < filterFee) {
+          // filter out tx
+          if (!this.filteredTxs.has(tx.txid)) {
+            this.filteredTxs.set(tx.txid, tx);
+            filtered.push(tx.txid);
+          }
+        } else {
+          // include tx
+          if (this.filteredTxs.has(tx.txid)) {
+            this.filteredTxs.delete(tx.txid);
+            included.push(tx);
+          }
+        }
+      }
+    }
+    return { filtered, included };
+  }
+
+  private updateMinFee(mempoolBlocks: MempoolBlockWithTransactions[]): void {
+    let totalFeeRate = 0;
+    let totalSize = 0;
+    let count = 0;
+    if (mempoolBlocks.length === 8) {
+      const lastBlock = mempoolBlocks[mempoolBlocks.length - 1];
+      for (let i = 0; i < lastBlock.transactions.length && totalSize < 16_000_000; i++) {
+        totalFeeRate += lastBlock.transactions[i].rate || (lastBlock.transactions[i].fee / lastBlock.transactions[i].vsize);
+        totalSize += lastBlock.transactions[i].vsize;
+        count++;
+      }
+      this.minFee = count ? (totalFeeRate / count) : 1;
+    } else {
+      this.minFee = 1;
+    }
+  }
+
+  private getFilterFee(): number {
+    const purgingBelow = Mempool.getMempoolInfo().mempoolminfee * 100000;
+    const filterFee = Math.max(purgingBelow, this.minFee);
+    return filterFee;
   }
 }
 

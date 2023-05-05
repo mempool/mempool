@@ -80,6 +80,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
+  hasRelatives?: boolean;
   position?: {
     block: number,
     vsize: number,
