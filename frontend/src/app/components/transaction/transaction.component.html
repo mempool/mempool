@@ -85,7 +85,7 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="transactionTime !== 0 && !replaced">
+                <ng-template [ngIf]="transactionTime !== 0">
                   <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
                     <td><span class="skeleton-loader"></span></td>
                     <td><span class="skeleton-loader"></span></td>
