@@ -75,7 +75,7 @@
     </form>
   </div>
 
-  <div [class]="!widget ? 'bottom-padding' : 'pb-0'" class="container pb-lg-0">
+  <div [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
     <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
     </div>
@@ -136,7 +136,6 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
 

@@ -10,6 +10,7 @@
   padding: 0px 15px;
   width: 100%;
   height: calc(100% - 140px);
+  padding-bottom: 20px;
   @media (max-width: 992px) {
     height: calc(100% - 190px);
   };
@@ -31,15 +32,6 @@
   @media (max-width: 485px) {
     max-height: 200px;
   }
-}
-
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
 }
 
 @media (max-width: 767.98px) {
