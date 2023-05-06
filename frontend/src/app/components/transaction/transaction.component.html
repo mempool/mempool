@@ -264,6 +264,10 @@
           <table class="table table-borderless table-striped">
             <tbody>
               <tr>
+                <td i18n="transaction.inputs">Inputs</td>
+                <td [innerHTML]="'&lrm;' + (tx.vin.length | number)"></td>
+              </tr>
+              <tr>
                 <td i18n="block.size">Size</td>
                 <td [innerHTML]="'&lrm;' + (tx.size | bytes: 2)"></td>
               </tr>
@@ -281,6 +285,10 @@
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
+              <tr>
+                <td i18n="transaction.outputs">Outputs</td>
+                <td [innerHTML]="'&lrm;' + (tx.vout.length | number)"></td>
+              </tr>
               <tr>
                 <td i18n="transaction.version">Version</td>
                 <td [innerHTML]="'&lrm;' + (tx.version | number)"></td>
@@ -420,12 +428,20 @@
                 <td><span class="skeleton-loader"></span></td>
                 <td><span class="skeleton-loader"></span></td>
               </tr>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
             </tbody>
           </table>
         </div>
         <div class="col-sm">
           <table class="table table-borderless table-striped">
             <tbody>
+              <tr>
+                <td><span class="skeleton-loader"></span></td>
+                <td><span class="skeleton-loader"></span></td>
+              </tr>
               <tr>
                 <td><span class="skeleton-loader"></span></td>
                 <td><span class="skeleton-loader"></span></td>
