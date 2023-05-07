@@ -264,7 +264,7 @@ class Blocks {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       let pool: PoolTag;
       if (coinbaseTx !== undefined) {
-        pool = await this.$findBlockMiner(coinbaseTx);
+        pool = await this.$findBlockMiner(coinbaseTx, block.id);
       } else {
         if (config.DATABASE.ENABLED === true) {
           pool = await poolsRepository.$getUnknownPool();
@@ -304,9 +304,9 @@ class Blocks {
   /**
    * Try to find which miner found the block
    * @param txMinerInfo
-   * @returns
+   * @param id - block hash
    */
-  private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined): Promise<PoolTag> {
+  private async $findBlockMiner(txMinerInfo: TransactionMinerInfo | undefined, id: string): Promise<PoolTag> {
     if (txMinerInfo === undefined || txMinerInfo.vout.length < 1) {
       if (config.DATABASE.ENABLED === true) {
         return await poolsRepository.$getUnknownPool();
@@ -325,13 +325,17 @@ class Blocks {
       pools = poolsParser.miningPools;
     }
 
+    const matchingPools: PoolTag[] = [];
+    const matchingPoolsSlugs = {};
+
     for (let i = 0; i < pools.length; ++i) {
       if (addresses.length) {
         const poolAddresses: string[] = typeof pools[i].addresses === 'string' ?
           JSON.parse(pools[i].addresses) : pools[i].addresses;
         for (let y = 0; y < poolAddresses.length; y++) {
-          if (addresses.indexOf(poolAddresses[y]) !== -1) {
-            return pools[i];
+          if (addresses.indexOf(poolAddresses[y]) !== -1 && !matchingPoolsSlugs[pools[i].slug]) {
+            matchingPools.push(pools[i]);
+            matchingPoolsSlugs[pools[i].slug] = true;
           }
         }
       }
@@ -341,9 +345,32 @@ class Blocks {
       for (let y = 0; y < regexes.length; ++y) {
         const regex = new RegExp(regexes[y], 'i');
         const match = asciiScriptSig.match(regex);
-        if (match !== null) {
-          return pools[i];
+        if (match !== null && !matchingPoolsSlugs[pools[i].slug]) {
+          matchingPools.push(pools[i]);
+          matchingPoolsSlugs[pools[i].slug] = true;
         }
+      }
+    }
+
+    if (matchingPools.length === 1) {
+      return matchingPools[0];
+    }
+    
+    // Conflicts - Resolve manually for now
+    if (matchingPools.length > 1) {
+      const pick = (matchingPools: PoolTag[], slug: string): PoolTag => {
+        for (const pool of matchingPools) {
+          if (pool.slug === slug) {
+            return pool;
+          }
+        }
+        return matchingPools[0];
+      };
+      if (id === '00000000000000000003aff64602a1687539515d9e2c44dc1f8c31289901781a') {
+        logger.info(`Got conflicting mining pool match for block ${id}. Manually picking foundryusa`, logger.tags.mining);
+        return pick(matchingPools, 'foundryusa');
+      } else {
+        logger.warn(`Got conflicting mining pool match for block ${id} but we did not define manual conflit resolution. Block may be tagged to the wrong mining pool. Candidates were: ${matchingPools.map(p => p.slug).join(',')}`, logger.tags.mining);
       }
     }
 
