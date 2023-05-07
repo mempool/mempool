@@ -2,6 +2,7 @@ import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import cluster from 'cluster';
 import DB from './database';
 import config from './config';
@@ -179,12 +180,15 @@ class Server {
           logger.debug(msg);
         }
       }
-      await blocks.$updateBlocks();
-      memPool.deleteExpiredTransactions();
-      await memPool.$updateMempool();
+      const newMempool = await bitcoinApi.$getRawMempool();
+      const numHandledBlocks = await blocks.$updateBlocks();
+      if (numHandledBlocks === 0) {
+        await memPool.$updateMempool(newMempool);
+      }
       indexer.$run();
 
-      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
+      // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
+      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 1 : config.MEMPOOL.POLL_RATE_MS);
       this.backendRetryCount = 0;
     } catch (e: any) {
       this.backendRetryCount++;
