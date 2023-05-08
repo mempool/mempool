@@ -84,8 +84,7 @@
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [limitFee]="500"
-              [limitFilterFee]="filterFeeIndex" [height]="500" [left]="65" [right]="10"
+            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [height]="500" [left]="65" [right]="10"
               [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"></app-mempool-graph>
           </div>
         </div>
