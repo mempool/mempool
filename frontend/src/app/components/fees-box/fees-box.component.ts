@@ -26,15 +26,23 @@ export class FeesBoxComponent implements OnInit {
     this.recommendedFees$ = this.stateService.recommendedFees$
       .pipe(
         tap((fees) => {
-          let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.minimumFee >= feeLvl);
+          let feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.economyFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
           const startColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
 
+          feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.hourFee >= feeLvl);
+          feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
+          const lowColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+
+          feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.halfHourFee >= feeLvl);
+          feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
+          const medColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+
           feeLevelIndex = feeLevels.slice().reverse().findIndex((feeLvl) => fees.fastestFee >= feeLvl);
           feeLevelIndex = feeLevelIndex >= 0 ? feeLevels.length - feeLevelIndex : feeLevelIndex;
-          const endColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
+          const highColor = '#' + (mempoolFeeColors[feeLevelIndex - 1] || mempoolFeeColors[mempoolFeeColors.length - 1]);
 
-          this.gradient = `linear-gradient(to right, ${startColor}, ${endColor})`;
+          this.gradient = `linear-gradient(to right, ${lowColor} 0%, ${medColor} 50%, ${highColor} 100%)`;
           this.noPriority = startColor;
         }
       )
