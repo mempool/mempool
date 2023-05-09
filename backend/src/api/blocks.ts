@@ -370,7 +370,8 @@ class Blocks {
         logger.info(`Got conflicting mining pool match for block ${id}. Manually picking foundryusa`, logger.tags.mining);
         return pick(matchingPools, 'foundryusa');
       } else {
-        logger.warn(`Got conflicting mining pool match for block ${id} but we did not define manual conflit resolution. Block may be tagged to the wrong mining pool. Candidates were: ${matchingPools.map(p => p.slug).join(',')}`, logger.tags.mining);
+        logger.warn(`Got conflicting mining pool match for block ${id} but we did not define manual conflict resolution. Block may be tagged to the wrong mining pool. Candidates were: ${matchingPools.map(p => p.slug).join(',')}`, logger.tags.mining);
+        return matchingPools[0]; // Keep the previous behavior
       }
     }
 
