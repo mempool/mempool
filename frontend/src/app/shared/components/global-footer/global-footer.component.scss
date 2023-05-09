@@ -1,22 +1,70 @@
 footer {
+  background-color: #1d1f31;
+  margin-top: 30px;
+}
+
+footer a {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+footer p {
+  margin-bottom: 0.25rem;
+}
+
+footer .row.main {
+  padding: 40px 0;
+}
+
+footer .row.main .branding {
   text-align: center;
 }
 
-.terms-of-service {
+footer .row.main .branding .btn {
+  display: inline-block;
+  color: #fff !important;
+}
+
+footer .row.main .branding button.account {
+  background-color: #2d3348;
+}
+
+footer .row.main .branding .cta {
+  margin: 50px auto 45px auto;
+}
+
+footer .row.main .branding .cta-secondary {
+
+}
+
+footer .row.main .links > div:first-child {
+  margin-bottom: 20px;
+}
+
+footer .row.main .links .category {
+  color: #4a68b9;
+  font-weight: 700;
+}
+
+footer .row.main .links .category:not(:first-child) {
   margin-top: 1rem;
 }
 
-.pref-selectors {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+footer .selector {
+  margin: 20px 0;
+}
 
-  .selector {
-    margin-left: .5em;
-    margin-bottom: .5em;
-    &:first {
-      margin-left: 0;
-    }
-  }
+footer .row.version .col-sm-12 {
+  padding: 20px !important;
+  background-color: #11131f;
+}
+
+footer .row.version .col-sm-12 p {
+  margin-bottom: 0;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+footer .row.version .col-sm-12 p a {
+  color: #09a3ba;
 }
