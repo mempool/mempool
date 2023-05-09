@@ -15,6 +15,7 @@ export default class BlockScene {
   gridWidth: number;
   gridHeight: number;
   gridSize: number;
+  pixelAlign: boolean;
   vbytesPerUnit: number;
   unitPadding: number;
   unitWidth: number;
@@ -23,19 +24,24 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
+  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, pixelAlign: boolean }
   ) {
-    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting });
+    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
-    this.unitPadding =  width / 500;
-    this.unitWidth = this.gridSize - (this.unitPadding * 2);
+    if (this.pixelAlign) {
+      this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 2.5));
+      this.unitWidth = this.gridSize - (this.unitPadding);
+    } else {
+      this.unitPadding =  width / 500;
+      this.unitWidth = this.gridSize - (this.unitPadding * 2);
+    }
 
     this.dirty = true;
     if (this.initialised && this.scene) {
@@ -209,14 +215,15 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHover(value));
   }
 
-  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
+  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, pixelAlign: boolean }
   ): void {
     this.orientation = orientation;
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
+    this.pixelAlign = pixelAlign;
 
     this.scene = {
       count: 0,
@@ -342,7 +349,12 @@ export default class BlockScene {
   private gridToScreen(position: Square | void): Square {
     if (position) {
       const slotSize = (position.s * this.gridSize);
-      const squareSize = slotSize - (this.unitPadding * 2);
+      let squareSize;
+      if (this.pixelAlign) {
+        squareSize = slotSize - (this.unitPadding);
+      } else {
+        squareSize = slotSize - (this.unitPadding * 2);
+      }
 
       // The grid is laid out notionally left-to-right, bottom-to-top,
       // so we rotate and/or flip the y axis to match the target configuration.

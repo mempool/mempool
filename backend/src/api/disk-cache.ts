@@ -52,7 +52,7 @@ class DiskCache {
       const mempool = memPool.getMempool();
       const mempoolArray: TransactionExtended[] = [];
       for (const tx in mempool) {
-        if (mempool[tx] && !mempool[tx].deleteAfter) {
+        if (mempool[tx]) {
           mempoolArray.push(mempool[tx]);
         }
       }

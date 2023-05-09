@@ -282,7 +282,7 @@ class WebsocketHandler {
     this.printLogs();
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions.map(tx => tx.txid), true);
+      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -300,6 +300,9 @@ class WebsocketHandler {
     if (Object.keys(rbfChanges.trees).length) {
       rbfReplacements = rbfCache.getRbfTrees(false);
       fullRbfReplacements = rbfCache.getRbfTrees(true);
+    }
+    for (const deletedTx of deletedTransactions) {
+      rbfCache.evict(deletedTx.txid);
     }
     const recommendedFees = feeApi.getRecommendedFee();
 
