@@ -1,22 +1,76 @@
 <footer *ngIf="networkPaths$ | async as networkPaths">
-  <div class="pref-selectors">
-    <div class="selector">
-      <app-language-selector></app-language-selector>
+    <div class="container-fluid">
+    <div class="row main">
+      <div class="col-sm-4 branding">
+        <h5>The Mempool Open Source Project™</h5>
+        <p>Explore the full Bitcoin ecosystem.</p>
+        <div class="selector">
+          <app-language-selector></app-language-selector>
+        </div>
+        <div class="selector">
+          <app-fiat-selector></app-fiat-selector>
+        </div>
+        <a class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Sign In / Sign Up</a>
+        <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
+        <p class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]">Connect to Mempool Nodes</a></p>
+      </div>
+      <div class="col-sm-8 links">
+        <div class="row">
+          <div class="col-sm-4">
+            <p class="category">Explore</p>
+            <p><a [routerLink]="['/mining' | relativeUrl]">Mining Dashboard</a></p>
+            <p><a [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
+            <p><a [routerLink]="['/blocks' | relativeUrl]">Recent Blocks</a></p>
+            <p><a [routerLink]="['/rbf' | relativeUrl]">Recent RBF Transactions</a></p>
+          </div>
+          <div class="col-sm-4 links">
+            <p class="category">Learn</p>
+            <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool">What is a mempool?</a></p>
+            <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-block-explorer">What is a block explorer?</a></p>
+            <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool-explorer">What is a mempool explorer?</a></p>
+            <p><a [routerLink]="['/docs/faq']" fragment="why-is-transaction-stuck-in-mempool">Why isn't my transaction confirming?</a></p>
+            <p><a [routerLink]="['/docs/faq' | relativeUrl]">More FAQs ›</a></p>
+          </div>
+          <div class="col-sm-4 links">
+            <p class="category">Connect</p>
+            <p><a href="https://github.com/mempool" target="_blank">GitHub</a></p>
+            <p><a href="https://twitter.com/mempool" target="_blank">Twitter</a></p>
+            <p><a href="nostr:npub18d4r6wanxkyrdfjdrjqzj2ukua5cas669ew2g5w7lf4a8te7awzqey6lt3" target="_blank">Nostr</a></p>
+            <p><a href="https://youtube.com/@mempool" target="_blank">YouTube</a></p>
+            <p><a href="https://bitcointv.com/c/mempool/videos" target="_blank">BitcoinTV</a></p>
+            <p><a href="https://mempool.chat" target="_blank">Matrix</a></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4 links">
+            <p class="category">Resources</p>
+            <p><a [routerLink]="['/docs/faq' | relativeUrl]">FAQs</a></p>
+            <p><a [routerLink]="['/docs/api' | relativeUrl]">API Documentation</a></p>
+            <p><a [routerLink]="['/about' | relativeUrl]">About the Project</a></p>
+          </div>
+          <div class="col-sm-4 links">
+            <p class="category">More Networks</p>
+            <p><a [routerLink]="['/testnet' | relativeUrl]">Testnet Block Explorer</a></p>
+            <p><a [routerLink]="['/signet' | relativeUrl]">Signet Block Explorer</a></p>
+            <p><a href="https://liquid.network">Liquid Block Explorer</a></p>
+            <p><a href="https://bisq.network">Bisq Block Explorer</a></p>
+          </div>
+          <div class="col-sm-4 links">
+            <p class="category">Legal</p>
+            <p><a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a></p>
+            <p><a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a></p>
+            <p><a [routerLink]="['/trademark-policy']">Trademark Policy</a></p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="selector">
-      <app-fiat-selector></app-fiat-selector>
-    </div>
-  </div>
+    <div class="row version">
+      <div class="col-sm-12">
+        <p *ngIf="officialMempoolSpace">{{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]</p>
+        
+        <p *ngIf="!officialMempoolSpace">v{{ packetJsonVersion }} [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</p>
 
-  <div class="terms-of-service">
-    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
-    |
-    <a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a>
-    |
-    <a *ngIf="officialMempoolSpace && networkPaths['mainnet'] === '/lightning' else broadcastTransaction" [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]">Connect to our nodes</a>
-    <ng-template #broadcastTransaction>
-      <a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a>
-    </ng-template>
+      </div>
+    </div>
   </div>
-  <br>
 </footer>
