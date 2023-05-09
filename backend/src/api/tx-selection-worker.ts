@@ -1,6 +1,6 @@
 import config from '../config';
 import logger from '../logger';
-import { CompactThreadTransaction, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
+import { CompactThreadTransaction, AuditTransaction } from '../mempool.interfaces';
 import { PairingHeap } from '../utils/pairing-heap';
 import { parentPort } from 'worker_threads';
 
@@ -19,11 +19,11 @@ if (parentPort) {
       });
     }
     
-    const { blocks, clusters } = makeBlockTemplates(mempool);
+    const { blocks, rates, clusters } = makeBlockTemplates(mempool);
 
     // return the result to main thread.
     if (parentPort) {
-      parentPort.postMessage({ blocks, clusters });
+      parentPort.postMessage({ blocks, rates, clusters });
     }
   });
 }
@@ -33,14 +33,14 @@ if (parentPort) {
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 */
 function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
-  : { blocks: CompactThreadTransaction[][], clusters: Map<number, number[]> } {
+  : { blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]> } {
   const start = Date.now();
   const auditPool: Map<number, AuditTransaction> = new Map();
   const mempoolArray: AuditTransaction[] = [];
-  const restOfArray: CompactThreadTransaction[] = [];
   const cpfpClusters: Map<number, number[]> = new Map();
   
   mempool.forEach(tx => {
+    tx.dirty = false;
     // initializing everything up front helps V8 optimize property access later
     auditPool.set(tx.uid, {
       uid: tx.uid,
@@ -81,9 +81,8 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
 
   // Build blocks by greedily choosing the highest feerate package
   // (i.e. the package rooted in the transaction with the best ancestor score)
-  const blocks: CompactThreadTransaction[][] = [];
+  const blocks: number[][] = [];
   let blockWeight = 4000;
-  let blockSize = 0;
   let transactions: AuditTransaction[] = [];
   const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
     if (a.score === b.score) {
@@ -139,13 +138,16 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
           ancestor.used = true;
           ancestor.usedBy = nextTx.uid;
           // update original copy of this tx with effective fee rate & relatives data
-          mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-          if (isCluster) {
-            mempoolTx.cpfpRoot = nextTx.uid;
+          if (mempoolTx.effectiveFeePerVsize !== effectiveFeeRate) {
+            mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
+            mempoolTx.dirty = true;
+          }
+          if (mempoolTx.cpfpRoot !== nextTx.uid) {
+            mempoolTx.cpfpRoot = isCluster ? nextTx.uid : null;
+            mempoolTx.dirty;
           }
           mempoolTx.cpfpChecked = true;
           transactions.push(ancestor);
-          blockSize += ancestor.size;
           blockWeight += ancestor.weight;
           used.push(ancestor);
         }
@@ -171,11 +173,10 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
     if ((exceededPackageTries || queueEmpty) && blocks.length < 7) {
       // construct this block
       if (transactions.length) {
-        blocks.push(transactions.map(t => mempool.get(t.uid) as CompactThreadTransaction));
+        blocks.push(transactions.map(t => t.uid));
       }
       // reset for the next block
       transactions = [];
-      blockSize = 0;
       blockWeight = 4000;
 
       // 'overflow' packages didn't fit in this block, but are valid candidates for the next
@@ -196,14 +197,22 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
   }
   // add the final unbounded block if it contains any transactions
   if (transactions.length > 0) {
-    blocks.push(transactions.map(t => mempool.get(t.uid) as CompactThreadTransaction));
+    blocks.push(transactions.map(t => t.uid));
+  }
+
+  // get map of dirty transactions
+  const rates = new Map<number, number>();
+  for (const tx of mempool.values()) {
+    if (tx?.dirty) {
+      rates.set(tx.uid, tx.effectiveFeePerVsize || tx.feePerVsize);
+    }
   }
 
   const end = Date.now();
   const time = end - start;
   logger.debug('Mempool templates calculated in ' + time / 1000 + ' seconds');
 
-  return { blocks, clusters: cpfpClusters };
+  return { blocks, rates, clusters: cpfpClusters };
 }
 
 // traverse in-mempool ancestors
