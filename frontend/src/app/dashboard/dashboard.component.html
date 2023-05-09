@@ -26,8 +26,7 @@
               <div class="mempool-graph">
                 <app-mempool-graph
                 [template]="'widget'"
-                [limitFee]="150"
-                [limitFilterFee]="1"
+                [filterSize]="1000000"
                 [data]="mempoolStats.value?.mempool"
                 [windowPreferenceOverride]="'2h'"
                 ></app-mempool-graph>
