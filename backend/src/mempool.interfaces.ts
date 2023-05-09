@@ -114,6 +114,7 @@ export interface CompactThreadTransaction {
   inputs: number[];
   cpfpRoot?: string;
   cpfpChecked?: boolean;
+  dirty?: boolean;
 }
 
 export interface ThreadTransaction {
