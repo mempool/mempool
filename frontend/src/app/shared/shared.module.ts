@@ -90,6 +90,13 @@ import { GeolocationComponent } from '../shared/components/geolocation/geolocati
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
 
+import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
+import { ClockchainComponent } from '../components/clockchain/clockchain.component';
+import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
+import { ClockComponent } from '../components/clock/clock.component';
+import { ClockMinedComponent } from '../components/clock/clock-mined.component';
+import { ClockMempoolComponent } from '../components/clock/clock-mempool.component';
+
 @NgModule({
   declarations: [
     ClipboardComponent,
@@ -172,6 +179,13 @@ import { GlobalFooterComponent } from './components/global-footer/global-footer.
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
+
+    MempoolBlockOverviewComponent,
+    ClockchainComponent,
+    ClockComponent,
+    ClockMinedComponent,
+    ClockMempoolComponent,
+    ClockFaceComponent,
   ],
   imports: [
     CommonModule,
@@ -279,6 +293,13 @@ import { GlobalFooterComponent } from './components/global-footer/global-footer.
     GeolocationComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
+
+    MempoolBlockOverviewComponent,
+    ClockchainComponent,
+    ClockComponent,
+    ClockMinedComponent,
+    ClockMempoolComponent,
+    ClockFaceComponent,
   ]
 })
 export class SharedModule {
