@@ -14,6 +14,7 @@ import { TrademarkPolicyComponent } from './components/trademark-policy/trademar
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
+import { RbfList } from './components/rbf-list/rbf-list.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
@@ -55,6 +56,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: BlocksList,
+          },
+          {
+            path: 'rbf',
+            component: RbfList,
           },
           {
             path: 'terms-of-service',
@@ -163,6 +168,10 @@ let routes: Routes = [
             component: BlocksList,
           },
           {
+            path: 'rbf',
+            component: RbfList,
+          },
+          {
             path: 'terms-of-service',
             component: TermsOfServiceComponent
           },
@@ -263,6 +272,10 @@ let routes: Routes = [
       {
         path: 'blocks',
         component: BlocksList,
+      },
+      {
+        path: 'rbf',
+        component: RbfList,
       },
       {
         path: 'terms-of-service',

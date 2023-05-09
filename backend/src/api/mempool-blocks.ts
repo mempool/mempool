@@ -1,5 +1,5 @@
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, ThreadTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor } from '../mempool.interfaces';
+import { MempoolBlock, TransactionExtended, ThreadTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction } from '../mempool.interfaces';
 import { Common } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -9,6 +9,9 @@ class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
+
+  private nextUid: number = 1;
+  private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
 
   constructor() {}
 
@@ -54,7 +57,14 @@ class MempoolBlocks {
     });
 
     // First sort
-    memPoolArray.sort((a, b) => b.feePerVsize - a.feePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.feePerVsize === b.feePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.feePerVsize - a.feePerVsize;
+      }
+    });
 
     // Loop through and traverse all ancestors and sum up all the sizes + fees
     // Pass down size + fee to all unconfirmed children
@@ -68,7 +78,14 @@ class MempoolBlocks {
     });
 
     // Final sort, by effective fee
-    memPoolArray.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.effectiveFeePerVsize === b.effectiveFeePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.effectiveFeePerVsize - a.effectiveFeePerVsize;
+      }
+    });
 
     const end = new Date().getTime();
     const time = end - start;
@@ -88,14 +105,26 @@ class MempoolBlocks {
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let blockWeight = 0;
+    let blockVsize = 0;
     let transactions: TransactionExtended[] = [];
     transactionsSorted.forEach((tx) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
         blockWeight += tx.weight;
+        blockVsize += tx.vsize;
         transactions.push(tx);
       } else {
         mempoolBlocks.push(this.dataToMempoolBlocks(transactions));
+        blockVsize = 0;
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
+        blockVsize += tx.vsize;
         blockWeight = tx.weight;
         transactions = [tx];
       }
@@ -112,6 +141,7 @@ class MempoolBlocks {
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
       let added: TransactionStripped[] = [];
       let removed: string[] = [];
+      const changed: { txid: string, rate: number | undefined }[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
         added = mempoolBlocks[i].transactions;
       } else if (!mempoolBlocks[i] && prevBlocks[i]) {
@@ -120,7 +150,7 @@ class MempoolBlocks {
         const prevIds = {};
         const newIds = {};
         prevBlocks[i].transactions.forEach(tx => {
-          prevIds[tx.txid] = true;
+          prevIds[tx.txid] = tx;
         });
         mempoolBlocks[i].transactions.forEach(tx => {
           newIds[tx.txid] = true;
@@ -133,30 +163,41 @@ class MempoolBlocks {
         mempoolBlocks[i].transactions.forEach(tx => {
           if (!prevIds[tx.txid]) {
             added.push(tx);
+          } else if (tx.rate !== prevIds[tx.txid].rate) {
+            changed.push({ txid: tx.txid, rate: tx.rate });
           }
         });
       }
       mempoolBlockDeltas.push({
         added,
-        removed
+        removed,
+        changed,
       });
     }
     return mempoolBlockDeltas;
   }
 
   public async $makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+    // reset mempool short ids
+    this.resetUids();
+    for (const tx of Object.values(newMempool)) {
+      this.setUid(tx);
+    }
+
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const strippedMempool: { [txid: string]: ThreadTransaction } = {};
-    Object.values(newMempool).filter(tx => !tx.deleteAfter).forEach(entry => {
-      strippedMempool[entry.txid] = {
-        txid: entry.txid,
-        fee: entry.fee,
-        weight: entry.weight,
-        feePerVsize: entry.fee / (entry.weight / 4),
-        effectiveFeePerVsize: entry.fee / (entry.weight / 4),
-        vin: entry.vin.map(v => v.txid),
-      };
+    const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
+    Object.values(newMempool).forEach(entry => {
+      if (entry.uid != null) {
+        strippedMempool.set(entry.uid, {
+          uid: entry.uid,
+          fee: entry.fee,
+          weight: entry.weight,
+          feePerVsize: entry.fee / (entry.weight / 4),
+          effectiveFeePerVsize: entry.fee / (entry.weight / 4),
+          inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
+        });
+      }
     });
 
     // (re)initialize tx selection worker thread
@@ -175,7 +216,7 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     let threadErrorListener;
     try {
-      const workerResultPromise = new Promise<{ blocks: ThreadTransaction[][], clusters: { [root: string]: string[] } }>((resolve, reject) => {
+      const workerResultPromise = new Promise<{ blocks: CompactThreadTransaction[][], clusters: Map<number, number[]> }>((resolve, reject) => {
         threadErrorListener = reject;
         this.txSelectionWorker?.once('message', (result): void => {
           resolve(result);
@@ -183,7 +224,7 @@ class MempoolBlocks {
         this.txSelectionWorker?.once('error', reject);
       });
       this.txSelectionWorker.postMessage({ type: 'set', mempool: strippedMempool });
-      let { blocks, clusters } = await workerResultPromise;
+      let { blocks, clusters } = this.convertResultTxids(await workerResultPromise);
       // filter out stale transactions
       const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
       blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
@@ -202,37 +243,42 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: string[], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: TransactionExtended[], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
       await this.$makeBlockTemplates(newMempool, saveResults);
       return;
     }
+
+    for (const tx of Object.values(added)) {
+      this.setUid(tx);
+    }
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const addedStripped: ThreadTransaction[] = added.map(entry => {
+    const addedStripped: CompactThreadTransaction[] = added.filter(entry => entry.uid != null).map(entry => {
       return {
-        txid: entry.txid,
+        uid: entry.uid || 0,
         fee: entry.fee,
         weight: entry.weight,
         feePerVsize: entry.fee / (entry.weight / 4),
         effectiveFeePerVsize: entry.fee / (entry.weight / 4),
-        vin: entry.vin.map(v => v.txid),
+        inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
       };
     });
 
     // run the block construction algorithm in a separate thread, and wait for a result
     let threadErrorListener;
     try {
-      const workerResultPromise = new Promise<{ blocks: ThreadTransaction[][], clusters: { [root: string]: string[] } }>((resolve, reject) => {
+      const workerResultPromise = new Promise<{ blocks: CompactThreadTransaction[][], clusters: Map<number, number[]> }>((resolve, reject) => {
         threadErrorListener = reject;
         this.txSelectionWorker?.once('message', (result): void => {
           resolve(result);
         });
         this.txSelectionWorker?.once('error', reject);
       });
-      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed });
-      let { blocks, clusters } = await workerResultPromise;
+      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedUids });
+      let { blocks, clusters } = this.convertResultTxids(await workerResultPromise);
       // filter out stale transactions
       const unfilteredCount = blocks.reduce((total, block) => { return total + block.length; }, 0);
       blocks = blocks.map(block => block.filter(tx => (tx.txid && tx.txid in newMempool)));
@@ -240,6 +286,8 @@ class MempoolBlocks {
       if (filteredCount < unfilteredCount) {
         logger.warn(`tx selection worker thread returned ${unfilteredCount - filteredCount} stale transactions from updateBlockTemplates`);
       }
+
+      this.removeUids(removedUids);
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -250,11 +298,19 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool, blocks, clusters, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool, blocks: ThreadTransaction[][], clusters, saveResults): MempoolBlockWithTransactions[] {
     // update this thread's mempool with the results
-    blocks.forEach(block => {
+    blocks.forEach((block, blockIndex) => {
+      let runningVsize = 0;
       block.forEach(tx => {
         if (tx.txid && tx.txid in mempool) {
+          // save position in projected blocks
+          mempool[tx.txid].position = {
+            block: blockIndex,
+            vsize: runningVsize + (mempool[tx.txid].vsize / 2),
+          };
+          runningVsize += mempool[tx.txid].vsize;
+
           if (tx.effectiveFeePerVsize != null) {
             mempool[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
           }
@@ -332,6 +388,54 @@ class MempoolBlocks {
       transactionIds: transactions.map((tx) => tx.txid),
       transactions: fitTransactions.map((tx) => Common.stripTransaction(tx)),
     };
+  }
+
+  private resetUids(): void {
+    this.uidMap.clear();
+    this.nextUid = 1;
+  }
+
+  private setUid(tx: TransactionExtended): number {
+    const uid = this.nextUid;
+    this.nextUid++;
+    this.uidMap.set(uid, tx.txid);
+    tx.uid = uid;
+    return uid;
+  }
+
+  private getUid(tx: TransactionExtended): number | void {
+    if (tx?.uid != null && this.uidMap.has(tx.uid)) {
+      return tx.uid;
+    }
+  }
+
+  private removeUids(uids: number[]): void {
+    for (const uid of uids) {
+      this.uidMap.delete(uid);
+    }
+  }
+
+  private convertResultTxids({ blocks, clusters }: { blocks: any[][], clusters: Map<number, number[]>})
+    : { blocks: ThreadTransaction[][], clusters: { [root: string]: string[] }} {
+    for (const block of blocks) {
+      for (const tx of block) {
+        tx.txid = this.uidMap.get(tx.uid);
+        if (tx.cpfpRoot) {
+          tx.cpfpRoot = this.uidMap.get(tx.cpfpRoot);
+        }
+      }
+    }
+    const convertedClusters = {};
+    for (const rootUid of clusters.keys()) {
+      const rootTxid = this.uidMap.get(rootUid);
+      if (rootTxid) {
+        const members = clusters.get(rootUid)?.map(uid => {
+          return this.uidMap.get(uid);
+        });
+        convertedClusters[rootTxid] = members;
+      }
+    }
+    return { blocks, clusters: convertedClusters } as { blocks: ThreadTransaction[][], clusters: { [root: string]: string[] }};
   }
 }
 

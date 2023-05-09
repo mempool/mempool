@@ -58,6 +58,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[];
   removed: string[];
+  changed: { txid: string, rate: number | undefined }[];
 }
 
 interface VinStrippedToScriptsig {
@@ -79,18 +80,22 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
-  deleteAfter?: number;
+  position?: {
+    block: number,
+    vsize: number,
+  };
+  uid?: number;
 }
 
 export interface AuditTransaction {
-  txid: string;
+  uid: number;
   fee: number;
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize: number;
-  vin: string[];
+  inputs: number[];
   relativesSet: boolean;
-  ancestorMap: Map<string, AuditTransaction>;
+  ancestorMap: Map<number, AuditTransaction>;
   children: Set<AuditTransaction>;
   ancestorFee: number;
   ancestorWeight: number;
@@ -100,13 +105,24 @@ export interface AuditTransaction {
   modifiedNode: HeapNode<AuditTransaction>;
 }
 
+export interface CompactThreadTransaction {
+  uid: number;
+  fee: number;
+  weight: number;
+  feePerVsize: number;
+  effectiveFeePerVsize?: number;
+  inputs: number[];
+  cpfpRoot?: string;
+  cpfpChecked?: boolean;
+}
+
 export interface ThreadTransaction {
   txid: string;
   fee: number;
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize?: number;
-  vin: string[];
+  inputs: number[];
   cpfpRoot?: string;
   cpfpChecked?: boolean;
 }
@@ -145,6 +161,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  rate?: number; // effective fee rate
 }
 
 export interface BlockExtension {

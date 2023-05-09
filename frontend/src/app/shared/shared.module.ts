@@ -61,6 +61,8 @@ import { DifficultyComponent } from '../components/difficulty/difficulty.compone
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
 import { DifficultyMiningComponent } from '../components/difficulty-mining/difficulty-mining.component';
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
+import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
+import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
 import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
 import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
@@ -72,6 +74,7 @@ import { AssetCirculationComponent } from '../components/asset-circulation/asset
 import { AmountShortenerPipe } from '../shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '../components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
+import { RbfList } from '../components/rbf-list/rbf-list.component';
 import { RewardStatsComponent } from '../components/reward-stats/reward-stats.component';
 import { DataCyDirective } from '../data-cy.directive';
 import { LoadingIndicatorComponent } from '../components/loading-indicator/loading-indicator.component';
@@ -85,6 +88,7 @@ import { TimestampComponent } from './components/timestamp/timestamp.component';
 import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
+import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
 
 @NgModule({
   declarations: [
@@ -138,6 +142,8 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     DifficultyComponent,
     DifficultyMiningComponent,
     DifficultyTooltipComponent,
+    RbfTimelineComponent,
+    RbfTimelineTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
@@ -151,6 +157,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    RbfList,
     DataCyDirective,
     RewardStatsComponent,
     LoadingIndicatorComponent,
@@ -164,6 +171,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     ToggleComponent,
     GeolocationComponent,
     TestnetAlertComponent,
+    GlobalFooterComponent,
   ],
   imports: [
     CommonModule,
@@ -242,6 +250,8 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     DifficultyComponent,
     DifficultyMiningComponent,
     DifficultyTooltipComponent,
+    RbfTimelineComponent,
+    RbfTimelineTooltipComponent,
     TxBowtieGraphComponent,
     TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
@@ -268,6 +278,7 @@ import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.
     ToggleComponent,
     GeolocationComponent,
     PreviewTitleComponent,
+    GlobalFooterComponent,
   ]
 })
 export class SharedModule {
