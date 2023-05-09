@@ -24,6 +24,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() count: number = 8; // number of blocks in this chunk (dynamic blocks only)
   @Input() loadingTip: boolean = false;
   @Input() connected: boolean = true;
+  @Input() minimal: boolean = false;
+  @Input() blockWidth: number = 125;
+  @Input() spotlight: number = 0;
   
   specialBlocks = specialBlocks;
   network = '';
@@ -50,6 +53,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   showMiningInfo = false;
   timeLtrSubscription: Subscription;
   timeLtr: boolean;
+
+  blockOffset: number = 155;
+  dividerBlockOffset: number = 205;
+  blockPadding: number = 30;
 
   gradientColors = {
     '': ['#9339f4', '#105fb0'],
@@ -118,7 +125,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
           this.blockStyles = [];
           if (this.blocksFilled && block.height > this.chainTip) {
-            this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -155 : -205)));
+            this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -this.blockOffset : -this.dividerBlockOffset)));
             setTimeout(() => {
               this.blockStyles = [];
               this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
@@ -159,6 +166,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes.blockWidth && this.blockWidth) {
+      this.blockPadding = 0.24 * this.blockWidth;
+      this.blockOffset = this.blockWidth + this.blockPadding;
+      this.dividerBlockOffset = this.blockOffset + (0.4 * this.blockWidth);
+      this.blockStyles = [];
+      this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
+    }
     if (this.static) {
       const animateSlide = changes.height && (changes.height.currentValue === changes.height.previousValue + 1);
       this.updateStaticBlocks(animateSlide);
@@ -191,14 +205,14 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
       this.arrowVisible = true;
       if (newBlockFromLeft) {
-        this.arrowLeftPx = blockindex * 155 + 30 - 205;
+        this.arrowLeftPx = blockindex * this.blockOffset + this.blockPadding - this.dividerBlockOffset;
         setTimeout(() => {
           this.arrowTransition = '2s';
-          this.arrowLeftPx = blockindex * 155 + 30;
+          this.arrowLeftPx = blockindex * this.blockOffset + this.blockPadding;
           this.cd.markForCheck();
         }, 50);
       } else {
-        this.arrowLeftPx = blockindex * 155 + 30;
+        this.arrowLeftPx = blockindex * this.blockOffset + this.blockPadding;
         if (!animate) {
           setTimeout(() => {
             this.arrowTransition = '2s';
@@ -245,7 +259,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.blocks = this.blocks.slice(0, this.count);
     this.blockStyles = [];
-    this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, animateSlide ? -155 : 0)));
+    this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, animateSlide ? -this.blockOffset : 0)));
     this.cd.markForCheck();
     if (animateSlide) {
       // animate blocks slide right
@@ -287,7 +301,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return {
-      left: addLeft + 155 * index + 'px',
+      left: addLeft + this.blockOffset * index + 'px',
       background: `repeating-linear-gradient(
         #2d3348,
         #2d3348 ${greenBackgroundHeight}%,
@@ -309,7 +323,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const addLeft = animateEnterFrom || 0;
 
     return {
-      left: addLeft + (155 * index) + 'px',
+      left: addLeft + (this.blockOffset * index) + 'px',
       background: "#2d3348",
     };
   }
@@ -317,7 +331,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   getStyleForPlaceholderBlock(index: number, animateEnterFrom: number = 0) {
     const addLeft = animateEnterFrom || 0;
     return {
-      left: addLeft + (155 * index) + 'px',
+      left: addLeft + (this.blockOffset * index) + 'px',
     };
   }
 
@@ -325,7 +339,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const addLeft = animateEnterFrom || 0;
 
     return {
-      left: addLeft + 155 * this.emptyBlocks.indexOf(block) + 'px',
+      left: addLeft + this.blockOffset * this.emptyBlocks.indexOf(block) + 'px',
       background: "#2d3348",
     };
   }
