@@ -30,6 +30,9 @@ class WebsocketHandler {
   private numConnected = 0;
   private numDisconnected = 0;
 
+  private initData: { [key: string]: string } = {};
+  private serializedInitData: string = '{}';
+
   constructor() { }
 
   setWebsocketServer(wss: WebSocket.Server) {
@@ -38,6 +41,41 @@ class WebsocketHandler {
 
   setExtraInitProperties(property: string, value: any) {
     this.extraInitProperties[property] = value;
+    this.setInitDataFields(this.extraInitProperties);
+  }
+
+  private setInitDataFields(data: { [property: string]: any }): void {
+    for (const property of Object.keys(data)) {
+      if (data[property] != null) {
+        this.initData[property] = JSON.stringify(data[property]);
+      } else {
+        delete this.initData[property];
+      }
+    }
+    this.serializedInitData = '{'
+      + Object.keys(this.initData).map(key => `"${key}": ${this.initData[key]}`).join(', ')
+      + '}';
+  }
+
+  private updateInitData(): void {
+    const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+    this.setInitDataFields({
+      'mempoolInfo': memPool.getMempoolInfo(),
+      'vBytesPerSecond': memPool.getVBytesPerSecond(),
+      'blocks': _blocks,
+      'conversions': priceUpdater.getLatestPrices(),
+      'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
+      'transactions': memPool.getLatestTransactions(),
+      'backendInfo': backendInfo.getBackendInfo(),
+      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
+      'da': da?.previousTime ? da : undefined,
+      'fees': feeApi.getRecommendedFee(),
+    });
+  }
+
+  public getSerializedInitData(): string {
+    return this.serializedInitData;
   }
 
   setupConnectionHandling() {
@@ -157,11 +195,13 @@ class WebsocketHandler {
           }
 
           if (parsedMessage.action === 'init') {
-            const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
-            if (!_blocks) {
+            if (!this.initData['blocks']?.length || !this.initData['da']) {
+              this.updateInitData();
+            }
+            if (!this.initData['blocks']?.length) {
               return;
             }
-            client.send(JSON.stringify(this.getInitData(_blocks)));
+            client.send(this.serializedInitData);
           }
 
           if (parsedMessage.action === 'ping') {
@@ -210,6 +250,8 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    this.setInitDataFields({ 'loadingIndicators': indicators });
+
     const response = JSON.stringify({ loadingIndicators: indicators });
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -224,6 +266,8 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
+    this.setInitDataFields({ 'conversions': conversionRates });
+
     const response = JSON.stringify({ conversions: conversionRates });
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -231,26 +275,6 @@ class WebsocketHandler {
       }
       client.send(response);
     });
-  }
-
-  getInitData(_blocks?: BlockExtended[]) {
-    if (!_blocks) {
-      _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
-    }
-    const da = difficultyAdjustment.getDifficultyAdjustment();
-    return {
-      'mempoolInfo': memPool.getMempoolInfo(),
-      'vBytesPerSecond': memPool.getVBytesPerSecond(),
-      'blocks': _blocks,
-      'conversions': priceUpdater.getLatestPrices(),
-      'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
-      'transactions': memPool.getLatestTransactions(),
-      'backendInfo': backendInfo.getBackendInfo(),
-      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
-      'da': da?.previousTime ? da : undefined,
-      'fees': feeApi.getRecommendedFee(),
-      ...this.extraInitProperties
-    };
   }
 
   handleNewStatistic(stats: OptimizedStatistic) {
@@ -310,8 +334,11 @@ class WebsocketHandler {
     }
     const recommendedFees = feeApi.getRecommendedFee();
 
+    // update init data
+    this.updateInitData();
+
     // cache serialized objects to avoid stringify-ing the same thing for every client
-    const responseCache = {};
+    const responseCache = { ...this.initData };
     function getCachedResponse(key: string,  data): string {
       if (!responseCache[key]) {
         responseCache[key] = JSON.stringify(data);
@@ -342,6 +369,8 @@ class WebsocketHandler {
       }
     }
 
+    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+
     this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
@@ -352,7 +381,7 @@ class WebsocketHandler {
       if (client['want-stats']) {
         response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
         response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', vBytesPerSecond);
-        response['transactions'] = getCachedResponse('transactions', newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx)));
+        response['transactions'] = getCachedResponse('transactions', latestTransactions);
         if (da?.previousTime) {
           response['da'] = getCachedResponse('da', da);
         }
@@ -587,13 +616,18 @@ class WebsocketHandler {
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
 
-    const responseCache = {};
-    function getCachedResponse(key,  data) {
+    // update init data
+    this.updateInitData();
+
+    const responseCache = { ...this.initData };
+    function getCachedResponse(key, data): string {
       if (!responseCache[key]) {
         responseCache[key] = JSON.stringify(data);
       }
       return responseCache[key];
     }
+
+    const mempoolInfo = memPool.getMempoolInfo();
 
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -606,7 +640,7 @@ class WebsocketHandler {
 
       const response = {};
       response['block'] = getCachedResponse('block', block);
-      response['mempoolInfo'] = getCachedResponse('mempoolInfo', memPool.getMempoolInfo(),);
+      response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
       response['da'] = getCachedResponse('da', da?.previousTime ? da : undefined);
       response['fees'] = getCachedResponse('fees', fees);
 
