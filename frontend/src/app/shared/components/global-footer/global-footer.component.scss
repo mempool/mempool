@@ -13,6 +13,8 @@ footer p {
 
 footer .row.main {
   padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 footer .row.main .branding {
@@ -34,6 +36,10 @@ footer .row.main .branding .cta {
 
 footer .row.main .branding .cta-secondary {
 
+}
+
+footer .row.main .links.outer {
+  padding-left: 24px;
 }
 
 footer .row.main .links > div:first-child {
