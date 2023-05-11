@@ -1,18 +1,18 @@
-<footer *ngIf="networkPaths$ | async as networkPaths">
+<footer>
     <div class="container-fluid">
     <div class="row main">
       <div class="col-sm-4 branding">
-        <h5>The Mempool Open Source Project™</h5>
-        <p>Explore the full Bitcoin ecosystem.</p>
+        <h5 i18n="about.about-the-project">The Mempool Open Source Project</h5>
+        <p i18="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</p>
         <div class="selector">
           <app-language-selector></app-language-selector>
         </div>
         <div class="selector">
           <app-fiat-selector></app-fiat-selector>
         </div>
-        <a class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Sign In / Sign Up</a>
+        <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Sign In / Sign Up</a>
         <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
-        <p class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]">Connect to Mempool Nodes</a></p>
+        <p *ngIf="officialMempoolSpace && env.LIGHTNING" class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our nodes</a></p>
       </div>
       <div class="col-sm-8 links">
         <div class="row">
@@ -21,7 +21,6 @@
             <p><a [routerLink]="['/mining' | relativeUrl]">Mining Dashboard</a></p>
             <p><a [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
             <p><a [routerLink]="['/blocks' | relativeUrl]">Recent Blocks</a></p>
-            <p><a [routerLink]="['/rbf' | relativeUrl]">Recent RBF Transactions</a></p>
           </div>
           <div class="col-sm-4 links">
             <p class="category">Learn</p>
@@ -50,10 +49,10 @@
           </div>
           <div class="col-sm-4 links">
             <p class="category">More Networks</p>
-            <p><a [routerLink]="['/testnet' | relativeUrl]">Testnet Block Explorer</a></p>
-            <p><a [routerLink]="['/signet' | relativeUrl]">Signet Block Explorer</a></p>
-            <p><a href="https://liquid.network">Liquid Block Explorer</a></p>
-            <p><a href="https://bisq.network">Bisq Block Explorer</a></p>
+            <p><a [routerLink]="['/testnet' | relativeUrl]">Testnet Explorer</a></p>
+            <p><a [routerLink]="['/signet' | relativeUrl]">Signet Explorer</a></p>
+            <p><a href="https://liquid.network">Liquid Explorer</a></p>
+            <p><a href="https://bisq.network">Bisq Explorer</a></p>
           </div>
           <div class="col-sm-4 links">
             <p class="category">Legal</p>
