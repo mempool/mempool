@@ -1,4 +1,5 @@
-import * as bitcoinjs from 'bitcoinjs-lib';
+import * as bitcoinjs from './bitcoinjs-lib.js';
+var Buffer = require('buffer/').Buffer;
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
