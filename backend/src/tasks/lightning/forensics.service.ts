@@ -27,7 +27,7 @@ class ForensicsService {
 
   private async $runTasks(): Promise<void> {
     try {
-      logger.info(`Running forensics scans`);
+      logger.debug(`Running forensics scans`);
 
       if (config.MEMPOOL.BACKEND === 'esplora') {
         await this.$runClosedChannelsForensics(false);
@@ -73,7 +73,7 @@ class ForensicsService {
     let progress = 0;
 
     try {
-      logger.info(`Started running closed channel forensics...`);
+      logger.debug(`Started running closed channel forensics...`);
       let channels;
       if (onlyNewChannels) {
         channels = await channelsApi.$getClosedChannelsWithoutReason();
@@ -152,11 +152,11 @@ class ForensicsService {
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.info(`Updating channel closed channel forensics ${progress}/${channels.length}`);
+          logger.debug(`Updating channel closed channel forensics ${progress}/${channels.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
-      logger.info(`Closed channels forensics scan complete.`);
+      logger.debug(`Closed channels forensics scan complete.`);
     } catch (e) {
       logger.err('$runClosedChannelsForensics() error: ' + (e instanceof Error ? e.message : e));
     }
@@ -217,7 +217,7 @@ class ForensicsService {
     let progress = 0;
 
     try {
-      logger.info(`Started running open channel forensics...`);
+      logger.debug(`Started running open channel forensics...`);
       const channels = await channelsApi.$getChannelsWithoutSourceChecked();
 
       for (const openChannel of channels) {
@@ -257,7 +257,7 @@ class ForensicsService {
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.info(`Updating opened channel forensics ${progress}/${channels?.length}`);
+          logger.debug(`Updating opened channel forensics ${progress}/${channels?.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
           this.truncateTempCache();
         }
@@ -266,7 +266,7 @@ class ForensicsService {
         }
       }
 
-      logger.info(`Open channels forensics scan complete.`);
+      logger.debug(`Open channels forensics scan complete.`);
     } catch (e) {
       logger.err('$runOpenedChannelsForensics() error: ' + (e instanceof Error ? e.message : e));
     } finally {
