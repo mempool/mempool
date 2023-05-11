@@ -1,4 +1,5 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
+
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
@@ -213,8 +214,8 @@ class BitcoinApi implements AbstractBitcoinApi {
         txid: vin.txid || '',
         vout: vin.vout || 0,
         witness: vin.txinwitness || [],
-        inner_redeemscript_asm: '',
-        inner_witnessscript_asm: '',
+        inner_redeemscript_asm: vin.inner_redeemscript_asm || '',
+        inner_witnessscript_asm: vin.inner_witnessscript_asm || '',
       };
     });
 

@@ -88,6 +88,8 @@ export namespace IBitcoinApi {
       asm: string;                   //  (string) asm
       hex: string;                   //  (string) hex
     };
+    inner_redeemscript_asm?: string; //  (string) The inner redeem script in assembly
+    inner_witnessscript_asm?: string;//  (string) The inner witness script in assembly
     sequence: number;                //  (numeric) The script sequence number
     txinwitness?: string[];          //  (string) hex-encoded witness data
     coinbase?: string;
