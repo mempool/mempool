@@ -42,6 +42,7 @@
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
+    "SSL": false,
     "TIMEOUT": 60000,
     "COOKIE": false,
     "COOKIE_PATH": "/path/to/bitcoin/.cookie"
@@ -65,6 +66,7 @@
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
+    "SSL": false,
     "TIMEOUT": 60000,
     "COOKIE": false,
     "COOKIE_PATH": "/path/to/bitcoin/.cookie"

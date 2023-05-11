@@ -35,6 +35,7 @@ export interface BitcoinRpcCredentials {
   port: number;
   user: string;
   pass: string;
+  ssl: boolean;
   timeout: number;
   cookie?: string;
 }

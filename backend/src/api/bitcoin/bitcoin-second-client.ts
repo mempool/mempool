@@ -7,6 +7,7 @@ const nodeRpcCredentials: BitcoinRpcCredentials = {
   port: config.SECOND_CORE_RPC.PORT,
   user: config.SECOND_CORE_RPC.USERNAME,
   pass: config.SECOND_CORE_RPC.PASSWORD,
+  ssl: config.SECOND_CORE_RPC.SSL,
   timeout: config.SECOND_CORE_RPC.TIMEOUT,
   cookie: config.SECOND_CORE_RPC.COOKIE ? config.SECOND_CORE_RPC.COOKIE_PATH : undefined,
 };
