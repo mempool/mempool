@@ -1,5 +1,4 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
-
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
