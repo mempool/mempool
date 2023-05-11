@@ -181,7 +181,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
           const positions = { top: (this.template === 'advanced') ? 0 : -30 };
-          positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 60;
+          positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 100;
           return positions;
         },
         extraCssText: `width: ${(this.template === 'advanced') ? '275px' : '200px'};
@@ -189,10 +189,19 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
-          type: 'line',
+          type: 'cross',
+          label: {
+            formatter: (params: any) => {
+              if (params.axisDimension === 'y') {
+                return this.vbytesPipe.transform(params.value, 2, 'vB', 'MvB', true)
+              } else {
+                return formatterXAxis(this.locale, this.windowPreference, params.value);
+              }
+            }
+          }
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
