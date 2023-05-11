@@ -233,10 +233,6 @@ class BitcoinApi implements AbstractBitcoinApi {
       esploraTransaction = await this.$appendMempoolFeeData(esploraTransaction);
     }
 
-    for (const vin of esploraTransaction.vin) {
-      this.addInnerScriptsToVin(vin);
-    }
-
     return esploraTransaction;
   }
 
