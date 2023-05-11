@@ -90,9 +90,12 @@
 </nav>
 </header>
 
+<app-testnet-alert *ngIf="network.val === 'liquidtestnet'"></app-testnet-alert>
+
 <br />
 
 <router-outlet></router-outlet>
 
-<br>
+<app-global-footer></app-global-footer>
+
 </ng-container>

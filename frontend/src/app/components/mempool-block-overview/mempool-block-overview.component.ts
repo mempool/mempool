@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
+  @Input() pixelAlign: boolean = false;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
@@ -99,7 +100,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       const direction = (this.blockIndex == null || this.index < this.blockIndex) ? this.poolDirection : this.chainDirection;
       this.blockGraph.replace(delta.added, direction);
     } else {
-      this.blockGraph.update(delta.added, delta.removed, blockMined ? this.chainDirection : this.poolDirection, blockMined);
+      this.blockGraph.update(delta.added, delta.removed, delta.changed || [], blockMined ? this.chainDirection : this.poolDirection, blockMined);
     }
 
     this.lastBlockHeight = this.stateService.latestBlockHeight;
@@ -107,8 +108,12 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
     this.isLoading$.next(false);
   }
 
-  onTxClick(event: TransactionStripped): void {
-    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.txid}`);
-    this.router.navigate([url]);
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
   }
 }

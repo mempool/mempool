@@ -23,7 +23,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
   @Input() blockConversion: Price;
-  @Output() txClickEvent = new EventEmitter<TransactionStripped>();
+  @Input() pixelAlign: boolean = false;
+  @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
 
@@ -132,9 +133,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  update(add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
-      this.scene.update(add, remove, direction, resetLayout);
+      this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
     }
   }
@@ -201,7 +202,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.start();
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
-        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray, highlighting: this.auditHighlighting });
+        blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
+        highlighting: this.auditHighlighting, pixelAlign: this.pixelAlign });
       this.start();
     }
   }
@@ -326,7 +328,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (event.target === this.canvas.nativeElement && event.pointerType === 'touch') {
       this.setPreviewTx(event.offsetX, event.offsetY, true);
     } else if (event.target === this.canvas.nativeElement) {
-      this.onTxClick(event.offsetX, event.offsetY);
+      const keyMod = event.shiftKey || event.ctrlKey || event.metaKey;
+      const middleClick = event.which === 2 || event.button === 1;
+      this.onTxClick(event.offsetX, event.offsetY, keyMod || middleClick);
     }
   }
 
@@ -409,12 +413,12 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  onTxClick(cssX: number, cssY: number) {
+  onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
     const x = cssX * window.devicePixelRatio;
     const y = cssY * window.devicePixelRatio;
     const selected = this.scene.getTxAt({ x, y });
     if (selected && selected.txid) {
-      this.txClickEvent.emit(selected);
+      this.txClickEvent.emit({ tx: selected, keyModifier });
     }
   }
 

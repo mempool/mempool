@@ -13,6 +13,48 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 
+interface DatabaseBlock {
+  id: string;
+  height: number;
+  version: number;
+  timestamp: number;
+  bits: number;
+  nonce: number;
+  difficulty: number;
+  merkle_root: string;
+  tx_count: number;
+  size: number;
+  weight: number;
+  previousblockhash: string;
+  mediantime: number;
+  totalFees: number;
+  medianFee: number;
+  feeRange: string;
+  reward: number;
+  poolId: number;
+  poolName: string;
+  poolSlug: string;
+  avgFee: number;
+  avgFeeRate: number;
+  coinbaseRaw: string;
+  coinbaseAddress: string;
+  coinbaseSignature: string;
+  coinbaseSignatureAscii: string;
+  avgTxSize: number;
+  totalInputs: number;
+  totalOutputs: number;
+  totalOutputAmt: number;
+  medianFeeAmt: number;
+  feePercentiles: string;
+  segwitTotalTxs: number;
+  segwitTotalSize: number;
+  segwitTotalWeight: number;
+  header: string;
+  utxoSetChange: number;
+  utxoSetSize: number;
+  totalInputAmt: number;
+}
+
 const BLOCK_DB_FIELDS = `
   blocks.hash AS id,
   blocks.height,
@@ -52,7 +94,7 @@ const BLOCK_DB_FIELDS = `
   blocks.header,
   blocks.utxoset_change AS utxoSetChange,
   blocks.utxoset_size AS utxoSetSize,
-  blocks.total_input_amt AS totalInputAmts
+  blocks.total_input_amt AS totalInputAmt
 `;
 
 class BlocksRepository {
@@ -167,6 +209,32 @@ class BlocksRepository {
       await DB.query(query, params);
     } catch (e: any) {
       logger.err('Cannot update indexed block coinstatsindex. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Update missing fee amounts fields
+   *
+   * @param blockHash 
+   * @param feeAmtPercentiles 
+   * @param medianFeeAmt 
+   */
+  public async $updateFeeAmounts(blockHash: string, feeAmtPercentiles, medianFeeAmt) : Promise<void> {
+    try {
+      const query = `
+        UPDATE blocks
+        SET fee_percentiles = ?, median_fee_amt = ?
+        WHERE hash = ?
+      `;
+      const params: any[] = [
+        JSON.stringify(feeAmtPercentiles),
+        medianFeeAmt,
+        blockHash
+      ];
+      await DB.query(query, params);
+    } catch (e: any) {
+      logger.err(`Cannot update fee amounts for block ${blockHash}. Reason: ' + ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }
@@ -432,7 +500,7 @@ class BlocksRepository {
 
       const blocks: BlockExtended[] = [];
       for (const block of rows) {
-        blocks.push(await this.formatDbBlockIntoExtendedBlock(block));
+        blocks.push(await this.formatDbBlockIntoExtendedBlock(block as DatabaseBlock));
       }
 
       return blocks;
@@ -459,33 +527,9 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
-   * Get one block by hash
-   */
-  public async $getBlockByHash(hash: string): Promise<object | null> {
-    try {
-      const query = `
-        SELECT ${BLOCK_DB_FIELDS}
-        FROM blocks
-        JOIN pools ON blocks.pool_id = pools.id
-        WHERE hash = ?;
-      `;
-      const [rows]: any[] = await DB.query(query, [hash]);
-
-      if (rows.length <= 0) {
-        return null;
-      }
- 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);
-    } catch (e) {
-      logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -599,7 +643,6 @@ class BlocksRepository {
         if (blocks[idx].previous_block_hash !== blocks[idx - 1].hash) {
           logger.warn(`Chain divergence detected at block ${blocks[idx - 1].height}`);
           await this.$deleteBlocksFrom(blocks[idx - 1].height);
-          await BlocksSummariesRepository.$deleteBlocksFrom(blocks[idx - 1].height);
           await HashratesRepository.$deleteHashratesFromTimestamp(blocks[idx - 1].timestamp - 604800);
           await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(blocks[idx - 1].height);
           return false;
@@ -619,7 +662,7 @@ class BlocksRepository {
    * Delete blocks from the database from blockHeight
    */
   public async $deleteBlocksFrom(blockHeight: number) {
-    logger.info(`Delete newer blocks from height ${blockHeight} from the database`);
+    logger.info(`Delete newer blocks from height ${blockHeight} from the database`, logger.tags.mining);
 
     try {
       await DB.query(`DELETE FROM blocks where height >= ${blockHeight}`);
@@ -933,7 +976,7 @@ class BlocksRepository {
    * 
    * @param dbBlk 
    */
-  private async formatDbBlockIntoExtendedBlock(dbBlk: any): Promise<BlockExtended> {
+  private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
     const extras: Partial<BlockExtension> = {};
 
@@ -997,6 +1040,7 @@ class BlocksRepository {
     }
 
     // If we're missing block summary related field, check if we can populate them on the fly now
+    // This is for example triggered upon re-org
     if (Common.blocksSummariesIndexingEnabled() &&
       (extras.medianFeeAmt === null || extras.feePercentiles === null))
     {
@@ -1004,11 +1048,12 @@ class BlocksRepository {
       if (extras.feePercentiles === null) {
         const block = await bitcoinClient.getBlock(dbBlk.id, 2);
         const summary = blocks.summarizeBlock(block);
-        await BlocksSummariesRepository.$saveSummary({ height: block.height, mined: summary });
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
         extras.medianFeeAmt = extras.feePercentiles[3];
+        await this.$updateFeeAmounts(dbBlk.id, extras.feePercentiles, extras.medianFeeAmt);
       }
     }
 

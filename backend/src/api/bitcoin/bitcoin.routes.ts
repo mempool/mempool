@@ -32,8 +32,10 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/replaces', this.getRbfHistory)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'replacements', this.getRbfReplacements)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fullrbf/replacements', this.getFullRbfReplacements)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
         try {
@@ -94,6 +96,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
@@ -110,7 +113,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
-          .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', this.getRawBlock)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', this.getTxIdsForBlock)
@@ -128,8 +130,9 @@ class BitcoinRoutes {
 
   private getInitData(req: Request, res: Response) {
     try {
-      const result = websocketHandler.getInitData();
-      res.json(result);
+      const result = websocketHandler.getSerializedInitData();
+      res.set('Content-Type', 'application/json');
+      res.send(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -589,10 +592,14 @@ class BitcoinRoutes {
     }
   }
 
-  private async getBlockTipHeight(req: Request, res: Response) {
+  private getBlockTipHeight(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlockHeightTip();
-      res.json(result);
+      const result = blocks.getCurrentBlockHeight();
+      if (!result) {
+        return res.status(503).send(`Service Temporarily Unavailable`);
+      }
+      res.setHeader('content-type', 'text/plain');
+      res.send(result.toString());
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -638,8 +645,30 @@ class BitcoinRoutes {
 
   private async getRbfHistory(req: Request, res: Response) {
     try {
-      const result = rbfCache.getReplaces(req.params.txId);
-      res.json(result || []);
+      const replacements = rbfCache.getRbfTree(req.params.txId) || null;
+      const replaces = rbfCache.getReplaces(req.params.txId) || null;
+      res.json({
+        replacements,
+        replaces
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getRbfReplacements(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getRbfTrees(false);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getFullRbfReplacements(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getRbfTrees(true);
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
