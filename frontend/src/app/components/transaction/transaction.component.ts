@@ -1,3 +1,4 @@
+import * as bitcoinjs from 'bitcoinjs-lib';
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -11,7 +12,7 @@ import {
   mergeMap,
   tap
 } from 'rxjs/operators';
-import { Transaction } from '../../interfaces/electrs.interface';
+import { Transaction, Vin } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, timer, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
@@ -321,6 +322,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           this.tx = tx;
+         
+          for(const vin of tx.vin){
+          this.addInnerScriptsToVin(vin)
+          }
           this.setFeatures();
           this.isCached = false;
           if (tx.fee === undefined) {
@@ -455,6 +460,95 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.setGraphSize();
+  }
+
+  convertScriptSigAsm(hex: string): string {
+    const buf = Buffer.from(hex, 'hex');
+
+    const b: string[] = [];
+
+    let i = 0;
+    while (i < buf.length) {
+      const op = buf[i];
+      if (op >= 0x01 && op <= 0x4e) {
+        i++;
+        let push: number;
+        if (op === 0x4c) {
+          push = buf.readUInt8(i);
+          b.push('OP_PUSHDATA1');
+          i += 1;
+        } else if (op === 0x4d) {
+          push = buf.readUInt16LE(i);
+          b.push('OP_PUSHDATA2');
+          i += 2;
+        } else if (op === 0x4e) {
+          push = buf.readUInt32LE(i);
+          b.push('OP_PUSHDATA4');
+          i += 4;
+        } else {
+          push = op;
+          b.push('OP_PUSHBYTES_' + push);
+        }
+
+        const data = buf.slice(i, i + push);
+        if (data.length !== push) {
+          break;
+        }
+
+        b.push(data.toString('hex'));
+        i += data.length;
+      } else {
+        if (op === 0x00) {
+          b.push('OP_0');
+        } else if (op === 0x4f) {
+          b.push('OP_PUSHNUM_NEG1');
+        } else if (op === 0xb1) {
+          b.push('OP_CLTV');
+        } else if (op === 0xb2) {
+          b.push('OP_CSV');
+        } else if (op === 0xba) {
+          b.push('OP_CHECKSIGADD');
+        } else {
+          const opcode = bitcoinjs.script.toASM([ op ]);
+          if (opcode && op < 0xfd) {
+            if (/^OP_(\d+)$/.test(opcode)) {
+              b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+            } else {
+              b.push(opcode);
+            }
+          } else {
+            b.push('OP_RETURN_' + op);
+          }
+        }
+        i += 1;
+      }
+    }
+
+    return b.join(' ');
+  }
+  addInnerScriptsToVin(vin: Vin): void {
+    if (!vin.prevout) {
+      return;
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'p2sh') {
+      const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
+      vin.inner_redeemscript_asm = this.convertScriptSigAsm(redeemScript);
+      if (vin.witness && vin.witness.length > 2) {
+        const witnessScript = vin.witness[vin.witness.length - 1];
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
+      const witnessScript = vin.witness[vin.witness.length - 1];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness && vin.witness.length > 1) {
+      const witnessScript = vin.witness[vin.witness.length - 2];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+    }
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
