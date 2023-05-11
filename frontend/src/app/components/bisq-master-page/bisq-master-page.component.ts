@@ -17,6 +17,7 @@ export class BisqMasterPageComponent implements OnInit {
   isMobile = window.innerWidth <= 767.98;
   urlLanguage: string;
   networkPaths: { [network: string]: string };
+  footerVisible = false;
 
   constructor(
     private stateService: StateService,
@@ -31,6 +32,9 @@ export class BisqMasterPageComponent implements OnInit {
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
+      if( paths.bisq === "" ) {
+        this.footerVisible = true;
+      }
     });
   }
 
