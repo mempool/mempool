@@ -107,7 +107,7 @@
                       <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
                         <span class="eta">
                           <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                          <a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                          <a *ngIf="false && stateService.env.OFFICIAL_MEMPOOL_SPACE" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
                         </span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
@@ -117,7 +117,7 @@
                         <ng-template #timeEstimateDefault>
                           <span class="eta">
                             <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * this.mempoolPosition.block) + now + timeAvg" [fastRender]="false" [fixedRender]="true"></app-time>
-                            <a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                            <a *ngIf="false && stateService.env.OFFICIAL_MEMPOOL_SPACE" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
                           </span>
                         </ng-template>
                       </ng-template>
