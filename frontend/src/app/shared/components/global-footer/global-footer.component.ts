@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, merge, of, Subject } from 'rxjs';
+import { tap, takeUntil } from 'rxjs/operators';
 import { Env, StateService } from '../../../services/state.service';
 import { IBackendInfo } from '../../../interfaces/websocket.interface';
 
@@ -10,12 +11,14 @@ import { IBackendInfo } from '../../../interfaces/websocket.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalFooterComponent implements OnInit {
+  private destroy$: Subject<any> = new Subject<any>();
   env: Env;
-  networkPaths: { [network: string]: string };
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   backendInfo$: Observable<IBackendInfo>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
+  network$: Observable<string>;
+  currentNetwork = "";
 
   constructor(
     public stateService: StateService,
@@ -24,6 +27,14 @@ export class GlobalFooterComponent implements OnInit {
   ngOnInit(): void {
     this.env = this.stateService.env;
     this.backendInfo$ = this.stateService.backendInfo$;
+    this.network$ = merge(of(''), this.stateService.networkChanged$).pipe(
+      tap((network: string) => {
+        return network;
+      })
+    );
+    this.network$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
+      this.currentNetwork = network;
+    });
   }
 
 }
