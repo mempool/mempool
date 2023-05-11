@@ -114,7 +114,12 @@
                           <ng-container *ngFor="let witness of vin.witness; index as i">
                             <input type="checkbox" [id]="'tx' + vindex + 'witness' + i" style="display: none;">
                             <p class="witness-item" [class.accordioned]="witness.length > 1000">
-                              {{ witness }}
+                              <ng-template [ngIf]="witness" [ngIfElse]="emptyWitnessItem">
+                                {{ witness }}
+                              </ng-template>
+                              <ng-template #emptyWitnessItem>
+                                &lt;empty&gt;
+                              </ng-template>
                             </p>
                             <div class="witness-toggle" *ngIf="witness.length > 1000">
                               <span  class="ellipsis">...</span>
