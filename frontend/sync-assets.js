@@ -1,5 +1,6 @@
 var https = require('https');
 var fs = require('fs');
+var crypto = require('crypto');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
@@ -37,6 +38,13 @@ function download(filename, url) {
   });
 }
 
+function getLocalHash(filePath) {
+  const size = fs.statSync(filePath);
+  const buffer = fs.readFileSync(filePath);
+  const bufferWithHeader = Buffer.concat([Buffer.from('blob '), Buffer.from(`${size.size}`), Buffer.from('\0'), buffer]);
+  return crypto.createHash('sha1').update(bufferWithHeader).digest('hex');
+}
+
 function downloadMiningPoolLogos() {
   const options = {
     host: 'api.github.com',
@@ -46,21 +54,29 @@ function downloadMiningPoolLogos() {
   };
 
   https.get(options, (response) => {
-    let chunks_of_data = [];
+    const chunks_of_data = [];
 
     response.on('data', (fragments) => {
       chunks_of_data.push(fragments);
     });
 
     response.on('end', () => {
-      let response_body = Buffer.concat(chunks_of_data);
+      const response_body = Buffer.concat(chunks_of_data);
       try {
         const poolLogos = JSON.parse(response_body.toString());
         let downloadedCount = 0;
         for (const poolLogo of poolLogos) {
           const filePath = `${PATH}/mining-pools/${poolLogo.name}`;
-          if (!fs.existsSync(filePath)) {
-            download(filePath, poolLogo.download_url);
+          if (fs.existsSync(filePath)) {
+            const localHash = getLocalHash(filePath);
+            if (localHash !== poolLogo.sha) {
+              console.log(`${poolLogo.name} is different on the remote, updating`);
+              download(filePath, poolLogo.download_url);
+              downloadedCount++;
+            }
+          } else {
+            console.log(`${poolLogo.name} is missing, downloading`);
+            download(`${PATH}mining-pools/${poolLogo.name}`, poolLogo.download_url);
             downloadedCount++;
           }
         }
@@ -73,7 +89,58 @@ function downloadMiningPoolLogos() {
     response.on('error', (error) => {
       throw new Error(error);
     });
-  })
+  });
+}
+
+function downloadPromoVideoSubtiles() {
+  // for( const l of promoVideoLanguages ) {
+  //  download(promoPrefix + l + '.vtt', 'https://raw.githubusercontent.com/mempool/mempool-promo/master/subtitles/' + l + '.vtt');
+  // }
+
+  const options = {
+    host: 'api.github.com',
+    path: '/repos/mempool/mempool-promo/contents/subtitles',
+    method: 'GET',
+    headers: {'user-agent': 'node.js'}
+  };
+
+  https.get(options, (response) => {
+    const chunks_of_data = [];
+
+    response.on('data', (fragments) => {
+      chunks_of_data.push(fragments);
+    });
+
+    response.on('end', () => {
+      const response_body = Buffer.concat(chunks_of_data);
+      try {
+        const videoLanguages = JSON.parse(response_body.toString());
+        let downloadedCount = 0;
+        for (const language of videoLanguages) {
+          const filePath = `${PATH}/promo-video/${language.name}`;
+          if (fs.existsSync(filePath)) {
+            const localHash = getLocalHash(filePath);
+            if (localHash !== language.sha) {
+              console.log(`${language.name} is different on the remote, updating`);
+              download(filePath, language.download_url);
+              downloadedCount++;
+            }
+          } else {
+            console.log(`${language.name} is missing, downloading`);
+            download(`${PATH}promo-video/${language.name}`, language.download_url);
+            downloadedCount++;
+          }
+        }
+        console.log(`Downloaded ${downloadedCount} and skipped ${videoLanguages.length - downloadedCount} existing video subtitles`);
+      } catch (e) {
+        console.error(`Unable to download video subtitles. Trying again at next restart. Reason: ${e instanceof Error ? e.message : e}`);
+      }
+    });
+
+    response.on('error', (error) => {
+      throw new Error(error);
+    });
+  });
 }
 
 let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
@@ -87,10 +154,9 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
 const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
 const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
-const promoPrefix = PATH + '/promo-video/';
-const promoVideoFile = promoPrefix + 'mempool-promo.mp4';
+
+const promoVideoFile = PATH + '/promo-video/mempool-promo.mp4';
 const promoVideoUrl = 'https://raw.githubusercontent.com/mempool/mempool-promo/master/promo.mp4';
-const promoVideoLanguages = ['en','sv','ja','zh','cs','fi','fr','de','it','lt','nb','fa','pl','ro','pt'];
 
 console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
@@ -105,8 +171,6 @@ if (!fs.existsSync(promoVideoFile)) {
   download(promoVideoFile, promoVideoUrl);
 }
 console.log('Downloading promo video subtitles');
-for( const l of promoVideoLanguages ) {
-  download(promoPrefix + l + ".vtt", "https://raw.githubusercontent.com/mempool/mempool-promo/master/subtitles/" + l + ".vtt");
-}
+downloadPromoVideoSubtiles();
 console.log('Downloading mining pool logos');
 downloadMiningPoolLogos();
