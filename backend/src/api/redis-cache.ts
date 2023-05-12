@@ -4,6 +4,7 @@ import blocks from './blocks';
 import logger from '../logger';
 import config from '../config';
 import { BlockExtended, BlockSummary, TransactionExtended } from '../mempool.interfaces';
+import rbfCache from './rbf-cache';
 
 class RedisCache {
   private client;
@@ -73,6 +74,24 @@ class RedisCache {
     }
   }
 
+  async $setRbfEntry(type: string, txid: string, value: any): Promise<void> {
+    try {
+      await this.$ensureConnected();
+      await this.client.json.set(`rbf:${type}:${txid}`, '$', value);
+    } catch (e) {
+      logger.warn(`Failed to set RBF ${type} in Redis cache: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  async $removeRbfEntry(type: string, txid: string): Promise<void> {
+    try {
+      await this.$ensureConnected();
+      await this.client.del(`rbf:${type}:${txid}`);
+    } catch (e) {
+      logger.warn(`Failed to remove RBF ${type} from Redis cache: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+
   async $getBlocks(): Promise<BlockExtended[]> {
     try {
       await this.$ensureConnected();
@@ -121,6 +140,26 @@ class RedisCache {
     return mempool;
   }
 
+  async $getRbfEntries(type: string): Promise<any[]> {
+    try {
+      await this.$ensureConnected();
+      const keys = await this.client.keys(`rbf:${type}:*`);
+      const promises: Promise<TransactionExtended[]>[] = [];
+      for (let i = 0; i < keys.length; i += 10000) {
+        const keySlice = keys.slice(i, i + 10000);
+        if (!keySlice.length) {
+          continue;
+        }
+        promises.push(this.client.json.mGet(keySlice, '$').then(chunk => chunk?.length ? chunk.flat().map((v, i) => [keySlice[i].slice(`rbf:${type}:`.length), v]) : [] ));
+      }
+      const entries = await Promise.all(promises);
+      return entries.flat();
+    } catch (e) {
+      logger.warn(`Failed to retrieve Rbf ${type}s from Redis cache: ${e instanceof Error ? e.message : e}`);
+      return [];
+    }
+  }
+
   async $loadCache() {
     logger.info('Restoring mempool and blocks data from Redis cache');
     // Load block data
@@ -128,11 +167,20 @@ class RedisCache {
     const loadedBlockSummaries = await this.$getBlockSummaries();
     // Load mempool
     const loadedMempool = await this.$getMempool();
+    // Load rbf data
+    const rbfTxs = await this.$getRbfEntries('tx');
+    const rbfTrees = await this.$getRbfEntries('tree');
+    const rbfExpirations = await this.$getRbfEntries('exp');
 
     // Set loaded data
     blocks.setBlocks(loadedBlocks || []);
     blocks.setBlockSummaries(loadedBlockSummaries || []);
     await memPool.$setMempool(loadedMempool);
+    await rbfCache.load({
+      txs: rbfTxs,
+      trees: rbfTrees.map(loadedTree => loadedTree[1]),
+      expiring: rbfExpirations,
+    });
   }
 
 }
