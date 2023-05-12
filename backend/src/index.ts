@@ -41,6 +41,7 @@ import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
+import redisCache from './api/redis-cache';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -122,7 +123,11 @@ class Server {
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
-      await diskCache.$loadMempoolCache();
+      if (config.MEMPOOL.CACHE_ENABLED) {
+        await diskCache.$loadMempoolCache();
+      } else if (config.REDIS.ENABLED) {
+        await redisCache.$loadCache();
+      }
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {

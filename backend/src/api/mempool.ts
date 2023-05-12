@@ -9,7 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
-import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import redisCache from './redis-cache';
 
 class Mempool {
   private inSync: boolean = false;
@@ -102,6 +102,10 @@ class Mempool {
       await this.$asyncMempoolChangedCallback(this.mempoolCache, count, [], []);
     }
     this.addToSpendMap(Object.values(this.mempoolCache));
+    if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
+      logger.debug('copying mempool from disk cache into Redis');
+      await redisCache.$addTransactions(Object.values(mempoolData));
+    }
   }
 
   public async $reloadMempool(expectedCount: number): Promise<MempoolTransactionExtended[]> {
@@ -316,6 +320,12 @@ class Mempool {
       this.inSync = true;
       logger.notice('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
+    }
+
+    // Update Redis cache
+    if (config.REDIS.ENABLED) {
+      await redisCache.$addTransactions(newTransactions);
+      await redisCache.$removeTransactions(deletedTransactions.map(tx => tx.txid));
     }
 
     const end = new Date().getTime();
