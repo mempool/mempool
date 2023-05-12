@@ -47,6 +47,8 @@
     "size": 372,
     "weight": 828,
     "fee": 1.5,
-    "status": { "confirmed": false }
+    "status": {
+      "confirmed": false
+    }
   }
 }
