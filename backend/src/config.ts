@@ -12,6 +12,7 @@ interface IConfig {
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
+    CACHE_ENABLED: boolean;
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
     BLOCK_WEIGHT_UNITS: number;
@@ -137,7 +138,11 @@ interface IConfig {
     AUDIT: boolean;
     AUDIT_START_HEIGHT: number;
     SERVERS: string[];
-  }
+  },
+  REDIS: {
+    ENABLED: boolean;
+    UNIX_SOCKET_PATH: string;
+  },
 }
 
 const defaults: IConfig = {
@@ -150,6 +155,7 @@ const defaults: IConfig = {
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
+    'CACHE_ENABLED': true,
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
     'BLOCK_WEIGHT_UNITS': 4000000,
@@ -275,7 +281,11 @@ const defaults: IConfig = {
     'AUDIT': false,
     'AUDIT_START_HEIGHT': 774000,
     'SERVERS': [],
-  }
+  },
+  'REDIS': {
+    'ENABLED': false,
+    'UNIX_SOCKET_PATH': '',
+  },
 };
 
 class Config implements IConfig {
@@ -296,6 +306,7 @@ class Config implements IConfig {
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
+  REDIS: IConfig['REDIS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -316,6 +327,7 @@ class Config implements IConfig {
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
+    this.REDIS = configs.REDIS;
   }
 
   merge = (...objects: object[]): IConfig => {
