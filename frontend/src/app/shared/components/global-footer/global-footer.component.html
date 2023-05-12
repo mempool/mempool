@@ -10,8 +10,10 @@
         <div class="selector">
           <app-fiat-selector></app-fiat-selector>
         </div>
-        <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
-        <p *ngIf="officialMempoolSpace && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Sign In</a></p>
+        <ng-template #temporaryHidden>
+          <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
+          <p *ngIf="officialMempoolSpace && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Sign In</a></p>
+        </ng-template>
         <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
         <p *ngIf="officialMempoolSpace && env.LIGHTNING" class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
         <p><a [routerLink]="['/about' | relativeUrl]">About the Project</a></p>
