@@ -36,7 +36,7 @@ class RbfCache {
     }
 
     const newTx = Common.stripTransaction(newTxExtended) as RbfTransaction;
-    const newTime = newTxExtended.firstSeen || Date.now();
+    const newTime = newTxExtended.firstSeen || (Date.now() / 1000);
     newTx.rbf = newTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
     this.txs.set(newTx.txid, newTxExtended);
 
@@ -59,7 +59,7 @@ class RbfCache {
           }
         }
       } else {
-        const replacedTime = replacedTxExtended.firstSeen || Date.now();
+        const replacedTime = replacedTxExtended.firstSeen || (Date.now() / 1000);
         replacedTrees.push({
           tx: replacedTx,
           time: replacedTime,
@@ -74,7 +74,7 @@ class RbfCache {
     const treeId = replacedTrees[0].tx.txid;
     const newTree = {
       tx: newTx,
-      time: newTxExtended.firstSeen || Date.now(),
+      time: newTime,
       fullRbf,
       replaces: replacedTrees
     };
