@@ -36,7 +36,7 @@
           <h5 class="card-title">US Dollar - BTC/USD</h5>
           <div class="chart-container">
             <ng-container *ngIf="hlocData$ | async as hlocData; else loadingSpinner">
-              <app-lightweight-charts [height]="300" [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="2"></app-lightweight-charts>      
+              <app-lightweight-charts [height]="300" [data]="hlocData.hloc" [volumeData]="hlocData.volume" [precision]="2"></app-lightweight-charts>
             </ng-container>
           </div>
         </div>
@@ -84,7 +84,7 @@
                     </ng-template>
                   </td>
                   <td>{{ ticker.volume?.num_trades ? ticker.volume?.num_trades : 0 }}</td>
-                </tr> 
+                </tr>
               </tbody>
             </table>
           </div>
@@ -105,9 +105,6 @@
   </ng-container>
   </div>
 
-  <app-language-selector></app-language-selector>
-
-  <app-global-footer></app-global-footer>
 </div>
 
 <ng-template #loadingTmpl>

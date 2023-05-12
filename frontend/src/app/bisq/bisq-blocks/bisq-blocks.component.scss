@@ -1,11 +1,6 @@
 .pagination-container {
   float: none;
-  margin-bottom: 200px;
   @media(min-width: 400px){
     float: right;
   }
-}
-
-.container-xl {
-    padding-bottom: 110px;
 }
