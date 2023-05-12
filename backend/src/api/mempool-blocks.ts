@@ -1,6 +1,6 @@
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction } from '../mempool.interfaces';
-import { Common } from './common';
+import { MempoolBlock, TransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
+import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
@@ -104,6 +104,8 @@ class MempoolBlocks {
 
   private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
+    let feeStatsCalculator: OnlineFeeStatsCalculator = new OnlineFeeStatsCalculator(config.MEMPOOL.BLOCK_WEIGHT_UNITS);
+    let onlineStats = false;
     let blockSize = 0;
     let blockWeight = 0;
     let blockVsize = 0;
@@ -111,7 +113,7 @@ class MempoolBlocks {
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     let transactionIds: string[] = [];
     let transactions: TransactionExtended[] = [];
-    transactionsSorted.forEach((tx) => {
+    transactionsSorted.forEach((tx, index) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
         tx.position = {
@@ -126,6 +128,9 @@ class MempoolBlocks {
           transactions.push(tx);
         }
         transactionIds.push(tx.txid);
+        if (onlineStats) {
+          feeStatsCalculator.processNext(tx);
+        }
       } else {
         mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees));
         blockVsize = 0;
@@ -133,6 +138,16 @@ class MempoolBlocks {
           block: mempoolBlocks.length,
           vsize: blockVsize + (tx.vsize / 2),
         };
+
+        if (mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+          const stackWeight = transactionsSorted.slice(index).reduce((total, tx) => total + (tx.weight || 0), 0);
+          if (stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
+            onlineStats = true;
+            feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5);
+            feeStatsCalculator.processNext(tx);
+          }
+        }
+
         blockVsize += tx.vsize;
         blockWeight = tx.weight;
         blockSize = tx.size;
@@ -142,7 +157,8 @@ class MempoolBlocks {
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees));
+      const feeStats = onlineStats ? feeStatsCalculator.getRawFeeStats() : undefined;
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees, feeStats));
     }
 
     return mempoolBlocks;
@@ -310,7 +326,16 @@ class MempoolBlocks {
       }
     }
 
-    const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees }[] = [];
+    let hasBlockStack = blocks.length >= 8;
+    let stackWeight;
+    let feeStatsCalculator: OnlineFeeStatsCalculator | void;
+    if (hasBlockStack) {
+      stackWeight = blocks[blocks.length - 1].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
+      hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
+      feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5);
+    }
+
+    const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees, feeStats }[] = [];
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
@@ -333,6 +358,11 @@ class MempoolBlocks {
           };
           mempoolTx.cpfpChecked = true;
 
+          // online calculation of stack-of-blocks fee stats
+          if (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) {
+            feeStatsCalculator.processNext(mempoolTx);
+          }
+
           totalSize += mempoolTx.size;
           totalVsize += mempoolTx.vsize;
           totalWeight += mempoolTx.weight;
@@ -348,7 +378,8 @@ class MempoolBlocks {
         transactions,
         totalSize,
         totalWeight,
-        totalFees
+        totalFees,
+        feeStats: (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
       });
     }
 
@@ -382,7 +413,9 @@ class MempoolBlocks {
       }
     }
 
-    const mempoolBlocks = readyBlocks.map(b => this.dataToMempoolBlocks(b.transactionIds, b.transactions, b.totalSize, b.totalWeight, b.totalFees));
+    const mempoolBlocks = readyBlocks.map((b, index) => {
+      return this.dataToMempoolBlocks(b.transactionIds, b.transactions, b.totalSize, b.totalWeight, b.totalFees, b.feeStats);
+    });
 
     if (saveResults) {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
@@ -393,8 +426,10 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactionIds: string[], transactions: TransactionExtended[], totalSize: number, totalWeight: number, totalFees: number): MempoolBlockWithTransactions {
-    const feeStats = Common.calcEffectiveFeeStatistics(transactions);
+  private dataToMempoolBlocks(transactionIds: string[], transactions: TransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
+    if (!feeStats) {
+      feeStats = Common.calcEffectiveFeeStatistics(transactions);
+    }
     return {
       blockSize: totalSize,
       blockVSize: (totalWeight / 4), // fractional vsize to avoid rounding errors
