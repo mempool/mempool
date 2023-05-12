@@ -326,6 +326,7 @@ class Mempool {
     if (config.REDIS.ENABLED) {
       await redisCache.$addTransactions(newTransactions);
       await redisCache.$removeTransactions(deletedTransactions.map(tx => tx.txid));
+      await rbfCache.updateCache();
     }
 
     const end = new Date().getTime();
