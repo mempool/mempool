@@ -22,7 +22,7 @@ export class GlobalFooterComponent implements OnInit {
   urlLanguage: string;
   network$: Observable<string>;
   networkPaths: { [network: string]: string };
-  currentNetwork = "";
+  currentNetwork = '';
 
   constructor(
     public stateService: StateService,
@@ -45,19 +45,23 @@ export class GlobalFooterComponent implements OnInit {
     this.network$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
       this.currentNetwork = network;
     });
-    console.log(this.networkPaths);
   }
 
-  networkLink( network ) {
-    let thisNetwork = network || "mainnet";
-    if( network === "" || network === "mainnet" || network === "testnet" || network === "signet" ) {
-      return ( this.env.BASE_MODULE === 'mempool' ? "" : this.env.MEMPOOL_WEBSITE_URL + this.urlLanguage ) + this.networkPaths[thisNetwork] || '/';
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  networkLink(network) {
+    const thisNetwork = network || 'mainnet';
+    if( network === '' || network === 'mainnet' || network === 'testnet' || network === 'signet' ) {
+      return (this.env.BASE_MODULE === 'mempool' ? '' : this.env.MEMPOOL_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
-    if( network === "liquid" || network === "liquidtestnet" ) {
-      return ( this.env.BASE_MODULE === 'liquid' ? "" : this.env.LIQUID_WEBSITE_URL + this.urlLanguage ) + this.networkPaths[thisNetwork] || '/';
+    if( network === 'liquid' || network === 'liquidtestnet' ) {
+      return (this.env.BASE_MODULE === 'liquid' ? '' : this.env.LIQUID_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
-    if( network === "bisq" ) {
-      return ( this.env.BASE_MODULE === 'bisq' ? "" : this.env.BISQ_WEBSITE_URL + this.urlLanguage ) + this.networkPaths[thisNetwork] || '/';
+    if( network === 'bisq' ) {
+      return (this.env.BASE_MODULE === 'bisq' ? '' : this.env.BISQ_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
   }
 
