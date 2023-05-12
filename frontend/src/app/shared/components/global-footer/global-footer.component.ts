@@ -51,7 +51,7 @@ export class GlobalFooterComponent implements OnInit {
       this.currentNetwork = network;
     });
 
-    this.loggedIn = this.storageService.getValue('auth') !== null;
+    this.loggedIn = JSON.parse(this.storageService.getValue('auth')) !== null;
     const auth = JSON.parse(this.storageService.getValue('auth'));
     if (auth?.user?.username) {
       this.username = auth.user.username;

@@ -11,11 +11,11 @@
           <app-fiat-selector></app-fiat-selector>
         </div>
         <ng-template #temporaryHidden>
-        <div *ngIf="officialMempoolSpace" class="cta">
-          <div *ngIf="loggedIn" class="mb-1"><small>Logged in<span *ngIf="username"> as {{ username}}</span></small></div>
-          <a *ngIf="!loggedIn" class="btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
-          <p *ngIf="!loggedIn && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]">Sign In</a></p>
-        </div>
+          <div *ngIf="officialMempoolSpace" class="cta">
+            <div *ngIf="loggedIn" class="mb-1"><small>Logged in<span *ngIf="username"> as {{ username}}</span></small></div>
+            <a *ngIf="!loggedIn" class="btn btn-purple sponsor" [routerLink]="['/sponsor' | relativeUrl]">Support the Project</a>
+          </div>
+          <p *ngIf="!loggedIn && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/login' | relativeUrl]">Sign In</a></p>
         </ng-template>
         <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
         <p *ngIf="officialMempoolSpace && env.LIGHTNING" class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
