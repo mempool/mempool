@@ -46,11 +46,11 @@
         <div class="row">
           <div class="col-lg-6 links">
             <p class="category">More Networks</p>
-            <p *ngIf="currentNetwork !== '' && currentNetwork !== 'mainnet'"><a [routerLink]="['/' | relativeUrl]">Mainnet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'testnet'"><a [routerLink]="['/testnet' | relativeUrl]">Testnet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'signet'"><a [routerLink]="['/signet' | relativeUrl]">Signet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'liquid' && currentNetwork !== 'liquidtestnet'"><a href="https://liquid.network">Liquid Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'bisq'"><a href="https://bisq.network">Bisq Explorer</a></p>
+            <p *ngIf="currentNetwork !== '' && currentNetwork !== 'mainnet'"><a [href]="networkLink('mainnet')">Mainnet Explorer</a></p>
+            <p *ngIf="currentNetwork !== 'testnet'"><a [href]="networkLink('testnet')">Testnet Explorer</a></p>
+            <p *ngIf="currentNetwork !== 'signet'"><a [href]="networkLink('signet')">Signet Explorer</a></p>
+            <p *ngIf="currentNetwork !== 'liquid' && currentNetwork !== 'liquidtestnet'"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
+            <p *ngIf="currentNetwork !== 'bisq'"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
           </div>
           <div class="col-lg-6 links">
             <p class="category">Legal</p>
