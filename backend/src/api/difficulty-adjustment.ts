@@ -34,11 +34,12 @@ export function calcDifficultyAdjustment(
   const remainingBlocks = EPOCH_BLOCK_LENGTH - blocksInEpoch;
   const nextRetargetHeight = (blockHeight >= 0) ? blockHeight + remainingBlocks : 0;
   const expectedBlocks = diffSeconds / BLOCK_SECONDS_TARGET;
+  const actualTimespan = (blocksInEpoch === 2015 ? latestBlockTimestamp : nowSeconds) - DATime;
 
   let difficultyChange = 0;
   let timeAvgSecs = blocksInEpoch ? diffSeconds / blocksInEpoch : BLOCK_SECONDS_TARGET;
 
-  difficultyChange = (BLOCK_SECONDS_TARGET / timeAvgSecs - 1) * 100;
+  difficultyChange = (BLOCK_SECONDS_TARGET / (actualTimespan / (blocksInEpoch + 1)) - 1) * 100;
   // Max increase is x4 (+300%)
   if (difficultyChange > 300) {
     difficultyChange = 300;
