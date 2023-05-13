@@ -93,10 +93,6 @@ function downloadMiningPoolLogos() {
 }
 
 function downloadPromoVideoSubtiles() {
-  // for( const l of promoVideoLanguages ) {
-  //  download(promoPrefix + l + '.vtt', 'https://raw.githubusercontent.com/mempool/mempool-promo/master/subtitles/' + l + '.vtt');
-  // }
-
   const options = {
     host: 'api.github.com',
     path: '/repos/mempool/mempool-promo/contents/subtitles',
@@ -127,7 +123,7 @@ function downloadPromoVideoSubtiles() {
             }
           } else {
             console.log(`${language.name} is missing, downloading`);
-            download(`${PATH}promo-video/${language.name}`, language.download_url);
+            download(`${PATH}/promo-video/${language.name}`, language.download_url);
             downloadedCount++;
           }
         }
