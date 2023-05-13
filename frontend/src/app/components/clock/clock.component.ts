@@ -52,7 +52,7 @@ export class ClockComponent implements OnInit {
 
   ngOnInit(): void {
     this.resizeCanvas();
-    this.websocketService.want(['blocks']);
+    this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
