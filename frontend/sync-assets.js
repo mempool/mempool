@@ -123,7 +123,7 @@ function downloadPromoVideoSubtiles() {
             }
           } else {
             console.log(`${language.name} is missing, downloading`);
-            download(`${PATH}/promo-video/${language.name}`, language.download_url);
+            download(filePath, language.download_url);
             downloadedCount++;
           }
         }
