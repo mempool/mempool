@@ -200,4 +200,46 @@ describe('Mempool Backend Config', () => {
       parseJson(fixture);
     });
   });
+
+  test('should ensure that the mempool-config.json Docker template has all the keys', () => {
+    jest.isolateModules(() => {
+      const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
+      const dockerJson = fs.readFileSync(`${__dirname}/../../../docker/backend/mempool-config.json`, 'utf-8');
+
+      function parseJson(jsonObj, root?) {
+        for (const [key, value] of Object.entries(jsonObj)) {
+          switch (typeof value) {
+            case 'object': {
+              if (Array.isArray(value)) {
+                // numbers, arrays and booleans won't be enclosed by quotes
+                const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+                expect(dockerJson).toContain(`"${key}": ${replaceStr}`);
+                break;
+              } else {
+                //Check for top level config keys
+                expect(dockerJson).toContain(`"${key}"`);
+                parseJson(value, key);
+                break;
+              }
+            }
+            case 'string': {
+              // strings should be enclosed by quotes
+              const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+              expect(dockerJson).toContain(`"${key}": "${replaceStr}"`);
+              break;
+            }
+            default: {
+              // numbers, arrays and booleans won't be enclosed by quotes
+              const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+              expect(dockerJson).toContain(`"${key}": ${replaceStr}`);
+              break;
+            }
+          }
+        };
+      }
+      parseJson(fixture);
+    });
+  });
+
+
 });
