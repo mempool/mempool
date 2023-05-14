@@ -1,0 +1,73 @@
+<div class="rbf-timeline box" [class.mined]="replacements.mined">
+  <div class="timeline-wrapper">
+    <div class="timeline" *ngFor="let timeline of rows">
+      <div class="intervals">
+        <ng-container *ngFor="let cell of timeline; let i = index;">
+          <div class="node-spacer"></div>
+          <ng-container *ngIf="i < timeline.length - 1">
+            <div class="interval" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+              <div class="interval-time">
+                <app-time [time]="cell.replacement.interval" [relative]="false"></app-time>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="nodes">
+        <ng-container *ngFor="let cell of timeline; let i = index;">
+          <ng-container *ngIf="cell.replacement; else nonNode">
+            <div class="node"
+              [id]="'node-'+cell.replacement.tx.txid"
+              [class.selected]="txid === cell.replacement.tx.txid"
+              [class.mined]="cell.replacement.tx.mined"
+              [class.first-node]="cell.first"
+            >
+              <div class="track"></div>
+              <a class="shape-border"
+                [class.rbf]="cell.replacement.tx.rbf"
+                [routerLink]="['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                (pointerover)="onHover($event, cell.replacement);"
+                (pointerout)="onBlur($event);"
+              >
+                <div class="shape"></div>
+              </a>
+              <span class="fee-rate">{{ cell.replacement.tx.fee / (cell.replacement.tx.vsize) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span>
+            </div>
+          </ng-container>
+          <ng-template #nonNode>
+            <ng-container [ngSwitch]="cell.connector">
+              <div class="connector" *ngSwitchCase="'pipe'"><div class="pipe"></div></div>
+              <div class="connector" *ngSwitchCase="'corner'"><div class="corner"></div></div>
+              <div class="node-spacer" *ngSwitchDefault></div>
+            </ng-container>
+          </ng-template>
+          <ng-container *ngIf="i < timeline.length - 1">
+            <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+              <div class="track"></div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #nodeSpacer>
+    <div class="node-spacer"></div>
+  </ng-template>
+
+  <ng-template #intervalSpacer>
+    <div class="interval-spacer"></div>
+  </ng-template>
+
+  <app-rbf-timeline-tooltip
+    [rbfInfo]="hoverInfo"
+    [cursorPosition]="tooltipPosition"
+  ></app-rbf-timeline-tooltip>
+
+  <!-- <app-rbf-timeline-tooltip
+    *ngIf=[tooltip]
+    [line]="hoverLine"
+    [cursorPosition]="tooltipPosition"
+    [isConnector]="hoverConnector"
+  ></app-rbf-timeline-tooltip> -->
+</div>
