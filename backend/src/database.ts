@@ -33,8 +33,32 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
     OkPacket[] | ResultSetHeader>(query, params?): Promise<[T, FieldPacket[]]>
   {
     this.checkDBFlag();
-    const pool = await this.getPool();
-    return pool.query(query, params);
+    let hardTimeout;
+    if (query?.timeout != null) {
+      hardTimeout = Math.floor(query.timeout * 1.1);
+    } else {
+      hardTimeout = config.DATABASE.TIMEOUT;
+    }
+    if (hardTimeout > 0) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject(new Error(`DB query failed to return, reject or time out within ${hardTimeout / 1000}s - ${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}`));
+        }, hardTimeout);
+
+        this.getPool().then(pool => {
+          return pool.query(query, params) as Promise<[T, FieldPacket[]]>;
+        }).then(result => {
+          resolve(result);
+        }).catch(error => {
+          reject(error);
+        }).finally(() => {
+          clearTimeout(timer);
+        });
+      });
+    } else {
+      const pool = await this.getPool();
+      return pool.query(query, params);
+    }
   }
 
   public async checkDbConnection() {

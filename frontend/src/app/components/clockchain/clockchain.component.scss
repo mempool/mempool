@@ -1,0 +1,94 @@
+.divider {
+  position: absolute;
+  left: -0.5px;
+  top: 0;
+  .divider-line {
+    stroke: white;
+    stroke-width: 4px;
+    stroke-linecap: butt;
+    stroke-dasharray: 25px 25px;
+  }
+}
+
+.blockchain-wrapper {
+  height: 100%;
+
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.position-container {
+  position: absolute;
+  left: 50%;
+  top: 0;
+}
+
+.black-background {
+  background-color: #11131f;
+  z-index: 100;
+  position: relative;
+}
+
+.scroll-spacer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.loading-block {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  width: 300px;
+  left: -150px;
+  top: 0px;
+}
+
+.time-toggle {
+  color: white;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: -1.8em;
+  left: 1px;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blockchain-wrapper.ltr-transition .blocks-wrapper,
+.blockchain-wrapper.ltr-transition .position-container,
+.blockchain-wrapper.ltr-transition .time-toggle {
+  transition: transform 1s;
+}
+
+.blockchain-wrapper.time-ltr {
+  .blocks-wrapper {
+    transform: scaleX(-1);
+  }
+
+  .time-toggle {
+    transform: translateX(-50%) scaleX(-1);
+  }
+}
+
+:host-context(.ltr-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: ltr;
+  }
+}
+
+:host-context(.rtl-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: rtl;
+  }
+}

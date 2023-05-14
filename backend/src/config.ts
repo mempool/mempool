@@ -86,6 +86,7 @@ interface IConfig {
     DATABASE: string;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -194,7 +195,8 @@ const defaults: IConfig = {
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 180000,
   },
   'SYSLOG': {
     'ENABLED': true,

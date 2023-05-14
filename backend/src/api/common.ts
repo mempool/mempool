@@ -1,4 +1,4 @@
-import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
@@ -57,11 +57,11 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended } {
-    const matches: { [txid: string]: TransactionExtended } = {};
-    deleted
-      .forEach((deletedTx) => {
-        const foundMatches = added.find((addedTx) => {
+  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended[] } {
+    const matches: { [txid: string]: TransactionExtended[] } = {};
+    added
+      .forEach((addedTx) => {
+        const foundMatches = deleted.filter((deletedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
           return addedTx.fee > deletedTx.fee
             // The new transaction must pay more fee per kB than the replaced tx.
@@ -70,8 +70,8 @@ export class Common {
             && deletedTx.vin.some((deletedVin) =>
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
-        if (foundMatches) {
-          matches[deletedTx.txid] = foundMatches;
+        if (foundMatches?.length) {
+          matches[addedTx.txid] = foundMatches;
         }
       });
     return matches;
@@ -83,6 +83,7 @@ export class Common {
       fee: tx.fee,
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
+      rate: tx.effectiveFeePerVsize,
     };
   }
 
@@ -439,5 +440,121 @@ export class Common {
 
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
+  }
+}
+
+/**
+ * Class to calculate average fee rates of a list of transactions
+ * at certain weight percentiles, in a single pass
+ * 
+ * init with:
+ *   maxWeight - the total weight to measure percentiles relative to (e.g. 4MW for a single block)
+ *   percentileBandWidth - how many weight units to average over for each percentile (as a % of maxWeight)
+ *   percentiles - an array of weight percentiles to compute, in %
+ * 
+ * then call .processNext(tx) for each transaction, in descending order
+ * 
+ * retrieve the final results with .getFeeStats()
+ */
+export class OnlineFeeStatsCalculator {
+  private maxWeight: number;
+  private percentiles = [10,25,50,75,90];
+
+  private bandWidthPercent = 2;
+  private bandWidth: number = 0;
+  private bandIndex = 0;
+  private leftBound = 0;
+  private rightBound = 0;
+  private inBand = false;
+  private totalBandFee = 0;
+  private totalBandWeight = 0;
+  private minBandRate = Infinity;
+  private maxBandRate = 0;
+
+  private feeRange: { avg: number, min: number, max: number }[] = [];
+  private totalWeight: number = 0;
+
+  constructor (maxWeight: number, percentileBandWidth?: number, percentiles?: number[]) {
+    this.maxWeight = maxWeight;
+    if (percentiles && percentiles.length) {
+      this.percentiles = percentiles;
+    }
+    if (percentileBandWidth != null) {
+      this.bandWidthPercent = percentileBandWidth;
+    }
+    this.bandWidth = this.maxWeight * (this.bandWidthPercent / 100);
+    // add min/max percentiles aligned to the ends of the range
+    this.percentiles.unshift(this.bandWidthPercent / 2);
+    this.percentiles.push(100 - (this.bandWidthPercent / 2));
+    this.setNextBounds();
+  }
+
+  processNext(tx: { weight: number, fee: number, effectiveFeePerVsize?: number, feePerVsize?: number, rate?: number, txid: string }): void {
+    let left = this.totalWeight;
+    const right = this.totalWeight + tx.weight;
+    if (!this.inBand && right <= this.leftBound) {
+      this.totalWeight += tx.weight;
+      return;
+    }
+
+    while (left < right) {
+      if (right > this.leftBound) {
+        this.inBand = true;
+        const txRate = (tx.rate || tx.effectiveFeePerVsize || tx.feePerVsize || 0);
+        const weight = Math.min(right, this.rightBound) - Math.max(left, this.leftBound);
+        this.totalBandFee += (txRate * weight);
+        this.totalBandWeight += weight;
+        this.maxBandRate = Math.max(this.maxBandRate, txRate);
+        this.minBandRate = Math.min(this.minBandRate, txRate);
+      }
+      left = Math.min(right, this.rightBound);
+
+      if (left >= this.rightBound) {
+        this.inBand = false;
+        const avgBandFeeRate = this.totalBandWeight ? (this.totalBandFee / this.totalBandWeight) : 0;
+        this.feeRange.unshift({ avg: avgBandFeeRate, min: this.minBandRate, max: this.maxBandRate });
+        this.bandIndex++;
+        this.setNextBounds();
+        this.totalBandFee = 0;
+        this.totalBandWeight = 0;
+        this.minBandRate = Infinity;
+        this.maxBandRate = 0;
+      }
+    }
+    this.totalWeight += tx.weight;
+  }
+
+  private setNextBounds(): void {
+    const nextPercentile = this.percentiles[this.bandIndex];
+    if (nextPercentile != null) {
+      this.leftBound = ((nextPercentile / 100) * this.maxWeight) - (this.bandWidth / 2);
+      this.rightBound = this.leftBound + this.bandWidth;
+    } else {
+      this.leftBound = Infinity;
+      this.rightBound = Infinity;
+    }
+  }
+
+  getRawFeeStats(): WorkingEffectiveFeeStats {
+    if (this.totalBandWeight > 0) {
+      const avgBandFeeRate = this.totalBandWeight ? (this.totalBandFee / this.totalBandWeight) : 0;
+      this.feeRange.unshift({ avg: avgBandFeeRate, min: this.minBandRate, max: this.maxBandRate });
+    }
+    while (this.feeRange.length < this.percentiles.length) {
+      this.feeRange.unshift({ avg: 0, min: 0, max: 0 });
+    }
+    return {
+      minFee: this.feeRange[0].min,
+      medianFee: this.feeRange[Math.floor(this.feeRange.length / 2)].avg,
+      maxFee: this.feeRange[this.feeRange.length - 1].max,
+      feeRange: this.feeRange.map(f => f.avg),
+    };
+  }
+
+  getFeeStats(): EffectiveFeeStats {
+    const stats = this.getRawFeeStats();
+    stats.feeRange[0] = stats.minFee;
+    stats.feeRange[stats.feeRange.length - 1] = stats.maxFee;
+    return stats;
   }
 }
