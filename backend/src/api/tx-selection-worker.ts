@@ -1,10 +1,10 @@
 import config from '../config';
 import logger from '../logger';
-import { ThreadTransaction, MempoolBlockWithTransactions, AuditTransaction } from '../mempool.interfaces';
+import { CompactThreadTransaction, AuditTransaction } from '../mempool.interfaces';
 import { PairingHeap } from '../utils/pairing-heap';
 import { parentPort } from 'worker_threads';
 
-let mempool: { [txid: string]: ThreadTransaction } = {};
+let mempool: Map<number, CompactThreadTransaction> = new Map();
 
 if (parentPort) {
   parentPort.on('message', (params) => {
@@ -12,18 +12,18 @@ if (parentPort) {
       mempool = params.mempool;
     } else if (params.type === 'update') {
       params.added.forEach(tx => {
-        mempool[tx.txid] = tx;
+        mempool.set(tx.uid, tx);
       });
-      params.removed.forEach(txid => {
-        delete mempool[txid];
+      params.removed.forEach(uid => {
+        mempool.delete(uid);
       });
     }
     
-    const { blocks, clusters } = makeBlockTemplates(mempool);
+    const { blocks, rates, clusters } = makeBlockTemplates(mempool);
 
     // return the result to main thread.
     if (parentPort) {
-     parentPort.postMessage({ blocks, clusters });
+      parentPort.postMessage({ blocks, rates, clusters });
     }
   });
 }
@@ -32,26 +32,25 @@ if (parentPort) {
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 */
-function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
-  : { blocks: ThreadTransaction[][], clusters: { [root: string]: string[] } } {
+function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
+  : { blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]> } {
   const start = Date.now();
-  const auditPool: { [txid: string]: AuditTransaction } = {};
+  const auditPool: Map<number, AuditTransaction> = new Map();
   const mempoolArray: AuditTransaction[] = [];
-  const restOfArray: ThreadTransaction[] = [];
-  const cpfpClusters: { [root: string]: string[] } = {};
+  const cpfpClusters: Map<number, number[]> = new Map();
   
-  // grab the top feerate txs up to maxWeight
-  Object.values(mempool).sort((a, b) => b.feePerVsize - a.feePerVsize).forEach(tx => {
+  mempool.forEach(tx => {
+    tx.dirty = false;
     // initializing everything up front helps V8 optimize property access later
-    auditPool[tx.txid] = {
-      txid: tx.txid,
+    auditPool.set(tx.uid, {
+      uid: tx.uid,
       fee: tx.fee,
       weight: tx.weight,
       feePerVsize: tx.feePerVsize,
       effectiveFeePerVsize: tx.feePerVsize,
-      vin: tx.vin,
+      inputs: tx.inputs || [],
       relativesSet: false,
-      ancestorMap: new Map<string, AuditTransaction>(),
+      ancestorMap: new Map<number, AuditTransaction>(),
       children: new Set<AuditTransaction>(),
       ancestorFee: 0,
       ancestorWeight: 0,
@@ -59,8 +58,8 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
       used: false,
       modified: false,
       modifiedNode: null,
-    };
-    mempoolArray.push(auditPool[tx.txid]);
+    });
+    mempoolArray.push(auditPool.get(tx.uid) as AuditTransaction);
   });
 
   // Build relatives graph & calculate ancestor scores
@@ -73,8 +72,8 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   // Sort by descending ancestor score
   mempoolArray.sort((a, b) => {
     if (b.score === a.score) {
-      // tie-break by lexicographic txid order for stability
-      return a.txid < b.txid ? -1 : 1;
+      // tie-break by uid for stability
+      return a.uid < b.uid ? -1 : 1;
     } else {
       return (b.score || 0) - (a.score || 0);
     }
@@ -82,14 +81,13 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
 
   // Build blocks by greedily choosing the highest feerate package
   // (i.e. the package rooted in the transaction with the best ancestor score)
-  const blocks: ThreadTransaction[][] = [];
+  const blocks: number[][] = [];
   let blockWeight = 4000;
-  let blockSize = 0;
   let transactions: AuditTransaction[] = [];
   const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
     if (a.score === b.score) {
-      // tie-break by lexicographic txid order for stability
-      return a.txid > b.txid;
+      // tie-break by uid for stability
+      return a.uid > b.uid;
     } else {
       return (a.score || 0) > (b.score || 0);
     }
@@ -126,24 +124,30 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
         let isCluster = false;
         if (sortedTxSet.length > 1) {
-          cpfpClusters[nextTx.txid] = sortedTxSet.map(tx => tx.txid);
+          cpfpClusters.set(nextTx.uid, sortedTxSet.map(tx => tx.uid));
           isCluster = true;
         }
         const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
         const used: AuditTransaction[] = [];
         while (sortedTxSet.length) {
           const ancestor = sortedTxSet.pop();
-          const mempoolTx = mempool[ancestor.txid];
+          const mempoolTx = mempool.get(ancestor.uid);
+          if (!mempoolTx) {
+            continue;
+          }
           ancestor.used = true;
-          ancestor.usedBy = nextTx.txid;
+          ancestor.usedBy = nextTx.uid;
           // update original copy of this tx with effective fee rate & relatives data
-          mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-          if (isCluster) {
-            mempoolTx.cpfpRoot = nextTx.txid;
+          if (mempoolTx.effectiveFeePerVsize !== effectiveFeeRate) {
+            mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
+            mempoolTx.dirty = true;
+          }
+          if (mempoolTx.cpfpRoot !== nextTx.uid) {
+            mempoolTx.cpfpRoot = isCluster ? nextTx.uid : null;
+            mempoolTx.dirty;
           }
           mempoolTx.cpfpChecked = true;
           transactions.push(ancestor);
-          blockSize += ancestor.size;
           blockWeight += ancestor.weight;
           used.push(ancestor);
         }
@@ -169,11 +173,10 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
     if ((exceededPackageTries || queueEmpty) && blocks.length < 7) {
       // construct this block
       if (transactions.length) {
-        blocks.push(transactions.map(t => mempool[t.txid]));
+        blocks.push(transactions.map(t => t.uid));
       }
       // reset for the next block
       transactions = [];
-      blockSize = 0;
       blockWeight = 4000;
 
       // 'overflow' packages didn't fit in this block, but are valid candidates for the next
@@ -194,24 +197,32 @@ function makeBlockTemplates(mempool: { [txid: string]: ThreadTransaction })
   }
   // add the final unbounded block if it contains any transactions
   if (transactions.length > 0) {
-    blocks.push(transactions.map(t => mempool[t.txid]));
+    blocks.push(transactions.map(t => t.uid));
+  }
+
+  // get map of dirty transactions
+  const rates = new Map<number, number>();
+  for (const tx of mempool.values()) {
+    if (tx?.dirty) {
+      rates.set(tx.uid, tx.effectiveFeePerVsize || tx.feePerVsize);
+    }
   }
 
   const end = Date.now();
   const time = end - start;
   logger.debug('Mempool templates calculated in ' + time / 1000 + ' seconds');
 
-  return { blocks, clusters: cpfpClusters };
+  return { blocks, rates, clusters: cpfpClusters };
 }
 
 // traverse in-mempool ancestors
 // recursion unavoidable, but should be limited to depth < 25 by mempool policy
 function setRelatives(
   tx: AuditTransaction,
-  mempool: { [txid: string]: AuditTransaction },
+  mempool: Map<number, AuditTransaction>,
 ): void {
-  for (const parent of tx.vin) {
-    const parentTx = mempool[parent];
+  for (const parent of tx.inputs) {
+    const parentTx = mempool.get(parent);
     if (parentTx && !tx.ancestorMap?.has(parent)) {
       tx.ancestorMap.set(parent, parentTx);
       parentTx.children.add(tx);
@@ -220,7 +231,7 @@ function setRelatives(
         setRelatives(parentTx, mempool);
       }
       parentTx.ancestorMap.forEach((ancestor) => {
-        tx.ancestorMap.set(ancestor.txid, ancestor);
+        tx.ancestorMap.set(ancestor.uid, ancestor);
       });
     }
   };
@@ -238,7 +249,7 @@ function setRelatives(
 // avoids recursion to limit call stack depth
 function updateDescendants(
   rootTx: AuditTransaction,
-  mempool: { [txid: string]: AuditTransaction },
+  mempool: Map<number, AuditTransaction>,
   modified: PairingHeap<AuditTransaction>,
 ): void {
   const descendantSet: Set<AuditTransaction> = new Set();
@@ -254,9 +265,9 @@ function updateDescendants(
   });
   while (descendants.length) {
     descendantTx = descendants.pop();
-    if (descendantTx && descendantTx.ancestorMap && descendantTx.ancestorMap.has(rootTx.txid)) {
+    if (descendantTx && descendantTx.ancestorMap && descendantTx.ancestorMap.has(rootTx.uid)) {
       // remove tx as ancestor
-      descendantTx.ancestorMap.delete(rootTx.txid);
+      descendantTx.ancestorMap.delete(rootTx.uid);
       descendantTx.ancestorFee -= rootTx.fee;
       descendantTx.ancestorWeight -= rootTx.weight;
       tmpScore = descendantTx.score;

@@ -85,7 +85,7 @@
           <div class="col-sm">
             <table class="table table-borderless table-striped">
               <tbody>
-                <ng-template [ngIf]="transactionTime !== 0 && !replaced">
+                <ng-template [ngIf]="transactionTime !== 0">
                   <tr *ngIf="transactionTime === -1; else firstSeenTmpl">
                     <td><span class="skeleton-loader"></span></td>
                     <td><span class="skeleton-loader"></span></td>
@@ -109,10 +109,10 @@
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
-                          <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
+                          <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * this.mempoolPosition.block) + now + timeAvg" [fastRender]="false" [fixedRender]="true" [forceFloorOnTimeIntervals]="['hour']"></app-time>
+                          <app-time kind="until" *ngIf="(timeAvg$ | async) as timeAvg;" [time]="(timeAvg * this.mempoolPosition.block) + now + timeAvg" [fastRender]="false" [fixedRender]="true"></app-time>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -461,11 +461,7 @@
     </ng-template>
   </ng-template>
 
-  <br>
-
 </div>
-
-<br>
 
 <ng-template #feeTable>
   <table class="table table-borderless table-striped">

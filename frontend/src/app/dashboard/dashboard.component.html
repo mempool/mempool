@@ -26,8 +26,7 @@
               <div class="mempool-graph">
                 <app-mempool-graph
                 [template]="'widget'"
-                [limitFee]="150"
-                [limitFilterFee]="1"
+                [filterSize]="1000000"
                 [data]="mempoolStats.value?.mempool"
                 [windowPreferenceOverride]="'2h'"
                 ></app-mempool-graph>
@@ -143,26 +142,6 @@
       </div>
     </div>
   </div>
-
-  <div class="pref-selectors">
-    <div class="selector">
-      <app-language-selector></app-language-selector>
-    </div>
-    <div class="selector">
-      <app-fiat-selector></app-fiat-selector>
-    </div>
-  </div>
-
-  <div class="terms-of-service">
-    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
-    |
-    <a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a>
-    |
-    <a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a>
-  </div>
-
-  <br>
-
 </div>
 
 <ng-template #loadingAssetsTable>

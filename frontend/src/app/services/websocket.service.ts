@@ -9,8 +9,8 @@ import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { BlockExtended } from '../interfaces/node-api.interface';
 
-const OFFLINE_RETRY_AFTER_MS = 1000;
-const OFFLINE_PING_CHECK_AFTER_MS = 10000;
+const OFFLINE_RETRY_AFTER_MS = 2000;
+const OFFLINE_PING_CHECK_AFTER_MS = 30000;
 const EXPECT_PING_RESPONSE_AFTER_MS = 5000;
 
 const initData = makeStateKey('/api/v1/init-data');
@@ -119,7 +119,7 @@ export class WebsocketService {
       },
       (err: Error) => {
         console.log(err);
-        console.log(`WebSocket error, trying to reconnect in ${OFFLINE_RETRY_AFTER_MS} seconds`);
+        console.log(`WebSocket error`);
         this.goOffline();
       });
   }
@@ -208,11 +208,13 @@ export class WebsocketService {
   }
 
   goOffline() {
+    const retryDelay = OFFLINE_RETRY_AFTER_MS + (Math.random() * OFFLINE_RETRY_AFTER_MS);
+    console.log(`trying to reconnect websocket in ${retryDelay} seconds`);
     this.goneOffline = true;
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
       this.startSubscription(true);
-    }, OFFLINE_RETRY_AFTER_MS);
+    }, retryDelay);
   }
 
   startOnlineCheck() {
@@ -223,7 +225,7 @@ export class WebsocketService {
       this.websocketSubject.next({action: 'ping'});
       this.onlineCheckTimeoutTwo = window.setTimeout(() => {
         if (!this.goneOffline) {
-          console.log('WebSocket response timeout, force closing, trying to reconnect in 10 seconds');
+          console.log('WebSocket response timeout, force closing');
           this.websocketSubject.complete();
           this.subscription.unsubscribe();
           this.goOffline();
