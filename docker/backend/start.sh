@@ -181,11 +181,11 @@ sed -i "s!__SECOND_CORE_RPC_TIMEOUT__!${__SECOND_CORE_RPC_TIMEOUT__}!g" mempool-
 sed -i "s!__DATABASE_ENABLED__!${__DATABASE_ENABLED__}!g" mempool-config.json
 sed -i "s!__DATABASE_HOST__!${__DATABASE_HOST__}!g" mempool-config.json
 sed -i "s!__DATABASE_SOCKET__!${__DATABASE_SOCKET__}!g" mempool-config.json
-
 sed -i "s!__DATABASE_PORT__!${__DATABASE_PORT__}!g" mempool-config.json
 sed -i "s!__DATABASE_DATABASE__!${__DATABASE_DATABASE__}!g" mempool-config.json
 sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
+sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
