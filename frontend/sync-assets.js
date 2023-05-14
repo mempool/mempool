@@ -81,7 +81,7 @@ function downloadMiningPoolLogos$() {
               }
             } else {
               console.log(`${poolLogo.name} is missing, downloading...`);
-              download(`${PATH}mining-pools/${poolLogo.name}`, poolLogo.download_url);
+              download(filePath, poolLogo.download_url);
               downloadedCount++;
             }
           }
