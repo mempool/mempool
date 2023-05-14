@@ -1,0 +1,60 @@
+{
+  "vsize": 109,
+  "feePerVsize": 80.49427917620137,
+  "effectiveFeePerVsize": 35.05247612484001,
+  "txid": "21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f",
+  "version": 2,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "1e3bd5c634781a6ba8bb3d3385b14739bf38cad5332d5fbc5c0ab775e54b9aef",
+      "vout": 144,
+      "prevout": {
+        "scriptpubkey": "0014d98654186b90d95da7e31a30929f5b5b6a0af250",
+        "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 d98654186b90d95da7e31a30929f5b5b6a0af250",
+        "scriptpubkey_type": "v0_p2wpkh",
+        "scriptpubkey_address": "bc1qmxr9gxrtjrv4mflrrgcf986mtd4q4ujss432tk",
+        "value": 253017648
+      },
+      "scriptsig": "",
+      "scriptsig_asm": "",
+      "witness": [
+        "30440220448e8f58fcdea87c1969d58438b49da5b43712380bc4c68b02d22cf6b164907302207b2ed660f1a5b3b74f712961ffb3f3a7d1ac6e48b269ea6ff15df985042211f301",
+        "02e39a1f3583e382cec1a1fab6a3f5950b6403c953fada58d809127a497f502ebe"
+      ],
+      "is_coinbase": false,
+      "sequence": 4294967293
+    }
+  ],
+  "vout": [
+    {
+      "scriptpubkey": "0014edb5167da7e97c73d7931eb2130ac3e34e6845a9",
+      "scriptpubkey_asm": "OP_0 OP_PUSHBYTES_20 edb5167da7e97c73d7931eb2130ac3e34e6845a9",
+      "scriptpubkey_type": "v0_p2wpkh",
+      "scriptpubkey_address": "bc1qak63vld8a97884unr6epxzkrud8xs3dfdqswy2",
+      "value": 253008854
+    }
+  ],
+  "size": 191,
+  "weight": 437,
+  "fee": 8794,
+  "status": {
+    "confirmed": false
+  },
+  "firstSeen": 1683864993,
+  "uid": 298353,
+  "position": {
+    "block": 0,
+    "vsize": 886207.5
+  },
+  "cpfpChecked": true,
+  "ancestors": [
+    {
+      "txid": "1e3bd5c634781a6ba8bb3d3385b14739bf38cad5332d5fbc5c0ab775e54b9aef",
+      "fee": 169220,
+      "weight": 19877
+    }
+  ],
+  "descendants": [],
+  "bestDescendant": null
+}

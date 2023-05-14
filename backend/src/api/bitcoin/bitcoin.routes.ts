@@ -130,8 +130,9 @@ class BitcoinRoutes {
 
   private getInitData(req: Request, res: Response) {
     try {
-      const result = websocketHandler.getInitData();
-      res.json(result);
+      const result = websocketHandler.getSerializedInitData();
+      res.set('Content-Type', 'application/json');
+      res.send(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

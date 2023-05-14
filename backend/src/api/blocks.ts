@@ -529,11 +529,14 @@ class Blocks {
     return await BlocksRepository.$validateChain();
   }
 
-  public async $updateBlocks() {
+  public async $updateBlocks(): Promise<number> {
     // warn if this run stalls the main loop for more than 2 minutes
     const timer = this.startTimer();
 
+    diskCache.lock();
+
     let fastForwarded = false;
+    let handledBlocks = 0;
     const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
     this.updateTimerProgress(timer, 'got block height tip');
 
@@ -695,9 +698,15 @@ class Blocks {
       this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
       await Promise.all(callbackPromises);
       this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
+
+      handledBlocks++;
     }
 
+    diskCache.unlock();
+
     this.clearTimer(timer);
+
+    return handledBlocks;
   }
 
   private startTimer() {

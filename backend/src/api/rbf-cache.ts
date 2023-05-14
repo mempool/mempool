@@ -1,3 +1,4 @@
+import logger from "../logger";
 import { TransactionExtended, TransactionStripped } from "../mempool.interfaces";
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { Common } from "./common";
@@ -23,10 +24,10 @@ class RbfCache {
   private dirtyTrees: Set<string> = new Set();
   private treeMap: Map<string, string> = new Map(); // map of txids to sequence ids
   private txs: Map<string, TransactionExtended> = new Map();
-  private expiring: Map<string, Date> = new Map();
+  private expiring: Map<string, number> = new Map();
 
   constructor() {
-    setInterval(this.cleanup.bind(this), 1000 * 60 * 60);
+    setInterval(this.cleanup.bind(this), 1000 * 60 * 10);
   }
 
   public add(replaced: TransactionExtended[], newTxExtended: TransactionExtended): void {
@@ -35,7 +36,7 @@ class RbfCache {
     }
 
     const newTx = Common.stripTransaction(newTxExtended) as RbfTransaction;
-    const newTime = newTxExtended.firstSeen || Date.now();
+    const newTime = newTxExtended.firstSeen || (Date.now() / 1000);
     newTx.rbf = newTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
     this.txs.set(newTx.txid, newTxExtended);
 
@@ -58,7 +59,7 @@ class RbfCache {
           }
         }
       } else {
-        const replacedTime = replacedTxExtended.firstSeen || Date.now();
+        const replacedTime = replacedTxExtended.firstSeen || (Date.now() / 1000);
         replacedTrees.push({
           tx: replacedTx,
           time: replacedTime,
@@ -73,7 +74,7 @@ class RbfCache {
     const treeId = replacedTrees[0].tx.txid;
     const newTree = {
       tx: newTx,
-      time: newTxExtended.firstSeen || Date.now(),
+      time: newTime,
       fullRbf,
       replaces: replacedTrees
     };
@@ -146,6 +147,9 @@ class RbfCache {
   }
 
   public mined(txid): void {
+    if (!this.txs.has(txid)) {
+      return;
+    }
     const treeId = this.treeMap.get(txid);
     if (treeId && this.rbfTrees.has(treeId)) {
       const tree = this.rbfTrees.get(treeId);
@@ -159,18 +163,21 @@ class RbfCache {
   }
 
   // flag a transaction as removed from the mempool
-  public evict(txid): void {
-    this.expiring.set(txid, new Date(Date.now() + 1000 * 86400)); // 24 hours
+  public evict(txid: string, fast: boolean = false): void {
+    if (this.txs.has(txid) && (fast || !this.expiring.has(txid))) {
+      this.expiring.set(txid, fast ? Date.now() + (1000 * 60 * 10) : Date.now() + (1000 * 86400)); // 24 hours
+    }
   }
 
   private cleanup(): void {
-    const currentDate = new Date();
-    for (const txid in this.expiring) {
-      if ((this.expiring.get(txid) || 0) < currentDate) {
+    const now = Date.now();
+    for (const txid of this.expiring.keys()) {
+      if ((this.expiring.get(txid) || 0) < now) {
         this.expiring.delete(txid);
         this.remove(txid);
       }
     }
+    logger.debug(`rbf cache contains ${this.txs.size} txs, ${this.expiring.size} due to expire`);
   }
 
   // remove a transaction & all previous versions from the cache
@@ -237,7 +244,9 @@ class RbfCache {
       await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
     }
     expiring.forEach(expiringEntry => {
-      this.expiring.set(expiringEntry[0], expiringEntry[1]);
+      if (this.txs.has(expiringEntry[0])) {
+        this.expiring.set(expiringEntry[0], new Date(expiringEntry[1]).getTime());
+      }
     });
     this.cleanup();
   }
@@ -269,16 +278,27 @@ class RbfCache {
 
     // check if any transactions in this tree have already been confirmed
     mined = mined || treeInfo.mined;
+    let exists = mined;
     if (!mined) {
       try {
         const apiTx = await bitcoinApi.$getRawTransaction(txid);
+        if (apiTx) {
+          exists = true;
+        }
         if (apiTx?.status?.confirmed) {
           mined = true;
-          this.evict(txid);
+          treeInfo.txMined = true;
+          this.evict(txid, true);
         }
       } catch (e) {
         // most transactions do not exist
       }
+    }
+
+    // if the root tx is not in the mempool or the blockchain
+    // evict this tree as soon as possible
+    if (root === txid && !exists) {
+      this.evict(txid, true);
     }
 
     // recursively reconstruct child trees
