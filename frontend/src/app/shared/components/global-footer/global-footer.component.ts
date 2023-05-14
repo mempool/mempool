@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Observable, merge, of, Subject } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
 import { Env, StateService } from '../../../services/state.service';
@@ -28,6 +28,7 @@ export class GlobalFooterComponent implements OnInit {
     public stateService: StateService,
     private languageService: LanguageService,
     private navigationService: NavigationService,
+    @Inject(LOCALE_ID) public locale: string,
   ) {}
 
   ngOnInit(): void {
