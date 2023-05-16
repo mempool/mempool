@@ -19,7 +19,7 @@ class BlocksAuditRepositories {
     }
   }
 
-  public async $getBlockPredictionsHistory(div: number, interval: string | null): Promise<any> {
+  public async $getBlocksHealthHistory(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT UNIX_TIMESTAMP(time) as time, height, match_rate FROM blocks_audits`;
 
@@ -32,17 +32,17 @@ class BlocksAuditRepositories {
       const [rows] = await DB.query(query);
       return rows;
     } catch (e: any) {
-      logger.err(`Cannot fetch block prediction history. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot fetch blocks health history. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
 
-  public async $getPredictionsCount(): Promise<number> {
+  public async $getBlocksHealthCount(): Promise<number> {
     try {
       const [rows] = await DB.query(`SELECT count(hash) as count FROM blocks_audits`);
       return rows[0].count;
     } catch (e: any) {
-      logger.err(`Cannot fetch block prediction history. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot fetch blocks health count. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
