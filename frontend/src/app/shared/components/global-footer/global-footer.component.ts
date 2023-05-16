@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
-import { Observable, merge, of, Subject } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
 import { Env, StateService } from '../../../services/state.service';
 import { IBackendInfo } from '../../../interfaces/websocket.interface';
@@ -26,13 +27,16 @@ export class GlobalFooterComponent implements OnInit {
   currentNetwork = '';
   loggedIn = false;
   username = null;
+  urlSubscription: Subscription;
 
   constructor(
     public stateService: StateService,
     private languageService: LanguageService,
     private navigationService: NavigationService,
     @Inject(LOCALE_ID) public locale: string,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private route: ActivatedRoute,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -51,18 +55,22 @@ export class GlobalFooterComponent implements OnInit {
       this.currentNetwork = network;
     });
 
-    this.loggedIn = JSON.parse(this.storageService.getValue('auth')) !== null;
-    const auth = JSON.parse(this.storageService.getValue('auth'));
-    if (auth?.user?.username) {
-      this.username = auth.user.username;
-    } else {
-      this.username = null;
-    }
+    this.urlSubscription = this.route.url.subscribe((url) => {
+      this.loggedIn = JSON.parse(this.storageService.getValue('auth')) !== null;
+      const auth = JSON.parse(this.storageService.getValue('auth'));
+      if (auth?.user?.username) {
+        this.username = auth.user.username;
+      } else {
+        this.username = null;
+      }
+      this.cd.markForCheck();
+    })
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.urlSubscription.unsubscribe();
   }
 
   networkLink(network) {
