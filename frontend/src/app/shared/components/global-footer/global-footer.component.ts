@@ -7,6 +7,7 @@ import { IBackendInfo } from '../../../interfaces/websocket.interface';
 import { LanguageService } from '../../../services/language.service';
 import { NavigationService } from '../../../services/navigation.service';
 import { StorageService } from '../../../services/storage.service';
+import { WebsocketService } from '../../../services/websocket.service';
 
 @Component({
   selector: 'app-global-footer',
@@ -36,7 +37,8 @@ export class GlobalFooterComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private storageService: StorageService,
     private route: ActivatedRoute,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private websocketService: WebsocketService
   ) {}
 
   ngOnInit(): void {
