@@ -127,7 +127,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
           cpfpClusters.set(nextTx.uid, sortedTxSet.map(tx => tx.uid));
           isCluster = true;
         }
-        const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
+        const effectiveFeeRate = Math.min(nextTx.dependencyRate || Infinity, nextTx.ancestorFee / (nextTx.ancestorWeight / 4));
         const used: AuditTransaction[] = [];
         while (sortedTxSet.length) {
           const ancestor = sortedTxSet.pop();
@@ -155,7 +155,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
         // remove these as valid package ancestors for any descendants remaining in the mempool
         if (used.length) {
           used.forEach(tx => {
-            updateDescendants(tx, auditPool, modified);
+            updateDescendants(tx, auditPool, modified, effectiveFeeRate);
           });
         }
 
@@ -251,6 +251,7 @@ function updateDescendants(
   rootTx: AuditTransaction,
   mempool: Map<number, AuditTransaction>,
   modified: PairingHeap<AuditTransaction>,
+  clusterRate: number,
 ): void {
   const descendantSet: Set<AuditTransaction> = new Set();
   // stack of nodes left to visit
@@ -272,6 +273,7 @@ function updateDescendants(
       descendantTx.ancestorWeight -= rootTx.weight;
       tmpScore = descendantTx.score;
       descendantTx.score = descendantTx.ancestorFee / (descendantTx.ancestorWeight / 4);
+      descendantTx.dependencyRate = descendantTx.dependencyRate ? Math.min(descendantTx.dependencyRate, clusterRate) : clusterRate;
 
       if (!descendantTx.modifiedNode) {
         descendantTx.modified = true;
