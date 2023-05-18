@@ -6528,7 +6528,7 @@
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
-        <target>Среднее расстояние между каналами</target>
+        <target>Сред. расстояние между каналами</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">59,60</context>
