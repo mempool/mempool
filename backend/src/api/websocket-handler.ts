@@ -332,6 +332,8 @@ class WebsocketHandler {
     for (const deletedTx of deletedTransactions) {
       rbfCache.evict(deletedTx.txid);
     }
+    memPool.removeFromSpendMap(deletedTransactions);
+    memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
     // update init data
@@ -598,6 +600,10 @@ class WebsocketHandler {
         block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
       }
     }
+
+    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
+    memPool.handleMinedRbfTransactions(rbfTransactions);
+    memPool.removeFromSpendMap(transactions);
 
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
