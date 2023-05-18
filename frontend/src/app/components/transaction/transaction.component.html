@@ -481,7 +481,7 @@
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)">
+      <tr *ngIf="cpfpInfo && (cpfpInfo.effectiveFeePerVsize || cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length)">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
@@ -490,7 +490,7 @@
               <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>
-          <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+          <button *ngIf="cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
         </td>
       </tr>
     </tbody>

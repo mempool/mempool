@@ -24,6 +24,7 @@ export interface CpfpInfo {
   ancestors: Ancestor[];
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
+  effectiveFeePerVsize?: number;
 }
 
 export interface RbfInfo {

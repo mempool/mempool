@@ -164,14 +164,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
           relatives.push(cpfpInfo.bestDescendant);
         }
-        let totalWeight =
-          this.tx.weight +
-          relatives.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          relatives.reduce((prev, val) => prev + val.fee, 0);
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        if (!cpfpInfo.effectiveFeePerVsize) {
+          let totalWeight =
+            this.tx.weight +
+            relatives.reduce((prev, val) => prev + val.weight, 0);
+          let totalFees =
+            this.tx.fee +
+            relatives.reduce((prev, val) => prev + val.fee, 0);
+          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        } else {
+          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        }
 
         this.cpfpInfo = cpfpInfo;
       });

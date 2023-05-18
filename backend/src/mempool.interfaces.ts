@@ -104,6 +104,7 @@ export interface AuditTransaction {
   used: boolean;
   modified: boolean;
   modifiedNode: HeapNode<AuditTransaction>;
+  dependencyRate?: number;
 }
 
 export interface CompactThreadTransaction {
