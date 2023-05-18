@@ -14,6 +14,7 @@ class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: TransactionExtended } = {};
+  private spendMap = new Map<string, TransactionExtended>();
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
@@ -77,6 +78,10 @@ class Mempool {
     return this.mempoolCache;
   }
 
+  public getSpendMap(): Map<string, TransactionExtended> {
+    return this.spendMap;
+  }
+
   public async $setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
     this.mempoolCache = mempoolData;
     if (this.mempoolChangedCallback) {
@@ -85,6 +90,7 @@ class Mempool {
     if (this.$asyncMempoolChangedCallback) {
       await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
+    this.addToSpendMap(Object.values(this.mempoolCache));
   }
 
   public async $updateMemPoolInfo() {
@@ -272,6 +278,34 @@ class Mempool {
       if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
         // Store replaced transactions
         rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
+      }
+    }
+  }
+
+  public handleMinedRbfTransactions(rbfTransactions: { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }}): void {
+    for (const rbfTransaction in rbfTransactions) {
+      if (rbfTransactions[rbfTransaction].replacedBy && rbfTransactions[rbfTransaction]?.replaced?.length) {
+        // Store replaced transactions
+        rbfCache.add(rbfTransactions[rbfTransaction].replaced, rbfTransactions[rbfTransaction].replacedBy);
+      }
+    }
+  }
+
+  public addToSpendMap(transactions: TransactionExtended[]): void {
+    for (const tx of transactions) {
+      for (const vin of tx.vin) {
+        this.spendMap.set(`${vin.txid}:${vin.vout}`, tx);
+      }
+    }
+  }
+
+  public removeFromSpendMap(transactions: TransactionExtended[]): void {
+    for (const tx of transactions) {
+      for (const vin of tx.vin) {
+        const key = `${vin.txid}:${vin.vout}`;
+        if (this.spendMap.get(key)?.txid === tx.txid) {
+          this.spendMap.delete(key);
+        }
       }
     }
   }
