@@ -557,7 +557,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        const { censored, added, fresh, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -584,6 +584,7 @@ class WebsocketHandler {
           addedTxs: added,
           missingTxs: censored,
           freshTxs: fresh,
+          sigopTxs: sigop,
           matchRate: matchRate,
         });
 
