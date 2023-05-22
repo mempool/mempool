@@ -36,6 +36,7 @@ export interface BlockAudit {
   sigopTxs: string[],
   fullrbfTxs: string[],
   addedTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
   expectedFees?: number,
   expectedWeight?: number,
