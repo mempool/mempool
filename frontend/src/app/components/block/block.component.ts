@@ -336,6 +336,7 @@ export class BlockComponent implements OnInit, OnDestroy {
           const isSelected = {};
           const isFresh = {};
           const isSigop = {};
+          const isAccelerated = {};
           this.numMissing = 0;
           this.numUnexpected = 0;
 
@@ -358,6 +359,9 @@ export class BlockComponent implements OnInit, OnDestroy {
             for (const txid of blockAudit.sigopTxs || []) {
               isSigop[txid] = true;
             }
+            for (const txid of blockAudit.acceleratedTxs || []) {
+              isAccelerated[txid] = true;
+            }
             // set transaction statuses
             for (const tx of blockAudit.template) {
               tx.context = 'projected';
@@ -369,6 +373,9 @@ export class BlockComponent implements OnInit, OnDestroy {
                 tx.status = isFresh[tx.txid] ? 'fresh' : (isSigop[tx.txid] ? 'sigop' : 'missing');
                 isMissing[tx.txid] = true;
                 this.numMissing++;
+              }
+              if (isAccelerated[tx.txid]) {
+                tx.status = 'accelerated';
               }
             }
             for (const [index, tx] of blockAudit.transactions.entries()) {
@@ -383,6 +390,9 @@ export class BlockComponent implements OnInit, OnDestroy {
                 tx.status = 'selected';
                 isSelected[tx.txid] = true;
                 this.numUnexpected++;
+              }
+              if (isAccelerated[tx.txid]) {
+                tx.status = 'accelerated';
               }
             }
             for (const tx of blockAudit.transactions) {

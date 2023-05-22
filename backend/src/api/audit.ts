@@ -5,15 +5,16 @@ import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.in
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
-   : { censored: string[], added: string[], fresh: string[], sigop: string[], score: number, similarity: number } {
+  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended }, accelerations: { [txid: string]: number })
+   : { censored: string[], added: string[], fresh: string[], sigop: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], fresh: [], sigop: [], score: 0, similarity: 1 };
+      return { censored: [], added: [], fresh: [], sigop: [], accelerated: [], score: 0, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
     const fresh: string[] = []; // missing, but firstSeen within PROPAGATION_MARGIN
+    const accelerated: string[] = []; // prioritized by the mempool accelerator
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
     let displacedWeight = 0;
@@ -26,6 +27,9 @@ class Audit {
     const now = Math.round((Date.now() / 1000));
     for (const tx of transactions) {
       inBlock[tx.txid] = tx;
+      if (accelerations[tx.txid]) {
+        accelerated.push(tx.txid);
+      }
     }
     // coinbase is always expected
     if (transactions[0]) {
@@ -138,6 +142,7 @@ class Audit {
       added,
       fresh,
       sigop: [],
+      accelerated,
       score,
       similarity,
     };

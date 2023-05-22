@@ -76,7 +76,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 

@@ -16,6 +16,7 @@ const auditColors = {
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
   selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
+  accelerated: hexToColor('8F5FF6'),
 };
 
 // convert from this class's update format to TxSprite's update format
@@ -37,7 +38,7 @@ export default class TxView implements TransactionStripped {
   value: number;
   feerate: number;
   rate?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
 
@@ -179,6 +180,8 @@ export default class TxView implements TransactionStripped {
         return auditColors.added;
       case 'selected':
         return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+      case 'accelerated':
+        return auditColors.accelerated;
       case 'found':
         if (this.context === 'projected') {
           return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
