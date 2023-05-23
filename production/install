@@ -1815,7 +1815,7 @@ echo "[*] Adding MySQL configuration"
 case $OS in
 
     FreeBSD)
-        osSudo "${ROOT_USER}" service mysql-server start
+        osSudo "${ROOT_USER}" service mysql-server onestart
     ;;
     Debian)
         osSudo "${ROOT_USER}" service mysql start
