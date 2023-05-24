@@ -1,18 +1,28 @@
+p {
+  margin-top: 1rem;
+}
+
+tr {
+  white-space: normal;
+}
+
 #hero {
   text-align: center;
   margin: 60px auto;
   width: 100%;
   max-width: 2000px;
+  padding: 0 20px;
 }
 
 #hero p {
   color: rgba(255, 255, 255, 0.568627451);
 }
 
-#hero img {
+#hero video {
   height: auto;
   width: 50%;
   max-width: 675px;
+  margin-top: 40px;
 }
 
 h2 {
@@ -21,7 +31,7 @@ h2 {
 }
 
 .panel {
-  padding: 50px 80px 40px 80px;
+  padding: 30px 40px 30px 40px;
 }
 
 .panel-lead {
@@ -40,18 +50,26 @@ h2 {
   height: auto;
 }
 
+.cta.panel {
+  text-align: center;
+}
+
+.cta.bottom.panel {
+  position: relative;
+}
+
 .explainer.panel {
   text-align: center;
   width: 100%;
   max-width: 2000px;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-bottom: 75px;
 }
 
 .explainer.panel .point {
   text-align: center;
   width: 460px;
-  height: 400px;
+  height: 300px;
   padding: 30px;
   display: inline-block;
 }
@@ -66,11 +84,9 @@ h2 {
 
 .explainer.panel .point svg {
   height: auto;
-  width: 125px;
-  background: #1d1f31;
+  width: 115px;
   border-radius: 50%;
-  padding: 20px;
-  filter: sepia(100%);
+  padding: 25px;
 }
 
 .panel.faq {
@@ -81,7 +97,7 @@ h2 {
 }
 
 .endpoint-container {
-  margin-bottom: 5px;
+  margin-bottom: 25px;
 }
 
 .endpoint-container .section-header {
@@ -100,12 +116,30 @@ h2 {
   text-decoration: none;
 }
 
+.bg-effect {
+  position: absolute;
+  z-index: -100 !important;
+  height: 90vh;
+  opacity: 0.3;
+  background-repeat: no-repeat;
+  max-width: calc(100% - 50px);
+  animation: 2s ease forwards .5s bg-scale;
+}
 
+.bg-effect.top {
+  background-position: top left;
+  top: 20px;
+  width: 1000px;
+}
 
 @media (max-width: 992px) {
 
   #hero img {
     width: 80%;
+  }
+
+  .explainer.panel .point {
+    width: 100%;
   }
 
 }
