@@ -55,6 +55,7 @@ class BlocksAuditRepositories {
         transactions, template, missing_txs as missingTxs, added_txs as addedTxs, fresh_txs as freshTxs, sigop_txs as sigopTxs, match_rate as matchRate
         FROM blocks_audits
         JOIN blocks ON blocks.hash = blocks_audits.hash
+        JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
         JOIN blocks_summaries ON blocks_summaries.id = blocks_audits.hash
         WHERE blocks_audits.hash = "${hash}"
       `);
