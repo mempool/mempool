@@ -118,10 +118,6 @@ class PoolsParser {
    * @param pool 
    */
   private async $deleteBlocksForPool(pool: PoolTag): Promise<void> {
-    if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
-      return;
-    }
-
     // Get oldest blocks mined by the pool and assume pools-v2.json updates only concern most recent years
     // Ignore early days of Bitcoin as there were no mining pool yet
     const [oldestPoolBlock]: any[] = await DB.query(`
