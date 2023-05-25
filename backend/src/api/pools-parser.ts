@@ -41,7 +41,7 @@ class PoolsParser {
   public async migratePoolsJson(): Promise<void> {
     // We also need to wipe the backend cache to make sure we don't serve blocks with
     // the wrong mining pool (usually happen with unknown blocks)
-    diskCache.wipeCache();
+    diskCache.setIgnoreBlocksCache();
 
     await this.$insertUnknownPool();
 
