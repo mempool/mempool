@@ -222,6 +222,9 @@ class DiskCache {
       if (!this.ignoreBlocksCache) {
         blocks.setBlocks(data.blocks);
         blocks.setBlockSummaries(data.blockSummaries || []);
+      } else {
+        logger.info('Re-saving cache with empty recent blocks data');
+        await this.$saveCacheToDisk(true);
       }
     } catch (e) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
