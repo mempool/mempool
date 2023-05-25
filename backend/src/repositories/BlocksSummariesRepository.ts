@@ -53,8 +53,9 @@ class BlocksSummariesRepository {
 
   public async $getIndexedSummariesId(): Promise<string[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries`);
-      return rows.map(row => row.id);
+      const [rows]: any[] = await DB.query(`SELECT id, length(transactions) as tlen from blocks_summaries`);
+      // filter out rows that are missing the block summary (transactions column)
+      return rows.filter(row => row.tlen > 2).map(row => row.id);
     } catch (e) {
       logger.err(`Cannot get block summaries id list. Reason: ` + (e instanceof Error ? e.message : e));
     }
