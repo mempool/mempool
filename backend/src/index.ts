@@ -24,6 +24,7 @@ import icons from './api/liquid/icons';
 import { Common } from './api/common';
 import poolsUpdater from './tasks/pools-updater';
 import indexer from './indexer';
+import nostr from './nostr'
 import nodesRoutes from './api/explorer/nodes.routes';
 import channelsRoutes from './api/explorer/channels.routes';
 import generalLightningRoutes from './api/explorer/general.routes';
@@ -141,6 +142,10 @@ class Server {
     await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
+
+    if (config.NOSTR.ENABLED) {
+      nostr.$run();
+    }
 
     if (config.MEMPOOL.ENABLED) {
       this.runMainUpdateLoop();

@@ -129,6 +129,10 @@ interface IConfig {
     GEOLITE2_ASN: string;
     GEOIP2_ISP: string;
   },
+  NOSTR: {
+    ENABLED: boolean;
+    RELAYS: string[];
+  }
 }
 
 const defaults: IConfig = {
@@ -258,6 +262,10 @@ const defaults: IConfig = {
     'GEOLITE2_ASN': '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
     'GEOIP2_ISP': '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
   },
+  'NOSTR': {
+    'ENABLED': false,
+    'RELAYS': [],
+  }
 };
 
 class Config implements IConfig {
@@ -277,6 +285,7 @@ class Config implements IConfig {
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
+  NOSTR: IConfig['NOSTR'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -296,6 +305,7 @@ class Config implements IConfig {
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
+    this.NOSTR = configs.NOSTR;
   }
 
   merge = (...objects: object[]): IConfig => {
