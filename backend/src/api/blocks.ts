@@ -600,6 +600,14 @@ class Blocks {
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true);
+      if (config.MEMPOOL.BACKEND !== 'esplora') {
+        // fill in missing transaction fee data from verboseBlock
+        for (let i = 0; i < transactions.length; i++) {
+          if (!transactions[i].fee && transactions[i].txid === verboseBlock.tx[i].txid) {
+            transactions[i].fee = verboseBlock.tx[i].fee * 100_000_000;
+          }
+        }
+      }
       const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
