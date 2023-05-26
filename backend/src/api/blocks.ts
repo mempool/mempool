@@ -306,7 +306,7 @@ class Blocks {
     }
 
     const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
-    const address = txMinerInfo.vout[0].scriptpubkey_address;
+    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter((address) => address);
 
     let pools: PoolTag[] = [];
     if (config.DATABASE.ENABLED === true) {
@@ -316,11 +316,13 @@ class Blocks {
     }
 
     for (let i = 0; i < pools.length; ++i) {
-      if (address !== undefined) {
-        const addresses: string[] = typeof pools[i].addresses === 'string' ?
+      if (addresses.length) {
+        const poolAddresses: string[] = typeof pools[i].addresses === 'string' ?
           JSON.parse(pools[i].addresses) : pools[i].addresses;
-        if (addresses.indexOf(address) !== -1) {
-          return pools[i];
+        for (let y = 0; y < poolAddresses.length; y++) {
+          if (addresses.indexOf(poolAddresses[y]) !== -1) {
+            return pools[i];
+          }
         }
       }
 
