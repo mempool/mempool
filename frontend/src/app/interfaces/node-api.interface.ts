@@ -155,7 +155,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
 }
 
 interface RbfTransaction extends TransactionStripped {
