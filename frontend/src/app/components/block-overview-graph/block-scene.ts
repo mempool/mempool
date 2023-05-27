@@ -150,7 +150,7 @@ export default class BlockScene {
     this.updateAll(startTime, 200, direction);
   }
 
-  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     const startTime = performance.now();
     const removed = this.removeBatch(remove, startTime, direction);
 
@@ -175,6 +175,7 @@ export default class BlockScene {
       // update effective rates
       change.forEach(tx => {
         if (this.txs[tx.txid]) {
+          this.txs[tx.txid].acc = tx.acc;
           this.txs[tx.txid].feerate = tx.rate || (this.txs[tx.txid].fee / this.txs[tx.txid].vsize);
           this.txs[tx.txid].rate = tx.rate;
           this.txs[tx.txid].dirty = true;

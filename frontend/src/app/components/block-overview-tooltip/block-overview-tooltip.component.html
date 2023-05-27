@@ -29,7 +29,8 @@
         </td>
       </tr>
       <tr *ngIf="effectiveRate && effectiveRate !== feeRate">
-        <td class="td-width" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+        <td *ngIf="!this.acceleration" class="td-width" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+        <td *ngIf="this.acceleration" class="td-width" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Accelerated fee rate</td>
         <td>
           <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
         </td>

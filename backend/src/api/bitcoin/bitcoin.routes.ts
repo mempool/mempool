@@ -214,6 +214,7 @@ class BitcoinRoutes {
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
           adjustedVsize: tx.adjustedVsize,
+          acceleration: tx.acceleration
         });
         return;
       }

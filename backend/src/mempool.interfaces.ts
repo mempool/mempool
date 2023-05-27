@@ -92,6 +92,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     block: number,
     vsize: number,
   };
+  acceleration?: number;
   uid?: number;
 }
 
@@ -183,6 +184,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: number;
   rate?: number; // effective fee rate
 }
 
