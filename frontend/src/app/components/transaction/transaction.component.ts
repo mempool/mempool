@@ -183,6 +183,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
         }
+        if (cpfpInfo.acceleration) {
+          this.tx.acceleration = cpfpInfo.acceleration;
+        }
 
         this.cpfpInfo = cpfpInfo;
         this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));

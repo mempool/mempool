@@ -111,6 +111,7 @@ export class Common {
       fee: tx.fee,
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
+      acc: tx.acceleration || undefined,
       rate: tx.effectiveFeePerVsize,
     };
   }
