@@ -478,7 +478,8 @@
         </td>
       </tr>
       <tr *ngIf="cpfpInfo && hasEffectiveFeeRate">
-        <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+        <td *ngIf="cpfpInfo.acceleration" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Accelerated fee rate</td>
+        <td *ngIf="!cpfpInfo.acceleration" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
             {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>

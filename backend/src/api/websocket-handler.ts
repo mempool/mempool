@@ -21,6 +21,7 @@ import Audit from './audit';
 import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
+import mempool from './mempool';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -559,7 +560,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        const { censored, added, fresh, sigop, accelerated, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool, accelerations);
+        const { censored, added, fresh, sigop, accelerated, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -623,6 +624,8 @@ class WebsocketHandler {
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
+
+    memPool.removeAccelerations(txIds);
 
     // update init data
     this.updateInitData();

@@ -169,7 +169,7 @@ class MempoolBlocks {
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
       let added: TransactionStripped[] = [];
       let removed: string[] = [];
-      const changed: { txid: string, rate: number | undefined }[] = [];
+      const changed: { txid: string, rate: number | undefined, acc: number | undefined }[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
         added = mempoolBlocks[i].transactions;
       } else if (!mempoolBlocks[i] && prevBlocks[i]) {
@@ -191,8 +191,8 @@ class MempoolBlocks {
         mempoolBlocks[i].transactions.forEach(tx => {
           if (!prevIds[tx.txid]) {
             added.push(tx);
-          } else if (tx.rate !== prevIds[tx.txid].rate) {
-            changed.push({ txid: tx.txid, rate: tx.rate });
+          } else if (tx.rate !== prevIds[tx.txid].rate || tx.acc !== prevIds[tx.txid].acc) {
+            changed.push({ txid: tx.txid, rate: tx.rate, acc: tx.acc });
           }
         });
       }
@@ -205,7 +205,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, accelerations: { [txid: string]: number } = {}): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
@@ -221,7 +221,7 @@ class MempoolBlocks {
       if (entry.uid != null) {
         strippedMempool.set(entry.uid, {
           uid: entry.uid,
-          fee: entry.fee,
+          fee: entry.fee + (entry.acceleration || 0),
           weight: (entry.adjustedVsize * 4),
           sigops: entry.sigops,
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
@@ -281,13 +281,14 @@ class MempoolBlocks {
     for (const tx of Object.values(added)) {
       this.setUid(tx);
     }
+
     const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
     const addedStripped: CompactThreadTransaction[] = added.filter(entry => entry.uid != null).map(entry => {
       return {
         uid: entry.uid || 0,
-        fee: entry.fee,
+        fee: entry.fee + (entry.acceleration || 0),
         weight: (entry.adjustedVsize * 4),
         sigops: entry.sigops,
         feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,

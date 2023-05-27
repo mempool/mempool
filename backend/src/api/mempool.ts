@@ -22,6 +22,8 @@ class Mempool {
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[]) => Promise<void>) | undefined;
 
+  private accelerations: { [txId: string]: number } = {};
+
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
 
@@ -232,6 +234,17 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
+    const newAccelerations: { txid: string, delta: number }[] = [];
+    newTransactions.forEach(tx => {
+      if (tx.txid.startsWith('00')) {
+        const delta = Math.floor(Math.random() * 100000) + 100000;
+        newAccelerations.push({ txid: tx.txid, delta });
+        tx.acceleration = delta;
+      }
+    });
+    this.addAccelerations(newAccelerations);
+    this.removeAccelerations(deletedTransactions.map(tx => tx.txid));
+
     if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
       this.inSync = true;
       logger.notice('The mempool is now in sync!');
@@ -254,6 +267,22 @@ class Mempool {
     logger.debug(`Mempool updated in ${time / 1000} seconds. New size: ${Object.keys(this.mempoolCache).length} (${diff > 0 ? '+' + diff : diff})`);
 
     this.clearTimer(timer);
+  }
+
+  public getAccelerations(): { [txid: string]: number } {
+    return this.accelerations;
+  }
+
+  public addAccelerations(newAccelerations: { txid: string, delta: number }[]): void {
+    for (const acceleration of newAccelerations) {
+      this.accelerations[acceleration.txid] = acceleration.delta;
+    }
+  }
+
+  public removeAccelerations(txids: string[]): void {
+    for (const txid of txids) {
+      delete this.accelerations[txid];
+    }
   }
 
   private startTimer() {

@@ -5,7 +5,7 @@ import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.in
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended }, accelerations: { [txid: string]: number })
+  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
    : { censored: string[], added: string[], fresh: string[], sigop: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
       return { censored: [], added: [], fresh: [], sigop: [], accelerated: [], score: 0, similarity: 1 };
@@ -27,7 +27,7 @@ class Audit {
     const now = Math.round((Date.now() / 1000));
     for (const tx of transactions) {
       inBlock[tx.txid] = tx;
-      if (accelerations[tx.txid]) {
+      if (tx.acceleration) {
         accelerated.push(tx.txid);
       }
     }
