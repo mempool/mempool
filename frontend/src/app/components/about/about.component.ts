@@ -94,4 +94,9 @@ export class AboutComponent implements OnInit {
   showSubtitles(language) {
     return ( this.locale.startsWith( language ) && !this.locale.startsWith('en') );
   }
+
+  unmutePromoVideo() {
+    let video = <HTMLVideoElement>this.document.getElementById('promoVideo');
+    video.muted = false;
+  }
 }
