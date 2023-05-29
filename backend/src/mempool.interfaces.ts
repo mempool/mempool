@@ -88,6 +88,12 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   uid?: number;
 }
 
+export interface MempoolTransactionExtended extends TransactionExtended {
+  sigops: number;
+  adjustedVsize: number;
+  adjustedFeePerVsize: number;
+}
+
 export interface AuditTransaction {
   uid: number;
   fee: number;

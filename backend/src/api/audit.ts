@@ -14,7 +14,6 @@ class Audit {
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
     const fresh: string[] = []; // missing, but firstSeen within PROPAGATION_MARGIN
-    const sigop: string[] = []; // missing, but possibly has an adjusted vsize due to high sigop count
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
     let displacedWeight = 0;
@@ -38,8 +37,6 @@ class Audit {
         // tx is recent, may have reached the miner too late for inclusion
         if (mempool[txid]?.firstSeen != null && (now - (mempool[txid]?.firstSeen || 0)) <= PROPAGATION_MARGIN) {
           fresh.push(txid);
-        } else if (this.isPossibleHighSigop(mempool[txid])) {
-          sigop.push(txid);
         } else {
           isCensored[txid] = true;
         }
@@ -140,18 +137,10 @@ class Audit {
       censored: Object.keys(isCensored),
       added,
       fresh,
-      sigop,
+      sigop: [],
       score,
       similarity,
     };
-  }
-
-  // Detect transactions with a possibly adjusted vsize due to high sigop count
-  // very rough heuristic based on number of OP_CHECKMULTISIG outputs
-  // will miss cases with other sources of sigops
-  isPossibleHighSigop(tx: TransactionExtended): boolean {
-    const numBareMultisig = tx.vout.reduce((count, vout) => count + (vout.scriptpubkey_asm.includes('OP_CHECKMULTISIG') ? 1 : 0), 0);
-    return (numBareMultisig * 400) > tx.vsize;
   }
 }
 
