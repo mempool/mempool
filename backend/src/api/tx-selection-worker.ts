@@ -48,12 +48,14 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
       weight: tx.weight,
       feePerVsize: tx.feePerVsize,
       effectiveFeePerVsize: tx.feePerVsize,
+      sigops: tx.sigops,
       inputs: tx.inputs || [],
       relativesSet: false,
       ancestorMap: new Map<number, AuditTransaction>(),
       children: new Set<AuditTransaction>(),
       ancestorFee: 0,
       ancestorWeight: 0,
+      ancestorSigops: 0,
       score: 0,
       used: false,
       modified: false,
@@ -83,6 +85,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
   // (i.e. the package rooted in the transaction with the best ancestor score)
   const blocks: number[][] = [];
   let blockWeight = 4000;
+  let blockSigops = 0;
   let transactions: AuditTransaction[] = [];
   const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => {
     if (a.score === b.score) {
@@ -118,7 +121,7 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
 
     if (nextTx && !nextTx?.used) {
       // Check if the package fits into this block
-      if (blocks.length >= 7 || (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS)) {
+      if (blocks.length >= 7 || ((blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) && (blockSigops + nextTx.ancestorSigops <= 80000))) {
         const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
         // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
         const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
@@ -237,9 +240,11 @@ function setRelatives(
   };
   tx.ancestorFee = tx.fee || 0;
   tx.ancestorWeight = tx.weight || 0;
+  tx.ancestorSigops = tx.sigops || 0;
   tx.ancestorMap.forEach((ancestor) => {
     tx.ancestorFee += ancestor.fee;
     tx.ancestorWeight += ancestor.weight;
+    tx.ancestorSigops += ancestor.sigops;
   });
   tx.score = tx.ancestorFee / ((tx.ancestorWeight / 4) || 1);
   tx.relativesSet = true;
@@ -271,6 +276,7 @@ function updateDescendants(
       descendantTx.ancestorMap.delete(rootTx.uid);
       descendantTx.ancestorFee -= rootTx.fee;
       descendantTx.ancestorWeight -= rootTx.weight;
+      descendantTx.ancestorSigops -= rootTx.sigops;
       tmpScore = descendantTx.score;
       descendantTx.score = descendantTx.ancestorFee / (descendantTx.ancestorWeight / 4);
       descendantTx.dependencyRate = descendantTx.dependencyRate ? Math.min(descendantTx.dependencyRate, clusterRate) : clusterRate;
