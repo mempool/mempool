@@ -18,19 +18,7 @@
       </span>
 
       <div class="container-buttons">
-        <ng-template [ngIf]="tx?.status?.confirmed">
-          <button *ngIf="latestBlock" type="button" class="btn btn-sm btn-success">
-            <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
-            <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-            <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
-          </button>
-        </ng-template>
-        <ng-template [ngIf]="tx && !tx?.status?.confirmed && replaced">
-          <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Replaced</button>
-        </ng-template>
-        <ng-template [ngIf]="tx && !tx?.status?.confirmed && !replaced">
-          <button type="button" class="btn btn-sm btn-danger" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
-        </ng-template>
+        <app-confirmations [chainTip]="latestBlock?.height" [height]="tx?.status?.block_height" [replaced]="replaced"></app-confirmations>
       </div>
     </ng-container>
   </div>
