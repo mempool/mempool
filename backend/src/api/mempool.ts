@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
+import accelerationApi, { Acceleration } from './services/acceleration';
 
 class Mempool {
   private inSync: boolean = false;
@@ -18,9 +19,9 @@ class Mempool {
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
-    deletedTransactions: MempoolTransactionExtended[]) => void) | undefined;
+    deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
-    deletedTransactions: MempoolTransactionExtended[]) => Promise<void>) | undefined;
+    deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => Promise<void>) | undefined;
 
   private accelerations: { [txId: string]: number } = {};
 
@@ -67,12 +68,12 @@ class Mempool {
   }
 
   public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]) => void): void {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => void): void {
     this.mempoolChangedCallback = fn;
   }
 
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]) => Promise<void>): void {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => Promise<void>): void {
     this.$asyncMempoolChangedCallback = fn;
   }
 
@@ -92,10 +93,10 @@ class Mempool {
       }
     }
     if (this.mempoolChangedCallback) {
-      this.mempoolChangedCallback(this.mempoolCache, [], []);
+      this.mempoolChangedCallback(this.mempoolCache, [], [], []);
     }
     if (this.$asyncMempoolChangedCallback) {
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, [], [], []);
     }
     this.addToSpendMap(Object.values(this.mempoolCache));
   }
@@ -231,19 +232,13 @@ class Mempool {
       }
     }
 
+    const accelerationDelta = await this.$updateAccelerations();
+    if (accelerationDelta.length) {
+      hasChange = true;
+    }
+
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
-
-    const newAccelerations: { txid: string, delta: number }[] = [];
-    newTransactions.forEach(tx => {
-      if (tx.txid.startsWith('00')) {
-        const delta = Math.floor(Math.random() * 100000) + 100000;
-        newAccelerations.push({ txid: tx.txid, delta });
-        tx.acceleration = delta;
-      }
-    });
-    this.addAccelerations(newAccelerations);
-    this.removeAccelerations(deletedTransactions.map(tx => tx.txid));
 
     if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
       this.inSync = true;
@@ -254,11 +249,11 @@ class Mempool {
     this.mempoolCacheDelta = Math.abs(transactions.length - Object.keys(this.mempoolCache).length);
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
-      this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions, accelerationDelta);
     }
     if (this.$asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions, accelerationDelta);
       this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 
@@ -273,15 +268,37 @@ class Mempool {
     return this.accelerations;
   }
 
-  public addAccelerations(newAccelerations: { txid: string, delta: number }[]): void {
-    for (const acceleration of newAccelerations) {
-      this.accelerations[acceleration.txid] = acceleration.delta;
-    }
-  }
+  public async $updateAccelerations(): Promise<string[]> {
+    try {
+      const newAccelerations = await accelerationApi.fetchAccelerations$();
 
-  public removeAccelerations(txids: string[]): void {
-    for (const txid of txids) {
-      delete this.accelerations[txid];
+      const changed: string[] = [];
+
+      const newAccelerationMap: { [txid: string]: number } = {};
+      for (const acceleration of newAccelerations) {
+        newAccelerationMap[acceleration.txid] = acceleration.feeDelta;
+        if (this.accelerations[acceleration.txid] == null) {
+          // new acceleration
+          changed.push(acceleration.txid);
+        } else if (this.accelerations[acceleration.txid] !== acceleration.feeDelta) {
+          // feeDelta changed
+          changed.push(acceleration.txid);
+        }
+      }
+
+      for (const oldTxid of Object.keys(this.accelerations)) {
+        if (!newAccelerationMap[oldTxid]) {
+          // removed
+          changed.push(oldTxid);
+        }
+      }
+
+      this.accelerations = newAccelerationMap;
+
+      return changed;
+    } catch (e: any) {
+      logger.debug(`Failed to update accelerations: ` + (e instanceof Error ? e.message : e));
+      return [];
     }
   }
 
