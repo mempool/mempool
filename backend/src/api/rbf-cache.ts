@@ -31,7 +31,7 @@ class RbfCache {
   }
 
   public add(replaced: TransactionExtended[], newTxExtended: TransactionExtended): void {
-    if (!newTxExtended || !replaced?.length) {
+    if (!newTxExtended || !replaced?.length || this.txs.has(newTxExtended.txid)) {
       return;
     }
 
