@@ -77,6 +77,24 @@ export class Common {
     return matches;
   }
 
+  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, TransactionExtended>): { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} {
+    const matches: { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} = {};
+    for (const tx of minedTransactions) {
+      const replaced: Set<TransactionExtended> = new Set();
+      for (let i = 0; i < tx.vin.length; i++) {
+        const vin = tx.vin[i];
+        const match = spendMap.get(`${vin.txid}:${vin.vout}`);
+        if (match && match.txid !== tx.txid) {
+          replaced.add(match);
+        }
+      }
+      if (replaced.size) {
+        matches[tx.txid] = { replaced: Array.from(replaced), replacedBy: tx };
+      }
+    }
+    return matches;
+  }
+
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
     return {
       txid: tx.txid,
