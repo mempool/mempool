@@ -381,7 +381,7 @@ class WebsocketHandler {
   }
 
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -392,7 +392,7 @@ class WebsocketHandler {
       if (config.MEMPOOL.RUST_GBT) {
         await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
       } else {
-        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true);
       }
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
@@ -737,8 +737,6 @@ class WebsocketHandler {
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
     const mempoolInfo = memPool.getMempoolInfo();
-
-    memPool.removeAccelerations(txIds);
 
     // update init data
     this.updateSocketDataFields({

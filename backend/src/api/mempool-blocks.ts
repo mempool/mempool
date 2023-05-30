@@ -5,6 +5,7 @@ import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
+import mempool from './mempool';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -212,8 +213,10 @@ class MempoolBlocks {
     // reset mempool short ids
     this.resetUids();
     for (const tx of Object.values(newMempool)) {
-      this.setUid(tx);
+      this.setUid(tx, true);
     }
+
+    const accelerations = mempool.getAccelerations();
 
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
@@ -222,7 +225,7 @@ class MempoolBlocks {
       if (entry.uid !== null && entry.uid !== undefined) {
         const stripped = {
           uid: entry.uid,
-          fee: entry.fee + (entry.acceleration || 0),
+          fee: entry.fee + (accelerations[entry.txid] || 0),
           weight: (entry.adjustedVsize * 4),
           sigops: entry.sigops,
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
@@ -273,7 +276,7 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], accelerationDelta: string[] = [], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
       await this.$makeBlockTemplates(newMempool, saveResults);
@@ -282,17 +285,20 @@ class MempoolBlocks {
 
     const start = Date.now();
 
-    for (const tx of Object.values(added)) {
+    const accelerations = mempool.getAccelerations();
+    const addedAndChanged: MempoolTransactionExtended[] = accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added);
+
+    for (const tx of addedAndChanged) {
       this.setUid(tx, true);
     }
-
     const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const addedStripped: CompactThreadTransaction[] = added.filter(entry => (entry.uid !== null && entry.uid !== undefined)).map(entry => {
+    const addedStripped: CompactThreadTransaction[] = addedAndChanged.filter(entry => entry.uid != null).map(entry => {
       return {
         uid: entry.uid || 0,
-        fee: entry.fee + (entry.acceleration || 0),
+        fee: entry.fee + (accelerations[entry.txid] || 0),
         weight: (entry.adjustedVsize * 4),
         sigops: entry.sigops,
         feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
