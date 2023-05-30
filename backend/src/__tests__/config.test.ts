@@ -127,6 +127,11 @@ describe('Mempool Backend Config', () => {
         AUDIT_START_HEIGHT: 774000,
         SERVERS: []
       });
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual({
+        API: "",
+        ACCELERATIONS: false,
+      });
     });
   });
 
@@ -160,6 +165,8 @@ describe('Mempool Backend Config', () => {
       expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
     });
   });
 

@@ -137,7 +137,11 @@ interface IConfig {
     AUDIT: boolean;
     AUDIT_START_HEIGHT: number;
     SERVERS: string[];
-  }
+  },
+  MEMPOOL_SERVICES: {
+    API: string;
+    ACCELERATIONS: boolean;
+  },
 }
 
 const defaults: IConfig = {
@@ -275,6 +279,10 @@ const defaults: IConfig = {
     'AUDIT': false,
     'AUDIT_START_HEIGHT': 774000,
     'SERVERS': [],
+  },
+  'MEMPOOL_SERVICES': {
+    'API': '',
+    'ACCELERATIONS': false,
   }
 };
 
@@ -296,6 +304,7 @@ class Config implements IConfig {
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
+  MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -316,6 +325,7 @@ class Config implements IConfig {
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
+    this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
   }
 
   merge = (...objects: object[]): IConfig => {
