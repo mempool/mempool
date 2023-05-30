@@ -80,8 +80,6 @@ class PoolsParser {
         }
       }
     }
-
-    logger.info('Mining pools-v2.json import completed');
   }
 
   /**
