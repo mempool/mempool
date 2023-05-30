@@ -129,7 +129,15 @@ class PoolsParser {
       LIMIT 1`,
       [pool.id]
     );
-    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : 130635;
+
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
+    }
+
+    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : firstKnownBlockPool;
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
     this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
     await DB.query(`
@@ -150,11 +158,18 @@ class PoolsParser {
   }
 
   private async $deleteUnknownBlocks(): Promise<void> {
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
+    }
+
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height 130635 for re-indexing`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${firstKnownBlockPool} for re-indexing`);
     await DB.query(`
       DELETE FROM blocks
-      WHERE pool_id = ? AND height >= 130635`,
+      WHERE pool_id = ? AND height >= ${firstKnownBlockPool}`,
       [unknownPool[0].id]
     );
 
