@@ -122,5 +122,9 @@
     "LIQUID_ONION": "http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1",
     "BISQ_URL": "https://bisq.markets/api",
     "BISQ_ONION": "http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api"
+  },
+  "MEMPOOL_SERVICES": {
+    "API": "https://mempool.space/api",
+    "ACCELERATIONS": false
   }
 }

@@ -117,6 +117,11 @@ describe('Mempool Backend Config', () => {
         GEOLITE2_ASN: '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
         GEOIP2_ISP: '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
       });
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual({
+        API: "",
+        ACCELERATIONS: false,
+      });
     });
   });
 
@@ -150,6 +155,8 @@ describe('Mempool Backend Config', () => {
       expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
     });
   });
 

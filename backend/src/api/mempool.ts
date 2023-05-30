@@ -269,6 +269,10 @@ class Mempool {
   }
 
   public async $updateAccelerations(): Promise<string[]> {
+    if (!config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      return [];
+    }
+
     try {
       const newAccelerations = await accelerationApi.fetchAccelerations$();
 

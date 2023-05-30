@@ -126,6 +126,10 @@ __MAXMIND_GEOLITE2_CITY__=${MAXMIND_GEOLITE2_CITY:="/backend/GeoIP/GeoLite2-City
 __MAXMIND_GEOLITE2_ASN__=${MAXMIND_GEOLITE2_ASN:="/backend/GeoIP/GeoLite2-ASN.mmdb"}
 __MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
 
+# MEMPOOL_SERVICES
+__MEMPOOL_SERVICES_API__==${MEMPOOL_SERVICES_API:=""}
+__MEMPOOL_SERVICES_ACCELERATIONS__==${MEMPOOL_SERVICES_ACCELERATIONS:=false}
+
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -242,6 +246,10 @@ sed -i "s!__MAXMIND_ENABLED__!${__MAXMIND_ENABLED__}!g" mempool-config.json
 sed -i "s!__MAXMIND_GEOLITE2_CITY__!${__MAXMIND_GEOLITE2_CITY__}!g" mempool-config.json
 sed -i "s!__MAXMIND_GEOLITE2_ASN__!${__MAXMIND_GEOLITE2_ASN__}!g" mempool-config.json
 sed -i "s!__MAXMIND_GEOIP2_ISP__!${__MAXMIND_GEOIP2_ISP__}!g" mempool-config.json
+
+# MEMPOOL_SERVICES
+sed -i "s!__MEMPOOL_SERVICES_API__!${__MEMPOOL_SERVICES_API__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_SERVICES_ACCELERATIONS__!${__MEMPOOL_SERVICES_ACCELERATIONS__}!g" mempool-config.json
 
 
 node /backend/package/index.js
