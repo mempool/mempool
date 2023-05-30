@@ -657,8 +657,8 @@ class WebsocketHandler {
 
       if (client['track-tx']) {
         const trackTxid = client['track-tx'];
-        if (txIds.indexOf(trackTxid) > -1) {
-          response['txConfirmed'] = 'true';
+        if (trackTxid && txIds.indexOf(trackTxid) > -1) {
+          response['txConfirmed'] = JSON.stringify(trackTxid);
         } else {
           const mempoolTx = _memPool[trackTxid];
           if (mempoolTx && mempoolTx.position) {

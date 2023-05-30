@@ -92,7 +92,7 @@ export class StateService {
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$: ReplaySubject<[BlockExtended, boolean]>;
+  blocks$: ReplaySubject<[BlockExtended, string | boolean]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);

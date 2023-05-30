@@ -258,7 +258,7 @@ export class WebsocketService {
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
         this.stateService.updateChainTip(response.block.height);
-        this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
+        this.stateService.blocks$.next([response.block, response.txConfirmed]);
       }
 
       if (response.txConfirmed) {
