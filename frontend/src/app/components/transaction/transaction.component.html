@@ -485,11 +485,11 @@
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx?.status?.confirmed">
             &nbsp;
-            <app-tx-fee-rating *ngIf="tx.fee && (!cpfpInfo || (!cpfpInfo.effectiveFeePerVsize && !cpfpInfo?.descendants?.length && !cpfpInfo?.bestDescendant && !cpfpInfo?.ancestors?.length))" [tx]="tx"></app-tx-fee-rating>
+            <app-tx-fee-rating *ngIf="tx.fee && !hasEffectiveFeeRate" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="cpfpInfo && (cpfpInfo.effectiveFeePerVsize || cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length)">
+      <tr *ngIf="cpfpInfo && hasEffectiveFeeRate">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
