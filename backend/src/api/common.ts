@@ -77,10 +77,10 @@ export class Common {
     return matches;
   }
 
-  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, TransactionExtended>): { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} {
-    const matches: { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} = {};
+  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, MempoolTransactionExtended>): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
+    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
     for (const tx of minedTransactions) {
-      const replaced: Set<TransactionExtended> = new Set();
+      const replaced: Set<MempoolTransactionExtended> = new Set();
       for (let i = 0; i < tx.vin.length; i++) {
         const vin = tx.vin[i];
         const match = spendMap.get(`${vin.txid}:${vin.vout}`);
