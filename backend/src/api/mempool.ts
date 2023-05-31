@@ -1,6 +1,6 @@
 import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { MempoolTransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
+import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
 import transactionUtils from './transaction-utils';
@@ -287,11 +287,11 @@ class Mempool {
     }
   }
 
-  public handleMinedRbfTransactions(rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: MempoolTransactionExtended }}): void {
+  public handleMinedRbfTransactions(rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}): void {
     for (const rbfTransaction in rbfTransactions) {
       if (rbfTransactions[rbfTransaction].replacedBy && rbfTransactions[rbfTransaction]?.replaced?.length) {
         // Store replaced transactions
-        rbfCache.add(rbfTransactions[rbfTransaction].replaced, rbfTransactions[rbfTransaction].replacedBy);
+        rbfCache.add(rbfTransactions[rbfTransaction].replaced, transactionUtils.extendMempoolTransaction(rbfTransactions[rbfTransaction].replacedBy));
       }
     }
   }
@@ -304,7 +304,7 @@ class Mempool {
     }
   }
 
-  public removeFromSpendMap(transactions: MempoolTransactionExtended[]): void {
+  public removeFromSpendMap(transactions: TransactionExtended[]): void {
     for (const tx of transactions) {
       for (const vin of tx.vin) {
         const key = `${vin.txid}:${vin.vout}`;
