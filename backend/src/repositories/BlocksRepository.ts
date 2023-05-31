@@ -578,19 +578,6 @@ class BlocksRepository {
   }
 
   /**
-   * Return blocks height
-   */
-   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
-    try {
-      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Get general block stats
    */
   public async $getBlockStats(blockCount: number): Promise<any> {
@@ -877,7 +864,7 @@ class BlocksRepository {
   /**
    * Get all blocks which have not be linked to a price yet
    */
-   public async $getBlocksWithoutPrice(): Promise<object[]> {
+  public async $getBlocksWithoutPrice(): Promise<object[]> {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
@@ -889,7 +876,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -909,7 +896,6 @@ class BlocksRepository {
         logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
