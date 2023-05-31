@@ -928,7 +928,7 @@ class BlocksRepository {
       return blocks;
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinstatsindex. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
