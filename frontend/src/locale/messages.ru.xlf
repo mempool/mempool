@@ -5494,7 +5494,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
-        <target>мСат</target>
+        <target>mSats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">35</context>
@@ -5615,7 +5615,7 @@
       </trans-unit>
       <trans-unit id="3bbd25c289760a3ba57e30df5ad5fe8977ab25a5" datatype="html">
         <source>lightning channel</source>
-        <target>лайтнинг-канал</target>
+        <target>lightning-канал</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
