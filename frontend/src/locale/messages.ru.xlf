@@ -3444,7 +3444,7 @@
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
-        <target>Размер мемпула</target>
+        <target>Размер пула ожидания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">23,24</context>
