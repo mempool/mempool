@@ -211,6 +211,8 @@ class BitcoinRoutes {
           bestDescendant: tx.bestDescendant || null,
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          sigops: tx.sigops,
+          adjustedVsize: tx.adjustedVsize,
         });
         return;
       }

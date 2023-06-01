@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -76,6 +76,7 @@ class Blocks {
     blockHeight: number,
     onlyCoinbase: boolean,
     quiet: boolean = false,
+    addMempoolData: boolean = false,
   ): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
     const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
@@ -96,14 +97,14 @@ class Blocks {
           logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
         }
         try {
-          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
+          const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, false, addMempoolData);
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
           try {
             if (config.MEMPOOL.BACKEND === 'esplora') {
               // Try again with core
-              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true);
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true, addMempoolData);
               transactions.push(tx);
               transactionsFetched++;
             } else {
@@ -126,11 +127,13 @@ class Blocks {
       }
     }
 
-    transactions.forEach((tx) => {
-      if (!tx.cpfpChecked) {
-        Common.setRelativesAndGetCpfpInfo(tx, mempool); // Child Pay For Parent
-      }
-    });
+    if (addMempoolData) {
+      transactions.forEach((tx) => {
+        if (!tx.cpfpChecked) {
+          Common.setRelativesAndGetCpfpInfo(tx as MempoolTransactionExtended, mempool); // Child Pay For Parent
+        }
+      });
+    }
 
     if (!quiet) {
       logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
@@ -596,7 +599,7 @@ class Blocks {
       const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
-      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
+      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true);
       const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);

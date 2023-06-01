@@ -88,28 +88,38 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   uid?: number;
 }
 
+export interface MempoolTransactionExtended extends TransactionExtended {
+  sigops: number;
+  adjustedVsize: number;
+  adjustedFeePerVsize: number;
+}
+
 export interface AuditTransaction {
   uid: number;
   fee: number;
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize: number;
+  sigops: number;
   inputs: number[];
   relativesSet: boolean;
   ancestorMap: Map<number, AuditTransaction>;
   children: Set<AuditTransaction>;
   ancestorFee: number;
   ancestorWeight: number;
+  ancestorSigops: number;
   score: number;
   used: boolean;
   modified: boolean;
   modifiedNode: HeapNode<AuditTransaction>;
+  dependencyRate?: number;
 }
 
 export interface CompactThreadTransaction {
   uid: number;
   fee: number;
   weight: number;
+  sigops: number;
   feePerVsize: number;
   effectiveFeePerVsize?: number;
   inputs: number[];

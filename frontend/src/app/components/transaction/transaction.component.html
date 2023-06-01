@@ -271,6 +271,10 @@
                 <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
                 <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
               </tr>
+              <tr *ngIf="cpfpInfo && cpfpInfo.adjustedVsize && cpfpInfo.adjustedVsize > (tx.weight / 4)">
+                <td i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize</td>
+                <td [innerHTML]="'&lrm;' + (cpfpInfo.adjustedVsize | vbytes: 2)"></td>
+              </tr>
               <tr>
                 <td i18n="block.weight">Weight</td>
                 <td [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></td>
@@ -288,6 +292,10 @@
               <tr>
                 <td i18n="transaction.locktime">Locktime</td>
                 <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
+              </tr>
+              <tr *ngIf="cpfpInfo && cpfpInfo.adjustedVsize && cpfpInfo.adjustedVsize > (tx.weight / 4)">
+                <td i18n="transaction.sigops|Transaction Sigops">Sigops</td>
+                <td [innerHTML]="'&lrm;' + (cpfpInfo.sigops | number)"></td>
               </tr>
               <tr>
                 <td i18n="transaction.hex">Transaction hex</td>
@@ -477,11 +485,11 @@
           {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
           <ng-template [ngIf]="tx?.status?.confirmed">
             &nbsp;
-            <app-tx-fee-rating *ngIf="tx.fee && ((cpfpInfo && !cpfpInfo?.descendants?.length && !cpfpInfo?.bestDescendant && !cpfpInfo?.ancestors?.length) || !cpfpInfo)" [tx]="tx"></app-tx-fee-rating>
+            <app-tx-fee-rating *ngIf="tx.fee && !hasEffectiveFeeRate" [tx]="tx"></app-tx-fee-rating>
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="cpfpInfo && (cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length)">
+      <tr *ngIf="cpfpInfo && hasEffectiveFeeRate">
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
@@ -490,7 +498,7 @@
               <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>
-          <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+          <button *ngIf="cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
         </td>
       </tr>
     </tbody>
