@@ -3346,7 +3346,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
-        <target>Обычно размещает вашу транзакцию между первым и вторым блоками в мемпуле</target>
+        <target>Обычно размещает вашу транзакцию между первым и вторым блоками в пуле ожидания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
