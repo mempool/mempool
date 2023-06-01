@@ -3938,7 +3938,7 @@
       </trans-unit>
       <trans-unit id="c16d236667af327bd474b149cb909d1cd06fa50c" datatype="html">
         <source>Avg Health</source>
-        <target>Сред. здоровье</target>
+        <target>Среднее здоровье</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -4294,7 +4294,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
-        <target>Сред. комиссия за блок</target>
+        <target>Средняя комиссия за блок</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4326,7 +4326,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
-        <target>Сред. комиссия за транзакцию</target>
+        <target>Средняя комиссия за транзакцию</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4860,7 +4860,7 @@
       </trans-unit>
       <trans-unit id="5403a767248e304199592271bba3366d2ca3f903" datatype="html">
         <source>Show less</source>
-        <target>Показывать меньше</target>
+        <target>Показывай меньше</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">228,234</context>
@@ -4909,7 +4909,7 @@
       </trans-unit>
       <trans-unit id="eb1737af67381ce6f0b347038bb4c65b3deb84be" datatype="html">
         <source>Effective fee rate</source>
-        <target>Эффективная ставка комиссии</target>
+        <target>Эффективная комиссионная ставка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">486,489</context>
@@ -5305,7 +5305,7 @@
       </trans-unit>
       <trans-unit id="86d26b45470e43b409e589517922276109138e87" datatype="html">
         <source>Transaction Fees</source>
-        <target>Комиссии за транзакции</target>
+        <target>Транзакционные комиссии (приоритет)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -5494,7 +5494,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
-        <target>mSats</target>
+        <target>мСат</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">35</context>
@@ -5615,7 +5615,7 @@
       </trans-unit>
       <trans-unit id="3bbd25c289760a3ba57e30df5ad5fe8977ab25a5" datatype="html">
         <source>lightning channel</source>
-        <target>lightning-канал</target>
+        <target>лайтнинг-канал</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6040,7 +6040,7 @@
       </trans-unit>
       <trans-unit id="ab456546aa39de3328fcfdf077f410b5ff1aa773" datatype="html">
         <source>Avg Capacity</source>
-        <target>Сред. емкость</target>
+        <target>Средняя емкость</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6053,7 +6053,7 @@
       </trans-unit>
       <trans-unit id="f68705670e611f13da1a43e90f9c97d8761dd9ef" datatype="html">
         <source>Avg Fee Rate</source>
-        <target>Сред. комиссия</target>
+        <target>Средняя комиссия</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -6075,7 +6075,7 @@
       </trans-unit>
       <trans-unit id="140fb39368f210ec945417f3eb23bf9564396e5c" datatype="html">
         <source>Avg Base Fee</source>
-        <target>Сред. базовая комиссия</target>
+        <target>Средняя базовая комиссия</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -6528,7 +6528,7 @@
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
-        <target>Сред. расстояние между каналами</target>
+        <target>Среднее расстояние между каналами</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">59,60</context>
@@ -7070,7 +7070,7 @@
       </trans-unit>
       <trans-unit id="date-base.week" datatype="html">
         <source><x id="DATE" equiv-text="counter"/> week</source>
-        <target><x id="DATE" equiv-text="counter"/> неделя</target>
+        <target><x id="DATE" equiv-text="counter"/> неделю</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/i18n/dates.ts</context>
           <context context-type="linenumber">7</context>
