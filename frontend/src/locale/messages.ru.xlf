@@ -4900,7 +4900,7 @@
       </trans-unit>
       <trans-unit id="66b65556acb90d8764fe166a260af0309671698c" datatype="html">
         <source>Waiting for it to appear in the mempool...</source>
-        <target>Ожидаем ее появления в мемпуле ...</target>
+        <target>Ожидаем ее появления в пуле ожидания...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">451,456</context>
