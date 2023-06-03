@@ -21,7 +21,7 @@ import Audit from './audit';
 import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
-import mempool from './mempool';
+import accelerationApi from './services/acceleration';
 
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
@@ -311,7 +311,7 @@ class WebsocketHandler {
     this.printLogs();
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true);
+      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -545,18 +545,23 @@ class WebsocketHandler {
     if (config.MEMPOOL.AUDIT) {
       let projectedBlocks;
       let auditMempool = _memPool;
+      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && await accelerationApi.$isAcceleratedBlock(block);
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
       if (separateAudit) {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated);
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
       } else {
-        projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        if ((config.MEMPOOL_SERVICES.ACCELERATIONS && !isAccelerated)) {
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated);
+        } else {
+          projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        }
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
@@ -615,7 +620,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }

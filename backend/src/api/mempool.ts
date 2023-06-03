@@ -274,7 +274,7 @@ class Mempool {
     }
 
     try {
-      const newAccelerations = await accelerationApi.fetchAccelerations$();
+      const newAccelerations = await accelerationApi.$fetchAccelerations();
 
       const changed: string[] = [];
 

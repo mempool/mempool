@@ -206,7 +206,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
@@ -215,7 +215,7 @@ class MempoolBlocks {
       this.setUid(tx, true);
     }
 
-    const accelerations = mempool.getAccelerations();
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
 
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
@@ -224,7 +224,7 @@ class MempoolBlocks {
       if (entry.uid != null) {
         strippedMempool.set(entry.uid, {
           uid: entry.uid,
-          fee: entry.fee + (accelerations[entry.txid] || 0),
+          fee: entry.fee + (useAccelerations ? (accelerations[entry.txid] || 0) : 0),
           weight: (entry.adjustedVsize * 4),
           sigops: entry.sigops,
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
@@ -263,7 +263,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, accelerations, saveResults);
       logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
     } catch (e) {
@@ -272,17 +272,17 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], accelerationDelta: string[] = [], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
-      await this.$makeBlockTemplates(newMempool, saveResults);
+      await this.$makeBlockTemplates(newMempool, saveResults, useAccelerations);
       return;
     }
 
     const start = Date.now();
 
-    const accelerations = mempool.getAccelerations();
-    const addedAndChanged: MempoolTransactionExtended[] = accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added);
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const addedAndChanged: MempoolTransactionExtended[] = useAccelerations ? accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added) : added;
 
     for (const tx of addedAndChanged) {
       this.setUid(tx);
@@ -294,7 +294,7 @@ class MempoolBlocks {
     const addedStripped: CompactThreadTransaction[] = addedAndChanged.filter(entry => entry.uid != null).map(entry => {
       return {
         uid: entry.uid || 0,
-        fee: entry.fee + (accelerations[entry.txid] || 0),
+        fee: entry.fee + (useAccelerations ? (accelerations[entry.txid] || 0) : 0),
         weight: (entry.adjustedVsize * 4),
         sigops: entry.sigops,
         feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
@@ -321,14 +321,14 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      this.processBlockTemplates(newMempool, blocks, rates, clusters, accelerations, saveResults);
       logger.debug(`updateBlockTemplates completed in ${(Date.now() - start) / 1000} seconds`);
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
     }
   }
 
-  private processBlockTemplates(mempool, blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool, blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }, accelerations, saveResults): MempoolBlockWithTransactions[] {
     for (const txid of Object.keys(rates)) {
       if (txid in mempool) {
         mempool[txid].effectiveFeePerVsize = rates[txid];
@@ -366,6 +366,8 @@ class MempoolBlocks {
             vsize: totalVsize + (mempoolTx.vsize / 2),
           };
           mempoolTx.cpfpChecked = true;
+
+          mempoolTx.acceleration = accelerations[txid];
 
           // online calculation of stack-of-blocks fee stats
           if (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) {
