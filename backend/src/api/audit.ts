@@ -6,7 +6,7 @@ import rbfCache from './rbf-cache';
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended })
+  auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended }, useAccelerations: boolean = false)
    : { censored: string[], added: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
       return { censored: [], added: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 0, similarity: 1 };
@@ -29,7 +29,7 @@ class Audit {
     const now = Math.round((Date.now() / 1000));
     for (const tx of transactions) {
       inBlock[tx.txid] = tx;
-      if (tx.acceleration) {
+      if (mempool[tx.txid] && mempool[tx.txid].acceleration) {
         accelerated.push(tx.txid);
       }
     }

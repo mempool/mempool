@@ -21,7 +21,7 @@ import Audit from './audit';
 import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
-import mempool from './mempool';
+import accelerationApi from './services/acceleration';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -392,7 +392,7 @@ class WebsocketHandler {
       if (config.MEMPOOL.RUST_GBT) {
         await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
       } else {
-        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true);
+        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
@@ -648,6 +648,7 @@ class WebsocketHandler {
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
       let auditMempool = _memPool;
+      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && await accelerationApi.$isAcceleratedBlock(block);
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
@@ -657,13 +658,17 @@ class WebsocketHandler {
           if (config.MEMPOOL.RUST_GBT) {
             projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool);
           } else {
-            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated);
           }
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
       } else {
-        projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        if ((config.MEMPOOL_SERVICES.ACCELERATIONS && !isAccelerated)) {
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated);
+        } else {
+          projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        }
       }
 
       if (Common.indexingEnabled()) {
@@ -723,11 +728,15 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
+<<<<<<< HEAD
       if (config.MEMPOOL.RUST_GBT) {
         await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
       } else {
         await mempoolBlocks.$makeBlockTemplates(_memPool, true);
       }
+=======
+      await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
+>>>>>>> 77b0a8ecc (Refactor accelerated audits)
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
