@@ -13,7 +13,7 @@
     <p i18n>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</p>
   </div>
 
-  <video src="/resources/promo-video/mempool-promo.mp4" poster="/resources/promo-video/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true">
+  <video #promoVideo (click)="unmutePromoVideo()" (touchstart)="unmutePromoVideo()" src="/resources/promo-video/mempool-promo.mp4" poster="/resources/promo-video/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true">
     <track label="English" kind="captions" srclang="en" src="/resources/promo-video/en.vtt" [attr.default]="showSubtitles('en') ? '' : null">
     <track label="日本語" kind="captions" srclang="ja" src="/resources/promo-video/ja.vtt" [attr.default]="showSubtitles('ja') ? '' : null">
     <track label="中文" kind="captions" srclang="zh" src="/resources/promo-video/zh.vtt" [attr.default]="showSubtitles('zh') ? '' : null">
