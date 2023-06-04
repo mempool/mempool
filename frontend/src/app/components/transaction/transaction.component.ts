@@ -391,7 +391,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
       this.latestBlock = block;
 
-      if (txConfirmed && this.tx && !this.tx.status.confirmed) {
+      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
