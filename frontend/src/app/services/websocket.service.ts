@@ -241,7 +241,7 @@ export class WebsocketService {
       blocks.forEach((block: BlockExtended) => {
         if (block.height > this.stateService.latestBlockHeight) {
           maxHeight = Math.max(maxHeight, block.height);
-          this.stateService.blocks$.next([block, false]);
+          this.stateService.blocks$.next([block, '']);
         }
       });
       this.stateService.updateChainTip(maxHeight);
@@ -258,7 +258,7 @@ export class WebsocketService {
     if (response.block) {
       if (response.block.height > this.stateService.latestBlockHeight) {
         this.stateService.updateChainTip(response.block.height);
-        this.stateService.blocks$.next([response.block, response.txConfirmed]);
+        this.stateService.blocks$.next([response.block, response.txConfirmed || '']);
       }
 
       if (response.txConfirmed) {
