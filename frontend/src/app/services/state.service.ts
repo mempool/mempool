@@ -92,7 +92,7 @@ export class StateService {
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$: ReplaySubject<[BlockExtended, boolean]>;
+  blocks$: ReplaySubject<[BlockExtended, string]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -163,7 +163,7 @@ export class StateService {
       }
     });
 
-    this.blocks$ = new ReplaySubject<[BlockExtended, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
+    this.blocks$ = new ReplaySubject<[BlockExtended, string]>(this.env.KEEP_BLOCKS_AMOUNT);
 
     if (this.env.BASE_MODULE === 'bisq') {
       this.network = this.env.BASE_MODULE;
