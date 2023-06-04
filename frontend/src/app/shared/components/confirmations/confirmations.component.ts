@@ -1,10 +1,11 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 
 
 @Component({
   selector: 'app-confirmations',
   templateUrl: './confirmations.component.html',
   styleUrls: ['./confirmations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationsComponent implements OnChanges {
   @Input() chainTip: number;
