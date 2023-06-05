@@ -11,7 +11,8 @@ import { StateService } from '../../services/state.service';
 export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width: number = 300;
   @Input() height: number = 60;
-  @Input() mode: 'mempool' | 'block';
+  @Input() mode: 'mempool' | 'mined';
+  @Input() index: number = 0;
 
   mempoolBlocks: number = 3;
   blockchainBlocks: number = 6;
@@ -69,5 +70,13 @@ export class ClockchainComponent implements OnInit, OnChanges, OnDestroy {
   toggleTimeDirection() {
     this.ltrTransitionEnabled = true;
     this.stateService.timeLtr.next(!this.timeLtr);
+  }
+
+  getMempoolUrl(index): string {
+    return `/clock/mempool/${index}`;
+  }
+
+  getMinedUrl(index): string {
+    return `/clock/block/${index}`;
   }
 }

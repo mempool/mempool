@@ -95,8 +95,6 @@ import { MempoolBlockOverviewComponent } from '../components/mempool-block-overv
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
-import { ClockMinedComponent } from '../components/clock/clock-mined.component';
-import { ClockMempoolComponent } from '../components/clock/clock-mempool.component';
 
 @NgModule({
   declarations: [
@@ -185,8 +183,6 @@ import { ClockMempoolComponent } from '../components/clock/clock-mempool.compone
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
-    ClockMinedComponent,
-    ClockMempoolComponent,
     ClockFaceComponent,
   ],
   imports: [
@@ -300,8 +296,6 @@ import { ClockMempoolComponent } from '../components/clock/clock-mempool.compone
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
-    ClockMinedComponent,
-    ClockMempoolComponent,
     ClockFaceComponent,
   ]
 })

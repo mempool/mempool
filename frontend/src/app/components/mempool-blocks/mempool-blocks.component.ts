@@ -28,6 +28,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() blockWidth: number = 125;
   @Input() count: number = null;
   @Input() spotlight: number = 0;
+  @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
 
   specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];

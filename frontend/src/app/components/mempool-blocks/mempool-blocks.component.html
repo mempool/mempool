@@ -8,7 +8,7 @@
           [style.right]="mempoolBlockStyles[i].right"
         ></div>
         <div @blockEntryTrigger [@.disabled]="i > 0 || !animateEntry" [attr.data-cy]="'mempool-block-' + i" class="bitcoin-block text-center mempool-block" [class.hide-block]="count && i >= count" id="mempool-block-{{ i }}" [ngStyle]="mempoolBlockStyles[i]" [class.blink-bg]="projectedBlock.blink">
-          <a draggable="false" [routerLink]="['/mempool-block/' | relativeUrl, i]"
+          <a draggable="false" [routerLink]="[getHref(i) | relativeUrl]"
             class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
           <div class="block-body">
             <ng-container *ngIf="!minimal">
