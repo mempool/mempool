@@ -35,6 +35,7 @@ export interface BlockAudit {
   sigopTxs: string[],
   addedTxs: string[],
   matchRate: number,
+  expectedFees: number;
 }
 
 export interface AuditScore {
