@@ -19,6 +19,13 @@
                 </a>
                 </label>
             </div>
+            <div class="btn-group btn-group-toggle">
+              <label class="btn btn-primary btn-sm mr-2">
+                <a [routerLink]="['/clock/mined/0' | relativeUrl]" style="color: white" id="btn-tv">
+                  <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" title="Clock view"></fa-icon>
+                </a>
+                </label>
+            </div>
             <div class="btn-group btn-group-toggle" name="radioBasic">
               <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
                 <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
