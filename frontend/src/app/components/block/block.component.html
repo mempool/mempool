@@ -72,6 +72,15 @@
                   </ng-template>
                 </td>
               </tr>
+              <tr *ngIf="auditAvailable">
+                <td i18n="latest-blocks.expected_fees">Expected total fees</td>
+                <td>
+                  <app-amount [satoshis]="blockAudit?.expectedFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
+                  <span class="fiat">
+                    <app-fiat [blockConversion]="blockConversion" [value]="blockAudit?.expectedFees" digitsInfo="1.0-0"></app-fiat>
+                  </span>
+                </td>
+              </tr>
             </ng-container>
             <ng-template #skeletonRows>
               <tr>
