@@ -105,6 +105,7 @@ class TransactionRepository {
     return {
       descendants,
       ancestors,
+      effectiveFeePerVsize: cluster.effectiveFeePerVsize,
     };
   }
 }

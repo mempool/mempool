@@ -1,4 +1,4 @@
-import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
@@ -366,39 +366,79 @@ export class Common {
   }
 
   static calculateCpfp(height: number, transactions: TransactionExtended[]): CpfpSummary {
-    const clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[] = [];
-    let cluster: TransactionExtended[] = [];
-    let ancestors: { [txid: string]: boolean } = {};
+    const clusters: CpfpCluster[] = []; // list of all cpfp clusters in this block
+    const clusterMap: { [txid: string]: CpfpCluster } = {}; // map transactions to their cpfp cluster
+    let clusterTxs: TransactionExtended[] = []; // working list of elements of the current cluster
+    let ancestors: { [txid: string]: boolean } = {}; // working set of ancestors of the current cluster root
     const txMap = {};
+    // initialize the txMap
+    for (const tx of transactions) {
+      txMap[tx.txid] = tx;
+    }
+    // reverse pass to identify CPFP clusters
     for (let i = transactions.length - 1; i >= 0; i--) {
       const tx = transactions[i];
-      txMap[tx.txid] = tx;
       if (!ancestors[tx.txid]) {
         let totalFee = 0;
         let totalVSize = 0;
-        cluster.forEach(tx => {
+        clusterTxs.forEach(tx => {
           totalFee += tx?.fee || 0;
           totalVSize += (tx.weight / 4);
         });
         const effectiveFeePerVsize = totalFee / totalVSize;
-        if (cluster.length > 1) {
-          clusters.push({
-            root: cluster[0].txid,
+        let cluster: CpfpCluster;
+        if (clusterTxs.length > 1) {
+          cluster = {
+            root: clusterTxs[0].txid,
             height,
-            txs: cluster.map(tx => { return { txid: tx.txid, weight: tx.weight, fee: tx.fee || 0 }; }),
+            txs: clusterTxs.map(tx => { return { txid: tx.txid, weight: tx.weight, fee: tx.fee || 0 }; }),
             effectiveFeePerVsize,
-          });
+          };
+          clusters.push(cluster);
         }
-        cluster.forEach(tx => {
+        clusterTxs.forEach(tx => {
           txMap[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
+          if (cluster) {
+            clusterMap[tx.txid] = cluster;
+          }
         });
-        cluster = [];
+        // reset working vars
+        clusterTxs = [];
         ancestors = {};
       }
-      cluster.push(tx);
+      clusterTxs.push(tx);
       tx.vin.forEach(vin => {
         ancestors[vin.txid] = true;
       });
+    }
+    // forward pass to enforce ancestor rate caps
+    for (const tx of transactions) {
+      let minAncestorRate = tx.effectiveFeePerVsize;
+      for (const vin of tx.vin) {
+        if (txMap[vin.txid]?.effectiveFeePerVsize) {
+          minAncestorRate = Math.min(minAncestorRate, txMap[vin.txid].effectiveFeePerVsize);
+        }
+      }
+      // check rounded values to skip cases with almost identical fees
+      const roundedMinAncestorRate = Math.ceil(minAncestorRate);
+      const roundedEffectiveFeeRate = Math.floor(tx.effectiveFeePerVsize);
+      if (roundedMinAncestorRate < roundedEffectiveFeeRate) {
+        tx.effectiveFeePerVsize = minAncestorRate;
+        if (!clusterMap[tx.txid]) {
+          // add a single-tx cluster to record the dependent rate
+          const cluster = {
+            root: tx.txid,
+            height,
+            txs: [{ txid: tx.txid, weight: tx.weight, fee: tx.fee || 0 }],
+            effectiveFeePerVsize: minAncestorRate,
+          };
+          clusterMap[tx.txid] = cluster;
+          clusters.push(cluster);
+        } else {
+          // update the existing cluster with the dependent rate
+          clusterMap[tx.txid].effectiveFeePerVsize = minAncestorRate;
+        }
+      }
     }
     return {
       transactions,

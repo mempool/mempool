@@ -253,9 +253,16 @@ export interface WorkingEffectiveFeeStats extends EffectiveFeeStats {
   maxFee: number;
 }
 
+export interface CpfpCluster {
+  root: string,
+  height: number,
+  txs: Ancestor[],
+  effectiveFeePerVsize: number,
+}
+
 export interface CpfpSummary {
   transactions: TransactionExtended[];
-  clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[];
+  clusters: CpfpCluster[];
 }
 
 export interface Statistic {
