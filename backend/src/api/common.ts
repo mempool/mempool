@@ -91,6 +91,14 @@ export class Common {
       if (replaced.size) {
         matches[tx.txid] = { replaced: Array.from(replaced), replacedBy: tx };
       }
+      // remove this tx from the spendMap
+      // prevents the same tx being replaced more than once
+      for (const vin of tx.vin) {
+        const key = `${vin.txid}:${vin.vout}`;
+        if (spendMap.get(key)?.txid === tx.txid) {
+          spendMap.delete(key);
+        }
+      }
     }
     return matches;
   }
