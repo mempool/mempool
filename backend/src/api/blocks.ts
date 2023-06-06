@@ -127,14 +127,6 @@ class Blocks {
       }
     }
 
-    if (addMempoolData) {
-      transactions.forEach((tx) => {
-        if (!tx.cpfpChecked) {
-          Common.setRelativesAndGetCpfpInfo(tx as MempoolTransactionExtended, mempool); // Child Pay For Parent
-        }
-      });
-    }
-
     if (!quiet) {
       logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
     }
