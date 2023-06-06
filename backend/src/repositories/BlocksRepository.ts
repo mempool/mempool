@@ -1032,10 +1032,12 @@ class BlocksRepository {
 
     // Match rate is not part of the blocks table, but it is part of APIs so we must include it
     extras.matchRate = null;
+    extras.expectedFees = null;
     if (config.MEMPOOL.AUDIT) {
       const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
       if (auditScore != null) {
         extras.matchRate = auditScore.matchRate;
+        extras.expectedFees = auditScore.expectedFees;
       }
     }
 

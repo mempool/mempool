@@ -81,7 +81,7 @@ class BlocksAuditRepositories {
   public async $getBlockAuditScore(hash: string): Promise<AuditScore> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT hash, match_rate as matchRate
+        `SELECT hash, match_rate as matchRate, expected_fees as expectedFees
         FROM blocks_audits
         WHERE blocks_audits.hash = "${hash}"
       `);
@@ -95,7 +95,7 @@ class BlocksAuditRepositories {
   public async $getBlockAuditScores(maxHeight: number, minHeight: number): Promise<AuditScore[]> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT hash, match_rate as matchRate
+        `SELECT hash, match_rate as matchRate, expected_fees as expectedFees
         FROM blocks_audits
         WHERE blocks_audits.height BETWEEN ? AND ?
       `, [minHeight, maxHeight]);

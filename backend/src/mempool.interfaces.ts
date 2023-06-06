@@ -41,6 +41,7 @@ export interface BlockAudit {
 export interface AuditScore {
   hash: string,
   matchRate?: number,
+  expectedFees?: number
 }
 
 export interface MempoolBlock {
@@ -183,6 +184,7 @@ export interface BlockExtension {
   feeRange: number[]; // fee rate percentiles
   reward: number;
   matchRate: number | null;
+  expectedFees: number | null;
   similarity?: number;
   pool: {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`

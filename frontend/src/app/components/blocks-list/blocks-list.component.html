@@ -16,6 +16,8 @@
         <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Mined</th>
         <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.health" ngbTooltip="Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Health</th>
+        <th *ngIf="auditAvailable" class="text-right" i18n="latest-blocks.expected-fees" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
+          i18n-ngbTooltip="latest-blocks.expected-fees" ngbTooltip="Expected fees" placement="bottom">Expected fees</th>
         <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.reward" ngbTooltip="Reward" placement="bottom" #reward [disableTooltip]="!isEllipsisActive(reward)">Reward</th>
         <th *ngIf="indexingAvailable && !widget" class="fees text-right" i18n="latest-blocks.fees" [class]="indexingAvailable ? '' : 'legacy'">Fees</th>
@@ -63,6 +65,9 @@
             <ng-template #loadingHealth>
               <span class="skeleton-loader" style="max-width: 60px"></span>
             </ng-template>
+          </td>
+          <td *ngIf="auditAvailable" class="text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
+            <app-amount [satoshis]="block.extras.expectedFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
           </td>
           <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <app-amount [satoshis]="block.extras.reward" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
