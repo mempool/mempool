@@ -196,7 +196,7 @@ export class StatisticsComponent implements OnInit {
         this.feeLevelDropdownData.push({
           fee: fee,
           range,
-          color: _chartColors[i - 1],
+          color: _chartColors[i],
         });
       }
     });
