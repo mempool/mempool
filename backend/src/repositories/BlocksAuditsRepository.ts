@@ -14,7 +14,6 @@ class BlocksAuditRepositories {
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save block audit into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
