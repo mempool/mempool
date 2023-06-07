@@ -10,6 +10,8 @@ import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeeDistributionGraphComponent implements OnInit, OnChanges {
+  @Input() feeRange: number[];
+  @Input() vsize: number;
   @Input() transactions: TransactionStripped[];
   @Input() height: number | string = 210;
   @Input() top: number | string = 20;
@@ -18,6 +20,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
   @Input() numSamples: number = 200;
   @Input() numLabels: number = 10;
 
+  simple: boolean = false;
   data: number[][];
   labelInterval: number = 50;
 
@@ -36,11 +39,17 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.simple = !!this.feeRange?.length;
     this.prepareChart();
     this.mountChart();
   }
 
   prepareChart() {
+    if (this.simple) {
+      this.data = this.feeRange.map((rate, index) => [index * 10, rate]);
+      this.labelInterval = 1;
+      return;
+    }
     this.data = [];
     if (!this.transactions?.length) {
       return;
@@ -56,14 +65,14 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
     this.labelInterval = this.numSamples / this.numLabels;
     while (nextSample <= maxBlockVSize) {
       if (txIndex >= txs.length) {
-        samples.push([1 - (sampleIndex / this.numSamples), 0]);
+        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, 0]);
         nextSample += sampleInterval;
         sampleIndex++;
         break;
       }
 
       while (txs[txIndex] && nextSample < cumVSize + txs[txIndex].vsize) {
-        samples.push([1 - (sampleIndex / this.numSamples), txs[txIndex].rate]);
+        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, txs[txIndex].rate]);
         nextSample += sampleInterval;
         sampleIndex++;
       }
@@ -84,7 +93,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
       xAxis: {
         type: 'category',
         boundaryGap: false,
-        name: 'MvB',
+        name: '% Weight',
         nameLocation: 'middle',
         nameGap: 0,
         nameTextStyle: {
@@ -93,7 +102,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
         },
         axisLabel: {
           interval: (index: number): boolean => { return index && (index % this.labelInterval === 0); },
-          formatter: (value: number): string => { return Number(value).toFixed(1); },
+          formatter: (value: number): string => { return Number(value).toFixed(0); },
         },
         axisTick: {
           interval: (index:number): boolean => { return (index % this.labelInterval === 0); },

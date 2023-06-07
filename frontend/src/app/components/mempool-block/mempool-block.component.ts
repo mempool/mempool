@@ -54,6 +54,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
                 const ordinal = this.getOrdinal(mempoolBlocks[this.mempoolBlockIndex]);
                 this.ordinal$.next(ordinal);
                 this.seoService.setTitle(ordinal);
+                mempoolBlocks[this.mempoolBlockIndex].isStack = mempoolBlocks[this.mempoolBlockIndex].blockVSize > this.stateService.blockVSize;
                 return mempoolBlocks[this.mempoolBlockIndex];
               })
             );
