@@ -645,9 +645,12 @@ class Blocks {
             logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
             indexer.reindex();
           }
-          await blocksRepository.$saveBlockInDatabase(blockExtended);
-          this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
+        }
 
+        await blocksRepository.$saveBlockInDatabase(blockExtended);
+        this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
+
+        if (!fastForwarded) {
           const lastestPriceId = await PricesRepository.$getLatestPriceId();
           this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
           if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
