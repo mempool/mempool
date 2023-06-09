@@ -18,6 +18,19 @@ class BlocksAuditRepositories {
     }
   }
 
+  public async $setSummary(hash: string, expectedFees: number, expectedWeight: number) {
+    try {
+      await DB.query(`
+        UPDATE blocks_audits SET
+        expected_fees = ?,
+        expected_weight = ?
+        WHERE hash = ?
+      `, [expectedFees, expectedWeight, hash]);
+    } catch (e: any) {
+      logger.err(`Cannot update block audit in db. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+  }
+
   public async $getBlocksHealthHistory(div: number, interval: string | null): Promise<any> {
     try {
       let query = `SELECT UNIX_TIMESTAMP(time) as time, height, match_rate FROM blocks_audits`;
@@ -108,6 +121,32 @@ class BlocksAuditRepositories {
         WHERE blocks_audits.height BETWEEN ? AND ?
       `, [minHeight, maxHeight]);
       return rows;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getBlocksWithoutSummaries(): Promise<string[]> {
+    try {
+      const [fromRows]: any[] = await DB.query(`
+        SELECT height
+        FROM blocks_audits
+        WHERE expected_fees IS NULL
+        ORDER BY height DESC
+        LIMIT 1
+      `);
+      if (!fromRows?.length) {
+        return [];
+      }
+      const fromHeight = fromRows[0].height;
+      const [idRows]: any[] = await DB.query(`
+        SELECT hash
+        FROM blocks_audits
+        WHERE height <= ?
+        ORDER BY height DESC
+      `, [fromHeight]);
+      return idRows.map(row => row.hash);
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;

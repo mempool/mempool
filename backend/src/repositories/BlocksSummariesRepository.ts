@@ -50,6 +50,21 @@ class BlocksSummariesRepository {
     }
   }
 
+  public async $getTemplate(id: string): Promise<BlockSummary | undefined> {
+    try {
+      const [templates]: any[] = await DB.query(`SELECT * from blocks_templates WHERE id = ?`, [id]);
+      if (templates.length > 0) {
+        return {
+          id: templates[0].id,
+          transactions: JSON.parse(templates[0].template),
+        };
+      }
+    } catch (e) {
+      logger.err(`Cannot get block template for block id ${id}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return undefined;
+  }
+
   public async $getIndexedSummariesId(): Promise<string[]> {
     try {
       const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries`);
