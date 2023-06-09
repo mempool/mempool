@@ -428,12 +428,18 @@
         <td i18n="block.actual-weight">Actual weight</td>
         <td [innerHTML]>
           <span [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></span>
+          <span *ngIf="blockAudit.weightDelta" class="difference" [class.positive]="blockAudit.weightDelta <= 0" [class.negative]="blockAudit.weightDelta > 0">
+            {{ blockAudit.weightDelta < 0 ? '+' : '' }}{{ (-blockAudit.weightDelta * 100) | amountShortener: 2 }}%
+          </span>
         </td>
       </tr>
       <tr>
         <td i18n="block.actual_transaction_count">Actual transactions</td>
         <td>
           {{ block.tx_count }}
+          <span *ngIf="blockAudit.txDelta" class="difference" [class.positive]="blockAudit.txDelta <= 0" [class.negative]="blockAudit.txDelta > 0">
+            {{ blockAudit.txDelta < 0 ? '+' : '' }}{{ (-blockAudit.txDelta * 100) | amountShortener: 2 }}%
+          </span>
         </td>
       </tr>
     </tbody>
