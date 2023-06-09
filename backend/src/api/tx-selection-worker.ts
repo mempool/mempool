@@ -8,22 +8,24 @@ let mempool: Map<number, CompactThreadTransaction> = new Map();
 
 if (parentPort) {
   parentPort.on('message', (params) => {
-    if (params.type === 'set') {
-      mempool = params.mempool;
-    } else if (params.type === 'update') {
-      params.added.forEach(tx => {
+    if (params.type === 'clear') {
+      mempool = new Map();
+    } else {
+      params.added?.forEach(tx => {
         mempool.set(tx.uid, tx);
       });
-      params.removed.forEach(uid => {
+      params.removed?.forEach(uid => {
         mempool.delete(uid);
       });
     }
-    
-    const { blocks, rates, clusters } = makeBlockTemplates(mempool);
 
-    // return the result to main thread.
-    if (parentPort) {
-      parentPort.postMessage({ blocks, rates, clusters });
+    if (params.type === 'execute') {
+      const { blocks, rates, clusters } = makeBlockTemplates(mempool);
+
+      // return the result to main thread.
+      if (parentPort) {
+        parentPort.postMessage({ blocks, rates, clusters });
+      }
     }
   });
 }
