@@ -126,6 +126,7 @@ export class StateService {
   keyNavigation$ = new Subject<KeyboardEvent>();
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
+  resetScroll$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
   hideAudit: BehaviorSubject<boolean>;
