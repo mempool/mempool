@@ -534,7 +534,8 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 62 && isBitcoin === true) {
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED DEFAULT NULL');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_weight BIGINT UNSIGNED DEFAULT NULL');
       await this.updateToSchemaVersion(62);
     }
 

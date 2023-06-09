@@ -388,6 +388,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             for (const tx of blockAudit.transactions) {
               inBlock[tx.txid] = true;
             }
+            blockAudit.feeDelta = (blockAudit.expectedFees - this.block.extras.totalFees) / blockAudit.expectedFees;
             this.setAuditAvailable(true);
           } else {
             this.setAuditAvailable(false);

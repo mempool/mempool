@@ -38,6 +38,17 @@
       color: rgba(255, 255, 255, 0.4);
       margin-left: 5px;
     }
+
+    .difference {
+      margin-left: 0.5em;
+  
+      &.positive {
+        color: rgb(66, 183, 71);
+      }
+      &.negative {
+        color: rgb(183, 66, 66);
+      }
+    }
   }
 }
 
