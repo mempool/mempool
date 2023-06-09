@@ -153,6 +153,8 @@ export interface BlockAudit extends BlockExtended {
   expectedFees: number,
   expectedWeight: number,
   feeDelta?: number,
+  weightDelta?: number,
+  txDelta?: number,
   template: TransactionStripped[],
   transactions: TransactionStripped[],
 }
