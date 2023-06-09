@@ -559,8 +559,6 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        logger.debug(`Auditing block ${block.height} (${block.id})`);
-
         const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
@@ -573,8 +571,12 @@ class WebsocketHandler {
           };
         }) : [];
 
-        const totalFees = stripped.reduce((total, transaction) => total + transaction.fee, 0);
-        logger.debug(`Projected block fees: ${totalFees} sats`);
+        let totalFees = 0;
+        let totalWeight = 0;
+        for (const tx of stripped) {
+          totalFees += tx.fee;
+          totalWeight += (tx.vsize * 4);
+        }
 
         BlocksSummariesRepository.$saveTemplate({
           height: block.height,
@@ -593,7 +595,8 @@ class WebsocketHandler {
           freshTxs: fresh,
           sigopTxs: sigop,
           matchRate: matchRate,
-          expectedFees: totalFees
+          expectedFees: totalFees,
+          expectedWeight: totalWeight,
         });
 
         if (block.extras) {

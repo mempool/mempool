@@ -35,13 +35,15 @@ export interface BlockAudit {
   sigopTxs: string[],
   addedTxs: string[],
   matchRate: number,
-  expectedFees: number;
+  expectedFees?: number,
+  expectedWeight?: number,
 }
 
 export interface AuditScore {
   hash: string,
   matchRate?: number,
   expectedFees?: number
+  expectedWeight?: number
 }
 
 export interface MempoolBlock {
@@ -185,6 +187,7 @@ export interface BlockExtension {
   reward: number;
   matchRate: number | null;
   expectedFees: number | null;
+  expectedWeight: number | null;
   similarity?: number;
   pool: {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`

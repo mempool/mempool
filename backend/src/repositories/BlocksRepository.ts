@@ -1038,6 +1038,7 @@ class BlocksRepository {
       if (auditScore != null) {
         extras.matchRate = auditScore.matchRate;
         extras.expectedFees = auditScore.expectedFees;
+        extras.expectedWeight = auditScore.expectedWeight;
       }
     }
 
