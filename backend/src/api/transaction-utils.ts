@@ -59,8 +59,8 @@ class TransactionUtils {
       feePerVsize: feePerVbytes,
       effectiveFeePerVsize: feePerVbytes,
     }, transaction);
-    if (!transaction?.status?.confirmed) {
-      transactionExtended.firstSeen = Math.round((new Date().getTime() / 1000));
+    if (!transaction?.status?.confirmed && !transactionExtended.firstSeen) {
+      transactionExtended.firstSeen = Math.round((Date.now() / 1000));
     }
     return transactionExtended;
   }
@@ -83,8 +83,8 @@ class TransactionUtils {
       adjustedFeePerVsize: adjustedFeePerVsize,
       effectiveFeePerVsize: adjustedFeePerVsize,
     });
-    if (!transaction?.status?.confirmed) {
-      transactionExtended.firstSeen = Math.round((new Date().getTime() / 1000));
+    if (!transactionExtended?.status?.confirmed && !transactionExtended.firstSeen) {
+      transactionExtended.firstSeen = Math.round((Date.now() / 1000));
     }
     return transactionExtended;
   }

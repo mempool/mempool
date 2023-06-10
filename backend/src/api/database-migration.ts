@@ -523,9 +523,21 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 61 && isBitcoin === true) {
-      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      // Break block templates into their own table
+      if (! await this.$checkIfTableExists('blocks_templates')) {
+        await this.$executeQuery('CREATE TABLE blocks_templates AS SELECT id, template FROM blocks_summaries WHERE template != "[]"');
+      }
+      await this.$executeQuery('ALTER TABLE blocks_templates MODIFY template JSON DEFAULT "[]"');
+      await this.$executeQuery('ALTER TABLE blocks_templates ADD PRIMARY KEY (id)');
+      await this.$executeQuery('ALTER TABLE blocks_summaries DROP COLUMN template');
       await this.updateToSchemaVersion(61);
     }
+
+    if (databaseSchemaVersion < 62 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED NOT NULL DEFAULT "0"');
+      await this.updateToSchemaVersion(62);
+    }
+
   }
 
   /**
