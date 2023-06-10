@@ -112,7 +112,14 @@ export class BlocksList implements OnInit, OnDestroy {
             acc = acc.slice(0, this.widget ? 6 : 15);
           }
           return acc;
-        }, [])
+        }, []),
+        switchMap((blocks) => {
+          console.log(blocks);
+          blocks.forEach(block => {
+            block.extras.feeDelta = block.extras.expectedFees ? (block.extras.totalFees - block.extras.expectedFees) / block.extras.expectedFees : 0;
+          });
+          return of(blocks);
+        })
       );
 
     if (this.indexingAvailable && this.auditAvailable) {

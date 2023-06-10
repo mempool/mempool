@@ -134,6 +134,8 @@ export interface BlockExtension {
   coinbaseRaw?: string;
   matchRate?: number;
   expectedFees?: number;
+  expectedWeight?: number;
+  feeDelta?: number;
   similarity?: number;
   pool?: {
     id: number;

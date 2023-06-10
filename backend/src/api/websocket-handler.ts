@@ -602,6 +602,7 @@ class WebsocketHandler {
         if (block.extras) {
           block.extras.matchRate = matchRate;
           block.extras.expectedFees = totalFees;
+          block.extras.expectedWeight = totalWeight;
           block.extras.similarity = similarity;
         }
       }
