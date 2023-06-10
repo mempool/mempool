@@ -14,7 +14,6 @@ class BlocksAuditRepositories {
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save block audit into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
@@ -55,6 +54,7 @@ class BlocksAuditRepositories {
         transactions, template, missing_txs as missingTxs, added_txs as addedTxs, fresh_txs as freshTxs, sigop_txs as sigopTxs, match_rate as matchRate, expected_fees as expectedFees
         FROM blocks_audits
         JOIN blocks ON blocks.hash = blocks_audits.hash
+        JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
         JOIN blocks_summaries ON blocks_summaries.id = blocks_audits.hash
         WHERE blocks_audits.hash = "${hash}"
       `);
