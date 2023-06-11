@@ -53,4 +53,8 @@ export class MasterPageComponent implements OnInit {
   onResize(): void {
     this.isMobile = window.innerWidth <= 767.98;
   }
+
+  brandClick(e): void {
+    this.stateService.resetScroll$.next(true);
+  }
 }
