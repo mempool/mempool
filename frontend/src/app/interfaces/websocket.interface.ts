@@ -6,7 +6,7 @@ export interface WebsocketResponse {
   block?: BlockExtended;
   blocks?: BlockExtended[];
   conversions?: any;
-  txConfirmed?: boolean;
+  txConfirmed?: string;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;

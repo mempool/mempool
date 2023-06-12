@@ -27,6 +27,7 @@ export class StartComponent implements OnInit, OnDestroy {
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
+  resetScrollSubscription: Subscription; 
 
   isMobile: boolean = false;
   isiOS: boolean = false;
@@ -108,6 +109,12 @@ export class StartComponent implements OnInit, OnDestroy {
           }, 60 * 60 * 1000);
         }
       });
+    this.resetScrollSubscription = this.stateService.resetScroll$.subscribe(reset => {
+      if (reset) {
+        this.resetScroll();
+        this.stateService.resetScroll$.next(false);
+      } 
+    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -387,5 +394,6 @@ export class StartComponent implements OnInit, OnDestroy {
     this.chainTipSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.blockCounterSubscription.unsubscribe();
+    this.resetScrollSubscription.unsubscribe();
   }
 }
