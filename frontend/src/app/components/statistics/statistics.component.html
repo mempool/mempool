@@ -62,7 +62,7 @@
                 <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
                   <ul>
                     <ng-template ngFor let-feeData let-i="index" [ngForOf]="feeLevelDropdownData">
-                      <ng-template [ngIf]="feeData.fee <= 400">
+                      <ng-template [ngIf]="feeData.fee <= (feeLevels[maxFeeIndex])">
                         <li (click)="filterFeeIndex = feeData.fee"
                           [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
                           <span class="square" [ngStyle]="{'backgroundColor': feeData.color}"></span>
@@ -84,7 +84,8 @@
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [height]="500" [left]="65" [right]="10"
+            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'"
+              [limitFilterFee]="filterFeeIndex" [height]="500" [left]="65" [right]="10"
               [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"></app-mempool-graph>
           </div>
         </div>

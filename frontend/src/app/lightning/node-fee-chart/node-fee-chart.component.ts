@@ -253,20 +253,4 @@ export class NodeFeeChartComponent implements OnInit {
   isMobile() {
     return (window.innerWidth <= 767.98);
   }
-
-  onSaveChart() {
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 40;
-    this.chartOptions.backgroundColor = '#11131f';
-    this.chartInstance.setOption(this.chartOptions);
-    download(this.chartInstance.getDataURL({
-      pixelRatio: 2,
-    }), `node-fee-chart.svg`);
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
-  }
 }
