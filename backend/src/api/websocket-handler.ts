@@ -1,7 +1,7 @@
 import logger from '../logger';
 import * as WebSocket from 'ws';
 import {
-  BlockExtended, TransactionExtended, WebsocketResponse,
+  BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
   OptimizedStatistic, ILoadingIndicators
 } from '../mempool.interfaces';
 import blocks from './blocks';
@@ -122,7 +122,7 @@ class WebsocketHandler {
                     } else {
                       // tx.prevout is missing from transactions when in bitcoind mode
                       try {
-                        const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                        const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
                         response['tx'] = fullTx;
                       } catch (e) {
                         logger.debug('Error finding transaction: ' + (e instanceof Error ? e.message : e));
@@ -130,7 +130,7 @@ class WebsocketHandler {
                     }
                   } else {
                     try {
-                      const fullTx = await transactionUtils.$getTransactionExtended(client['track-tx'], true);
+                      const fullTx = await transactionUtils.$getMempoolTransactionExtended(client['track-tx'], true);
                       response['tx'] = fullTx;
                     } catch (e) {
                       logger.debug('Error finding transaction. ' + (e instanceof Error ? e.message : e));
@@ -301,8 +301,8 @@ class WebsocketHandler {
     });
   }
 
-  async $handleMempoolChange(newMempool: { [txid: string]: TransactionExtended },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]): Promise<void> {
+  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended },
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -332,6 +332,8 @@ class WebsocketHandler {
     for (const deletedTx of deletedTransactions) {
       rbfCache.evict(deletedTx.txid);
     }
+    memPool.removeFromSpendMap(deletedTransactions);
+    memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
     // update init data
@@ -397,7 +399,7 @@ class WebsocketHandler {
         if (tx) {
           if (config.MEMPOOL.BACKEND !== 'esplora') {
             try {
-              const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+              const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
               response['tx'] = JSON.stringify(fullTx);
             } catch (e) {
               logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
@@ -417,7 +419,7 @@ class WebsocketHandler {
           if (someVin) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
-                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
                 logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
@@ -431,7 +433,7 @@ class WebsocketHandler {
           if (someVout) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
-                const fullTx = await transactionUtils.$getTransactionExtended(tx.txid, true);
+                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
                 foundTransactions.push(fullTx);
               } catch (e) {
                 logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
@@ -557,7 +559,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        const { censored, added, fresh, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
@@ -584,6 +586,7 @@ class WebsocketHandler {
           addedTxs: added,
           missingTxs: censored,
           freshTxs: fresh,
+          sigopTxs: sigop,
           matchRate: matchRate,
         });
 
@@ -598,6 +601,10 @@ class WebsocketHandler {
         block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
       }
     }
+
+    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
+    memPool.handleMinedRbfTransactions(rbfTransactions);
+    memPool.removeFromSpendMap(transactions);
 
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
@@ -650,8 +657,8 @@ class WebsocketHandler {
 
       if (client['track-tx']) {
         const trackTxid = client['track-tx'];
-        if (txIds.indexOf(trackTxid) > -1) {
-          response['txConfirmed'] = 'true';
+        if (trackTxid && txIds.indexOf(trackTxid) > -1) {
+          response['txConfirmed'] = JSON.stringify(trackTxid);
         } else {
           const mempoolTx = _memPool[trackTxid];
           if (mempoolTx && mempoolTx.position) {

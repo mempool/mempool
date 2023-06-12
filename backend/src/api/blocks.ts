@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -76,6 +76,7 @@ class Blocks {
     blockHeight: number,
     onlyCoinbase: boolean,
     quiet: boolean = false,
+    addMempoolData: boolean = false,
   ): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
     const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
@@ -96,14 +97,14 @@ class Blocks {
           logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
         }
         try {
-          const tx = await transactionUtils.$getTransactionExtended(txIds[i]);
+          const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, false, addMempoolData);
           transactions.push(tx);
           transactionsFetched++;
         } catch (e) {
           try {
             if (config.MEMPOOL.BACKEND === 'esplora') {
               // Try again with core
-              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true);
+              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true, addMempoolData);
               transactions.push(tx);
               transactionsFetched++;
             } else {
@@ -126,11 +127,13 @@ class Blocks {
       }
     }
 
-    transactions.forEach((tx) => {
-      if (!tx.cpfpChecked) {
-        Common.setRelativesAndGetCpfpInfo(tx, mempool); // Child Pay For Parent
-      }
-    });
+    if (addMempoolData) {
+      transactions.forEach((tx) => {
+        if (!tx.cpfpChecked) {
+          Common.setRelativesAndGetCpfpInfo(tx as MempoolTransactionExtended, mempool); // Child Pay For Parent
+        }
+      });
+    }
 
     if (!quiet) {
       logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
@@ -306,7 +309,7 @@ class Blocks {
     }
 
     const asciiScriptSig = transactionUtils.hex2ascii(txMinerInfo.vin[0].scriptsig);
-    const address = txMinerInfo.vout[0].scriptpubkey_address;
+    const addresses = txMinerInfo.vout.map((vout) => vout.scriptpubkey_address).filter((address) => address);
 
     let pools: PoolTag[] = [];
     if (config.DATABASE.ENABLED === true) {
@@ -316,11 +319,13 @@ class Blocks {
     }
 
     for (let i = 0; i < pools.length; ++i) {
-      if (address !== undefined) {
-        const addresses: string[] = typeof pools[i].addresses === 'string' ?
+      if (addresses.length) {
+        const poolAddresses: string[] = typeof pools[i].addresses === 'string' ?
           JSON.parse(pools[i].addresses) : pools[i].addresses;
-        if (addresses.indexOf(address) !== -1) {
-          return pools[i];
+        for (let y = 0; y < poolAddresses.length; y++) {
+          if (addresses.indexOf(poolAddresses[y]) !== -1) {
+            return pools[i];
+          }
         }
       }
 
@@ -594,7 +599,15 @@ class Blocks {
       const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
-      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false);
+      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true);
+      if (config.MEMPOOL.BACKEND !== 'esplora') {
+        // fill in missing transaction fee data from verboseBlock
+        for (let i = 0; i < transactions.length; i++) {
+          if (!transactions[i].fee && transactions[i].txid === verboseBlock.tx[i].txid) {
+            transactions[i].fee = verboseBlock.tx[i].fee * 100_000_000;
+          }
+        }
+      }
       const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);

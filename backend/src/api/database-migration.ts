@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 59;
+  private static currentVersion = 61;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -516,6 +516,23 @@ class DatabaseMigration {
       // https://github.com/mempool/mempool/issues/3360
       await this.$executeQuery(`TRUNCATE prices`);
     }
+
+    if (databaseSchemaVersion < 60 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD sigop_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(60);
+    }
+
+    if (databaseSchemaVersion < 61 && isBitcoin === true) {
+      // Break block templates into their own table
+      if (! await this.$checkIfTableExists('blocks_templates')) {
+        await this.$executeQuery('CREATE TABLE blocks_templates AS SELECT id, template FROM blocks_summaries WHERE template != "[]"');
+      }
+      await this.$executeQuery('ALTER TABLE blocks_templates MODIFY template JSON DEFAULT "[]"');
+      await this.$executeQuery('ALTER TABLE blocks_templates ADD PRIMARY KEY (id)');
+      await this.$executeQuery('ALTER TABLE blocks_summaries DROP COLUMN template');
+      await this.updateToSchemaVersion(61);
+    }
+
   }
 
   /**

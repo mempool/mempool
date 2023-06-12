@@ -1,6 +1,6 @@
 import config from '../config';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
-import { TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
+import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
 import transactionUtils from './transaction-utils';
@@ -13,13 +13,14 @@ import rbfCache from './rbf-cache';
 class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
-  private mempoolCache: { [txId: string]: TransactionExtended } = {};
+  private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
+  private spendMap = new Map<string, MempoolTransactionExtended>();
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
-  private mempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
-    deletedTransactions: TransactionExtended[]) => void) | undefined;
-  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: TransactionExtended; }, newTransactions: TransactionExtended[],
-    deletedTransactions: TransactionExtended[]) => Promise<void>) | undefined;
+  private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
+    deletedTransactions: MempoolTransactionExtended[]) => void) | undefined;
+  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
+    deletedTransactions: MempoolTransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -63,28 +64,38 @@ class Mempool {
     return this.latestTransactions;
   }
 
-  public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => void) {
+  public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]) => void): void {
     this.mempoolChangedCallback = fn;
   }
 
-  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: TransactionExtended; },
-    newTransactions: TransactionExtended[], deletedTransactions: TransactionExtended[]) => Promise<void>) {
+  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]) => Promise<void>): void {
     this.$asyncMempoolChangedCallback = fn;
   }
 
-  public getMempool(): { [txid: string]: TransactionExtended } {
+  public getMempool(): { [txid: string]: MempoolTransactionExtended } {
     return this.mempoolCache;
   }
 
-  public async $setMempool(mempoolData: { [txId: string]: TransactionExtended }) {
+  public getSpendMap(): Map<string, MempoolTransactionExtended> {
+    return this.spendMap;
+  }
+
+  public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
+    for (const txid of Object.keys(this.mempoolCache)) {
+      if (this.mempoolCache[txid].sigops == null || this.mempoolCache[txid].effectiveFeePerVsize == null) {
+        this.mempoolCache[txid] = transactionUtils.extendMempoolTransaction(this.mempoolCache[txid]);
+      }
+    }
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
     if (this.$asyncMempoolChangedCallback) {
       await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
     }
+    this.addToSpendMap(Object.values(this.mempoolCache));
   }
 
   public async $updateMemPoolInfo() {
@@ -127,7 +138,7 @@ class Mempool {
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
-    const newTransactions: TransactionExtended[] = [];
+    const newTransactions: MempoolTransactionExtended[] = [];
 
     this.mempoolCacheDelta = Math.abs(diff);
 
@@ -149,7 +160,7 @@ class Mempool {
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         try {
-          const transaction = await transactionUtils.$getTransactionExtended(txid);
+          const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
           this.updateTimerProgress(timer, 'fetched new transaction');
           this.mempoolCache[txid] = transaction;
           if (this.inSync) {
@@ -199,7 +210,7 @@ class Mempool {
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
-    const deletedTransactions: TransactionExtended[] = [];
+    const deletedTransactions: MempoolTransactionExtended[] = [];
 
     if (this.mempoolProtection !== 1) {
       this.mempoolProtection = 0;
@@ -267,11 +278,39 @@ class Mempool {
     }
   }
 
-  public handleRbfTransactions(rbfTransactions: { [txid: string]: TransactionExtended[]; }): void {
+  public handleRbfTransactions(rbfTransactions: { [txid: string]: MempoolTransactionExtended[]; }): void {
     for (const rbfTransaction in rbfTransactions) {
       if (this.mempoolCache[rbfTransaction] && rbfTransactions[rbfTransaction]?.length) {
         // Store replaced transactions
         rbfCache.add(rbfTransactions[rbfTransaction], this.mempoolCache[rbfTransaction]);
+      }
+    }
+  }
+
+  public handleMinedRbfTransactions(rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}): void {
+    for (const rbfTransaction in rbfTransactions) {
+      if (rbfTransactions[rbfTransaction].replacedBy && rbfTransactions[rbfTransaction]?.replaced?.length) {
+        // Store replaced transactions
+        rbfCache.add(rbfTransactions[rbfTransaction].replaced, transactionUtils.extendMempoolTransaction(rbfTransactions[rbfTransaction].replacedBy));
+      }
+    }
+  }
+
+  public addToSpendMap(transactions: MempoolTransactionExtended[]): void {
+    for (const tx of transactions) {
+      for (const vin of tx.vin) {
+        this.spendMap.set(`${vin.txid}:${vin.vout}`, tx);
+      }
+    }
+  }
+
+  public removeFromSpendMap(transactions: TransactionExtended[]): void {
+    for (const tx of transactions) {
+      for (const vin of tx.vin) {
+        const key = `${vin.txid}:${vin.vout}`;
+        if (this.spendMap.get(key)?.txid === tx.txid) {
+          this.spendMap.delete(key);
+        }
       }
     }
   }

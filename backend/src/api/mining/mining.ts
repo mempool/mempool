@@ -13,7 +13,6 @@ import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
 import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
-import database from '../../database';
 
 class Mining {
   private blocksPriceIndexingRunning = false;
@@ -21,10 +20,10 @@ class Mining {
   public lastWeeklyHashrateIndexingDate: number | null = null;
 
   /**
-   * Get historical block predictions match rate
+   * Get historical blocks health
    */
-   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
-    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+   public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );

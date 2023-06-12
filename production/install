@@ -356,10 +356,10 @@ ELEMENTS_REPO_BRANCH=master
 ELEMENTS_LATEST_RELEASE=elements-22.1
 echo -n '.'
 
-BITCOIN_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
+BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
 BITCOIN_ELECTRS_REPO_NAME=electrs
-BITCOIN_ELECTRS_REPO_BRANCH=new-index
-BITCOIN_ELECTRS_LATEST_RELEASE=new-index
+BITCOIN_ELECTRS_REPO_BRANCH=mempool
+BITCOIN_ELECTRS_LATEST_RELEASE=mempool
 
 ELEMENTS_ELECTRS_REPO_URL=https://github.com/blockstream/electrs
 ELEMENTS_ELECTRS_REPO_NAME=electrs
@@ -1312,8 +1312,13 @@ case $OS in
         osSudo "${ROOT_USER}" pw usermod ${MEMPOOL_USER} -G "${CLN_GROUP}"
         osSudo "${ROOT_USER}" chsh -s `which zsh` "${CLN_USER}"
         echo "export PATH=$PATH:$HOME/.local/bin" >> "${CLN_HOME}/.zshrc"
-        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
-        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning" "${CLN_HOME}/.lightning/{bitcoin,signet,testnet}"
+        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/bitcoin"
+        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/signet"
+        osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/testnet"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/bitcoin"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/signet"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/testnet"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
         echo "[*] Creating symlink to .bitcoin folder"
         osSudo "${CLN_USER}" ln -s "${BITCOIN_HOME}/.bitcoin" "${CLN_HOME}/.bitcoin"
@@ -1321,16 +1326,18 @@ case $OS in
         echo "[*] Installing Core Lightning package"
         osPackageInstall ${CLN_PKG}
 
-        echo "[*] Installing Core Lightning mainnet Cronjob"
-        public_ipv4=$( ifconfig | grep 'inet ' | awk -F ' ' '{ print $2 }' | grep -v '^103\.165\.192\.' | grep -v '^127\.0\.0\.1' )
-        public_ipv6=$( ifconfig | grep 'inet6' | awk -F ' ' '{ print $2 }' | grep -v '^2001:df6:7280::' | grep -v '^fe80::' | grep -v '^::1' )
-
-        crontab_cln+="@reboot sleep 10 ; screen -dmS main lightningd --rpc-file-mode 0660 --alias `hostname` --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
-        crontab_cln+="@reboot sleep 10 ; screen -dmS tes lightningd --rpc-file-mode 0660 --alias `hostname` --network testnet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
-        crontab_cln+="@reboot sleep 10 ; screen -dmS sig lightningd --rpc-file-mode 0660 --alias `hostname` --network signet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6 \n"
-        crontab_cln+="@reboot sleep 20 ; /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
-        crontab_cln+="1 * * * * /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
-        echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
+######## FIXME: this code doesn't work properly, needs fixing
+#
+#        echo "[*] Installing Core Lightning mainnet Cronjob"
+#        public_ipv4=$( ifconfig | grep 'inet ' | awk -F ' ' '{ print $2 }' | grep -v '^103\.165\.192\.' | grep -v '^127\.0\.0\.1' )
+#        public_ipv6=$( ifconfig | grep 'inet6' | awk -F ' ' '{ print $2 }' | grep -v '^2001:df6:7280::' | grep -v '^fe80::' | grep -v '^::1' )
+#
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS main lightningd --rpc-file-mode 0660 --alias `hostname` --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS tes lightningd --rpc-file-mode 0660 --alias `hostname` --network testnet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS sig lightningd --rpc-file-mode 0660 --alias `hostname` --network signet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6 \n"
+#        crontab_cln+="@reboot sleep 20 ; /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
+#        crontab_cln+="1 * * * * /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
+#        echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
     ;;
     Debian)
     ;;
@@ -1813,7 +1820,7 @@ echo "[*] Adding MySQL configuration"
 case $OS in
 
     FreeBSD)
-        osSudo "${ROOT_USER}" service mysql-server start
+        osSudo "${ROOT_USER}" service mysql-server onestart
     ;;
     Debian)
         osSudo "${ROOT_USER}" service mysql start

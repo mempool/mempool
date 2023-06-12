@@ -6,7 +6,7 @@ export interface WebsocketResponse {
   block?: BlockExtended;
   blocks?: BlockExtended[];
   conversions?: any;
-  txConfirmed?: boolean;
+  txConfirmed?: string;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
@@ -76,7 +76,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
   context?: 'projected' | 'actual';
 }
 
