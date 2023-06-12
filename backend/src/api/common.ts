@@ -1,4 +1,4 @@
-import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
@@ -57,15 +57,15 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: TransactionExtended[], deleted: TransactionExtended[]): { [txid: string]: TransactionExtended[] } {
-    const matches: { [txid: string]: TransactionExtended[] } = {};
+  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[]): { [txid: string]: MempoolTransactionExtended[] } {
+    const matches: { [txid: string]: MempoolTransactionExtended[] } = {};
     added
       .forEach((addedTx) => {
         const foundMatches = deleted.filter((deletedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
           return addedTx.fee > deletedTx.fee
             // The new transaction must pay more fee per kB than the replaced tx.
-            && addedTx.feePerVsize > deletedTx.feePerVsize
+            && addedTx.adjustedFeePerVsize > deletedTx.adjustedFeePerVsize
             // Spends one or more of the same inputs
             && deletedTx.vin.some((deletedVin) =>
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
@@ -77,10 +77,10 @@ export class Common {
     return matches;
   }
 
-  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, TransactionExtended>): { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} {
-    const matches: { [txid: string]: { replaced: TransactionExtended[], replacedBy: TransactionExtended }} = {};
+  static findMinedRbfTransactions(minedTransactions: TransactionExtended[], spendMap: Map<string, MempoolTransactionExtended>): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
+    const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
     for (const tx of minedTransactions) {
-      const replaced: Set<TransactionExtended> = new Set();
+      const replaced: Set<MempoolTransactionExtended> = new Set();
       for (let i = 0; i < tx.vin.length; i++) {
         const vin = tx.vin[i];
         const match = spendMap.get(`${vin.txid}:${vin.vout}`);
@@ -120,18 +120,18 @@ export class Common {
     }
   }
 
-  static setRelativesAndGetCpfpInfo(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): CpfpInfo {
+  static setRelativesAndGetCpfpInfo(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
     const parents = this.findAllParents(tx, memPool);
-    const lowerFeeParents = parents.filter((parent) => parent.feePerVsize < tx.effectiveFeePerVsize);
+    const lowerFeeParents = parents.filter((parent) => parent.adjustedFeePerVsize < tx.effectiveFeePerVsize);
 
-    let totalWeight = tx.weight + lowerFeeParents.reduce((prev, val) => prev + val.weight, 0);
+    let totalWeight = (tx.adjustedVsize * 4) + lowerFeeParents.reduce((prev, val) => prev + (val.adjustedVsize * 4), 0);
     let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
 
     tx.ancestors = parents
       .map((t) => {
         return {
           txid: t.txid,
-          weight: t.weight,
+          weight: (t.adjustedVsize * 4),
           fee: t.fee,
         };
       });
@@ -152,8 +152,8 @@ export class Common {
   }
 
 
-  private static findAllParents(tx: TransactionExtended, memPool: { [txid: string]: TransactionExtended }): TransactionExtended[] {
-    let parents: TransactionExtended[] = [];
+  private static findAllParents(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): MempoolTransactionExtended[] {
+    let parents: MempoolTransactionExtended[] = [];
     tx.vin.forEach((parent) => {
       if (parents.find((p) => p.txid === parent.txid)) {
         return;
@@ -161,17 +161,17 @@ export class Common {
 
       const parentTx = memPool[parent.txid];
       if (parentTx) {
-        if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.feePerVsize) {
+        if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.adjustedFeePerVsize) {
           if (parentTx.bestDescendant && parentTx.bestDescendant.fee < tx.fee + tx.bestDescendant.fee) {
             parentTx.bestDescendant = {
-              weight: tx.weight + tx.bestDescendant.weight,
+              weight: (tx.adjustedVsize * 4) + tx.bestDescendant.weight,
               fee: tx.fee + tx.bestDescendant.fee,
               txid: tx.txid,
             };
           }
-        } else if (tx.feePerVsize > parentTx.feePerVsize) {
+        } else if (tx.adjustedFeePerVsize > parentTx.adjustedFeePerVsize) {
           parentTx.bestDescendant = {
-            weight: tx.weight,
+            weight: (tx.adjustedVsize * 4),
             fee: tx.fee,
             txid: tx.txid
           };
