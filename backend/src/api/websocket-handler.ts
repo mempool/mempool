@@ -116,7 +116,7 @@ class WebsocketHandler {
           }
 
           // send initial data when a client first starts a subscription
-          if (wantNow['want-blocks']) {
+          if (wantNow['want-blocks'] || (parsedMessage && parsedMessage['refresh-blocks'])) {
             response['blocks'] = this.socketData['blocks'];
           }
 
