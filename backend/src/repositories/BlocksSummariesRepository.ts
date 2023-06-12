@@ -36,17 +36,16 @@ class BlocksSummariesRepository {
     try {
       const transactions = JSON.stringify(params.template?.transactions || []);
       await DB.query(`
-        INSERT INTO blocks_summaries (height, id, transactions, template)
-        VALUE (?, ?, ?, ?)
+        INSERT INTO blocks_templates (id, template)
+        VALUE (?, ?)
         ON DUPLICATE KEY UPDATE
           template = ?
-      `, [params.height, blockId, '[]', transactions, transactions]);
+      `, [blockId, transactions, transactions]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block template for ${blockId} because it has already been indexed, ignoring`);
       } else {
-        logger.debug(`Cannot save block template for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
-        throw e;
+        logger.warn(`Cannot save block template for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
       }
     }
   }
