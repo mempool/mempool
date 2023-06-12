@@ -173,6 +173,7 @@ tr, td, th {
 }
 .fee-delta {
   width: 6%;
+  padding-left: 0;
   @media (max-width: 991px) {
     display: none;
   }

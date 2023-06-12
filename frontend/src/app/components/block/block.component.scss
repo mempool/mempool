@@ -263,3 +263,10 @@ h1 {
   top: 11px;
   margin-left: 10px;
 }
+
+.audit-details-table {
+  margin-top: 1.25rem;
+  @media (max-width: 767.98px) {
+    margin-top: 0.75rem;
+  }
+}
