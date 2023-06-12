@@ -68,7 +68,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
         samples.push([(1 - (sampleIndex / this.numSamples)) * 100, 0]);
         nextSample += sampleInterval;
         sampleIndex++;
-        break;
+        continue;
       }
 
       while (txs[txIndex] && nextSample < cumVSize + txs[txIndex].vsize) {
@@ -128,7 +128,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
           position: 'top',
           color: '#ffffff',
           textShadowBlur: 0,
-          formatter: (label: any): string => '' + Math.floor(label.data[1]),
+          formatter: (label: any): string => '' + (label.data[1] > 99.5 ? Math.round(label.data[1]) : label.data[1].toFixed(1)),
         },
         showAllSymbol: false,
         smooth: true,
