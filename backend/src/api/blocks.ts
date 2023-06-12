@@ -730,6 +730,11 @@ class Blocks {
         this.currentDifficulty = block.difficulty;
       }
 
+      // wait for pending async callbacks to finish
+      this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
+      await Promise.all(callbackPromises);
+      this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
+
       this.blocks.push(blockExtended);
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
@@ -745,11 +750,6 @@ class Blocks {
       if (!memPool.hasPriority() && (block.height % config.MEMPOOL.DISK_CACHE_BLOCK_INTERVAL === 0)) {
         diskCache.$saveCacheToDisk();
       }
-
-      // wait for pending async callbacks to finish
-      this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
-      await Promise.all(callbackPromises);
-      this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
 
       handledBlocks++;
     }
