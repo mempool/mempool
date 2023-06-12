@@ -86,6 +86,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   segwitEnabled: boolean;
   rbfEnabled: boolean;
   taprootEnabled: boolean;
+  hasEffectiveFeeRate: boolean;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -157,6 +158,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((cpfpInfo) => {
         if (!cpfpInfo || !this.tx) {
           this.cpfpInfo = null;
+          this.hasEffectiveFeeRate = false;
           return;
         }
         // merge ancestors/descendants
@@ -164,16 +166,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
           relatives.push(cpfpInfo.bestDescendant);
         }
-        let totalWeight =
-          this.tx.weight +
-          relatives.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          relatives.reduce((prev, val) => prev + val.fee, 0);
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        const hasRelatives = !!relatives.length;
+        if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
+          let totalWeight =
+            this.tx.weight +
+            relatives.reduce((prev, val) => prev + val.weight, 0);
+          let totalFees =
+            this.tx.fee +
+            relatives.reduce((prev, val) => prev + val.fee, 0);
+          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        } else {
+          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        }
 
         this.cpfpInfo = cpfpInfo;
+        this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
       });
 
     this.fetchRbfSubscription = this.fetchRbfHistory$
@@ -359,6 +366,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               };
+              const hasRelatives = !!(tx.ancestors.length || tx.bestDescendant);
+              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
@@ -382,7 +391,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
       this.latestBlock = block;
 
-      if (txConfirmed && this.tx && !this.tx.status.confirmed) {
+      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
@@ -500,6 +509,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.hasEffectiveFeeRate = false;
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
