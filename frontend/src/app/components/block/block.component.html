@@ -395,17 +395,17 @@
   <table *ngIf="block && blockAudit" class="table table-borderless table-striped audit-details-table">
     <tbody>
       <tr>
-        <td i18n="block.expected-total-fees|Expected total fees in a block">Expected fees</td>
+        <td i18n="block.total-fees|Total fees in a block">Total fees</td>
         <td>
           <app-amount [satoshis]="blockAudit.expectedFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
         </td>
       </tr>
       <tr>
-        <td i18n="block.expected-weight">Expected weight</td>
+        <td i18n="block.weight">Weight</td>
         <td [innerHTML]="'&lrm;' + (blockAudit.expectedWeight | wuBytes: 2)"></td>
       </tr>
       <tr>
-        <td i18n="block.expected_transaction_count">Expected transactions</td>
+        <td i18n="mempool-block.transactions">Transactions</td>
         <td>{{ blockAudit.template?.length || 0 }}</td>
       </tr>
     </tbody>
@@ -416,7 +416,7 @@
   <table *ngIf="block && blockAudit" class="table table-borderless table-striped audit-details-table">
     <tbody>
       <tr>
-        <td i18n="block.actual-total-fees|Actual total fees in a block">Actual fees</td>
+        <td i18n="block.total-fees|Total fees in a block">Total fees</td>
         <td>
           <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
           <span *ngIf="blockAudit.feeDelta" class="difference" [class.positive]="blockAudit.feeDelta <= 0" [class.negative]="blockAudit.feeDelta > 0">
@@ -425,7 +425,7 @@
         </td>
       </tr>
       <tr>
-        <td i18n="block.actual-weight">Actual weight</td>
+        <td i18n="block.weight">Weight</td>
         <td [innerHTML]>
           <span [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></span>
           <span *ngIf="blockAudit.weightDelta" class="difference" [class.positive]="blockAudit.weightDelta <= 0" [class.negative]="blockAudit.weightDelta > 0">
@@ -434,7 +434,7 @@
         </td>
       </tr>
       <tr>
-        <td i18n="block.actual_transaction_count">Actual transactions</td>
+        <td i18n="mempool-block.transactions">Transactions</td>
         <td>
           {{ block.tx_count }}
           <span *ngIf="blockAudit.txDelta" class="difference" [class.positive]="blockAudit.txDelta <= 0" [class.negative]="blockAudit.txDelta > 0">
