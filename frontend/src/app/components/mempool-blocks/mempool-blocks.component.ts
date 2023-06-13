@@ -26,6 +26,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() minimal: boolean = false;
   @Input() blockWidth: number = 125;
+  @Input() containerWidth: number = null;
   @Input() count: number = null;
   @Input() spotlight: number = 0;
 
@@ -252,7 +253,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
-    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const innerWidth = this.containerWidth || (this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2);
     const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
     while (blocks.length < blocksAmount) {
       blocks.push({
@@ -272,7 +273,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
-    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const innerWidth = this.containerWidth || (this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2);
     let blocksAmount;
     if (this.count) {
       blocksAmount = 8;

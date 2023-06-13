@@ -145,6 +145,7 @@ class WebsocketHandler {
                 response['txPosition'] = {
                   txid: trackTxid,
                   position: tx.position,
+                  accelerated: tx.acceleration || undefined,
                 };
               }
             } else {

@@ -169,6 +169,7 @@ interface RbfTransaction extends TransactionStripped {
 export interface MempoolPosition {
   block: number,
   vsize: number,
+  accelerated?: boolean
 }
 
 export interface RewardStats {
