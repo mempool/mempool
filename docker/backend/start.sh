@@ -46,7 +46,7 @@ __ELECTRUM_TLS_ENABLED__=${ELECTRUM_TLS_ENABLED:=false}
 
 # ESPLORA
 __ESPLORA_REST_API_URL__=${ESPLORA_REST_API_URL:=http://127.0.0.1:3000}
-__ESPLORA_UNIX_SOCKET_PATH__=${ESPLORA_UNIX_SOCKET_PATH:=null}
+__ESPLORA_UNIX_SOCKET_PATH__=${ESPLORA_UNIX_SOCKET_PATH:="null"}
 __ESPLORA_RETRY_UNIX_SOCKET_AFTER__=${ESPLORA_RETRY_UNIX_SOCKET_AFTER:=30000}
 
 # SECOND_CORE_RPC
@@ -108,6 +108,8 @@ __LIGHTNING_TOPOLOGY_FOLDER__=${LIGHTNING_TOPOLOGY_FOLDER:=""}
 __LIGHTNING_STATS_REFRESH_INTERVAL__=${LIGHTNING_STATS_REFRESH_INTERVAL:=600}
 __LIGHTNING_GRAPH_REFRESH_INTERVAL__=${LIGHTNING_GRAPH_REFRESH_INTERVAL:=600}
 __LIGHTNING_LOGGER_UPDATE_INTERVAL__=${LIGHTNING_LOGGER_UPDATE_INTERVAL:=30}
+__LIGHTNING_FORENSICS_INTERVAL__=${LIGHTNING_FORENSICS_INTERVAL:=43200}
+__LIGHTNING_FORENSICS_RATE_LIMIT__=${LIGHTNING_FORENSICS_RATE_LIMIT:=20}
 
 # LND
 __LND_TLS_CERT_PATH__=${LND_TLS_CERT_PATH:=""}
@@ -127,28 +129,28 @@ __MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
-sed -i "s/__MEMPOOL_NETWORK__/${__MEMPOOL_NETWORK__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BACKEND__/${__MEMPOOL_BACKEND__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_ENABLED__/${__MEMPOOL_ENABLED__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_HTTP_PORT__/${__MEMPOOL_HTTP_PORT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_SPAWN_CLUSTER_PROCS__/${__MEMPOOL_SPAWN_CLUSTER_PROCS__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_NETWORK__!${__MEMPOOL_NETWORK__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_BACKEND__!${__MEMPOOL_BACKEND__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_ENABLED__!${__MEMPOOL_ENABLED__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_HTTP_PORT__!${__MEMPOOL_HTTP_PORT__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_SPAWN_CLUSTER_PROCS__!${__MEMPOOL_SPAWN_CLUSTER_PROCS__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_API_URL_PREFIX__!${__MEMPOOL_API_URL_PREFIX__}!g" mempool-config.json
-sed -i "s/__MEMPOOL_POLL_RATE_MS__/${__MEMPOOL_POLL_RATE_MS__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_POLL_RATE_MS__!${__MEMPOOL_POLL_RATE_MS__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CACHE_DIR__!${__MEMPOOL_CACHE_DIR__}!g" mempool-config.json
-sed -i "s/__MEMPOOL_CLEAR_PROTECTION_MINUTES__/${__MEMPOOL_CLEAR_PROTECTION_MINUTES__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__/${__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BLOCK_WEIGHT_UNITS__/${__MEMPOOL_BLOCK_WEIGHT_UNITS__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_INITIAL_BLOCKS_AMOUNT__/${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__/${__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_INDEXING_BLOCKS_AMOUNT__/${__MEMPOOL_INDEXING_BLOCKS_AMOUNT__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_BLOCKS_SUMMARIES_INDEXING__/${__MEMPOOL_BLOCKS_SUMMARIES_INDEXING__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__/${__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_CLEAR_PROTECTION_MINUTES__!${__MEMPOOL_CLEAR_PROTECTION_MINUTES__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__!${__MEMPOOL_RECOMMENDED_FEE_PERCENTILE__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_BLOCK_WEIGHT_UNITS__!${__MEMPOOL_BLOCK_WEIGHT_UNITS__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_INITIAL_BLOCKS_AMOUNT__!${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__!${__MEMPOOL_MEMPOOL_BLOCKS_AMOUNT__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_INDEXING_BLOCKS_AMOUNT__!${__MEMPOOL_INDEXING_BLOCKS_AMOUNT__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_BLOCKS_SUMMARIES_INDEXING__!${__MEMPOOL_BLOCKS_SUMMARIES_INDEXING__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__!${__MEMPOOL_USE_SECOND_NODE_FOR_MINFEE__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_EXTERNAL_ASSETS__!${__MEMPOOL_EXTERNAL_ASSETS__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_EXTERNAL_MAX_RETRY__!${__MEMPOOL_EXTERNAL_MAX_RETRY__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_EXTERNAL_RETRY_INTERVAL__!${__MEMPOOL_EXTERNAL_RETRY_INTERVAL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_USER_AGENT__!${__MEMPOOL_USER_AGENT__}!g" mempool-config.json
-sed -i "s/__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__/${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}/g" mempool-config.json
-sed -i "s/__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__/${__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__}/g" mempool-config.json
+sed -i "s!__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__!${__MEMPOOL_STDOUT_LOG_MIN_PRIORITY__}!g" mempool-config.json
+sed -i "s!__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__!${__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_AUDIT__!${__MEMPOOL_AUDIT__}!g" mempool-config.json
@@ -158,53 +160,53 @@ sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-conf
 sed -i "s!__MEMPOOL_MAX_BLOCKS_BULK_QUERY__!${__MEMPOOL_MAX_BLOCKS_BULK_QUERY__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__!${__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__}!g" mempool-config.json
 
-sed -i "s/__CORE_RPC_HOST__/${__CORE_RPC_HOST__}/g" mempool-config.json
-sed -i "s/__CORE_RPC_PORT__/${__CORE_RPC_PORT__}/g" mempool-config.json
-sed -i "s/__CORE_RPC_USERNAME__/${__CORE_RPC_USERNAME__}/g" mempool-config.json
-sed -i "s/__CORE_RPC_PASSWORD__/${__CORE_RPC_PASSWORD__}/g" mempool-config.json
-sed -i "s/__CORE_RPC_TIMEOUT__/${__CORE_RPC_TIMEOUT__}/g" mempool-config.json
+sed -i "s!__CORE_RPC_HOST__!${__CORE_RPC_HOST__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_PORT__!${__CORE_RPC_PORT__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_USERNAME__!${__CORE_RPC_USERNAME__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_PASSWORD__!${__CORE_RPC_PASSWORD__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_TIMEOUT__!${__CORE_RPC_TIMEOUT__}!g" mempool-config.json
 
-sed -i "s/__ELECTRUM_HOST__/${__ELECTRUM_HOST__}/g" mempool-config.json
-sed -i "s/__ELECTRUM_PORT__/${__ELECTRUM_PORT__}/g" mempool-config.json
-sed -i "s/__ELECTRUM_TLS_ENABLED__/${__ELECTRUM_TLS_ENABLED__}/g" mempool-config.json
+sed -i "s!__ELECTRUM_HOST__!${__ELECTRUM_HOST__}!g" mempool-config.json
+sed -i "s!__ELECTRUM_PORT__!${__ELECTRUM_PORT__}!g" mempool-config.json
+sed -i "s!__ELECTRUM_TLS_ENABLED__!${__ELECTRUM_TLS_ENABLED__}!g" mempool-config.json
 
 sed -i "s!__ESPLORA_REST_API_URL__!${__ESPLORA_REST_API_URL__}!g" mempool-config.json
 sed -i "s!__ESPLORA_UNIX_SOCKET_PATH__!${__ESPLORA_UNIX_SOCKET_PATH__}!g" mempool-config.json
 sed -i "s!__ESPLORA_RETRY_UNIX_SOCKET_AFTER__!${__ESPLORA_RETRY_UNIX_SOCKET_AFTER__}!g" mempool-config.json
 
-sed -i "s/__SECOND_CORE_RPC_HOST__/${__SECOND_CORE_RPC_HOST__}/g" mempool-config.json
-sed -i "s/__SECOND_CORE_RPC_PORT__/${__SECOND_CORE_RPC_PORT__}/g" mempool-config.json
-sed -i "s/__SECOND_CORE_RPC_USERNAME__/${__SECOND_CORE_RPC_USERNAME__}/g" mempool-config.json
-sed -i "s/__SECOND_CORE_RPC_PASSWORD__/${__SECOND_CORE_RPC_PASSWORD__}/g" mempool-config.json
-sed -i "s/__SECOND_CORE_RPC_TIMEOUT__/${__SECOND_CORE_RPC_TIMEOUT__}/g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_HOST__!${__SECOND_CORE_RPC_HOST__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_PORT__!${__SECOND_CORE_RPC_PORT__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_USERNAME__!${__SECOND_CORE_RPC_USERNAME__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_PASSWORD__!${__SECOND_CORE_RPC_PASSWORD__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_TIMEOUT__!${__SECOND_CORE_RPC_TIMEOUT__}!g" mempool-config.json
 
-sed -i "s/__DATABASE_ENABLED__/${__DATABASE_ENABLED__}/g" mempool-config.json
-sed -i "s/__DATABASE_HOST__/${__DATABASE_HOST__}/g" mempool-config.json
+sed -i "s!__DATABASE_ENABLED__!${__DATABASE_ENABLED__}!g" mempool-config.json
+sed -i "s!__DATABASE_HOST__!${__DATABASE_HOST__}!g" mempool-config.json
 sed -i "s!__DATABASE_SOCKET__!${__DATABASE_SOCKET__}!g" mempool-config.json
+sed -i "s!__DATABASE_PORT__!${__DATABASE_PORT__}!g" mempool-config.json
+sed -i "s!__DATABASE_DATABASE__!${__DATABASE_DATABASE__}!g" mempool-config.json
+sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
+sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
+sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
 
-sed -i "s/__DATABASE_PORT__/${__DATABASE_PORT__}/g" mempool-config.json
-sed -i "s/__DATABASE_DATABASE__/${__DATABASE_DATABASE__}/g" mempool-config.json
-sed -i "s/__DATABASE_USERNAME__/${__DATABASE_USERNAME__}/g" mempool-config.json
-sed -i "s/__DATABASE_PASSWORD__/${__DATABASE_PASSWORD__}/g" mempool-config.json
+sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
+sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
+sed -i "s!__SYSLOG_PORT__!${__SYSLOG_PORT__}!g" mempool-config.json
+sed -i "s!__SYSLOG_MIN_PRIORITY__!${__SYSLOG_MIN_PRIORITY__}!g" mempool-config.json
+sed -i "s!__SYSLOG_FACILITY__!${__SYSLOG_FACILITY__}!g" mempool-config.json
 
-sed -i "s/__SYSLOG_ENABLED__/${__SYSLOG_ENABLED__}/g" mempool-config.json
-sed -i "s/__SYSLOG_HOST__/${__SYSLOG_HOST__}/g" mempool-config.json
-sed -i "s/__SYSLOG_PORT__/${__SYSLOG_PORT__}/g" mempool-config.json
-sed -i "s/__SYSLOG_MIN_PRIORITY__/${__SYSLOG_MIN_PRIORITY__}/g" mempool-config.json
-sed -i "s/__SYSLOG_FACILITY__/${__SYSLOG_FACILITY__}/g" mempool-config.json
+sed -i "s!__STATISTICS_ENABLED__!${__STATISTICS_ENABLED__}!g" mempool-config.json
+sed -i "s!__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__!${__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__}!g" mempool-config.json
 
-sed -i "s/__STATISTICS_ENABLED__/${__STATISTICS_ENABLED__}/g" mempool-config.json
-sed -i "s/__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__/${__STATISTICS_TX_PER_SECOND_SAMPLE_PERIOD__}/g" mempool-config.json
-
-sed -i "s/__BISQ_ENABLED__/${__BISQ_ENABLED__}/g" mempool-config.json
+sed -i "s!__BISQ_ENABLED__!${__BISQ_ENABLED__}!g" mempool-config.json
 sed -i "s!__BISQ_DATA_PATH__!${__BISQ_DATA_PATH__}!g" mempool-config.json
 
-sed -i "s/__SOCKS5PROXY_ENABLED__/${__SOCKS5PROXY_ENABLED__}/g" mempool-config.json
-sed -i "s/__SOCKS5PROXY_USE_ONION__/${__SOCKS5PROXY_USE_ONION__}/g" mempool-config.json
-sed -i "s/__SOCKS5PROXY_HOST__/${__SOCKS5PROXY_HOST__}/g" mempool-config.json
-sed -i "s/__SOCKS5PROXY_PORT__/${__SOCKS5PROXY_PORT__}/g" mempool-config.json
-sed -i "s/__SOCKS5PROXY_USERNAME__/${__SOCKS5PROXY_USERNAME__}/g" mempool-config.json
-sed -i "s/__SOCKS5PROXY_PASSWORD__/${__SOCKS5PROXY_PASSWORD__}/g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_ENABLED__!${__SOCKS5PROXY_ENABLED__}!g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_USE_ONION__!${__SOCKS5PROXY_USE_ONION__}!g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_HOST__!${__SOCKS5PROXY_HOST__}!g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_PORT__!${__SOCKS5PROXY_PORT__}!g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_USERNAME__!${__SOCKS5PROXY_USERNAME__}!g" mempool-config.json
+sed -i "s!__SOCKS5PROXY_PASSWORD__!${__SOCKS5PROXY_PASSWORD__}!g" mempool-config.json
 
 sed -i "s!__PRICE_DATA_SERVER_TOR_URL__!${__PRICE_DATA_SERVER_TOR_URL__}!g" mempool-config.json
 sed -i "s!__PRICE_DATA_SERVER_CLEARNET_URL__!${__PRICE_DATA_SERVER_CLEARNET_URL__}!g" mempool-config.json
@@ -223,6 +225,8 @@ sed -i "s!__LIGHTNING_TOPOLOGY_FOLDER__!${__LIGHTNING_TOPOLOGY_FOLDER__}!g" memp
 sed -i "s!__LIGHTNING_STATS_REFRESH_INTERVAL__!${__LIGHTNING_STATS_REFRESH_INTERVAL__}!g" mempool-config.json
 sed -i "s!__LIGHTNING_GRAPH_REFRESH_INTERVAL__!${__LIGHTNING_GRAPH_REFRESH_INTERVAL__}!g" mempool-config.json
 sed -i "s!__LIGHTNING_LOGGER_UPDATE_INTERVAL__!${__LIGHTNING_LOGGER_UPDATE_INTERVAL__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_FORENSICS_INTERVAL__!${__LIGHTNING_FORENSICS_INTERVAL__}!g" mempool-config.json
+sed -i "s!__LIGHTNING_FORENSICS_RATE_LIMIT__!${__LIGHTNING_FORENSICS_RATE_LIMIT__}!g" mempool-config.json
 
 # LND
 sed -i "s!__LND_TLS_CERT_PATH__!${__LND_TLS_CERT_PATH__}!g" mempool-config.json

@@ -15,11 +15,9 @@
       </span>
       <span class="grow"></span>
       <div class="container-buttons">
-        <button *ngIf="(latestBlock$ | async) as latestBlock" type="button" class="btn btn-sm btn-success float-right">
-          <ng-container *ngTemplateOutlet="latestBlock.height - bisqTx.blockHeight + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - bisqTx.blockHeight + 1}"></ng-container>
-          <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-          <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
-        </button>
+        <div *ngIf="(latestBlock$ | async) as latestBlock">
+          <app-confirmations [chainTip]="latestBlock?.height" [height]="bisqTx.blockHeight" [hideUnconfirmed]="true" buttonClass="float-right"></app-confirmations>
+        </div>
       </div>
     </div>
     

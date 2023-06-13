@@ -104,7 +104,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolEmptyBlocks.forEach((b) => {
       this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
     });
-    this.reduceMempoolBlocksToFitScreen(this.mempoolEmptyBlocks);
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
 
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
@@ -244,10 +244,31 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.animateEntry = false;
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
   }
 
   trackByFn(index: number, block: MempoolBlock) {
     return (block.isStack) ? `stack-${block.index}` : block.index;
+  }
+
+  reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
+    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    while (blocks.length < blocksAmount) {
+      blocks.push({
+        blockSize: 0,
+        blockVSize: 0,
+        feeRange: [],
+        index: blocks.length,
+        medianFee: 0,
+        nTx: 0,
+        totalFees: 0
+      });
+    }
+    while (blocks.length > blocksAmount) {
+      blocks.pop();
+    }
+    return blocks;
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {

@@ -30,7 +30,9 @@ export class StatisticsComponent implements OnInit {
   spinnerLoading = false;
   feeLevels = feeLevels;
   chartColors = chartColors;
+  filterSize = 100000;
   filterFeeIndex = 1;
+  maxFeeIndex: number;
   dropDownOpen = false;
 
   mempoolStats: OptimizedMempoolStats[] = [];
@@ -134,6 +136,16 @@ export class StatisticsComponent implements OnInit {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
+    let maxTier = 0;
+    for (let index = 37; index > -1; index--) {
+      mempoolStats.forEach((stats) => {
+        if (stats.vsizes[index] >= this.filterSize) {
+          maxTier = Math.max(maxTier, index);
+        }
+      });
+    }
+    this.maxFeeIndex = maxTier;
+
     this.capExtremeVbytesValues();
 
     this.mempoolTransactionsWeightPerSecondData = {
@@ -152,27 +164,42 @@ export class StatisticsComponent implements OnInit {
   }
 
   setFeeLevelDropdownData() {
-    let _feeLevels = feeLevels
+    let _feeLevels = feeLevels;
     let _chartColors = chartColors;
     if (!this.inverted) {
       _feeLevels = [...feeLevels].reverse();
       _chartColors = [...chartColors].reverse();
     }
     _feeLevels.forEach((fee, i) => {
+      let range;
+      const nextIndex = this.inverted ? i + 1 : i - 1;
+      if (this.stateService.isLiquid()) {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${(_feeLevels[i] / 10).toFixed(1)}+`;
+        } else {
+          range = `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[nextIndex] / 10).toFixed(1)}`;
+        }
+      } else {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${_feeLevels[i]}+`;
+        } else {
+          range = `${_feeLevels[i]} - ${_feeLevels[nextIndex]}`;
+        }
+      }
       if (this.inverted) {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i + 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i + 1]}`,
+          range,
           color: _chartColors[i],
         });
       } else {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i - 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i - 1]}`,
-          color: _chartColors[i - 1],
+          range,
+          color: _chartColors[i],
         });
       }
-    })
+    });
   }
 
   /**
