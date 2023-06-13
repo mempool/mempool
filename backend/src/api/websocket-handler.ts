@@ -173,9 +173,15 @@ class WebsocketHandler {
               }
               const tx = memPool.getMempool()[trackTxid];
               if (tx && tx.position) {
+                const position: { block: number, vsize: number, accelerated?: number } = {
+                  ...tx.position
+                };
+                if (tx.acceleration) {
+                  position.accelerated = tx.acceleration;
+                }
                 response['txPosition'] = JSON.stringify({
                   txid: trackTxid,
-                  position: tx.position,
+                  position
                 });
               }
             } else {
@@ -600,7 +606,10 @@ class WebsocketHandler {
         if (mempoolTx && mempoolTx.position) {
           response['txPosition'] = JSON.stringify({
             txid: trackTxid,
-            position: mempoolTx.position,
+            position: {
+              ...mempoolTx.position,
+              accelerated: mempoolTx.acceleration || undefined,
+            }
           });
         }
       }
@@ -728,15 +737,11 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-<<<<<<< HEAD
       if (config.MEMPOOL.RUST_GBT) {
         await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
       } else {
-        await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+        await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
-=======
-      await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
->>>>>>> 77b0a8ecc (Refactor accelerated audits)
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
@@ -799,7 +804,10 @@ class WebsocketHandler {
           if (mempoolTx && mempoolTx.position) {
             response['txPosition'] = JSON.stringify({
               txid: trackTxid,
-              position: mempoolTx.position,
+              position: {
+                ...mempoolTx.position,
+                accelerated: mempoolTx.acceleration || undefined,
+              }
             });
           }
         }
