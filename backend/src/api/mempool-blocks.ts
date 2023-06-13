@@ -1,5 +1,5 @@
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -36,9 +36,9 @@ class MempoolBlocks {
     return this.mempoolBlockDeltas;
   }
 
-  public updateMempoolBlocks(memPool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): MempoolBlockWithTransactions[] {
+  public updateMempoolBlocks(memPool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): MempoolBlockWithTransactions[] {
     const latestMempool = memPool;
-    const memPoolArray: TransactionExtended[] = [];
+    const memPoolArray: MempoolTransactionExtended[] = [];
     for (const i in latestMempool) {
       if (latestMempool.hasOwnProperty(i)) {
         memPoolArray.push(latestMempool[i]);
@@ -52,17 +52,17 @@ class MempoolBlocks {
       tx.ancestors = [];
       tx.cpfpChecked = false;
       if (!tx.effectiveFeePerVsize) {
-        tx.effectiveFeePerVsize = tx.feePerVsize;
+        tx.effectiveFeePerVsize = tx.adjustedFeePerVsize;
       }
     });
 
     // First sort
     memPoolArray.sort((a, b) => {
-      if (a.feePerVsize === b.feePerVsize) {
+      if (a.adjustedFeePerVsize === b.adjustedFeePerVsize) {
         // tie-break by lexicographic txid order for stability
         return a.txid < b.txid ? -1 : 1;
       } else {
-        return b.feePerVsize - a.feePerVsize;
+        return b.adjustedFeePerVsize - a.adjustedFeePerVsize;
       }
     });
 
@@ -102,7 +102,7 @@ class MempoolBlocks {
     return blocks;
   }
 
-  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[]): MempoolBlockWithTransactions[] {
+  private calculateMempoolBlocks(transactionsSorted: MempoolTransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
     let feeStatsCalculator: OnlineFeeStatsCalculator = new OnlineFeeStatsCalculator(config.MEMPOOL.BLOCK_WEIGHT_UNITS);
     let onlineStats = false;
@@ -112,7 +112,7 @@ class MempoolBlocks {
     let blockFees = 0;
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     let transactionIds: string[] = [];
-    let transactions: TransactionExtended[] = [];
+    let transactions: MempoolTransactionExtended[] = [];
     transactionsSorted.forEach((tx, index) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
@@ -205,7 +205,7 @@ class MempoolBlocks {
     return mempoolBlockDeltas;
   }
 
-  public async $makeBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
@@ -222,9 +222,10 @@ class MempoolBlocks {
         strippedMempool.set(entry.uid, {
           uid: entry.uid,
           fee: entry.fee,
-          weight: entry.weight,
-          feePerVsize: entry.fee / (entry.weight / 4),
-          effectiveFeePerVsize: entry.effectiveFeePerVsize || (entry.fee / (entry.weight / 4)),
+          weight: (entry.adjustedVsize * 4),
+          sigops: entry.sigops,
+          feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
+          effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
           inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
         });
       }
@@ -268,7 +269,7 @@ class MempoolBlocks {
     return this.mempoolBlocks;
   }
 
-  public async $updateBlockTemplates(newMempool: { [txid: string]: TransactionExtended }, added: TransactionExtended[], removed: TransactionExtended[], saveResults: boolean = false): Promise<void> {
+  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], saveResults: boolean = false): Promise<void> {
     if (!this.txSelectionWorker) {
       // need to reset the worker
       await this.$makeBlockTemplates(newMempool, saveResults);
@@ -287,9 +288,10 @@ class MempoolBlocks {
       return {
         uid: entry.uid || 0,
         fee: entry.fee,
-        weight: entry.weight,
-        feePerVsize: entry.fee / (entry.weight / 4),
-        effectiveFeePerVsize: entry.effectiveFeePerVsize || (entry.fee / (entry.weight / 4)),
+        weight: (entry.adjustedVsize * 4),
+        sigops: entry.sigops,
+        feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
+        effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
         inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
       };
     });
@@ -341,12 +343,12 @@ class MempoolBlocks {
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block: string[] = blocks[blockIndex];
       let txid: string;
-      let mempoolTx: TransactionExtended;
+      let mempoolTx: MempoolTransactionExtended;
       let totalSize = 0;
       let totalVsize = 0;
       let totalWeight = 0;
       let totalFees = 0;
-      const transactions: TransactionExtended[] = [];
+      const transactions: MempoolTransactionExtended[] = [];
       for (let txIndex = 0; txIndex < block.length; txIndex++) {
         txid = block[txIndex];
         if (txid) {
@@ -397,7 +399,7 @@ class MempoolBlocks {
               const relative = {
                 txid: txid,
                 fee: mempool[txid].fee,
-                weight: mempool[txid].weight,
+                weight: (mempool[txid].adjustedVsize * 4),
               };
               if (matched) {
                 descendants.push(relative);
@@ -426,7 +428,7 @@ class MempoolBlocks {
     return mempoolBlocks;
   }
 
-  private dataToMempoolBlocks(transactionIds: string[], transactions: TransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
+  private dataToMempoolBlocks(transactionIds: string[], transactions: MempoolTransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
     if (!feeStats) {
       feeStats = Common.calcEffectiveFeeStatistics(transactions);
     }
@@ -447,7 +449,7 @@ class MempoolBlocks {
     this.nextUid = 1;
   }
 
-  private setUid(tx: TransactionExtended): number {
+  private setUid(tx: MempoolTransactionExtended): number {
     const uid = this.nextUid;
     this.nextUid++;
     this.uidMap.set(uid, tx.txid);
@@ -455,7 +457,7 @@ class MempoolBlocks {
     return uid;
   }
 
-  private getUid(tx: TransactionExtended): number | void {
+  private getUid(tx: MempoolTransactionExtended): number | void {
     if (tx?.uid != null && this.uidMap.has(tx.uid)) {
       return tx.uid;
     }

@@ -1,5 +1,5 @@
 import logger from "../logger";
-import { TransactionExtended, TransactionStripped } from "../mempool.interfaces";
+import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { Common } from "./common";
 
@@ -23,15 +23,15 @@ class RbfCache {
   private rbfTrees: Map<string, RbfTree> = new Map(); // sequences of consecutive replacements
   private dirtyTrees: Set<string> = new Set();
   private treeMap: Map<string, string> = new Map(); // map of txids to sequence ids
-  private txs: Map<string, TransactionExtended> = new Map();
+  private txs: Map<string, MempoolTransactionExtended> = new Map();
   private expiring: Map<string, number> = new Map();
 
   constructor() {
     setInterval(this.cleanup.bind(this), 1000 * 60 * 10);
   }
 
-  public add(replaced: TransactionExtended[], newTxExtended: TransactionExtended): void {
-    if (!newTxExtended || !replaced?.length) {
+  public add(replaced: MempoolTransactionExtended[], newTxExtended: MempoolTransactionExtended): void {
+    if (!newTxExtended || !replaced?.length || this.txs.has(newTxExtended.txid)) {
       return;
     }
 
@@ -92,7 +92,7 @@ class RbfCache {
     return this.replaces.get(txId);
   }
 
-  public getTx(txId: string): TransactionExtended | undefined {
+  public getTx(txId: string): MempoolTransactionExtended | undefined {
     return this.txs.get(txId);
   }
 
@@ -272,7 +272,7 @@ class RbfCache {
     return deflated;
   }
 
-  async importTree(root, txid, deflated, txs: Map<string, TransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+  async importTree(root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 

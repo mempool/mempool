@@ -6,9 +6,9 @@ const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first
 
 class Audit {
   auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
-   : { censored: string[], added: string[], fresh: string[], score: number, similarity: number } {
+   : { censored: string[], added: string[], fresh: string[], sigop: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], fresh: [], score: 0, similarity: 1 };
+      return { censored: [], added: [], fresh: [], sigop: [], score: 0, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
@@ -137,6 +137,7 @@ class Audit {
       censored: Object.keys(isCensored),
       added,
       fresh,
+      sigop: [],
       score,
       similarity,
     };

@@ -13,7 +13,6 @@ import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
 import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
-import database from '../../database';
 
 class Mining {
   private blocksPriceIndexingRunning = false;
@@ -21,10 +20,10 @@ class Mining {
   public lastWeeklyHashrateIndexingDate: number | null = null;
 
   /**
-   * Get historical block predictions match rate
+   * Get historical blocks health
    */
-   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
-    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+   public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
@@ -473,11 +472,11 @@ class Mining {
     }
     this.blocksPriceIndexingRunning = true;
 
+    let totalInserted = 0;
     try {
       const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
       const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
 
-      let totalInserted = 0;
       const blocksPrices: BlockPrice[] = [];
 
       for (const block of blocksWithoutPrices) {
@@ -522,7 +521,13 @@ class Mining {
       }
     } catch (e) {
       this.blocksPriceIndexingRunning = false;
-      throw e;
+      logger.err(`Cannot index block prices. ${e}`);
+    }
+
+    if (totalInserted > 0) {
+      logger.info(`Indexing blocks prices completed. Indexed ${totalInserted}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing blocks prices completed. Indexed 0.`, logger.tags.mining);
     }
 
     this.blocksPriceIndexingRunning = false;

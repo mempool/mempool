@@ -24,6 +24,9 @@ export interface CpfpInfo {
   ancestors: Ancestor[];
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
+  effectiveFeePerVsize?: number;
+  sigops?: number;
+  adjustedVsize?: number;
 }
 
 export interface RbfInfo {
@@ -155,7 +158,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
 }
 
 interface RbfTransaction extends TransactionStripped {
