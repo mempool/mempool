@@ -5,6 +5,7 @@ import { BlockExtended, PoolTag } from '../../mempool.interfaces';
 export interface Acceleration {
   txid: string,
   feeDelta: number,
+  pools: number[],
 }
 
 class AccelerationApi {
@@ -17,21 +18,12 @@ class AccelerationApi {
     }
   }
 
-  public async $fetchPools(): Promise<PoolTag[]> {
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      const response = await query(`${config.MEMPOOL_SERVICES.API}/partners`);
-      return (response as PoolTag[]) || [];
-    } else {
-      return [];
+  public isAcceleratedBlock(block: BlockExtended, accelerations: Acceleration[]): boolean {
+    let anyAccelerated = false;
+    for (let i = 0; i < accelerations.length && !anyAccelerated; i++) {
+      anyAccelerated = anyAccelerated || accelerations[i].pools?.includes(block.extras.pool.id);
     }
-  }
-
-  public async $isAcceleratedBlock(block: BlockExtended): Promise<boolean> {
-    const pools = await this.$fetchPools();
-    if (block?.extras?.pool?.id == null) {
-      return false;
-    }
-    return pools.reduce((match, tag) => match || tag.uniqueId === block.extras.pool.id, false);
+    return anyAccelerated;
   }
 }
 

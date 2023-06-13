@@ -23,7 +23,7 @@ class Mempool {
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => Promise<void>) | undefined;
 
-  private accelerations: { [txId: string]: number } = {};
+  private accelerations: { [txId: string]: Acceleration } = {};
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -332,7 +332,7 @@ class Mempool {
     this.clearTimer(timer);
   }
 
-  public getAccelerations(): { [txid: string]: number } {
+  public getAccelerations(): { [txid: string]: Acceleration } {
     return this.accelerations;
   }
 
@@ -346,15 +346,37 @@ class Mempool {
 
       const changed: string[] = [];
 
-      const newAccelerationMap: { [txid: string]: number } = {};
+      const newAccelerationMap: { [txid: string]: Acceleration } = {};
       for (const acceleration of newAccelerations) {
-        newAccelerationMap[acceleration.txid] = acceleration.feeDelta;
+        newAccelerationMap[acceleration.txid] = acceleration;
         if (this.accelerations[acceleration.txid] == null) {
           // new acceleration
           changed.push(acceleration.txid);
-        } else if (this.accelerations[acceleration.txid] !== acceleration.feeDelta) {
-          // feeDelta changed
-          changed.push(acceleration.txid);
+        } else {
+          if (this.accelerations[acceleration.txid].feeDelta !== acceleration.feeDelta) {
+            // feeDelta changed
+            changed.push(acceleration.txid);
+          } else if (this.accelerations[acceleration.txid].pools?.length) {
+            let poolsChanged = false;
+            const pools = new Set();
+            this.accelerations[acceleration.txid].pools.forEach(pool => {
+              pools.add(pool);
+            });
+            acceleration.pools.forEach(pool => {
+              if (!pools.has(pool)) {
+                poolsChanged = true;
+              } else {
+                pools.delete(pool);
+              }
+            });
+            if (pools.size > 0) {
+              poolsChanged = true;
+            }
+            if (poolsChanged) {
+              // pools changed
+              changed.push(acceleration.txid);
+            }
+          }
         }
       }
 
