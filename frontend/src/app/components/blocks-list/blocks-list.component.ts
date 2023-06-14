@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, combineLatest, concat, Observable, timer, EMPTY, Subscription, of } from 'rxjs';
 import { catchError, delayWhen, map, retryWhen, scan, skip, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
@@ -39,6 +39,7 @@ export class BlocksList implements OnInit, OnDestroy {
     private apiService: ApiService,
     private websocketService: WebsocketService,
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) {
   }
 
@@ -114,7 +115,6 @@ export class BlocksList implements OnInit, OnDestroy {
           return acc;
         }, []),
         switchMap((blocks) => {
-          console.log(blocks);
           blocks.forEach(block => {
             block.extras.feeDelta = block.extras.expectedFees ? (block.extras.totalFees - block.extras.expectedFees) / block.extras.expectedFees : 0;
           });
@@ -138,6 +138,7 @@ export class BlocksList implements OnInit, OnDestroy {
           this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
         });
         this.loadingScores = false;
+        this.cd.markForCheck();
       });
 
       this.latestScoreSubscription = this.stateService.blocks$.pipe(
@@ -162,6 +163,7 @@ export class BlocksList implements OnInit, OnDestroy {
       ).subscribe((score) => {
         if (score && score.hash) {
           this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
+          this.cd.markForCheck();
         }
       });
     }
