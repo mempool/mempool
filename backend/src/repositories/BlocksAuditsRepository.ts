@@ -6,15 +6,28 @@ import { BlockAudit, AuditScore } from '../mempool.interfaces';
 class BlocksAuditRepositories {
   public async $saveAudit(audit: BlockAudit): Promise<void> {
     try {
-      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, fresh_txs, sigop_txs, match_rate)
-        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
-          JSON.stringify(audit.addedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), audit.matchRate]);
+      await DB.query(`INSERT INTO blocks_audits(time, height, hash, missing_txs, added_txs, fresh_txs, sigop_txs, match_rate, expected_fees, expected_weight)
+        VALUE (FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.time, audit.height, audit.hash, JSON.stringify(audit.missingTxs),
+          JSON.stringify(audit.addedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save block audit into db. Reason: ` + (e instanceof Error ? e.message : e));
       }
+    }
+  }
+
+  public async $setSummary(hash: string, expectedFees: number, expectedWeight: number) {
+    try {
+      await DB.query(`
+        UPDATE blocks_audits SET
+        expected_fees = ?,
+        expected_weight = ?
+        WHERE hash = ?
+      `, [expectedFees, expectedWeight, hash]);
+    } catch (e: any) {
+      logger.err(`Cannot update block audit in db. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -51,7 +64,15 @@ class BlocksAuditRepositories {
       const [rows]: any[] = await DB.query(
         `SELECT blocks.height, blocks.hash as id, UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.size,
         blocks.weight, blocks.tx_count,
-        transactions, template, missing_txs as missingTxs, added_txs as addedTxs, fresh_txs as freshTxs, sigop_txs as sigopTxs, match_rate as matchRate
+        transactions,
+        template,
+        missing_txs as missingTxs,
+        added_txs as addedTxs,
+        fresh_txs as freshTxs,
+        sigop_txs as sigopTxs,
+        match_rate as matchRate,
+        expected_fees as expectedFees,
+        expected_weight as expectedWeight
         FROM blocks_audits
         JOIN blocks ON blocks.hash = blocks_audits.hash
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
@@ -81,7 +102,7 @@ class BlocksAuditRepositories {
   public async $getBlockAuditScore(hash: string): Promise<AuditScore> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT hash, match_rate as matchRate
+        `SELECT hash, match_rate as matchRate, expected_fees as expectedFees, expected_weight as expectedWeight
         FROM blocks_audits
         WHERE blocks_audits.hash = "${hash}"
       `);
@@ -95,11 +116,37 @@ class BlocksAuditRepositories {
   public async $getBlockAuditScores(maxHeight: number, minHeight: number): Promise<AuditScore[]> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT hash, match_rate as matchRate
+        `SELECT hash, match_rate as matchRate, expected_fees as expectedFees, expected_weight as expectedWeight
         FROM blocks_audits
         WHERE blocks_audits.height BETWEEN ? AND ?
       `, [minHeight, maxHeight]);
       return rows;
+    } catch (e: any) {
+      logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getBlocksWithoutSummaries(): Promise<string[]> {
+    try {
+      const [fromRows]: any[] = await DB.query(`
+        SELECT height
+        FROM blocks_audits
+        WHERE expected_fees IS NULL
+        ORDER BY height DESC
+        LIMIT 1
+      `);
+      if (!fromRows?.length) {
+        return [];
+      }
+      const fromHeight = fromRows[0].height;
+      const [idRows]: any[] = await DB.query(`
+        SELECT hash
+        FROM blocks_audits
+        WHERE height <= ?
+        ORDER BY height DESC
+      `, [fromHeight]);
+      return idRows.map(row => row.hash);
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;

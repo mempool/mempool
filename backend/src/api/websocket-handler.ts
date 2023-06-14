@@ -571,11 +571,18 @@ class WebsocketHandler {
           };
         }) : [];
 
+        let totalFees = 0;
+        let totalWeight = 0;
+        for (const tx of stripped) {
+          totalFees += tx.fee;
+          totalWeight += (tx.vsize * 4);
+        }
+
         BlocksSummariesRepository.$saveTemplate({
           height: block.height,
           template: {
             id: block.id,
-            transactions: stripped
+            transactions: stripped,
           }
         });
 
@@ -588,10 +595,14 @@ class WebsocketHandler {
           freshTxs: fresh,
           sigopTxs: sigop,
           matchRate: matchRate,
+          expectedFees: totalFees,
+          expectedWeight: totalWeight,
         });
 
         if (block.extras) {
           block.extras.matchRate = matchRate;
+          block.extras.expectedFees = totalFees;
+          block.extras.expectedWeight = totalWeight;
           block.extras.similarity = similarity;
         }
       }
