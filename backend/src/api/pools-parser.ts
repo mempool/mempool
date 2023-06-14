@@ -4,6 +4,7 @@ import config from '../config';
 import PoolsRepository from '../repositories/PoolsRepository';
 import { PoolTag } from '../mempool.interfaces';
 import diskCache from './disk-cache';
+import mining from './mining/mining';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -73,14 +74,12 @@ class PoolsParser {
         if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
           JSON.stringify(pool.regexes) !== poolDB.regexes) {
           // Pool addresses changed or coinbase tags changed
-          logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool. If 'AUTOMATIC_BLOCK_REINDEXING' is enabled, we will re-index its blocks and 'unknown' blocks`);
+          logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool.`);
           await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes);
           await this.$deleteBlocksForPool(poolDB);
         }
       }
     }
-
-    logger.info('Mining pools-v2.json import completed');
   }
 
   /**
@@ -128,7 +127,15 @@ class PoolsParser {
       LIMIT 1`,
       [pool.id]
     );
-    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : 130635;
+
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
+    }
+
+    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : firstKnownBlockPool;
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
     this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
     await DB.query(`
@@ -142,16 +149,31 @@ class PoolsParser {
       WHERE pool_id = ?`,
       [pool.id]
     );
+
+    // Re-index hashrates and difficulty adjustments later
+    mining.reindexHashrateRequested = true;
+    mining.reindexDifficultyAdjustmentRequested = true;
   }
 
   private async $deleteUnknownBlocks(): Promise<void> {
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
+    }
+
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height 130635 for re-indexing`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${firstKnownBlockPool} for re-indexing`);
     await DB.query(`
       DELETE FROM blocks
-      WHERE pool_id = ? AND height >= 130635`,
+      WHERE pool_id = ? AND height >= ${firstKnownBlockPool}`,
       [unknownPool[0].id]
     );
+
+    // Re-index hashrates and difficulty adjustments later
+    mining.reindexHashrateRequested = true;
+    mining.reindexDifficultyAdjustmentRequested = true;
   }
 }
 

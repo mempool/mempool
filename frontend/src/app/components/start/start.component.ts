@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
@@ -9,6 +9,8 @@ import { specialBlocks } from '../../app.constants';
   styleUrls: ['./start.component.scss'],
 })
 export class StartComponent implements OnInit, OnDestroy {
+  @Input() showLoadingIndicator = false;
+
   interval = 60;
   colors = ['#5E35B1', '#ffffff'];
 

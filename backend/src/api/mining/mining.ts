@@ -13,11 +13,15 @@ import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
 import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
+import database from '../../database';
 
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
   public lastWeeklyHashrateIndexingDate: number | null = null;
+  
+  public reindexHashrateRequested = false;
+  public reindexDifficultyAdjustmentRequested = false;
 
   /**
    * Get historical blocks health
@@ -289,6 +293,14 @@ class Mining {
    * Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexHashrateRequested === true) {
+      logger.notice(`hashrates will now be re-indexed`);
+      await database.query(`TRUNCATE hashrates`);
+      this.lastHashrateIndexingDate = 0;
+      this.reindexHashrateRequested = false;
+    }
+
     // We only run this once a day around midnight
     const today = new Date().getUTCDate();
     if (today === this.lastHashrateIndexingDate) {
@@ -394,6 +406,13 @@ class Mining {
    * Index difficulty adjustments
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexDifficultyAdjustmentRequested === true) {
+      logger.notice(`difficulty_adjustments will now be re-indexed`);
+      await database.query(`TRUNCATE difficulty_adjustments`);
+      this.reindexDifficultyAdjustmentRequested = false;
+    }
+
     const indexedHeightsArray = await DifficultyAdjustmentsRepository.$getAdjustmentsHeights();
     const indexedHeights = {};
     for (const height of indexedHeightsArray) {
