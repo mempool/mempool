@@ -358,7 +358,7 @@ let routes: Routes = [
   },
   {
     path: 'clock',
-    redirectTo: 'clock/mined/0'
+    redirectTo: 'clock/mempool/0'
   },
   {
     path: 'clock/:mode',
