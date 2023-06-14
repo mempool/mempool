@@ -69,7 +69,7 @@
           </td>
           <td *ngIf="auditAvailable" class="fee-delta" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <span *ngIf="block.extras.feeDelta" class="difference" [class.positive]="block.extras.feeDelta >= 0" [class.negative]="block.extras.feeDelta < 0">
-              ({{ block.extras.feeDelta > 0 ? '+' : '' }}{{ (block.extras.feeDelta * 100) | amountShortener: 2 }}%)
+              {{ block.extras.feeDelta > 0 ? '+' : '' }}{{ (block.extras.feeDelta * 100) | amountShortener: 2 }}%
             </span>
           </td>
           <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
