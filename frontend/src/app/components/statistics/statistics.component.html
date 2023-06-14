@@ -13,7 +13,7 @@
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
             <div class="small-buttons">
-              <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mined/0' | relativeUrl]" style="color: white" id="btn-clock">
+              <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mempool/0' | relativeUrl]" style="color: white" id="btn-clock">
                 <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" title="Clock view"></fa-icon>
               </a>
               <a *ngIf="!isMobile()" class="btn btn-primary btn-sm mb-0" [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
