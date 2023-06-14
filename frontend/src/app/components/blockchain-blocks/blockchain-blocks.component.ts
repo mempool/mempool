@@ -365,4 +365,23 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
     return emptyBlocks;
   }
+
+  getMinBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      // heuristic to check if feeRange is adjusted for effective rates
+      if (block.extras.medianFee === block.extras.feeRange[3]) {
+        return block.extras.feeRange[1];
+      } else {
+        return block.extras.feeRange[0];
+      }
+    }
+    return 0;
+  }
+
+  getMaxBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      return block.extras.feeRange[block.extras.feeRange.length - 1];
+    }
+    return 0;
+  }
 }
