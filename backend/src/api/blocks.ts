@@ -480,6 +480,11 @@ class Blocks {
         totalWeight += (tx.vsize * 4);
       }
       await BlocksAuditsRepository.$setSummary(hash, totalFees, totalWeight);
+      const cachedBlock = this.blocks.find(block => block.id === hash);
+      if (cachedBlock) {
+        cachedBlock.extras.expectedFees = totalFees;
+        cachedBlock.extras.expectedWeight = totalWeight;
+      }
 
       indexedThisRun++;
       indexedTotal++;
