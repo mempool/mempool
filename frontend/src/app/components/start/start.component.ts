@@ -44,6 +44,7 @@ export class StartComponent implements OnInit, OnDestroy {
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
+  mempoolOffset: number = 0;
 
   constructor(
     private stateService: StateService,
@@ -115,6 +116,12 @@ export class StartComponent implements OnInit, OnDestroy {
         this.stateService.resetScroll$.next(false);
       } 
     });
+  }
+
+  onMempoolOffsetChange(offset): void {
+    const delta = offset - this.mempoolOffset;
+    this.addConvertedScrollOffset(delta);
+    this.mempoolOffset = offset;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -350,7 +357,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   resetScroll(): void {
     this.scrollToBlock(this.chainTip);
-    this.blockchainContainer.nativeElement.scrollLeft = 0;
+    this.setScrollLeft(0);
   }
 
   getPageIndexOf(height: number): number {
@@ -368,9 +375,17 @@ export class StartComponent implements OnInit, OnDestroy {
 
   getConvertedScrollOffset(): number {
     if (this.timeLtr) {
-      return -this.blockchainContainer?.nativeElement?.scrollLeft || 0;
+      return -(this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
     } else {
-      return this.blockchainContainer?.nativeElement?.scrollLeft || 0;
+      return (this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
+    }
+  }
+
+  setScrollLeft(offset: number): void {
+    if (this.timeLtr) {
+      this.blockchainContainer.nativeElement.scrollLeft = offset - this.mempoolOffset;
+    } else {
+      this.blockchainContainer.nativeElement.scrollLeft = offset + this.mempoolOffset;
     }
   }
 
@@ -388,7 +403,7 @@ export class StartComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.blockchainContainer?.nativeElement) {
       // clean up scroll position to prevent caching wrong scroll in Firefox
-      this.blockchainContainer.nativeElement.scrollLeft = 0;
+      this.setScrollLeft(0);
     }
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
