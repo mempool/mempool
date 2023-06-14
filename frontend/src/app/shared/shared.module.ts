@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
-  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
+  faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
@@ -95,8 +95,6 @@ import { MempoolBlockOverviewComponent } from '../components/mempool-block-overv
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
-import { ClockMinedComponent } from '../components/clock/clock-mined.component';
-import { ClockMempoolComponent } from '../components/clock/clock-mempool.component';
 
 @NgModule({
   declarations: [
@@ -185,8 +183,6 @@ import { ClockMempoolComponent } from '../components/clock/clock-mempool.compone
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
-    ClockMinedComponent,
-    ClockMempoolComponent,
     ClockFaceComponent,
   ],
   imports: [
@@ -300,8 +296,6 @@ import { ClockMempoolComponent } from '../components/clock/clock-mempool.compone
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
-    ClockMinedComponent,
-    ClockMempoolComponent,
     ClockFaceComponent,
   ]
 })
@@ -310,6 +304,7 @@ export class SharedModule {
     library.addIcons(faInfoCircle);
     library.addIcons(faChartArea);
     library.addIcons(faTv);
+    library.addIcons(faClock);
     library.addIcons(faTachometerAlt);
     library.addIcons(faCubes);
     library.addIcons(faHammer);

@@ -12,12 +12,13 @@
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
-            <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
-              <label class="btn btn-primary btn-sm mr-2">
-                <a [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
-                  <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
-                </a>
-                </label>
+            <div class="small-buttons">
+              <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mempool/0' | relativeUrl]" style="color: white" id="btn-clock">
+                <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" title="Clock view"></fa-icon>
+              </a>
+              <a *ngIf="!isMobile()" class="btn btn-primary btn-sm mb-0" [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
+                <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
+              </a>
             </div>
             <div class="btn-group btn-group-toggle" name="radioBasic">
               <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">

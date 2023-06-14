@@ -150,17 +150,30 @@
     margin: 0px 0px;
   }
   .btn {
-    width: 49.25%;
+    width: 50%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 1px 0;
+    margin-right: 0.5rem;
     @media (min-width: 830px) {
       width: auto;
     }
+
+    &:first-child {
+      margin-right: 0;
+      @media (min-width: 830px) {
+        margin-right: 0.5rem;
+      }
+    }
   }
   .dropdown {
-    width: 49.25%;
     display: flex;
+    width: 50%;
+    flex-grow: 1;
+    flex-shrink: 1;
     @media (min-width: 830px) {
       width: auto;
-      margin: 0px 5px;
+      margin-left: 0.5rem;
     }
   }
   #dropdownFees {

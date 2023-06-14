@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of, switchMap, tap } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { MempoolInfo, Recommendedfees } from '../../interfaces/websocket.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
   selector: 'app-clock',
@@ -13,12 +14,14 @@ import { ActivatedRoute } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClockComponent implements OnInit {
-  @Input() mode: 'block' | 'mempool' = 'block';
   hideStats: boolean = false;
+  mode: 'mempool' | 'mined' = 'mined';
+  blockIndex: number;
+  pageSubscription: Subscription;
   blocksSubscription: Subscription;
   recommendedFees$: Observable<Recommendedfees>;
   mempoolInfo$: Observable<MempoolInfo>;
-  block: BlockExtended;
+  blocks: BlockExtended[] = [];
   clockSize: number = 300;
   chainWidth: number = 384;
   chainHeight: number = 60;
@@ -41,6 +44,8 @@ export class ClockComponent implements OnInit {
     public stateService: StateService,
     private websocketService: WebsocketService,
     private route: ActivatedRoute,
+    private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
     private cd: ChangeDetectorRef,
   ) {
     this.route.queryParams.subscribe((params) => {
@@ -57,14 +62,40 @@ export class ClockComponent implements OnInit {
     this.blocksSubscription = this.stateService.blocks$
       .subscribe(([block]) => {
         if (block) {
-          this.block = block;
-          this.blockStyle = this.getStyleForBlock(this.block);
-          this.cd.markForCheck();
+          this.blocks.unshift(block);
+          this.blocks = this.blocks.slice(0, 16);
+          if (this.blocks[this.blockIndex]) {
+            this.blockStyle = this.getStyleForBlock(this.blocks[this.blockIndex]);
+            this.cd.markForCheck();
+          }
         }
       });
 
     this.recommendedFees$ = this.stateService.recommendedFees$;
     this.mempoolInfo$ = this.stateService.mempoolInfo$;
+
+    this.pageSubscription = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) => {
+        const rawMode: string = params.get('mode');
+        const mode = rawMode === 'mempool' ? 'mempool' : 'mined';
+        const index: number = Number.parseInt(params.get('index'));
+        if (mode !== rawMode || index < 0 || isNaN(index)) {
+          this.router.navigate([this.relativeUrlPipe.transform('/clock'), mode, index || 0]);
+        }
+        return of({
+          mode,
+          index,
+        });
+      }),
+      tap((page: { mode: 'mempool' | 'mined', index: number }) => {
+        this.mode = page.mode;
+        this.blockIndex = page.index || 0;
+        if (this.blocks[this.blockIndex]) {
+          this.blockStyle = this.getStyleForBlock(this.blocks[this.blockIndex]);
+          this.cd.markForCheck();
+        }
+      })
+    ).subscribe();
   }
 
   getStyleForBlock(block: BlockExtended) {
