@@ -1,8 +1,7 @@
-import cluster, { Cluster } from 'cluster';
 import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
-import { Ancestor } from '../mempool.interfaces';
+import { Ancestor, CpfpCluster } from '../mempool.interfaces';
 import transactionRepository from '../repositories/TransactionRepository';
 
 class CpfpRepository {
@@ -12,7 +11,7 @@ class CpfpRepository {
     }
     // skip clusters of transactions with the same fees
     const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
-    const equalFee = txs.reduce((acc, tx) => {
+    const equalFee = txs.length > 1 && txs.reduce((acc, tx) => {
       return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
     }, true);
     if (equalFee) {
@@ -54,9 +53,9 @@ class CpfpRepository {
       const txs: any[] = [];
 
       for (const cluster of clusters) {
-        if (cluster.txs?.length > 1) {
+        if (cluster.txs?.length) {
           const roundedEffectiveFee = Math.round(cluster.effectiveFeePerVsize * 100) / 100;
-          const equalFee = cluster.txs.reduce((acc, tx) => {
+          const equalFee = cluster.txs.length > 1 && cluster.txs.reduce((acc, tx) => {
             return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
           }, true);
           if (!equalFee) {
@@ -111,7 +110,7 @@ class CpfpRepository {
     }
   }
 
-  public async $getCluster(clusterRoot: string): Promise<Cluster | void> {
+  public async $getCluster(clusterRoot: string): Promise<CpfpCluster | void> {
     const [clusterRows]: any = await DB.query(
       `
         SELECT *
@@ -121,6 +120,7 @@ class CpfpRepository {
       [clusterRoot]
     );
     const cluster = clusterRows[0];
+    cluster.effectiveFeePerVsize = cluster.fee_rate;
     if (cluster?.txs) {
       cluster.txs = this.unpack(cluster.txs);
       return cluster;
