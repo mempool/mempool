@@ -358,6 +358,9 @@ class MempoolBlocks {
             block: blockIndex,
             vsize: totalVsize + (mempoolTx.vsize / 2),
           };
+          mempoolTx.ancestors = [];
+          mempoolTx.descendants = [];
+          mempoolTx.bestDescendant = null;
           mempoolTx.cpfpChecked = true;
 
           // online calculation of stack-of-blocks fee stats
