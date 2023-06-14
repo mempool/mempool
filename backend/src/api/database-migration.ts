@@ -1051,7 +1051,7 @@ class DatabaseMigration {
   }
 
   public async $blocksReindexingTruncate(): Promise<void> {
-    logger.warn(`Truncating pools, blocks and hashrates for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
+    logger.warn(`Truncating pools, blocks, hashrates and difficulty_adjustments tables for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
     await Common.sleep$(5000);
 
     await this.$executeQuery(`TRUNCATE blocks`);
