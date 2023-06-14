@@ -13,10 +13,10 @@
         [class.offscreen]="!static && count && i >= count"
         id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
         [class.blink-bg]="isSpecial(block.height)">
-        <a draggable="false" [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }"
+        <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
         <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
-          <a [routerLink]="['/block/' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height
+          <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }">{{ block.height
             }}</a>
         </div>
         <div class="block-body">

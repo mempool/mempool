@@ -5,8 +5,20 @@
   <div class="position-container" [ngClass]="network ? network : ''" [style.top]="(height / 3) + 'px'">
     <span>
       <div class="blocks-wrapper">
-        <app-mempool-blocks [minimal]="true" [count]="mempoolBlocks" [blockWidth]="blockWidth" [spotlight]="mode === 'mempool' ? 1 : 0"></app-mempool-blocks>
-        <app-blockchain-blocks [minimal]="true" [count]="blockchainBlocks" [blockWidth]="blockWidth" [spotlight]="mode === 'block' ? -1 : 0"></app-blockchain-blocks>
+        <app-mempool-blocks
+          [minimal]="true"
+          [count]="mempoolBlocks"
+          [blockWidth]="blockWidth"
+          [spotlight]="mode === 'mempool' ? index + 1 : 0"
+          [getHref]="getMempoolUrl"
+        ></app-mempool-blocks>
+        <app-blockchain-blocks
+          [minimal]="true"
+          [count]="blockchainBlocks"
+          [blockWidth]="blockWidth"
+          [spotlight]="mode === 'mined' ? -index - 1 : 0"
+          [getHref]="getMinedUrl"
+        ></app-blockchain-blocks>
       </div>
       <div class="divider" [style.top]="-(height / 6) + 'px'">
         <svg
