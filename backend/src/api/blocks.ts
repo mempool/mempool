@@ -282,10 +282,14 @@ class Blocks {
       }
 
       extras.matchRate = null;
+      extras.expectedFees = null;
+      extras.expectedWeight = null;
       if (config.MEMPOOL.AUDIT) {
         const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(block.id);
         if (auditScore != null) {
           extras.matchRate = auditScore.matchRate;
+          extras.expectedFees = auditScore.expectedFees;
+          extras.expectedWeight = auditScore.expectedWeight;
         }
       }
     }
@@ -453,6 +457,46 @@ class Blocks {
       logger.err(`CPFP indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`);
       throw e;
     }
+  }
+
+  /**
+   * [INDEXING] Index expected fees & weight for all audited blocks
+   */
+  public async $generateAuditStats(): Promise<void> {
+    const blockIds = await BlocksAuditsRepository.$getBlocksWithoutSummaries();
+    if (!blockIds?.length) {
+      return;
+    }
+    let timer = Date.now();
+    let indexedThisRun = 0;
+    let indexedTotal = 0;
+    logger.debug(`Indexing ${blockIds.length} block audit details`);
+    for (const hash of blockIds) {
+      const summary = await BlocksSummariesRepository.$getTemplate(hash);
+      let totalFees = 0;
+      let totalWeight = 0;
+      for (const tx of summary?.transactions || []) {
+        totalFees += tx.fee;
+        totalWeight += (tx.vsize * 4);
+      }
+      await BlocksAuditsRepository.$setSummary(hash, totalFees, totalWeight);
+      const cachedBlock = this.blocks.find(block => block.id === hash);
+      if (cachedBlock) {
+        cachedBlock.extras.expectedFees = totalFees;
+        cachedBlock.extras.expectedWeight = totalWeight;
+      }
+
+      indexedThisRun++;
+      indexedTotal++;
+      const elapsedSeconds = (Date.now() - timer) / 1000;
+      if (elapsedSeconds > 5) {
+        const blockPerSeconds = indexedThisRun / elapsedSeconds;
+        logger.debug(`Indexed ${indexedTotal} / ${blockIds.length} block audit details (${blockPerSeconds.toFixed(1)}/s)`);
+        timer = Date.now();
+        indexedThisRun = 0;
+      }
+    }
+    logger.debug(`Indexing block audit details completed`);
   }
 
   /**

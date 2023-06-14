@@ -134,6 +134,7 @@ class Indexer {
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
       await blocks.$generateCPFPDatabase();
+      await blocks.$generateAuditStats();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
