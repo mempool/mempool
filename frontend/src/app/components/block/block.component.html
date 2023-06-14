@@ -392,7 +392,7 @@
 </ng-template>
 
 <ng-template #expectedDetails>
-  <table *ngIf="block && blockAudit" class="table table-borderless table-striped audit-details-table">
+  <table *ngIf="block && blockAudit && blockAudit.expectedFees != null" class="table table-borderless table-striped audit-details-table">
     <tbody>
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
@@ -413,7 +413,7 @@
 </ng-template>
 
 <ng-template #actualDetails>
-  <table *ngIf="block && blockAudit" class="table table-borderless table-striped audit-details-table">
+  <table *ngIf="block && blockAudit && blockAudit.expectedFees != null" class="table table-borderless table-striped audit-details-table">
     <tbody>
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
