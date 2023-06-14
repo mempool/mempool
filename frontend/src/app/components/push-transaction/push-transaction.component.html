@@ -3,10 +3,20 @@
 
   <form [formGroup]="pushTxForm" (submit)="pushTxForm.valid && postTx()" novalidate>
     <div class="mb-3">
-      <textarea formControlName="txHash" class="form-control" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction hex"></textarea>
+      <div formArrayName="txHash">
+        <div *ngFor="let tx of getTxs().controls; index as i">
+          <textarea [formControlName]="i" class="form-control mb-3" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction hex"></textarea>
+        </div>
+      </div>
     </div>
-    <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</button>
-    <p class="red-color d-inline">{{ error }}</p> <a *ngIf="txId" [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
+    <div class="d-flex justify-content-between mb-3">
+      <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</button>
+      <button [disabled]="isLoading" class="btn btn-secondary" (click)="addTx()">Add Child Transaction</button>
+    </div>
+    <p class="red-color d-inline">{{ error }}</p> 
+    <div *ngFor="let txId of txIds">
+      <a [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
+    </div>
   </form>
 
 </div>

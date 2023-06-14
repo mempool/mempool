@@ -714,13 +714,26 @@ class BitcoinRoutes {
   private async $postTransaction(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
     try {
-      let rawTx;
+      let rawTxs;
       if (typeof req.body === 'object') {
-        rawTx = Object.keys(req.body)[0];
+        rawTxs = Object.keys(req.body)[0];
       } else {
-        rawTx = req.body;
+        rawTxs = req.body;
       }
-      const txIdResult = await bitcoinApi.$sendRawTransaction(rawTx);
+
+      const txsArray = rawTxs.split(/\s+/);
+      let txIdResult: String[] = [];
+      if (txsArray.length > 1) {
+        const resp = await bitcoinApi.$submitPackage(txsArray);
+
+        for (let wtxid in resp['tx-results']) {
+          txIdResult.push(resp['tx-results'][wtxid]['txid']);
+        }
+      } else {
+        const txid = await bitcoinApi.$sendRawTransaction(txsArray[0]);
+
+        txIdResult.push(txid);
+      }
       res.send(txIdResult);
     } catch (e: any) {
       res.status(400).send(e.message && e.code ? 'sendrawtransaction RPC error: ' + JSON.stringify({ code: e.code, message: e.message })

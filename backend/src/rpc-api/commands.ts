@@ -80,6 +80,7 @@ module.exports = {
   setTxFee: 'settxfee',
   signMessage: 'signmessage',
   signRawTransaction: 'signrawtransaction', // bitcoind v0.7.0+
+  submitPackage: 'submitpackage',
   stop: 'stop',
   submitBlock: 'submitblock', // bitcoind v0.7.0+
   validateAddress: 'validateaddress',

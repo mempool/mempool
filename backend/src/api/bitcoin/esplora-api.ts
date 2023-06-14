@@ -118,6 +118,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     throw new Error('Method not implemented.');
   }
 
+  $submitPackage(rawTransactions: string[]): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend> {
     return this.$queryWrapper<IEsploraApi.Outspend>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/outspend/' + vout);
   }

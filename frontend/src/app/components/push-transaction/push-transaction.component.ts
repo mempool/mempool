@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormArray } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApiService } from '../../services/api.service';
 export class PushTransactionComponent implements OnInit {
   pushTxForm: UntypedFormGroup;
   error: string = '';
-  txId: string = '';
+  txIds: string[] = [];
   isLoading = false;
 
   constructor(
@@ -20,18 +20,30 @@ export class PushTransactionComponent implements OnInit {
 
   ngOnInit(): void {
     this.pushTxForm = this.formBuilder.group({
-      txHash: ['', Validators.required],
+      txHash: this.formBuilder.array([]),
     });
+
+    this.addTx();
+  }
+
+  getTxs() {
+    return this.pushTxForm.get('txHash') as FormArray;
+  }
+
+  addTx() {
+    this.getTxs().push(this.formBuilder.control('', Validators.required))
   }
 
   postTx() {
     this.isLoading = true;
     this.error = '';
-    this.txId = '';
-    this.apiService.postTransaction$(this.pushTxForm.get('txHash').value)
+    this.txIds = [];
+    const txs = this.pushTxForm.get('txHash').value;
+    const txData = txs.join(' ');
+    this.apiService.postTransaction$(txData)
       .subscribe((result) => {
         this.isLoading = false;
-        this.txId = result;
+        this.txIds = result;
         this.pushTxForm.reset();
       },
       (error) => {
