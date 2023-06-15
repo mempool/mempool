@@ -150,7 +150,7 @@
                   <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
-                <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td><app-fee-rate [fee]="cpfpTx.fee" [weight]="cpfpTx.weight"></app-fee-rate></td>
                 <td class="d-none d-lg-table-cell"><fa-icon  *ngIf="roundToOneDecimal(cpfpTx) > roundToOneDecimal(tx)"  class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
@@ -161,7 +161,7 @@
                   <app-truncate [text]="cpfpInfo.bestDescendant.txid" [link]="['/tx' | relativeUrl, cpfpInfo.bestDescendant.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpInfo.bestDescendant.weight / 4 | vbytes: 2"></td>
-                <td>{{ cpfpInfo.bestDescendant.fee / (cpfpInfo.bestDescendant.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td><app-fee-rate [fee]="cpfpInfo.bestDescendant.fee" [weight]="cpfpInfo.bestDescendant.weight"></app-fee-rate></td>
                 <td class="d-none d-lg-table-cell"><fa-icon class="arrow-green" [icon]="['fas', 'angle-double-up']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
@@ -172,7 +172,7 @@
                   <app-truncate [text]="cpfpTx.txid" [link]="['/tx' | relativeUrl, cpfpTx.txid]"></app-truncate>
                 </td>
                 <td class="d-none d-lg-table-cell" [innerHTML]="cpfpTx.weight / 4 | vbytes: 2"></td>
-                <td>{{ cpfpTx.fee / (cpfpTx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+                <td><app-fee-rate [fee]="cpfpTx.fee" [weight]="cpfpTx.weight"></app-fee-rate></td>
                 <td class="d-none d-lg-table-cell"><fa-icon *ngIf="roundToOneDecimal(cpfpTx) < roundToOneDecimal(tx)" class="arrow-red" [icon]="['fas', 'angle-double-down']" [fixedWidth]="true"></fa-icon></td>
               </tr>
             </ng-template>
@@ -475,7 +475,7 @@
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
-          {{ tx.feePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          <app-fee-rate [fee]="tx.feePerVsize"></app-fee-rate>
           <ng-template [ngIf]="tx?.status?.confirmed">
             &nbsp;
             <app-tx-fee-rating *ngIf="tx.fee && !hasEffectiveFeeRate" [tx]="tx"></app-tx-fee-rating>
@@ -486,7 +486,7 @@
         <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
-            {{ tx.effectiveFeePerVsize | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+            <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             <ng-template [ngIf]="tx?.status?.confirmed">
               <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
