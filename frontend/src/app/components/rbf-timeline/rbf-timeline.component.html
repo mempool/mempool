@@ -31,7 +31,7 @@
               >
                 <div class="shape"></div>
               </a>
-              <span class="fee-rate">{{ cell.replacement.tx.fee / (cell.replacement.tx.vsize) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span>
+              <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4"></app-fee-rate></span>
             </div>
           </ng-container>
           <ng-template #nonNode>

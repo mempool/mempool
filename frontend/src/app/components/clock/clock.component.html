@@ -45,7 +45,9 @@
     </div>
     <div class="stats top right">
       <p class="label" i18n="clock.priority-rate|priority fee rate">priority rate</p>
-      <p *ngIf="recommendedFees$ | async as recommendedFees;" i18n="shared.sat-vbyte|sat/vB">{{ recommendedFees.fastestFee }} sat/vB</p>
+      <p *ngIf="recommendedFees$ | async as recommendedFees;">
+        <app-fee-rate [fee]="recommendedFees.fastestFee" unitClass="" rounding="1.0-0"></app-fee-rate>
+      </p>
     </div>
     <div *ngIf="mode !== 'mempool' && blocks?.length" class="stats bottom left">
       <p [innerHTML]="blocks[blockIndex].size | bytes: 2"></p>

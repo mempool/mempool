@@ -13,6 +13,7 @@ export class FeeRateComponent implements OnInit {
   @Input() rounding: string = null;
   @Input() showUnit: boolean = true;
   @Input() unitClass: string = 'symbol';
+  @Input() unitStyle: any;
 
   rateUnits$: Observable<string>;
 
