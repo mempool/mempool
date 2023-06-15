@@ -138,6 +138,8 @@ export class BlockComponent implements OnInit, OnDestroy {
 
         if (block.id === this.blockHash) {
           this.block = block;
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
           if (block?.extras?.reward != undefined) {
             this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
           }
@@ -234,6 +236,8 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
+        block.extras.minFee = this.getMinBlockFee(block);
+        block.extras.maxFee = this.getMaxBlockFee(block);
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
         this.nextBlockHeight = block.height + 1;
