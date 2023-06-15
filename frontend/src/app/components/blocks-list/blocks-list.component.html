@@ -44,21 +44,16 @@
           </td>
           <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <a
+              *ngIf="block?.extras?.matchRate != null; else nullHealth"
               class="health-badge badge"
-              [class.badge-success]="auditScores[block.id] >= 99"
-              [class.badge-warning]="auditScores[block.id] >= 75 && auditScores[block.id] < 99"
-              [class.badge-danger]="auditScores[block.id] < 75"
-              [routerLink]="auditScores[block.id] != null ? ['/block/' | relativeUrl, block.id] : null"
+              [class.badge-success]="block.extras.matchRate >= 99"
+              [class.badge-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
+              [class.badge-danger]="block.extras.matchRate < 75"
+              [routerLink]="block.extras.matchRate != null ? ['/block/' | relativeUrl, block.id] : null"
               [state]="{ data: { block: block } }"
-              *ngIf="auditScores[block.id] != null; else nullHealth"
-            >{{ auditScores[block.id] }}%</a>
+            >{{ block.extras.matchRate }}%</a>
             <ng-template #nullHealth>
-              <ng-container *ngIf="!loadingScores; else loadingHealth">
-                <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
-              </ng-container>
-            </ng-template>
-            <ng-template #loadingHealth>
-              <span class="skeleton-loader" style="max-width: 60px"></span>
+              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
           <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
