@@ -98,6 +98,8 @@ import { ClockchainComponent } from '../components/clockchain/clockchain.compone
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
 
+import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
+
 @NgModule({
   declarations: [
     ClipboardComponent,
@@ -188,6 +190,9 @@ import { ClockComponent } from '../components/clock/clock.component';
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
+
+    OnlyVsizeDirective,
+    OnlyWeightDirective
   ],
   imports: [
     CommonModule,
@@ -303,6 +308,9 @@ import { ClockComponent } from '../components/clock/clock.component';
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
+
+    OnlyVsizeDirective,
+    OnlyWeightDirective
   ]
 })
 export class SharedModule {
