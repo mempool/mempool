@@ -35,6 +35,7 @@ import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
+import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -106,6 +107,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     TxFeeRatingComponent,
     LanguageSelectorComponent,
     FiatSelectorComponent,
+    RateUnitSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -225,6 +227,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     TxFeeRatingComponent,
     LanguageSelectorComponent,
     FiatSelectorComponent,
+    RateUnitSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,

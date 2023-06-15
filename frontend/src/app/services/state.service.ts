@@ -133,6 +133,7 @@ export class StateService {
   hideFlow: BehaviorSubject<boolean>;
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
+  rateUnits$: BehaviorSubject<string>;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -225,6 +226,9 @@ export class StateService {
     
     const fiatPreference = this.storageService.getValue('fiat-preference');
     this.fiatCurrency$ = new BehaviorSubject<string>(fiatPreference || 'USD');
+
+    const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
+    this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
   }
 
   setNetworkBasedonUrl(url: string) {
