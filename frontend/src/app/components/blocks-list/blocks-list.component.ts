@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { BehaviorSubject, combineLatest, concat, Observable, timer, EMPTY, Subscription, of } from 'rxjs';
-import { catchError, delayWhen, map, retryWhen, scan, skip, switchMap, tap } from 'rxjs/operators';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, timer, of } from 'rxjs';
+import { delayWhen, map, retryWhen, scan, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
@@ -12,19 +12,14 @@ import { WebsocketService } from '../../services/websocket.service';
   styleUrls: ['./blocks-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlocksList implements OnInit, OnDestroy {
+export class BlocksList implements OnInit {
   @Input() widget: boolean = false;
 
   blocks$: Observable<BlockExtended[]> = undefined;
-  auditScores: { [hash: string]: number | void } = {};
-
-  auditScoreSubscription: Subscription;
-  latestScoreSubscription: Subscription;
 
   indexingAvailable = false;
   auditAvailable = false;
   isLoading = true;
-  loadingScores = true;
   fromBlockHeight = undefined;
   paginationMaxSize: number;
   page = 1;
@@ -66,7 +61,7 @@ export class BlocksList implements OnInit, OnDestroy {
                   this.blocksCount = blocks[0].height + 1;
                 }
                 this.isLoading = false;
-                this.lastBlockHeight = Math.max(...blocks.map(o => o.height))
+                this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
               }),
               map(blocks => {
                 if (this.indexingAvailable) {
@@ -82,7 +77,7 @@ export class BlocksList implements OnInit, OnDestroy {
                 return blocks;
               }),
               retryWhen(errors => errors.pipe(delayWhen(() => timer(10000))))
-            )
+            );
         })
       ),
       this.stateService.blocks$
@@ -121,68 +116,17 @@ export class BlocksList implements OnInit, OnDestroy {
           return of(blocks);
         })
       );
-
-    if (this.indexingAvailable && this.auditAvailable) {
-      this.auditScoreSubscription = this.fromHeightSubject.pipe(
-        switchMap((fromBlockHeight) => {
-          this.loadingScores = true;
-          return this.apiService.getBlockAuditScores$(this.page === 1 ? undefined : fromBlockHeight)
-            .pipe(
-              catchError(() => {
-                return EMPTY;
-              })
-            );
-        })
-      ).subscribe((scores) => {
-        Object.values(scores).forEach(score => {
-          this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
-        });
-        this.loadingScores = false;
-        this.cd.markForCheck();
-      });
-
-      this.latestScoreSubscription = this.stateService.blocks$.pipe(
-        switchMap((block) => {
-          if (block[0]?.extras?.matchRate != null) {
-            return of({
-              hash: block[0].id,
-              matchRate: block[0]?.extras?.matchRate,
-            });
-          }
-          else if (block[0]?.id && this.auditScores[block[0].id] === undefined) {
-            return this.apiService.getBlockAuditScore$(block[0].id)
-              .pipe(
-                catchError(() => {
-                  return EMPTY;
-                })
-              );
-          } else {
-            return EMPTY;
-          }
-        }),
-      ).subscribe((score) => {
-        if (score && score.hash) {
-          this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
-          this.cd.markForCheck();
-        }
-      });
-    }
   }
 
-  ngOnDestroy(): void {
-    this.auditScoreSubscription?.unsubscribe();
-    this.latestScoreSubscription?.unsubscribe();
-  }
-
-  pageChange(page: number) {
+  pageChange(page: number): void {
     this.fromHeightSubject.next((this.blocksCount - 1) - (page - 1) * 15);
   }
 
-  trackByBlock(index: number, block: BlockExtended) {
+  trackByBlock(index: number, block: BlockExtended): number {
     return block.height;
   }
 
-  isEllipsisActive(e) {
+  isEllipsisActive(e): boolean {
     return (e.offsetWidth < e.scrollWidth);
   }
 }
