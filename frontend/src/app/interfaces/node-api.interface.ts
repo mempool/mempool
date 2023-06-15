@@ -129,6 +129,8 @@ export interface PoolStat {
 export interface BlockExtension {
   totalFees?: number;
   medianFee?: number;
+  minFee?: number;
+  maxFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseRaw?: string;

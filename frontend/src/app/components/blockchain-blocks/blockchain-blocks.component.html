@@ -31,9 +31,8 @@
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
-              *ngIf="block?.extras?.feeRange; else emptyfeespan">
-              {{ getMinBlockFee(block) | number:feeRounding }} - {{
-              getMaxBlockFee(block) | number:feeRounding }} <ng-container
+              *ngIf="block?.extras?.minFee != null && block?.extras?.maxFee != null; else emptyfeespan">
+              {{ block.extras.minFee | number:feeRounding }} - {{ block.extras.maxFee | number:feeRounding }} <ng-container
                 i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
             </div>
             <ng-template #emptyfeespan>
