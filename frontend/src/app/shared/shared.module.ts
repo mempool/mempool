@@ -83,6 +83,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
@@ -173,6 +174,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -287,6 +289,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
