@@ -114,6 +114,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             this.blocksFilled = false;
           }
 
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
+
           this.blocks.unshift(block);
           this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
 
@@ -240,6 +243,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       if (height >= 0) {
         this.cacheService.loadBlock(height);
         block = this.cacheService.getCachedBlock(height) || null;
+        if (block) {
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
+        }
       }
       this.blocks.push(block || {
         placeholder: height < 0,
@@ -278,6 +285,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   onBlockLoaded(block: BlockExtended) {
     const blockIndex = this.height - block.height;
     if (blockIndex >= 0 && blockIndex < this.blocks.length) {
+      block.extras.minFee = this.getMinBlockFee(block);
+      block.extras.maxFee = this.getMaxBlockFee(block);
       this.blocks[blockIndex] = block;
       this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);
     }
@@ -365,5 +374,24 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       });
     }
     return emptyBlocks;
+  }
+
+  getMinBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      // heuristic to check if feeRange is adjusted for effective rates
+      if (block.extras.medianFee === block.extras.feeRange[3]) {
+        return block.extras.feeRange[1];
+      } else {
+        return block.extras.feeRange[0];
+      }
+    }
+    return 0;
+  }
+
+  getMaxBlockFee(block: BlockExtended): number {
+    if (block?.extras?.feeRange) {
+      return block.extras.feeRange[block.extras.feeRange.length - 1];
+    }
+    return 0;
   }
 }
