@@ -21,9 +21,13 @@
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
         <td>{{ rbfInfo.tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></td>
       </tr>
-      <tr>
+      <tr *only-vsize>
         <td class="td-width" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
         <td [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize | vbytes: 2)"></td>
+      </tr>
+      <tr *only-weight>
+        <td class="td-width" i18n="transaction.weight|Transaction Weight">Weight</td>
+        <td [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize * 4 | vbytes: 2)"></td>
       </tr>
       <tr>
         <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>

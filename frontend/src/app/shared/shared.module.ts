@@ -209,6 +209,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
   ],
   providers: [
     VbytesPipe,
+    WuBytesPipe,
     RelativeUrlPipe,
     NoSanitizePipe,
     ShortenStringPipe,

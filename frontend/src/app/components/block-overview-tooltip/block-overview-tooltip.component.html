@@ -34,9 +34,13 @@
           <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
         </td>
       </tr>
-      <tr>
+      <tr *only-vsize>
         <td class="td-width" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
         <td [innerHTML]="'&lrm;' + (vsize | vbytes: 2)"></td>
+      </tr>
+      <tr *only-weight>
+        <td class="td-width" i18n="transaction.weight|Transaction Weight">Weight</td>
+        <td [innerHTML]="'&lrm;' + ((vsize * 4) | wuBytes: 2)"></td>
       </tr>
       <tr *ngIf="auditEnabled && tx && tx.status && tx.status.length">
         <td class="td-width" i18n="transaction.audit-status">Audit status</td>

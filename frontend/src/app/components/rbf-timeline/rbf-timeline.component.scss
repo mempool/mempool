@@ -126,11 +126,6 @@
         }
       }
 
-      .symbol::ng-deep {
-        display: block;
-        margin-top: -0.5em;
-      }
-
       &.selected {
         .shape-border {
           background: #9339f4;
