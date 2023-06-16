@@ -3,7 +3,7 @@ import memPool from './mempool';
 import blocks from './blocks';
 import logger from '../logger';
 import config from '../config';
-import { BlockExtended, BlockSummary, TransactionExtended } from '../mempool.interfaces';
+import { BlockExtended, BlockSummary, MempoolTransactionExtended } from '../mempool.interfaces';
 import rbfCache from './rbf-cache';
 
 class RedisCache {
@@ -52,7 +52,7 @@ class RedisCache {
     }
   }
 
-  async $addTransactions(newTransactions: TransactionExtended[]) {
+  async $addTransactions(newTransactions: MempoolTransactionExtended[]) {
     try {
       await this.$ensureConnected();
       await Promise.all(newTransactions.map(tx => {
@@ -112,12 +112,12 @@ class RedisCache {
     }
   }
 
-  async $getMempool(): Promise<{ [txid: string]: TransactionExtended }> {
+  async $getMempool(): Promise<{ [txid: string]: MempoolTransactionExtended }> {
     const mempool = {};
     try {
       await this.$ensureConnected();
       const keys = await this.client.keys('tx:*');
-      const promises: Promise<TransactionExtended[]>[] = [];
+      const promises: Promise<MempoolTransactionExtended[]>[] = [];
       for (let i = 0; i < keys.length; i += 10000) {
         const keySlice = keys.slice(i, i + 10000);
         if (!keySlice.length) {
@@ -144,7 +144,7 @@ class RedisCache {
     try {
       await this.$ensureConnected();
       const keys = await this.client.keys(`rbf:${type}:*`);
-      const promises: Promise<TransactionExtended[]>[] = [];
+      const promises: Promise<MempoolTransactionExtended[]>[] = [];
       for (let i = 0; i < keys.length; i += 10000) {
         const keySlice = keys.slice(i, i + 10000);
         if (!keySlice.length) {
