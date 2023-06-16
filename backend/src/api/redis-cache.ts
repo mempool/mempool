@@ -10,6 +10,9 @@ class RedisCache {
   private client;
   private connected = false;
 
+  private cacheQueue: MempoolTransactionExtended[] = [];
+  private txFlushLimit: number = 1000;
+
   constructor() {
     if (config.REDIS.ENABLED) {
       const redisConfig = {
@@ -50,6 +53,18 @@ class RedisCache {
     } catch (e) {
       logger.warn(`Failed to update blocks in Redis cache: ${e instanceof Error ? e.message : e}`);
     }
+  }
+
+  async $addTransaction(tx: MempoolTransactionExtended) {
+    this.cacheQueue.push(tx);
+    if (this.cacheQueue.length > this.txFlushLimit) {
+      await this.$flushTransactions();
+    }
+  }
+
+  async $flushTransactions() {
+    await this.$addTransactions(this.cacheQueue);
+    this.cacheQueue = [];
   }
 
   async $addTransactions(newTransactions: MempoolTransactionExtended[]) {
@@ -118,6 +133,7 @@ class RedisCache {
       await this.$ensureConnected();
       const keys = await this.client.keys('tx:*');
       const promises: Promise<MempoolTransactionExtended[]>[] = [];
+      let returned = 0;
       for (let i = 0; i < keys.length; i += 10000) {
         const keySlice = keys.slice(i, i + 10000);
         if (!keySlice.length) {
@@ -131,6 +147,8 @@ class RedisCache {
               }
             }
           }
+          logger.info(`Loaded ${(returned * 10000) + (chunk.length)}/${keys.length} transactions from Redis cache`);
+          returned++;
         }));
       }
       await Promise.all(promises);
