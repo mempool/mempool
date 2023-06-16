@@ -40,7 +40,7 @@ export class StartComponent implements OnInit, OnDestroy {
   minScrollWidth: number;
   pageIndex: number = 0;
   pages: any[] = [];
-  pendingMark: number | void = null;
+  pendingMark: number | null = null;
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
@@ -71,19 +71,29 @@ export class StartComponent implements OnInit, OnDestroy {
       this.chainTip = height;
       this.tipIsSet = true;
       this.updatePages();
-      if (this.pendingMark != null) {
-        this.scrollToBlock(this.pendingMark);
-        this.pendingMark = null;
-      }
+      this.applyPendingMarkArrow();
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
+      let blockHeight;
       if (mark?.blockHeight != null) {
+        blockHeight = mark.blockHeight;
+      } else if (mark?.mempoolBlockIndex != null) {
+        blockHeight = -1 - mark.mempoolBlockIndex;
+      } else if (mark?.mempoolPosition?.block != null) {
+        blockHeight = -1 - mark.mempoolPosition.block;
+      }
+      if (blockHeight != null) {
         if (this.tipIsSet) {
-          if (!this.blockInViewport(mark.blockHeight)) {
-            this.scrollToBlock(mark.blockHeight);
+          let scrollToHeight = blockHeight;
+          if (blockHeight < 0) {
+            scrollToHeight = this.chainTip - blockHeight;
           }
-        } else {
-          this.pendingMark = mark.blockHeight;
+          if (!this.blockInViewport(scrollToHeight)) {
+            this.scrollToBlock(scrollToHeight);
+          }
+        }
+        if (!this.tipIsSet || (blockHeight < 0 && !this.mempoolOffset)) {
+          this.pendingMark = blockHeight;
         }
       }
     });
@@ -122,6 +132,18 @@ export class StartComponent implements OnInit, OnDestroy {
     const delta = offset - this.mempoolOffset;
     this.addConvertedScrollOffset(delta);
     this.mempoolOffset = offset;
+    this.applyPendingMarkArrow();
+  }
+
+  applyPendingMarkArrow(): void {
+    if (this.pendingMark != null) {
+      if (this.pendingMark < 0) {
+        this.scrollToBlock(this.chainTip - this.pendingMark);
+      } else {
+        this.scrollToBlock(this.pendingMark);
+      }
+      this.pendingMark = null;
+    }
   }
 
   @HostListener('window:resize', ['$event'])
