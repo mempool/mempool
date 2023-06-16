@@ -8,6 +8,9 @@
 <ng-template [ngIf]="!hideUnconfirmed && !confirmations && replaced">
   <button type="button" class="btn btn-sm btn-danger {{buttonClass}}" i18n="transaction.unconfirmed|Transaction unconfirmed state">Replaced</button>
 </ng-template>
-<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced">
+<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced && removed">
+  <button type="button" class="btn btn-sm btn-danger {{buttonClass}}" i18n="transaction.audit.removed|Transaction removed state">Removed</button>
+</ng-template>
+<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced && !removed">
   <button type="button" class="btn btn-sm btn-danger {{buttonClass}}" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
 </ng-template>

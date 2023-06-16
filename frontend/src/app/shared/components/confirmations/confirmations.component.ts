@@ -11,6 +11,7 @@ export class ConfirmationsComponent implements OnChanges {
   @Input() chainTip: number;
   @Input() height: number;
   @Input() replaced: boolean = false;
+  @Input() removed: boolean = false;
   @Input() hideUnconfirmed: boolean = false;
   @Input() buttonClass: string = '';
 
