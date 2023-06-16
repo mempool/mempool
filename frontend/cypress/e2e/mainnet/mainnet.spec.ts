@@ -537,7 +537,7 @@ describe('Mainnet', () => {
           cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
         });
 
-        cy.get('.btn-danger').then(getRectangle).then((rectA) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
           cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
@@ -582,7 +582,7 @@ describe('Mainnet', () => {
           cy.get(alertLocator).invoke('css', 'width').should('equal', firstWidth);
         });
 
-        cy.get('.btn-danger').then(getRectangle).then((rectA) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
           cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
