@@ -186,6 +186,12 @@ class Mempool {
         loadingIndicators.setProgress('mempool', progress);
         loggerTimer = new Date().getTime() / 1000;
       }
+      // Break and restart mempool loop if we spend too much time processing
+      // new transactions that may lead to falling behind on block height
+      if (this.inSync && (new Date().getTime()) - start > 10_000) {
+        logger.debug('Breaking mempool loop because the 10s time limit exceeded.');
+        break;
+      }
     }
 
     // Reset esplora 404 counter and log a warning if needed
