@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { Price, PriceService } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 
@@ -16,13 +15,11 @@ export class CalculatorComponent implements OnInit {
   satoshis = 10000;
   form: FormGroup;
 
-  currency: string;
   currency$ = this.stateService.fiatCurrency$;
-  mainSubscription$: Observable<any>;
   price$: Observable<number>;
+  lastFiatPrice$: Observable<number>;
 
   constructor(
-    private priceService: PriceService,
     private stateService: StateService,
     private formBuilder: FormBuilder,
     private websocketService: WebsocketService,
@@ -35,13 +32,19 @@ export class CalculatorComponent implements OnInit {
       satoshis: [0],
     });
 
+    this.lastFiatPrice$ = this.stateService.conversions$.asObservable()
+      .pipe(
+        map((conversions) => conversions.time)
+      );
+
+    let currency;
     this.price$ = this.currency$.pipe(
-      switchMap((currency) => {
-        this.currency = currency; 
+      switchMap((result) => {
+        currency = result; 
         return this.stateService.conversions$.asObservable();
       }),
       map((conversions) => {
-        return conversions[this.currency];
+        return conversions[currency];
       })
     );
 
@@ -49,8 +52,6 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('fiat').valueChanges
     ]).subscribe(([price, value]) => {
-      value = parseFloat(value.replace(',', '.'));
-      value = value || 0;
       const rate = (value / price).toFixed(8);
       const satsRate = Math.round(value / price * 100_000_000);
       this.form.get('bitcoin').setValue(rate, { emitEvent: false });
@@ -61,8 +62,6 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('bitcoin').valueChanges
     ]).subscribe(([price, value]) => {
-      value = parseFloat(value.replace(',', '.'));
-      value = value || 0;
       const rate = parseFloat((value * price).toFixed(8));
       this.form.get('fiat').setValue(rate, { emitEvent: false } );
       this.form.get('satoshis').setValue(Math.round(value * 100_000_000), { emitEvent: false } );
@@ -72,8 +71,6 @@ export class CalculatorComponent implements OnInit {
       this.price$,
       this.form.get('satoshis').valueChanges
     ]).subscribe(([price, value]) => {
-      value = parseFloat(value.replace(',', '.'));
-      value = value || 0;
       const rate = parseFloat((value / 100_000_000 * price).toFixed(8));
       const bitcoinRate = (value / 100_000_000).toFixed(8);
       this.form.get('fiat').setValue(rate, { emitEvent: false } );
@@ -82,4 +79,25 @@ export class CalculatorComponent implements OnInit {
 
   }
 
+  transformInput(name: string): void {
+    const formControl = this.form.get(name);
+    if (!formControl.value) {
+      return formControl.setValue('', {emitEvent: false});
+    }
+    let value = formControl.value.replace(',', '.').replace(/[^0-9.]/g, '');
+    if (value === '.') {
+      value = '0';
+    }
+    const sanitizedValue = this.removeExtraDots(value);
+    formControl.setValue(sanitizedValue, {emitEvent: true});
+  }
+
+  removeExtraDots(str: string): string {
+    const [beforeDot, afterDot] = str.split('.', 2);
+    if (afterDot === undefined) {
+      return str;
+    }
+    const afterDotReplaced = afterDot.replace(/\./g, '');
+    return `${beforeDot}.${afterDotReplaced}`;
+  }
 }

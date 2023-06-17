@@ -3,37 +3,62 @@
     <h2>Calculator</h2>
   </div>
 
-  <div class="row justify-content-md-center" *ngIf="price$ | async; else loading">
-    <div class="col-md-auto">
+  <ng-container *ngIf="price$ | async; else loading">
+
+    <div class="row justify-content-center">
 
       <form [formGroup]="form">
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
             <span class="input-group-text">{{ currency$ | async }}</span>
           </div>
-          <input type="text" class="form-control" formControlName="fiat">
+          <input type="text" class="form-control" formControlName="fiat" (input)="transformInput('fiat')">
           <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
-            <span class="input-group-text"><app-svg-images name="bitcoin" width="30" height="30" viewBox="0 0 75 80" style="width: 25px; height: 24px; margin-left: 8px;"></app-svg-images></span>
+            <span class="input-group-text"><app-svg-images name="bitcoin" width="50" height="50" viewBox="0 0 120 120" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
           </div>
-          <input type="text" class="form-control" formControlName="bitcoin">
+          <input type="text" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')">
           <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
-            <span class="input-group-text"><app-svg-images name="sats" width="30" height="30" viewBox="-9 0 370 450" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
+            <span class="input-group-text"><app-svg-images name="sats" width="50" height="50" viewBox="-9 0 700 700" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
           </div>
-          <input type="text" class="form-control" formControlName="satoshis">
+          <input type="text" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')">
           <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
       </form>
 
     </div>
-  </div>
+
+    <br>
+
+    <div class="row justify-content-center">
+      <div class="bitcoin-satoshis-text">
+        <app-svg-images name="bitcoin" width="40" height="40" viewBox="0 0 75 80" style="width: 25px; height: 24px; margin-right: 4px;"></app-svg-images>
+         <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
+        <app-svg-images name="sats" width="40" height="40" viewBox="-9 0 370 450" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="fiat-text">
+        <app-fiat [value]="form.get('satoshis').value" digitsInfo="1.0-0"></app-fiat>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+      <div class="symbol">
+        Fiat price last updated <app-time kind="since" [time]="lastFiatPrice$ | async" [fastRender]="true"></app-time>
+      </div>
+    </div>
+
+
+  </ng-container>
 
   <ng-template #loading>
     <div class="text-center">
