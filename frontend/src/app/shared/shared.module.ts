@@ -97,6 +97,7 @@ import { MempoolBlockOverviewComponent } from '../components/mempool-block-overv
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
+import { CalculatorComponent } from '../components/calculator/calculator.component';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
@@ -185,12 +186,11 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
-
+    CalculatorComponent,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
-
     OnlyVsizeDirective,
     OnlyWeightDirective
   ],

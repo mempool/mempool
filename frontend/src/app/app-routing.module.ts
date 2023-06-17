@@ -22,6 +22,7 @@ import { AssetsFeaturedComponent } from './components/assets/assets-featured/ass
 import { AssetsComponent } from './components/assets/assets.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
+import { CalculatorComponent } from './components/calculator/calculator.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -277,6 +278,10 @@ let routes: Routes = [
       {
         path: 'rbf',
         component: RbfList,
+      },
+      {
+        path: 'calculator',
+        component: CalculatorComponent
       },
       {
         path: 'terms-of-service',

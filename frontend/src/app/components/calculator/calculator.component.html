@@ -1,0 +1,44 @@
+<div class="container-xl">
+  <div class="text-center">
+    <h2>Calculator</h2>
+  </div>
+
+  <div class="row justify-content-md-center" *ngIf="price$ | async; else loading">
+    <div class="col-md-auto">
+
+      <form [formGroup]="form">
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text">{{ currency$ | async }}</span>
+          </div>
+          <input type="text" class="form-control" formControlName="fiat">
+          <app-clipboard [button]="true" [text]="form.get('fiat').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><app-svg-images name="bitcoin" width="30" height="30" viewBox="0 0 75 80" style="width: 25px; height: 24px; margin-left: 8px;"></app-svg-images></span>
+          </div>
+          <input type="text" class="form-control" formControlName="bitcoin">
+          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+
+        <div class="input-group input-group-lg mb-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><app-svg-images name="sats" width="30" height="30" viewBox="-9 0 370 450" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
+          </div>
+          <input type="text" class="form-control" formControlName="satoshis">
+          <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="text-center">
+      Waiting for price feed...
+    </div>
+  </ng-template>
+
+</div>
