@@ -280,7 +280,7 @@ let routes: Routes = [
         component: RbfList,
       },
       {
-        path: 'calculator',
+        path: 'tools/calculator',
         component: CalculatorComponent
       },
       {
