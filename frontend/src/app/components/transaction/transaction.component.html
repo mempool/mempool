@@ -18,7 +18,12 @@
       </span>
 
       <div class="container-buttons">
-        <app-confirmations [chainTip]="latestBlock?.height" [height]="tx?.status?.block_height" [replaced]="replaced"></app-confirmations>
+        <app-confirmations
+          [chainTip]="latestBlock?.height"
+          [height]="tx?.status?.block_height"
+          [replaced]="replaced"
+          [removed]="this.rbfInfo?.mined && !this.tx?.status?.confirmed"
+        ></app-confirmations>
       </div>
     </ng-container>
   </div>
