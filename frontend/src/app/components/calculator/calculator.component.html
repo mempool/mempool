@@ -18,7 +18,7 @@
 
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
-            <span class="input-group-text"><app-svg-images name="bitcoin" width="50" height="50" viewBox="0 0 120 120" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
+            <span class="input-group-text">BTC</span>
           </div>
           <input type="text" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')">
           <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
@@ -26,7 +26,7 @@
 
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
-            <span class="input-group-text"><app-svg-images name="sats" width="50" height="50" viewBox="-9 0 700 700" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images></span>
+            <span class="input-group-text">sats</span>
           </div>
           <input type="text" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')">
           <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
@@ -39,9 +39,9 @@
 
     <div class="row justify-content-center">
       <div class="bitcoin-satoshis-text">
-        <app-svg-images name="bitcoin" width="40" height="40" viewBox="0 0 75 80" style="width: 25px; height: 24px; margin-right: 4px;"></app-svg-images>
+        ₿
          <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
-        <app-svg-images name="sats" width="40" height="40" viewBox="-9 0 370 450" style="width: 25px; height: 24px; margin-left: 6px;"></app-svg-images>
+        <span class="sats"> sats</span>
       </div>
     </div>
 
