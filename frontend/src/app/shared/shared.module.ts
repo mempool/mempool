@@ -188,14 +188,13 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     TestnetAlertComponent,
     GlobalFooterComponent,
     CalculatorComponent,
+    BitcoinsatoshisPipe,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
-    CalculatorComponent,
     ClockFaceComponent,
     OnlyVsizeDirective,
-    OnlyWeightDirective,
-    BitcoinsatoshisPipe
+    OnlyWeightDirective
   ],
   imports: [
     CommonModule,
