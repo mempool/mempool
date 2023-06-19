@@ -583,6 +583,10 @@ class WebsocketHandler {
 
     const _memPool = memPool.getMempool();
 
+    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
+    memPool.handleMinedRbfTransactions(rbfTransactions);
+    memPool.removeFromSpendMap(transactions);
+
     if (config.MEMPOOL.AUDIT) {
       let projectedBlocks;
       let auditMempool = _memPool;
@@ -605,7 +609,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, fresh, sigop, fullrbf, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
@@ -633,6 +637,7 @@ class WebsocketHandler {
           missingTxs: censored,
           freshTxs: fresh,
           sigopTxs: sigop,
+          fullrbfTxs: fullrbf,
           matchRate: matchRate,
           expectedFees: totalFees,
           expectedWeight: totalWeight,
@@ -651,10 +656,6 @@ class WebsocketHandler {
         block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
       }
     }
-
-    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
-    memPool.handleMinedRbfTransactions(rbfTransactions);
-    memPool.removeFromSpendMap(transactions);
 
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {

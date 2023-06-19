@@ -156,6 +156,7 @@ export interface BlockAudit extends BlockExtended {
   addedTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
+  fullrbfTxs: string[],
   matchRate: number,
   expectedFees: number,
   expectedWeight: number,
@@ -171,7 +172,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'fullrbf';
   context?: 'projected' | 'actual';
 }
 
