@@ -240,6 +240,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.mempoolPosition = txPosition.position;
         if (this.tx && !this.tx.status.confirmed) {
           this.stateService.markBlock$.next({
+            txid: txPosition.txid,
             mempoolPosition: this.mempoolPosition
           });
           this.txInBlockIndex = this.mempoolPosition.block;
@@ -359,6 +360,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           } else {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
+                txid: tx.txid,
                 txFeePerVSize: tx.effectiveFeePerVsize,
                 mempoolPosition: this.mempoolPosition,
               });

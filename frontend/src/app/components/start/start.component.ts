@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { StateService } from '../../services/state.service';
+import { MarkBlockState, StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 
 @Component({
@@ -24,6 +24,7 @@ export class StartComponent implements OnInit, OnDestroy {
   chainTipSubscription: Subscription;
   chainTip: number = -1;
   tipIsSet: boolean = false;
+  lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
@@ -75,20 +76,31 @@ export class StartComponent implements OnInit, OnDestroy {
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
       let blockHeight;
+      let newMark = true;
       if (mark?.blockHeight != null) {
+        if (this.lastMark?.blockHeight === mark.blockHeight) {
+          newMark = false;
+        }
         blockHeight = mark.blockHeight;
       } else if (mark?.mempoolBlockIndex != null) {
+        if (this.lastMark?.mempoolBlockIndex === mark.mempoolBlockIndex || (mark.txid && this.lastMark?.txid === mark.txid)) {
+          newMark = false;
+        }
         blockHeight = -1 - mark.mempoolBlockIndex;
       } else if (mark?.mempoolPosition?.block != null) {
+        if (this.lastMark?.txid === mark.txid) {
+          newMark = false;
+        }
         blockHeight = -1 - mark.mempoolPosition.block;
       }
+      this.lastMark = mark;
       if (blockHeight != null) {
         if (this.tipIsSet) {
           let scrollToHeight = blockHeight;
           if (blockHeight < 0) {
             scrollToHeight = this.chainTip - blockHeight;
           }
-          if (!this.blockInViewport(scrollToHeight)) {
+          if (newMark && !this.blockInViewport(scrollToHeight)) {
             this.scrollToBlock(scrollToHeight);
           }
         }

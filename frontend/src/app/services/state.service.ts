@@ -8,8 +8,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { map, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
-interface MarkBlockState {
+export interface MarkBlockState {
   blockHeight?: number;
+  txid?: string;
   mempoolBlockIndex?: number;
   txFeePerVSize?: number;
   mempoolPosition?: MempoolPosition;
