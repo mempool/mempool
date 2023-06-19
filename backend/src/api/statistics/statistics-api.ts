@@ -211,7 +211,7 @@ class StatisticsApi {
       CAST(avg(vsize_1800) as DOUBLE) as vsize_1800,
       CAST(avg(vsize_2000) as DOUBLE) as vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'ALL TIME' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -259,7 +259,7 @@ class StatisticsApi {
       vsize_1800,
       vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'ALL TIME' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -382,6 +382,17 @@ class StatisticsApi {
       return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
       logger.err('$list4Y() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  public async $listAll(): Promise<OptimizedStatistic[]> {
+    try {
+      const query = this.getQueryForDays(43200, 'ALL TIME'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
+    } catch (e) {
+      logger.err('$listAll() error' + (e instanceof Error ? e.message : e));
       return [];
     }
   }
