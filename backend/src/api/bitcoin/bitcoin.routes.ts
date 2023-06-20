@@ -394,9 +394,13 @@ class BitcoinRoutes {
 
   private async getBlockAuditSummary(req: Request, res: Response) {
     try {
-      const transactions = await blocks.$getBlockAuditSummary(req.params.hash);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
-      res.json(transactions);
+      const auditSummary = await blocks.$getBlockAuditSummary(req.params.hash);
+      if (auditSummary) {
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+        res.json(auditSummary);
+      } else {
+        return res.status(404).send(`audit not available`);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
