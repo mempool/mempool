@@ -37,10 +37,11 @@ class AuditReplication {
     let loggerTimer = Date.now();
     // process missing audits in batches of 
     for (let i = 0; i < missingAudits.length; i += BATCH_SIZE) {
-      const results = await Promise.all(missingAudits.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE).map(hash => this.$syncAudit(hash)));
+      const slice = missingAudits.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
+      const results = await Promise.all(slice.map(hash => this.$syncAudit(hash)));
       const synced = results.reduce((total, status) => status ? total + 1 : total, 0);
       totalSynced += synced;
-      totalMissed += (BATCH_SIZE - synced);
+      totalMissed += (slice.length - synced);
       if (Date.now() - loggerTimer > 10000) {
         loggerTimer = Date.now();
         logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${missingAudits.length} missing audits`, 'Replication');
