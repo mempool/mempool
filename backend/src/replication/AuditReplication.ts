@@ -6,6 +6,7 @@ import blocksSummariesRepository from '../repositories/BlocksSummariesRepository
 import { $sync } from './replicator';
 import config from '../config';
 import { Common } from '../api/common';
+import blocks from '../api/blocks';
 
 const BATCH_SIZE = 16;
 
@@ -116,6 +117,13 @@ class AuditReplication {
       expectedFees: auditSummary.expectedFees,
       expectedWeight: auditSummary.expectedWeight,
     });
+    // add missing data to cached blocks
+    const cachedBlock = blocks.getBlocks().find(block => block.id === blockHash);
+    if (cachedBlock) {
+      cachedBlock.extras.matchRate = auditSummary.matchRate;
+      cachedBlock.extras.expectedFees = auditSummary.expectedFees || null;
+      cachedBlock.extras.expectedWeight = auditSummary.expectedWeight || null;
+    }
   }
 }
 
