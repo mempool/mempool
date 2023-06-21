@@ -53,17 +53,17 @@
   }
 }
 .formRadioGroup.mining {
-  @media (min-width: 991px) {
+  @media (min-width: 1035px) {
     position: relative;
     top: -100px;
   }
-  @media (min-width: 830px) and (max-width: 991px) {
+  @media (min-width: 830px) and (max-width: 1035px) {
     position: relative;
     top: 0px;
   }
 }
 .formRadioGroup.no-menu {
-  @media (min-width: 991px) {
+  @media (min-width: 1035px) {
     position: relative;
     top: -33px;
   }
