@@ -47,6 +47,13 @@ jobs:
         run: npm run test
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ matrix.flavor == 'dev'}}
+        with:
+          files: |
+            ${{ matrix.node }}/${{ matrix.flavor }}/backend/junit.xml
+
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
