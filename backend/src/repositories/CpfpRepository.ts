@@ -78,14 +78,6 @@ class CpfpRepository {
 
       const maxChunk = 100;
       let chunkIndex = 0;
-      // insert transactions in batches of up to 100 rows
-      while (chunkIndex < txs.length) {
-        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk);
-        await transactionRepository.$batchSetCluster(chunk);
-        chunkIndex += maxChunk;
-      }
-
-      chunkIndex = 0;
       // insert clusters in batches of up to 100 rows
       while (chunkIndex < clusterValues.length) {
         const chunk = clusterValues.slice(chunkIndex, chunkIndex + maxChunk);
@@ -103,6 +95,15 @@ class CpfpRepository {
         );
         chunkIndex += maxChunk;
       }
+
+      chunkIndex = 0;
+      // insert transactions in batches of up to 100 rows
+      while (chunkIndex < txs.length) {
+        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk);
+        await transactionRepository.$batchSetCluster(chunk);
+        chunkIndex += maxChunk;
+      }
+
       return true;
     } catch (e: any) {
       logger.err(`Cannot save cpfp clusters into db. Reason: ` + (e instanceof Error ? e.message : e));
