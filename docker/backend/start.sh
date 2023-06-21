@@ -130,6 +130,12 @@ __MAXMIND_GEOLITE2_CITY__=${MAXMIND_GEOLITE2_CITY:="/backend/GeoIP/GeoLite2-City
 __MAXMIND_GEOLITE2_ASN__=${MAXMIND_GEOLITE2_ASN:="/backend/GeoIP/GeoLite2-ASN.mmdb"}
 __MAXMIND_GEOIP2_ISP__=${MAXMIND_GEOIP2_ISP:=""}
 
+# REPLICATION
+__REPLICATION_ENABLED__=${REPLICATION_ENABLED:=true}
+__REPLICATION_AUDIT__=${REPLICATION_AUDIT:=true}
+__REPLICATION_AUDIT_START_HEIGHT__=${REPLICATION_AUDIT_START_HEIGHT:=774000}
+__REPLICATION_SERVERS__=${REPLICATION_SERVERS:=[]}
+
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -250,5 +256,10 @@ sed -i "s!__MAXMIND_GEOLITE2_CITY__!${__MAXMIND_GEOLITE2_CITY__}!g" mempool-conf
 sed -i "s!__MAXMIND_GEOLITE2_ASN__!${__MAXMIND_GEOLITE2_ASN__}!g" mempool-config.json
 sed -i "s!__MAXMIND_GEOIP2_ISP__!${__MAXMIND_GEOIP2_ISP__}!g" mempool-config.json
 
+# REPLICATION
+sed -i "s!__REPLICATION_ENABLED__!${__REPLICATION_ENABLED__}!g" mempool-config.json
+sed -i "s!__REPLICATION_AUDIT__!${__REPLICATION_AUDIT__}!g" mempool-config.json
+sed -i "s!__REPLICATION_AUDIT_START_HEIGHT__!${__REPLICATION_AUDIT_START_HEIGHT__}!g" mempool-config.json
+sed -i "s!__REPLICATION_SERVERS__!${__REPLICATION_SERVERS__}!g" mempool-config.json
 
 node /backend/package/index.js
