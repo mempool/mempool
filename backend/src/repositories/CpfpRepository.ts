@@ -120,8 +120,8 @@ class CpfpRepository {
       [clusterRoot]
     );
     const cluster = clusterRows[0];
-    cluster.effectiveFeePerVsize = cluster.fee_rate;
     if (cluster?.txs) {
+      cluster.effectiveFeePerVsize = cluster.fee_rate;
       cluster.txs = this.unpack(cluster.txs);
       return cluster;
     }
