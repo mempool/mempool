@@ -1,20 +1,22 @@
-import type { Config } from "@jest/types"
+import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  preset: "ts-jest",
-  testEnvironment: "node",
+  preset: 'ts-jest',
+  testEnvironment: 'node',
   verbose: true,
   automock: false,
   collectCoverage: true,
-  collectCoverageFrom: ["./src/**/**.ts"],
-  coverageProvider: "babel",
+  collectCoverageFrom: ['./src/**/**.ts'],
+  coverageProvider: 'babel',
   coverageThreshold: {
     global: {
       lines: 1
     }
   },
   setupFiles: [
-    "./testSetup.ts",
+    './testSetup.ts',
   ],
-}
+  'reporters': ['default', 'jest-junit']
+};
+
 export default config;
