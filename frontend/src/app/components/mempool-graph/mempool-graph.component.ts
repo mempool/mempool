@@ -35,6 +35,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   isLoading = true;
   mempoolVsizeFeesData: any;
+  mempoolVsizeMA: any;
   mempoolVsizeFeesOptions: EChartsOption;
   mempoolVsizeFeesInitOptions = {
     renderer: 'svg',
@@ -67,6 +68,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     }
     this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
     this.mempoolVsizeFeesData = this.handleNewMempoolData(this.data.concat([]));
+    this.mempoolVsizeMA = this.handleNewMAData(this.data.concat([]));
     this.mountFeeChart();
   }
 
@@ -94,16 +96,35 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const labels = mempoolStats.map(stats => stats.added);
     const finalArrayVByte = this.generateArray(mempoolStats);
     const finalTot = this.generateTotal(mempoolStats);
+    const finalMA = this.generateMA(mempoolStats, 7);
 
     console.log("labels: " + labels.length + " : " +labels[0]);
     console.log("handlingNewMempoolData: "+finalArrayVByte.length + " : " +finalArrayVByte[22].length+ " : "+finalArrayVByte[22][0]);
-    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][0]);
+    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][10]);
+    console.log("finalMA: "+finalMA.length + " : " +finalMA[0].length+ " : "+finalMA[0][10]);
 
     return {
       labels: labels,
       series: finalArrayVByte
     };
   }
+
+  handleNewMAData(mempoolStats: OptimizedMempoolStats[]) {
+    mempoolStats.reverse();
+    const finalTot = this.generateTotal(mempoolStats);
+    const finalMA = this.generateMA(mempoolStats, 7);
+    const labels = mempoolStats.map(stats => stats.added);
+
+    console.log("labels: " + labels.length + " : " +labels[0]);
+    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][10]);
+    console.log("finalMA: "+finalMA.length + " : " +finalMA[0].length+ " : "+finalMA[0][10]);
+
+    return {
+      labels: labels,
+      series: finalMA
+    };
+  }
+
 
   generateTotal(mempoolStats: OptimizedMempoolStats[]) {
     const finalTot: number[][] = [];
@@ -114,6 +135,17 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     finalTot.push(totalArray);
     return finalTot;
+  }
+
+  generateMA(mempoolStats: OptimizedMempoolStats[], windowSize: number) {
+    const finalMA: number[][] = [];
+    const maArray: number[] = [];
+    mempoolStats.forEach((stats) => {
+      maArray.push(stats.vsizes.reduce((a, b) => a + b, 0) / windowSize);
+    });
+
+    finalMA.push(maArray);
+    return finalMA;
   }
 
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
@@ -137,6 +169,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     return finalArray;
   }
 
+  //This is where the data is assigned to the chart
   mountFeeChart() {
     this.orderLevels();
     const { series } = this.mempoolVsizeFeesData;
