@@ -93,11 +93,27 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
     const finalArrayVByte = this.generateArray(mempoolStats);
+    const finalTot = this.generateTotal(mempoolStats);
+
+    console.log("labels: " + labels.length + " : " +labels[0]);
+    console.log("handlingNewMempoolData: "+finalArrayVByte.length + " : " +finalArrayVByte[22].length+ " : "+finalArrayVByte[22][0]);
+    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][0]);
 
     return {
       labels: labels,
       series: finalArrayVByte
     };
+  }
+
+  generateTotal(mempoolStats: OptimizedMempoolStats[]) {
+    const finalTot: number[][] = [];
+    const totalArray: number[] = [];
+    mempoolStats.forEach((stats) => {
+      totalArray.push(stats.vsizes.reduce((a, b) => a + b, 0));
+    });
+
+    finalTot.push(totalArray);
+    return finalTot;
   }
 
   generateArray(mempoolStats: OptimizedMempoolStats[]) {

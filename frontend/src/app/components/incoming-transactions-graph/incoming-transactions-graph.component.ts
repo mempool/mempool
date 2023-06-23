@@ -61,6 +61,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   }
 
   mountChart(): void {
+    console.log("inside mountChart: " + this.data.series[0].length);
     this.mempoolStatsChartOption = {
       grid: {
         height: this.height,
@@ -110,7 +111,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
           params.map((item: any, index: number) => {
