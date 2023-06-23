@@ -224,7 +224,12 @@ class BitcoinRoutes {
     } else {
       let cpfpInfo;
       if (config.DATABASE.ENABLED) {
-        cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        try {
+          cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        } catch (e) {
+          res.status(500).send('failed to get CPFP info');
+          return;
+        }
       }
       if (cpfpInfo) {
         res.json(cpfpInfo);
