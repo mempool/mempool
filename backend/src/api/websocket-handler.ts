@@ -342,7 +342,7 @@ class WebsocketHandler {
     this.printLogs();
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+      await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -588,7 +588,7 @@ class WebsocketHandler {
       if (separateAudit) {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          projectedBlocks = await mempoolBlocks.$rustMakeBlockTemplates(auditMempool, false);
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
@@ -655,7 +655,7 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      await mempoolBlocks.$rustMakeBlockTemplates(_memPool, true);
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
