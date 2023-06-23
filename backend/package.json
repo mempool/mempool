@@ -22,7 +22,7 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "npm run tsc && npm run create-resources",
+    "build": "npm run build-rust && npm run tsc && npm run create-resources",
     "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
     "package": "npm run build && rm -rf package && mv dist package && mv node_modules package && npm run package-rm-build-deps",
     "package-rm-build-deps": "(cd package/node_modules; rm -r typescript @typescript-eslint)",
@@ -33,7 +33,8 @@
     "test": "./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
+    "build-rust": "cd rust-gbt && npm install"
   },
   "dependencies": {
     "@babel/core": "^7.21.3",
