@@ -127,7 +127,7 @@ export interface CompactThreadTransaction {
   feePerVsize: number;
   effectiveFeePerVsize?: number;
   inputs: number[];
-  cpfpRoot?: string;
+  cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
 }
