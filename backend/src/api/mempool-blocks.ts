@@ -1,9 +1,11 @@
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, AuditTransaction } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
+
+const neonAddon = require('../../rust-gbt');
 
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
@@ -219,7 +221,7 @@ class MempoolBlocks {
     const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
     Object.values(newMempool).forEach(entry => {
       if (entry.uid != null) {
-        strippedMempool.set(entry.uid, {
+        const stripped = {
           uid: entry.uid,
           fee: entry.fee,
           weight: (entry.adjustedVsize * 4),
@@ -227,7 +229,8 @@ class MempoolBlocks {
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
           effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
           inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
-        });
+        };
+        strippedMempool.set(entry.uid, stripped);
       }
     });
 
@@ -261,7 +264,9 @@ class MempoolBlocks {
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+
       logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+
       return processed;
     } catch (e) {
       logger.err('makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -319,6 +324,36 @@ class MempoolBlocks {
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
     }
+  }
+
+  public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+    const start = Date.now();
+
+    // reset mempool short ids
+    this.resetUids();
+    for (const tx of Object.values(newMempool)) {
+      this.setUid(tx);
+    }
+
+    // serialize relevant mempool data into an ArrayBuffer
+    // to reduce the overhead of passing this data to the rust thread
+    const mempoolBuffer = this.mempoolToArrayBuffer(newMempool);
+
+    // run the block construction algorithm in a separate thread, and wait for a result
+    try {
+      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.go(mempoolBuffer, resolve); }));
+      const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+      return processed;
+    } catch (e) {
+      logger.err('RUST makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+    }
+    return this.mempoolBlocks;
+  }
+
+  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], saveResults: boolean = false): Promise<void> {
+    await this.$rustMakeBlockTemplates(newMempool, saveResults);
+    return;
   }
 
   private processBlockTemplates(mempool, blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
@@ -495,6 +530,74 @@ class MempoolBlocks {
       }
     }
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
+  }
+
+  private convertNeonResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: number[][], clusters: number[][]})
+    : { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
+    const rateMap = new Map<number, number>();
+    const clusterMap = new Map<number, number[]>();
+    for (const rate of rates) {
+      rateMap.set(rate[0], rate[1]);
+    }
+    for (const cluster of clusters) {
+      clusterMap.set(cluster[0], cluster);
+    }
+    const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
+      return this.uidMap.get(uid) || '';
+    }));
+    const convertedRates = {};
+    for (const rateUid of rateMap.keys()) {
+      const rateTxid = this.uidMap.get(rateUid);
+      if (rateTxid) {
+        convertedRates[rateTxid] = rateMap.get(rateUid);
+      }
+    }
+    const convertedClusters = {};
+    for (const rootUid of clusterMap.keys()) {
+      const rootTxid = this.uidMap.get(rootUid);
+      if (rootTxid) {
+        const members = clusterMap.get(rootUid)?.map(uid => {
+          return this.uidMap.get(uid);
+        });
+        convertedClusters[rootTxid] = members;
+      }
+    }
+    return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
+  }
+
+  private mempoolToArrayBuffer(mempool: { [txid: string]: MempoolTransactionExtended }): ArrayBuffer {
+    let len = 4;
+    const inputs: { [uid: number]: number[] } = {};
+    let validCount = 0;
+    for (const tx of Object.values(mempool)) {
+      if (tx.uid != null) {
+        validCount++;
+        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => uid != null) as number[]
+        inputs[tx.uid] = txInputs;
+        len += (10 + txInputs.length) * 4;
+      }
+    }
+    const buf = new ArrayBuffer(len);
+    const view = new DataView(buf);
+    view.setUint32(0, validCount, false);
+    let offset = 4;
+    for (const tx of Object.values(mempool)) {
+      if (tx.uid != null) {
+        view.setUint32(offset, tx.uid, false);
+        view.setFloat64(offset + 4, tx.fee, false);
+        view.setUint32(offset + 12, (tx.adjustedVsize * 4), false);
+        view.setUint32(offset + 16, tx.sigops, false);
+        view.setFloat64(offset + 20, (tx.adjustedFeePerVsize || tx.feePerVsize), false);
+        view.setFloat64(offset + 28, (tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize), false);
+        view.setUint32(offset + 36, inputs[tx.uid].length, false);
+        offset += 40;
+        for (const input of inputs[tx.uid]) {
+          view.setUint32(offset, input, false);
+          offset += 4;
+        }
+      }
+    }
+    return buf;
   }
 }
 
