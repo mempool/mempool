@@ -2,6 +2,7 @@
 extern crate bytes;
 use std::io::Cursor;
 use bytes::buf::Buf;
+
 pub struct ThreadTransaction {
   pub uid: u32,
   pub fee: u64,

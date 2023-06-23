@@ -34,13 +34,7 @@ impl Ord for TxPriority {
   }
 }
 
-pub fn gbt(mempool_array: Vec<ThreadTransaction>) -> (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>) {
-  let mut mempool: HashMap<u32,ThreadTransaction> = HashMap::new();
-  for transaction in mempool_array {
-    mempool.insert(transaction.uid, transaction);
-  }
-
-
+pub fn gbt(mempool: &mut HashMap<u32,ThreadTransaction>) -> (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>) {
   return make_block_templates(mempool);
 }
 
@@ -49,13 +43,13 @@ pub fn gbt(mempool_array: Vec<ThreadTransaction>) -> (Vec<Vec<u32>>, Vec<(u32, f
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
-fn make_block_templates(mempool: HashMap<u32,ThreadTransaction>) -> (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>) {
+fn make_block_templates(mempool: &mut HashMap<u32,ThreadTransaction>) -> (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>) {
   let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
   let mut mempool_array: VecDeque<u32> = VecDeque::new();
   let mut cluster_array: Vec<Vec<u32>> = Vec::new();
 
   // Initialize working structs
-  for (uid, tx) in &mempool {
+  for (uid, tx) in mempool {
     let audit_tx = AuditTransaction {
       uid: tx.uid,
       fee: tx.fee,
