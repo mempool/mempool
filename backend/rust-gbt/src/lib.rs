@@ -1,11 +1,20 @@
 use neon::{prelude::*, types::buffer::TypedArray};
+use std::collections::HashMap;
+use std::ops::DerefMut;
+use std::sync::Mutex;
+use once_cell::sync::Lazy;
 
 mod gbt;
 mod thread_transaction;
 mod audit_transaction;
-use thread_transaction::{ThreadTransaction};
+mod utils;
+use thread_transaction::ThreadTransaction;
 
-fn go(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+static THREAD_TRANSACTIONS: Lazy<Mutex<HashMap<u32, ThreadTransaction>>> = Lazy::new(|| {
+  Mutex::new(HashMap::new())
+});
+
+fn make(mut cx: FunctionContext) -> JsResult<JsUndefined> {
   let mempool_arg = cx.argument::<JsArrayBuffer>(0)?.root(&mut cx).into_inner(&mut cx);
   let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
   let channel = cx.channel();
@@ -13,8 +22,48 @@ fn go(mut cx: FunctionContext) -> JsResult<JsUndefined> {
   let buffer = mempool_arg.as_slice(&mut cx);
   let thread_transactions = ThreadTransaction::batch_from_buffer(buffer);
 
+  let mut map = THREAD_TRANSACTIONS.lock().unwrap();
+  map.clear();
+  for tx in thread_transactions {
+    map.insert(tx.uid, tx);
+  }
+  drop(map);
+
+  run_in_thread(channel, callback);
+
+  Ok(cx.undefined())
+}
+
+fn update(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+  let new_txs_arg = cx.argument::<JsArrayBuffer>(0)?.root(&mut cx).into_inner(&mut cx);
+  let remove_txs_arg = cx.argument::<JsArrayBuffer>(1)?.root(&mut cx).into_inner(&mut cx);
+  let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
+  let channel = cx.channel();
+
+  let mut map = THREAD_TRANSACTIONS.lock().unwrap();
+  let new_tx_buffer = new_txs_arg.as_slice(&mut cx);
+  let thread_transactions = ThreadTransaction::batch_from_buffer(new_tx_buffer);
+  for tx in thread_transactions {
+    map.insert(tx.uid, tx);
+  }
+
+  let remove_tx_buffer = remove_txs_arg.as_slice(&mut cx);
+  let remove_ids = utils::txids_from_buffer(remove_tx_buffer);
+  for txid in &remove_ids {
+    map.remove(txid);
+  }
+  drop(map);
+
+  run_in_thread(channel, callback);
+
+  Ok(cx.undefined())
+}
+
+fn run_in_thread(channel: Channel, callback: Root<JsFunction>) {
   std::thread::spawn(move || {
-    let (blocks, rates, clusters) = gbt::gbt(thread_transactions);
+    let mut map = THREAD_TRANSACTIONS.lock().unwrap();
+    let (blocks, rates, clusters) = gbt::gbt(map.deref_mut());
+    drop(map);
 
     channel.send(move |mut cx| {
       let result = JsObject::new(&mut cx);
@@ -64,12 +113,11 @@ fn go(mut cx: FunctionContext) -> JsResult<JsUndefined> {
       Ok(())
     });
   });
-
-  Ok(cx.undefined())
 }
 
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
-  cx.export_function("go", go)?;
+  cx.export_function("make", make)?;
+  cx.export_function("update", update)?;
   Ok(())
 }

@@ -11,6 +11,7 @@ class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
+  private rustInitialized: boolean = false;
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
@@ -284,7 +285,7 @@ class MempoolBlocks {
     const start = Date.now();
 
     for (const tx of Object.values(added)) {
-      this.setUid(tx);
+      this.setUid(tx, true);
     }
     const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
     // prepare a stripped down version of the mempool with only the minimum necessary data
@@ -337,23 +338,49 @@ class MempoolBlocks {
 
     // serialize relevant mempool data into an ArrayBuffer
     // to reduce the overhead of passing this data to the rust thread
-    const mempoolBuffer = this.mempoolToArrayBuffer(newMempool);
+    const mempoolBuffer = this.mempoolToArrayBuffer(Object.values(newMempool), newMempool);
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
-      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.go(mempoolBuffer, resolve); }));
+      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.make(mempoolBuffer, resolve); }));
+      this.rustInitialized = true;
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
     } catch (e) {
+      this.rustInitialized = false;
       logger.err('RUST makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
     }
     return this.mempoolBlocks;
   }
 
   public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], saveResults: boolean = false): Promise<void> {
-    await this.$rustMakeBlockTemplates(newMempool, saveResults);
-    return;
+    if (!this.rustInitialized) {
+      // need to reset the worker
+      await this.$rustMakeBlockTemplates(newMempool, saveResults);
+      return;
+    }
+
+    const start = Date.now();
+
+    for (const tx of Object.values(added)) {
+      this.setUid(tx, true);
+    }
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+    // serialize relevant mempool data into an ArrayBuffer
+    // to reduce the overhead of passing this data to the rust thread
+    const addedBuffer = this.mempoolToArrayBuffer(added, newMempool);
+    const removedBuffer = this.uidsToArrayBuffer(removedUids);
+
+    // run the block construction algorithm in a separate thread, and wait for a result
+    try {
+      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.update(addedBuffer, removedBuffer, resolve); }));
+      this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+    } catch (e) {
+      this.rustInitialized = false;
+      logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+    }
   }
 
   private processBlockTemplates(mempool, blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
@@ -487,12 +514,16 @@ class MempoolBlocks {
     this.nextUid = 1;
   }
 
-  private setUid(tx: MempoolTransactionExtended): number {
-    const uid = this.nextUid;
-    this.nextUid++;
-    this.uidMap.set(uid, tx.txid);
-    tx.uid = uid;
-    return uid;
+  private setUid(tx: MempoolTransactionExtended, skipSet = false): number {
+    if (tx.uid == null || !skipSet) {
+      const uid = this.nextUid;
+      this.nextUid++;
+      this.uidMap.set(uid, tx.txid);
+      tx.uid = uid;
+      return uid;
+    } else {
+      return tx.uid;
+    }
   }
 
   private getUid(tx: MempoolTransactionExtended): number | void {
@@ -565,14 +596,14 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private mempoolToArrayBuffer(mempool: { [txid: string]: MempoolTransactionExtended }): ArrayBuffer {
+  private mempoolToArrayBuffer(txs: MempoolTransactionExtended[], mempool: { [txid: string]: MempoolTransactionExtended }): ArrayBuffer {
     let len = 4;
     const inputs: { [uid: number]: number[] } = {};
     let validCount = 0;
-    for (const tx of Object.values(mempool)) {
+    for (const tx of txs) {
       if (tx.uid != null) {
         validCount++;
-        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => uid != null) as number[]
+        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => uid != null) as number[];
         inputs[tx.uid] = txInputs;
         len += (10 + txInputs.length) * 4;
       }
@@ -581,7 +612,7 @@ class MempoolBlocks {
     const view = new DataView(buf);
     view.setUint32(0, validCount, false);
     let offset = 4;
-    for (const tx of Object.values(mempool)) {
+    for (const tx of txs) {
       if (tx.uid != null) {
         view.setUint32(offset, tx.uid, false);
         view.setFloat64(offset + 4, tx.fee, false);
@@ -596,6 +627,19 @@ class MempoolBlocks {
           offset += 4;
         }
       }
+    }
+    return buf;
+  }
+
+  private uidsToArrayBuffer(uids: number[]): ArrayBuffer {
+    let len = (uids.length + 1) * 4;
+    const buf = new ArrayBuffer(len);
+    const view = new DataView(buf);
+    view.setUint32(0, uids.length, false);
+    let offset = 4;
+    for (const uid of uids) {
+      view.setUint32(offset, uid, false);
+      offset += 4;
     }
     return buf;
   }
