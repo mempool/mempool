@@ -1,7 +1,6 @@
 use neon::{prelude::*, types::buffer::TypedArray};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
-use std::ops::DerefMut;
 use std::sync::Mutex;
 
 mod audit_transaction;
@@ -21,7 +20,7 @@ fn make(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
     let channel = cx.channel();
 
-    let buffer = mempool_arg.as_slice(&mut cx);
+    let buffer = mempool_arg.as_slice(&cx);
 
     let mut map = HashMap::new();
     for tx in ThreadTransaction::batch_from_buffer(buffer) {
@@ -49,12 +48,12 @@ fn update(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let channel = cx.channel();
 
     let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-    let new_tx_buffer = new_txs_arg.as_slice(&mut cx);
+    let new_tx_buffer = new_txs_arg.as_slice(&cx);
     for tx in ThreadTransaction::batch_from_buffer(new_tx_buffer) {
         map.insert(tx.uid, tx);
     }
 
-    let remove_tx_buffer = remove_txs_arg.as_slice(&mut cx);
+    let remove_tx_buffer = remove_txs_arg.as_slice(&cx);
     for txid in &utils::txids_from_buffer(remove_tx_buffer) {
         map.remove(txid);
     }
@@ -68,7 +67,7 @@ fn update(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 fn run_in_thread(channel: Channel, callback: Root<JsFunction>) {
     std::thread::spawn(move || {
         let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-        let (blocks, rates, clusters) = gbt::gbt(map.deref_mut()).unwrap();
+        let (blocks, rates, clusters) = gbt::gbt(&mut map).unwrap();
         drop(map);
 
         channel.send(move |mut cx| {

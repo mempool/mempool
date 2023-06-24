@@ -24,9 +24,9 @@ impl Eq for TxPriority {}
 impl PartialOrd for TxPriority {
     fn partial_cmp(&self, other: &TxPriority) -> Option<Ordering> {
         if self.score == other.score {
-            return Some(self.uid.cmp(&other.uid));
+            Some(self.uid.cmp(&other.uid))
         } else {
-            return other.score.partial_cmp(&self.score);
+            other.score.partial_cmp(&self.score)
         }
     }
 }
@@ -36,14 +36,24 @@ impl Ord for TxPriority {
     }
 }
 
+/// The result from calling the gbt function.
+///
+/// This tuple contains the following:
+/// 1. A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
+/// 2. A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
+/// 3. A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
+pub type GbtResult = (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>);
+
+pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
+    make_block_templates(mempool)
+}
+
 /*
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
-pub fn gbt(
-    mempool: &mut HashMap<u32, ThreadTransaction>,
-) -> Option<(Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>)> {
+fn make_block_templates(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
     let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
     let mut mempool_array: VecDeque<u32> = VecDeque::new();
     let mut cluster_array: Vec<Vec<u32>> = Vec::new();
@@ -95,18 +105,18 @@ pub fn gbt(
     let mut modified: PriorityQueue<u32, TxPriority> = PriorityQueue::new();
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
-    while mempool_array.len() > 0 || !modified.is_empty() {
+    while !mempool_array.is_empty() || !modified.is_empty() {
         let next_txid: u32;
         if modified.is_empty() {
             next_txid = mempool_array.pop_front()?;
-        } else if mempool_array.len() == 0 {
+        } else if mempool_array.is_empty() {
             next_txid = modified.pop()?.0;
         } else {
             let next_array_txid = mempool_array.front()?;
             let next_modified_txid = modified.peek()?.0;
             let array_tx: &AuditTransaction = audit_pool.get(next_array_txid)?;
             let modified_tx: &AuditTransaction = audit_pool.get(next_modified_txid)?;
-            match array_tx.cmp(&modified_tx) {
+            match array_tx.cmp(modified_tx) {
                 std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
                     next_txid = mempool_array.pop_front()?;
                 }
@@ -132,7 +142,7 @@ pub fn gbt(
         } else {
             let mut package: Vec<(u32, usize, u32)> = Vec::new();
             let mut cluster: Vec<u32> = Vec::new();
-            let is_cluster: bool = next_tx.ancestors.len() > 0;
+            let is_cluster: bool = !next_tx.ancestors.is_empty();
             package.push((next_txid, next_tx.ancestors.len(), next_tx.weight));
             cluster.push(next_txid);
             for ancestor_id in &next_tx.ancestors {
@@ -176,10 +186,10 @@ pub fn gbt(
         // this block is full
         let exceeded_package_tries =
             failures > 1000 && block_weight > (BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
-        let queue_is_empty = mempool_array.len() == 0 && modified.is_empty();
+        let queue_is_empty = mempool_array.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
-            if transactions.len() > 0 {
+            if !transactions.is_empty() {
                 blocks.push(transactions);
             }
             // reset for the next block
@@ -206,7 +216,7 @@ pub fn gbt(
         }
     }
     // add the final unbounded block if it contains any transactions
-    if transactions.len() > 0 {
+    if !transactions.is_empty() {
         blocks.push(transactions);
     }
 
@@ -238,16 +248,12 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
     for parent_id in &parents {
         set_relatives(*parent_id, audit_pool);
 
-        match audit_pool.get_mut(&parent_id) {
-            Some(parent) => {
-                ancestors.insert(*parent_id);
-                parent.children.insert(txid);
-                for ancestor in &parent.ancestors {
-                    ancestors.insert(*ancestor);
-                }
+        if let Some(parent) = audit_pool.get_mut(parent_id) {
+            ancestors.insert(*parent_id);
+            parent.children.insert(txid);
+            for ancestor in &parent.ancestors {
+                ancestors.insert(*ancestor);
             }
-
-            None => {}
         }
     }
 
@@ -256,7 +262,7 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let ancestor = audit_pool.get(&ancestor_id).unwrap();
+        let ancestor = audit_pool.get(ancestor_id).unwrap();
         total_fee += ancestor.fee;
         total_weight += ancestor.weight;
         total_sigops += ancestor.sigops;
@@ -268,10 +274,10 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
         tx.ancestor_weight = tx.weight + total_weight;
         tx.ancestor_sigops = tx.sigops + total_sigops;
         tx.score = (tx.ancestor_fee as f64)
-            / (if tx.ancestor_weight != 0 {
-                tx.ancestor_weight as f64 / 4.0
-            } else {
+            / (if tx.ancestor_weight == 0 {
                 1.0
+            } else {
+                tx.ancestor_weight as f64 / 4.0
             });
         tx.relatives_set_flag = true;
     }
@@ -302,7 +308,7 @@ fn update_descendants(
     } else {
         return;
     }
-    while descendant_stack.len() > 0 {
+    while !descendant_stack.is_empty() {
         let next_txid: u32 = descendant_stack.pop().unwrap();
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
@@ -312,10 +318,10 @@ fn update_descendants(
             descendant.ancestor_sigops -= root_sigops;
             let current_score = descendant.score;
             descendant.score = (descendant.ancestor_fee as f64)
-                / (if descendant.ancestor_weight != 0 {
-                    descendant.ancestor_weight as f64 / 4.0
-                } else {
+                / (if descendant.ancestor_weight == 0 {
                     1.0
+                } else {
+                    descendant.ancestor_weight as f64 / 4.0
                 });
             descendant.dependency_rate = descendant.dependency_rate.min(cluster_rate);
             descendant.modified = true;

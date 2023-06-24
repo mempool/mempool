@@ -43,9 +43,9 @@ impl Eq for AuditTransaction {}
 impl PartialOrd for AuditTransaction {
     fn partial_cmp(&self, other: &AuditTransaction) -> Option<Ordering> {
         if self.score == other.score {
-            return Some(self.uid.cmp(&other.uid));
+            Some(self.uid.cmp(&other.uid))
         } else {
-            return self.score.partial_cmp(&other.score);
+            self.score.partial_cmp(&other.score)
         }
     }
 }
