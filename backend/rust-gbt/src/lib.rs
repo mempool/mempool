@@ -27,7 +27,9 @@ pub fn make(mempool_buffer: Uint8Array, callback: JsFunction) -> Result<()> {
         map.insert(tx.uid, tx);
     }
 
-    let mut global_map = THREAD_TRANSACTIONS.lock().unwrap();
+    let mut global_map = THREAD_TRANSACTIONS
+        .lock()
+        .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
     *global_map = map;
 
     run_in_thread(callback)
@@ -37,7 +39,9 @@ pub fn make(mempool_buffer: Uint8Array, callback: JsFunction) -> Result<()> {
     ts_args_type = "newTxs: Uint8Array, removeTxs: Uint8Array, callback: (result: GbtResult) => void"
 )]
 pub fn update(new_txs: Uint8Array, remove_txs: Uint8Array, callback: JsFunction) -> Result<()> {
-    let mut map = THREAD_TRANSACTIONS.lock().unwrap();
+    let mut map = THREAD_TRANSACTIONS
+        .lock()
+        .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
     for tx in ThreadTransaction::batch_from_buffer(&new_txs) {
         map.insert(tx.uid, tx);
     }
