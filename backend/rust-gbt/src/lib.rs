@@ -71,16 +71,23 @@ fn run_in_thread(callback: JsFunction) -> Result<()> {
         callback.create_threadsafe_function(UNBOUNDED_QUEUE, |ctx| Ok(vec![ctx.value]))?;
 
     let handle = std::thread::spawn(move || {
-        let mut map = THREAD_TRANSACTIONS
-            .lock()
-            .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
-        let result = gbt::gbt(&mut map).ok_or_else(|| napi::Error::from_reason("gbt failed"))?;
+        let result = {
+            let mut map = THREAD_TRANSACTIONS
+                .lock()
+                .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
+            gbt::gbt(&mut map).ok_or_else(|| napi::Error::from_reason("gbt failed"))?
+        };
 
         // Note: A call mode of Blocking does not mean it will block, but rather it tells
         // the N-API what to do in the event of a full queue.
         // The queue will never be full, so Blocking is fine.
-        thread_safe_callback.call(result, ThreadsafeFunctionCallMode::Blocking);
-        Ok(())
+        match thread_safe_callback.call(result, ThreadsafeFunctionCallMode::Blocking) {
+            Status::Ok => Ok(()),
+            error => Err(napi::Error::from_reason(format!(
+                "Callback failure: {}",
+                error
+            ))),
+        }
     });
 
     handle
