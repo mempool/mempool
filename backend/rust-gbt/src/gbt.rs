@@ -43,16 +43,12 @@ impl Ord for TxPriority {
 /// 3. A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
 pub type GbtResult = (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>);
 
-pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
-    make_block_templates(mempool)
-}
-
 /*
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
-fn make_block_templates(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
+pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
     let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
     let mut mempool_array: VecDeque<u32> = VecDeque::new();
     let mut cluster_array: Vec<Vec<u32>> = Vec::new();
