@@ -1,3 +1,4 @@
+use crate::thread_transaction::ThreadTransaction;
 use std::{
     cmp::Ordering,
     collections::HashSet,
@@ -53,5 +54,30 @@ impl PartialOrd for AuditTransaction {
 impl Ord for AuditTransaction {
     fn cmp(&self, other: &AuditTransaction) -> Ordering {
         self.partial_cmp(other).unwrap()
+    }
+}
+
+impl AuditTransaction {
+    pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
+        AuditTransaction {
+            uid: tx.uid,
+            fee: tx.fee,
+            weight: tx.weight,
+            sigops: tx.sigops,
+            fee_per_vsize: tx.fee_per_vsize,
+            effective_fee_per_vsize: tx.effective_fee_per_vsize,
+            dependency_rate: f64::INFINITY,
+            inputs: tx.inputs.clone(),
+            relatives_set_flag: false,
+            ancestors: HashSet::new(),
+            children: HashSet::new(),
+            ancestor_fee: tx.fee,
+            ancestor_weight: tx.weight,
+            ancestor_sigops: tx.sigops,
+            score: 0.0,
+            used: false,
+            modified: false,
+            dirty: false,
+        }
     }
 }
