@@ -36,7 +36,7 @@ impl ThreadTransaction {
                 fee_per_vsize,
                 effective_fee_per_vsize,
                 inputs,
-            })
+            });
         }
 
         transactions
