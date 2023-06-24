@@ -1,9 +1,12 @@
 use priority_queue::PriorityQueue;
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{
+    cmp::Ordering,
+    collections::{HashMap, HashSet, VecDeque},
+};
 
-use crate::audit_transaction::AuditTransaction;
-use crate::thread_transaction::ThreadTransaction;
+use crate::{
+    audit_transaction::AuditTransaction, thread_transaction::ThreadTransaction, GbtResult,
+};
 
 const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
 const BLOCK_SIGOPS: u32 = 80_000;
@@ -35,14 +38,6 @@ impl Ord for TxPriority {
     }
 }
 
-/// The result from calling the gbt function.
-///
-/// This tuple contains the following:
-/// 1. A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
-/// 2. A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
-/// 3. A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
-pub type GbtResult = (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>);
-
 /*
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
@@ -51,7 +46,7 @@ pub type GbtResult = (Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>);
 pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
     let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
     let mut mempool_array: VecDeque<u32> = VecDeque::new();
-    let mut cluster_array: Vec<Vec<u32>> = Vec::new();
+    let mut clusters: Vec<Vec<u32>> = Vec::new();
 
     // Initialize working structs
     for (uid, tx) in mempool {
@@ -130,7 +125,7 @@ pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
             package.sort_unstable_by_key(|a| 0 - a.1);
 
             if is_cluster {
-                cluster_array.push(cluster);
+                clusters.push(cluster);
             }
 
             let cluster_rate = next_tx
@@ -197,14 +192,18 @@ pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
     }
 
     // make a list of dirty transactions and their new rates
-    let mut rates: Vec<(u32, f64)> = Vec::new();
+    let mut rates: Vec<Vec<f64>> = Vec::new();
     for (txid, tx) in audit_pool {
         if tx.dirty {
-            rates.push((txid, tx.effective_fee_per_vsize));
+            rates.push(vec![txid as f64, tx.effective_fee_per_vsize]);
         }
     }
 
-    Some((blocks, rates, cluster_array))
+    Some(GbtResult {
+        blocks,
+        rates,
+        clusters,
+    })
 }
 
 fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
