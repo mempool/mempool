@@ -1,7 +1,6 @@
 use priority_queue::PriorityQueue;
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::f64::INFINITY;
 
 use crate::audit_transaction::AuditTransaction;
 use crate::thread_transaction::ThreadTransaction;
@@ -60,26 +59,7 @@ fn make_block_templates(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option
 
     // Initialize working structs
     for (uid, tx) in mempool {
-        let audit_tx = AuditTransaction {
-            uid: tx.uid,
-            fee: tx.fee,
-            weight: tx.weight,
-            sigops: tx.sigops,
-            fee_per_vsize: tx.fee_per_vsize,
-            effective_fee_per_vsize: tx.effective_fee_per_vsize,
-            dependency_rate: INFINITY,
-            inputs: tx.inputs.clone(),
-            relatives_set_flag: false,
-            ancestors: HashSet::new(),
-            children: HashSet::new(),
-            ancestor_fee: tx.fee,
-            ancestor_weight: tx.weight,
-            ancestor_sigops: tx.sigops,
-            score: 0.0,
-            used: false,
-            modified: false,
-            dirty: false,
-        };
+        let audit_tx = AuditTransaction::from_thread_transaction(tx);
         audit_pool.insert(audit_tx.uid, audit_tx);
         mempool_array.push_back(*uid);
     }
