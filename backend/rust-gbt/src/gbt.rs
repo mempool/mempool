@@ -34,7 +34,7 @@ impl PartialOrd for TxPriority {
 }
 impl Ord for TxPriority {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
+        self.partial_cmp(other).expect("score will never be NaN")
     }
 }
 
@@ -51,6 +51,7 @@ pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
     // Initialize working structs
     for (uid, tx) in mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
+        // Safety: audit_pool and mempool_array must always contain the same transactions
         audit_pool.insert(audit_tx.uid, audit_tx);
         mempool_array.push_back(*uid);
     }
@@ -62,8 +63,12 @@ pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
 
     // Sort by descending ancestor score
     mempool_array.make_contiguous().sort_unstable_by(|a, b| {
-        let a_tx = audit_pool.get(a).unwrap();
-        let b_tx = audit_pool.get(b).unwrap();
+        let a_tx = audit_pool
+            .get(a)
+            .expect("audit_pool contains exact same txes as mempool_array");
+        let b_tx = audit_pool
+            .get(b)
+            .expect("audit_pool contains exact same txes as mempool_array");
         b_tx.cmp(a_tx)
     });
 
@@ -224,6 +229,7 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
         set_relatives(*parent_id, audit_pool);
 
         if let Some(parent) = audit_pool.get_mut(parent_id) {
+            // Safety: ancestors must always contain only txes in audit_pool
             ancestors.insert(*parent_id);
             parent.children.insert(txid);
             for ancestor in &parent.ancestors {
@@ -237,7 +243,9 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let ancestor = audit_pool.get(ancestor_id).unwrap();
+        let ancestor = audit_pool
+            .get(ancestor_id)
+            .expect("audit_pool contains all ancestors");
         total_fee += ancestor.fee;
         total_weight += ancestor.weight;
         total_sigops += ancestor.sigops;
@@ -283,8 +291,7 @@ fn update_descendants(
     } else {
         return;
     }
-    while !descendant_stack.is_empty() {
-        let next_txid: u32 = descendant_stack.pop().unwrap();
+    while let Some(next_txid) = descendant_stack.pop() {
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
             descendant.ancestors.remove(&root_txid);
