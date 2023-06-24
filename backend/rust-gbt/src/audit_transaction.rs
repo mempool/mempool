@@ -53,7 +53,7 @@ impl PartialOrd for AuditTransaction {
 
 impl Ord for AuditTransaction {
     fn cmp(&self, other: &AuditTransaction) -> Ordering {
-        self.partial_cmp(other).unwrap()
+        self.partial_cmp(other).expect("score will never be NaN")
     }
 }
 
