@@ -1,4 +1,6 @@
-use neon::{prelude::*, types::buffer::TypedArray};
+use napi::bindgen_prelude::*;
+use napi_derive::napi;
+
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -12,115 +14,66 @@ use thread_transaction::ThreadTransaction;
 static THREAD_TRANSACTIONS: Lazy<Mutex<HashMap<u32, ThreadTransaction>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
-fn make(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let mempool_arg = cx
-        .argument::<JsArrayBuffer>(0)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    let channel = cx.channel();
-
-    let buffer = mempool_arg.as_slice(&cx);
-
+#[napi]
+pub fn make<F>(mempool_buffer: Uint8Array, callback: F) -> Result<()>
+where
+    F: Fn(GbtResult) -> Result<()>,
+{
     let mut map = HashMap::new();
-    for tx in ThreadTransaction::batch_from_buffer(buffer) {
+    for tx in ThreadTransaction::batch_from_buffer(&mempool_buffer) {
         map.insert(tx.uid, tx);
     }
 
     let mut global_map = THREAD_TRANSACTIONS.lock().unwrap();
     *global_map = map;
 
-    run_in_thread(channel, callback);
-
-    Ok(cx.undefined())
+    run_in_thread(callback)
 }
 
-fn update(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let new_txs_arg = cx
-        .argument::<JsArrayBuffer>(0)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let remove_txs_arg = cx
-        .argument::<JsArrayBuffer>(1)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
-    let channel = cx.channel();
-
+#[napi]
+pub fn update<F>(new_txs: Uint8Array, remove_txs: Uint8Array, callback: F) -> Result<()>
+where
+    F: Fn(GbtResult) -> Result<()>,
+{
     let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-    let new_tx_buffer = new_txs_arg.as_slice(&cx);
-    for tx in ThreadTransaction::batch_from_buffer(new_tx_buffer) {
+    for tx in ThreadTransaction::batch_from_buffer(&new_txs) {
         map.insert(tx.uid, tx);
     }
-
-    let remove_tx_buffer = remove_txs_arg.as_slice(&cx);
-    for txid in &utils::txids_from_buffer(remove_tx_buffer) {
+    for txid in &utils::txids_from_buffer(&remove_txs) {
         map.remove(txid);
     }
     drop(map);
 
-    run_in_thread(channel, callback);
-
-    Ok(cx.undefined())
+    run_in_thread(callback)
 }
 
-fn run_in_thread(channel: Channel, callback: Root<JsFunction>) {
-    std::thread::spawn(move || {
-        let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-        let (blocks, rates, clusters) = gbt::gbt(&mut map).unwrap();
-        drop(map);
+/// The result from calling the gbt function.
+///
+/// This tuple contains the following:
+///   blocks: A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
+/// clusters: A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
+///    rates: A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
+#[napi(constructor)]
+pub struct GbtResult {
+    pub blocks: Vec<Vec<u32>>,
+    pub clusters: Vec<Vec<u32>>,
+    pub rates: Vec<Vec<f64>>, // Tuples not supported. u32 fits inside f64
+}
 
-        channel.send(move |mut cx| {
-            let result = JsObject::new(&mut cx);
-
-            let js_blocks = JsArray::new(&mut cx, blocks.len() as u32);
-            for (i, block) in blocks.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, block.len() as u32);
-                for (j, uid) in block.iter().enumerate() {
-                    let v = cx.number(*uid);
-                    inner.set(&mut cx, j as u32, v)?;
-                }
-                js_blocks.set(&mut cx, i as u32, inner)?;
-            }
-
-            let js_clusters = JsArray::new(&mut cx, clusters.len() as u32);
-            for (i, cluster) in clusters.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, cluster.len() as u32);
-                for (j, uid) in cluster.iter().enumerate() {
-                    let v = cx.number(*uid);
-                    inner.set(&mut cx, j as u32, v)?;
-                }
-                js_clusters.set(&mut cx, i as u32, inner)?;
-            }
-
-            let js_rates = JsArray::new(&mut cx, rates.len() as u32);
-            for (i, (uid, rate)) in rates.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, 2);
-                let js_uid = cx.number(*uid);
-                let js_rate = cx.number(*rate);
-                inner.set(&mut cx, 0, js_uid)?;
-                inner.set(&mut cx, 1, js_rate)?;
-                js_rates.set(&mut cx, i as u32, inner)?;
-            }
-
-            result.set(&mut cx, "blocks", js_blocks)?;
-            result.set(&mut cx, "clusters", js_clusters)?;
-            result.set(&mut cx, "rates", js_rates)?;
-
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = vec![result.upcast()];
-
-            callback.call(&mut cx, this, args)?;
-
-            Ok(())
-        });
+fn run_in_thread<F>(callback: F) -> Result<()>
+where
+    F: Fn(GbtResult) -> Result<()>,
+{
+    let handle = std::thread::spawn(|| -> Result<GbtResult> {
+        let mut map = THREAD_TRANSACTIONS
+            .lock()
+            .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
+        gbt::gbt(&mut map).ok_or_else(|| napi::Error::from_reason("gbt failed"))
     });
-}
 
-#[neon::main]
-fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("make", make)?;
-    cx.export_function("update", update)?;
-    Ok(())
+    callback(
+        handle
+            .join()
+            .map_err(|_| napi::Error::from_reason("thread panicked"))??,
+    )
 }
