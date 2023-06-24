@@ -36,18 +36,12 @@ impl Ord for TxPriority {
     }
 }
 
-pub fn gbt(
-    mempool: &mut HashMap<u32, ThreadTransaction>,
-) -> Option<(Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>)> {
-    make_block_templates(mempool)
-}
-
 /*
 * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
-fn make_block_templates(
+pub fn gbt(
     mempool: &mut HashMap<u32, ThreadTransaction>,
 ) -> Option<(Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>)> {
     let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
