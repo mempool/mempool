@@ -5,8 +5,9 @@ use std::{
 };
 
 use crate::{
-    audit_transaction::AuditTransaction, utils::U32HasherState, GbtResult, ThreadTransactionsMap,
-    STARTING_CAPACITY,
+    audit_transaction::AuditTransaction,
+    u32_hashmap::{u32hashmap_with_capacity, U32HasherState},
+    GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
 };
 
 const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
@@ -47,8 +48,7 @@ impl Ord for TxPriority {
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
 pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
-    let mut audit_pool: AuditPool =
-        HashMap::with_capacity_and_hasher(STARTING_CAPACITY, U32HasherState);
+    let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
     let mut mempool_array: VecDeque<u32> = VecDeque::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
 
