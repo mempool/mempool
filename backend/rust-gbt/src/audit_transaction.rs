@@ -95,7 +95,7 @@ impl AuditTransaction {
 
     /// Safety: This function must NEVER set score to NaN.
     #[inline]
-    pub fn calc_new_score(&mut self) {
+    fn calc_new_score(&mut self) {
         self.score = (self.ancestor_fee as f64)
             / (if self.ancestor_weight == 0 {
                 1.0
