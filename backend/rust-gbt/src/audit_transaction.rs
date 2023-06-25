@@ -5,6 +5,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Clone)]
 pub struct AuditTransaction {
     pub uid: u32,
@@ -43,7 +44,7 @@ impl PartialEq for AuditTransaction {
 impl Eq for AuditTransaction {}
 
 impl PartialOrd for AuditTransaction {
-    fn partial_cmp(&self, other: &AuditTransaction) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         // If either score is NaN, this is false,
         // and partial_cmp will return None
         if self.score == other.score {
@@ -55,7 +56,7 @@ impl PartialOrd for AuditTransaction {
 }
 
 impl Ord for AuditTransaction {
-    fn cmp(&self, other: &AuditTransaction) -> Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         // Safety: The only possible values for score are f64
         // that are not NaN. This is because outside code can not
         // freely assign score. Also, calc_new_score guarantees no NaN.
@@ -65,7 +66,7 @@ impl Ord for AuditTransaction {
 
 impl AuditTransaction {
     pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
-        AuditTransaction {
+        Self {
             uid: tx.uid,
             fee: tx.fee,
             weight: tx.weight,
@@ -88,7 +89,7 @@ impl AuditTransaction {
     }
 
     #[inline]
-    pub fn score(&self) -> f64 {
+    pub const fn score(&self) -> f64 {
         self.score
     }
 
@@ -99,7 +100,43 @@ impl AuditTransaction {
             / (if self.ancestor_weight == 0 {
                 1.0
             } else {
-                self.ancestor_weight as f64 / 4.0
+                f64::from(self.ancestor_weight) / 4.0
             });
+    }
+
+    #[inline]
+    pub fn set_ancestors(
+        &mut self,
+        ancestors: HashSet<u32>,
+        total_fee: u64,
+        total_weight: u32,
+        total_sigops: u32,
+    ) {
+        self.ancestors = ancestors;
+        self.ancestor_fee = self.fee + total_fee;
+        self.ancestor_weight = self.weight + total_weight;
+        self.ancestor_sigops = self.sigops + total_sigops;
+        self.calc_new_score();
+        self.relatives_set_flag = true;
+    }
+
+    #[inline]
+    pub fn remove_root(
+        &mut self,
+        root_txid: u32,
+        root_fee: u64,
+        root_weight: u32,
+        root_sigops: u32,
+        cluster_rate: f64,
+    ) -> f64 {
+        self.ancestors.remove(&root_txid);
+        self.ancestor_fee -= root_fee;
+        self.ancestor_weight -= root_weight;
+        self.ancestor_sigops -= root_sigops;
+        let old_score = self.score();
+        self.calc_new_score();
+        self.dependency_rate = self.dependency_rate.min(cluster_rate);
+        self.modified = true;
+        old_score
     }
 }
