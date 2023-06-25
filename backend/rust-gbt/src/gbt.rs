@@ -6,7 +6,7 @@ use std::{
 
 use crate::{
     audit_transaction::AuditTransaction,
-    u32_hashmap::{u32hashmap_with_capacity, U32HasherState},
+    u32_hasher_types::{u32hashmap_with_capacity, u32priority_queue_with_capacity, U32HasherState},
     GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
 };
 
@@ -16,6 +16,7 @@ const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const MAX_BLOCKS: usize = 8;
 
 type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
+type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 
 struct TxPriority {
     uid: u32,
@@ -82,7 +83,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
     let mut block_sigops: u32 = 0;
     let mut transactions: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
-    let mut modified: PriorityQueue<u32, TxPriority> = PriorityQueue::new();
+    let mut modified: ModifiedQueue = u32priority_queue_with_capacity(STARTING_CAPACITY);
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
     while !mempool_array.is_empty() || !modified.is_empty() {
@@ -274,7 +275,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
 fn update_descendants(
     root_txid: u32,
     audit_pool: &mut AuditPool,
-    modified: &mut PriorityQueue<u32, TxPriority>,
+    modified: &mut ModifiedQueue,
     cluster_rate: f64,
 ) {
     let mut visited: HashSet<u32> = HashSet::new();
