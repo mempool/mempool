@@ -5,7 +5,17 @@
 
 export class GbtGenerator {
   constructor()
+  /**
+   * # Errors
+   *
+   * Rejects if the thread panics or if the Mutex is poisoned.
+   */
   make(mempoolBuffer: Uint8Array): Promise<GbtResult>
+  /**
+   * # Errors
+   *
+   * Rejects if the thread panics or if the Mutex is poisoned.
+   */
   update(newTxs: Uint8Array, removeTxs: Uint8Array): Promise<GbtResult>
 }
 /**

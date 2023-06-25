@@ -12,8 +12,8 @@ pub struct ThreadTransaction {
 }
 
 impl ThreadTransaction {
-    pub fn batch_from_buffer(buffer: &[u8]) -> Vec<ThreadTransaction> {
-        let mut transactions: Vec<ThreadTransaction> = Vec::new();
+    pub fn batch_from_buffer(buffer: &[u8]) -> Vec<Self> {
+        let mut transactions: Vec<Self> = Vec::new();
         let mut cursor = Cursor::new(buffer);
         let size = cursor.get_u32();
         for _ in 0..size {
@@ -28,7 +28,7 @@ impl ThreadTransaction {
             for _ in 0..input_count {
                 inputs.push(cursor.get_u32());
             }
-            transactions.push(ThreadTransaction {
+            transactions.push(Self {
                 uid,
                 fee,
                 weight,
