@@ -252,8 +252,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { make, update, GbtResult } = nativeBinding
+const { GbtGenerator, GbtResult } = nativeBinding
 
-module.exports.make = make
-module.exports.update = update
+module.exports.GbtGenerator = GbtGenerator
 module.exports.GbtResult = GbtResult
