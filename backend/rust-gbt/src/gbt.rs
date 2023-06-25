@@ -29,7 +29,7 @@ impl PartialEq for TxPriority {
 }
 impl Eq for TxPriority {}
 impl PartialOrd for TxPriority {
-    fn partial_cmp(&self, other: &TxPriority) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.score == other.score {
             Some(self.uid.cmp(&other.uid))
         } else {
@@ -43,11 +43,16 @@ impl Ord for TxPriority {
     }
 }
 
-/*
-* Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
-* (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
-* Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
-*/
+/// Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
+///
+/// See `BlockAssembler` in Bitcoin Core's
+/// [miner.cpp](https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp).
+/// Ported from mempool backend's
+/// [tx-selection-worker.ts](https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts).
+//
+// TODO: Make gbt smaller to fix these lints.
+#[allow(clippy::too_many_lines)]
+#[allow(clippy::cognitive_complexity)]
 pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
     let mut mempool_array: VecDeque<u32> = VecDeque::with_capacity(STARTING_CAPACITY);
@@ -140,10 +145,10 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
 
             let cluster_rate = next_tx
                 .dependency_rate
-                .min(next_tx.ancestor_fee as f64 / (next_tx.ancestor_weight as f64 / 4.0));
+                .min(next_tx.ancestor_fee as f64 / (f64::from(next_tx.ancestor_weight) / 4.0));
 
-            for package_entry in &package {
-                if let Some(tx) = audit_pool.get_mut(&package_entry.0) {
+            for (txid, _, _) in &package {
+                if let Some(tx) = audit_pool.get_mut(txid) {
                     tx.used = true;
                     if tx.effective_fee_per_vsize != cluster_rate {
                         tx.effective_fee_per_vsize = cluster_rate;
@@ -153,12 +158,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                     block_weight += tx.weight;
                     block_sigops += tx.sigops;
                 }
-                update_descendants(
-                    package_entry.0,
-                    &mut audit_pool,
-                    &mut modified,
-                    cluster_rate,
-                );
+                update_descendants(*txid, &mut audit_pool, &mut modified, cluster_rate);
             }
 
             failures = 0;
@@ -205,14 +205,14 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut rates: Vec<Vec<f64>> = Vec::new();
     for (txid, tx) in audit_pool {
         if tx.dirty {
-            rates.push(vec![txid as f64, tx.effective_fee_per_vsize]);
+            rates.push(vec![f64::from(txid), tx.effective_fee_per_vsize]);
         }
     }
 
     Some(GbtResult {
         blocks,
-        rates,
         clusters,
+        rates,
     })
 }
 
@@ -257,12 +257,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     }
 
     if let Some(tx) = audit_pool.get_mut(&txid) {
-        tx.ancestors = ancestors;
-        tx.ancestor_fee = tx.fee + total_fee;
-        tx.ancestor_weight = tx.weight + total_weight;
-        tx.ancestor_sigops = tx.sigops + total_sigops;
-        tx.calc_new_score();
-        tx.relatives_set_flag = true;
+        tx.set_ancestors(ancestors, total_fee, total_weight, total_sigops);
     }
 }
 
@@ -294,16 +289,11 @@ fn update_descendants(
     while let Some(next_txid) = descendant_stack.pop() {
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
-            descendant.ancestors.remove(&root_txid);
-            descendant.ancestor_fee -= root_fee;
-            descendant.ancestor_weight -= root_weight;
-            descendant.ancestor_sigops -= root_sigops;
-            let current_score = descendant.score();
-            descendant.calc_new_score();
-            descendant.dependency_rate = descendant.dependency_rate.min(cluster_rate);
-            descendant.modified = true;
+            let old_score =
+                descendant.remove_root(root_txid, root_fee, root_weight, root_sigops, cluster_rate);
             // update modified priority if score has changed
-            if !descendant.modified || descendant.score() < current_score {
+            // remove_root() always sets modified to true
+            if descendant.score() < old_score {
                 modified.push_decrease(
                     descendant.uid,
                     TxPriority {
@@ -311,7 +301,7 @@ fn update_descendants(
                         score: descendant.score(),
                     },
                 );
-            } else if descendant.score() > current_score {
+            } else if descendant.score() > old_score {
                 modified.push_increase(
                     descendant.uid,
                     TxPriority {

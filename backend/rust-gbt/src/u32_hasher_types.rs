@@ -4,12 +4,12 @@ use std::{
     hash::{BuildHasher, Hasher},
 };
 
-/// This is the only way to create a HashMap with the U32HasherState and capacity
+/// This is the only way to create a `HashMap` with the `U32HasherState` and capacity
 pub fn u32hashmap_with_capacity<V>(capacity: usize) -> HashMap<u32, V, U32HasherState> {
     HashMap::with_capacity_and_hasher(capacity, U32HasherState(()))
 }
 
-/// This is the only way to create a PriorityQueue with the U32HasherState and capacity
+/// This is the only way to create a `PriorityQueue` with the `U32HasherState` and capacity
 pub fn u32priority_queue_with_capacity<V: Ord>(
     capacity: usize,
 ) -> PriorityQueue<u32, V, U32HasherState> {
