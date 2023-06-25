@@ -21,7 +21,8 @@ pub struct AuditTransaction {
     pub ancestor_fee: u64,
     pub ancestor_weight: u32,
     pub ancestor_sigops: u32,
-    pub score: f64,
+    // Safety: Must be private to prevent NaN breaking Ord impl.
+    score: f64,
     pub used: bool,
     pub modified: bool,
     pub dirty: bool,
@@ -53,6 +54,9 @@ impl PartialOrd for AuditTransaction {
 
 impl Ord for AuditTransaction {
     fn cmp(&self, other: &AuditTransaction) -> Ordering {
+        // Safety: The only possible values for score are f64
+        // that are not NaN. This is because outside code can not
+        // freely assign score. Also, calc_new_score guarantees no NaN.
         self.partial_cmp(other).expect("score will never be NaN")
     }
 }
@@ -79,5 +83,21 @@ impl AuditTransaction {
             modified: false,
             dirty: false,
         }
+    }
+
+    #[inline]
+    pub fn score(&self) -> f64 {
+        self.score
+    }
+
+    /// Safety: This function must NEVER set score to NaN.
+    #[inline]
+    pub fn calc_new_score(&mut self) {
+        self.score = (self.ancestor_fee as f64)
+            / (if self.ancestor_weight == 0 {
+                1.0
+            } else {
+                self.ancestor_weight as f64 / 4.0
+            });
     }
 }
