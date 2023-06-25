@@ -4,12 +4,17 @@ use std::{
     collections::{HashMap, HashSet, VecDeque},
 };
 
-use crate::{audit_transaction::AuditTransaction, GbtResult, ThreadTransactionsMap};
+use crate::{
+    audit_transaction::AuditTransaction, utils::U32HasherState, GbtResult, ThreadTransactionsMap,
+    STARTING_CAPACITY,
+};
 
 const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
 const BLOCK_SIGOPS: u32 = 80_000;
 const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const MAX_BLOCKS: usize = 8;
+
+type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
 
 struct TxPriority {
     uid: u32,
@@ -42,8 +47,9 @@ impl Ord for TxPriority {
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
 pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
-    let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
-    let mut mempool_array: VecDeque<u32> = VecDeque::new();
+    let mut audit_pool: AuditPool =
+        HashMap::with_capacity_and_hasher(STARTING_CAPACITY, U32HasherState);
+    let mut mempool_array: VecDeque<u32> = VecDeque::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
 
     // Initialize working structs
@@ -75,7 +81,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut blocks: Vec<Vec<u32>> = Vec::new();
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
     let mut block_sigops: u32 = 0;
-    let mut transactions: Vec<u32> = Vec::new();
+    let mut transactions: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut modified: PriorityQueue<u32, TxPriority> = PriorityQueue::new();
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
@@ -167,7 +173,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                 blocks.push(transactions);
             }
             // reset for the next block
-            transactions = Vec::new();
+            transactions = Vec::with_capacity(STARTING_CAPACITY);
             block_weight = 4000;
             // 'overflow' packages didn't fit in this block, but are valid candidates for the next
             overflow.reverse();
@@ -209,7 +215,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     })
 }
 
-fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
+fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut parents: HashSet<u32> = HashSet::new();
     if let Some(tx) = audit_pool.get(&txid) {
         if tx.relatives_set_flag {
@@ -267,7 +273,7 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
 // iterate over remaining descendants, removing the root as a valid ancestor & updating the ancestor score
 fn update_descendants(
     root_txid: u32,
-    audit_pool: &mut HashMap<u32, AuditTransaction>,
+    audit_pool: &mut AuditPool,
     modified: &mut PriorityQueue<u32, TxPriority>,
     cluster_rate: f64,
 ) {
