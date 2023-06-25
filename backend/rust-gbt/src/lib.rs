@@ -3,11 +3,12 @@ use napi_derive::napi;
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use utils::U32HasherState;
+use u32_hashmap::{u32hashmap_with_capacity, U32HasherState};
 
 mod audit_transaction;
 mod gbt;
 mod thread_transaction;
+mod u32_hashmap;
 mod utils;
 use thread_transaction::ThreadTransaction;
 
@@ -32,10 +33,7 @@ impl GbtGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            thread_transactions: Arc::new(Mutex::new(HashMap::with_capacity_and_hasher(
-                STARTING_CAPACITY,
-                U32HasherState,
-            ))),
+            thread_transactions: Arc::new(Mutex::new(u32hashmap_with_capacity(STARTING_CAPACITY))),
         }
     }
 
