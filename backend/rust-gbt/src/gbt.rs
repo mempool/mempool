@@ -4,9 +4,7 @@ use std::{
     collections::{HashMap, HashSet, VecDeque},
 };
 
-use crate::{
-    audit_transaction::AuditTransaction, thread_transaction::ThreadTransaction, GbtResult,
-};
+use crate::{audit_transaction::AuditTransaction, GbtResult, ThreadTransactionsMap};
 
 const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
 const BLOCK_SIGOPS: u32 = 80_000;
@@ -43,7 +41,7 @@ impl Ord for TxPriority {
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 * Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
 */
-pub fn gbt(mempool: &mut HashMap<u32, ThreadTransaction>) -> Option<GbtResult> {
+pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
     let mut mempool_array: VecDeque<u32> = VecDeque::new();
     let mut clusters: Vec<Vec<u32>> = Vec::new();

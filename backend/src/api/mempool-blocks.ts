@@ -1,4 +1,4 @@
-import * as napiAddon from '../../rust-gbt';
+import { GbtGenerator } from '../../rust-gbt';
 import logger from '../logger';
 import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, AuditTransaction } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
@@ -11,6 +11,7 @@ class MempoolBlocks {
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
   private rustInitialized: boolean = false;
+  private rustGbtGenerator: GbtGenerator = new GbtGenerator();
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
@@ -342,7 +343,7 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
       const { blocks, rates, clusters } = this.convertNapiResultTxids(
-        await napiAddon.make(new Uint8Array(mempoolBuffer)),
+        await this.rustGbtGenerator.make(new Uint8Array(mempoolBuffer)),
       );
       this.rustInitialized = true;
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
@@ -376,7 +377,7 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
       const { blocks, rates, clusters } = this.convertNapiResultTxids(
-        await napiAddon.update(
+        await this.rustGbtGenerator.update(
             new Uint8Array(addedBuffer),
             new Uint8Array(removedBuffer),
         ),
