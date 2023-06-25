@@ -1,4 +1,12 @@
-use napi::bindgen_prelude::*;
+#![warn(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::float_cmp)]
+
+use napi::bindgen_prelude::{Result, Uint8Array};
 use napi_derive::napi;
 
 use std::collections::HashMap;
@@ -13,7 +21,7 @@ mod utils;
 use thread_transaction::ThreadTransaction;
 
 /// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
-/// HashMap doubles capacity when it hits it, so 2048 is a decent tradeoff between
+/// `HashMap` doubles capacity when it hits it, so 2048 is a decent tradeoff between
 /// not wasting too much memory when it's below this, and allowing for less re-allocations
 /// by virtue of starting with such a large capacity.
 ///
@@ -31,12 +39,16 @@ pub struct GbtGenerator {
 impl GbtGenerator {
     #[napi(constructor)]
     #[allow(clippy::new_without_default)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             thread_transactions: Arc::new(Mutex::new(u32hashmap_with_capacity(STARTING_CAPACITY))),
         }
     }
 
+    /// # Errors
+    ///
+    /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
     pub async fn make(&self, mempool_buffer: Uint8Array) -> Result<GbtResult> {
         run_task(Arc::clone(&self.thread_transactions), move |map| {
@@ -47,6 +59,9 @@ impl GbtGenerator {
         .await
     }
 
+    /// # Errors
+    ///
+    /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
     pub async fn update(&self, new_txs: Uint8Array, remove_txs: Uint8Array) -> Result<GbtResult> {
         run_task(Arc::clone(&self.thread_transactions), move |map| {
@@ -77,12 +92,12 @@ pub struct GbtResult {
 /// All on another thread, this runs an arbitrary task in between
 /// taking the lock and running gbt.
 ///
-/// Rather than filling / updating the HashMap on the main thread,
-/// this allows for HashMap modifying tasks to be run before running and returning gbt results.
+/// Rather than filling / updating the `HashMap` on the main thread,
+/// this allows for `HashMap` modifying tasks to be run before running and returning gbt results.
 ///
-/// `thread_transactions` is a cloned Arc of the Mutex for the HashMap state.
+/// `thread_transactions` is a cloned `Arc` of the `Mutex` for the `HashMap` state.
 /// `callback` is a `'static + Send` `FnOnce` closure/function that takes a mutable reference
-/// to the HashMap as the only argument. (A move closure is recommended to meet the bounds)
+/// to the `HashMap` as the only argument. (A move closure is recommended to meet the bounds)
 async fn run_task<F>(
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
     callback: F,
