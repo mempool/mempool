@@ -3,12 +3,12 @@ use napi_derive::napi;
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use u32_hashmap::{u32hashmap_with_capacity, U32HasherState};
+use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
 mod audit_transaction;
 mod gbt;
 mod thread_transaction;
-mod u32_hashmap;
+mod u32_hasher_types;
 mod utils;
 use thread_transaction::ThreadTransaction;
 
