@@ -44,6 +44,8 @@ impl Eq for AuditTransaction {}
 
 impl PartialOrd for AuditTransaction {
     fn partial_cmp(&self, other: &AuditTransaction) -> Option<Ordering> {
+        // If either score is NaN, this is false,
+        // and partial_cmp will return None
         if self.score == other.score {
             Some(self.uid.cmp(&other.uid))
         } else {
