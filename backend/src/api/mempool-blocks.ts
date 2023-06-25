@@ -342,12 +342,7 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
       const { blocks, rates, clusters } = this.convertNapiResultTxids(
-        await new Promise((resolve) => {
-          napiAddon.make(
-            new Uint8Array(mempoolBuffer),
-            resolve,
-          );
-        })
+        await napiAddon.make(new Uint8Array(mempoolBuffer)),
       );
       this.rustInitialized = true;
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
@@ -381,13 +376,10 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
       const { blocks, rates, clusters } = this.convertNapiResultTxids(
-        await new Promise((resolve) => {
-          napiAddon.update(
+        await napiAddon.update(
             new Uint8Array(addedBuffer),
             new Uint8Array(removedBuffer),
-            resolve,
-          );
-        })
+        ),
       );
       this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
