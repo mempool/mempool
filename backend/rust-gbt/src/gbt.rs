@@ -185,7 +185,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                             *overflowed,
                             TxPriority {
                                 uid: *overflowed,
-                                score: overflowed_tx.score,
+                                score: overflowed_tx.score(),
                             },
                         );
                     } else {
@@ -261,12 +261,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
         tx.ancestor_fee = tx.fee + total_fee;
         tx.ancestor_weight = tx.weight + total_weight;
         tx.ancestor_sigops = tx.sigops + total_sigops;
-        tx.score = (tx.ancestor_fee as f64)
-            / (if tx.ancestor_weight == 0 {
-                1.0
-            } else {
-                tx.ancestor_weight as f64 / 4.0
-            });
+        tx.calc_new_score();
         tx.relatives_set_flag = true;
     }
 }
@@ -303,30 +298,25 @@ fn update_descendants(
             descendant.ancestor_fee -= root_fee;
             descendant.ancestor_weight -= root_weight;
             descendant.ancestor_sigops -= root_sigops;
-            let current_score = descendant.score;
-            descendant.score = (descendant.ancestor_fee as f64)
-                / (if descendant.ancestor_weight == 0 {
-                    1.0
-                } else {
-                    descendant.ancestor_weight as f64 / 4.0
-                });
+            let current_score = descendant.score();
+            descendant.calc_new_score();
             descendant.dependency_rate = descendant.dependency_rate.min(cluster_rate);
             descendant.modified = true;
             // update modified priority if score has changed
-            if !descendant.modified || descendant.score < current_score {
+            if !descendant.modified || descendant.score() < current_score {
                 modified.push_decrease(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
-                        score: descendant.score,
+                        score: descendant.score(),
                     },
                 );
-            } else if descendant.score > current_score {
+            } else if descendant.score() > current_score {
                 modified.push_increase(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
-                        score: descendant.score,
+                        score: descendant.score(),
                     },
                 );
             }
