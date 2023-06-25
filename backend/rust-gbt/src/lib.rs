@@ -11,6 +11,14 @@ mod thread_transaction;
 mod utils;
 use thread_transaction::ThreadTransaction;
 
+/// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
+/// HashMap doubles capacity when it hits it, so 2048 is a decent tradeoff between
+/// not wasting too much memory when it's below this, and allowing for less re-allocations
+/// by virtue of starting with such a large capacity.
+///
+/// Note: This doesn't *have* to be a power of 2. (uwu)
+const STARTING_CAPACITY: usize = 2048;
+
 type ThreadTransactionsMap = HashMap<u32, ThreadTransaction, U32HasherState>;
 
 #[napi]
@@ -25,7 +33,7 @@ impl GbtGenerator {
     pub fn new() -> Self {
         Self {
             thread_transactions: Arc::new(Mutex::new(HashMap::with_capacity_and_hasher(
-                2048,
+                STARTING_CAPACITY,
                 U32HasherState,
             ))),
         }
