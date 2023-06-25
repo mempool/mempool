@@ -17,6 +17,7 @@ bytes = "1.4.0"
 once_cell = "1.18.0"
 napi = { version = "2.13.2", features = ["napi8", "tokio_rt"] }
 napi-derive = "2.13.0"
+bytemuck = "1.13.1"
 
 [build-dependencies]
 napi-build = "2.0.1"

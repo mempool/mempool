@@ -31,16 +31,16 @@ pub struct U32Hasher(u32);
 impl Hasher for U32Hasher {
     fn finish(&self) -> u64 {
         // Safety: Two u32s next to each other will make a u64
-        unsafe { core::mem::transmute::<(u32, u32), u64>((self.0, 0_u32)) }
+        bytemuck::cast([self.0, 0])
     }
 
     fn write(&mut self, bytes: &[u8]) {
         // Assert in debug builds (testing too) that only 4 byte keys (u32, i32, f32, etc.) run
         debug_assert!(bytes.len() == 4);
-        // Safety: We know that the size of the key is at least 4 bytes
+        // Safety: We know that the size of the key is 4 bytes
         // We also know that the only way to get an instance of HashMap using this "hasher"
-        // is through the public functions in this module which set the key to u32.
-        self.0 = unsafe { *bytes.as_ptr().cast::<u32>() };
+        // is through the public functions in this module which set the key type to u32.
+        self.0 = *bytemuck::from_bytes(bytes);
     }
 }
 
