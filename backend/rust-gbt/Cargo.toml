@@ -3,7 +3,7 @@ name = "gbt"
 version = "0.1.0"
 description = "An inefficient re-implementation of the getBlockTemplate algorithm in Rust"
 authors = ["mononaut"]
-edition = "2018"
+edition = "2021"
 exclude = ["index.node"]
 
 [lib]
@@ -14,9 +14,9 @@ crate-type = ["cdylib"]
 [dependencies]
 priority-queue = "1.3.2"
 bytes = "1.4.0"
-once_cell = "1.18.0"
+napi = { version = "2.13.2", features = ["napi8", "tokio_rt"] }
+napi-derive = "2.13.0"
+bytemuck = "1.13.1"
 
-[dependencies.neon]
-version = "0.10"
-default-features = false
-features = ["napi-6","channel-api"]
+[build-dependencies]
+napi-build = "2.0.1"

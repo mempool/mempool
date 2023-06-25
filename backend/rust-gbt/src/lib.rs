@@ -1,127 +1,119 @@
-use neon::{prelude::*, types::buffer::TypedArray};
-use once_cell::sync::Lazy;
+#![warn(clippy::all)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::float_cmp)]
+
+use napi::bindgen_prelude::{Result, Uint8Array};
+use napi_derive::napi;
+
 use std::collections::HashMap;
-use std::ops::DerefMut;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
 mod audit_transaction;
 mod gbt;
 mod thread_transaction;
+mod u32_hasher_types;
 mod utils;
 use thread_transaction::ThreadTransaction;
 
-static THREAD_TRANSACTIONS: Lazy<Mutex<HashMap<u32, ThreadTransaction>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
+/// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
+/// `HashMap` doubles capacity when it hits it, so 2048 is a decent tradeoff between
+/// not wasting too much memory when it's below this, and allowing for less re-allocations
+/// by virtue of starting with such a large capacity.
+///
+/// Note: This doesn't *have* to be a power of 2. (uwu)
+const STARTING_CAPACITY: usize = 2048;
 
-fn make(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let mempool_arg = cx
-        .argument::<JsArrayBuffer>(0)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    let channel = cx.channel();
+type ThreadTransactionsMap = HashMap<u32, ThreadTransaction, U32HasherState>;
 
-    let buffer = mempool_arg.as_slice(&mut cx);
-
-    let mut map = HashMap::new();
-    for tx in ThreadTransaction::batch_from_buffer(buffer) {
-        map.insert(tx.uid, tx);
-    }
-
-    let mut global_map = THREAD_TRANSACTIONS.lock().unwrap();
-    *global_map = map;
-
-    run_in_thread(channel, callback);
-
-    Ok(cx.undefined())
+#[napi]
+pub struct GbtGenerator {
+    thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
 }
 
-fn update(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let new_txs_arg = cx
-        .argument::<JsArrayBuffer>(0)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let remove_txs_arg = cx
-        .argument::<JsArrayBuffer>(1)?
-        .root(&mut cx)
-        .into_inner(&mut cx);
-    let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
-    let channel = cx.channel();
-
-    let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-    let new_tx_buffer = new_txs_arg.as_slice(&mut cx);
-    for tx in ThreadTransaction::batch_from_buffer(new_tx_buffer) {
-        map.insert(tx.uid, tx);
+#[napi]
+impl GbtGenerator {
+    #[napi(constructor)]
+    #[allow(clippy::new_without_default)]
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
+            thread_transactions: Arc::new(Mutex::new(u32hashmap_with_capacity(STARTING_CAPACITY))),
+        }
     }
 
-    let remove_tx_buffer = remove_txs_arg.as_slice(&mut cx);
-    for txid in &utils::txids_from_buffer(remove_tx_buffer) {
-        map.remove(txid);
+    /// # Errors
+    ///
+    /// Rejects if the thread panics or if the Mutex is poisoned.
+    #[napi]
+    pub async fn make(&self, mempool_buffer: Uint8Array) -> Result<GbtResult> {
+        run_task(Arc::clone(&self.thread_transactions), move |map| {
+            for tx in ThreadTransaction::batch_from_buffer(&mempool_buffer) {
+                map.insert(tx.uid, tx);
+            }
+        })
+        .await
     }
-    drop(map);
 
-    run_in_thread(channel, callback);
-
-    Ok(cx.undefined())
+    /// # Errors
+    ///
+    /// Rejects if the thread panics or if the Mutex is poisoned.
+    #[napi]
+    pub async fn update(&self, new_txs: Uint8Array, remove_txs: Uint8Array) -> Result<GbtResult> {
+        run_task(Arc::clone(&self.thread_transactions), move |map| {
+            for tx in ThreadTransaction::batch_from_buffer(&new_txs) {
+                map.insert(tx.uid, tx);
+            }
+            for txid in &utils::txids_from_buffer(&remove_txs) {
+                map.remove(txid);
+            }
+        })
+        .await
+    }
 }
 
-fn run_in_thread(channel: Channel, callback: Root<JsFunction>) {
-    std::thread::spawn(move || {
-        let mut map = THREAD_TRANSACTIONS.lock().unwrap();
-        let (blocks, rates, clusters) = gbt::gbt(map.deref_mut()).unwrap();
-        drop(map);
+/// The result from calling the gbt function.
+///
+/// This tuple contains the following:
+///   blocks: A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
+/// clusters: A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
+///    rates: A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
+#[napi(constructor)]
+pub struct GbtResult {
+    pub blocks: Vec<Vec<u32>>,
+    pub clusters: Vec<Vec<u32>>,
+    pub rates: Vec<Vec<f64>>, // Tuples not supported. u32 fits inside f64
+}
 
-        channel.send(move |mut cx| {
-            let result = JsObject::new(&mut cx);
-
-            let js_blocks = JsArray::new(&mut cx, blocks.len() as u32);
-            for (i, block) in blocks.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, block.len() as u32);
-                for (j, uid) in block.iter().enumerate() {
-                    let v = cx.number(*uid);
-                    inner.set(&mut cx, j as u32, v)?;
-                }
-                js_blocks.set(&mut cx, i as u32, inner)?;
-            }
-
-            let js_clusters = JsArray::new(&mut cx, clusters.len() as u32);
-            for (i, cluster) in clusters.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, cluster.len() as u32);
-                for (j, uid) in cluster.iter().enumerate() {
-                    let v = cx.number(*uid);
-                    inner.set(&mut cx, j as u32, v)?;
-                }
-                js_clusters.set(&mut cx, i as u32, inner)?;
-            }
-
-            let js_rates = JsArray::new(&mut cx, rates.len() as u32);
-            for (i, (uid, rate)) in rates.iter().enumerate() {
-                let inner = JsArray::new(&mut cx, 2);
-                let js_uid = cx.number(*uid);
-                let js_rate = cx.number(*rate);
-                inner.set(&mut cx, 0, js_uid)?;
-                inner.set(&mut cx, 1, js_rate)?;
-                js_rates.set(&mut cx, i as u32, inner)?;
-            }
-
-            result.set(&mut cx, "blocks", js_blocks)?;
-            result.set(&mut cx, "clusters", js_clusters)?;
-            result.set(&mut cx, "rates", js_rates)?;
-
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = vec![result.upcast()];
-
-            callback.call(&mut cx, this, args)?;
-
-            Ok(())
-        });
+/// All on another thread, this runs an arbitrary task in between
+/// taking the lock and running gbt.
+///
+/// Rather than filling / updating the `HashMap` on the main thread,
+/// this allows for `HashMap` modifying tasks to be run before running and returning gbt results.
+///
+/// `thread_transactions` is a cloned `Arc` of the `Mutex` for the `HashMap` state.
+/// `callback` is a `'static + Send` `FnOnce` closure/function that takes a mutable reference
+/// to the `HashMap` as the only argument. (A move closure is recommended to meet the bounds)
+async fn run_task<F>(
+    thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
+    callback: F,
+) -> Result<GbtResult>
+where
+    F: FnOnce(&mut ThreadTransactionsMap) + Send + 'static,
+{
+    let handle = napi::tokio::task::spawn_blocking(move || {
+        let mut map = thread_transactions
+            .lock()
+            .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
+        callback(&mut map);
+        gbt::gbt(&mut map).ok_or_else(|| napi::Error::from_reason("gbt failed"))
     });
-}
 
-#[neon::main]
-fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("make", make)?;
-    cx.export_function("update", update)?;
-    Ok(())
+    handle
+        .await
+        .map_err(|_| napi::Error::from_reason("thread panicked"))?
 }

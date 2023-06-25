@@ -1,15 +1,22 @@
 use priority_queue::PriorityQueue;
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet, VecDeque};
-use std::f64::INFINITY;
+use std::{
+    cmp::Ordering,
+    collections::{HashMap, HashSet, VecDeque},
+};
 
-use crate::audit_transaction::AuditTransaction;
-use crate::thread_transaction::ThreadTransaction;
+use crate::{
+    audit_transaction::AuditTransaction,
+    u32_hasher_types::{u32hashmap_with_capacity, u32priority_queue_with_capacity, U32HasherState},
+    GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
+};
 
 const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
 const BLOCK_SIGOPS: u32 = 80_000;
 const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const MAX_BLOCKS: usize = 8;
+
+type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
+type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 
 struct TxPriority {
     uid: u32,
@@ -22,54 +29,39 @@ impl PartialEq for TxPriority {
 }
 impl Eq for TxPriority {}
 impl PartialOrd for TxPriority {
-    fn partial_cmp(&self, other: &TxPriority) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.score == other.score {
-            return Some(self.uid.cmp(&other.uid));
+            Some(self.uid.cmp(&other.uid))
         } else {
-            return other.score.partial_cmp(&self.score);
+            other.score.partial_cmp(&self.score)
         }
     }
 }
 impl Ord for TxPriority {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
+        self.partial_cmp(other).expect("score will never be NaN")
     }
 }
 
-/*
-* Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
-* (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
-* Ported from https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts
-*/
-pub fn gbt(
-    mempool: &mut HashMap<u32, ThreadTransaction>,
-) -> Option<(Vec<Vec<u32>>, Vec<(u32, f64)>, Vec<Vec<u32>>)> {
-    let mut audit_pool: HashMap<u32, AuditTransaction> = HashMap::new();
-    let mut mempool_array: VecDeque<u32> = VecDeque::new();
-    let mut cluster_array: Vec<Vec<u32>> = Vec::new();
+/// Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
+///
+/// See `BlockAssembler` in Bitcoin Core's
+/// [miner.cpp](https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp).
+/// Ported from mempool backend's
+/// [tx-selection-worker.ts](https://github.com/mempool/mempool/blob/master/backend/src/api/tx-selection-worker.ts).
+//
+// TODO: Make gbt smaller to fix these lints.
+#[allow(clippy::too_many_lines)]
+#[allow(clippy::cognitive_complexity)]
+pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
+    let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
+    let mut mempool_array: VecDeque<u32> = VecDeque::with_capacity(STARTING_CAPACITY);
+    let mut clusters: Vec<Vec<u32>> = Vec::new();
 
     // Initialize working structs
     for (uid, tx) in mempool {
-        let audit_tx = AuditTransaction {
-            uid: tx.uid,
-            fee: tx.fee,
-            weight: tx.weight,
-            sigops: tx.sigops,
-            fee_per_vsize: tx.fee_per_vsize,
-            effective_fee_per_vsize: tx.effective_fee_per_vsize,
-            dependency_rate: INFINITY,
-            inputs: tx.inputs.clone(),
-            relatives_set_flag: false,
-            ancestors: HashSet::new(),
-            children: HashSet::new(),
-            ancestor_fee: tx.fee,
-            ancestor_weight: tx.weight,
-            ancestor_sigops: tx.sigops,
-            score: 0.0,
-            used: false,
-            modified: false,
-            dirty: false,
-        };
+        let audit_tx = AuditTransaction::from_thread_transaction(tx);
+        // Safety: audit_pool and mempool_array must always contain the same transactions
         audit_pool.insert(audit_tx.uid, audit_tx);
         mempool_array.push_back(*uid);
     }
@@ -81,8 +73,12 @@ pub fn gbt(
 
     // Sort by descending ancestor score
     mempool_array.make_contiguous().sort_unstable_by(|a, b| {
-        let a_tx = audit_pool.get(a).unwrap();
-        let b_tx = audit_pool.get(b).unwrap();
+        let a_tx = audit_pool
+            .get(a)
+            .expect("audit_pool contains exact same txes as mempool_array");
+        let b_tx = audit_pool
+            .get(b)
+            .expect("audit_pool contains exact same txes as mempool_array");
         b_tx.cmp(a_tx)
     });
 
@@ -91,22 +87,22 @@ pub fn gbt(
     let mut blocks: Vec<Vec<u32>> = Vec::new();
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
     let mut block_sigops: u32 = 0;
-    let mut transactions: Vec<u32> = Vec::new();
-    let mut modified: PriorityQueue<u32, TxPriority> = PriorityQueue::new();
+    let mut transactions: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
+    let mut modified: ModifiedQueue = u32priority_queue_with_capacity(STARTING_CAPACITY);
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
-    while mempool_array.len() > 0 || !modified.is_empty() {
+    while !mempool_array.is_empty() || !modified.is_empty() {
         let next_txid: u32;
         if modified.is_empty() {
             next_txid = mempool_array.pop_front()?;
-        } else if mempool_array.len() == 0 {
+        } else if mempool_array.is_empty() {
             next_txid = modified.pop()?.0;
         } else {
             let next_array_txid = mempool_array.front()?;
             let next_modified_txid = modified.peek()?.0;
             let array_tx: &AuditTransaction = audit_pool.get(next_array_txid)?;
             let modified_tx: &AuditTransaction = audit_pool.get(next_modified_txid)?;
-            match array_tx.cmp(&modified_tx) {
+            match array_tx.cmp(modified_tx) {
                 std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
                     next_txid = mempool_array.pop_front()?;
                 }
@@ -132,7 +128,7 @@ pub fn gbt(
         } else {
             let mut package: Vec<(u32, usize, u32)> = Vec::new();
             let mut cluster: Vec<u32> = Vec::new();
-            let is_cluster: bool = next_tx.ancestors.len() > 0;
+            let is_cluster: bool = !next_tx.ancestors.is_empty();
             package.push((next_txid, next_tx.ancestors.len(), next_tx.weight));
             cluster.push(next_txid);
             for ancestor_id in &next_tx.ancestors {
@@ -144,15 +140,15 @@ pub fn gbt(
             package.sort_unstable_by_key(|a| 0 - a.1);
 
             if is_cluster {
-                cluster_array.push(cluster);
+                clusters.push(cluster);
             }
 
             let cluster_rate = next_tx
                 .dependency_rate
-                .min(next_tx.ancestor_fee as f64 / (next_tx.ancestor_weight as f64 / 4.0));
+                .min(next_tx.ancestor_fee as f64 / (f64::from(next_tx.ancestor_weight) / 4.0));
 
-            for package_entry in &package {
-                if let Some(tx) = audit_pool.get_mut(&package_entry.0) {
+            for (txid, _, _) in &package {
+                if let Some(tx) = audit_pool.get_mut(txid) {
                     tx.used = true;
                     if tx.effective_fee_per_vsize != cluster_rate {
                         tx.effective_fee_per_vsize = cluster_rate;
@@ -162,12 +158,7 @@ pub fn gbt(
                     block_weight += tx.weight;
                     block_sigops += tx.sigops;
                 }
-                update_descendants(
-                    package_entry.0,
-                    &mut audit_pool,
-                    &mut modified,
-                    cluster_rate,
-                );
+                update_descendants(*txid, &mut audit_pool, &mut modified, cluster_rate);
             }
 
             failures = 0;
@@ -176,14 +167,14 @@ pub fn gbt(
         // this block is full
         let exceeded_package_tries =
             failures > 1000 && block_weight > (BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
-        let queue_is_empty = mempool_array.len() == 0 && modified.is_empty();
+        let queue_is_empty = mempool_array.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
-            if transactions.len() > 0 {
+            if !transactions.is_empty() {
                 blocks.push(transactions);
             }
             // reset for the next block
-            transactions = Vec::new();
+            transactions = Vec::with_capacity(STARTING_CAPACITY);
             block_weight = 4000;
             // 'overflow' packages didn't fit in this block, but are valid candidates for the next
             overflow.reverse();
@@ -194,7 +185,7 @@ pub fn gbt(
                             *overflowed,
                             TxPriority {
                                 uid: *overflowed,
-                                score: overflowed_tx.score,
+                                score: overflowed_tx.score(),
                             },
                         );
                     } else {
@@ -206,22 +197,26 @@ pub fn gbt(
         }
     }
     // add the final unbounded block if it contains any transactions
-    if transactions.len() > 0 {
+    if !transactions.is_empty() {
         blocks.push(transactions);
     }
 
     // make a list of dirty transactions and their new rates
-    let mut rates: Vec<(u32, f64)> = Vec::new();
+    let mut rates: Vec<Vec<f64>> = Vec::new();
     for (txid, tx) in audit_pool {
         if tx.dirty {
-            rates.push((txid, tx.effective_fee_per_vsize));
+            rates.push(vec![f64::from(txid), tx.effective_fee_per_vsize]);
         }
     }
 
-    Some((blocks, rates, cluster_array))
+    Some(GbtResult {
+        blocks,
+        clusters,
+        rates,
+    })
 }
 
-fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
+fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut parents: HashSet<u32> = HashSet::new();
     if let Some(tx) = audit_pool.get(&txid) {
         if tx.relatives_set_flag {
@@ -238,16 +233,13 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
     for parent_id in &parents {
         set_relatives(*parent_id, audit_pool);
 
-        match audit_pool.get_mut(&parent_id) {
-            Some(parent) => {
-                ancestors.insert(*parent_id);
-                parent.children.insert(txid);
-                for ancestor in &parent.ancestors {
-                    ancestors.insert(*ancestor);
-                }
+        if let Some(parent) = audit_pool.get_mut(parent_id) {
+            // Safety: ancestors must always contain only txes in audit_pool
+            ancestors.insert(*parent_id);
+            parent.children.insert(txid);
+            for ancestor in &parent.ancestors {
+                ancestors.insert(*ancestor);
             }
-
-            None => {}
         }
     }
 
@@ -256,32 +248,24 @@ fn set_relatives(txid: u32, audit_pool: &mut HashMap<u32, AuditTransaction>) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let ancestor = audit_pool.get(&ancestor_id).unwrap();
+        let ancestor = audit_pool
+            .get(ancestor_id)
+            .expect("audit_pool contains all ancestors");
         total_fee += ancestor.fee;
         total_weight += ancestor.weight;
         total_sigops += ancestor.sigops;
     }
 
     if let Some(tx) = audit_pool.get_mut(&txid) {
-        tx.ancestors = ancestors;
-        tx.ancestor_fee = tx.fee + total_fee;
-        tx.ancestor_weight = tx.weight + total_weight;
-        tx.ancestor_sigops = tx.sigops + total_sigops;
-        tx.score = (tx.ancestor_fee as f64)
-            / (if tx.ancestor_weight != 0 {
-                tx.ancestor_weight as f64 / 4.0
-            } else {
-                1.0
-            });
-        tx.relatives_set_flag = true;
+        tx.set_ancestors(ancestors, total_fee, total_weight, total_sigops);
     }
 }
 
 // iterate over remaining descendants, removing the root as a valid ancestor & updating the ancestor score
 fn update_descendants(
     root_txid: u32,
-    audit_pool: &mut HashMap<u32, AuditTransaction>,
-    modified: &mut PriorityQueue<u32, TxPriority>,
+    audit_pool: &mut AuditPool,
+    modified: &mut ModifiedQueue,
     cluster_rate: f64,
 ) {
     let mut visited: HashSet<u32> = HashSet::new();
@@ -302,38 +286,27 @@ fn update_descendants(
     } else {
         return;
     }
-    while descendant_stack.len() > 0 {
-        let next_txid: u32 = descendant_stack.pop().unwrap();
+    while let Some(next_txid) = descendant_stack.pop() {
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
-            descendant.ancestors.remove(&root_txid);
-            descendant.ancestor_fee -= root_fee;
-            descendant.ancestor_weight -= root_weight;
-            descendant.ancestor_sigops -= root_sigops;
-            let current_score = descendant.score;
-            descendant.score = (descendant.ancestor_fee as f64)
-                / (if descendant.ancestor_weight != 0 {
-                    descendant.ancestor_weight as f64 / 4.0
-                } else {
-                    1.0
-                });
-            descendant.dependency_rate = descendant.dependency_rate.min(cluster_rate);
-            descendant.modified = true;
+            let old_score =
+                descendant.remove_root(root_txid, root_fee, root_weight, root_sigops, cluster_rate);
             // update modified priority if score has changed
-            if !descendant.modified || descendant.score < current_score {
+            // remove_root() always sets modified to true
+            if descendant.score() < old_score {
                 modified.push_decrease(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
-                        score: descendant.score,
+                        score: descendant.score(),
                     },
                 );
-            } else if descendant.score > current_score {
+            } else if descendant.score() > old_score {
                 modified.push_increase(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
-                        score: descendant.score,
+                        score: descendant.score(),
                     },
                 );
             }

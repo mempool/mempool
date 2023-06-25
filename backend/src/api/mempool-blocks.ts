@@ -1,3 +1,4 @@
+import { GbtGenerator } from '../../rust-gbt';
 import logger from '../logger';
 import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, AuditTransaction } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
@@ -5,13 +6,12 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 
-const neonAddon = require('../../rust-gbt');
-
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
   private rustInitialized: boolean = false;
+  private rustGbtGenerator: GbtGenerator = new GbtGenerator();
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
@@ -342,7 +342,9 @@ class MempoolBlocks {
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
-      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.make(mempoolBuffer, resolve); }));
+      const { blocks, rates, clusters } = this.convertNapiResultTxids(
+        await this.rustGbtGenerator.make(new Uint8Array(mempoolBuffer)),
+      );
       this.rustInitialized = true;
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
@@ -374,7 +376,12 @@ class MempoolBlocks {
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
-      const { blocks, rates, clusters } = this.convertNeonResultTxids(await new Promise((resolve) => { neonAddon.update(addedBuffer, removedBuffer, resolve); }));
+      const { blocks, rates, clusters } = this.convertNapiResultTxids(
+        await this.rustGbtGenerator.update(
+            new Uint8Array(addedBuffer),
+            new Uint8Array(removedBuffer),
+        ),
+      );
       this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
@@ -563,7 +570,7 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private convertNeonResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: number[][], clusters: number[][]})
+  private convertNapiResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: number[][], clusters: number[][]})
     : { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
     const rateMap = new Map<number, number>();
     const clusterMap = new Map<number, number[]>();

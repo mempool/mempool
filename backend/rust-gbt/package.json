@@ -2,16 +2,32 @@
   "name": "gbt",
   "version": "0.1.0",
   "description": "An inefficient re-implementation of the getBlockTemplate algorithm in Rust",
-  "main": "index.node",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
-    "build-debug": "npm run build --",
-    "build-release": "npm run build -- --release",
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform",
+    "build-debug": "npm run build",
+    "build-release": "npm run build -- --release --strip",
     "install": "npm run build-release",
+    "prepublishOnly": "napi prepublish -t npm",
     "test": "cargo test"
   },
   "author": "mononaut",
+  "napi": {
+    "name": "gbt",
+    "triples": {
+      "defaults": false,
+      "additional": [
+        "x86_64-unknown-linux-gnu",
+        "x86_64-unknown-freebsd"
+      ]
+    }
+  },
   "devDependencies": {
-    "cargo-cp-artifact": "^0.1"
+    "@napi-rs/cli": "^2.16.1"
+  },
+  "engines": {
+    "node": ">= 12"
   }
 }
