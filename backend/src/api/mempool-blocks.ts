@@ -327,13 +327,21 @@ class MempoolBlocks {
     }
   }
 
-  public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
+  private resetRustGbt(): void {
+    this.rustInitialized = false;
+    this.rustGbtGenerator = new GbtGenerator();
+  }
+
+  private async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): Promise<MempoolBlockWithTransactions[]> {
     const start = Date.now();
 
     // reset mempool short ids
-    this.resetUids();
+    if (saveResults) {
+      this.resetUids();
+    }
+    // set missing short ids
     for (const tx of Object.values(newMempool)) {
-      this.setUid(tx);
+      this.setUid(tx, !saveResults);
     }
 
     // serialize relevant mempool data into an ArrayBuffer
@@ -341,25 +349,34 @@ class MempoolBlocks {
     const mempoolBuffer = this.mempoolToArrayBuffer(Object.values(newMempool), newMempool);
 
     // run the block construction algorithm in a separate thread, and wait for a result
+    const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
       const { blocks, rates, clusters } = this.convertNapiResultTxids(
-        await this.rustGbtGenerator.make(new Uint8Array(mempoolBuffer)),
+        await rustGbt.make(new Uint8Array(mempoolBuffer)),
       );
-      this.rustInitialized = true;
+      if (saveResults) {
+        this.rustInitialized = true;
+      }
       const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
     } catch (e) {
-      this.rustInitialized = false;
       logger.err('RUST makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+      if (saveResults) {
+        this.resetRustGbt();
+      }
     }
     return this.mempoolBlocks;
   }
 
-  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], saveResults: boolean = false): Promise<void> {
+  public async $oneOffRustBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }): Promise<MempoolBlockWithTransactions[]> {
+    return this.$rustMakeBlockTemplates(newMempool, false);
+  }
+
+  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
     if (!this.rustInitialized) {
       // need to reset the worker
-      await this.$rustMakeBlockTemplates(newMempool, saveResults);
+      await this.$rustMakeBlockTemplates(newMempool, true);
       return;
     }
 
@@ -382,11 +399,11 @@ class MempoolBlocks {
             new Uint8Array(removedBuffer),
         ),
       );
-      this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      this.processBlockTemplates(newMempool, blocks, rates, clusters, true);
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
-      this.rustInitialized = false;
       logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+      this.resetRustGbt();
     }
   }
 
