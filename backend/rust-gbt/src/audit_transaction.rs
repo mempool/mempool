@@ -1,4 +1,7 @@
-use crate::thread_transaction::ThreadTransaction;
+use crate::{
+    thread_transaction::ThreadTransaction,
+    u32_hasher_types::{u32hashset_new, U32HasherState},
+};
 use std::{
     cmp::Ordering,
     collections::HashSet,
@@ -17,8 +20,8 @@ pub struct AuditTransaction {
     pub dependency_rate: f64,
     pub inputs: Vec<u32>,
     pub relatives_set_flag: bool,
-    pub ancestors: HashSet<u32>,
-    pub children: HashSet<u32>,
+    pub ancestors: HashSet<u32, U32HasherState>,
+    pub children: HashSet<u32, U32HasherState>,
     pub ancestor_fee: u64,
     pub ancestor_weight: u32,
     pub ancestor_sigops: u32,
@@ -76,8 +79,8 @@ impl AuditTransaction {
             dependency_rate: f64::INFINITY,
             inputs: tx.inputs.clone(),
             relatives_set_flag: false,
-            ancestors: HashSet::new(),
-            children: HashSet::new(),
+            ancestors: u32hashset_new(),
+            children: u32hashset_new(),
             ancestor_fee: tx.fee,
             ancestor_weight: tx.weight,
             ancestor_sigops: tx.sigops,
@@ -107,7 +110,7 @@ impl AuditTransaction {
     #[inline]
     pub fn set_ancestors(
         &mut self,
-        ancestors: HashSet<u32>,
+        ancestors: HashSet<u32, U32HasherState>,
         total_fee: u64,
         total_weight: u32,
         total_sigops: u32,
