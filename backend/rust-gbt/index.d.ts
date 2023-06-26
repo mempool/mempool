@@ -22,13 +22,15 @@ export class GbtGenerator {
  * The result from calling the gbt function.
  *
  * This tuple contains the following:
- *   blocks: A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
- * clusters: A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
- *    rates: A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
+ *        blocks: A 2D Vector of transaction IDs (u32), the inner Vecs each represent a block.
+ * block_weights: A Vector of total weights per block.
+ *      clusters: A 2D Vector of transaction IDs representing clusters of dependent mempool transactions
+ *         rates: A Vector of tuples containing transaction IDs (u32) and effective fee per vsize (f64)
  */
 export class GbtResult {
   blocks: Array<Array<number>>
+  blockWeights: Array<number>
   clusters: Array<Array<number>>
   rates: Array<Array<number>>
-  constructor(blocks: Array<Array<number>>, clusters: Array<Array<number>>, rates: Array<Array<number>>)
+  constructor(blocks: Array<Array<number>>, blockWeights: Array<number>, clusters: Array<Array<number>>, rates: Array<Array<number>>)
 }

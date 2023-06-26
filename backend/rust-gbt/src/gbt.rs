@@ -62,6 +62,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
     let mut mempool_stack: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
+    let mut block_weights: Vec<u32> = Vec::new();
 
     info!("Initializing working structs");
     for (uid, tx) in mempool {
@@ -192,6 +193,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             // finalize this block
             if !transactions.is_empty() {
                 blocks.push(transactions);
+                block_weights.push(block_weight);
             }
             // reset for the next block
             transactions = Vec::with_capacity(STARTING_CAPACITY);
@@ -221,6 +223,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     info!("add the final unbounded block if it contains any transactions");
     if !transactions.is_empty() {
         blocks.push(transactions);
+        block_weights.push(block_weight);
     }
 
     info!("make a list of dirty transactions and their new rates");
@@ -238,6 +241,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
 
     GbtResult {
         blocks,
+        block_weights,
         clusters,
         rates,
     }
