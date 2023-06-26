@@ -31,6 +31,7 @@ interface IConfig {
     AUDIT: boolean;
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
+    RUST_GBT: boolean;
     CPFP_INDEXING: boolean;
     MAX_BLOCKS_BULK_QUERY: number;
     DISK_CACHE_BLOCK_INTERVAL: number;
@@ -160,6 +161,7 @@ const defaults: IConfig = {
     'AUDIT': false,
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,
+    'RUST_GBT': false,
     'CPFP_INDEXING': false,
     'MAX_BLOCKS_BULK_QUERY': 0,
     'DISK_CACHE_BLOCK_INTERVAL': 6,
