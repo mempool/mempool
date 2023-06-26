@@ -1,6 +1,6 @@
 use priority_queue::PriorityQueue;
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     hash::{BuildHasher, Hasher},
 };
 
@@ -16,7 +16,13 @@ pub fn u32priority_queue_with_capacity<V: Ord>(
     PriorityQueue::with_capacity_and_hasher(capacity, U32HasherState(()))
 }
 
+/// This is the only way to create a `HashSet` with the `U32HasherState`
+pub fn u32hashset_new() -> HashSet<u32, U32HasherState> {
+    HashSet::with_hasher(U32HasherState(()))
+}
+
 /// A private unit type is contained so no one can make an instance of it.
+#[derive(Clone)]
 pub struct U32HasherState(());
 
 impl BuildHasher for U32HasherState {
