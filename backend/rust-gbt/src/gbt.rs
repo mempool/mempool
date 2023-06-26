@@ -135,28 +135,23 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
             overflow.push(next_txid);
             failures += 1;
         } else {
-            let mut package: Vec<(u32, usize, u32)> = Vec::new();
+            let mut package: Vec<(u32, usize)> = Vec::new();
             let mut cluster: Vec<u32> = Vec::new();
             let is_cluster: bool = !next_tx.ancestors.is_empty();
-            package.push((next_txid, next_tx.ancestors.len(), next_tx.weight));
-            cluster.push(next_txid);
             for ancestor_id in &next_tx.ancestors {
                 if let Some(ancestor) = audit_pool.get(ancestor_id) {
-                    package.push((*ancestor_id, ancestor.ancestors.len(), ancestor.weight));
-                    cluster.push(*ancestor_id);
+                    package.push((*ancestor_id, ancestor.ancestors.len()));
                 }
             }
-            package.sort_unstable_by_key(|a| 0 - a.1);
-
-            if is_cluster {
-                clusters.push(cluster);
-            }
+            package.sort_unstable_by_key(|a| a.1);
+            package.push((next_txid, next_tx.ancestors.len()));
 
             let cluster_rate = next_tx
                 .dependency_rate
                 .min(next_tx.ancestor_fee as f64 / (f64::from(next_tx.ancestor_weight) / 4.0));
 
-            for (txid, _, _) in &package {
+            for (txid, _) in &package {
+                cluster.push(*txid);
                 if let Some(tx) = audit_pool.get_mut(txid) {
                     tx.used = true;
                     if tx.effective_fee_per_vsize != cluster_rate {
@@ -168,6 +163,10 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                     block_sigops += tx.sigops;
                 }
                 update_descendants(*txid, &mut audit_pool, &mut modified, cluster_rate);
+            }
+
+            if is_cluster {
+                clusters.push(cluster);
             }
 
             failures = 0;
@@ -185,6 +184,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
             // reset for the next block
             transactions = Vec::with_capacity(STARTING_CAPACITY);
             block_weight = 4000;
+            block_sigops = 0;
+            failures = 0;
             // 'overflow' packages didn't fit in this block, but are valid candidates for the next
             overflow.reverse();
             for overflowed in &overflow {
