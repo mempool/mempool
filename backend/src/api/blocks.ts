@@ -34,7 +34,7 @@ class Blocks {
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
-  private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>)[] = [];
+  private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
 
   private mainLoopTimeout: number = 120000;
 
@@ -60,7 +60,7 @@ class Blocks {
     this.newBlockCallbacks.push(fn);
   }
 
-  public setNewAsyncBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => Promise<void>) {
+  public setNewAsyncBlockCallback(fn: (block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>) {
     this.newAsyncBlockCallbacks.push(fn);
   }
 
@@ -635,7 +635,7 @@ class Blocks {
       const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
-      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true);
+      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true) as MempoolTransactionExtended[];
       if (config.MEMPOOL.BACKEND !== 'esplora') {
         // fill in missing transaction fee data from verboseBlock
         for (let i = 0; i < transactions.length; i++) {
