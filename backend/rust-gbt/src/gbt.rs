@@ -6,7 +6,9 @@ use std::{
 
 use crate::{
     audit_transaction::AuditTransaction,
-    u32_hasher_types::{u32hashmap_with_capacity, u32priority_queue_with_capacity, U32HasherState},
+    u32_hasher_types::{
+        u32hashmap_with_capacity, u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
+    },
     GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
 };
 
@@ -217,7 +219,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
 }
 
 fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
-    let mut parents: HashSet<u32> = HashSet::new();
+    let mut parents: HashSet<u32, U32HasherState> = u32hashset_new();
     if let Some(tx) = audit_pool.get(&txid) {
         if tx.relatives_set_flag {
             return;
@@ -229,7 +231,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
         return;
     }
 
-    let mut ancestors: HashSet<u32> = HashSet::new();
+    let mut ancestors: HashSet<u32, U32HasherState> = u32hashset_new();
     for parent_id in &parents {
         set_relatives(*parent_id, audit_pool);
 
@@ -268,7 +270,7 @@ fn update_descendants(
     modified: &mut ModifiedQueue,
     cluster_rate: f64,
 ) {
-    let mut visited: HashSet<u32> = HashSet::new();
+    let mut visited: HashSet<u32, U32HasherState> = u32hashset_new();
     let mut descendant_stack: Vec<u32> = Vec::new();
     let root_fee: u64;
     let root_weight: u32;
