@@ -1,6 +1,6 @@
 import { GbtGenerator } from '../../rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, AuditTransaction } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -17,8 +17,6 @@ class MempoolBlocks {
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
-
-  constructor() {}
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -45,9 +43,7 @@ class MempoolBlocks {
     const latestMempool = memPool;
     const memPoolArray: MempoolTransactionExtended[] = [];
     for (const i in latestMempool) {
-      if (latestMempool.hasOwnProperty(i)) {
-        memPoolArray.push(latestMempool[i]);
-      }
+      memPoolArray.push(latestMempool[i]);
     }
     const start = new Date().getTime();
 
@@ -223,7 +219,7 @@ class MempoolBlocks {
     // to reduce the overhead of passing this data to the worker thread
     const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
     Object.values(newMempool).forEach(entry => {
-      if (entry.uid != null) {
+      if (entry.uid !== null && entry.uid !== undefined) {
         const stripped = {
           uid: entry.uid,
           fee: entry.fee,
@@ -231,7 +227,7 @@ class MempoolBlocks {
           sigops: entry.sigops,
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
           effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
-          inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
+          inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[],
         };
         strippedMempool.set(entry.uid, stripped);
       }
@@ -289,10 +285,10 @@ class MempoolBlocks {
     for (const tx of Object.values(added)) {
       this.setUid(tx, true);
     }
-    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
     // prepare a stripped down version of the mempool with only the minimum necessary data
     // to reduce the overhead of passing this data to the worker thread
-    const addedStripped: CompactThreadTransaction[] = added.filter(entry => entry.uid != null).map(entry => {
+    const addedStripped: CompactThreadTransaction[] = added.filter(entry => (entry.uid !== null && entry.uid !== undefined)).map(entry => {
       return {
         uid: entry.uid || 0,
         fee: entry.fee,
@@ -300,7 +296,7 @@ class MempoolBlocks {
         sigops: entry.sigops,
         feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
         effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
-        inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => uid != null) as number[],
+        inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[],
       };
     });
 
@@ -391,7 +387,7 @@ class MempoolBlocks {
     for (const tx of Object.values(added)) {
       this.setUid(tx, true);
     }
-    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
     // serialize relevant mempool data into an ArrayBuffer
     // to reduce the overhead of passing this data to the rust thread
     const addedBuffer = this.mempoolToArrayBuffer(added, newMempool);
@@ -516,7 +512,7 @@ class MempoolBlocks {
       }
     }
 
-    const mempoolBlocks = readyBlocks.map((b, index) => {
+    const mempoolBlocks = readyBlocks.map((b) => {
       return this.dataToMempoolBlocks(b.transactionIds, b.transactions, b.totalSize, b.totalWeight, b.totalFees, b.feeStats);
     });
 
@@ -551,7 +547,7 @@ class MempoolBlocks {
   }
 
   private setUid(tx: MempoolTransactionExtended, skipSet = false): number {
-    if (tx.uid == null || !skipSet) {
+    if (tx.uid === null || tx.uid === undefined || !skipSet) {
       const uid = this.nextUid;
       this.nextUid++;
       this.uidMap.set(uid, tx.txid);
@@ -563,7 +559,7 @@ class MempoolBlocks {
   }
 
   private getUid(tx: MempoolTransactionExtended): number | void {
-    if (tx?.uid != null && this.uidMap.has(tx.uid)) {
+    if (tx?.uid !== null && tx?.uid !== undefined && this.uidMap.has(tx.uid)) {
       return tx.uid;
     }
   }
@@ -646,9 +642,9 @@ class MempoolBlocks {
     const inputs: { [uid: number]: number[] } = {};
     let validCount = 0;
     for (const tx of txs) {
-      if (tx.uid != null) {
+      if (tx.uid !== null && tx.uid !== undefined) {
         validCount++;
-        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => uid != null) as number[];
+        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
         inputs[tx.uid] = txInputs;
         len += (10 + txInputs.length) * 4;
       }
@@ -658,7 +654,7 @@ class MempoolBlocks {
     view.setUint32(0, validCount, false);
     let offset = 4;
     for (const tx of txs) {
-      if (tx.uid != null) {
+      if (tx.uid !== null && tx.uid !== undefined) {
         view.setUint32(offset, tx.uid, false);
         view.setFloat64(offset + 4, tx.fee, false);
         view.setUint32(offset + 12, (tx.adjustedVsize * 4), false);
@@ -677,7 +673,7 @@ class MempoolBlocks {
   }
 
   private uidsToArrayBuffer(uids: number[]): ArrayBuffer {
-    let len = (uids.length + 1) * 4;
+    const len = (uids.length + 1) * 4;
     const buf = new ArrayBuffer(len);
     const view = new DataView(buf);
     view.setUint32(0, uids.length, false);
