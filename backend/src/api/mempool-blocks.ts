@@ -374,6 +374,10 @@ class MempoolBlocks {
   }
 
   public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
+    // sanity check to avoid approaching uint32 uid overflow
+    if (this.nextUid > 4_000_000_000) {
+      this.resetRustGbt();
+    }
     if (!this.rustInitialized) {
       // need to reset the worker
       await this.$rustMakeBlockTemplates(newMempool, true);
