@@ -403,7 +403,13 @@ class MempoolBlocks {
             new Uint8Array(removedBuffer),
         ),
       );
-      this.processBlockTemplates(newMempool, blocks, rates, clusters, true);
+      const expectedMempoolSize = Object.keys(newMempool).length;
+      const actualMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
+      if (expectedMempoolSize !== actualMempoolSize) {
+        throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
+      } else {
+        this.processBlockTemplates(newMempool, blocks, rates, clusters, true);
+      }
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
       logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -602,23 +608,32 @@ class MempoolBlocks {
       clusterMap.set(cluster[0], cluster);
     }
     const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
-      return this.uidMap.get(uid) || '';
+      const txid = this.uidMap.get(uid);
+      if (txid !== undefined) {
+        return txid;
+      } else {
+        throw new Error('GBT returned a block containing a transaction with unknown uid');
+      }
     }));
     const convertedRates = {};
     for (const rateUid of rateMap.keys()) {
       const rateTxid = this.uidMap.get(rateUid);
-      if (rateTxid) {
+      if (rateTxid !== undefined) {
         convertedRates[rateTxid] = rateMap.get(rateUid);
+      } else {
+        throw new Error('GBT returned a fee rate for a transaction with unknown uid');
       }
     }
     const convertedClusters = {};
     for (const rootUid of clusterMap.keys()) {
       const rootTxid = this.uidMap.get(rootUid);
-      if (rootTxid) {
+      if (rootTxid !== undefined) {
         const members = clusterMap.get(rootUid)?.map(uid => {
           return this.uidMap.get(uid);
         });
         convertedClusters[rootTxid] = members;
+      } else {
+        throw new Error('GBT returned a cluster rooted in a transaction with unknown uid');
       }
     }
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
