@@ -35,7 +35,7 @@ impl PartialOrd for TxPriority {
         if self.score == other.score {
             Some(self.uid.cmp(&other.uid))
         } else {
-            other.score.partial_cmp(&self.score)
+            self.score.partial_cmp(&other.score)
         }
     }
 }
@@ -95,10 +95,13 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut failures = 0;
     while !mempool_array.is_empty() || !modified.is_empty() {
         let next_txid: u32;
+        let from_modified: bool;
         if modified.is_empty() {
             next_txid = mempool_array.pop_front()?;
+            from_modified = false;
         } else if mempool_array.is_empty() {
             next_txid = modified.pop()?.0;
+            from_modified = true;
         } else {
             let next_array_txid = mempool_array.front()?;
             let next_modified_txid = modified.peek()?.0;
@@ -107,16 +110,20 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
             match array_tx.cmp(modified_tx) {
                 std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
                     next_txid = mempool_array.pop_front()?;
+                    from_modified = false;
                 }
                 std::cmp::Ordering::Less => {
                     next_txid = modified.pop()?.0;
+                    from_modified = true;
                 }
             }
         }
 
         let next_tx = audit_pool.get(&next_txid)?;
 
-        if next_tx.used {
+        // skip the transaction if it has already been used
+        // or has been moved to the "modified" priority queue
+        if next_tx.used || (!from_modified && next_tx.modified) {
             continue;
         }
 
@@ -293,9 +300,9 @@ fn update_descendants(
             // remove root tx as ancestor
             let old_score =
                 descendant.remove_root(root_txid, root_fee, root_weight, root_sigops, cluster_rate);
-            // update modified priority if score has changed
-            // remove_root() always sets modified to true
+            // add to priority queue or update priority if score has changed
             if descendant.score() < old_score {
+                descendant.modified = true;
                 modified.push_decrease(
                     descendant.uid,
                     TxPriority {
@@ -304,6 +311,7 @@ fn update_descendants(
                     },
                 );
             } else if descendant.score() > old_score {
+                descendant.modified = true;
                 modified.push_increase(
                     descendant.uid,
                     TxPriority {

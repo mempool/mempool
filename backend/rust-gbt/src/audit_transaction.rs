@@ -28,6 +28,7 @@ pub struct AuditTransaction {
     // Safety: Must be private to prevent NaN breaking Ord impl.
     score: f64,
     pub used: bool,
+    /// whether this transaction has been moved to the "modified" priority queue
     pub modified: bool,
     pub dirty: bool,
 }
@@ -132,14 +133,14 @@ impl AuditTransaction {
         root_sigops: u32,
         cluster_rate: f64,
     ) -> f64 {
-        self.ancestors.remove(&root_txid);
-        self.ancestor_fee -= root_fee;
-        self.ancestor_weight -= root_weight;
-        self.ancestor_sigops -= root_sigops;
         let old_score = self.score();
-        self.calc_new_score();
         self.dependency_rate = self.dependency_rate.min(cluster_rate);
-        self.modified = true;
+        if self.ancestors.remove(&root_txid) {
+            self.ancestor_fee -= root_fee;
+            self.ancestor_weight -= root_weight;
+            self.ancestor_sigops -= root_sigops;
+            self.calc_new_score();
+        }
         old_score
     }
 }
