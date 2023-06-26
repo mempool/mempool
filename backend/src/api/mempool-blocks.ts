@@ -262,7 +262,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      const processed = this.processBlockTemplates(newMempool, blocks, null, rates, clusters, saveResults);
 
       logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
 
@@ -318,7 +318,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      this.processBlockTemplates(newMempool, blocks, null, rates, clusters, saveResults);
       logger.debug(`updateBlockTemplates completed in ${(Date.now() - start) / 1000} seconds`);
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -349,13 +349,13 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
-      const { blocks, rates, clusters } = this.convertNapiResultTxids(
+      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
         await rustGbt.make(new Uint8Array(mempoolBuffer)),
       );
       if (saveResults) {
         this.rustInitialized = true;
       }
-      const processed = this.processBlockTemplates(newMempool, blocks, rates, clusters, saveResults);
+      const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
     } catch (e) {
@@ -395,7 +395,7 @@ class MempoolBlocks {
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
-      const { blocks, rates, clusters } = this.convertNapiResultTxids(
+      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
         await this.rustGbtGenerator.update(
             new Uint8Array(addedBuffer),
             new Uint8Array(removedBuffer),
@@ -406,7 +406,7 @@ class MempoolBlocks {
       if (expectedMempoolSize !== actualMempoolSize) {
         throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
       } else {
-        this.processBlockTemplates(newMempool, blocks, rates, clusters, true);
+        this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, true);
       }
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
@@ -415,10 +415,11 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool, blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
     for (const txid of Object.keys(rates)) {
       if (txid in mempool) {
         mempool[txid].effectiveFeePerVsize = rates[txid];
+        mempool[txid].cpfpChecked = false;
       }
     }
 
@@ -426,60 +427,13 @@ class MempoolBlocks {
     let stackWeight;
     let feeStatsCalculator: OnlineFeeStatsCalculator | void;
     if (hasBlockStack) {
-      stackWeight = blocks[blocks.length - 1].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
+      if (blockWeights && blockWeights[7] !== null) {
+        stackWeight = blockWeights[7];
+      } else {
+        stackWeight = blocks[blocks.length - 1].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
+      }
       hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
       feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
-    }
-
-    const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees, feeStats }[] = [];
-    const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
-    // update this thread's mempool with the results
-    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-      const block: string[] = blocks[blockIndex];
-      let txid: string;
-      let mempoolTx: MempoolTransactionExtended;
-      let totalSize = 0;
-      let totalVsize = 0;
-      let totalWeight = 0;
-      let totalFees = 0;
-      const transactions: MempoolTransactionExtended[] = [];
-      for (let txIndex = 0; txIndex < block.length; txIndex++) {
-        txid = block[txIndex];
-        if (txid) {
-          mempoolTx = mempool[txid];
-          // save position in projected blocks
-          mempoolTx.position = {
-            block: blockIndex,
-            vsize: totalVsize + (mempoolTx.vsize / 2),
-          };
-          mempoolTx.ancestors = [];
-          mempoolTx.descendants = [];
-          mempoolTx.bestDescendant = null;
-          mempoolTx.cpfpChecked = true;
-
-          // online calculation of stack-of-blocks fee stats
-          if (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) {
-            feeStatsCalculator.processNext(mempoolTx);
-          }
-
-          totalSize += mempoolTx.size;
-          totalVsize += mempoolTx.vsize;
-          totalWeight += mempoolTx.weight;
-          totalFees += mempoolTx.fee;
-
-          if (totalVsize <= sizeLimit) {
-            transactions.push(mempoolTx);
-          }
-        }
-      }
-      readyBlocks.push({
-        transactionIds: block,
-        transactions,
-        totalSize,
-        totalWeight,
-        totalFees,
-        feeStats: (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
-      });
     }
 
     for (const cluster of Object.values(clusters)) {
@@ -508,8 +462,64 @@ class MempoolBlocks {
           mempoolTx.ancestors = ancestors;
           mempoolTx.descendants = descendants;
           mempoolTx.bestDescendant = null;
+          mempoolTx.cpfpChecked = true;
         }
       }
+    }
+
+    const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees, feeStats }[] = [];
+    const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
+    // update this thread's mempool with the results
+    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
+      const block: string[] = blocks[blockIndex];
+      let mempoolTx: MempoolTransactionExtended;
+      let totalSize = 0;
+      let totalVsize = 0;
+      let totalWeight = 0;
+      let totalFees = 0;
+      const transactions: MempoolTransactionExtended[] = [];
+      for (const txid of block) {
+        if (txid) {
+          mempoolTx = mempool[txid];
+          // save position in projected blocks
+          mempoolTx.position = {
+            block: blockIndex,
+            vsize: totalVsize + (mempoolTx.vsize / 2),
+          };
+          if (!mempoolTx.cpfpChecked) {
+            if (mempoolTx.ancestors?.length) {
+              mempoolTx.ancestors = [];
+            }
+            if (mempoolTx.descendants?.length) {
+              mempoolTx.descendants = [];
+            }
+            mempoolTx.bestDescendant = null;
+            mempoolTx.cpfpChecked = true;
+          }
+
+          // online calculation of stack-of-blocks fee stats
+          if (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) {
+            feeStatsCalculator.processNext(mempoolTx);
+          }
+
+          totalSize += mempoolTx.size;
+          totalVsize += mempoolTx.vsize;
+          totalWeight += mempoolTx.weight;
+          totalFees += mempoolTx.fee;
+
+          if (totalVsize <= sizeLimit) {
+            transactions.push(mempoolTx);
+          }
+        }
+      }
+      readyBlocks.push({
+        transactionIds: block,
+        transactions,
+        totalSize,
+        totalWeight,
+        totalFees,
+        feeStats: (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
+      });
     }
 
     const mempoolBlocks = readyBlocks.map((b) => {
@@ -595,8 +605,8 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private convertNapiResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: number[][], clusters: number[][]})
-    : { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
+  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters }: { blocks: number[][], blockWeights: number[], rates: number[][], clusters: number[][]})
+    : { blocks: string[][], blockWeights: number[], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
     const rateMap = new Map<number, number>();
     const clusterMap = new Map<number, number[]>();
     for (const rate of rates) {
@@ -634,7 +644,7 @@ class MempoolBlocks {
         throw new Error('GBT returned a cluster rooted in a transaction with unknown uid');
       }
     }
-    return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
+    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], blockWeights: number[], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
   private mempoolToArrayBuffer(txs: MempoolTransactionExtended[], mempool: { [txid: string]: MempoolTransactionExtended }): ArrayBuffer {
