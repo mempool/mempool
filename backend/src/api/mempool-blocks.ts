@@ -6,6 +6,8 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 
+const MAX_UINT32 = Math.pow(2, 32) - 1;
+
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
@@ -375,7 +377,7 @@ class MempoolBlocks {
 
   public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
     // sanity check to avoid approaching uint32 uid overflow
-    if (this.nextUid > 4_000_000_000) {
+    if (this.nextUid + added.length > MAX_UINT32) {
       this.resetRustGbt();
     }
     if (!this.rustInitialized) {
