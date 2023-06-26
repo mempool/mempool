@@ -195,6 +195,7 @@ class DiskCache {
 
         if (data.mempoolArray) {
           for (const tx of data.mempoolArray) {
+            delete tx.uid;
             data.mempool[tx.txid] = tx;
           }
         }
@@ -207,6 +208,7 @@ class DiskCache {
             const cacheData2 = JSON.parse(fs.readFileSync(fileName, 'utf8'));
             if (cacheData2.mempoolArray) {
               for (const tx of cacheData2.mempoolArray) {
+                delete tx.uid;
                 data.mempool[tx.txid] = tx;
               }
             } else {
