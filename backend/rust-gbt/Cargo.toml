@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "An inefficient re-implementation of the getBlockTemplate algorithm in Rust"
 authors = ["mononaut"]
 edition = "2021"
-exclude = ["index.node"]
+publish = false
 
 [lib]
 crate-type = ["cdylib"]
