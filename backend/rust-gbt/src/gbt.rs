@@ -136,7 +136,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         }
 
         if blocks.len() < (MAX_BLOCKS - 1)
-            && ((block_weight + (4 * next_tx.ancestor_vsize()) >= MAX_BLOCK_WEIGHT_UNITS)
+            && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize()) >= MAX_BLOCK_WEIGHT_UNITS)
                 || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
         {
             // hold this package in an overflow list while we check for smaller options
@@ -297,7 +297,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
 
     let mut total_fee: u64 = 0;
     let mut total_weight: u32 = 0;
-    let mut total_vsize: u32 = 0;
+    let mut total_sigop_adjusted_vsize: u32 = 0;
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
@@ -306,12 +306,12 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
             .expect("audit_pool contains all ancestors");
         total_fee += ancestor.fee;
         total_weight += ancestor.weight;
-        total_vsize += ancestor.vsize;
+        total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
         total_sigops += ancestor.sigops;
     }
 
     if let Some(tx) = audit_pool.get_mut(&txid) {
-        tx.set_ancestors(ancestors, total_fee, total_weight, total_vsize, total_sigops);
+        tx.set_ancestors(ancestors, total_fee, total_weight, total_sigop_adjusted_vsize, total_sigops);
     }
 }
 
@@ -326,7 +326,7 @@ fn update_descendants(
     let mut descendant_stack: Vec<u32> = Vec::new();
     let root_fee: u64;
     let root_weight: u32;
-    let root_vsize: u32;
+    let root_sigop_adjusted_vsize: u32;
     let root_sigops: u32;
     if let Some(root_tx) = audit_pool.get(&root_txid) {
         for descendant_id in &root_tx.children {
@@ -337,7 +337,7 @@ fn update_descendants(
         }
         root_fee = root_tx.fee;
         root_weight = root_tx.weight;
-        root_vsize = root_tx.vsize;
+        root_sigop_adjusted_vsize = root_tx.sigop_adjusted_vsize;
         root_sigops = root_tx.sigops;
     } else {
         return;
@@ -346,7 +346,7 @@ fn update_descendants(
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
             let old_score =
-                descendant.remove_root(root_txid, root_fee, root_weight, root_vsize, root_sigops, cluster_rate);
+                descendant.remove_root(root_txid, root_fee, root_weight, root_sigop_adjusted_vsize, root_sigops, cluster_rate);
             // add to priority queue or update priority if score has changed
             if descendant.score() < old_score {
                 descendant.modified = true;
