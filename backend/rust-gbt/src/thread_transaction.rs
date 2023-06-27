@@ -1,6 +1,7 @@
 use bytes::buf::Buf;
 use std::io::Cursor;
 
+#[derive(Debug)]
 pub struct ThreadTransaction {
     pub uid: u32,
     pub fee: u64,
