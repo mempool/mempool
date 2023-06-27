@@ -1,6 +1,7 @@
 use priority_queue::PriorityQueue;
 use std::{
     collections::{HashMap, HashSet},
+    fmt::Debug,
     hash::{BuildHasher, Hasher},
 };
 
@@ -24,6 +25,12 @@ pub fn u32hashset_new() -> HashSet<u32, U32HasherState> {
 /// A private unit type is contained so no one can make an instance of it.
 #[derive(Clone)]
 pub struct U32HasherState(());
+
+impl Debug for U32HasherState {
+    fn fmt(&self, _: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Ok(())
+    }
+}
 
 impl BuildHasher for U32HasherState {
     type Hasher = U32Hasher;
