@@ -9,7 +9,7 @@ use std::{
 };
 
 #[allow(clippy::struct_excessive_bools)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuditTransaction {
     pub uid: u32,
     pub fee: u64,
@@ -98,11 +98,6 @@ impl AuditTransaction {
     }
 
     #[inline]
-    pub const fn ancestor_fee(&self) -> u64 {
-        self.ancestor_fee
-    }
-
-    #[inline]
     pub const fn ancestor_weight(&self) -> u32 {
         self.ancestor_weight
     }
@@ -110,6 +105,23 @@ impl AuditTransaction {
     #[inline]
     pub const fn ancestor_sigops(&self) -> u32 {
         self.ancestor_sigops
+    }
+
+    #[inline]
+    pub fn cluster_rate(&self) -> f64 {
+        // Safety: self.ancestor_weight can never be 0.
+        // Even if it could, as it approaches 0, the value inside the min() call
+        // grows, so if we think of 0 as "grew infinitely" then dependency_rate would be
+        // the smaller of the two. If either side is NaN, the other side is returned.
+        self.dependency_rate
+            .min(self.ancestor_fee as f64 / (f64::from(self.ancestor_weight) / 4.0))
+    }
+
+    pub fn set_dirty_if_different(&mut self, cluster_rate: f64) {
+        if self.effective_fee_per_vsize != cluster_rate {
+            self.effective_fee_per_vsize = cluster_rate;
+            self.dirty = true;
+        }
     }
 
     /// Safety: This function must NEVER set score to NaN.
