@@ -1,7 +1,7 @@
 use priority_queue::PriorityQueue;
 use std::{
     cmp::Ordering,
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
 };
 
 use crate::{
@@ -57,31 +57,31 @@ impl Ord for TxPriority {
 #[allow(clippy::cognitive_complexity)]
 pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
-    let mut mempool_array: VecDeque<u32> = VecDeque::with_capacity(STARTING_CAPACITY);
+    let mut mempool_stack: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
 
     // Initialize working structs
     for (uid, tx) in mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
-        // Safety: audit_pool and mempool_array must always contain the same transactions
+        // Safety: audit_pool and mempool_stack must always contain the same transactions
         audit_pool.insert(audit_tx.uid, audit_tx);
-        mempool_array.push_back(*uid);
+        mempool_stack.push(*uid);
     }
 
     // Build relatives graph & calculate ancestor scores
-    for txid in &mempool_array {
+    for txid in &mempool_stack {
         set_relatives(*txid, &mut audit_pool);
     }
 
     // Sort by descending ancestor score
-    mempool_array.make_contiguous().sort_unstable_by(|a, b| {
+    mempool_stack.sort_unstable_by(|a, b| {
         let a_tx = audit_pool
             .get(a)
-            .expect("audit_pool contains exact same txes as mempool_array");
+            .expect("audit_pool contains exact same txes as mempool_stack");
         let b_tx = audit_pool
             .get(b)
-            .expect("audit_pool contains exact same txes as mempool_array");
-        b_tx.cmp(a_tx)
+            .expect("audit_pool contains exact same txes as mempool_stack");
+        a_tx.cmp(b_tx)
     });
 
     // Build blocks by greedily choosing the highest feerate package
@@ -93,23 +93,23 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut modified: ModifiedQueue = u32priority_queue_with_capacity(STARTING_CAPACITY);
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
-    while !mempool_array.is_empty() || !modified.is_empty() {
+    while !mempool_stack.is_empty() || !modified.is_empty() {
         let next_txid: u32;
         let from_modified: bool;
         if modified.is_empty() {
-            next_txid = mempool_array.pop_front()?;
+            next_txid = mempool_stack.pop()?;
             from_modified = false;
-        } else if mempool_array.is_empty() {
+        } else if mempool_stack.is_empty() {
             next_txid = modified.pop()?.0;
             from_modified = true;
         } else {
-            let next_array_txid = mempool_array.front()?;
+            let next_array_txid = mempool_stack.last()?;
             let next_modified_txid = modified.peek()?.0;
             let array_tx: &AuditTransaction = audit_pool.get(next_array_txid)?;
             let modified_tx: &AuditTransaction = audit_pool.get(next_modified_txid)?;
             match array_tx.cmp(modified_tx) {
                 std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
-                    next_txid = mempool_array.pop_front()?;
+                    next_txid = mempool_stack.pop()?;
                     from_modified = false;
                 }
                 std::cmp::Ordering::Less => {
@@ -175,7 +175,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
         // this block is full
         let exceeded_package_tries =
             failures > 1000 && block_weight > (BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
-        let queue_is_empty = mempool_array.is_empty() && modified.is_empty();
+        let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
             if !transactions.is_empty() {
@@ -199,7 +199,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                             },
                         );
                     } else {
-                        mempool_array.push_front(*overflowed);
+                        mempool_stack.push(*overflowed);
                     }
                 }
             }
