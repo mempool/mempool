@@ -156,7 +156,6 @@ class Mempool {
       }
     };
 
-    let loggerTimer = new Date().getTime() / 1000;
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         try {
@@ -179,18 +178,19 @@ class Mempool {
           logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
         }
       }
-      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-      if (elapsedSeconds > 4) {
+
+      if (new Date().getTime() - start > 5_000) {
         const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
         logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
-        loadingIndicators.setProgress('mempool', progress);
-        loggerTimer = new Date().getTime() / 1000;
-      }
-      // Break and restart mempool loop if we spend too much time processing
-      // new transactions that may lead to falling behind on block height
-      if (this.inSync && (new Date().getTime()) - start > 10_000) {
-        logger.debug('Breaking mempool loop because the 10s time limit exceeded.');
-        break;
+        
+        if (this.inSync) {
+          // Break and restart mempool loop if we spend too much time processing
+          // new transactions that may lead to falling behind on block height
+          logger.debug('Breaking mempool loop because the 5s time limit exceeded.');
+          break;
+        } else {
+          loadingIndicators.setProgress('mempool', progress);
+        }
       }
     }
 
