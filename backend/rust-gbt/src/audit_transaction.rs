@@ -14,6 +14,7 @@ pub struct AuditTransaction {
     pub uid: u32,
     pub fee: u64,
     pub weight: u32,
+    pub vsize: u32,
     pub sigops: u32,
     pub fee_per_vsize: f64,
     pub effective_fee_per_vsize: f64,
@@ -24,6 +25,7 @@ pub struct AuditTransaction {
     pub children: HashSet<u32, U32HasherState>,
     ancestor_fee: u64,
     ancestor_weight: u32,
+    ancestor_vsize: u32,
     ancestor_sigops: u32,
     // Safety: Must be private to prevent NaN breaking Ord impl.
     score: f64,
@@ -74,6 +76,7 @@ impl AuditTransaction {
             uid: tx.uid,
             fee: tx.fee,
             weight: tx.weight,
+            vsize: ((tx.weight + 3) / 4).max(tx.sigops * 5), // rounded up to the nearest integer
             sigops: tx.sigops,
             fee_per_vsize: tx.fee_per_vsize,
             effective_fee_per_vsize: tx.effective_fee_per_vsize,
@@ -84,6 +87,7 @@ impl AuditTransaction {
             children: u32hashset_new(),
             ancestor_fee: tx.fee,
             ancestor_weight: tx.weight,
+            ancestor_vsize: ((tx.weight + 3) / 4).max(tx.sigops * 5), // rounded up to the nearest integer
             ancestor_sigops: tx.sigops,
             score: 0.0,
             used: false,
@@ -98,8 +102,8 @@ impl AuditTransaction {
     }
 
     #[inline]
-    pub const fn ancestor_weight(&self) -> u32 {
-        self.ancestor_weight
+    pub const fn ancestor_vsize(&self) -> u32 {
+        self.ancestor_vsize
     }
 
     #[inline]
@@ -128,10 +132,10 @@ impl AuditTransaction {
     #[inline]
     fn calc_new_score(&mut self) {
         self.score = (self.ancestor_fee as f64)
-            / (if self.ancestor_weight == 0 {
+            / (if self.ancestor_vsize == 0 {
                 1.0
             } else {
-                f64::from(self.ancestor_weight) / 4.0
+                f64::from(self.ancestor_vsize)
             });
     }
 
@@ -141,11 +145,13 @@ impl AuditTransaction {
         ancestors: HashSet<u32, U32HasherState>,
         total_fee: u64,
         total_weight: u32,
+        total_vsize: u32,
         total_sigops: u32,
     ) {
         self.ancestors = ancestors;
         self.ancestor_fee = self.fee + total_fee;
         self.ancestor_weight = self.weight + total_weight;
+        self.ancestor_vsize = self.vsize + total_vsize;
         self.ancestor_sigops = self.sigops + total_sigops;
         self.calc_new_score();
         self.relatives_set_flag = true;
@@ -157,6 +163,7 @@ impl AuditTransaction {
         root_txid: u32,
         root_fee: u64,
         root_weight: u32,
+        root_vsize: u32,
         root_sigops: u32,
         cluster_rate: f64,
     ) -> f64 {
@@ -165,6 +172,7 @@ impl AuditTransaction {
         if self.ancestors.remove(&root_txid) {
             self.ancestor_fee -= root_fee;
             self.ancestor_weight -= root_weight;
+            self.ancestor_vsize -= root_vsize;
             self.ancestor_sigops -= root_sigops;
             self.calc_new_score();
         }
