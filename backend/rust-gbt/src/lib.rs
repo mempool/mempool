@@ -110,7 +110,7 @@ where
             .lock()
             .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
         callback(&mut map);
-        gbt::gbt(&mut map).ok_or_else(|| napi::Error::from_reason("gbt failed"))
+        Ok(gbt::gbt(&mut map))
     });
 
     handle
