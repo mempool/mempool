@@ -55,7 +55,7 @@ impl Ord for TxPriority {
 // TODO: Make gbt smaller to fix these lints.
 #[allow(clippy::too_many_lines)]
 #[allow(clippy::cognitive_complexity)]
-pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
+pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
     let mut mempool_stack: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
@@ -207,11 +207,11 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
         }
     }
 
-    Some(GbtResult {
+    GbtResult {
         blocks,
         clusters,
         rates,
-    })
+    }
 }
 
 fn next_valid_from_stack<'a>(mempool_stack: &mut Vec<u32>, audit_pool: &'a AuditPool) -> Option<&'a AuditTransaction> {
