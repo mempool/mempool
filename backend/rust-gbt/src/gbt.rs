@@ -3,6 +3,7 @@ use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
 };
+use tracing::{info, trace};
 
 use crate::{
     audit_transaction::AuditTransaction,
@@ -20,6 +21,7 @@ const MAX_BLOCKS: usize = 8;
 type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
 type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 
+#[derive(Debug)]
 struct TxPriority {
     uid: u32,
     score: f64,
@@ -60,7 +62,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut mempool_stack: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
 
-    // Initialize working structs
+    info!("Initializing working structs");
     for (uid, tx) in mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
         // Safety: audit_pool and mempool_stack must always contain the same transactions
@@ -68,12 +70,13 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         mempool_stack.push(*uid);
     }
 
-    // Build relatives graph & calculate ancestor scores
+    info!("Building relatives graph & calculate ancestor scores");
     for txid in &mempool_stack {
         set_relatives(*txid, &mut audit_pool);
     }
+    trace!("Post relative graph Audit Pool: {:#?}", audit_pool);
 
-    // Sort by descending ancestor score
+    info!("Sorting by descending ancestor score");
     mempool_stack.sort_unstable_by(|a, b| {
         let a_tx = audit_pool
             .get(a)
@@ -84,8 +87,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         a_tx.cmp(b_tx)
     });
 
-    // Build blocks by greedily choosing the highest feerate package
-    // (i.e. the package rooted in the transaction with the best ancestor score)
+    info!("Building blocks by greedily choosing the highest feerate package");
+    info!("(i.e. the package rooted in the transaction with the best ancestor score)");
     let mut blocks: Vec<Vec<u32>> = Vec::new();
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
     let mut block_sigops: u32 = 0;
@@ -94,6 +97,22 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
     while !mempool_stack.is_empty() || !modified.is_empty() {
+        // This trace log storm is big, so to make scrolling through
+        // Each iteration easier, leaving a bunch of empty rows
+        // And a header of ======
+        trace!("\n\n\n\n\n\n\n\n\n\n==================================");
+        trace!("mempool_array: {:#?}", mempool_stack);
+        trace!("clusters: {:#?}", clusters);
+        trace!("modified: {:#?}", modified);
+        trace!("audit_pool: {:#?}", audit_pool);
+        trace!("blocks: {:#?}", blocks);
+        trace!("block_weight: {:#?}", block_weight);
+        trace!("block_sigops: {:#?}", block_sigops);
+        trace!("transactions: {:#?}", transactions);
+        trace!("overflow: {:#?}", overflow);
+        trace!("failures: {:#?}", failures);
+        trace!("\n==================================");
+
         let next_from_stack = next_valid_from_stack(&mut mempool_stack, &audit_pool);
         let next_from_queue = next_valid_from_queue(&mut modified, &audit_pool);
         if next_from_stack.is_none() && next_from_queue.is_none() {
@@ -134,18 +153,13 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             package.sort_unstable_by_key(|a| a.1);
             package.push((next_tx.uid, next_tx.ancestors.len()));
 
-            let cluster_rate = next_tx
-                .dependency_rate
-                .min(next_tx.ancestor_fee() as f64 / (f64::from(next_tx.ancestor_weight()) / 4.0));
+            let cluster_rate = next_tx.cluster_rate();
 
             for (txid, _) in &package {
                 cluster.push(*txid);
                 if let Some(tx) = audit_pool.get_mut(txid) {
                     tx.used = true;
-                    if tx.effective_fee_per_vsize != cluster_rate {
-                        tx.effective_fee_per_vsize = cluster_rate;
-                        tx.dirty = true;
-                    }
+                    tx.set_dirty_if_different(cluster_rate);
                     transactions.push(tx.uid);
                     block_weight += tx.weight;
                     block_sigops += tx.sigops;
@@ -202,10 +216,15 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     // make a list of dirty transactions and their new rates
     let mut rates: Vec<Vec<f64>> = Vec::new();
     for (txid, tx) in audit_pool {
+        trace!("txid: {}, is_dirty: {}", txid, tx.dirty);
         if tx.dirty {
             rates.push(vec![f64::from(txid), tx.effective_fee_per_vsize]);
         }
     }
+    trace!("\n\n\n\n\n====================");
+    trace!("blocks: {:#?}", blocks);
+    trace!("clusters: {:#?}", clusters);
+    trace!("rates: {:#?}\n====================\n\n\n\n\n", rates);
 
     GbtResult {
         blocks,
@@ -214,7 +233,10 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     }
 }
 
-fn next_valid_from_stack<'a>(mempool_stack: &mut Vec<u32>, audit_pool: &'a AuditPool) -> Option<&'a AuditTransaction> {
+fn next_valid_from_stack<'a>(
+    mempool_stack: &mut Vec<u32>,
+    audit_pool: &'a AuditPool,
+) -> Option<&'a AuditTransaction> {
     let mut next_txid = mempool_stack.last()?;
     let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
     while tx.used || tx.modified {
@@ -225,7 +247,10 @@ fn next_valid_from_stack<'a>(mempool_stack: &mut Vec<u32>, audit_pool: &'a Audit
     Some(tx)
 }
 
-fn next_valid_from_queue<'a>(queue: &mut ModifiedQueue, audit_pool: &'a AuditPool) -> Option<&'a AuditTransaction> {
+fn next_valid_from_queue<'a>(
+    queue: &mut ModifiedQueue,
+    audit_pool: &'a AuditPool,
+) -> Option<&'a AuditTransaction> {
     let mut next_txid = queue.peek()?.0;
     let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
     while tx.used {

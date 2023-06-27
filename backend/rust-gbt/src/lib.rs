@@ -8,17 +8,21 @@
 
 use napi::bindgen_prelude::{Result, Uint8Array};
 use napi_derive::napi;
+use tracing::{debug, info, trace};
+use tracing_log::LogTracer;
+use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
 mod audit_transaction;
 mod gbt;
 mod thread_transaction;
 mod u32_hasher_types;
 mod utils;
+
 use thread_transaction::ThreadTransaction;
+use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
 /// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
 /// `HashMap` doubles capacity when it hits it, so 2048 is a decent tradeoff between
@@ -35,12 +39,36 @@ pub struct GbtGenerator {
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
 }
 
+#[napi::module_init]
+fn init() {
+    // Set all `tracing` logs to print to STDOUT
+    // Note: Passing RUST_LOG env variable to the node process
+    //       will change the log level for the rust module.
+    tracing::subscriber::set_global_default(
+        FmtSubscriber::builder()
+            .with_env_filter(EnvFilter::from_default_env())
+            .with_ansi(
+                // Default to no-color logs.
+                // Setting RUST_LOG_COLOR to 1 or true|TRUE|True etc.
+                // will enable color
+                std::env::var("RUST_LOG_COLOR")
+                    .map(|s| ["1", "true"].contains(&&*s.to_lowercase()))
+                    .unwrap_or(false),
+            )
+            .finish(),
+    )
+    .expect("Logging subscriber failed");
+    // Convert all `log` logs into `tracing` events
+    LogTracer::init().expect("Legacy log subscriber failed");
+}
+
 #[napi]
 impl GbtGenerator {
     #[napi(constructor)]
     #[allow(clippy::new_without_default)]
     #[must_use]
     pub fn new() -> Self {
+        debug!("Created new GbtGenerator");
         Self {
             thread_transactions: Arc::new(Mutex::new(u32hashmap_with_capacity(STARTING_CAPACITY))),
         }
@@ -51,6 +79,7 @@ impl GbtGenerator {
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
     pub async fn make(&self, mempool_buffer: Uint8Array) -> Result<GbtResult> {
+        trace!("make: Current State {:#?}", self.thread_transactions);
         run_task(Arc::clone(&self.thread_transactions), move |map| {
             for tx in ThreadTransaction::batch_from_buffer(&mempool_buffer) {
                 map.insert(tx.uid, tx);
@@ -64,6 +93,7 @@ impl GbtGenerator {
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
     pub async fn update(&self, new_txs: Uint8Array, remove_txs: Uint8Array) -> Result<GbtResult> {
+        trace!("update: Current State {:#?}", self.thread_transactions);
         run_task(Arc::clone(&self.thread_transactions), move |map| {
             for tx in ThreadTransaction::batch_from_buffer(&new_txs) {
                 map.insert(tx.uid, tx);
@@ -105,12 +135,28 @@ async fn run_task<F>(
 where
     F: FnOnce(&mut ThreadTransactionsMap) + Send + 'static,
 {
+    debug!("Spawning thread...");
     let handle = napi::tokio::task::spawn_blocking(move || {
+        debug!(
+            "Getting lock for thread_transactions from thread {:?}...",
+            std::thread::current().id()
+        );
         let mut map = thread_transactions
             .lock()
             .map_err(|_| napi::Error::from_reason("THREAD_TRANSACTIONS Mutex poisoned"))?;
         callback(&mut map);
-        Ok(gbt::gbt(&mut map))
+
+        info!("Starting gbt algorithm for {} elements...", map.len());
+        let result = gbt::gbt(&mut map);
+        info!("Finished gbt algorithm for {} elements...", map.len());
+
+        debug!(
+            "Releasing lock for thread_transactions from thread {:?}...",
+            std::thread::current().id()
+        );
+        drop(map);
+
+        Ok(result)
     });
 
     handle
