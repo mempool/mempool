@@ -657,7 +657,7 @@ class MempoolBlocks {
       if (tx.uid !== null && tx.uid !== undefined) {
         view.setUint32(offset, tx.uid, false);
         view.setFloat64(offset + 4, tx.fee, false);
-        view.setUint32(offset + 12, (tx.adjustedVsize * 4), false);
+        view.setUint32(offset + 12, tx.weight, false);
         view.setUint32(offset + 16, tx.sigops, false);
         view.setFloat64(offset + 20, (tx.adjustedFeePerVsize || tx.feePerVsize), false);
         view.setFloat64(offset + 28, (tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize), false);

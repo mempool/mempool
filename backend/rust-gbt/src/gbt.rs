@@ -13,9 +13,10 @@ use crate::{
     GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
 };
 
-const BLOCK_WEIGHT_UNITS: u32 = 4_000_000;
+const MAX_BLOCK_WEIGHT_UNITS: u32 = 4_000_000 - 4_000;
 const BLOCK_SIGOPS: u32 = 80_000;
 const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
+const BLOCK_RESERVED_SIGOPS: u32 = 400;
 const MAX_BLOCKS: usize = 8;
 
 type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
@@ -91,7 +92,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     info!("(i.e. the package rooted in the transaction with the best ancestor score)");
     let mut blocks: Vec<Vec<u32>> = Vec::new();
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
-    let mut block_sigops: u32 = 0;
+    let mut block_sigops: u32 = BLOCK_RESERVED_SIGOPS;
     let mut transactions: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
     let mut modified: ModifiedQueue = u32priority_queue_with_capacity(STARTING_CAPACITY);
     let mut overflow: Vec<u32> = Vec::new();
@@ -135,7 +136,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         }
 
         if blocks.len() < (MAX_BLOCKS - 1)
-            && ((block_weight + next_tx.ancestor_weight() >= BLOCK_WEIGHT_UNITS)
+            && ((block_weight + (4 * next_tx.ancestor_vsize()) >= MAX_BLOCK_WEIGHT_UNITS)
                 || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
         {
             // hold this package in an overflow list while we check for smaller options
@@ -150,7 +151,13 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
                     package.push((*ancestor_id, ancestor.ancestors.len()));
                 }
             }
-            package.sort_unstable_by_key(|a| a.1);
+            package.sort_unstable_by(|a, b| -> Ordering {
+                if a.1 == b.1 {
+                    b.0.cmp(&a.0)
+                } else {
+                    a.1.cmp(&b.1)
+                }
+            });
             package.push((next_tx.uid, next_tx.ancestors.len()));
 
             let cluster_rate = next_tx.cluster_rate();
@@ -176,7 +183,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
 
         // this block is full
         let exceeded_package_tries =
-            failures > 1000 && block_weight > (BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
+            failures > 1000 && block_weight > (MAX_BLOCK_WEIGHT_UNITS - BLOCK_RESERVED_WEIGHT);
         let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
@@ -185,8 +192,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             }
             // reset for the next block
             transactions = Vec::with_capacity(STARTING_CAPACITY);
-            block_weight = 4000;
-            block_sigops = 0;
+            block_weight = BLOCK_RESERVED_WEIGHT;
+            block_sigops = BLOCK_RESERVED_SIGOPS;
             failures = 0;
             // 'overflow' packages didn't fit in this block, but are valid candidates for the next
             overflow.reverse();
@@ -290,6 +297,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
 
     let mut total_fee: u64 = 0;
     let mut total_weight: u32 = 0;
+    let mut total_vsize: u32 = 0;
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
@@ -298,11 +306,12 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
             .expect("audit_pool contains all ancestors");
         total_fee += ancestor.fee;
         total_weight += ancestor.weight;
+        total_vsize += ancestor.vsize;
         total_sigops += ancestor.sigops;
     }
 
     if let Some(tx) = audit_pool.get_mut(&txid) {
-        tx.set_ancestors(ancestors, total_fee, total_weight, total_sigops);
+        tx.set_ancestors(ancestors, total_fee, total_weight, total_vsize, total_sigops);
     }
 }
 
@@ -317,6 +326,7 @@ fn update_descendants(
     let mut descendant_stack: Vec<u32> = Vec::new();
     let root_fee: u64;
     let root_weight: u32;
+    let root_vsize: u32;
     let root_sigops: u32;
     if let Some(root_tx) = audit_pool.get(&root_txid) {
         for descendant_id in &root_tx.children {
@@ -327,6 +337,7 @@ fn update_descendants(
         }
         root_fee = root_tx.fee;
         root_weight = root_tx.weight;
+        root_vsize = root_tx.vsize;
         root_sigops = root_tx.sigops;
     } else {
         return;
@@ -335,7 +346,7 @@ fn update_descendants(
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
             let old_score =
-                descendant.remove_root(root_txid, root_fee, root_weight, root_sigops, cluster_rate);
+                descendant.remove_root(root_txid, root_fee, root_weight, root_vsize, root_sigops, cluster_rate);
             // add to priority queue or update priority if score has changed
             if descendant.score() < old_score {
                 descendant.modified = true;
