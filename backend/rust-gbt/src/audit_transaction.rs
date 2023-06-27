@@ -22,9 +22,9 @@ pub struct AuditTransaction {
     pub relatives_set_flag: bool,
     pub ancestors: HashSet<u32, U32HasherState>,
     pub children: HashSet<u32, U32HasherState>,
-    pub ancestor_fee: u64,
-    pub ancestor_weight: u32,
-    pub ancestor_sigops: u32,
+    ancestor_fee: u64,
+    ancestor_weight: u32,
+    ancestor_sigops: u32,
     // Safety: Must be private to prevent NaN breaking Ord impl.
     score: f64,
     pub used: bool,
@@ -95,6 +95,21 @@ impl AuditTransaction {
     #[inline]
     pub const fn score(&self) -> f64 {
         self.score
+    }
+
+    #[inline]
+    pub const fn ancestor_fee(&self) -> u64 {
+        self.ancestor_fee
+    }
+
+    #[inline]
+    pub const fn ancestor_weight(&self) -> u32 {
+        self.ancestor_weight
+    }
+
+    #[inline]
+    pub const fn ancestor_sigops(&self) -> u32 {
+        self.ancestor_sigops
     }
 
     /// Safety: This function must NEVER set score to NaN.
