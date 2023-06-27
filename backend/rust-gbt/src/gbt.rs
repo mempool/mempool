@@ -94,37 +94,25 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
     while !mempool_stack.is_empty() || !modified.is_empty() {
-        let next_txid: u32;
-        let from_modified: bool;
-        if modified.is_empty() {
-            next_txid = mempool_stack.pop()?;
-            from_modified = false;
-        } else if mempool_stack.is_empty() {
-            next_txid = modified.pop()?.0;
-            from_modified = true;
-        } else {
-            let next_array_txid = mempool_stack.last()?;
-            let next_modified_txid = modified.peek()?.0;
-            let array_tx: &AuditTransaction = audit_pool.get(next_array_txid)?;
-            let modified_tx: &AuditTransaction = audit_pool.get(next_modified_txid)?;
-            match array_tx.cmp(modified_tx) {
-                std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
-                    next_txid = mempool_stack.pop()?;
-                    from_modified = false;
-                }
-                std::cmp::Ordering::Less => {
-                    next_txid = modified.pop()?.0;
-                    from_modified = true;
-                }
-            }
-        }
-
-        let next_tx = audit_pool.get(&next_txid)?;
-
-        // skip the transaction if it has already been used
-        // or has been moved to the "modified" priority queue
-        if next_tx.used || (!from_modified && next_tx.modified) {
+        let next_from_stack = next_valid_from_stack(&mut mempool_stack, &audit_pool);
+        let next_from_queue = next_valid_from_queue(&mut modified, &audit_pool);
+        if next_from_stack.is_none() && next_from_queue.is_none() {
             continue;
+        }
+        let (next_tx, from_stack) = match (next_from_stack, next_from_queue) {
+            (Some(stack_tx), Some(queue_tx)) => match queue_tx.cmp(stack_tx) {
+                std::cmp::Ordering::Less => (stack_tx, true),
+                _ => (queue_tx, false),
+            },
+            (Some(stack_tx), None) => (stack_tx, true),
+            (None, Some(queue_tx)) => (queue_tx, false),
+            (None, None) => unreachable!(),
+        };
+
+        if from_stack {
+            mempool_stack.pop();
+        } else {
+            modified.pop();
         }
 
         if blocks.len() < (MAX_BLOCKS - 1)
@@ -132,7 +120,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                 || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
         {
             // hold this package in an overflow list while we check for smaller options
-            overflow.push(next_txid);
+            overflow.push(next_tx.uid);
             failures += 1;
         } else {
             let mut package: Vec<(u32, usize)> = Vec::new();
@@ -144,7 +132,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
                 }
             }
             package.sort_unstable_by_key(|a| a.1);
-            package.push((next_txid, next_tx.ancestors.len()));
+            package.push((next_tx.uid, next_tx.ancestors.len()));
 
             let cluster_rate = next_tx
                 .dependency_rate
@@ -224,6 +212,28 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
         clusters,
         rates,
     })
+}
+
+fn next_valid_from_stack<'a>(mempool_stack: &mut Vec<u32>, audit_pool: &'a AuditPool) -> Option<&'a AuditTransaction> {
+    let mut next_txid = mempool_stack.last()?;
+    let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
+    while tx.used || tx.modified {
+        mempool_stack.pop();
+        next_txid = mempool_stack.last()?;
+        tx = audit_pool.get(next_txid)?;
+    }
+    Some(tx)
+}
+
+fn next_valid_from_queue<'a>(queue: &mut ModifiedQueue, audit_pool: &'a AuditPool) -> Option<&'a AuditTransaction> {
+    let mut next_txid = queue.peek()?.0;
+    let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
+    while tx.used {
+        queue.pop();
+        next_txid = queue.peek()?.0;
+        tx = audit_pool.get(next_txid)?;
+    }
+    Some(tx)
 }
 
 fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
