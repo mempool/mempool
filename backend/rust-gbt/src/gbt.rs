@@ -128,8 +128,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
         }
 
         if blocks.len() < (MAX_BLOCKS - 1)
-            && ((block_weight + next_tx.ancestor_weight >= BLOCK_WEIGHT_UNITS)
-                || (block_sigops + next_tx.ancestor_sigops > BLOCK_SIGOPS))
+            && ((block_weight + next_tx.ancestor_weight() >= BLOCK_WEIGHT_UNITS)
+                || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
         {
             // hold this package in an overflow list while we check for smaller options
             overflow.push(next_txid);
@@ -148,7 +148,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> Option<GbtResult> {
 
             let cluster_rate = next_tx
                 .dependency_rate
-                .min(next_tx.ancestor_fee as f64 / (f64::from(next_tx.ancestor_weight) / 4.0));
+                .min(next_tx.ancestor_fee() as f64 / (f64::from(next_tx.ancestor_weight()) / 4.0));
 
             for (txid, _) in &package {
                 cluster.push(*txid);
