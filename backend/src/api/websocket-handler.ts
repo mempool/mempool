@@ -333,7 +333,7 @@ class WebsocketHandler {
     });
   }
 
-  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended },
+  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
@@ -343,7 +343,7 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, newTransactions, deletedTransactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
       } else {
         await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
       }
@@ -664,7 +664,7 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, [], transactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
       } else {
         await mempoolBlocks.$makeBlockTemplates(_memPool, true);
       }
