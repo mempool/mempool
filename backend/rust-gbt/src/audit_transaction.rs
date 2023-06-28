@@ -49,15 +49,20 @@ impl PartialEq for AuditTransaction {
 
 impl Eq for AuditTransaction {}
 
+#[inline]
+pub fn partial_cmp_uid_score(a: (u32, f64), b: (u32, f64)) -> Option<Ordering> {
+    // If either score is NaN, this is false,
+    // and partial_cmp will return None
+    if a.1 == b.1 {
+        Some(a.0.cmp(&b.0))
+    } else {
+        a.1.partial_cmp(&b.1)
+    }
+}
+
 impl PartialOrd for AuditTransaction {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        // If either score is NaN, this is false,
-        // and partial_cmp will return None
-        if self.score == other.score {
-            Some(self.uid.cmp(&other.uid))
-        } else {
-            self.score.partial_cmp(&other.score)
-        }
+        partial_cmp_uid_score((self.uid, self.score), (other.uid, other.score))
     }
 }
 
@@ -72,11 +77,13 @@ impl Ord for AuditTransaction {
 
 impl AuditTransaction {
     pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
+        // rounded up to the nearest integer
+        let sigop_adjusted_vsize = ((tx.weight + 3) / 4).max(tx.sigops * 5);
         Self {
             uid: tx.uid,
             fee: tx.fee,
             weight: tx.weight,
-            sigop_adjusted_vsize: ((tx.weight + 3) / 4).max(tx.sigops * 5), // rounded up to the nearest integer
+            sigop_adjusted_vsize,
             sigops: tx.sigops,
             fee_per_vsize: tx.fee_per_vsize,
             effective_fee_per_vsize: tx.effective_fee_per_vsize,
@@ -87,7 +94,7 @@ impl AuditTransaction {
             children: u32hashset_new(),
             ancestor_fee: tx.fee,
             ancestor_weight: tx.weight,
-            ancestor_sigop_adjusted_vsize: ((tx.weight + 3) / 4).max(tx.sigops * 5), // rounded up to the nearest integer
+            ancestor_sigop_adjusted_vsize: sigop_adjusted_vsize,
             ancestor_sigops: tx.sigops,
             score: 0.0,
             used: false,
