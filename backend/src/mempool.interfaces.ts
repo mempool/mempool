@@ -96,6 +96,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   sigops: number;
   adjustedVsize: number;
   adjustedFeePerVsize: number;
+  inputs?: number[];
 }
 
 export interface AuditTransaction {
@@ -125,7 +126,7 @@ export interface CompactThreadTransaction {
   weight: number;
   sigops: number;
   feePerVsize: number;
-  effectiveFeePerVsize?: number;
+  effectiveFeePerVsize: number;
   inputs: number[];
   cpfpRoot?: number;
   cpfpChecked?: boolean;

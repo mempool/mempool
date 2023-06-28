@@ -1,6 +1,5 @@
 use crate::{
-    thread_transaction::ThreadTransaction,
-    u32_hasher_types::{u32hashset_new, U32HasherState},
+    u32_hasher_types::{u32hashset_new, U32HasherState}, ThreadTransaction,
 };
 use std::{
     cmp::Ordering,
@@ -16,7 +15,6 @@ pub struct AuditTransaction {
     pub weight: u32,
     pub sigop_adjusted_vsize: u32,
     pub sigops: u32,
-    pub fee_per_vsize: f64,
     pub effective_fee_per_vsize: f64,
     pub dependency_rate: f64,
     pub inputs: Vec<u32>,
@@ -81,18 +79,17 @@ impl AuditTransaction {
         let sigop_adjusted_vsize = ((tx.weight + 3) / 4).max(tx.sigops * 5);
         Self {
             uid: tx.uid,
-            fee: tx.fee,
+            fee: tx.fee as u64,
             weight: tx.weight,
             sigop_adjusted_vsize,
             sigops: tx.sigops,
-            fee_per_vsize: tx.fee_per_vsize,
             effective_fee_per_vsize: tx.effective_fee_per_vsize,
             dependency_rate: f64::INFINITY,
             inputs: tx.inputs.clone(),
             relatives_set_flag: false,
             ancestors: u32hashset_new(),
             children: u32hashset_new(),
-            ancestor_fee: tx.fee,
+            ancestor_fee: tx.fee as u64,
             ancestor_weight: tx.weight,
             ancestor_sigop_adjusted_vsize: sigop_adjusted_vsize,
             ancestor_sigops: tx.sigops,
