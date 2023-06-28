@@ -371,7 +371,7 @@ class MempoolBlocks {
     return this.$rustMakeBlockTemplates(newMempool, false);
   }
 
-  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
+  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
     // sanity check to avoid approaching uint32 uid overflow
     if (this.nextUid + added.length > MAX_UINT32) {
       this.resetRustGbt();
@@ -401,13 +401,13 @@ class MempoolBlocks {
           removedUids,
         ),
       );
-      const expectedMempoolSize = Object.keys(newMempool).length;
-      const actualMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
-      if (expectedMempoolSize !== actualMempoolSize) {
+      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
+      if (mempoolSize !== resultMempoolSize) {
         throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
       } else {
         this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, true);
       }
+      this.removeUids(removedUids);
       logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
       logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -423,6 +423,7 @@ class MempoolBlocks {
       }
     }
 
+    const lastBlockIndex = blocks.length - 1;
     let hasBlockStack = blocks.length >= 8;
     let stackWeight;
     let feeStatsCalculator: OnlineFeeStatsCalculator | void;
@@ -430,7 +431,7 @@ class MempoolBlocks {
       if (blockWeights && blockWeights[7] !== null) {
         stackWeight = blockWeights[7];
       } else {
-        stackWeight = blocks[blocks.length - 1].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
+        stackWeight = blocks[lastBlockIndex].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
       }
       hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
       feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
@@ -438,8 +439,8 @@ class MempoolBlocks {
 
     for (const cluster of Object.values(clusters)) {
       for (const memberTxid of cluster) {
-        if (memberTxid in mempool) {
-          const mempoolTx = mempool[memberTxid];
+        const mempoolTx = mempool[memberTxid];
+        if (mempoolTx) {
           const ancestors: Ancestor[] = [];
           const descendants: Ancestor[] = [];
           let matched = false;
@@ -459,10 +460,7 @@ class MempoolBlocks {
               }
             }
           });
-          mempoolTx.ancestors = ancestors;
-          mempoolTx.descendants = descendants;
-          mempoolTx.bestDescendant = null;
-          mempoolTx.cpfpChecked = true;
+          Object.assign(mempoolTx, {ancestors, descendants, bestDescendant: null, cpfpChecked: true});
         }
       }
     }
@@ -498,7 +496,7 @@ class MempoolBlocks {
           }
 
           // online calculation of stack-of-blocks fee stats
-          if (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) {
+          if (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) {
             feeStatsCalculator.processNext(mempoolTx);
           }
 
@@ -518,7 +516,7 @@ class MempoolBlocks {
         totalSize,
         totalWeight,
         totalFees,
-        feeStats: (hasBlockStack && blockIndex === blocks.length - 1 && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
+        feeStats: (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
       });
     }
 
