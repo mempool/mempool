@@ -6,7 +6,7 @@ use std::{
 use tracing::{info, trace};
 
 use crate::{
-    audit_transaction::AuditTransaction,
+    audit_transaction::{partial_cmp_uid_score, AuditTransaction},
     u32_hasher_types::{
         u32hashmap_with_capacity, u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
     },
@@ -78,15 +78,17 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     trace!("Post relative graph Audit Pool: {:#?}", audit_pool);
 
     info!("Sorting by descending ancestor score");
-    mempool_stack.sort_unstable_by(|a, b| {
-        let a_tx = audit_pool
-            .get(a)
-            .expect("audit_pool contains exact same txes as mempool_stack");
-        let b_tx = audit_pool
-            .get(b)
-            .expect("audit_pool contains exact same txes as mempool_stack");
-        a_tx.cmp(b_tx)
-    });
+    let mut mempool_stack: Vec<(u32, f64)> = mempool_stack
+        .into_iter()
+        .map(|txid| {
+            let atx = audit_pool
+                .get(&txid)
+                .expect("All txids are from audit_pool");
+            (txid, atx.score())
+        })
+        .collect();
+    mempool_stack.sort_unstable_by(|a, b| partial_cmp_uid_score(*a, *b).expect("Not NaN"));
+    let mut mempool_stack: Vec<u32> = mempool_stack.into_iter().map(|(txid, _)| txid).collect();
 
     info!("Building blocks by greedily choosing the highest feerate package");
     info!("(i.e. the package rooted in the transaction with the best ancestor score)");
@@ -136,7 +138,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         }
 
         if blocks.len() < (MAX_BLOCKS - 1)
-            && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize()) >= MAX_BLOCK_WEIGHT_UNITS)
+            && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize())
+                >= MAX_BLOCK_WEIGHT_UNITS)
                 || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
         {
             // hold this package in an overflow list while we check for smaller options
@@ -215,12 +218,12 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             overflow = Vec::new();
         }
     }
-    // add the final unbounded block if it contains any transactions
+    info!("add the final unbounded block if it contains any transactions");
     if !transactions.is_empty() {
         blocks.push(transactions);
     }
 
-    // make a list of dirty transactions and their new rates
+    info!("make a list of dirty transactions and their new rates");
     let mut rates: Vec<Vec<f64>> = Vec::new();
     for (txid, tx) in audit_pool {
         trace!("txid: {}, is_dirty: {}", txid, tx.dirty);
@@ -311,7 +314,13 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     }
 
     if let Some(tx) = audit_pool.get_mut(&txid) {
-        tx.set_ancestors(ancestors, total_fee, total_weight, total_sigop_adjusted_vsize, total_sigops);
+        tx.set_ancestors(
+            ancestors,
+            total_fee,
+            total_weight,
+            total_sigop_adjusted_vsize,
+            total_sigops,
+        );
     }
 }
 
@@ -345,8 +354,14 @@ fn update_descendants(
     while let Some(next_txid) = descendant_stack.pop() {
         if let Some(descendant) = audit_pool.get_mut(&next_txid) {
             // remove root tx as ancestor
-            let old_score =
-                descendant.remove_root(root_txid, root_fee, root_weight, root_sigop_adjusted_vsize, root_sigops, cluster_rate);
+            let old_score = descendant.remove_root(
+                root_txid,
+                root_fee,
+                root_weight,
+                root_sigop_adjusted_vsize,
+                root_sigops,
+                cluster_rate,
+            );
             // add to priority queue or update priority if score has changed
             if descendant.score() < old_score {
                 descendant.modified = true;

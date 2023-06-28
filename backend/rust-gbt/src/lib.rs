@@ -30,7 +30,7 @@ use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 /// by virtue of starting with such a large capacity.
 ///
 /// Note: This doesn't *have* to be a power of 2. (uwu)
-const STARTING_CAPACITY: usize = 2048;
+const STARTING_CAPACITY: usize = 32768;
 
 type ThreadTransactionsMap = HashMap<u32, ThreadTransaction, U32HasherState>;
 
