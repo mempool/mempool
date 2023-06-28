@@ -23,13 +23,10 @@ mod u32_hasher_types;
 
 use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
-/// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
-/// `HashMap` doubles capacity when it hits it, so 2048 is a decent tradeoff between
-/// not wasting too much memory when it's below this, and allowing for less re-allocations
-/// by virtue of starting with such a large capacity.
+/// This is the initial capacity of the GbtGenerator struct's inner HashMap.
 ///
 /// Note: This doesn't *have* to be a power of 2. (uwu)
-const STARTING_CAPACITY: usize = 32768;
+const STARTING_CAPACITY: usize = 1_048_576;
 
 type ThreadTransactionsMap = HashMap<u32, ThreadTransaction, U32HasherState>;
 

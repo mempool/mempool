@@ -10,7 +10,7 @@ use crate::{
     u32_hasher_types::{
         u32hashmap_with_capacity, u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
     },
-    GbtResult, ThreadTransactionsMap, STARTING_CAPACITY,
+    GbtResult, ThreadTransactionsMap,
 };
 
 const MAX_BLOCK_WEIGHT_UNITS: u32 = 4_000_000 - 4_000;
@@ -59,8 +59,9 @@ impl Ord for TxPriority {
 #[allow(clippy::too_many_lines)]
 #[allow(clippy::cognitive_complexity)]
 pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
-    let mut audit_pool: AuditPool = u32hashmap_with_capacity(STARTING_CAPACITY);
-    let mut mempool_stack: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
+    let mempool_len = mempool.len();
+    let mut audit_pool: AuditPool = u32hashmap_with_capacity(mempool_len);
+    let mut mempool_stack: Vec<u32> = Vec::with_capacity(mempool_len);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
     let mut block_weights: Vec<u32> = Vec::new();
 
@@ -96,8 +97,10 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut blocks: Vec<Vec<u32>> = Vec::new();
     let mut block_weight: u32 = BLOCK_RESERVED_WEIGHT;
     let mut block_sigops: u32 = BLOCK_RESERVED_SIGOPS;
-    let mut transactions: Vec<u32> = Vec::with_capacity(STARTING_CAPACITY);
-    let mut modified: ModifiedQueue = u32priority_queue_with_capacity(STARTING_CAPACITY);
+    // No need to be bigger than 4096 transactions for the per-block transaction Vec.
+    let initial_txes_per_block: usize = 4096.min(mempool_len);
+    let mut transactions: Vec<u32> = Vec::with_capacity(initial_txes_per_block);
+    let mut modified: ModifiedQueue = u32priority_queue_with_capacity(mempool_len);
     let mut overflow: Vec<u32> = Vec::new();
     let mut failures = 0;
     while !mempool_stack.is_empty() || !modified.is_empty() {
@@ -196,7 +199,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
                 block_weights.push(block_weight);
             }
             // reset for the next block
-            transactions = Vec::with_capacity(STARTING_CAPACITY);
+            transactions = Vec::with_capacity(initial_txes_per_block);
             block_weight = BLOCK_RESERVED_WEIGHT;
             block_sigops = BLOCK_RESERVED_SIGOPS;
             failures = 0;
