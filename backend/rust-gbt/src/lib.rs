@@ -6,8 +6,9 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::float_cmp)]
 
-use napi::bindgen_prelude::{Result, Uint8Array};
+use napi::bindgen_prelude::{Result};
 use napi_derive::napi;
+use thread_transaction::ThreadTransaction;
 use tracing::{debug, info, trace};
 use tracing_log::LogTracer;
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
@@ -19,9 +20,7 @@ mod audit_transaction;
 mod gbt;
 mod thread_transaction;
 mod u32_hasher_types;
-mod utils;
 
-use thread_transaction::ThreadTransaction;
 use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
 /// This is the starting capacity for HashMap/Vec/etc. that deal with transactions.
@@ -78,10 +77,10 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn make(&self, mempool_buffer: Uint8Array) -> Result<GbtResult> {
+    pub async fn make(&self, mempool: Vec<ThreadTransaction>) -> Result<GbtResult> {
         trace!("make: Current State {:#?}", self.thread_transactions);
         run_task(Arc::clone(&self.thread_transactions), move |map| {
-            for tx in ThreadTransaction::batch_from_buffer(&mempool_buffer) {
+            for tx in mempool {
                 map.insert(tx.uid, tx);
             }
         })
@@ -92,13 +91,13 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn update(&self, new_txs: Uint8Array, remove_txs: Uint8Array) -> Result<GbtResult> {
+    pub async fn update(&self, new_txs: Vec<ThreadTransaction>, remove_txs: Vec<u32>) -> Result<GbtResult> {
         trace!("update: Current State {:#?}", self.thread_transactions);
         run_task(Arc::clone(&self.thread_transactions), move |map| {
-            for tx in ThreadTransaction::batch_from_buffer(&new_txs) {
+            for tx in new_txs {
                 map.insert(tx.uid, tx);
             }
-            for txid in &utils::txids_from_buffer(&remove_txs) {
+            for txid in &remove_txs {
                 map.remove(txid);
             }
         })

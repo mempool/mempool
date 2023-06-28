@@ -1,4 +1,4 @@
-import { GbtGenerator } from '../../rust-gbt';
+import { GbtGenerator, ThreadTransaction as RustThreadTransaction } from '../../rust-gbt';
 import logger from '../logger';
 import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
@@ -341,16 +341,16 @@ class MempoolBlocks {
     for (const tx of Object.values(newMempool)) {
       this.setUid(tx, !saveResults);
     }
-
-    // serialize relevant mempool data into an ArrayBuffer
-    // to reduce the overhead of passing this data to the rust thread
-    const mempoolBuffer = this.mempoolToArrayBuffer(Object.values(newMempool), newMempool);
+    // set short ids for transaction inputs
+    for (const tx of Object.values(newMempool)) {
+      tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
+    }
 
     // run the block construction algorithm in a separate thread, and wait for a result
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
       const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
-        await rustGbt.make(new Uint8Array(mempoolBuffer)),
+        await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[]),
       );
       if (saveResults) {
         this.rustInitialized = true;
@@ -383,22 +383,22 @@ class MempoolBlocks {
     }
 
     const start = Date.now();
-
-    for (const tx of Object.values(added)) {
+    // set missing short ids
+    for (const tx of added) {
       this.setUid(tx, true);
     }
+    // set short ids for transaction inputs
+    for (const tx of added) {
+      tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
+    }
     const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
-    // serialize relevant mempool data into an ArrayBuffer
-    // to reduce the overhead of passing this data to the rust thread
-    const addedBuffer = this.mempoolToArrayBuffer(added, newMempool);
-    const removedBuffer = this.uidsToArrayBuffer(removedUids);
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
       const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
         await this.rustGbtGenerator.update(
-            new Uint8Array(addedBuffer),
-            new Uint8Array(removedBuffer),
+          added as RustThreadTransaction[],
+          removedUids,
         ),
       );
       const expectedMempoolSize = Object.keys(newMempool).length;
@@ -645,54 +645,6 @@ class MempoolBlocks {
       }
     }
     return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], blockWeights: number[], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
-  }
-
-  private mempoolToArrayBuffer(txs: MempoolTransactionExtended[], mempool: { [txid: string]: MempoolTransactionExtended }): ArrayBuffer {
-    let len = 4;
-    const inputs: { [uid: number]: number[] } = {};
-    let validCount = 0;
-    for (const tx of txs) {
-      if (tx.uid !== null && tx.uid !== undefined) {
-        validCount++;
-        const txInputs = tx.vin.map(v => this.getUid(mempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
-        inputs[tx.uid] = txInputs;
-        len += (10 + txInputs.length) * 4;
-      }
-    }
-    const buf = new ArrayBuffer(len);
-    const view = new DataView(buf);
-    view.setUint32(0, validCount, false);
-    let offset = 4;
-    for (const tx of txs) {
-      if (tx.uid !== null && tx.uid !== undefined) {
-        view.setUint32(offset, tx.uid, false);
-        view.setFloat64(offset + 4, tx.fee, false);
-        view.setUint32(offset + 12, tx.weight, false);
-        view.setUint32(offset + 16, tx.sigops, false);
-        view.setFloat64(offset + 20, (tx.adjustedFeePerVsize || tx.feePerVsize), false);
-        view.setFloat64(offset + 28, (tx.effectiveFeePerVsize || tx.adjustedFeePerVsize || tx.feePerVsize), false);
-        view.setUint32(offset + 36, inputs[tx.uid].length, false);
-        offset += 40;
-        for (const input of inputs[tx.uid]) {
-          view.setUint32(offset, input, false);
-          offset += 4;
-        }
-      }
-    }
-    return buf;
-  }
-
-  private uidsToArrayBuffer(uids: number[]): ArrayBuffer {
-    const len = (uids.length + 1) * 4;
-    const buf = new ArrayBuffer(len);
-    const view = new DataView(buf);
-    view.setUint32(0, uids.length, false);
-    let offset = 4;
-    for (const uid of uids) {
-      view.setUint32(offset, uid, false);
-      offset += 4;
-    }
-    return buf;
   }
 }
 
