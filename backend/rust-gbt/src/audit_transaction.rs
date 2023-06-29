@@ -1,5 +1,6 @@
 use crate::{
-    u32_hasher_types::{u32hashset_new, U32HasherState}, ThreadTransaction,
+    u32_hasher_types::{u32hashset_new, U32HasherState},
+    ThreadTransaction,
 };
 use std::{
     cmp::Ordering,
@@ -75,15 +76,8 @@ impl Ord for AuditTransaction {
 }
 
 #[inline]
-fn calc_fee_rate(
-    fee: f64,
-    vsize: u32,
-) -> f64 {
-    fee / (if vsize == 0 {
-        1.0
-    } else {
-        f64::from(vsize)
-    })
+fn calc_fee_rate(fee: f64, vsize: u32) -> f64 {
+    fee / (if vsize == 0 { 1.0 } else { f64::from(vsize) })
 }
 
 impl AuditTransaction {
@@ -149,7 +143,10 @@ impl AuditTransaction {
     /// Safety: This function must NEVER set score to NaN.
     #[inline]
     fn calc_new_score(&mut self) {
-        self.score = self.adjusted_fee_per_vsize.min(calc_fee_rate(self.ancestor_fee as f64, self.ancestor_sigop_adjusted_vsize));
+        self.score = self.adjusted_fee_per_vsize.min(calc_fee_rate(
+            self.ancestor_fee as f64,
+            self.ancestor_sigop_adjusted_vsize,
+        ));
     }
 
     #[inline]

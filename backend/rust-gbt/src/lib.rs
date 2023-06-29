@@ -6,7 +6,7 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::float_cmp)]
 
-use napi::bindgen_prelude::{Result};
+use napi::bindgen_prelude::Result;
 use napi_derive::napi;
 use thread_transaction::ThreadTransaction;
 use tracing::{debug, info, trace};
@@ -88,7 +88,11 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn update(&self, new_txs: Vec<ThreadTransaction>, remove_txs: Vec<u32>) -> Result<GbtResult> {
+    pub async fn update(
+        &self,
+        new_txs: Vec<ThreadTransaction>,
+        remove_txs: Vec<u32>,
+    ) -> Result<GbtResult> {
         trace!("update: Current State {:#?}", self.thread_transactions);
         run_task(Arc::clone(&self.thread_transactions), move |map| {
             for tx in new_txs {
