@@ -15,6 +15,7 @@ pub struct AuditTransaction {
     pub weight: u32,
     pub sigop_adjusted_vsize: u32,
     pub sigops: u32,
+    adjusted_fee_per_vsize: f64,
     pub effective_fee_per_vsize: f64,
     pub dependency_rate: f64,
     pub inputs: Vec<u32>,
@@ -73,6 +74,18 @@ impl Ord for AuditTransaction {
     }
 }
 
+#[inline]
+fn calc_fee_rate(
+    fee: f64,
+    vsize: u32,
+) -> f64 {
+    fee / (if vsize == 0 {
+        1.0
+    } else {
+        f64::from(vsize)
+    })
+}
+
 impl AuditTransaction {
     pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
         // rounded up to the nearest integer
@@ -83,6 +96,7 @@ impl AuditTransaction {
             weight: tx.weight,
             sigop_adjusted_vsize,
             sigops: tx.sigops,
+            adjusted_fee_per_vsize: calc_fee_rate(tx.fee, sigop_adjusted_vsize),
             effective_fee_per_vsize: tx.effective_fee_per_vsize,
             dependency_rate: f64::INFINITY,
             inputs: tx.inputs.clone(),
@@ -135,12 +149,7 @@ impl AuditTransaction {
     /// Safety: This function must NEVER set score to NaN.
     #[inline]
     fn calc_new_score(&mut self) {
-        self.score = (self.ancestor_fee as f64)
-            / (if self.ancestor_sigop_adjusted_vsize == 0 {
-                1.0
-            } else {
-                f64::from(self.ancestor_sigop_adjusted_vsize)
-            });
+        self.score = self.adjusted_fee_per_vsize.min(calc_fee_rate(self.ancestor_fee as f64, self.ancestor_sigop_adjusted_vsize));
     }
 
     #[inline]
