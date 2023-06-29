@@ -562,14 +562,7 @@ class WebsocketHandler {
         const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
-        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
-          return {
-            txid: tx.txid,
-            vsize: tx.vsize,
-            fee: tx.fee ? Math.round(tx.fee) : 0,
-            value: tx.value,
-          };
-        }) : [];
+        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
 
         let totalFees = 0;
         let totalWeight = 0;
