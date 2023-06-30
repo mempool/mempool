@@ -1,4 +1,4 @@
-import { GbtGenerator, ThreadTransaction as RustThreadTransaction } from '../../rust-gbt';
+import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction } from '../../rust-gbt';
 import logger from '../logger';
 import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
@@ -262,7 +262,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      const processed = this.processBlockTemplates(newMempool, blocks, null, rates, clusters, saveResults);
+      const processed = this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), saveResults);
 
       logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
 
@@ -318,7 +318,7 @@ class MempoolBlocks {
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
 
-      this.processBlockTemplates(newMempool, blocks, null, rates, clusters, saveResults);
+      this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), saveResults);
       logger.debug(`updateBlockTemplates completed in ${(Date.now() - start) / 1000} seconds`);
     } catch (e) {
       logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
@@ -415,10 +415,10 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: { [root: string]: number }, clusters: { [root: string]: string[] }, saveResults): MempoolBlockWithTransactions[] {
-    for (const txid of Object.keys(rates)) {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], saveResults): MempoolBlockWithTransactions[] {
+    for (const [txid, rate] of rates) {
       if (txid in mempool) {
-        mempool[txid].effectiveFeePerVsize = rates[txid];
+        mempool[txid].effectiveFeePerVsize = rate;
         mempool[txid].cpfpChecked = false;
       }
     }
@@ -437,7 +437,7 @@ class MempoolBlocks {
       feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
     }
 
-    for (const cluster of Object.values(clusters)) {
+    for (const cluster of clusters) {
       for (const memberTxid of cluster) {
         const mempoolTx = mempool[memberTxid];
         if (mempoolTx) {
@@ -465,12 +465,10 @@ class MempoolBlocks {
       }
     }
 
-    const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees, feeStats }[] = [];
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
-    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-      const block: string[] = blocks[blockIndex];
-      let mempoolTx: MempoolTransactionExtended;
+    let mempoolTx: MempoolTransactionExtended;
+    const mempoolBlocks: MempoolBlockWithTransactions[] = blocks.map((block, blockIndex) => {
       let totalSize = 0;
       let totalVsize = 0;
       let totalWeight = 0;
@@ -510,18 +508,14 @@ class MempoolBlocks {
           }
         }
       }
-      readyBlocks.push({
-        transactionIds: block,
+      return this.dataToMempoolBlocks(
+        block,
         transactions,
         totalSize,
         totalWeight,
         totalFees,
-        feeStats: (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
-      });
-    }
-
-    const mempoolBlocks = readyBlocks.map((b) => {
-      return this.dataToMempoolBlocks(b.transactionIds, b.transactions, b.totalSize, b.totalWeight, b.totalFees, b.feeStats);
+        (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
+      );
     });
 
     if (saveResults) {
@@ -603,16 +597,8 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters }: { blocks: number[][], blockWeights: number[], rates: number[][], clusters: number[][]})
-    : { blocks: string[][], blockWeights: number[], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
-    const rateMap = new Map<number, number>();
-    const clusterMap = new Map<number, number[]>();
-    for (const rate of rates) {
-      rateMap.set(rate[0], rate[1]);
-    }
-    for (const cluster of clusters) {
-      clusterMap.set(cluster[0], cluster);
-    }
+  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters }: GbtResult)
+    : { blocks: string[][], blockWeights: number[], rates: [string, number][], clusters: string[][] } {
     const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
       const txid = this.uidMap.get(uid);
       if (txid !== undefined) {
@@ -621,28 +607,16 @@ class MempoolBlocks {
         throw new Error('GBT returned a block containing a transaction with unknown uid');
       }
     }));
-    const convertedRates = {};
-    for (const rateUid of rateMap.keys()) {
-      const rateTxid = this.uidMap.get(rateUid);
-      if (rateTxid !== undefined) {
-        convertedRates[rateTxid] = rateMap.get(rateUid);
-      } else {
-        throw new Error('GBT returned a fee rate for a transaction with unknown uid');
-      }
+    const convertedRates: [string, number][] = [];
+    for (const [rateUid, rate] of rates) {
+      const rateTxid = this.uidMap.get(rateUid) as string;
+      convertedRates.push([rateTxid, rate]);
     }
-    const convertedClusters = {};
-    for (const rootUid of clusterMap.keys()) {
-      const rootTxid = this.uidMap.get(rootUid);
-      if (rootTxid !== undefined) {
-        const members = clusterMap.get(rootUid)?.map(uid => {
-          return this.uidMap.get(uid);
-        });
-        convertedClusters[rootTxid] = members;
-      } else {
-        throw new Error('GBT returned a cluster rooted in a transaction with unknown uid');
-      }
+    const convertedClusters: string[][] = [];
+    for (const cluster of clusters) {
+      convertedClusters.push(cluster.map(uid => this.uidMap.get(uid)) as string[]);
     }
-    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], blockWeights: number[], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
+    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters };
   }
 }
 
