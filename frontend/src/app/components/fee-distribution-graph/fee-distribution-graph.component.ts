@@ -3,6 +3,7 @@ import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
+import { selectPowerOfTen } from '../../bitcoin.utils';
 
 @Component({
   selector: 'app-fee-distribution-graph',
@@ -34,17 +35,17 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
     private vbytesPipe: VbytesPipe,
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mountChart();
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.simple = !!this.feeRange?.length;
     this.prepareChart();
     this.mountChart();
   }
 
-  prepareChart() {
+  prepareChart(): void {
     if (this.simple) {
       this.data = this.feeRange.map((rate, index) => [index * 10, rate]);
       this.labelInterval = 1;
@@ -82,7 +83,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
     this.data = samples.reverse();
   }
 
-  mountChart() {
+  mountChart(): void {
     this.mempoolVsizeFeesOptions = {
       grid: {
         height: '210',
@@ -118,6 +119,13 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
             color: '#ffffff66',
             opacity: 0.25,
           }
+        },
+        axisLabel: {
+          formatter: (value: number): string => {
+            const selectedPowerOfTen = selectPowerOfTen(value);
+            const newVal = Math.round(value / selectedPowerOfTen.divider);
+            return `${newVal}${selectedPowerOfTen.unit}`;
+          },
         }
       },
       series: [{
@@ -128,7 +136,12 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
           position: 'top',
           color: '#ffffff',
           textShadowBlur: 0,
-          formatter: (label: any): string => '' + (label.data[1] > 99.5 ? Math.round(label.data[1]) : label.data[1].toFixed(1)),
+          formatter: (label: { data: number[] }): string => {
+            const value = label.data[1];
+            const selectedPowerOfTen = selectPowerOfTen(value);
+            const newVal = Math.round(value / selectedPowerOfTen.divider);
+            return `${newVal}${selectedPowerOfTen.unit}`;
+          },
         },
         showAllSymbol: false,
         smooth: true,
