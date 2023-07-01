@@ -64,7 +64,6 @@ class BlocksAuditRepositories {
       const [rows]: any[] = await DB.query(
         `SELECT blocks.height, blocks.hash as id, UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.size,
         blocks.weight, blocks.tx_count,
-        transactions,
         template,
         missing_txs as missingTxs,
         added_txs as addedTxs,
@@ -76,7 +75,6 @@ class BlocksAuditRepositories {
         FROM blocks_audits
         JOIN blocks ON blocks.hash = blocks_audits.hash
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
-        JOIN blocks_summaries ON blocks_summaries.id = blocks_audits.hash
         WHERE blocks_audits.hash = "${hash}"
       `);
       
@@ -85,12 +83,9 @@ class BlocksAuditRepositories {
         rows[0].addedTxs = JSON.parse(rows[0].addedTxs);
         rows[0].freshTxs = JSON.parse(rows[0].freshTxs);
         rows[0].sigopTxs = JSON.parse(rows[0].sigopTxs);
-        rows[0].transactions = JSON.parse(rows[0].transactions);
         rows[0].template = JSON.parse(rows[0].template);
 
-        if (rows[0].transactions.length) {
-          return rows[0];
-        }
+        return rows[0];
       }
       return null;
     } catch (e: any) {
