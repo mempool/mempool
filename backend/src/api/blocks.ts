@@ -1007,19 +1007,11 @@ class Blocks {
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<any> {
-    let summary;
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
-      summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+      return BlocksAuditsRepository.$getBlockAudit(hash);
+    } else {
+      return null;
     }
-
-    // fallback to non-audited transaction summary
-    if (!summary?.transactions?.length) {
-      const strippedTransactions = await this.$getStrippedBlockTransactions(hash);
-      summary = {
-        transactions: strippedTransactions
-      };
-    }
-    return summary;
   }
 
   public getLastDifficultyAdjustmentTime(): number {
