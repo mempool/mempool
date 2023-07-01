@@ -21,6 +21,7 @@ do for url in / \
 	'/api/v1/statistics/2y' \
 	'/api/v1/statistics/3y' \
 	'/api/v1/statistics/4y' \
+	'/api/v1/statistics/all' \
 	'/api/v1/mining/pools/24h' \
 	'/api/v1/mining/pools/3d' \
 	'/api/v1/mining/pools/1w' \
