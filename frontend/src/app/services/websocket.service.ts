@@ -235,6 +235,8 @@ export class WebsocketService {
   }
 
   handleResponse(response: WebsocketResponse) {
+    let reinitBlocks = false;
+
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
       let maxHeight = 0;
@@ -256,9 +258,11 @@ export class WebsocketService {
     }
 
     if (response.block) {
-      if (response.block.height > this.stateService.latestBlockHeight) {
+      if (response.block.height === this.stateService.latestBlockHeight + 1) {
         this.stateService.updateChainTip(response.block.height);
         this.stateService.blocks$.next([response.block, response.txConfirmed || '']);
+      } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
+        reinitBlocks = true;
       }
 
       if (response.txConfirmed) {
@@ -368,6 +372,10 @@ export class WebsocketService {
 
     if (response['git-commit']) {
       this.stateService.backendInfo$.next(response['git-commit']);
+    }
+
+    if (reinitBlocks) {
+      this.websocketSubject.next({'refresh-blocks': true});
     }
   }
 }
