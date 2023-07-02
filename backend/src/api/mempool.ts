@@ -180,9 +180,7 @@ class Mempool {
         }
       }
 
-      if (new Date().getTime() - start > 5_000) {
-        const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
-        logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
+      if (Date.now() - intervalTimer > 5_000) {
         
         if (this.inSync) {
           // Break and restart mempool loop if we spend too much time processing
