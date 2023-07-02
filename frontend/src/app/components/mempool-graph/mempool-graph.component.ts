@@ -26,7 +26,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() filterSize = 100000;
   @Input() limitFilterFee = 1;
   @Input() height: number | string = 200;
-  @Input() top: number | string = 20;
+  @Input() top: number | string = 7;
   @Input() right: number | string = 10;
   @Input() left: number | string = 75;
   @Input() template: ('widget' | 'advanced') = 'widget';
@@ -36,6 +36,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   isLoading = true;
   mempoolVsizeFeesData: any;
   mempoolVsizeMA: any;
+  MAWindowSize = 10;
   mempoolVsizeFeesOptions: EChartsOption;
   mempoolVsizeFeesInitOptions = {
     renderer: 'svg',
@@ -95,13 +96,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
     const finalArrayVByte = this.generateArray(mempoolStats);
-    const finalTot = this.generateTotal(mempoolStats);
-    const finalMA = this.generateMA(mempoolStats, 7);
-
-    console.log("labels: " + labels.length + " : " +labels[0]);
-    console.log("handlingNewMempoolData: "+finalArrayVByte.length + " : " +finalArrayVByte[22].length+ " : "+finalArrayVByte[22][0]);
-    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][10]);
-    console.log("finalMA: "+finalMA.length + " : " +finalMA[0].length+ " : "+finalMA[0][10]);
 
     return {
       labels: labels,
@@ -111,17 +105,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   handleNewMAData(mempoolStats: OptimizedMempoolStats[]) {
     mempoolStats.reverse();
-    const finalTot = this.generateTotal(mempoolStats);
-    const finalMA = this.generateMA(mempoolStats, 7);
     const labels = mempoolStats.map(stats => stats.added);
-
-    console.log("labels: " + labels.length + " : " +labels[0]);
-    console.log("finalTot: "+finalTot.length + " : " +finalTot[0].length+ " : "+finalTot[0][10]);
-    console.log("finalMA: "+finalMA.length + " : " +finalMA[0].length+ " : "+finalMA[0][10]);
+    const finalMA = this.generateMA(mempoolStats, this.MAWindowSize);
 
     return {
       labels: labels,
-      series: finalMA
+      mas: finalMA
     };
   }
 
@@ -138,10 +127,35 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   generateMA(mempoolStats: OptimizedMempoolStats[], windowSize: number) {
-    const finalMA: number[][] = [];
-    const maArray: number[] = [];
+    const finalMA: number[][][] = [];
+    const maArray: number[][] = [];
     mempoolStats.forEach((stats) => {
-      maArray.push(stats.vsizes.reduce((a, b) => a + b, 0) / windowSize);
+      let maVal = 0;
+
+      //maVal = stats.vsizes.slice(0, windowSize).reduce((a, b) => a + b, 0) / windowSize;
+      maVal = stats.vsizes.reduce((a, b) => a + b, 0) / windowSize;
+      /*
+      check if maVal is NaN, if so, set it to 0
+      */
+      if (isNaN(maVal)) {
+        maVal = 0;
+      }
+
+      /*
+      check if maVal is Infinity, if so, set it to 0
+      */
+      if (maVal === Infinity) {
+        maVal = 0;
+      }
+
+      /*
+      check if maVal is negative, if so, set it to 0
+      */
+      if (maVal < 0) {
+        maVal = 0;
+      }
+
+      maArray.push([stats.added * 1000, maVal]);
     });
 
     finalMA.push(maArray);
@@ -170,12 +184,52 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   //This is where the data is assigned to the chart
+  //the data is stored in seriesGraph and assigned to series in the options
   mountFeeChart() {
     this.orderLevels();
     const { series } = this.mempoolVsizeFeesData;
+    const { mas } = this.mempoolVsizeMA;
 
     const seriesGraph = [];
     const newColors = [];
+    seriesGraph.push({
+      zlevel: 1,
+      name: 'MA',
+      type: 'line',
+      stack: 'ma',
+      smooth: false,
+      markPoint: {
+        symbol: 'rect',
+      },
+      lineStyle: {
+        color: 'white',
+      },
+      symbol: 'none',
+      emphasis: {
+        focus: 'none',
+        areaStyle: {
+          opacity: 0.85,
+        },
+      },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: {
+          color: 'white',
+          opacity: 1,
+          width: this.inverted ? 2 : 0,
+        },
+        data: [{
+          yAxis: '1000000',
+          label: {
+            show: false,
+            color: 'white',
+          }
+        }],
+      },
+      data: mas[0]
+    });
+
     for (let index = 0; index < series.length; index++) {
       const value = series[index];
       if (index >= this.feeLimitIndex && index <= this.maxFeeIndex) {
@@ -225,6 +279,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
 
+
+    //object to hold the options for the chart
+    //data is assigned to seriesGraph
     this.mempoolVsizeFeesOptions = {
       series: this.inverted ? [...seriesGraph].reverse() : seriesGraph,
       hover: true,
@@ -391,7 +448,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             padding: [20, 0, 0, 0],
           },
           type: 'time',
-          boundaryGap: false,
           axisLine: { onZero: true },
           axisLabel: {
             margin: 20,

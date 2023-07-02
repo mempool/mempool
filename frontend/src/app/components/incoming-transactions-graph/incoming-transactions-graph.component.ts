@@ -61,7 +61,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   }
 
   mountChart(): void {
-    console.log("inside mountChart: " + this.data.series[0].length);
     this.mempoolStatsChartOption = {
       grid: {
         height: this.height,

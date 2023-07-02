@@ -166,6 +166,9 @@ export class StatisticsComponent implements OnInit {
   setFeeLevelDropdownData() {
     let _feeLevels = feeLevels;
     let _chartColors = chartColors;
+    _feeLevels.push(0);
+    _chartColors.push('#FFFFFF');
+
     if (!this.inverted) {
       _feeLevels = [...feeLevels].reverse();
       _chartColors = [...chartColors].reverse();
@@ -186,6 +189,7 @@ export class StatisticsComponent implements OnInit {
           range = `${_feeLevels[i]} - ${_feeLevels[nextIndex]}`;
         }
       }
+
       if (this.inverted) {
         this.feeLevelDropdownData.push({
           fee: fee,
@@ -200,6 +204,7 @@ export class StatisticsComponent implements OnInit {
         });
       }
     });
+
   }
 
   /**
