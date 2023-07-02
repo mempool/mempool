@@ -156,6 +156,7 @@ class Mempool {
       }
     };
 
+    let intervalTimer = Date.now();
     for (const txid of transactions) {
       if (!this.mempoolCache[txid]) {
         try {
