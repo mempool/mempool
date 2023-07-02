@@ -1042,9 +1042,13 @@ class Blocks {
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {
-    const result = await cpfpRepository.$batchSaveClusters(cpfpSummary.clusters);
-    if (!result) {
-      await cpfpRepository.$insertProgressMarker(height);
+    try {
+      const result = await cpfpRepository.$batchSaveClusters(cpfpSummary.clusters);
+      if (!result) {
+        await cpfpRepository.$insertProgressMarker(height);
+      }
+    } catch (e) {
+      // not a fatal error, we'll try again next time the indexer runs
     }
   }
 }
