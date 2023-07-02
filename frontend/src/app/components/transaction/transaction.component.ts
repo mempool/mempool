@@ -19,7 +19,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -65,7 +65,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCachedTx$ = new Subject<string>();
   isCached: boolean = false;
   now = Date.now();
-  timeAvg$: Observable<number>;
+  da$: Observable<DifficultyAdjustment>;
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
   outputIndex: number;
@@ -117,11 +117,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setFlowEnabled();
     });
 
-    this.timeAvg$ = timer(0, 1000)
-      .pipe(
-        switchMap(() => this.stateService.difficultyAdjustment$),
-        map((da) => da.timeAvg)
-      );
+    this.da$ = this.stateService.difficultyAdjustment$.pipe(
+      tap(() => {
+        this.now = Date.now();
+      })
+    );
 
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.fragmentParams = new URLSearchParams(fragment || '');
@@ -236,6 +236,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
+      this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
         this.mempoolPosition = txPosition.position;
         if (this.tx && !this.tx.status.confirmed) {
@@ -434,11 +435,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
+      this.now = Date.now();
+
       if (!this.tx || this.mempoolPosition) {
         return;
       }
-
-      this.now = Date.now();
 
       const txFeePerVSize =
         this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
