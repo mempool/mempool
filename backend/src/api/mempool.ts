@@ -188,7 +188,10 @@ class Mempool {
           logger.debug('Breaking mempool loop because the 5s time limit exceeded.');
           break;
         } else {
+          const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
+          logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
           loadingIndicators.setProgress('mempool', progress);
+          intervalTimer = Date.now()
         }
       }
     }
