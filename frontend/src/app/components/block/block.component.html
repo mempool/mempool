@@ -63,7 +63,7 @@
                     *ngIf="blockAudit?.matchRate != null; else nullHealth"
                   >{{ blockAudit?.matchRate }}%</span>
                   <ng-template #nullHealth>
-                    <ng-container *ngIf="!isLoadingAudit; else loadingHealth">
+                    <ng-container *ngIf="!isLoadingOverview; else loadingHealth">
                       <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
                     </ng-container>
                   </ng-template>

@@ -158,6 +158,13 @@ class Blocks {
     };
   }
 
+  public summarizeBlockTransactions(hash: string, transactions: TransactionExtended[]): BlockSummary {
+    return {
+      id: hash,
+      transactions: Common.stripTransactions(transactions),
+    };
+  }
+
   private convertLiquidFees(block: IBitcoinApi.VerboseBlock): IBitcoinApi.VerboseBlock {
     block.tx.forEach(tx => {
       tx.fee = Object.values(tx.fee || {}).reduce((total, output) => total + output, 0);
@@ -646,7 +653,7 @@ class Blocks {
       }
       const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
-      const blockSummary: BlockSummary = this.summarizeBlock(verboseBlock);
+      const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `got block data for ${this.currentBlockHeight}`);
 
       // start async callbacks
@@ -668,12 +675,13 @@ class Blocks {
             for (let i = 10; i >= 0; --i) {
               const newBlock = await this.$indexBlock(lastBlock.height - i);
               this.updateTimerProgress(timer, `reindexed block`);
-              await this.$getStrippedBlockTransactions(newBlock.id, true, true);
-              this.updateTimerProgress(timer, `reindexed block summary`);
+              let cpfpSummary;
               if (config.MEMPOOL.CPFP_INDEXING) {
-                await this.$indexCPFP(newBlock.id, lastBlock.height - i);
+                cpfpSummary = await this.$indexCPFP(newBlock.id, lastBlock.height - i);
                 this.updateTimerProgress(timer, `reindexed block cpfp`);
               }
+              await this.$getStrippedBlockTransactions(newBlock.id, true, true, cpfpSummary, newBlock.height);
+              this.updateTimerProgress(timer, `reindexed block summary`);
             }
             await mining.$indexDifficultyAdjustments();
             await DifficultyAdjustmentsRepository.$deleteLastAdjustment();
@@ -704,7 +712,7 @@ class Blocks {
 
           // Save blocks summary for visualization if it's enabled
           if (Common.blocksSummariesIndexingEnabled() === true) {
-            await this.$getStrippedBlockTransactions(blockExtended.id, true);
+            await this.$getStrippedBlockTransactions(blockExtended.id, true, false, cpfpSummary, blockExtended.height);
             this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
           }
           if (config.MEMPOOL.CPFP_INDEXING) {
@@ -730,6 +738,11 @@ class Blocks {
         this.currentDifficulty = block.difficulty;
       }
 
+      // wait for pending async callbacks to finish
+      this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
+      await Promise.all(callbackPromises);
+      this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
+
       this.blocks.push(blockExtended);
       if (this.blocks.length > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4) {
         this.blocks = this.blocks.slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 4);
@@ -745,11 +758,6 @@ class Blocks {
       if (!memPool.hasPriority() && (block.height % config.MEMPOOL.DISK_CACHE_BLOCK_INTERVAL === 0)) {
         diskCache.$saveCacheToDisk();
       }
-
-      // wait for pending async callbacks to finish
-      this.updateTimerProgress(timer, `waiting for async callbacks to complete for ${this.currentBlockHeight}`);
-      await Promise.all(callbackPromises);
-      this.updateTimerProgress(timer, `async callbacks completed for ${this.currentBlockHeight}`);
 
       handledBlocks++;
     }
@@ -827,7 +835,7 @@ class Blocks {
   }
 
   public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
-    skipDBLookup = false): Promise<TransactionStripped[]>
+    skipDBLookup = false, cpfpSummary?: CpfpSummary, blockHeight?: number): Promise<TransactionStripped[]>
   {
     if (skipMemoryCache === false) {
       // Check the memory cache
@@ -845,13 +853,35 @@ class Blocks {
       }
     }
 
-    // Call Core RPC
-    const block = await bitcoinClient.getBlock(hash, 2);
-    const summary = this.summarizeBlock(block);
+    let height = blockHeight;
+    let summary: BlockSummary;
+    if (cpfpSummary) {
+      summary = {
+        id: hash,
+        transactions: cpfpSummary.transactions.map(tx => {
+          return {
+            txid: tx.txid,
+            fee: tx.fee,
+            vsize: tx.vsize,
+            value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
+            rate: tx.effectiveFeePerVsize
+          };
+        }),
+      };
+    } else {
+      // Call Core RPC
+      const block = await bitcoinClient.getBlock(hash, 2);
+      summary = this.summarizeBlock(block);
+      height = block.height;
+    }
+    if (height == null) {
+      const block = await bitcoinApi.$getBlock(hash);
+      height = block.height;
+    }
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveTransactions(block.height, block.hash, summary.transactions);
+      await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions);
     }
 
     return summary.transactions;
@@ -1007,19 +1037,11 @@ class Blocks {
   }
 
   public async $getBlockAuditSummary(hash: string): Promise<any> {
-    let summary;
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
-      summary = await BlocksAuditsRepository.$getBlockAudit(hash);
+      return BlocksAuditsRepository.$getBlockAudit(hash);
+    } else {
+      return null;
     }
-
-    // fallback to non-audited transaction summary
-    if (!summary?.transactions?.length) {
-      const strippedTransactions = await this.$getStrippedBlockTransactions(hash);
-      summary = {
-        transactions: strippedTransactions
-      };
-    }
-    return summary;
   }
 
   public getLastDifficultyAdjustmentTime(): number {
@@ -1050,9 +1072,13 @@ class Blocks {
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {
-    const result = await cpfpRepository.$batchSaveClusters(cpfpSummary.clusters);
-    if (!result) {
-      await cpfpRepository.$insertProgressMarker(height);
+    try {
+      const result = await cpfpRepository.$batchSaveClusters(cpfpSummary.clusters);
+      if (!result) {
+        await cpfpRepository.$insertProgressMarker(height);
+      }
+    } catch (e) {
+      // not a fatal error, we'll try again next time the indexer runs
     }
   }
 }

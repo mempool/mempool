@@ -72,8 +72,10 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        } else {
+          this.radioGroupForm.controls.dateSpan.setValue('2h', { emitEvent: false });
         }
       });
 
@@ -114,7 +116,12 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '3y') {
           return this.apiService.list3YStatistics$();
         }
-        return this.apiService.list4YStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '4y') {
+          return this.apiService.list4YStatistics$();
+        }
+        if (this.radioGroupForm.controls.dateSpan.value === 'all') {
+          return this.apiService.listAllTimeStatistics$();
+        }
       })
     )
     .subscribe((mempoolStats: any) => {

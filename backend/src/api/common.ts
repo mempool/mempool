@@ -113,6 +113,10 @@ export class Common {
     };
   }
 
+  static stripTransactions(txs: TransactionExtended[]): TransactionStripped[] {
+    return txs.map(this.stripTransaction);
+  }
+
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
        setTimeout(() => {
