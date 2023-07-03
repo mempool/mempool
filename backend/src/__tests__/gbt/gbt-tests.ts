@@ -1,7 +1,6 @@
 import fs from 'fs';
-import { GbtGenerator } from '../../../rust-gbt';
+import { GbtGenerator, ThreadTransaction } from '../../../rust-gbt';
 import path from 'path';
-import { CompactThreadTransaction } from '../../mempool.interfaces';
 
 const baseline = require('./test-data/target-template.json');
 const testVector = require('./test-data/test-data-ids.json');
@@ -28,18 +27,20 @@ describe('Rust GBT', () => {
   });
 });
 
-function mempoolFromArrayBuffer(buf: ArrayBuffer): CompactThreadTransaction[] {
+function mempoolFromArrayBuffer(buf: ArrayBuffer): ThreadTransaction[] {
   const view = new DataView(buf);
   const count = view.getUint32(0, false);
-  const txs: CompactThreadTransaction[] = [];
+  const txs: ThreadTransaction[] = [];
   let offset = 4;
   for (let i = 0; i < count; i++) {
-    const tx: CompactThreadTransaction = {
-      uid: view.getUint32(offset, false),
+    const uid = view.getUint32(offset, false);
+    const tx: ThreadTransaction = {
+      uid,
+      order: txidToOrdering(vectorUidMap.get(uid) as string),
       fee: view.getFloat64(offset + 4, false),
       weight: view.getUint32(offset + 12, false),
       sigops: view.getUint32(offset + 16, false),
-      feePerVsize: view.getFloat64(offset + 20, false),
+      // feePerVsize: view.getFloat64(offset + 20, false),
       effectiveFeePerVsize: view.getFloat64(offset + 28, false),
       inputs: [],
     };
@@ -52,4 +53,8 @@ function mempoolFromArrayBuffer(buf: ArrayBuffer): CompactThreadTransaction[] {
     txs.push(tx);
   }
   return txs;
+}
+
+function txidToOrdering(txid: string): number {
+  return parseInt(txid.slice(56).match(/../g)?.reverse().join('') as string, 16);
 }

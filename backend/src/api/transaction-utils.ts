@@ -76,6 +76,7 @@ class TransactionUtils {
     const adjustedFeePerVsize = Math.max(Common.isLiquid() ? 0.1 : 1,
       (transaction.fee || 0) / adjustedVsize);
     const transactionExtended: MempoolTransactionExtended = Object.assign(transaction, {
+      order: this.txidToOrdering(transaction.txid),
       vsize: Math.round(transaction.weight / 4),
       adjustedVsize,
       sigops,
@@ -153,6 +154,11 @@ class TransactionUtils {
     }
 
     return sigops;
+  }
+
+  // returns the most significant 4 bytes of the txid as an integer
+  public txidToOrdering(txid: string): number {
+    return parseInt(txid.slice(56).match(/../g)?.reverse().join('') as string, 16);
   }
 }
 

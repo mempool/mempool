@@ -23,7 +23,7 @@ mod u32_hasher_types;
 
 use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
 
-/// This is the initial capacity of the GbtGenerator struct's inner HashMap.
+/// This is the initial capacity of the `GbtGenerator` struct's inner `HashMap`.
 ///
 /// Note: This doesn't *have* to be a power of 2. (uwu)
 const STARTING_CAPACITY: usize = 1_048_576;

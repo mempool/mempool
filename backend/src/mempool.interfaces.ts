@@ -93,6 +93,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
   sigops: number;
   adjustedVsize: number;
   adjustedFeePerVsize: number;

@@ -12,6 +12,7 @@ use std::{
 #[derive(Clone, Debug)]
 pub struct AuditTransaction {
     pub uid: u32,
+    order: u32,
     pub fee: u64,
     pub weight: u32,
     pub sigop_adjusted_vsize: u32,
@@ -50,19 +51,24 @@ impl PartialEq for AuditTransaction {
 impl Eq for AuditTransaction {}
 
 #[inline]
-pub fn partial_cmp_uid_score(a: (u32, f64), b: (u32, f64)) -> Option<Ordering> {
+pub fn partial_cmp_uid_score(a: (u32, u32, f64), b: (u32, u32, f64)) -> Option<Ordering> {
     // If either score is NaN, this is false,
     // and partial_cmp will return None
-    if a.1 == b.1 {
-        Some(a.0.cmp(&b.0))
+    if a.2 != b.2 {
+        a.2.partial_cmp(&b.2)
+    } else if a.1 != b.1 {
+        Some(b.1.cmp(&a.1))
     } else {
-        a.1.partial_cmp(&b.1)
+        Some(a.0.cmp(&b.0))
     }
 }
 
 impl PartialOrd for AuditTransaction {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        partial_cmp_uid_score((self.uid, self.score), (other.uid, other.score))
+        partial_cmp_uid_score(
+            (self.uid, self.order, self.score),
+            (other.uid, self.order, other.score),
+        )
     }
 }
 
@@ -86,6 +92,7 @@ impl AuditTransaction {
         let sigop_adjusted_vsize = ((tx.weight + 3) / 4).max(tx.sigops * 5);
         Self {
             uid: tx.uid,
+            order: tx.order,
             fee: tx.fee as u64,
             weight: tx.weight,
             sigop_adjusted_vsize,
@@ -111,6 +118,11 @@ impl AuditTransaction {
     #[inline]
     pub const fn score(&self) -> f64 {
         self.score
+    }
+
+    #[inline]
+    pub const fn order(&self) -> u32 {
+        self.order
     }
 
     #[inline]

@@ -5,6 +5,7 @@
 
 export interface ThreadTransaction {
   uid: number
+  order: number
   fee: number
   weight: number
   sigops: number

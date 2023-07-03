@@ -4,6 +4,7 @@ use napi_derive::napi;
 #[napi(object)]
 pub struct ThreadTransaction {
     pub uid: u32,
+    pub order: u32,
     pub fee: f64,
     pub weight: u32,
     pub sigops: u32,
