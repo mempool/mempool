@@ -158,7 +158,13 @@ class TransactionUtils {
 
   // returns the most significant 4 bytes of the txid as an integer
   public txidToOrdering(txid: string): number {
-    return parseInt(txid.slice(56).match(/../g)?.reverse().join('') as string, 16);
+    return (
+      ((parseInt(txid.substring(62, 64), 16) << 24) |
+        (parseInt(txid.substring(60, 62), 16) << 16) |
+        (parseInt(txid.substring(58, 60), 16) << 8) |
+        parseInt(txid.substring(56, 58), 16)) >>>
+      0
+    );
   }
 }
 
