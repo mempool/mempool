@@ -89,6 +89,9 @@ class Mempool {
       if (this.mempoolCache[txid].sigops == null || this.mempoolCache[txid].effectiveFeePerVsize == null) {
         this.mempoolCache[txid] = transactionUtils.extendMempoolTransaction(this.mempoolCache[txid]);
       }
+      if (this.mempoolCache[txid].order == null) {
+        this.mempoolCache[txid].order = transactionUtils.txidToOrdering(txid);
+      }
       count++;
     }
     if (this.mempoolChangedCallback) {

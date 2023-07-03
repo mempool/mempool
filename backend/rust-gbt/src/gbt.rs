@@ -25,6 +25,7 @@ type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 #[derive(Debug)]
 struct TxPriority {
     uid: u32,
+    order: u32,
     score: f64,
 }
 impl PartialEq for TxPriority {
@@ -35,10 +36,12 @@ impl PartialEq for TxPriority {
 impl Eq for TxPriority {}
 impl PartialOrd for TxPriority {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.score == other.score {
-            Some(self.uid.cmp(&other.uid))
-        } else {
+        if self.score != other.score {
             self.score.partial_cmp(&other.score)
+        } else if self.order != other.order {
+            Some(other.order.cmp(&self.order))
+        } else {
+            Some(self.uid.cmp(&other.uid))
         }
     }
 }
@@ -80,17 +83,17 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     trace!("Post relative graph Audit Pool: {:#?}", audit_pool);
 
     info!("Sorting by descending ancestor score");
-    let mut mempool_stack: Vec<(u32, f64)> = mempool_stack
+    let mut mempool_stack: Vec<(u32, u32, f64)> = mempool_stack
         .into_iter()
         .map(|txid| {
             let atx = audit_pool
                 .get(&txid)
                 .expect("All txids are from audit_pool");
-            (txid, atx.score())
+            (txid, atx.order(), atx.score())
         })
         .collect();
     mempool_stack.sort_unstable_by(|a, b| partial_cmp_uid_score(*a, *b).expect("Not NaN"));
-    let mut mempool_stack: Vec<u32> = mempool_stack.into_iter().map(|(txid, _)| txid).collect();
+    let mut mempool_stack: Vec<u32> = mempool_stack.into_iter().map(|(txid, _, _)| txid).collect();
 
     info!("Building blocks by greedily choosing the highest feerate package");
     info!("(i.e. the package rooted in the transaction with the best ancestor score)");
@@ -212,6 +215,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
                             *overflowed,
                             TxPriority {
                                 uid: *overflowed,
+                                order: overflowed_tx.order(),
                                 score: overflowed_tx.score(),
                             },
                         );
@@ -376,6 +380,7 @@ fn update_descendants(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
+                        order: descendant.order(),
                         score: descendant.score(),
                     },
                 );
@@ -385,6 +390,7 @@ fn update_descendants(
                     descendant.uid,
                     TxPriority {
                         uid: descendant.uid,
+                        order: descendant.order(),
                         score: descendant.score(),
                     },
                 );
