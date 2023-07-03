@@ -233,7 +233,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     for (let index = 0; index < series.length; index++) {
       const value = series[index];
-      //console.log("Series data: " + this.feeLevelsOrdered[index], this.chartColorsOrdered[index]);
       if (index >= this.feeLimitIndex && index <= this.maxFeeIndex) {
         newColors.push(this.chartColorsOrdered[index]);
         seriesGraph.push({
@@ -281,10 +280,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
 
+    //Handle the added MA to series, add color white for this temporarly to keep original colors synced up
     const seriesGraphMA = maGraph.concat(this.inverted ? [...seriesGraph].reverse() : seriesGraph);
     const colorMA = ["#FFFFFF"].concat(this.inverted ? [...newColors].reverse() : newColors);
-    //console.log("Colors : " + seriesGraph[0].name + " : " + newColors[0] + " : " + newColors);
-    //object to hold the options for the chart
+
     //data is assigned to seriesGraph
     this.mempoolVsizeFeesOptions = {
       series: seriesGraphMA,
@@ -325,8 +324,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
           const items = this.inverted ? [...params.slice(1)].reverse() : params.slice(1);
           items.map((item: any, index: number) => {
+
             //Don't include MA in the tool tip list
-            console.log("Item: " + item.seriesName + " : " + item.color + " : " + index);
             if (item.seriesName !== 'MA') {
               totalParcial += item.value[1];
               const progressPercentage = (item.value[1] / totalValue) * 100;
@@ -496,7 +495,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     //Use slice(1) so that we don't count the moving average values
     const valuesInverted = this.inverted ? values : [...values].reverse();
     for (const item of valuesInverted) {
-      //console.log("Item im total: ", item);
       if(item.seriesName != "MA")
       {
         totalValueTemp += item.value[1];
