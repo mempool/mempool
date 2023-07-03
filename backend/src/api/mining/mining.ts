@@ -106,6 +106,7 @@ class Mining {
         emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+        avgFeeDelta: poolInfo.avgFeeDelta,
       };
       poolsStats.push(poolStat);
     });
