@@ -312,7 +312,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     }
 
     let mut total_fee: u64 = 0;
-    let mut total_weight: u32 = 0;
+    let mut total_sigop_adjusted_weight: u32 = 0;
     let mut total_sigop_adjusted_vsize: u32 = 0;
     let mut total_sigops: u32 = 0;
 
@@ -321,7 +321,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
             .get(ancestor_id)
             .expect("audit_pool contains all ancestors");
         total_fee += ancestor.fee;
-        total_weight += ancestor.weight;
+        total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
         total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
         total_sigops += ancestor.sigops;
     }
@@ -330,7 +330,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
         tx.set_ancestors(
             ancestors,
             total_fee,
-            total_weight,
+            total_sigop_adjusted_weight,
             total_sigop_adjusted_vsize,
             total_sigops,
         );
@@ -347,7 +347,7 @@ fn update_descendants(
     let mut visited: HashSet<u32, U32HasherState> = u32hashset_new();
     let mut descendant_stack: Vec<u32> = Vec::new();
     let root_fee: u64;
-    let root_weight: u32;
+    let root_sigop_adjusted_weight: u32;
     let root_sigop_adjusted_vsize: u32;
     let root_sigops: u32;
     if let Some(root_tx) = audit_pool.get(&root_txid) {
@@ -358,7 +358,7 @@ fn update_descendants(
             }
         }
         root_fee = root_tx.fee;
-        root_weight = root_tx.weight;
+        root_sigop_adjusted_weight = root_tx.sigop_adjusted_weight;
         root_sigop_adjusted_vsize = root_tx.sigop_adjusted_vsize;
         root_sigops = root_tx.sigops;
     } else {
@@ -370,7 +370,7 @@ fn update_descendants(
             let old_score = descendant.remove_root(
                 root_txid,
                 root_fee,
-                root_weight,
+                root_sigop_adjusted_weight,
                 root_sigop_adjusted_vsize,
                 root_sigops,
                 cluster_rate,

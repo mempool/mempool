@@ -15,6 +15,9 @@ pub struct AuditTransaction {
     order: u32,
     pub fee: u64,
     pub weight: u32,
+    // exact sigop-adjusted weight
+    pub sigop_adjusted_weight: u32,
+    // sigop-adjusted vsize rounded up the the next integer
     pub sigop_adjusted_vsize: u32,
     pub sigops: u32,
     adjusted_fee_per_vsize: f64,
@@ -25,7 +28,7 @@ pub struct AuditTransaction {
     pub ancestors: HashSet<u32, U32HasherState>,
     pub children: HashSet<u32, U32HasherState>,
     ancestor_fee: u64,
-    ancestor_weight: u32,
+    ancestor_sigop_adjusted_weight: u32,
     ancestor_sigop_adjusted_vsize: u32,
     ancestor_sigops: u32,
     // Safety: Must be private to prevent NaN breaking Ord impl.
@@ -85,36 +88,44 @@ impl Ord for AuditTransaction {
 }
 
 #[inline]
-fn calc_fee_rate(fee: f64, vsize: u32) -> f64 {
-    fee / (if vsize == 0 { 1.0 } else { f64::from(vsize) })
+fn calc_fee_rate(fee: f64, vsize: f64) -> f64 {
+    fee / (if vsize == 0.0 { 1.0 } else { vsize })
 }
 
 impl AuditTransaction {
     pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
         // rounded up to the nearest integer
+        let is_adjusted = tx.weight < (tx.sigops * 20);
         let sigop_adjusted_vsize = ((tx.weight + 3) / 4).max(tx.sigops * 5);
+        let sigop_adjusted_weight = tx.weight.max(tx.sigops * 20);
+        let effective_fee_per_vsize = if is_adjusted {
+            calc_fee_rate(tx.fee, f64::from(sigop_adjusted_weight) / 4.0)
+        } else {
+            tx.effective_fee_per_vsize
+        };
         Self {
             uid: tx.uid,
             order: tx.order,
             fee: tx.fee as u64,
             weight: tx.weight,
+            sigop_adjusted_weight,
             sigop_adjusted_vsize,
             sigops: tx.sigops,
-            adjusted_fee_per_vsize: calc_fee_rate(tx.fee, sigop_adjusted_vsize),
-            effective_fee_per_vsize: tx.effective_fee_per_vsize,
+            adjusted_fee_per_vsize: calc_fee_rate(tx.fee, f64::from(sigop_adjusted_vsize)),
+            effective_fee_per_vsize,
             dependency_rate: f64::INFINITY,
             inputs: tx.inputs.clone(),
             relatives_set_flag: false,
             ancestors: u32hashset_new(),
             children: u32hashset_new(),
             ancestor_fee: tx.fee as u64,
-            ancestor_weight: tx.weight,
+            ancestor_sigop_adjusted_weight: sigop_adjusted_weight,
             ancestor_sigop_adjusted_vsize: sigop_adjusted_vsize,
             ancestor_sigops: tx.sigops,
             score: 0.0,
             used: false,
             modified: false,
-            dirty: false,
+            dirty: effective_fee_per_vsize != tx.effective_fee_per_vsize,
         }
     }
 
@@ -144,8 +155,10 @@ impl AuditTransaction {
         // Even if it could, as it approaches 0, the value inside the min() call
         // grows, so if we think of 0 as "grew infinitely" then dependency_rate would be
         // the smaller of the two. If either side is NaN, the other side is returned.
-        self.dependency_rate
-            .min(self.ancestor_fee as f64 / (f64::from(self.ancestor_weight) / 4.0))
+        self.dependency_rate.min(calc_fee_rate(
+            self.ancestor_fee as f64,
+            f64::from(self.ancestor_sigop_adjusted_weight) / 4.0,
+        ))
     }
 
     pub fn set_dirty_if_different(&mut self, cluster_rate: f64) {
@@ -160,7 +173,7 @@ impl AuditTransaction {
     fn calc_new_score(&mut self) {
         self.score = self.adjusted_fee_per_vsize.min(calc_fee_rate(
             self.ancestor_fee as f64,
-            self.ancestor_sigop_adjusted_vsize,
+            f64::from(self.ancestor_sigop_adjusted_vsize),
         ));
     }
 
@@ -169,13 +182,14 @@ impl AuditTransaction {
         &mut self,
         ancestors: HashSet<u32, U32HasherState>,
         total_fee: u64,
-        total_weight: u32,
+        total_sigop_adjusted_weight: u32,
         total_sigop_adjusted_vsize: u32,
         total_sigops: u32,
     ) {
         self.ancestors = ancestors;
         self.ancestor_fee = self.fee + total_fee;
-        self.ancestor_weight = self.weight + total_weight;
+        self.ancestor_sigop_adjusted_weight =
+            self.sigop_adjusted_weight + total_sigop_adjusted_weight;
         self.ancestor_sigop_adjusted_vsize = self.sigop_adjusted_vsize + total_sigop_adjusted_vsize;
         self.ancestor_sigops = self.sigops + total_sigops;
         self.calc_new_score();
@@ -187,7 +201,7 @@ impl AuditTransaction {
         &mut self,
         root_txid: u32,
         root_fee: u64,
-        root_weight: u32,
+        root_sigop_adjusted_weight: u32,
         root_sigop_adjusted_vsize: u32,
         root_sigops: u32,
         cluster_rate: f64,
@@ -196,7 +210,7 @@ impl AuditTransaction {
         self.dependency_rate = self.dependency_rate.min(cluster_rate);
         if self.ancestors.remove(&root_txid) {
             self.ancestor_fee -= root_fee;
-            self.ancestor_weight -= root_weight;
+            self.ancestor_sigop_adjusted_weight -= root_sigop_adjusted_weight;
             self.ancestor_sigop_adjusted_vsize -= root_sigop_adjusted_vsize;
             self.ancestor_sigops -= root_sigops;
             self.calc_new_score();
