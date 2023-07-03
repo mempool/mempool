@@ -36,13 +36,10 @@ impl PartialEq for TxPriority {
 impl Eq for TxPriority {}
 impl PartialOrd for TxPriority {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.score != other.score {
-            self.score.partial_cmp(&other.score)
-        } else if self.order != other.order {
-            Some(other.order.cmp(&self.order))
-        } else {
-            Some(self.uid.cmp(&other.uid))
-        }
+        partial_cmp_uid_score(
+            (self.uid, self.order, self.score),
+            (other.uid, other.order, other.score),
+        )
     }
 }
 impl Ord for TxPriority {
@@ -153,26 +150,31 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             overflow.push(next_tx.uid);
             failures += 1;
         } else {
-            let mut package: Vec<(u32, usize)> = Vec::new();
+            let mut package: Vec<(u32, u32, usize)> = Vec::new();
             let mut cluster: Vec<u32> = Vec::new();
             let is_cluster: bool = !next_tx.ancestors.is_empty();
             for ancestor_id in &next_tx.ancestors {
                 if let Some(ancestor) = audit_pool.get(ancestor_id) {
-                    package.push((*ancestor_id, ancestor.ancestors.len()));
+                    package.push((*ancestor_id, ancestor.order(), ancestor.ancestors.len()));
                 }
             }
             package.sort_unstable_by(|a, b| -> Ordering {
-                if a.1 == b.1 {
-                    b.0.cmp(&a.0)
-                } else {
+                if a.2 != b.2 {
+                    // order by ascending ancestor count
+                    a.2.cmp(&b.2)
+                } else if a.1 != b.1 {
+                    // tie-break by ascending partial txid
                     a.1.cmp(&b.1)
+                } else {
+                    // tie-break partial txid collisions by ascending uid
+                    a.0.cmp(&b.0)
                 }
             });
-            package.push((next_tx.uid, next_tx.ancestors.len()));
+            package.push((next_tx.uid, next_tx.order(), next_tx.ancestors.len()));
 
             let cluster_rate = next_tx.cluster_rate();
 
-            for (txid, _) in &package {
+            for (txid, _, _) in &package {
                 cluster.push(*txid);
                 if let Some(tx) = audit_pool.get_mut(txid) {
                     tx.used = true;

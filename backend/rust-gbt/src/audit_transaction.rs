@@ -55,11 +55,14 @@ pub fn partial_cmp_uid_score(a: (u32, u32, f64), b: (u32, u32, f64)) -> Option<O
     // If either score is NaN, this is false,
     // and partial_cmp will return None
     if a.2 != b.2 {
+        // compare by score (sorts by ascending score)
         a.2.partial_cmp(&b.2)
     } else if a.1 != b.1 {
+        // tie-break by comparing partial txids (sorts by descending txid)
         Some(b.1.cmp(&a.1))
     } else {
-        Some(a.0.cmp(&b.0))
+        // tie-break partial txid collisions by comparing uids (sorts by descending uid)
+        Some(b.0.cmp(&a.0))
     }
 }
 
@@ -67,7 +70,7 @@ impl PartialOrd for AuditTransaction {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         partial_cmp_uid_score(
             (self.uid, self.order, self.score),
-            (other.uid, self.order, other.score),
+            (other.uid, other.order, other.score),
         )
     }
 }
