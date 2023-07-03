@@ -192,7 +192,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     const seriesGraph = [];
     const newColors = [];
-    seriesGraph.push({
+    const maGraph = [];
+    maGraph.push({
       zlevel: 1,
       name: 'MA',
       type: 'line',
@@ -232,6 +233,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     for (let index = 0; index < series.length; index++) {
       const value = series[index];
+      //console.log("Series data: " + this.feeLevelsOrdered[index], this.chartColorsOrdered[index]);
       if (index >= this.feeLimitIndex && index <= this.maxFeeIndex) {
         newColors.push(this.chartColorsOrdered[index]);
         seriesGraph.push({
@@ -279,13 +281,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
 
-
+    const seriesGraphMA = maGraph.concat(this.inverted ? [...seriesGraph].reverse() : seriesGraph);
+    const colorMA = ["#FFFFFF"].concat(this.inverted ? [...newColors].reverse() : newColors);
+    //console.log("Colors : " + seriesGraph[0].name + " : " + newColors[0] + " : " + newColors);
     //object to hold the options for the chart
     //data is assigned to seriesGraph
     this.mempoolVsizeFeesOptions = {
-      series: this.inverted ? [...seriesGraph].reverse() : seriesGraph,
+      series: seriesGraphMA,
       hover: true,
-      color: this.inverted ? [...newColors].reverse() : newColors,
+      color: colorMA,
       tooltip: {
         show: !this.isMobile(),
         trigger: 'axis',
@@ -312,71 +316,77 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           }
         },
         formatter: (params: any) => {
+
           const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
           let progressPercentageText = '';
-          const items = this.inverted ? [...params].reverse() : params;
+
+          const items = this.inverted ? [...params.slice(1)].reverse() : params.slice(1);
           items.map((item: any, index: number) => {
-            totalParcial += item.value[1];
-            const progressPercentage = (item.value[1] / totalValue) * 100;
-            const progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
-            let activeItemClass = '';
-            let hoverActive = 0;
-            if (this.inverted) {
-              hoverActive = Math.abs(this.feeLevelsOrdered.length - item.seriesIndex - this.feeLevelsOrdered.length);
-            } else {
-              hoverActive = item.seriesIndex;
-            }
-            if (this.hoverIndexSerie === hoverActive) {
-              progressPercentageText = `<div class="total-parcial-active">
-                <span class="progress-percentage">
-                  ${formatNumber(progressPercentage, this.locale, '1.2-2')}
-                  <span class="symbol">%</span>
-                </span>
-                <span class="total-parcial-vbytes">
-                  ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
-                </span>
-                <div class="total-percentage-bar">
+            //Don't include MA in the tool tip list
+            console.log("Item: " + item.seriesName + " : " + item.color + " : " + index);
+            if (item.seriesName !== 'MA') {
+              totalParcial += item.value[1];
+              const progressPercentage = (item.value[1] / totalValue) * 100;
+              const progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
+              let activeItemClass = '';
+              let hoverActive = 0;
+              if (this.inverted) {
+                hoverActive = Math.abs(this.feeLevelsOrdered.length - item.seriesIndex - this.feeLevelsOrdered.length);
+              } else {
+                hoverActive = item.seriesIndex;
+              }
+              if (this.hoverIndexSerie === hoverActive) {
+                progressPercentageText = `<div class="total-parcial-active">
+                  <span class="progress-percentage">
+                    ${formatNumber(progressPercentage, this.locale, '1.2-2')}
+                    <span class="symbol">%</span>
+                  </span>
+                  <span class="total-parcial-vbytes">
+                    ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
+                  </span>
+                  <div class="total-percentage-bar">
+                    <span class="total-percentage-bar-background">
+                      <span style="
+                        width: ${progressPercentage}%;
+                        background: ${item.color}
+                      "></span>
+                    </span>
+                  </div>
+                </div>`;
+                activeItemClass = 'active';
+              }
+              itemFormatted.push(`<tr class="item ${activeItemClass}">
+                <td class="indicator-container">
+                  <span class="indicator" style="
+                    background-color: ${item.color}
+                  "></span>
+                  <span>
+                    ${item.seriesName}
+                  </span>
+                </td>
+                <td class="total-progress-sum">
+                  <span>
+                    ${this.vbytesPipe.transform(item.value[1], 2, 'vB', 'MvB', false)}
+                  </span>
+                </td>
+                <td class="total-progress-sum">
+                  <span>
+                    ${this.vbytesPipe.transform(totalValueArray[index], 2, 'vB', 'MvB', false)}
+                  </span>
+                </td>
+                <td class="total-progress-sum-bar">
                   <span class="total-percentage-bar-background">
                     <span style="
-                      width: ${progressPercentage}%;
-                      background: ${item.color}
+                      width: ${progressPercentageSum.toFixed(2)}%;
+                      background-color: ${this.chartColorsOrdered[3]}
                     "></span>
                   </span>
-                </div>
-              </div>`;
-              activeItemClass = 'active';
+                </td>
+              </tr>`);
             }
-            itemFormatted.push(`<tr class="item ${activeItemClass}">
-              <td class="indicator-container">
-                <span class="indicator" style="
-                  background-color: ${item.color}
-                "></span>
-                <span>
-                  ${item.seriesName}
-                </span>
-              </td>
-              <td class="total-progress-sum">
-                <span>
-                  ${this.vbytesPipe.transform(item.value[1], 2, 'vB', 'MvB', false)}
-                </span>
-              </td>
-              <td class="total-progress-sum">
-                <span>
-                  ${this.vbytesPipe.transform(totalValueArray[index], 2, 'vB', 'MvB', false)}
-                </span>
-              </td>
-              <td class="total-progress-sum-bar">
-                <span class="total-percentage-bar-background">
-                  <span style="
-                    width: ${progressPercentageSum.toFixed(2)}%;
-                    background-color: ${this.chartColorsOrdered[3]}
-                  "></span>
-                </span>
-              </td>
-            </tr>`);
           });
           const classActive = (this.template === 'advanced') ? 'fees-wrapper-tooltip-chart-advanced' : '';
           const titleRange = $localize`Range`;
@@ -475,15 +485,23 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         }
       },
     };
+    /// add maGraph to mempoolVsizeOptions series
+
   }
 
   getTotalValues = (values: any) => {
     let totalValueTemp = 0;
     const totalValueArray = [];
+
+    //Use slice(1) so that we don't count the moving average values
     const valuesInverted = this.inverted ? values : [...values].reverse();
     for (const item of valuesInverted) {
-      totalValueTemp += item.value[1];
-      totalValueArray.push(totalValueTemp);
+      //console.log("Item im total: ", item);
+      if(item.seriesName != "MA")
+      {
+        totalValueTemp += item.value[1];
+        totalValueArray.push(totalValueTemp);
+      }
     }
     return {
       totalValue: totalValueTemp,
