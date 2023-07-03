@@ -1,8 +1,0 @@
-sitemap
-data
-docker-compose.yml
-docker/back_data
-backend/mempool-config.json
-*.swp
-frontend/src/resources/config.template.js
-frontend/src/resources/config.js
