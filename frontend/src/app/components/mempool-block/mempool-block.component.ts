@@ -17,6 +17,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
+  mempoolBlockTransactions$: Observable<TransactionStripped[]>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
   previewTx: TransactionStripped | void;
   webGlEnabled: boolean;
@@ -53,6 +54,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
                 const ordinal = this.getOrdinal(mempoolBlocks[this.mempoolBlockIndex]);
                 this.ordinal$.next(ordinal);
                 this.seoService.setTitle(ordinal);
+                mempoolBlocks[this.mempoolBlockIndex].isStack = mempoolBlocks[this.mempoolBlockIndex].blockVSize > this.stateService.blockVSize;
                 return mempoolBlocks[this.mempoolBlockIndex];
               })
             );
@@ -61,6 +63,8 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
         })
       );
+
+    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(txMap => Object.values(txMap)));
 
     this.network$ = this.stateService.networkChanged$;
   }

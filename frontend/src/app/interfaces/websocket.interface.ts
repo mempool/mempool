@@ -31,6 +31,7 @@ export interface WebsocketResponse {
   'track-rbf'?: string;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
+  'refresh-blocks'?: boolean;
 }
 
 export interface ReplacedTransaction extends Transaction {
