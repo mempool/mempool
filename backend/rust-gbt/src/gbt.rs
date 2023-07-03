@@ -66,7 +66,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     let mut block_weights: Vec<u32> = Vec::new();
 
     info!("Initializing working structs");
-    for (uid, tx) in mempool {
+    for (uid, tx) in &mut *mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
         // Safety: audit_pool and mempool_stack must always contain the same transactions
         audit_pool.insert(audit_tx.uid, audit_tx);
@@ -241,6 +241,9 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         trace!("txid: {}, is_dirty: {}", txid, tx.dirty);
         if tx.dirty {
             rates.push(vec![f64::from(txid), tx.effective_fee_per_vsize]);
+            if let Some(mempool_tx) = mempool.get_mut(&txid) {
+                mempool_tx.effective_fee_per_vsize = tx.effective_fee_per_vsize;
+            }
         }
     }
     trace!("\n\n\n\n\n====================");
