@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
+import { switchMap, tap, throttleTime, catchError, map, shareReplay, startWith } from 'rxjs/operators';
 import { Transaction, Vout } from '../../interfaces/electrs.interface';
-import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest } from 'rxjs';
+import { Observable, of, Subscription, asyncScheduler, EMPTY, combineLatest, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -44,7 +44,6 @@ export class BlockComponent implements OnInit, OnDestroy {
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
   isLoadingOverview = true;
-  isLoadingAudit = true;
   error: any;
   blockSubsidy: number;
   fees: number;
@@ -281,143 +280,111 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.isLoadingOverview = false;
     });
 
-    if (!this.auditSupported) {
-      this.overviewSubscription = block$.pipe(
-        startWith(null),
-        pairwise(),
-        switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
-          .pipe(
-            catchError((err) => {
-              this.overviewError = err;
-              return of([]);
-            }),
-            switchMap((transactions) => {
-              if (prevBlock) {
-                return of({ transactions, direction: (prevBlock.height < block.height) ? 'right' : 'left' });
-              } else {
-                return of({ transactions, direction: 'down' });
-              }
-            })
-          )
-        ),
-      )
-      .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
-        this.strippedTransactions = transactions;
-        this.isLoadingOverview = false;
-        this.setupBlockGraphs();
-      },
-      (error) => {
-        this.error = error;
-        this.isLoadingOverview = false;
-      });
-    }
-
-    if (this.auditSupported) {
-      this.auditSubscription = block$.pipe(
-        startWith(null),
-        pairwise(),
-        switchMap(([prevBlock, block]) => {
-          this.isLoadingAudit = true;
-          this.blockAudit = null;
-          return this.apiService.getBlockAudit$(block.id)
+    this.overviewSubscription = block$.pipe(
+      switchMap((block) => {
+        return forkJoin([
+          this.apiService.getStrippedBlockTransactions$(block.id)
             .pipe(
               catchError((err) => {
                 this.overviewError = err;
-                this.isLoadingAudit = false;
-                return of([]);
+                return of(null);
               })
-            );
-        }
-        ),
-        filter((response) => response != null),
-        map((response) => {
-          const blockAudit = response.body;
-          const inTemplate = {};
-          const inBlock = {};
-          const isAdded = {};
-          const isCensored = {};
-          const isMissing = {};
-          const isSelected = {};
-          const isFresh = {};
-          const isSigop = {};
-          this.numMissing = 0;
-          this.numUnexpected = 0;
+            ),
+          !this.isAuditAvailableFromBlockHeight(block.height) ? of(null) : this.apiService.getBlockAudit$(block.id)
+            .pipe(
+              catchError((err) => {
+                this.overviewError = err;
+                return of(null);
+              })
+            )
+        ]);
+      })
+    )
+    .subscribe(([transactions, blockAudit]) => {      
+      if (transactions) {
+        this.strippedTransactions = transactions;
+      } else {
+        this.strippedTransactions = [];
+      }
 
-          if (blockAudit?.template) {
-            for (const tx of blockAudit.template) {
-              inTemplate[tx.txid] = true;
-            }
-            for (const tx of blockAudit.transactions) {
-              inBlock[tx.txid] = true;
-            }
-            for (const txid of blockAudit.addedTxs) {
-              isAdded[txid] = true;
-            }
-            for (const txid of blockAudit.missingTxs) {
-              isCensored[txid] = true;
-            }
-            for (const txid of blockAudit.freshTxs || []) {
-              isFresh[txid] = true;
-            }
-            for (const txid of blockAudit.sigopTxs || []) {
-              isSigop[txid] = true;
-            }
-            // set transaction statuses
-            for (const tx of blockAudit.template) {
-              tx.context = 'projected';
-              if (isCensored[tx.txid]) {
-                tx.status = 'censored';
-              } else if (inBlock[tx.txid]) {
-                tx.status = 'found';
-              } else {
-                tx.status = isFresh[tx.txid] ? 'fresh' : (isSigop[tx.txid] ? 'sigop' : 'missing');
-                isMissing[tx.txid] = true;
-                this.numMissing++;
-              }
-            }
-            for (const [index, tx] of blockAudit.transactions.entries()) {
-              tx.context = 'actual';
-              if (index === 0) {
-                tx.status = null;
-              } else if (isAdded[tx.txid]) {
-                tx.status = 'added';
-              } else if (inTemplate[tx.txid]) {
-                tx.status = 'found';
-              } else {
-                tx.status = 'selected';
-                isSelected[tx.txid] = true;
-                this.numUnexpected++;
-              }
-            }
-            for (const tx of blockAudit.transactions) {
-              inBlock[tx.txid] = true;
-            }
+      this.blockAudit = null;
+      if (transactions && blockAudit) {
+        const inTemplate = {};
+        const inBlock = {};
+        const isAdded = {};
+        const isCensored = {};
+        const isMissing = {};
+        const isSelected = {};
+        const isFresh = {};
+        const isSigop = {};
+        this.numMissing = 0;
+        this.numUnexpected = 0;
 
-            blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - this.block.extras.totalFees) / blockAudit.expectedFees : 0;
-            blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
-            blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
-
-            this.setAuditAvailable(true);
-          } else {
-            this.setAuditAvailable(false);
+        if (blockAudit?.template) {
+          for (const tx of blockAudit.template) {
+            inTemplate[tx.txid] = true;
           }
-          return blockAudit;
-        }),
-        catchError((err) => {
-          console.log(err);
-          this.error = err;
-          this.isLoadingOverview = false;
-          this.isLoadingAudit = false;
+          for (const tx of transactions) {
+            inBlock[tx.txid] = true;
+          }
+          for (const txid of blockAudit.addedTxs) {
+            isAdded[txid] = true;
+          }
+          for (const txid of blockAudit.missingTxs) {
+            isCensored[txid] = true;
+          }
+          for (const txid of blockAudit.freshTxs || []) {
+            isFresh[txid] = true;
+          }
+          for (const txid of blockAudit.sigopTxs || []) {
+            isSigop[txid] = true;
+          }
+          // set transaction statuses
+          for (const tx of blockAudit.template) {
+            tx.context = 'projected';
+            if (isCensored[tx.txid]) {
+              tx.status = 'censored';
+            } else if (inBlock[tx.txid]) {
+              tx.status = 'found';
+            } else {
+              tx.status = isFresh[tx.txid] ? 'fresh' : (isSigop[tx.txid] ? 'sigop' : 'missing');
+              isMissing[tx.txid] = true;
+              this.numMissing++;
+            }
+          }
+          for (const [index, tx] of transactions.entries()) {
+            tx.context = 'actual';
+            if (index === 0) {
+              tx.status = null;
+            } else if (isAdded[tx.txid]) {
+              tx.status = 'added';
+            } else if (inTemplate[tx.txid]) {
+              tx.status = 'found';
+            } else {
+              tx.status = 'selected';
+              isSelected[tx.txid] = true;
+              this.numUnexpected++;
+            }
+          }
+          for (const tx of transactions) {
+            inBlock[tx.txid] = true;
+          }
+
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - this.block.extras.totalFees) / blockAudit.expectedFees : 0;
+          blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
+          blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
+          this.blockAudit = blockAudit;
+          this.setAuditAvailable(true);
+        } else {
           this.setAuditAvailable(false);
-          return of(null);
-        }),
-      ).subscribe((blockAudit) => {
-        this.blockAudit = blockAudit;
-        this.setupBlockGraphs();
-        this.isLoadingOverview = false;
-        this.isLoadingAudit = false;
-      });
-    }
+        }
+      } else {
+        this.setAuditAvailable(false);
+      }
+
+      this.isLoadingOverview = false;
+      this.setupBlockGraphs();
+    });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
@@ -652,25 +619,32 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
-    if (!this.auditSupported) {
+    if (!this.isAuditAvailableFromBlockHeight(blockHeight)) {
       this.setAuditAvailable(false);
+    }
+  }
+  
+  isAuditAvailableFromBlockHeight(blockHeight: number): boolean {
+    if (!this.auditSupported) {
+      return false;
     }
     switch (this.stateService.network) {
       case 'testnet':
         if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
         break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
         break;
       default:
         if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
-          this.setAuditAvailable(false);
+          return false;
         }
     }
+    return true;
   }
 
   getMinBlockFee(block: BlockExtended): number {
