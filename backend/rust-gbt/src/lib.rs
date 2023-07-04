@@ -74,9 +74,9 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn make(&self, mempool: Vec<ThreadTransaction>) -> Result<GbtResult> {
+    pub async fn make(&self, mempool: Vec<ThreadTransaction>, max_uid: u32) -> Result<GbtResult> {
         trace!("make: Current State {:#?}", self.thread_transactions);
-        run_task(Arc::clone(&self.thread_transactions), move |map| {
+        run_task(Arc::clone(&self.thread_transactions), max_uid as usize, move |map| {
             for tx in mempool {
                 map.insert(tx.uid, tx);
             }
@@ -92,9 +92,10 @@ impl GbtGenerator {
         &self,
         new_txs: Vec<ThreadTransaction>,
         remove_txs: Vec<u32>,
+        max_uid: u32,
     ) -> Result<GbtResult> {
         trace!("update: Current State {:#?}", self.thread_transactions);
-        run_task(Arc::clone(&self.thread_transactions), move |map| {
+        run_task(Arc::clone(&self.thread_transactions), max_uid as usize, move |map| {
             for tx in new_txs {
                 map.insert(tx.uid, tx);
             }
@@ -132,6 +133,7 @@ pub struct GbtResult {
 /// to the `HashMap` as the only argument. (A move closure is recommended to meet the bounds)
 async fn run_task<F>(
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
+    max_uid: usize,
     callback: F,
 ) -> Result<GbtResult>
 where
@@ -149,7 +151,7 @@ where
         callback(&mut map);
 
         info!("Starting gbt algorithm for {} elements...", map.len());
-        let result = gbt::gbt(&mut map);
+        let result = gbt::gbt(&mut map, max_uid);
         info!("Finished gbt algorithm for {} elements...", map.len());
 
         debug!(

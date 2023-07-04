@@ -350,7 +350,7 @@ class MempoolBlocks {
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
       const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
-        await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[]),
+        await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[], this.nextUid),
       );
       if (saveResults) {
         this.rustInitialized = true;
@@ -372,8 +372,9 @@ class MempoolBlocks {
   }
 
   public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[]): Promise<void> {
-    // sanity check to avoid approaching uint32 uid overflow
-    if (this.nextUid + added.length > MAX_UINT32) {
+    // GBT optimization requires that uids never get too sparse
+    // as a sanity check, we should also explicitly prevent uint32 uid overflow
+    if (this.nextUid + added.length >= Math.min(Math.max(262144, 2 * mempoolSize), MAX_UINT32)) {
       this.resetRustGbt();
     }
     if (!this.rustInitialized) {
@@ -399,6 +400,7 @@ class MempoolBlocks {
         await this.rustGbtGenerator.update(
           added as RustThreadTransaction[],
           removedUids,
+          this.nextUid,
         ),
       );
       const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);

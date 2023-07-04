@@ -19,13 +19,13 @@ export class GbtGenerator {
    *
    * Rejects if the thread panics or if the Mutex is poisoned.
    */
-  make(mempool: Array<ThreadTransaction>): Promise<GbtResult>
+  make(mempool: Array<ThreadTransaction>, maxUid: number): Promise<GbtResult>
   /**
    * # Errors
    *
    * Rejects if the thread panics or if the Mutex is poisoned.
    */
-  update(newTxs: Array<ThreadTransaction>, removeTxs: Array<number>): Promise<GbtResult>
+  update(newTxs: Array<ThreadTransaction>, removeTxs: Array<number>, maxUid: number): Promise<GbtResult>
 }
 /**
  * The result from calling the gbt function.

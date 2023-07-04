@@ -1,14 +1,14 @@
 use priority_queue::PriorityQueue;
 use std::{
     cmp::Ordering,
-    collections::{HashMap, HashSet},
+    collections::{HashSet},
 };
 use tracing::{info, trace};
 
 use crate::{
     audit_transaction::{partial_cmp_uid_score, AuditTransaction},
     u32_hasher_types::{
-        u32hashmap_with_capacity, u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
+        u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
     },
     GbtResult, ThreadTransactionsMap,
 };
@@ -19,7 +19,7 @@ const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const BLOCK_RESERVED_SIGOPS: u32 = 400;
 const MAX_BLOCKS: usize = 8;
 
-type AuditPool = HashMap<u32, AuditTransaction, U32HasherState>;
+type AuditPool = Vec<Option<AuditTransaction>>;
 type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 
 #[derive(Debug)]
@@ -58,9 +58,10 @@ impl Ord for TxPriority {
 // TODO: Make gbt smaller to fix these lints.
 #[allow(clippy::too_many_lines)]
 #[allow(clippy::cognitive_complexity)]
-pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
+pub fn gbt(mempool: &mut ThreadTransactionsMap, max_uid: usize) -> GbtResult {
     let mempool_len = mempool.len();
-    let mut audit_pool: AuditPool = u32hashmap_with_capacity(mempool_len);
+    let mut audit_pool: AuditPool = Vec::with_capacity(max_uid + 1);
+    audit_pool.resize(max_uid + 1, None);
     let mut mempool_stack: Vec<u32> = Vec::with_capacity(mempool_len);
     let mut clusters: Vec<Vec<u32>> = Vec::new();
     let mut block_weights: Vec<u32> = Vec::new();
@@ -69,7 +70,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
     for (uid, tx) in &mut *mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
         // Safety: audit_pool and mempool_stack must always contain the same transactions
-        audit_pool.insert(audit_tx.uid, audit_tx);
+        audit_pool[*uid as usize] = Some(audit_tx);
         mempool_stack.push(*uid);
     }
 
@@ -84,7 +85,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
         .into_iter()
         .map(|txid| {
             let atx = audit_pool
-                .get(&txid)
+                .get(txid as usize)
+                .and_then(Option::as_ref)
                 .expect("All txids are from audit_pool");
             (txid, atx.order(), atx.score())
         })
@@ -154,7 +156,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             let mut cluster: Vec<u32> = Vec::new();
             let is_cluster: bool = !next_tx.ancestors.is_empty();
             for ancestor_id in &next_tx.ancestors {
-                if let Some(ancestor) = audit_pool.get(ancestor_id) {
+                if let Some(Some(ancestor)) = audit_pool.get(*ancestor_id as usize) {
                     package.push((*ancestor_id, ancestor.order(), ancestor.ancestors.len()));
                 }
             }
@@ -176,7 +178,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
 
             for (txid, _, _) in &package {
                 cluster.push(*txid);
-                if let Some(tx) = audit_pool.get_mut(txid) {
+                if let Some(Some(tx)) = audit_pool.get_mut(*txid as usize) {
                     tx.used = true;
                     tx.set_dirty_if_different(cluster_rate);
                     transactions.push(tx.uid);
@@ -211,7 +213,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
             // 'overflow' packages didn't fit in this block, but are valid candidates for the next
             overflow.reverse();
             for overflowed in &overflow {
-                if let Some(overflowed_tx) = audit_pool.get(overflowed) {
+                if let Some(Some(overflowed_tx)) = audit_pool.get(*overflowed as usize) {
                     if overflowed_tx.modified {
                         modified.push(
                             *overflowed,
@@ -237,12 +239,12 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap) -> GbtResult {
 
     info!("make a list of dirty transactions and their new rates");
     let mut rates: Vec<Vec<f64>> = Vec::new();
-    for (txid, tx) in audit_pool {
-        trace!("txid: {}, is_dirty: {}", txid, tx.dirty);
-        if tx.dirty {
-            rates.push(vec![f64::from(txid), tx.effective_fee_per_vsize]);
-            if let Some(mempool_tx) = mempool.get_mut(&txid) {
-                mempool_tx.effective_fee_per_vsize = tx.effective_fee_per_vsize;
+    for (uid, thread_tx) in mempool {
+        if let Some(Some(audit_tx)) = audit_pool.get(*uid as usize) {
+            trace!("txid: {}, is_dirty: {}", uid, audit_tx.dirty);
+            if audit_tx.dirty {
+                rates.push(vec![f64::from(*uid), audit_tx.effective_fee_per_vsize]);
+                thread_tx.effective_fee_per_vsize = audit_tx.effective_fee_per_vsize;
             }
         }
     }
@@ -263,33 +265,39 @@ fn next_valid_from_stack<'a>(
     mempool_stack: &mut Vec<u32>,
     audit_pool: &'a AuditPool,
 ) -> Option<&'a AuditTransaction> {
-    let mut next_txid = mempool_stack.last()?;
-    let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
-    while tx.used || tx.modified {
-        mempool_stack.pop();
-        next_txid = mempool_stack.last()?;
-        tx = audit_pool.get(next_txid)?;
+    while let Some(next_txid) = mempool_stack.last() {
+        match audit_pool.get(*next_txid as usize) {
+            Some(Some(tx)) if !tx.used && !tx.modified => {
+                return Some(tx);
+            }
+            _ => {
+                mempool_stack.pop();
+            }
+        }
     }
-    Some(tx)
+    None
 }
 
 fn next_valid_from_queue<'a>(
     queue: &mut ModifiedQueue,
     audit_pool: &'a AuditPool,
 ) -> Option<&'a AuditTransaction> {
-    let mut next_txid = queue.peek()?.0;
-    let mut tx: &AuditTransaction = audit_pool.get(next_txid)?;
-    while tx.used {
-        queue.pop();
-        next_txid = queue.peek()?.0;
-        tx = audit_pool.get(next_txid)?;
+    while let Some((next_txid, _)) = queue.peek() {
+        match audit_pool.get(*next_txid as usize) {
+            Some(Some(tx)) if !tx.used => {
+                return Some(tx);
+            }
+            _ => {
+                queue.pop();
+            }
+        }
     }
-    Some(tx)
+    None
 }
 
 fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut parents: HashSet<u32, U32HasherState> = u32hashset_new();
-    if let Some(tx) = audit_pool.get(&txid) {
+    if let Some(Some(tx)) = audit_pool.get(txid as usize) {
         if tx.relatives_set_flag {
             return;
         }
@@ -304,7 +312,7 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     for parent_id in &parents {
         set_relatives(*parent_id, audit_pool);
 
-        if let Some(parent) = audit_pool.get_mut(parent_id) {
+        if let Some(Some(parent)) = audit_pool.get_mut(*parent_id as usize) {
             // Safety: ancestors must always contain only txes in audit_pool
             ancestors.insert(*parent_id);
             parent.children.insert(txid);
@@ -320,16 +328,16 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let ancestor = audit_pool
-            .get(ancestor_id)
-            .expect("audit_pool contains all ancestors");
+        let Some(ancestor) = audit_pool
+            .get(*ancestor_id as usize)
+            .expect("audit_pool contains all ancestors") else { todo!() };
         total_fee += ancestor.fee;
         total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
         total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
         total_sigops += ancestor.sigops;
     }
 
-    if let Some(tx) = audit_pool.get_mut(&txid) {
+    if let Some(Some(tx)) = audit_pool.get_mut(txid as usize) {
         tx.set_ancestors(
             ancestors,
             total_fee,
@@ -353,7 +361,7 @@ fn update_descendants(
     let root_sigop_adjusted_weight: u32;
     let root_sigop_adjusted_vsize: u32;
     let root_sigops: u32;
-    if let Some(root_tx) = audit_pool.get(&root_txid) {
+    if let Some(Some(root_tx)) = audit_pool.get(root_txid as usize) {
         for descendant_id in &root_tx.children {
             if !visited.contains(descendant_id) {
                 descendant_stack.push(*descendant_id);
@@ -368,7 +376,7 @@ fn update_descendants(
         return;
     }
     while let Some(next_txid) = descendant_stack.pop() {
-        if let Some(descendant) = audit_pool.get_mut(&next_txid) {
+        if let Some(Some(descendant)) = audit_pool.get_mut(next_txid as usize) {
             // remove root tx as ancestor
             let old_score = descendant.remove_root(
                 root_txid,

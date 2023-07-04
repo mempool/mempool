@@ -14,8 +14,8 @@ const vectorBuffer: Buffer = fs.readFileSync(path.join(__dirname, './', './test-
 describe('Rust GBT', () => {
   test('should produce the same template as getBlockTemplate from Bitcoin Core', async () => {
     const rustGbt = new GbtGenerator();
-    const mempool = mempoolFromArrayBuffer(vectorBuffer.buffer);
-    const result = await rustGbt.make(mempool);
+    const { mempool, maxUid } = mempoolFromArrayBuffer(vectorBuffer.buffer);
+    const result = await rustGbt.make(mempool, maxUid);
 
     const blocks: [string, number][][] = result.blocks.map(block => {
       return block.map(uid => [vectorUidMap.get(uid) || 'missing', uid]);
@@ -27,13 +27,15 @@ describe('Rust GBT', () => {
   });
 });
 
-function mempoolFromArrayBuffer(buf: ArrayBuffer): ThreadTransaction[] {
+function mempoolFromArrayBuffer(buf: ArrayBuffer): { mempool: ThreadTransaction[], maxUid: number } {
+  let maxUid = 0;
   const view = new DataView(buf);
   const count = view.getUint32(0, false);
   const txs: ThreadTransaction[] = [];
   let offset = 4;
   for (let i = 0; i < count; i++) {
     const uid = view.getUint32(offset, false);
+    maxUid = Math.max(maxUid, uid);
     const tx: ThreadTransaction = {
       uid,
       order: txidToOrdering(vectorUidMap.get(uid) as string),
@@ -52,7 +54,7 @@ function mempoolFromArrayBuffer(buf: ArrayBuffer): ThreadTransaction[] {
     }
     txs.push(tx);
   }
-  return txs;
+  return { mempool: txs, maxUid };
 }
 
 function txidToOrdering(txid: string): number {
