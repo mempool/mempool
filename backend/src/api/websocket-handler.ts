@@ -22,6 +22,14 @@ import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 
+// valid 'want' subscriptions
+const wantable = [
+  'blocks',
+  'mempool-blocks',
+  'live-2h-chart',
+  'stats',
+];
+
 class WebsocketHandler {
   private wss: WebSocket.Server | undefined;
   private extraInitProperties = {};
@@ -30,7 +38,7 @@ class WebsocketHandler {
   private numConnected = 0;
   private numDisconnected = 0;
 
-  private initData: { [key: string]: string } = {};
+  private socketData: { [key: string]: string } = {};
   private serializedInitData: string = '{}';
 
   constructor() { }
@@ -39,28 +47,28 @@ class WebsocketHandler {
     this.wss = wss;
   }
 
-  setExtraInitProperties(property: string, value: any) {
+  setExtraInitData(property: string, value: any) {
     this.extraInitProperties[property] = value;
-    this.setInitDataFields(this.extraInitProperties);
+    this.updateSocketDataFields(this.extraInitProperties);
   }
 
-  private setInitDataFields(data: { [property: string]: any }): void {
+  private updateSocketDataFields(data: { [property: string]: any }): void {
     for (const property of Object.keys(data)) {
       if (data[property] != null) {
-        this.initData[property] = JSON.stringify(data[property]);
+        this.socketData[property] = JSON.stringify(data[property]);
       } else {
-        delete this.initData[property];
+        delete this.socketData[property];
       }
     }
     this.serializedInitData = '{'
-      + Object.keys(this.initData).map(key => `"${key}": ${this.initData[key]}`).join(', ')
-      + '}';
+    + Object.keys(this.socketData).map(key => `"${key}": ${this.socketData[key]}`).join(', ')
+    + '}';
   }
 
-  private updateInitData(): void {
+  private updateSocketData(): void {
     const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    this.setInitDataFields({
+    this.updateSocketDataFields({
       'mempoolInfo': memPool.getMempoolInfo(),
       'vBytesPerSecond': memPool.getVBytesPerSecond(),
       'blocks': _blocks,
@@ -94,11 +102,33 @@ class WebsocketHandler {
           const parsedMessage: WebsocketResponse = JSON.parse(message);
           const response = {};
 
-          if (parsedMessage.action === 'want') {
-            client['want-blocks'] = parsedMessage.data.indexOf('blocks') > -1;
-            client['want-mempool-blocks'] = parsedMessage.data.indexOf('mempool-blocks') > -1;
-            client['want-live-2h-chart'] = parsedMessage.data.indexOf('live-2h-chart') > -1;
-            client['want-stats'] = parsedMessage.data.indexOf('stats') > -1;
+          const wantNow = {};
+          if (parsedMessage && parsedMessage.action === 'want' && Array.isArray(parsedMessage.data)) {
+            for (const sub of wantable) {
+              const key = `want-${sub}`;
+              const wants = parsedMessage.data.includes(sub);
+              if (wants && client['wants'] && !client[key]) {
+                wantNow[key] = true;
+              }
+              client[key] = wants;
+            }
+            client['wants'] = true;
+          }
+
+          // send initial data when a client first starts a subscription
+          if (wantNow['want-blocks'] || (parsedMessage && parsedMessage['refresh-blocks'])) {
+            response['blocks'] = this.socketData['blocks'];
+          }
+
+          if (wantNow['want-mempool-blocks']) {
+            response['mempool-blocks'] = this.socketData['mempool-blocks'];
+          }
+
+          if (wantNow['want-stats']) {
+            response['mempoolInfo'] = this.socketData['mempoolInfo'];
+            response['vBytesPerSecond'] = this.socketData['vBytesPerSecond'];
+            response['fees'] = this.socketData['fees'];
+            response['da'] = this.socketData['da'];
           }
 
           if (parsedMessage && parsedMessage['track-tx']) {
@@ -109,21 +139,21 @@ class WebsocketHandler {
               if (parsedMessage['watch-mempool']) {
                 const rbfCacheTxid = rbfCache.getReplacedBy(trackTxid);
                 if (rbfCacheTxid) {
-                  response['txReplaced'] = {
+                  response['txReplaced'] = JSON.stringify({
                     txid: rbfCacheTxid,
-                  };
+                  });
                   client['track-tx'] = null;
                 } else {
                   // It might have appeared before we had the time to start watching for it
                   const tx = memPool.getMempool()[trackTxid];
                   if (tx) {
                     if (config.MEMPOOL.BACKEND === 'esplora') {
-                      response['tx'] = tx;
+                      response['tx'] = JSON.stringify(tx);
                     } else {
                       // tx.prevout is missing from transactions when in bitcoind mode
                       try {
                         const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
-                        response['tx'] = fullTx;
+                        response['tx'] = JSON.stringify(fullTx);
                       } catch (e) {
                         logger.debug('Error finding transaction: ' + (e instanceof Error ? e.message : e));
                       }
@@ -131,7 +161,7 @@ class WebsocketHandler {
                   } else {
                     try {
                       const fullTx = await transactionUtils.$getMempoolTransactionExtended(client['track-tx'], true);
-                      response['tx'] = fullTx;
+                      response['tx'] = JSON.stringify(fullTx);
                     } catch (e) {
                       logger.debug('Error finding transaction. ' + (e instanceof Error ? e.message : e));
                       client['track-mempool-tx'] = parsedMessage['track-tx'];
@@ -141,10 +171,10 @@ class WebsocketHandler {
               }
               const tx = memPool.getMempool()[trackTxid];
               if (tx && tx.position) {
-                response['txPosition'] = {
+                response['txPosition'] = JSON.stringify({
                   txid: trackTxid,
                   position: tx.position,
-                };
+                });
               }
             } else {
               client['track-tx'] = null;
@@ -177,10 +207,10 @@ class WebsocketHandler {
               const index = parsedMessage['track-mempool-block'];
               client['track-mempool-block'] = index;
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
-              response['projected-block-transactions'] = {
+              response['projected-block-transactions'] = JSON.stringify({
                 index: index,
                 blockTransactions: mBlocksWithTransactions[index]?.transactions || [],
-              };
+              });
             } else {
               client['track-mempool-block'] = null;
             }
@@ -189,23 +219,24 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-rbf'] !== undefined) {
             if (['all', 'fullRbf'].includes(parsedMessage['track-rbf'])) {
               client['track-rbf'] = parsedMessage['track-rbf'];
+              response['rbfLatest'] = JSON.stringify(rbfCache.getRbfTrees(parsedMessage['track-rbf'] === 'fullRbf'));
             } else {
               client['track-rbf'] = false;
             }
           }
 
           if (parsedMessage.action === 'init') {
-            if (!this.initData['blocks']?.length || !this.initData['da']) {
-              this.updateInitData();
+            if (!this.socketData['blocks']?.length || !this.socketData['da']) {
+              this.updateSocketData();
             }
-            if (!this.initData['blocks']?.length) {
+            if (!this.socketData['blocks']?.length) {
               return;
             }
             client.send(this.serializedInitData);
           }
 
           if (parsedMessage.action === 'ping') {
-            response['pong'] = true;
+            response['pong'] = JSON.stringify(true);
           }
 
           if (parsedMessage['track-donation'] && parsedMessage['track-donation'].length === 22) {
@@ -221,7 +252,8 @@ class WebsocketHandler {
           }
 
           if (Object.keys(response).length) {
-            client.send(JSON.stringify(response));
+            const serializedResponse = this.serializeResponse(response);
+            client.send(serializedResponse);
           }
         } catch (e) {
           logger.debug('Error parsing websocket message: ' + (e instanceof Error ? e.message : e));
@@ -250,7 +282,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.setInitDataFields({ 'loadingIndicators': indicators });
+    this.updateSocketDataFields({ 'loadingIndicators': indicators });
 
     const response = JSON.stringify({ loadingIndicators: indicators });
     this.wss.clients.forEach((client) => {
@@ -266,7 +298,7 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.setInitDataFields({ 'conversions': conversionRates });
+    this.updateSocketDataFields({ 'conversions': conversionRates });
 
     const response = JSON.stringify({ conversions: conversionRates });
     this.wss.clients.forEach((client) => {
@@ -336,11 +368,21 @@ class WebsocketHandler {
     memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
+    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+
     // update init data
-    this.updateInitData();
+    this.updateSocketDataFields({
+      'mempoolInfo': mempoolInfo,
+      'vBytesPerSecond': vBytesPerSecond,
+      'mempool-blocks': mBlocks,
+      'transactions': latestTransactions,
+      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
+      'da': da?.previousTime ? da : undefined,
+      'fees': recommendedFees,
+    });
 
     // cache serialized objects to avoid stringify-ing the same thing for every client
-    const responseCache = { ...this.initData };
+    const responseCache = { ...this.socketData };
     function getCachedResponse(key: string,  data): string {
       if (!responseCache[key]) {
         responseCache[key] = JSON.stringify(data);
@@ -370,8 +412,6 @@ class WebsocketHandler {
         }
       }
     }
-
-    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
 
     this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -490,7 +530,7 @@ class WebsocketHandler {
         if (rbfReplacedBy) {
           response['rbfTransaction'] = JSON.stringify({
             txid: rbfReplacedBy,
-          })
+          });
         }
 
         const rbfChange = rbfChanges.map[client['track-tx']];
@@ -524,9 +564,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        const serializedResponse = '{'
-          + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
-          + '}';
+        const serializedResponse = this.serializeResponse(response);
         client.send(serializedResponse);
       }
     });
@@ -562,14 +600,7 @@ class WebsocketHandler {
         const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
-        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions.map((tx) => {
-          return {
-            txid: tx.txid,
-            vsize: tx.vsize,
-            fee: tx.fee ? Math.round(tx.fee) : 0,
-            value: tx.value,
-          };
-        }) : [];
+        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
 
         let totalFees = 0;
         let totalWeight = 0;
@@ -633,11 +664,19 @@ class WebsocketHandler {
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
     const fees = feeApi.getRecommendedFee();
+    const mempoolInfo = memPool.getMempoolInfo();
 
     // update init data
-    this.updateInitData();
+    this.updateSocketDataFields({
+      'mempoolInfo': mempoolInfo,
+      'blocks': [...blocks.getBlocks(), block].slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT),
+      'mempool-blocks': mBlocks,
+      'loadingIndicators': loadingIndicators.getLoadingIndicators(),
+      'da': da?.previousTime ? da : undefined,
+      'fees': fees,
+    });
 
-    const responseCache = { ...this.initData };
+    const responseCache = { ...this.socketData };
     function getCachedResponse(key, data): string {
       if (!responseCache[key]) {
         responseCache[key] = JSON.stringify(data);
@@ -645,22 +684,26 @@ class WebsocketHandler {
       return responseCache[key];
     }
 
-    const mempoolInfo = memPool.getMempoolInfo();
-
     this.wss.clients.forEach((client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
 
-      if (!client['want-blocks']) {
-        return;
+      const response = {};
+
+      if (client['want-blocks']) {
+        response['block'] = getCachedResponse('block', block);
       }
 
-      const response = {};
-      response['block'] = getCachedResponse('block', block);
-      response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
-      response['da'] = getCachedResponse('da', da?.previousTime ? da : undefined);
-      response['fees'] = getCachedResponse('fees', fees);
+      if (client['want-stats']) {
+        response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
+        response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', memPool.getVBytesPerSecond());
+        response['fees'] = getCachedResponse('fees', fees);
+
+        if (da?.previousTime) {
+          response['da'] = getCachedResponse('da', da);
+        }
+      }
 
       if (mBlocks && client['want-mempool-blocks']) {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
@@ -755,11 +798,19 @@ class WebsocketHandler {
         }
       }
 
-      const serializedResponse = '{'
+      if (Object.keys(response).length) {
+        const serializedResponse = this.serializeResponse(response);
+        client.send(serializedResponse);
+      }
+    });
+  }
+
+  // takes a dictionary of JSON serialized values
+  // and zips it together into a valid JSON object
+  private serializeResponse(response): string {
+    return '{'
         + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
         + '}';
-      client.send(serializedResponse);
-    });
   }
 
   private printLogs(): void {
