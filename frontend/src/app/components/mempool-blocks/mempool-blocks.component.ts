@@ -146,6 +146,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
           this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
 
+          this.now = Date.now();
+
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
  
@@ -160,7 +162,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(
         map((da) => {
-          this.now = new Date().getTime();
+          this.now = Date.now();
+          this.cd.markForCheck();
           return da;
         })
       );

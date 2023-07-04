@@ -143,7 +143,7 @@ class MempoolBlocks {
           const stackWeight = transactionsSorted.slice(index).reduce((total, tx) => total + (tx.weight || 0), 0);
           if (stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
             onlineStats = true;
-            feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5);
+            feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
             feeStatsCalculator.processNext(tx);
           }
         }
@@ -334,7 +334,7 @@ class MempoolBlocks {
     if (hasBlockStack) {
       stackWeight = blocks[blocks.length - 1].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
       hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
-      feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5);
+      feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
     }
 
     const readyBlocks: { transactionIds, transactions, totalSize, totalWeight, totalFees, feeStats }[] = [];

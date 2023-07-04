@@ -153,6 +153,8 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  freshTxs: string[],
+  sigopTxs: string[],
   matchRate: number,
   expectedFees: number,
   expectedWeight: number,
@@ -169,6 +171,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  context?: 'projected' | 'actual';
 }
 
 interface RbfTransaction extends TransactionStripped {
