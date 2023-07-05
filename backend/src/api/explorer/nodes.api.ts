@@ -56,7 +56,8 @@ class NodesApi {
           UNIX_TIMESTAMP(updated_at) AS updated_at, color, sockets as sockets,
           as_number, city_id, country_id, subdivision_id, longitude, latitude,
           geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
-          geo_names_country.names as country, geo_names_subdivision.names as subdivision
+          geo_names_country.names as country, geo_names_subdivision.names as subdivision,
+          features
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
@@ -75,6 +76,8 @@ class NodesApi {
       node.subdivision = JSON.parse(node.subdivision);
       node.city = JSON.parse(node.city);
       node.country = JSON.parse(node.country);
+      
+      node.features = JSON.parse(node.features);
 
       // Active channels and capacity
       const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);
