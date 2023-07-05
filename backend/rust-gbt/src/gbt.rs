@@ -1,15 +1,10 @@
 use priority_queue::PriorityQueue;
-use std::{
-    cmp::Ordering,
-    collections::{HashSet},
-};
+use std::{cmp::Ordering, collections::HashSet, mem::ManuallyDrop};
 use tracing::{info, trace};
 
 use crate::{
     audit_transaction::{partial_cmp_uid_score, AuditTransaction},
-    u32_hasher_types::{
-        u32hashset_new, u32priority_queue_with_capacity, U32HasherState,
-    },
+    u32_hasher_types::{u32hashset_new, u32priority_queue_with_capacity, U32HasherState},
     GbtResult, ThreadTransactionsMap,
 };
 
@@ -19,7 +14,7 @@ const BLOCK_RESERVED_WEIGHT: u32 = 4_000;
 const BLOCK_RESERVED_SIGOPS: u32 = 400;
 const MAX_BLOCKS: usize = 8;
 
-type AuditPool = Vec<Option<AuditTransaction>>;
+type AuditPool = Vec<Option<ManuallyDrop<AuditTransaction>>>;
 type ModifiedQueue = PriorityQueue<u32, TxPriority, U32HasherState>;
 
 #[derive(Debug)]
@@ -70,7 +65,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, max_uid: usize) -> GbtResult {
     for (uid, tx) in &mut *mempool {
         let audit_tx = AuditTransaction::from_thread_transaction(tx);
         // Safety: audit_pool and mempool_stack must always contain the same transactions
-        audit_pool[*uid as usize] = Some(audit_tx);
+        audit_pool[*uid as usize] = Some(ManuallyDrop::new(audit_tx));
         mempool_stack.push(*uid);
     }
 
@@ -240,12 +235,17 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, max_uid: usize) -> GbtResult {
     info!("make a list of dirty transactions and their new rates");
     let mut rates: Vec<Vec<f64>> = Vec::new();
     for (uid, thread_tx) in mempool {
-        if let Some(Some(audit_tx)) = audit_pool.get(*uid as usize) {
+        // Takes ownership of the audit_tx and replaces with None
+        if let Some(Some(audit_tx)) = audit_pool.get_mut(*uid as usize).map(Option::take) {
             trace!("txid: {}, is_dirty: {}", uid, audit_tx.dirty);
             if audit_tx.dirty {
                 rates.push(vec![f64::from(*uid), audit_tx.effective_fee_per_vsize]);
                 thread_tx.effective_fee_per_vsize = audit_tx.effective_fee_per_vsize;
             }
+            // Drops the AuditTransaction manually
+            // There are no audit_txs that are not in the mempool HashMap
+            // So there is guaranteed to be no memory leaks.
+            ManuallyDrop::into_inner(audit_tx);
         }
     }
     trace!("\n\n\n\n\n====================");
