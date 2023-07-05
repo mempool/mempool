@@ -76,11 +76,15 @@ impl GbtGenerator {
     #[napi]
     pub async fn make(&self, mempool: Vec<ThreadTransaction>, max_uid: u32) -> Result<GbtResult> {
         trace!("make: Current State {:#?}", self.thread_transactions);
-        run_task(Arc::clone(&self.thread_transactions), max_uid as usize, move |map| {
-            for tx in mempool {
-                map.insert(tx.uid, tx);
-            }
-        })
+        run_task(
+            Arc::clone(&self.thread_transactions),
+            max_uid as usize,
+            move |map| {
+                for tx in mempool {
+                    map.insert(tx.uid, tx);
+                }
+            },
+        )
         .await
     }
 
@@ -95,14 +99,18 @@ impl GbtGenerator {
         max_uid: u32,
     ) -> Result<GbtResult> {
         trace!("update: Current State {:#?}", self.thread_transactions);
-        run_task(Arc::clone(&self.thread_transactions), max_uid as usize, move |map| {
-            for tx in new_txs {
-                map.insert(tx.uid, tx);
-            }
-            for txid in &remove_txs {
-                map.remove(txid);
-            }
-        })
+        run_task(
+            Arc::clone(&self.thread_transactions),
+            max_uid as usize,
+            move |map| {
+                for tx in new_txs {
+                    map.insert(tx.uid, tx);
+                }
+                for txid in &remove_txs {
+                    map.remove(txid);
+                }
+            },
+        )
         .await
     }
 }
