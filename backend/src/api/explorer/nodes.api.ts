@@ -656,10 +656,19 @@ class NodesApi {
           alias_search,
           color,
           sockets,
-          status
+          status,
+          features
         )
-        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1)
-        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, alias_search = ?, color = ?, sockets = ?, status = 1`;
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1, ?)
+        ON DUPLICATE KEY UPDATE
+          updated_at = FROM_UNIXTIME(?),
+          alias = ?,
+          alias_search = ?,
+          color = ?,
+          sockets = ?,
+          status = 1,
+          features = ?
+      `;
 
       await DB.query(query, [
         node.pub_key,
@@ -668,11 +677,13 @@ class NodesApi {
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
         node.last_update,
         node.alias,
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
       ]);
     } catch (e) {
       logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
