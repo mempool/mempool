@@ -58,11 +58,11 @@ function mempoolFromArrayBuffer(buf: ArrayBuffer): { mempool: ThreadTransaction[
 }
 
 function txidToOrdering(txid: string): number {
-  return (
-    ((parseInt(txid.substring(62, 64), 16) << 24) |
-      (parseInt(txid.substring(60, 62), 16) << 16) |
-      (parseInt(txid.substring(58, 60), 16) << 8) |
-      parseInt(txid.substring(56, 58), 16)) >>>
-    0
+  return parseInt(
+    txid.substr(62, 2) +
+      txid.substr(60, 2) +
+      txid.substr(58, 2) +
+      txid.substr(56, 2),
+    16
   );
 }
