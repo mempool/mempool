@@ -19,6 +19,7 @@ export interface PoolInfo {
   blockCount: number;
   slug: string;
   avgMatchRate: number | null;
+  avgFeeDelta: number | null;
 }
 
 export interface PoolStats extends PoolInfo {
