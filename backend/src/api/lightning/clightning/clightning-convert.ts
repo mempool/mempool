@@ -114,12 +114,14 @@ export function convertNode(clNode: any): ILightningApi.Node {
     const feature = FeaturesMap.get(i);
     if (!feature) {
       nodeFeatures.push({
+        bit: i,
         name: 'unknown',
         is_required: i % 2 === 0,
         is_known: false
       });
     } else {
       nodeFeatures.push({
+        bit: i,
         name: feature,
         is_required: i % 2 === 0,
         is_known: true
