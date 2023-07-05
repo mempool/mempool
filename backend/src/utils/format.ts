@@ -29,7 +29,7 @@ export function formatBytes(bytes: number, toUnit: string, skipUnit = false): st
 }
 
 // https://stackoverflow.com/a/64235212
-export function hex2bin(hex): string {
+export function hex2bin(hex: string): string {
   if (!hex) {
     return '';
   }
@@ -58,5 +58,38 @@ export function hex2bin(hex): string {
       default: return '';
     }
   }
+  return out;
+}
+
+export function bin2hex(bin: string): string {
+  if (!bin) {
+    return '';
+  }
+
+  let out = '';
+
+  for (let i = 0; i < bin.length; i += 4) {
+    const c = bin.substring(i, i + 4);
+    switch (c) {
+      case '0000': out += '0'; break;
+      case '0001': out += '1'; break;
+      case '0010': out += '2'; break;
+      case '0011': out += '3'; break;
+      case '0100': out += '4'; break;
+      case '0101': out += '5'; break;
+      case '0110': out += '6'; break;
+      case '0111': out += '7'; break;
+      case '1000': out += '8'; break;
+      case '1001': out += '9'; break;
+      case '1010': out += 'a'; break;
+      case '1011': out += 'b'; break;
+      case '1100': out += 'c'; break;
+      case '1101': out += 'd'; break;
+      case '1110': out += 'e'; break;
+      case '1111': out += 'f'; break;
+      default: return '';
+    }
+  }
+
   return out;
 }
