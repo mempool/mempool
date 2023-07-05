@@ -3,6 +3,7 @@ import DB from '../../database';
 import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
+import { bin2hex } from '../../utils/format';
 
 class NodesApi {
   public async $getWorldNodes(): Promise<any> {
@@ -76,8 +77,18 @@ class NodesApi {
       node.subdivision = JSON.parse(node.subdivision);
       node.city = JSON.parse(node.city);
       node.country = JSON.parse(node.country);
-      
+
+      // Features      
       node.features = JSON.parse(node.features);
+      let maxBit = 0;
+      for (const feature of node.features) {
+        maxBit = Math.max(maxBit, feature.bit);
+      }
+      node.featuresBits = new Array(maxBit + 1).fill(0);
+      for (const feature of node.features) {
+        node.featuresBits[feature.bit] = 1;
+      }
+      node.featuresBits = bin2hex(node.featuresBits.reverse().join(''));
 
       // Active channels and capacity
       const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);

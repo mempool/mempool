@@ -6,7 +6,7 @@ import { hex2bin } from '../../../utils/format';
 import config from '../../../config';
 
 // https://github.com/lightningnetwork/lnd/blob/master/lnwire/features.go
-enum FeatureBits {
+export enum FeatureBits {
 	DataLossProtectRequired = 0,
 	DataLossProtectOptional = 1,
 	InitialRoutingSync = 3,
@@ -47,10 +47,7 @@ enum FeatureBits {
 	MaxBolt11Feature = 5114,
 };
   
-// Features is a mapping of known feature bits to a descriptive name. All known
-// feature bits must be assigned a name in this mapping, and feature bit pairs
-// must be assigned together for correct behavior.
-const FeaturesMap = new Map<FeatureBits, string>([
+export const FeaturesMap = new Map<FeatureBits, string>([
 	[FeatureBits.DataLossProtectRequired, 'data-loss-protect'],
 	[FeatureBits.DataLossProtectOptional, 'data-loss-protect'],
 	[FeatureBits.InitialRoutingSync, 'initial-routing-sync'],

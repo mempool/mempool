@@ -21,7 +21,6 @@
   </div>
 
   <div class="box" *ngIf="!error">
-
     <div class="row">
       <div class="col-md">
         <table class="table table-borderless table-striped table-fixed">
@@ -58,6 +57,9 @@
             <tr *ngIf="(avgChannelDistance$ | async) as avgDistance;">
               <td i18n="lightning.avg-distance" class="text-truncate">Avg channel distance</td>
               <td class="direction-ltr">{{ avgDistance | amountShortener: 1 }} <span class="symbol">km</span> <span class="separator">·</span>{{ kmToMiles(avgDistance) | amountShortener: 1 }} <span class="symbol">mi</span></td>
+            </tr>
+            <tr *ngIf="!node.geolocation" class="d-none d-md-table-row">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
             </tr>
           </tbody>
         </table>
@@ -100,12 +102,25 @@
                 </td>
               </ng-template>
             </tr>
+            <tr *ngIf="node.geolocation">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
+            </tr>
+            <tr *ngIf="!node.geolocation" class="d-table-row d-md-none ">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
+
+  <ng-template #featurebits let-bits="bits">
+    <td i18n="lightning.features" class="text-truncate label">Features</td>
+    <td class="d-flex justify-content-between">
+      <span class="text-truncate w-90">{{ bits }}</span>
+      <a href="#" class="w-10">⊕</a>
+    </td>
+  </ng-template>
 
   <div class="input-group mt-3" *ngIf="!error && node.socketsObject.length">
     <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown"
