@@ -24,7 +24,7 @@
       ]
     }
   },
-  "devDependencies": {
+  "dependencies": {
     "@napi-rs/cli": "^2.16.1"
   },
   "engines": {
