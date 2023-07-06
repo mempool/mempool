@@ -43,7 +43,7 @@ impl Ord for TxPriority {
     }
 }
 
-/// Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
+/// Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core.
 ///
 /// See `BlockAssembler` in Bitcoin Core's
 /// [miner.cpp](https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp).
