@@ -8,6 +8,8 @@ This project was bootstrapped by [napi](https://www.npmjs.com/package/@napi-rs/c
 
 Installing gbt requires a [supported version of Node and Rust](https://github.com/napi-rs/napi-rs#platform-support).
 
+The build process also requires [Rust](https://www.rust-lang.org/tools/install) to be installed.
+
 You can install the project with npm. In the project directory, run:
 
 ```sh
