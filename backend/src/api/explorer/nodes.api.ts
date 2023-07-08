@@ -84,6 +84,8 @@ class NodesApi {
       for (const feature of node.features) {
         maxBit = Math.max(maxBit, feature.bit);
       }
+      maxBit = Math.ceil(maxBit / 4) * 4 - 1;
+      
       node.featuresBits = new Array(maxBit + 1).fill(0);
       for (const feature of node.features) {
         node.featuresBits[feature.bit] = 1;
