@@ -29,10 +29,10 @@
               </div>
               <div [attr.data-cy]="'mempool-block-' + i + '-time'" class="time-difference" *ngIf="projectedBlock.blockVSize <= stateService.blockVSize; else mergedBlock">
                 <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeDiffMainnet">
-                  <app-time kind="until" [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true"></app-time>
+                  <app-time kind="until" [time]="(1 * i) + now + 61000" [fastRender]="false" [fixedRender]="true" [precision]="1" minUnit="minute"></app-time>
                 </ng-template>
                 <ng-template #timeDiffMainnet>
-                  <app-time kind="until" [time]="da.timeAvg * (i + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
+                  <app-time kind="until" [time]="da.timeAvg * (i + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true" [precision]="1" minUnit="minute"></app-time>
                 </ng-template>
               </div>
               <ng-template #mergedBlock>
