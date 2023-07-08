@@ -1,6 +1,10 @@
 <div class="container-xl" (window:resize)="onResize($event)">
 
   <div class="title-block" [class.time-ltr]="timeLtr" id="block">
+    <div *ngIf="block?.stale" class="alert alert-mempool" role="alert">
+      <span i18n="block.reorged|Block reorg" class="alert-text">This block does not belong to the main chain, it has been replaced by:</span>
+      <app-truncate [text]="block.canonical" [lastChars]="12" [link]="['/block/' | relativeUrl, block.canonical]" [maxWidth]="480"></app-truncate>
+    </div>
     <h1>
       <ng-container *ngIf="blockHeight == null || blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
       <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
@@ -22,6 +26,8 @@
     </h1>
 
     <div class="grow"></div>
+
+    <button *ngIf="block?.stale" type="button" class="btn btn-sm btn-danger container-button" i18n="block.stale|Stale block state">Stale</button>
 
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>

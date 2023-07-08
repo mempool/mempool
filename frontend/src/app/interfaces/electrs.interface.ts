@@ -121,6 +121,7 @@ export interface Block {
   weight: number;
   previousblockhash: string;
   stale?: boolean;
+  canonical?: string;
 }
 
 export interface Address {
