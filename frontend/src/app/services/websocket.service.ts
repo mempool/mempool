@@ -239,13 +239,8 @@ export class WebsocketService {
 
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      let maxHeight = 0;
-      blocks.forEach((block: BlockExtended) => {
-        if (block.height > this.stateService.latestBlockHeight) {
-          maxHeight = Math.max(maxHeight, block.height);
-          this.stateService.blocks$.next([block, '']);
-        }
-      });
+      this.stateService.resetBlocks(blocks);
+      const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
       this.stateService.updateChainTip(maxHeight);
     }
 
@@ -260,7 +255,8 @@ export class WebsocketService {
     if (response.block) {
       if (response.block.height === this.stateService.latestBlockHeight + 1) {
         this.stateService.updateChainTip(response.block.height);
-        this.stateService.blocks$.next([response.block, response.txConfirmed || '']);
+        this.stateService.addBlock(response.block);
+        this.stateService.txConfirmed$.next([response.txConfirmed, response.block]);
       } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
         reinitBlocks = true;
       }

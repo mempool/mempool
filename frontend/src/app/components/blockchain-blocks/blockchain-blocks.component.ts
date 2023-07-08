@@ -41,6 +41,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   networkSubscription: Subscription;
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
+  txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
   blockStyles = [];
   emptyBlockStyles = [];
@@ -104,31 +105,22 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     if (!this.static) {
       this.blocksSubscription = this.stateService.blocks$
-        .subscribe(([block, txConfirmed]) => {
-          if (this.blocks.some((b) => b.height === block.height)) {
+        .subscribe((blocks) => {
+          if (!blocks?.length) {
             return;
           }
+          const latestHeight = blocks[0].height;
+          const animate = latestHeight > blocks[0].height;
 
-          if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
-            this.blocks = [];
-            this.blocksFilled = false;
+          for (const block of blocks) {
+            block.extras.minFee = this.getMinBlockFee(block);
+            block.extras.maxFee = this.getMaxBlockFee(block);
           }
 
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
-
-          this.blocks.unshift(block);
-          this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
-
-          if (txConfirmed && block.height > this.chainTip) {
-            this.markHeight = block.height;
-            this.moveArrowToPosition(true, true);
-          } else {
-            this.moveArrowToPosition(true, false);
-          }
+          this.blocks = blocks;
 
           this.blockStyles = [];
-          if (this.blocksFilled && block.height > this.chainTip) {
+          if (animate) {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -this.blockOffset : -this.dividerBlockOffset)));
             setTimeout(() => {
               this.blockStyles = [];
@@ -139,13 +131,18 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
           }
 
-          if (this.blocks.length === this.dynamicBlocksAmount) {
-            this.blocksFilled = true;
-          }
-
-          this.chainTip = Math.max(this.chainTip, block.height);
+          this.chainTip = latestHeight;
           this.cd.markForCheck();
         });
+
+      this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txid, block]) => {
+        if (txid) {
+          this.markHeight = block.height;
+          this.moveArrowToPosition(true, true);
+        } else {
+          this.moveArrowToPosition(true, false);
+        }
+      })
     } else {
       this.blockPageSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
         if (block.height <= this.height && block.height > this.height - this.count) {
@@ -164,9 +161,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       });
 
-      if (this.static) {
-        this.updateStaticBlocks();
-      }
+    if (this.static) {
+      this.updateStaticBlocks();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -189,6 +186,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (this.blockPageSubscription) {
       this.blockPageSubscription.unsubscribe();
+    }
+    if (this.txConfirmedSubscription) {
+      this.txConfirmedSubscription.unsubscribe();
     }
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
