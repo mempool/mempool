@@ -62,8 +62,7 @@ class BlocksAuditRepositories {
   public async $getBlockAudit(hash: string): Promise<any> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT blocks.height, blocks.hash as id, UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.size,
-        blocks.weight, blocks.tx_count,
+        `SELECT blocks_audits.height, blocks_audits.hash as id, UNIX_TIMESTAMP(blocks_audits.time) as timestamp,
         template,
         missing_txs as missingTxs,
         added_txs as addedTxs,
@@ -73,7 +72,6 @@ class BlocksAuditRepositories {
         expected_fees as expectedFees,
         expected_weight as expectedWeight
         FROM blocks_audits
-        JOIN blocks ON blocks.hash = blocks_audits.hash
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
         WHERE blocks_audits.hash = "${hash}"
       `);
