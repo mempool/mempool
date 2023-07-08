@@ -129,18 +129,19 @@ export class BlockComponent implements OnInit, OnDestroy {
       );
 
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        this.latestBlock = block;
-        this.latestBlocks.unshift(block);
-        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+      .subscribe((blocks) => {
+        this.latestBlock = blocks[0];
+        this.latestBlocks = blocks;
         this.setNextAndPreviousBlockLink();
 
-        if (block.id === this.blockHash) {
-          this.block = block;
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
-          if (block?.extras?.reward != undefined) {
-            this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+        for (const block of blocks) {
+          if (block.id === this.blockHash) {
+            this.block = block;
+            block.extras.minFee = this.getMinBlockFee(block);
+            block.extras.maxFee = this.getMaxBlockFee(block);
+            if (block?.extras?.reward != undefined) {
+              this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+            }
           }
         }
       });

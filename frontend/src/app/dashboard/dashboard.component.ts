@@ -132,8 +132,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.blocks$ = this.stateService.blocks$
       .pipe(
-        tap(([block]) => {
-          this.latestBlockHeight = block.height;
+        tap((blocks) => {
+          this.latestBlockHeight = blocks[0].height;
         }),
         scan((acc, [block]) => {
           if (acc.find((b) => b.height == block.height)) {

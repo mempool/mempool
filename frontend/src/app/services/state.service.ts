@@ -90,10 +90,11 @@ export class StateService {
   blockVSize: number;
   env: Env;
   latestBlockHeight = -1;
+  blocks: BlockExtended[] = [];
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$: ReplaySubject<[BlockExtended, string]>;
+  blocks$ = new BehaviorSubject<BlockExtended[]>([]);
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -102,6 +103,7 @@ export class StateService {
   mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
   mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
   liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
+  txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
   txRbfInfo$ = new Subject<RbfTree>();
   rbfLatest$ = new Subject<RbfTree[]>();
@@ -166,8 +168,6 @@ export class StateService {
         this.setLightningBasedonUrl(event.url);
       }
     });
-
-    this.blocks$ = new ReplaySubject<[BlockExtended, string]>(this.env.KEEP_BLOCKS_AMOUNT);
 
     this.liveMempoolBlockTransactions$ = merge(
       this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
@@ -340,5 +340,16 @@ export class StateService {
       this.latestBlockHeight = height;
       this.chainTip$.next(height);
     }
+  }
+
+  resetBlocks(blocks: BlockExtended[]): void {
+    this.blocks = blocks.reverse();
+    this.blocks$.next(blocks);
+  }
+
+  addBlock(block: BlockExtended): void {
+    this.blocks.unshift(block);
+    this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
+    this.blocks$.next(this.blocks);
   }
 }

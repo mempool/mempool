@@ -25,6 +25,7 @@ import DifficultyAdjustmentsRepository from '../repositories/DifficultyAdjustmen
 import PricesRepository from '../repositories/PricesRepository';
 import priceUpdater from '../tasks/price-updater';
 import chainTips from './chain-tips';
+import websocketHandler from './websocket-handler';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -686,6 +687,8 @@ class Blocks {
             this.updateTimerProgress(timer, `reindexed difficulty adjustments`);
             logger.info(`Re-indexed 10 blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
             indexer.reindex();
+
+            websocketHandler.handleReorg();
           }
         }
 
