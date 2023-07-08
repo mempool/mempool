@@ -120,6 +120,7 @@ export interface Block {
   size: number;
   weight: number;
   previousblockhash: string;
+  stale?: boolean;
 }
 
 export interface Address {
