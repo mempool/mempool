@@ -118,9 +118,35 @@
     <td i18n="lightning.features" class="text-truncate label">Features</td>
     <td class="d-flex justify-content-between">
       <span class="text-truncate w-90">{{ bits }}</span>
-      <a href="#" class="w-10">⊕</a>
+      <a href="#" class="w-10" (click)="toggleFeatures()">⊕</a>
     </td>
   </ng-template>
+
+  <div class="box mt-2" *ngIf="!error && showFeatures">
+    <div class="row">
+      <div class="col-md">
+        <div class="mb-3">
+          <h5>Raw bits</h5>
+          <span class="text-wrap w-100"><small>{{ node.featuresBits }}</small></span>
+        </div>
+        <h5>Decoded</h5>
+        <table class="table table-borderless table-striped table-fixed">
+          <thead>
+            <th style="width: 13%">Bit</th>
+            <th>Name</th>
+            <th style="width: 25%; text-align: right">Required</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let feature of node.features">
+              <td style="width: 13%">{{ feature.bit }}</td>
+              <td>{{ feature.name }}</td>
+              <td style="width: 25%; text-align: right">{{ feature.is_required }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <div class="input-group mt-3" *ngIf="!error && node.socketsObject.length">
     <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown"
