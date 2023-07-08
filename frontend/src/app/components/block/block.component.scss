@@ -1,3 +1,26 @@
+.title-block {
+  flex-wrap: wrap;
+  align-items: baseline;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+  h1 {
+    margin: 0rem;
+    margin-right: 15px;
+    line-height: 1;
+  }
+
+  .alert-mempool {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .container-button {
+    align-self: center;
+    margin-right: 1em;
+  }
+}
+
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
