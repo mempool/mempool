@@ -94,9 +94,11 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
   sigops: number;
   adjustedVsize: number;
   adjustedFeePerVsize: number;
+  inputs?: number[];
 }
 
 export interface AuditTransaction {
@@ -126,9 +128,9 @@ export interface CompactThreadTransaction {
   weight: number;
   sigops: number;
   feePerVsize: number;
-  effectiveFeePerVsize?: number;
+  effectiveFeePerVsize: number;
   inputs: number[];
-  cpfpRoot?: string;
+  cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
 }
