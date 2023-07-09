@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import fs from 'fs';
+import * as fs from 'fs';
 
 export default defineConfig({
   projectId: 'ry4br7',
