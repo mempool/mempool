@@ -2,7 +2,7 @@ import { calcDifficultyAdjustment, DifficultyAdjustment } from '../../api/diffic
 
 describe('Mempool Difficulty Adjustment', () => {
   test('should calculate Difficulty Adjustments properly', () => {
-    const dt = (dtString) => {
+    const dt = (dtString: string | number | Date): number => {
       return Math.floor(new Date(dtString).getTime() / 1000);
     };
 

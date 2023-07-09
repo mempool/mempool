@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as fs from 'fs';
 
 describe('Mempool Backend Config', () => {
@@ -159,7 +160,7 @@ describe('Mempool Backend Config', () => {
       const startSh = fs.readFileSync(`${__dirname}/../../../docker/backend/start.sh`, 'utf-8');
       const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
 
-      function parseJson(jsonObj, root?) {
+      function parseJson(jsonObj, root?): void {
         for (const [key, value] of Object.entries(jsonObj)) {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
@@ -207,7 +208,7 @@ describe('Mempool Backend Config', () => {
       const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
       const dockerJson = fs.readFileSync(`${__dirname}/../../../docker/backend/mempool-config.json`, 'utf-8');
 
-      function parseJson(jsonObj, root?) {
+      function parseJson(jsonObj, root?): void {
         for (const [key, value] of Object.entries(jsonObj)) {
           switch (typeof value) {
             case 'object': {

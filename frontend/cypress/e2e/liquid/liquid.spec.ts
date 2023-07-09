@@ -55,7 +55,7 @@ describe.skip('Liquid', () => {
     });
 
     it('loads the graphs page - mobile', () => {
-      cy.visit(`${basePath}`)
+      cy.visit(`${basePath}`);
       cy.waitForSkeletonGone();
       cy.get('#btn-graphs').click().then(() => {
         cy.viewport('iphone-6');
