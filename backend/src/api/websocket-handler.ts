@@ -333,7 +333,7 @@ class WebsocketHandler {
     });
   }
 
-  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended },
+  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
@@ -342,7 +342,11 @@ class WebsocketHandler {
     this.printLogs();
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+      if (config.MEMPOOL.RUST_GBT) {
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
+      } else {
+        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+      }
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -570,7 +574,7 @@ class WebsocketHandler {
     });
   }
  
-  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): Promise<void> {
+  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -588,7 +592,11 @@ class WebsocketHandler {
       if (separateAudit) {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          if (config.MEMPOOL.RUST_GBT) {
+            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool);
+          } else {
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          }
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
@@ -655,7 +663,11 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      if (config.MEMPOOL.RUST_GBT) {
+        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
+      } else {
+        await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      }
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }
