@@ -24,7 +24,7 @@ class BisqRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/trades', this.getBisqMarketTrades.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes', this.getBisqMarketVolumes.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'bisq/markets/volumes/7d', this.getBisqMarketVolumes7d.bind(this))
-    ;
+      ;
   }
 
 
@@ -345,7 +345,7 @@ class BisqRoutes {
     for (const i in params) {
       if (params.hasOwnProperty(i)) {
         if (params[i].required && requestParams[i] === undefined) {
-          return { error: i + ' parameter missing'};
+          return { error: i + ' parameter missing' };
         }
         if (typeof requestParams[i] === 'string') {
           const str = (requestParams[i] || '').toString().toLowerCase();
@@ -359,7 +359,7 @@ class BisqRoutes {
           } else if (params[i].types.indexOf(str) > -1) {
             final[i] = str;
           } else {
-            return { error: i + ' parameter invalid'};
+            return { error: i + ' parameter invalid' };
           }
         } else if (typeof requestParams[i] === 'number') {
           final[i] = requestParams[i];

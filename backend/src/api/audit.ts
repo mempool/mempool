@@ -6,7 +6,7 @@ const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first
 
 class Audit {
   auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
-   : { censored: string[], added: string[], fresh: string[], sigop: string[], score: number, similarity: number } {
+    : { censored: string[], added: string[], fresh: string[], sigop: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
       return { censored: [], added: [], fresh: [], sigop: [], score: 0, similarity: 1 };
     }
@@ -35,7 +35,7 @@ class Audit {
     for (const txid of projectedBlocks[0].transactionIds) {
       if (!inBlock[txid]) {
         // tx is recent, may have reached the miner too late for inclusion
-        if (mempool[txid]?.firstSeen != null && (now - (mempool[txid]?.firstSeen || 0)) <= PROPAGATION_MARGIN) {
+        if (mempool[txid]?.firstSeen !== null && (now - (mempool[txid]?.firstSeen || 0)) <= PROPAGATION_MARGIN) {
           fresh.push(txid);
         } else {
           isCensored[txid] = true;
@@ -71,7 +71,7 @@ class Audit {
           if (fits) {
             lastFeeRate = Math.min(lastFeeRate, tx.effectiveFeePerVsize);
           }
-          if (tx.firstSeen == null || (now - (tx?.firstSeen || 0)) > PROPAGATION_MARGIN) {
+          if (tx.firstSeen === null || (now - (tx?.firstSeen || 0)) > PROPAGATION_MARGIN) {
             displacedWeightRemaining -= tx.weight;
           }
           failures = 0;
