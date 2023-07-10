@@ -12,7 +12,7 @@ import {
   tap
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, from, throwError } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -52,6 +52,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   mempoolBlocksSubscription: Subscription;
+  blocksSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -128,6 +129,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       const vout = parseInt(this.fragmentParams.get('vout'), 10);
       this.inputIndex = (!isNaN(vin) && vin >= 0) ? vin : null;
       this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
+    });
+
+    this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
+      this.latestBlock = blocks[0];
     });
 
     this.fetchCpfpSubscription = this.fetchCpfp$
@@ -596,6 +601,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }

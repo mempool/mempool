@@ -36,6 +36,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   chainTip: number;
+  pendingMarkBlock: { animate: boolean, newBlockFromLeft: boolean };
   blocksSubscription: Subscription;
   blockPageSubscription: Subscription;
   networkSubscription: Subscription;
@@ -83,7 +84,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.chainTip = this.stateService.latestBlockHeight;
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
@@ -110,7 +110,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             return;
           }
           const latestHeight = blocks[0].height;
-          const animate = latestHeight > blocks[0].height;
+          const animate = this.chainTip != null && latestHeight > this.chainTip;
 
           for (const block of blocks) {
             block.extras.minFee = this.getMinBlockFee(block);
@@ -132,6 +132,11 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.chainTip = latestHeight;
+
+          if (this.pendingMarkBlock) {
+            this.moveArrowToPosition(this.pendingMarkBlock.animate, this.pendingMarkBlock.newBlockFromLeft);
+            this.pendingMarkBlock = null;
+          }
           this.cd.markForCheck();
         });
 
@@ -202,7 +207,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.arrowVisible = false;
       return;
     }
-    const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
+    if (this.chainTip == null) {
+      this.pendingMarkBlock = { animate, newBlockFromLeft };
+    }
+    const blockindex = this.blocks.findIndex((b) => { console.log(b); return b.height === this.markHeight });
     if (blockindex > -1) {
       if (!animate) {
         this.arrowTransition = 'inherit';
