@@ -13,7 +13,7 @@ export default defineConfig({
   },
   chromeWebSecurity: false,
   e2e: {
-    setupNodeEvents(on: any, config: any): void {
+    async setupNodeEvents(on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions): Promise<Cypress.PluginConfigOptions> {
 
       const CONFIG_FILE = 'mempool-frontend-config.json';
       if (fs.existsSync(CONFIG_FILE)) {
