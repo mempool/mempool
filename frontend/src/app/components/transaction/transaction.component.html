@@ -453,11 +453,18 @@
 
   <ng-template [ngIf]="error">
 
-    <div class="text-center" *ngIf="waitingForTransaction; else errorTemplate">
-      <h3 i18n="transaction.error.transaction-not-found">Transaction not found.</h3>
-      <h5 i18n="transaction.error.waiting-for-it-to-appear">Waiting for it to appear in the mempool...</h5>
+    <div class="text-center" *ngIf="loadingCachedTx; else waitingTemplate">
+      <h3 i18n="transaction.error.transaction-not-found">Loading transaction</h3>
       <div class="spinner-border text-light mt-2"></div>
     </div>
+
+    <ng-template #waitingTemplate>
+      <div class="text-center" *ngIf="waitingForTransaction; else errorTemplate">
+        <h3 i18n="transaction.error.transaction-not-found">Transaction not found.</h3>
+        <h5 i18n="transaction.error.waiting-for-it-to-appear">Waiting for it to appear in the mempool...</h5>
+        <div class="spinner-border text-light mt-2"></div>
+      </div>
+    </ng-template>
 
     <ng-template #errorTemplate>
       <div class="text-center">
