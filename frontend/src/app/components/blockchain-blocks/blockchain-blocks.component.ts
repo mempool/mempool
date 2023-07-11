@@ -210,7 +210,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (this.chainTip == null) {
       this.pendingMarkBlock = { animate, newBlockFromLeft };
     }
-    const blockindex = this.blocks.findIndex((b) => { console.log(b); return b.height === this.markHeight });
+    const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
     if (blockindex > -1) {
       if (!animate) {
         this.arrowTransition = 'inherit';
