@@ -1,11 +1,11 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
+import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { map, scan, shareReplay, tap } from 'rxjs/operators';
+import { map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 export interface MarkBlockState {
@@ -197,6 +197,11 @@ export class StateService {
       this.network = this.env.BASE_MODULE;
       this.networkChanged$.next(this.env.BASE_MODULE);
     }
+
+    this.networkChanged$.subscribe((network) => {
+      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.blocks$ = new ReplaySubject<[BlockExtended, string]>(this.env.KEEP_BLOCKS_AMOUNT);
+    });
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
 
