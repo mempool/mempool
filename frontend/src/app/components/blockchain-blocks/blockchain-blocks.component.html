@@ -22,8 +22,7 @@
         <div class="block-body">
           <ng-container *ngIf="!minimal">
             <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
-              ~{{ block?.extras?.medianFee | number:feeRounding }} <ng-container
-                i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+              ~<app-fee-rate [fee]="block?.extras?.medianFee" unitClass="" rounding="1.0-0"></app-fee-rate>
             </div>
             <ng-template #emptyfees>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
@@ -32,8 +31,9 @@
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
               *ngIf="block?.extras?.minFee != null && block?.extras?.maxFee != null; else emptyfeespan">
-              {{ block.extras.minFee | number:feeRounding }} - {{ block.extras.maxFee | number:feeRounding }} <ng-container
-                i18n="shared.sat-vbyte|sat/vB">sat/vB</ng-container>
+              <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0" unitClass=""></app-fee-rate>
+              -
+              <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0" unitClass=""></app-fee-rate>
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">

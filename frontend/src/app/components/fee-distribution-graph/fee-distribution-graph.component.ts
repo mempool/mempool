@@ -1,16 +1,17 @@
-import { OnChanges } from '@angular/core';
+import { OnChanges, OnDestroy } from '@angular/core';
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
 import { selectPowerOfTen } from '../../bitcoin.utils';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fee-distribution-graph',
   templateUrl: './fee-distribution-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeeDistributionGraphComponent implements OnInit, OnChanges {
+export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() feeRange: number[];
   @Input() vsize: number;
   @Input() transactions: TransactionStripped[];
@@ -25,6 +26,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
   data: number[][];
   labelInterval: number = 50;
 
+  rateUnitSub: Subscription;
+  weightMode: boolean = false;
   mempoolVsizeFeesOptions: any;
   mempoolVsizeFeesInitOptions = {
     renderer: 'svg'
@@ -35,8 +38,13 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
     private vbytesPipe: VbytesPipe,
   ) { }
 
-  ngOnInit(): void {
-    this.mountChart();
+  ngOnInit() {
+    this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
+      this.weightMode = rateUnits === 'wu';
+      if (this.data) {
+        this.mountChart();
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -122,8 +130,9 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
         },
         axisLabel: {
           formatter: (value: number): string => {
-            const selectedPowerOfTen = selectPowerOfTen(value);
-            const newVal = Math.round(value / selectedPowerOfTen.divider);
+            const unitValue = this.weightMode ? value / 4 : value;
+            const selectedPowerOfTen = selectPowerOfTen(unitValue);
+            const newVal = Math.round(unitValue / selectedPowerOfTen.divider);
             return `${newVal}${selectedPowerOfTen.unit}`;
           },
         }
@@ -138,10 +147,11 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
           textShadowBlur: 0,
           formatter: (label: { data: number[] }): string => {
             const value = label.data[1];
-            const selectedPowerOfTen = selectPowerOfTen(value);
-            const newVal = Math.round(value / selectedPowerOfTen.divider);
+            const unitValue = this.weightMode ? value / 4 : value;
+            const selectedPowerOfTen = selectPowerOfTen(unitValue);
+            const newVal = Math.round(unitValue / selectedPowerOfTen.divider);
             return `${newVal}${selectedPowerOfTen.unit}`;
-          },
+          }
         },
         showAllSymbol: false,
         smooth: true,
@@ -161,5 +171,9 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges {
         }
       }]
     };
+  }
+
+  ngOnDestroy(): void {
+    this.rateUnitSub.unsubscribe();
   }
 }
