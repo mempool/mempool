@@ -73,7 +73,7 @@ class PriceUpdater {
   }
 
   public async $run(): Promise<void> {
-    if (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet') {
+    if (['testnet', 'signet', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
     }

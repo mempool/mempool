@@ -271,6 +271,11 @@ const featureActivation = {
     segwit: 0,
     taproot: 0,
   },
+  regtest: {
+    rbf: 0,
+    segwit: 0,
+    taproot: 0,
+  },
 };
 
 export function isFeatureActive(network: string, height: number, feature: 'rbf' | 'segwit' | 'taproot'): boolean {

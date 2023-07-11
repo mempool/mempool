@@ -18,6 +18,7 @@ fi
 
 __TESTNET_ENABLED__=${TESTNET_ENABLED:=false}
 __SIGNET_ENABLED__=${SIGNET_ENABLED:=false}
+__REGTEST_ENABLED__=${REGTEST_ENABLED:=false}
 __LIQUID_ENABLED__=${LIQUID_EANBLED:=false}
 __LIQUID_TESTNET_ENABLED__=${LIQUID_TESTNET_ENABLED:=false}
 __BISQ_ENABLED__=${BISQ_ENABLED:=false}
@@ -44,6 +45,7 @@ __HISTORICAL_PRICE__=${HISTORICAL_PRICE:=true}
 # Export as environment variables to be used by envsubst
 export __TESTNET_ENABLED__
 export __SIGNET_ENABLED__
+export __REGTEST_ENABLED__
 export __LIQUID_ENABLED__
 export __LIQUID_TESTNET_ENABLED__
 export __BISQ_ENABLED__

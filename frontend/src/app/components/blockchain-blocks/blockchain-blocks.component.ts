@@ -68,6 +68,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     'liquidtestnet': ['#494a4a', '#272e46'],
     testnet: ['#1d486f', '#183550'],
     signet: ['#6f1d5d', '#471850'],
+    regtest: ['#9339f4', '#105fb0'],
   };
 
   constructor(
@@ -86,7 +87,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
+    if (['', 'testnet', 'signet', 'regtest'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
     }

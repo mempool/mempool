@@ -41,6 +41,8 @@ export class SeoService {
       return this.baseTitle + ' - Bitcoin Testnet';
     if (this.network === 'signet')
       return this.baseTitle + ' - Bitcoin Signet';
+    if (this.network === 'regtest')
+      return this.baseTitle + ' - Bitcoin Regtest';
     if (this.network === 'liquid')
       return this.baseTitle + ' - Liquid Network';
     if (this.network === 'liquidtestnet')

@@ -38,6 +38,7 @@ export class ClockComponent implements OnInit {
     'liquidtestnet': ['#494a4a', '#272e46'],
     testnet: ['#1d486f', '#183550'],
     signet: ['#6f1d5d', '#471850'],
+    regtest: ['#9339f4', '#105fb0'],
   };
 
   constructor(
