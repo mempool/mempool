@@ -5,7 +5,7 @@ import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommended
 import { BlockExtended, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { map, scan, shareReplay } from 'rxjs/operators';
+import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 export interface MarkBlockState {
@@ -94,7 +94,8 @@ export class StateService {
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$ = new BehaviorSubject<BlockExtended[]>([]);
+  blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
+  blocks$: Observable<BlockExtended[]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -200,10 +201,12 @@ export class StateService {
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new ReplaySubject<TransactionStripped>(6);
-      this.blocks$ = new ReplaySubject<[BlockExtended, string]>(this.env.KEEP_BLOCKS_AMOUNT);
+      this.blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
     });
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
+
+    this.blocks$ = this.blocksSubject$.pipe(filter(blocks => blocks != null && blocks.length > 0));
 
     const savedTimePreference = this.storageService.getValue('time-preference-ltr');
     const rtlLanguage = (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he'));
@@ -344,12 +347,12 @@ export class StateService {
 
   resetBlocks(blocks: BlockExtended[]): void {
     this.blocks = blocks.reverse();
-    this.blocks$.next(blocks);
+    this.blocksSubject$.next(blocks);
   }
 
   addBlock(block: BlockExtended): void {
     this.blocks.unshift(block);
     this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
-    this.blocks$.next(this.blocks);
+    this.blocksSubject$.next(this.blocks);
   }
 }

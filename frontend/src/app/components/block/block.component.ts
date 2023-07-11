@@ -142,7 +142,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             if (block?.extras?.reward != undefined) {
               this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
             }
-          } else if (block.height === this.block.height) {
+          } else if (block.height === this.block?.height) {
             this.block.stale = true;
             this.block.canonical = block.id;
           }
