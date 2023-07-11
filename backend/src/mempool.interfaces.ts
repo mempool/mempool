@@ -227,6 +227,7 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
