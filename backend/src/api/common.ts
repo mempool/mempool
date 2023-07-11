@@ -86,18 +86,18 @@ export class Common {
         const match = spendMap.get(`${vin.txid}:${vin.vout}`);
         if (match && match.txid !== tx.txid) {
           replaced.add(match);
+          // remove this tx from the spendMap
+          // prevents the same tx being replaced more than once
+          for (const replacedVin of match.vin) {
+            const key = `${replacedVin.txid}:${replacedVin.vout}`;
+            spendMap.delete(key);
+          }
         }
+        const key = `${vin.txid}:${vin.vout}`;
+        spendMap.delete(key);
       }
       if (replaced.size) {
         matches[tx.txid] = { replaced: Array.from(replaced), replacedBy: tx };
-      }
-      // remove this tx from the spendMap
-      // prevents the same tx being replaced more than once
-      for (const vin of tx.vin) {
-        const key = `${vin.txid}:${vin.vout}`;
-        if (spendMap.get(key)?.txid === tx.txid) {
-          spendMap.delete(key);
-        }
       }
     }
     return matches;
