@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, combineLatest } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
@@ -76,10 +76,11 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         }
       });
 
-    this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
-      .pipe(
-        startWith(this.radioGroupForm.controls.dateSpan.value),
-        switchMap((timespan) => {
+    this.statsObservable$ = combineLatest([
+        this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith(this.radioGroupForm.controls.dateSpan.value)),
+        this.stateService.rateUnits$
+    ]).pipe(
+        switchMap(([timespan, rateUnits]) => {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
@@ -135,8 +136,8 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
                 this.prepareChartOptions({
                   legends: legends,
-                  series: series,
-                });
+                  series: series
+                }, rateUnits === 'wu');
                 this.isLoading = false;
               }),
               map((response) => {
@@ -150,7 +151,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
       );
   }
 
-  prepareChartOptions(data) {
+  prepareChartOptions(data, weightMode) {
     this.chartOptions = {
       color: ['#D81B60', '#8E24AA', '#1E88E5', '#7CB342', '#FDD835', '#6D4C41', '#546E7A'],
       animation: false,
@@ -181,7 +182,11 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
 
           for (const rate of data.reverse()) {
-            tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1]} sats/vByte<br>`;
+            if (weightMode) {
+              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1] / 4} sats/WU<br>`;
+            } else {
+              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1]} sats/vByte<br>`;
+            }
           }
 
           if (['24h', '3d'].includes(this.timespan)) {
@@ -231,9 +236,12 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         axisLabel: {
           color: 'rgb(110, 112, 121)',
           formatter: (val) => {
+            if (weightMode) {
+              val /= 4;
+            }
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = Math.round(val / selectedPowerOfTen.divider);
-            return `${newVal}${selectedPowerOfTen.unit} s/vB`;
+            return `${newVal}${selectedPowerOfTen.unit} s/${weightMode ? 'WU': 'vB'}`;
           },
         },
         splitLine: {
