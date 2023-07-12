@@ -80,6 +80,9 @@ export class SearchFormComponent implements OnInit {
         }
         return text.trim();
       }),
+      tap((text) => {
+        this.stateService.searchText$.next(text);
+      }),
       distinctUntilChanged(),
     );
 

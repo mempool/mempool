@@ -129,6 +129,7 @@ export class StateService {
 
   markBlock$ = new BehaviorSubject<MarkBlockState>({});
   keyNavigation$ = new Subject<KeyboardEvent>();
+  searchText$ = new BehaviorSubject<string>('');
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
   resetScroll$: Subject<boolean> = new Subject<boolean>();
