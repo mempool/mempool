@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse, IBackendInfo } from '../interfaces/websocket.interface';
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
-import { BlockExtended } from '../interfaces/node-api.interface';
+import { CacheService } from './cache.service';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -40,6 +40,7 @@ export class WebsocketService {
     private stateService: StateService,
     private apiService: ApiService,
     private transferState: TransferState,
+    private cacheService: CacheService,
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
