@@ -29,6 +29,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       weight: block.weight,
       previousblockhash: block.previousblockhash,
       mediantime: block.mediantime,
+      stale: block.confirmations === -1,
     };
   }
 
@@ -415,10 +416,36 @@ class BitcoinApi implements AbstractBitcoinApi {
       vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
     }
 
-    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness && vin.witness.length > 1) {
-      const witnessScript = vin.witness[vin.witness.length - 2];
-      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness) {
+      const witnessScript = this.witnessToP2TRScript(vin.witness);
+      if (witnessScript !== null) {
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
     }
+  }
+
+  /**
+   * This function must only be called when we know the witness we are parsing
+   * is a taproot witness.
+   * @param witness An array of hex strings that represents the witness stack of
+   *                the input.
+   * @returns null if the witness is not a script spend, and the hex string of
+   *          the script item if it is a script spend.
+   */
+  private witnessToP2TRScript(witness: string[]): string | null {
+    if (witness.length < 2) return null;
+    // Note: see BIP341 for parsing details of witness stack
+
+    // If there are at least two witness elements, and the first byte of the
+    // last element is 0x50, this last element is called annex a and
+    // is removed from the witness stack.
+    const hasAnnex = witness[witness.length - 1].substring(0, 2) === '50';
+    // If there are at least two witness elements left, script path spending is used.
+    // Call the second-to-last stack element s, the script.
+    // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
+    if (hasAnnex && witness.length < 3) return null;
+    const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
+    return witness[positionOfScript];
   }
 
 }

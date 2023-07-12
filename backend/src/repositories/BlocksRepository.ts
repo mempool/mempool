@@ -13,6 +13,48 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 
+interface DatabaseBlock {
+  id: string;
+  height: number;
+  version: number;
+  timestamp: number;
+  bits: number;
+  nonce: number;
+  difficulty: number;
+  merkle_root: string;
+  tx_count: number;
+  size: number;
+  weight: number;
+  previousblockhash: string;
+  mediantime: number;
+  totalFees: number;
+  medianFee: number;
+  feeRange: string;
+  reward: number;
+  poolId: number;
+  poolName: string;
+  poolSlug: string;
+  avgFee: number;
+  avgFeeRate: number;
+  coinbaseRaw: string;
+  coinbaseAddress: string;
+  coinbaseSignature: string;
+  coinbaseSignatureAscii: string;
+  avgTxSize: number;
+  totalInputs: number;
+  totalOutputs: number;
+  totalOutputAmt: number;
+  medianFeeAmt: number;
+  feePercentiles: string;
+  segwitTotalTxs: number;
+  segwitTotalSize: number;
+  segwitTotalWeight: number;
+  header: string;
+  utxoSetChange: number;
+  utxoSetSize: number;
+  totalInputAmt: number;
+}
+
 const BLOCK_DB_FIELDS = `
   blocks.hash AS id,
   blocks.height,
@@ -52,7 +94,7 @@ const BLOCK_DB_FIELDS = `
   blocks.header,
   blocks.utxoset_change AS utxoSetChange,
   blocks.utxoset_size AS utxoSetSize,
-  blocks.total_input_amt AS totalInputAmts
+  blocks.total_input_amt AS totalInputAmt
 `;
 
 class BlocksRepository {
@@ -167,6 +209,32 @@ class BlocksRepository {
       await DB.query(query, params);
     } catch (e: any) {
       logger.err('Cannot update indexed block coinstatsindex. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Update missing fee amounts fields
+   *
+   * @param blockHash 
+   * @param feeAmtPercentiles 
+   * @param medianFeeAmt 
+   */
+  public async $updateFeeAmounts(blockHash: string, feeAmtPercentiles, medianFeeAmt) : Promise<void> {
+    try {
+      const query = `
+        UPDATE blocks
+        SET fee_percentiles = ?, median_fee_amt = ?
+        WHERE hash = ?
+      `;
+      const params: any[] = [
+        JSON.stringify(feeAmtPercentiles),
+        medianFeeAmt,
+        blockHash
+      ];
+      await DB.query(query, params);
+    } catch (e: any) {
+      logger.err(`Cannot update fee amounts for block ${blockHash}. Reason: ' + ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }
@@ -432,7 +500,7 @@ class BlocksRepository {
 
       const blocks: BlockExtended[] = [];
       for (const block of rows) {
-        blocks.push(await this.formatDbBlockIntoExtendedBlock(block));
+        blocks.push(await this.formatDbBlockIntoExtendedBlock(block as DatabaseBlock));
       }
 
       return blocks;
@@ -459,7 +527,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -505,19 +573,6 @@ class BlocksRepository {
         'Cannot get block height from timestamp from the db. Reason: ' +
           (e instanceof Error ? e.message : e),
       );
-      throw e;
-    }
-  }
-
-  /**
-   * Return blocks height
-   */
-   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
-    try {
-      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -809,7 +864,7 @@ class BlocksRepository {
   /**
    * Get all blocks which have not be linked to a price yet
    */
-   public async $getBlocksWithoutPrice(): Promise<object[]> {
+  public async $getBlocksWithoutPrice(): Promise<object[]> {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
@@ -821,7 +876,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -841,7 +896,6 @@ class BlocksRepository {
         logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
@@ -860,7 +914,7 @@ class BlocksRepository {
       return blocks;
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinstatsindex. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -908,7 +962,7 @@ class BlocksRepository {
    * 
    * @param dbBlk 
    */
-  private async formatDbBlockIntoExtendedBlock(dbBlk: any): Promise<BlockExtended> {
+  private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
     const extras: Partial<BlockExtension> = {};
 
@@ -964,10 +1018,14 @@ class BlocksRepository {
 
     // Match rate is not part of the blocks table, but it is part of APIs so we must include it
     extras.matchRate = null;
+    extras.expectedFees = null;
+    extras.expectedWeight = null;
     if (config.MEMPOOL.AUDIT) {
       const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
       if (auditScore != null) {
         extras.matchRate = auditScore.matchRate;
+        extras.expectedFees = auditScore.expectedFees;
+        extras.expectedWeight = auditScore.expectedWeight;
       }
     }
 
@@ -980,11 +1038,12 @@ class BlocksRepository {
       if (extras.feePercentiles === null) {
         const block = await bitcoinClient.getBlock(dbBlk.id, 2);
         const summary = blocks.summarizeBlock(block);
-        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.hash, summary.transactions);
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
         extras.medianFeeAmt = extras.feePercentiles[3];
+        await this.$updateFeeAmounts(dbBlk.id, extras.feePercentiles, extras.medianFeeAmt);
       }
     }
 

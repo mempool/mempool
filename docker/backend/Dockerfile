@@ -7,7 +7,12 @@ WORKDIR /build
 COPY . .
 
 RUN apt-get update
-RUN apt-get install -y build-essential python3 pkg-config
+RUN apt-get install -y build-essential python3 pkg-config curl
+
+# Install Rust via rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
+ENV PATH="/root/.cargo/bin:$PATH"
+
 RUN npm install --omit=dev --omit=optional
 RUN npm run package
 

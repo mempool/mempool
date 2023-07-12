@@ -19,12 +19,15 @@ class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
   public lastWeeklyHashrateIndexingDate: number | null = null;
+  
+  public reindexHashrateRequested = false;
+  public reindexDifficultyAdjustmentRequested = false;
 
   /**
-   * Get historical block predictions match rate
+   * Get historical blocks health
    */
-   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
-    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+   public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
@@ -103,6 +106,7 @@ class Mining {
         emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+        avgFeeDelta: poolInfo.avgFeeDelta,
       };
       poolsStats.push(poolStat);
     });
@@ -290,6 +294,14 @@ class Mining {
    * Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexHashrateRequested === true) {
+      logger.notice(`hashrates will now be re-indexed`);
+      await database.query(`TRUNCATE hashrates`);
+      this.lastHashrateIndexingDate = 0;
+      this.reindexHashrateRequested = false;
+    }
+
     // We only run this once a day around midnight
     const today = new Date().getUTCDate();
     if (today === this.lastHashrateIndexingDate) {
@@ -395,6 +407,13 @@ class Mining {
    * Index difficulty adjustments
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexDifficultyAdjustmentRequested === true) {
+      logger.notice(`difficulty_adjustments will now be re-indexed`);
+      await database.query(`TRUNCATE difficulty_adjustments`);
+      this.reindexDifficultyAdjustmentRequested = false;
+    }
+
     const indexedHeightsArray = await DifficultyAdjustmentsRepository.$getAdjustmentsHeights();
     const indexedHeights = {};
     for (const height of indexedHeightsArray) {
@@ -473,11 +492,11 @@ class Mining {
     }
     this.blocksPriceIndexingRunning = true;
 
+    let totalInserted = 0;
     try {
       const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
       const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
 
-      let totalInserted = 0;
       const blocksPrices: BlockPrice[] = [];
 
       for (const block of blocksWithoutPrices) {
@@ -522,7 +541,13 @@ class Mining {
       }
     } catch (e) {
       this.blocksPriceIndexingRunning = false;
-      throw e;
+      logger.err(`Cannot index block prices. ${e}`);
+    }
+
+    if (totalInserted > 0) {
+      logger.info(`Indexing blocks prices completed. Indexed ${totalInserted}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing blocks prices completed. Indexed 0.`, logger.tags.mining);
     }
 
     this.blocksPriceIndexingRunning = false;

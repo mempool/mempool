@@ -39,7 +39,8 @@ class PoolsRepository {
           pools.name AS name,
           pools.link AS link,
           slug,
-          AVG(blocks_audits.match_rate) AS avgMatchRate
+          AVG(blocks_audits.match_rate) AS avgMatchRate,
+          AVG((CAST(blocks.fees as SIGNED) - CAST(blocks_audits.expected_fees as SIGNED)) / NULLIF(CAST(blocks_audits.expected_fees as SIGNED), 0)) AS avgFeeDelta
       FROM blocks
       JOIN pools on pools.id = pool_id
       LEFT JOIN blocks_audits ON blocks_audits.height = blocks.height

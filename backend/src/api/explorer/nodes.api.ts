@@ -373,7 +373,7 @@ class NodesApi {
 
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
-      const publicKeySearch = search.replace('%', '') + '%';
+      const publicKeySearch = search.replace(/[^a-zA-Z0-9]/g, '') + '%';
       const aliasSearch = search
         .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".  
         .replace(/[^a-zA-Z0-9 ]/g, '') // Remove all special characters and keep just A to Z, 0 to 9.

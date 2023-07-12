@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { StateService } from '../../services/state.service';
+import { MarkBlockState, StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
 
 @Component({
@@ -9,6 +9,8 @@ import { specialBlocks } from '../../app.constants';
   styleUrls: ['./start.component.scss'],
 })
 export class StartComponent implements OnInit, OnDestroy {
+  @Input() showLoadingIndicator = false;
+
   interval = 60;
   colors = ['#5E35B1', '#ffffff'];
 
@@ -22,9 +24,11 @@ export class StartComponent implements OnInit, OnDestroy {
   chainTipSubscription: Subscription;
   chainTip: number = -1;
   tipIsSet: boolean = false;
+  lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
+  resetScrollSubscription: Subscription; 
 
   isMobile: boolean = false;
   isiOS: boolean = false;
@@ -37,10 +41,11 @@ export class StartComponent implements OnInit, OnDestroy {
   minScrollWidth: number;
   pageIndex: number = 0;
   pages: any[] = [];
-  pendingMark: number | void = null;
+  pendingMark: number | null = null;
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
+  mempoolOffset: number = 0;
 
   constructor(
     private stateService: StateService,
@@ -67,19 +72,40 @@ export class StartComponent implements OnInit, OnDestroy {
       this.chainTip = height;
       this.tipIsSet = true;
       this.updatePages();
-      if (this.pendingMark != null) {
-        this.scrollToBlock(this.pendingMark);
-        this.pendingMark = null;
-      }
+      this.applyPendingMarkArrow();
     });
     this.markBlockSubscription = this.stateService.markBlock$.subscribe((mark) => {
+      let blockHeight;
+      let newMark = true;
       if (mark?.blockHeight != null) {
+        if (this.lastMark?.blockHeight === mark.blockHeight) {
+          newMark = false;
+        }
+        blockHeight = mark.blockHeight;
+      } else if (mark?.mempoolBlockIndex != null) {
+        if (this.lastMark?.mempoolBlockIndex === mark.mempoolBlockIndex || (mark.txid && this.lastMark?.txid === mark.txid)) {
+          newMark = false;
+        }
+        blockHeight = -1 - mark.mempoolBlockIndex;
+      } else if (mark?.mempoolPosition?.block != null) {
+        if (this.lastMark?.txid === mark.txid) {
+          newMark = false;
+        }
+        blockHeight = -1 - mark.mempoolPosition.block;
+      }
+      this.lastMark = mark;
+      if (blockHeight != null) {
         if (this.tipIsSet) {
-          if (!this.blockInViewport(mark.blockHeight)) {
-            this.scrollToBlock(mark.blockHeight);
+          let scrollToHeight = blockHeight;
+          if (blockHeight < 0) {
+            scrollToHeight = this.chainTip - blockHeight;
           }
-        } else {
-          this.pendingMark = mark.blockHeight;
+          if (newMark && !this.blockInViewport(scrollToHeight)) {
+            this.scrollToBlock(scrollToHeight);
+          }
+        }
+        if (!this.tipIsSet || (blockHeight < 0 && !this.mempoolOffset)) {
+          this.pendingMark = blockHeight;
         }
       }
     });
@@ -106,6 +132,30 @@ export class StartComponent implements OnInit, OnDestroy {
           }, 60 * 60 * 1000);
         }
       });
+    this.resetScrollSubscription = this.stateService.resetScroll$.subscribe(reset => {
+      if (reset) {
+        this.resetScroll();
+        this.stateService.resetScroll$.next(false);
+      } 
+    });
+  }
+
+  onMempoolOffsetChange(offset): void {
+    const delta = offset - this.mempoolOffset;
+    this.addConvertedScrollOffset(delta);
+    this.mempoolOffset = offset;
+    this.applyPendingMarkArrow();
+  }
+
+  applyPendingMarkArrow(): void {
+    if (this.pendingMark != null) {
+      if (this.pendingMark < 0) {
+        this.scrollToBlock(this.chainTip - this.pendingMark);
+      } else {
+        this.scrollToBlock(this.pendingMark);
+      }
+      this.pendingMark = null;
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -137,9 +187,11 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(event: MouseEvent) {
-    this.mouseDragStartX = event.clientX;
-    this.resetMomentum(event.clientX);
-    this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+    if (!(event.which > 1 || event.button > 0)) {
+      this.mouseDragStartX = event.clientX;
+      this.resetMomentum(event.clientX);
+      this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+    }
   }
   onPointerDown(event: PointerEvent) {
     if (this.isiOS) {
@@ -339,7 +391,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   resetScroll(): void {
     this.scrollToBlock(this.chainTip);
-    this.blockchainContainer.nativeElement.scrollLeft = 0;
+    this.setScrollLeft(0);
   }
 
   getPageIndexOf(height: number): number {
@@ -357,9 +409,17 @@ export class StartComponent implements OnInit, OnDestroy {
 
   getConvertedScrollOffset(): number {
     if (this.timeLtr) {
-      return -this.blockchainContainer?.nativeElement?.scrollLeft || 0;
+      return -(this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
     } else {
-      return this.blockchainContainer?.nativeElement?.scrollLeft || 0;
+      return (this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
+    }
+  }
+
+  setScrollLeft(offset: number): void {
+    if (this.timeLtr) {
+      this.blockchainContainer.nativeElement.scrollLeft = offset - this.mempoolOffset;
+    } else {
+      this.blockchainContainer.nativeElement.scrollLeft = offset + this.mempoolOffset;
     }
   }
 
@@ -377,11 +437,12 @@ export class StartComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.blockchainContainer?.nativeElement) {
       // clean up scroll position to prevent caching wrong scroll in Firefox
-      this.blockchainContainer.nativeElement.scrollLeft = 0;
+      this.setScrollLeft(0);
     }
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.blockCounterSubscription.unsubscribe();
+    this.resetScrollSubscription.unsubscribe();
   }
 }
