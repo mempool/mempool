@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import logger from '../../logger';
 
 class Icons {
-  private static FILE_NAME = './icons.json';
+  private static FILE_NAME = '/elements/asset_registry_db/icons.json';
   private iconIds: string[] = [];
   private icons: { [assetId: string]: string; } = {};
 

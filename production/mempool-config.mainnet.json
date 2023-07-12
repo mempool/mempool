@@ -14,6 +14,7 @@
     "CPFP_INDEXING": true,
     "ADVANCED_GBT_AUDIT": true,
     "ADVANCED_GBT_MEMPOOL": true,
+    "RUST_GBT": true,
     "USE_SECOND_NODE_FOR_MINFEE": true,
     "DISK_CACHE_BLOCK_INTERVAL": 1
   },
@@ -31,12 +32,13 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
+    "REST_API_URL": "http://127.0.0.1:5000",
     "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-mainnet"
   },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
-    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "USERNAME": "__MEMPOOL_MAINNET_USER__",
     "PASSWORD": "__MEMPOOL_MAINNET_PASS__",
     "DATABASE": "mempool"

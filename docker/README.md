@@ -144,8 +144,8 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
-      MAX_BLOCKS_BULK_QUERY: ""
-      DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
+      MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
       ...
 ```
 
@@ -205,7 +205,8 @@ Corresponding `docker-compose.yml` overrides:
 ```json
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
-    "UNIX_SOCKET_PATH": "/tmp/esplora-socket"
+    "UNIX_SOCKET_PATH": "/tmp/esplora-socket",
+    "RETRY_UNIX_SOCKET_AFTER": 30000
   },
 ```
 
@@ -215,6 +216,7 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       ESPLORA_REST_API_URL: ""
       ESPLORA_UNIX_SOCKET_PATH: ""
+      ESPLORA_RETRY_UNIX_SOCKET_AFTER: ""
       ...
 ```
 
@@ -267,6 +269,7 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_DATABASE: ""
       DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
+      DATABASE_TIMEOUT: ""
       ...
 ```
 

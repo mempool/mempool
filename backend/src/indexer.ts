@@ -6,6 +6,7 @@ import logger from './logger';
 import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
+import config from './config';
 
 export interface CoreIndex {
   name: string;
@@ -72,7 +73,7 @@ class Indexer {
       return;
     }
 
-    if (task === 'blocksPrices' && !this.tasksRunning.includes(task)) {
+    if (task === 'blocksPrices' && !this.tasksRunning.includes(task) && !['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       this.tasksRunning.push(task);
       const lastestPriceId = await PricesRepository.$getLatestPriceId();
       if (priceUpdater.historyInserted === false || lastestPriceId === null) {
@@ -134,6 +135,7 @@ class Indexer {
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
       await blocks.$generateCPFPDatabase();
+      await blocks.$generateAuditStats();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));

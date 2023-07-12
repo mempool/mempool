@@ -2,6 +2,7 @@ import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import cluster from 'cluster';
 import DB from './database';
 import config from './config';
@@ -45,7 +46,8 @@ class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Application;
-  private currentBackendRetryInterval = 5;
+  private currentBackendRetryInterval = 1;
+  private backendRetryCount = 0;
 
   private maxHeapSize: number = 0;
   private heapLogInterval: number = 60;
@@ -120,7 +122,7 @@ class Server {
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
-      diskCache.loadMempoolCache();
+      await diskCache.$loadMempoolCache();
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
@@ -148,7 +150,7 @@ class Server {
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
-      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
+      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitData('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
       bisqMarkets.startBisqService();
     }
@@ -178,23 +180,26 @@ class Server {
           logger.debug(msg);
         }
       }
-      memPool.deleteExpiredTransactions();
-      await blocks.$updateBlocks();
-      await memPool.$updateMempool();
+      const newMempool = await bitcoinApi.$getRawMempool();
+      const numHandledBlocks = await blocks.$updateBlocks();
+      if (numHandledBlocks === 0) {
+        await memPool.$updateMempool(newMempool);
+      }
       indexer.$run();
 
-      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
-      this.currentBackendRetryInterval = 5;
+      // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
+      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 1 : config.MEMPOOL.POLL_RATE_MS);
+      this.backendRetryCount = 0;
     } catch (e: any) {
-      let loggerMsg = `Exception in runMainUpdateLoop(). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      this.backendRetryCount++;
+      let loggerMsg = `Exception in runMainUpdateLoop() (count: ${this.backendRetryCount}). Retrying in ${this.currentBackendRetryInterval} sec.`;
       loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
       if (e?.stack) {
         loggerMsg += ` Stack trace: ${e.stack}`;
       }
       // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
       // From the second Exception, `logger.warn` the Exception and increase the retry delay
-      // Maximum retry delay is 60 seconds
-      if (this.currentBackendRetryInterval > 5) {
+      if (this.backendRetryCount >= 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
       } else {
@@ -204,8 +209,8 @@ class Server {
         logger.debug(`AxiosError: ${e?.message}`);
       }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
-      this.currentBackendRetryInterval *= 2;
-      this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
+    } finally {
+      diskCache.unlock();
     }
   }
 
@@ -238,7 +243,7 @@ class Server {
     websocketHandler.setupConnectionHandling();
     if (config.MEMPOOL.ENABLED) {
       statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
-      memPool.setAsyncMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
+      memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
       blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
     priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));

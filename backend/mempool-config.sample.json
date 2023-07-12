@@ -27,6 +27,7 @@
     "AUDIT": false,
     "ADVANCED_GBT_AUDIT": false,
     "ADVANCED_GBT_MEMPOOL": false,
+    "RUST_GBT": false,
     "CPFP_INDEXING": false,
     "DISK_CACHE_BLOCK_INTERVAL": 6
   },
@@ -44,7 +45,8 @@
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
-    "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet"
+    "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet",
+    "RETRY_UNIX_SOCKET_AFTER": 30000
   },
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -60,7 +62,8 @@
     "SOCKET": "/var/run/mysql/mysql.sock",
     "DATABASE": "mempool",
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 180000
   },
   "SYSLOG": {
     "ENABLED": true,
