@@ -17,7 +17,7 @@ Get the latest Mempool code:
 
 ```
 git clone https://github.com/mempool/mempool
-cd mempool
+cd mempool/frontend
 ```
 
 ### 2. Specify Website

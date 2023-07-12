@@ -34,6 +34,7 @@ export interface BlockAudit {
   missingTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
+  fullrbfTxs: string[],
   addedTxs: string[],
   matchRate: number,
   expectedFees?: number,
@@ -227,6 +228,7 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
