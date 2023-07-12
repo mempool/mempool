@@ -120,6 +120,8 @@ export interface Block {
   size: number;
   weight: number;
   previousblockhash: string;
+  stale?: boolean;
+  canonical?: string;
 }
 
 export interface Address {

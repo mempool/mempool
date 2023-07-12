@@ -25,9 +25,8 @@ class TransactionRepository {
     }
   }
 
-  public async $batchSetCluster(txs): Promise<void> {
-    try {
-      let query = `
+  public buildBatchSetQuery(txs: { txid: string, cluster: string }[]): { query, params } {
+    let query = `
           INSERT IGNORE INTO compact_transactions
           (
             txid,
@@ -35,13 +34,22 @@ class TransactionRepository {
           )
           VALUES
       `;
-      query += txs.map(tx => {
-        return (' (UNHEX(?), UNHEX(?))');
-      }) + ';';
-      const values = txs.map(tx => [tx.txid, tx.cluster]).flat();
+    query += txs.map(tx => {
+      return (' (UNHEX(?), UNHEX(?))');
+    }) + ';';
+    const values = txs.map(tx => [tx.txid, tx.cluster]).flat();
+    return {
+      query,
+      params: values,
+    };
+  }
+
+  public async $batchSetCluster(txs): Promise<void> {
+    try {
+      const query = this.buildBatchSetQuery(txs);
       await DB.query(
-        query,
-        values
+        query.query,
+        query.params,
       );
     } catch (e: any) {
       logger.err(`Cannot save cpfp transactions into db. Reason: ` + (e instanceof Error ? e.message : e));
@@ -105,6 +113,7 @@ class TransactionRepository {
     return {
       descendants,
       ancestors,
+      effectiveFeePerVsize: cluster.effectiveFeePerVsize,
     };
   }
 }

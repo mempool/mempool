@@ -1,9 +1,11 @@
-import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
 import { formatNumber } from '@angular/common';
+import { StateService } from '../../services/state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -18,7 +20,7 @@ import { formatNumber } from '@angular/common';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
+export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
   @Input() theme: string;
   @Input() height: number | string = '200';
@@ -35,14 +37,24 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   };
   windowPreference: string;
   chartInstance: any = undefined;
+  weightMode: boolean = false;
+  rateUnitSub: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     private storageService: StorageService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit() {
     this.isLoading = true;
+
+    this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
+      this.weightMode = rateUnits === 'wu';
+      if (this.data) {
+        this.mountChart();
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -118,7 +130,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
+                <div class="value">${formatNumber(this.weightMode ? item.value[1] * 4 : item.value[1], this.locale, '1.0-0')} <span class="symbol">${this.weightMode ? 'WU' : 'vB'}/s</span></div>
               </div>`;
             }
           });
@@ -147,6 +159,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         type: 'value',
         axisLabel: {
           fontSize: 11,
+          formatter: (value) => {
+            return this.weightMode ? value * 4 : value;
+          }
         },
         splitLine: {
           lineStyle: {
@@ -249,5 +264,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     this.mempoolStatsChartOption.grid.height = prevHeight;
     this.mempoolStatsChartOption.backgroundColor = 'none';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
+  }
+
+  ngOnDestroy(): void {
+    this.rateUnitSub.unsubscribe();
   }
 }

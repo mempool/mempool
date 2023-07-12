@@ -20,6 +20,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   value = 0;
   vsize = 1;
   feeRate = 0;
+  effectiveRate;
 
   tooltipPosition: Position = { x: 0, y: 0 };
 
@@ -51,6 +52,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
       this.value = tx.value || 0;
       this.vsize = tx.vsize || 1;
       this.feeRate = this.fee / this.vsize;
+      this.effectiveRate = tx.rate;
     }
   }
 }
