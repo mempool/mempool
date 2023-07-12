@@ -269,6 +269,7 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_DATABASE: ""
       DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
+      DATABASE_TIMEOUT: ""
       ...
 ```
 

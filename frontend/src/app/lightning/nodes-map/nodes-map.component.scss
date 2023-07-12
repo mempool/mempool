@@ -4,17 +4,20 @@
   @media (min-width: 465px) {
     font-size: 20px;
   }
+  @media (min-width: 992px) {
+    height: 40px;
+  }
 }
 
 .full-container {
+  display: flex;
+  flex-direction: column;
   padding: 0px 15px;
   width: 100%;
-  min-height: 500px;
-  height: calc(100% - 150px);
-  @media (max-width: 992px) {
-    height: 100%;
-    padding-bottom: 100px;
-  };
+  height: calc(100vh - 250px);
+  @media (min-width: 992px) {
+    height: calc(100vh - 150px);
+  }
 }
 .full-container.widget {
   min-height: 240px;
@@ -34,8 +37,10 @@
 }
 
 .chart {
-  width: 100%;
+  display: flex;
+  flex: 1;
   height: 100%;
+  padding-top: 30px;
   padding-bottom: 20px;
   padding-right: 10px;
   @media (max-width: 992px) {

@@ -300,7 +300,7 @@ class NetworkSyncService {
         ++progress;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
-          logger.info(`Checking if channel has been closed ${progress}/${channels.length}`, logger.tags.ln);
+          logger.debug(`Checking if channel has been closed ${progress}/${channels.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }

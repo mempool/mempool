@@ -9,7 +9,11 @@ export class FeeRoundingPipe implements PipeTransform {
     @Inject(LOCALE_ID) private locale: string,
   ) {}
 
-  transform(fee: number): string {
+  transform(fee: number, rounding = null): string {
+    if (rounding) {
+      return formatNumber(fee, this.locale, rounding);
+    }
+
     if (fee >= 100) {
       return formatNumber(fee, this.locale, '1.0-0')
     } else if (fee < 10) {

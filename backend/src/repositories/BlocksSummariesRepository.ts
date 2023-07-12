@@ -36,19 +36,33 @@ class BlocksSummariesRepository {
     try {
       const transactions = JSON.stringify(params.template?.transactions || []);
       await DB.query(`
-        INSERT INTO blocks_summaries (height, id, transactions, template)
-        VALUE (?, ?, ?, ?)
+        INSERT INTO blocks_templates (id, template)
+        VALUE (?, ?)
         ON DUPLICATE KEY UPDATE
           template = ?
-      `, [params.height, blockId, '[]', transactions, transactions]);
+      `, [blockId, transactions, transactions]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block template for ${blockId} because it has already been indexed, ignoring`);
       } else {
-        logger.debug(`Cannot save block template for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
-        throw e;
+        logger.warn(`Cannot save block template for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
       }
     }
+  }
+
+  public async $getTemplate(id: string): Promise<BlockSummary | undefined> {
+    try {
+      const [templates]: any[] = await DB.query(`SELECT * from blocks_templates WHERE id = ?`, [id]);
+      if (templates.length > 0) {
+        return {
+          id: templates[0].id,
+          transactions: JSON.parse(templates[0].template),
+        };
+      }
+    } catch (e) {
+      logger.err(`Cannot get block template for block id ${id}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return undefined;
   }
 
   public async $getIndexedSummariesId(): Promise<string[]> {

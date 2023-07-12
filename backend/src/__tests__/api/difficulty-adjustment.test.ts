@@ -14,11 +14,11 @@ describe('Mempool Difficulty Adjustment', () => {
           750134,                         // Current block height
           0.6280047707459726,             // Previous retarget % (Passed through)
           'mainnet',                      // Network (if testnet, next value is non-zero)
-          0,                              // If not testnet, not used
+          0,                              // Latest block timestamp in seconds (only used if difficulty already locked in)
         ],
         { // Expected Result
           progressPercent: 9.027777777777777,
-          difficultyChange: 12.562233927411782,
+          difficultyChange: 13.180707740199772,
           estimatedRetargetDate: 1661895424692,
           remainingBlocks: 1834,
           remainingTime: 977591692,
@@ -41,7 +41,7 @@ describe('Mempool Difficulty Adjustment', () => {
         ],
         { // Expected Result is same other than timeOffset
           progressPercent: 9.027777777777777,
-          difficultyChange: 12.562233927411782,
+          difficultyChange: 13.180707740199772,
           estimatedRetargetDate: 1661895424692,
           remainingBlocks: 1834,
           remainingTime: 977591692,
@@ -52,6 +52,29 @@ describe('Mempool Difficulty Adjustment', () => {
           timeOffset: -667000, // 11 min 7 seconds since last block (testnet only)
           // If we add time avg to abs(timeOffset) it makes exactly 1200000 ms, or 20 minutes
           expectedBlocks: 161.68833333333333,
+        },
+      ],
+      [ // Vector 3 (mainnet lock-in (epoch ending 788255))
+        [ // Inputs
+          dt('2023-04-20T09:57:33.000Z'), // Last DA time (in seconds)
+          dt('2023-05-04T14:54:09.000Z'), // Current time (now) (in seconds)
+          788255,                         // Current block height
+          1.7220298879531821,             // Previous retarget % (Passed through)
+          'mainnet',                      // Network (if testnet, next value is non-zero)
+          dt('2023-05-04T14:54:26.000Z'), // Latest block timestamp in seconds
+        ],
+        { // Expected Result
+          progressPercent: 99.95039682539682,
+          difficultyChange: -1.4512637555574193,
+          estimatedRetargetDate: 1683212658129,
+          remainingBlocks: 1,
+          remainingTime: 609129,
+          previousRetarget: 1.7220298879531821,
+          previousTime: 1681984653,
+          nextRetargetHeight: 788256,
+          timeAvg: 609129,
+          timeOffset: 0,
+          expectedBlocks: 2045.66,
         },
       ],
     ] as [[number, number, number, number, string, number], DifficultyAdjustment][];

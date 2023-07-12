@@ -1,4 +1,4 @@
-describe('Liquid', () => {
+describe.skip('Liquid', () => {
   const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '';
 

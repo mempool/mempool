@@ -1,0 +1,35 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+.rbf-trees {
+  .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0;
+    margin-bottom: 0.5em;
+
+    .type {
+      .badge {
+        margin-left: .5em;
+      }
+    }
+  }
+
+  .tree {
+    margin-bottom: 1em;
+  }
+
+  .timeline-wrapper.mined {
+    border: solid 4px #1a9436;
+  }
+
+  .no-replacements {
+    margin: 1em;
+    text-align: center;
+  }
+}
