@@ -19,6 +19,7 @@ export interface PoolInfo {
   blockCount: number;
   slug: string;
   avgMatchRate: number | null;
+  avgFeeDelta: number | null;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -32,13 +33,19 @@ export interface BlockAudit {
   hash: string,
   missingTxs: string[],
   freshTxs: string[],
+  sigopTxs: string[],
+  fullrbfTxs: string[],
   addedTxs: string[],
   matchRate: number,
+  expectedFees?: number,
+  expectedWeight?: number,
 }
 
 export interface AuditScore {
   hash: string,
   matchRate?: number,
+  expectedFees?: number
+  expectedWeight?: number
 }
 
 export interface MempoolBlock {
@@ -87,32 +94,44 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   uid?: number;
 }
 
+export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
+  sigops: number;
+  adjustedVsize: number;
+  adjustedFeePerVsize: number;
+  inputs?: number[];
+}
+
 export interface AuditTransaction {
   uid: number;
   fee: number;
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize: number;
+  sigops: number;
   inputs: number[];
   relativesSet: boolean;
   ancestorMap: Map<number, AuditTransaction>;
   children: Set<AuditTransaction>;
   ancestorFee: number;
   ancestorWeight: number;
+  ancestorSigops: number;
   score: number;
   used: boolean;
   modified: boolean;
   modifiedNode: HeapNode<AuditTransaction>;
+  dependencyRate?: number;
 }
 
 export interface CompactThreadTransaction {
   uid: number;
   fee: number;
   weight: number;
+  sigops: number;
   feePerVsize: number;
-  effectiveFeePerVsize?: number;
+  effectiveFeePerVsize: number;
   inputs: number[];
-  cpfpRoot?: string;
+  cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
 }
@@ -171,6 +190,8 @@ export interface BlockExtension {
   feeRange: number[]; // fee rate percentiles
   reward: number;
   matchRate: number | null;
+  expectedFees: number | null;
+  expectedWeight: number | null;
   similarity?: number;
   pool: {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`
@@ -207,6 +228,7 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
@@ -237,9 +259,21 @@ export interface EffectiveFeeStats {
   feeRange: number[]; // 2nd, 10th, 25th, 50th, 75th, 90th, 98th percentiles
 }
 
+export interface WorkingEffectiveFeeStats extends EffectiveFeeStats {
+  minFee: number;
+  maxFee: number;
+}
+
+export interface CpfpCluster {
+  root: string,
+  height: number,
+  txs: Ancestor[],
+  effectiveFeePerVsize: number,
+}
+
 export interface CpfpSummary {
   transactions: TransactionExtended[];
-  clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[];
+  clusters: CpfpCluster[];
 }
 
 export interface Statistic {

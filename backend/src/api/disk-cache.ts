@@ -21,6 +21,7 @@ class DiskCache {
   private static RBF_FILE_NAME = config.MEMPOOL.CACHE_DIR + '/rbfcache.json';
   private static CHUNK_FILES = 25;
   private isWritingCache = false;
+  private ignoreBlocksCache = false;
 
   private semaphore: { resume: (() => void)[], locks: number } = {
     resume: [],
@@ -194,6 +195,7 @@ class DiskCache {
 
         if (data.mempoolArray) {
           for (const tx of data.mempoolArray) {
+            delete tx.uid;
             data.mempool[tx.txid] = tx;
           }
         }
@@ -206,6 +208,7 @@ class DiskCache {
             const cacheData2 = JSON.parse(fs.readFileSync(fileName, 'utf8'));
             if (cacheData2.mempoolArray) {
               for (const tx of cacheData2.mempoolArray) {
+                delete tx.uid;
                 data.mempool[tx.txid] = tx;
               }
             } else {
@@ -218,8 +221,13 @@ class DiskCache {
       }
 
       await memPool.$setMempool(data.mempool);
-      blocks.setBlocks(data.blocks);
-      blocks.setBlockSummaries(data.blockSummaries || []);
+      if (!this.ignoreBlocksCache) {
+        blocks.setBlocks(data.blocks);
+        blocks.setBlockSummaries(data.blockSummaries || []);
+      } else {
+        logger.info('Re-saving cache with empty recent blocks data');
+        await this.$saveCacheToDisk(true);
+      }
     } catch (e) {
       logger.warn('Failed to parse mempoool and blocks cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
     }
@@ -272,6 +280,10 @@ class DiskCache {
         nextResume();
       }
     }
+  }
+
+  public setIgnoreBlocksCache(): void {
+    this.ignoreBlocksCache = true;
   }
 }
 

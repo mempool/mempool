@@ -11,6 +11,15 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
   units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
+  precisionThresholds = {
+    year: 100,
+    month: 18,
+    week: 12,
+    day: 31,
+    hour: 48,
+    minute: 90,
+    second: 90
+  };
   intervals = {};
 
   @Input() time: number;
@@ -20,6 +29,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fixedRender = false;
   @Input() relative = false;
   @Input() precision: number = 0;
+  @Input() minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second';
   @Input() fractionDigits: number = 0;
 
   constructor(
@@ -85,8 +95,15 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
 
     let counter: number;
     for (const [index, unit] of this.units.entries()) {
-      const precisionUnit = this.units[Math.min(this.units.length - 1), index + this.precision];
+      let precisionUnit = this.units[Math.min(this.units.length - 1, index + this.precision)];
       counter = Math.floor(seconds / this.intervals[unit]);
+      const precisionCounter = Math.round(seconds / this.intervals[precisionUnit]);
+      if (precisionCounter > this.precisionThresholds[precisionUnit]) {
+        precisionUnit = unit;
+      }
+      if (this.units.indexOf(precisionUnit) === this.units.indexOf(this.minUnit)) {
+        counter = Math.max(1, counter);
+      }
       if (counter > 0) {
         let rounded = Math.round(seconds / this.intervals[precisionUnit]);
         if (this.fractionDigits) {

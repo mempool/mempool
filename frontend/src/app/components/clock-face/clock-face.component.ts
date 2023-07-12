@@ -26,7 +26,6 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     public stateService: StateService,
-    private websocketService: WebsocketService,
     private cd: ChangeDetectorRef
   ) {
     this.updateTime();

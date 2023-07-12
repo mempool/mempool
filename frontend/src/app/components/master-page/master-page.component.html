@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]">
+  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
       <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
@@ -17,7 +17,7 @@
     </ng-container>
   </a>
 
-  <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
+  <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
     <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
       <app-svg-images [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65" style="width: 30px; height: 30px; margin-right: 5px;"></app-svg-images>
     </button>
@@ -64,9 +64,9 @@
 
 <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
-<main style="margin-top: 24px;">
+<main>
   <router-outlet></router-outlet>
 </main>
 
-<app-global-footer></app-global-footer>
+<app-global-footer *ngIf="footerVisible"></app-global-footer>
 </ng-container>
