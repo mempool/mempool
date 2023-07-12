@@ -71,7 +71,7 @@ class PoolsUpdater {
       poolsParser.setMiningPools(poolsJson);
 
       if (config.DATABASE.ENABLED === false) { // Don't run db operations
-        logger.info('Mining pools-v2.json import completed (no database)');
+        logger.info(`Mining pools-v2.json (${githubSha}) import completed (no database)`);
         return;
       }
 
@@ -84,7 +84,7 @@ class PoolsUpdater {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
         await DB.query('ROLLBACK;');
       }
-      logger.info('PoolsUpdater completed');
+      logger.info(`Mining pools-v2.json (${githubSha}) import completed`);
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week

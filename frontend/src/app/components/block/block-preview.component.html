@@ -34,7 +34,7 @@
           </tr>
           <tr *ngIf="block?.extras?.medianFee != undefined">
             <td class="td-width" i18n="block.median-fee">Median fee</td>
-            <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
+            <td>~<app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate></td>
           </tr>
           <ng-template [ngIf]="fees !== undefined">
             <tr>

@@ -1,0 +1,106 @@
+footer {
+  background-color: #1d1f31;
+  margin-top: 30px;
+}
+
+footer a {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+footer p {
+  margin-bottom: 0.25rem;
+}
+
+footer .row.main {
+  padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+footer .row.main .branding {
+  text-align: center;
+}
+
+footer .row.main .branding .btn {
+  display: inline-block;
+  color: #fff !important;
+}
+
+footer .row.main .branding button.account {
+  background-color: #2d3348;
+}
+
+footer .row.main .branding .cta {
+  margin: 20px auto 25px auto;
+}
+
+footer .row.main .branding .cta-secondary {
+
+}
+
+footer .row.main .links.outer {
+  padding-left: 24px;
+  padding-top: 10px;
+}
+
+footer .row.main .links > div:first-child {
+  margin-bottom: 20px;
+}
+
+footer .row.main .links .category {
+  color: #4a68b9;
+  font-weight: 700;
+}
+
+footer .row.main .links .category:not(:first-child) {
+  margin-top: 1rem;
+}
+
+footer .selector {
+  margin: 20px 0;
+}
+
+footer .row.social-links {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+footer .row.social-links a {
+  margin: 0 14px;
+}
+
+footer .row.social-links svg {
+  width: 20px;
+}
+
+footer .row.version {
+  padding: 20px !important;
+  background-color: #11131f;
+}
+
+footer .row.version p {
+  margin-bottom: 0;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+footer .row.version p a {
+  color: #09a3ba;
+}
+
+@media (max-width: 992px) {
+
+  footer .row.main .links.outer {
+    text-align: center;
+  }
+
+  footer .row.main .links.outer > .row {
+    margin-top: 20px;
+  }
+
+  footer .row.main .links.outer > .row > div:first-child {
+    margin-bottom: 20px;
+  }
+
+}

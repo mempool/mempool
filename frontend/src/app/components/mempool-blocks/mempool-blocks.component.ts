@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap } from 'rxjs/operators';
+import { take, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment } from '../../interfaces/node-api.interface';
+import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -23,7 +23,16 @@ import { animate, style, transition, trigger } from '@angular/animations';
   ])],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MempoolBlocksComponent implements OnInit, OnDestroy {
+export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() minimal: boolean = false;
+  @Input() blockWidth: number = 125;
+  @Input() count: number = null;
+  @Input() spotlight: number = 0;
+  @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
+  @Input() allBlocks: boolean = false;
+
+  @Output() widthChange: EventEmitter<number> = new EventEmitter();
+
   specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];
   mempoolEmptyBlocks: MempoolBlock[] = this.mountEmptyBlocks();
@@ -48,8 +57,9 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   animateEntry: boolean = false;
 
-  blockWidth = 125;
-  blockPadding = 30;
+  blockOffset: number = 155;
+  blockPadding: number = 30;
+  containerOffset: number = 40;
   arrowVisible = false;
   tabHidden = false;
   feeRounding = '1.0-0';
@@ -58,6 +68,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   transition = 'background 2s, right 2s, transform 1s';
 
   markIndex: number;
+  txPosition: MempoolPosition;
   txFeePerVSize: number;
 
   resetTransitionTimeout: number;
@@ -97,7 +108,7 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.mempoolEmptyBlocks.forEach((b) => {
       this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
     });
-    this.reduceMempoolBlocksToFitScreen(this.mempoolEmptyBlocks);
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
 
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
@@ -135,16 +146,24 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
           this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
           this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
 
+          this.now = Date.now();
+
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
+ 
           return this.mempoolBlocks;
+        }),
+        tap(() => {
+          this.cd.markForCheck();
+          this.widthChange.emit(this.containerOffset + this.mempoolBlocks.length * this.blockOffset);
         })
       );
 
     this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(
         map((da) => {
-          this.now = new Date().getTime();
+          this.now = Date.now();
+          this.cd.markForCheck();
           return da;
         })
       );
@@ -152,9 +171,13 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     this.markBlocksSubscription = this.stateService.markBlock$
       .subscribe((state) => {
         this.markIndex = undefined;
+        this.txPosition = undefined;
         this.txFeePerVSize = undefined;
         if (state.mempoolBlockIndex !== undefined) {
           this.markIndex = state.mempoolBlockIndex;
+        }
+        if (state.mempoolPosition) {
+          this.txPosition = state.mempoolPosition;
         }
         if (state.txFeePerVSize) {
           this.txFeePerVSize = state.txFeePerVSize;
@@ -213,6 +236,14 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.blockWidth && this.blockWidth) {
+      this.blockPadding = 0.24 * this.blockWidth;
+      this.containerOffset = 0.32 * this.blockWidth;
+      this.blockOffset = this.blockWidth + this.blockPadding;
+    }
+  }
+
   ngOnDestroy() {
     this.markBlocksSubscription.unsubscribe();
     this.blockSubscription.unsubscribe();
@@ -225,25 +256,56 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.animateEntry = false;
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
   }
 
   trackByFn(index: number, block: MempoolBlock) {
     return (block.isStack) ? `stack-${block.index}` : block.index;
   }
 
+  reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
+    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    if (!this.allBlocks) {
+      blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    }
+    while (blocks.length < blocksAmount) {
+      blocks.push({
+        blockSize: 0,
+        blockVSize: 0,
+        feeRange: [],
+        index: blocks.length,
+        medianFee: 0,
+        nTx: 0,
+        totalFees: 0
+      });
+    }
+    while (blocks.length > blocksAmount) {
+      blocks.pop();
+    }
+    return blocks;
+  }
+
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
-    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    if (this.count) {
+      blocksAmount = 8;
+    } else if (!this.allBlocks) {
+      blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    }
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
-      const lastBlock = blocks[blocks.length - 1];
-      lastBlock.blockSize += block.blockSize;
-      lastBlock.blockVSize += block.blockVSize;
-      lastBlock.nTx += block.nTx;
-      lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
-      lastBlock.feeRange.sort((a, b) => a - b);
-      lastBlock.medianFee = this.median(lastBlock.feeRange);
-      lastBlock.totalFees += block.totalFees;
+      if (!this.count) {
+        const lastBlock = blocks[blocks.length - 1];
+        lastBlock.blockSize += block.blockSize;
+        lastBlock.blockVSize += block.blockVSize;
+        lastBlock.nTx += block.nTx;
+        lastBlock.feeRange = lastBlock.feeRange.concat(block.feeRange);
+        lastBlock.feeRange.sort((a, b) => a - b);
+        lastBlock.medianFee = this.median(lastBlock.feeRange);
+        lastBlock.totalFees += block.totalFees;
+      }
     }
     if (blocks.length) {
       blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
@@ -289,20 +351,20 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
     });
 
     return {
-      'right': 40 + index * 155 + 'px',
+      'right': this.containerOffset + index * this.blockOffset + 'px',
       'background': backgroundGradients.join(',') + ')'
     };
   }
 
   getStyleForMempoolEmptyBlock(index: number) {
     return {
-      'right': 40 + index * 155 + 'px',
+      'right': this.containerOffset + index * this.blockOffset + 'px',
       'background': '#554b45',
     };
   }
 
   calculateTransactionPosition() {
-    if ((!this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
+    if ((!this.txPosition && !this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
       this.arrowVisible = false;
       return;
     } else if (this.markIndex > -1) {
@@ -320,32 +382,42 @@ export class MempoolBlocksComponent implements OnInit, OnDestroy {
 
     this.arrowVisible = true;
 
-    let found = false;
-    for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
-      const block = this.mempoolBlocks[txInBlockIndex];
-      for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
-        if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
-          const feeRangeIndex = i;
-          const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
+    if (this.txPosition) {
+      if (this.txPosition.block >= this.mempoolBlocks.length) {
+        this.rightPosition = ((this.mempoolBlocks.length - 1) * (this.blockWidth + this.blockPadding)) + this.blockWidth;
+      } else {
+        const positionInBlock = Math.min(1, this.txPosition.vsize / this.stateService.blockVSize) * this.blockWidth;
+        const positionOfBlock = this.txPosition.block * (this.blockWidth + this.blockPadding);
+        this.rightPosition = positionOfBlock + positionInBlock;
+      }
+    } else {
+      let found = false;
+      for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
+        const block = this.mempoolBlocks[txInBlockIndex];
+        for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
+          if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
+            const feeRangeIndex = i;
+            const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
 
-          const txFee = this.txFeePerVSize - block.feeRange[i];
-          const max = block.feeRange[i + 1] - block.feeRange[i];
-          const blockLocation = txFee / max;
+            const txFee = this.txFeePerVSize - block.feeRange[i];
+            const max = block.feeRange[i + 1] - block.feeRange[i];
+            const blockLocation = txFee / max;
 
-          const chunkPositionOffset = blockLocation * feeRangeChunkSize;
-          const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
+            const chunkPositionOffset = blockLocation * feeRangeChunkSize;
+            const feePosition = feeRangeChunkSize * feeRangeIndex + chunkPositionOffset;
 
-          const blockedFilledPercentage = (block.blockVSize > this.stateService.blockVSize ? this.stateService.blockVSize : block.blockVSize) / this.stateService.blockVSize;
-          const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
-            + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
+            const blockedFilledPercentage = (block.blockVSize > this.stateService.blockVSize ? this.stateService.blockVSize : block.blockVSize) / this.stateService.blockVSize;
+            const arrowRightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding)
+              + ((1 - feePosition) * blockedFilledPercentage * this.blockWidth);
 
-          this.rightPosition = arrowRightPosition;
+            this.rightPosition = arrowRightPosition;
+            found = true;
+          }
+        }
+        if (this.txFeePerVSize >= block.feeRange[block.feeRange.length - 1]) {
+          this.rightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding);
           found = true;
         }
-      }
-      if (this.txFeePerVSize >= block.feeRange[block.feeRange.length - 1]) {
-        this.rightPosition = txInBlockIndex * (this.blockWidth + this.blockPadding);
-        found = true;
       }
     }
   }

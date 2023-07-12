@@ -1,7 +1,7 @@
 .bitcoin-block {
-  width: 125px;
-  height: 125px;
-  transition: background 2s, right 2s, transform 1s;
+  width: var(--block-size);
+  height: var(--block-size);
+  transition: background 2s, right 2s, transform 1s, opacity 1s;
 }
 
 .block-size {
@@ -14,6 +14,7 @@
   top: 0px;
   right: 0px;
   left: 0px;
+  --block-size: 125px;
 }
 
 .flashing {
@@ -66,11 +67,11 @@
 
 .bitcoin-block::after {
   content: '';
-  width: 125px;
-  height: 24px;
+  width: var(--block-size);
+  height: calc(0.192 * var(--block-size));
   position:absolute;
-  top: -24px;
-  left: -20px;
+  top: calc(-0.192 * var(--block-size));
+  left: calc(-0.16 * var(--block-size));
   background-color: #232838;
   transform:skew(40deg);
   transform-origin:top;
@@ -79,11 +80,11 @@
 
 .bitcoin-block::before {
   content: '';
-  width: 20px;
-  height: 125px;
+  width: calc(0.16 * var(--block-size));
+  height: var(--block-size);
   position: absolute;
-  top: -12px;
-  left: -20px;
+  top: calc(-0.096 * var(--block-size));
+  left: calc(-0.16 * var(--block-size));
   background-color: #191c27;
   z-index: -1;
 
@@ -98,6 +99,10 @@
 
 .mempool-block.bitcoin-block::before {
   background-color: #2d2825;
+}
+
+.mempool-block.hide-block {
+  opacity: 0;
 }
 
 .black-background {
@@ -141,7 +146,7 @@
 
   .bitcoin-block::before {
     transform: skewY(-50deg);
-    left: 125px;
+    left: var(--block-size);
   }
   .block-body {
     transform: scaleX(-1);
@@ -152,4 +157,16 @@
   #arrow-up {
     transform: translateX(70px);
   }
+}
+
+.spotlight-bottom {
+  position: absolute;
+  width: calc(0.6 * var(--block-size));
+  height: calc(0.25 * var(--block-size));
+  border-left: solid calc(0.3 * var(--block-size)) transparent;
+  border-bottom: solid calc(0.3 * var(--block-size)) white;
+  border-right: solid calc(0.3 * var(--block-size)) transparent;
+  transform: translate(calc(-0.2 * var(--block-size)), calc(1.1 * var(--block-size)));
+  border-radius: 2px;
+  z-index: -1;
 }
