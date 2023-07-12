@@ -226,7 +226,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tx.feePerVsize = tx.fee / (tx.weight / 4);
         this.isLoadingTx = false;
         this.error = undefined;
-        this.loadingCachedTx = false;
         this.waitingForTransaction = false;
         this.graphExpanded = false;
         this.transactionTime = tx.firstSeen || 0;
