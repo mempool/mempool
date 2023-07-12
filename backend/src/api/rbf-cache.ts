@@ -1,5 +1,5 @@
 import logger from "../logger";
-import { TransactionExtended, TransactionStripped } from "../mempool.interfaces";
+import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { Common } from "./common";
 
@@ -23,20 +23,20 @@ class RbfCache {
   private rbfTrees: Map<string, RbfTree> = new Map(); // sequences of consecutive replacements
   private dirtyTrees: Set<string> = new Set();
   private treeMap: Map<string, string> = new Map(); // map of txids to sequence ids
-  private txs: Map<string, TransactionExtended> = new Map();
+  private txs: Map<string, MempoolTransactionExtended> = new Map();
   private expiring: Map<string, number> = new Map();
 
   constructor() {
     setInterval(this.cleanup.bind(this), 1000 * 60 * 10);
   }
 
-  public add(replaced: TransactionExtended[], newTxExtended: TransactionExtended): void {
-    if (!newTxExtended || !replaced?.length) {
+  public add(replaced: MempoolTransactionExtended[], newTxExtended: MempoolTransactionExtended): void {
+    if (!newTxExtended || !replaced?.length || this.txs.has(newTxExtended.txid)) {
       return;
     }
 
     const newTx = Common.stripTransaction(newTxExtended) as RbfTransaction;
-    const newTime = newTxExtended.firstSeen || Date.now();
+    const newTime = newTxExtended.firstSeen || (Date.now() / 1000);
     newTx.rbf = newTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
     this.txs.set(newTx.txid, newTxExtended);
 
@@ -59,7 +59,7 @@ class RbfCache {
           }
         }
       } else {
-        const replacedTime = replacedTxExtended.firstSeen || Date.now();
+        const replacedTime = replacedTxExtended.firstSeen || (Date.now() / 1000);
         replacedTrees.push({
           tx: replacedTx,
           time: replacedTime,
@@ -74,7 +74,7 @@ class RbfCache {
     const treeId = replacedTrees[0].tx.txid;
     const newTree = {
       tx: newTx,
-      time: newTxExtended.firstSeen || Date.now(),
+      time: newTime,
       fullRbf,
       replaces: replacedTrees
     };
@@ -92,7 +92,7 @@ class RbfCache {
     return this.replaces.get(txId);
   }
 
-  public getTx(txId: string): TransactionExtended | undefined {
+  public getTx(txId: string): MempoolTransactionExtended | undefined {
     return this.txs.get(txId);
   }
 
@@ -167,6 +167,19 @@ class RbfCache {
     if (this.txs.has(txid) && (fast || !this.expiring.has(txid))) {
       this.expiring.set(txid, fast ? Date.now() + (1000 * 60 * 10) : Date.now() + (1000 * 86400)); // 24 hours
     }
+  }
+
+  // is the transaction involved in a full rbf replacement?
+  public isFullRbf(txid: string): boolean {
+    const treeId = this.treeMap.get(txid);
+    if (!treeId) {
+      return false;
+    }
+    const tree = this.rbfTrees.get(treeId);
+    if (!tree) {
+      return false;
+    }
+    return tree?.fullRbf;
   }
 
   private cleanup(): void {
@@ -272,7 +285,7 @@ class RbfCache {
     return deflated;
   }
 
-  async importTree(root, txid, deflated, txs: Map<string, TransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+  async importTree(root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 

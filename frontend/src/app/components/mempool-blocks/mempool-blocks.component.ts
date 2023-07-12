@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap } from 'rxjs/operators';
+import { take, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -28,6 +28,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() blockWidth: number = 125;
   @Input() count: number = null;
   @Input() spotlight: number = 0;
+  @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
+  @Input() allBlocks: boolean = false;
+
+  @Output() widthChange: EventEmitter<number> = new EventEmitter();
 
   specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];
@@ -104,7 +108,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.mempoolEmptyBlocks.forEach((b) => {
       this.mempoolEmptyBlockStyles.push(this.getStyleForMempoolEmptyBlock(b.index));
     });
-    this.reduceMempoolBlocksToFitScreen(this.mempoolEmptyBlocks);
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
 
     this.mempoolBlocks.map(() => {
       this.updateMempoolBlockStyles();
@@ -142,16 +146,24 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
           this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
 
+          this.now = Date.now();
+
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
+ 
           return this.mempoolBlocks;
+        }),
+        tap(() => {
+          this.cd.markForCheck();
+          this.widthChange.emit(this.containerOffset + this.mempoolBlocks.length * this.blockOffset);
         })
       );
 
     this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(
         map((da) => {
-          this.now = new Date().getTime();
+          this.now = Date.now();
+          this.cd.markForCheck();
           return da;
         })
       );
@@ -244,18 +256,42 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.animateEntry = false;
+    this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
   }
 
   trackByFn(index: number, block: MempoolBlock) {
     return (block.isStack) ? `stack-${block.index}` : block.index;
   }
 
+  reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
+    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    if (!this.allBlocks) {
+      blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    }
+    while (blocks.length < blocksAmount) {
+      blocks.push({
+        blockSize: 0,
+        blockVSize: 0,
+        feeRange: [],
+        index: blocks.length,
+        medianFee: 0,
+        nTx: 0,
+        totalFees: 0
+      });
+    }
+    while (blocks.length > blocksAmount) {
+      blocks.pop();
+    }
+    return blocks;
+  }
+
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
-    let blocksAmount;
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
     if (this.count) {
       blocksAmount = 8;
-    } else {
+    } else if (!this.allBlocks) {
       blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
     }
     while (blocks.length > blocksAmount) {

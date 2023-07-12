@@ -114,7 +114,12 @@
                           <ng-container *ngFor="let witness of vin.witness; index as i">
                             <input type="checkbox" [id]="'tx' + vindex + 'witness' + i" style="display: none;">
                             <p class="witness-item" [class.accordioned]="witness.length > 1000">
-                              {{ witness }}
+                              <ng-template [ngIf]="witness" [ngIfElse]="emptyWitnessItem">
+                                {{ witness }}
+                              </ng-template>
+                              <ng-template #emptyWitnessItem>
+                                &lt;empty&gt;
+                              </ng-template>
                             </p>
                             <div class="witness-toggle" *ngIf="witness.length > 1000">
                               <span  class="ellipsis">...</span>
@@ -285,22 +290,15 @@
 
     <div class="summary">
       <div class="float-left mt-2-5" *ngIf="!transactionPage && !tx.vin[0].is_coinbase && tx.fee !== -1">
-        {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span
-          class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol"
+        <app-fee-rate [fee]="tx.fee" [weight]="tx.weight"></app-fee-rate>
+        <span class="d-none d-sm-inline-block">&nbsp;&ndash; {{ tx.fee | number }} <span class="symbol"
             i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></span>
       </div>
       <div class="float-left mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
 
       <div class="float-right">
         <ng-container *ngIf="showConfirmations && latestBlock$ | async as latestBlock">
-          <button *ngIf="tx.status.confirmed; else unconfirmedButton" type="button" class="btn btn-sm btn-success mt-2">
-            <ng-container *ngTemplateOutlet="latestBlock.height - tx.status.block_height + 1 == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: latestBlock.height - tx.status.block_height + 1}"></ng-container>
-            <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
-            <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
-          </button>
-          <ng-template #unconfirmedButton>
-            <button type="button" class="btn btn-sm btn-danger mt-2" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
-          </ng-template>
+          <app-confirmations [chainTip]="latestBlock?.height" [height]="tx?.status?.block_height" buttonClass="mt-2"></app-confirmations>
         </ng-container>
         <button *ngIf="address === ''; else viewingAddress" type="button" class="btn btn-sm btn-primary mt-2 ml-2" (click)="switchCurrency()">
           <ng-template [ngIf]="(network === 'liquid' || network === 'liquidtestnet') && haveBlindedOutputValues(tx)" [ngIfElse]="defaultAmount" i18n="shared.confidential">Confidential</ng-template>

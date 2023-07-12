@@ -111,3 +111,14 @@
   pointer-events: none;
   opacity: 0.5;
 }
+
+td {
+  .difference {
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
+}

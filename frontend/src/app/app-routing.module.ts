@@ -4,8 +4,7 @@ import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
-import { ClockMinedComponent as ClockMinedComponent } from './components/clock/clock-mined.component';
-import { ClockMempoolComponent as ClockMempoolComponent } from './components/clock/clock-mempool.component';
+import { ClockComponent } from './components/clock/clock.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
@@ -358,12 +357,16 @@ let routes: Routes = [
     ],
   },
   {
-    path: 'clock-mined',
-    component: ClockMinedComponent,
+    path: 'clock',
+    redirectTo: 'clock/mempool/0'
   },
   {
-    path: 'clock-mempool',
-    component: ClockMempoolComponent,
+    path: 'clock/:mode',
+    redirectTo: 'clock/:mode/0'
+  },
+  {
+    path: 'clock/:mode/:index',
+    component: ClockComponent,
   },
   {
     path: 'status',

@@ -211,6 +211,8 @@ class BitcoinRoutes {
           bestDescendant: tx.bestDescendant || null,
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          sigops: tx.sigops,
+          adjustedVsize: tx.adjustedVsize,
         });
         return;
       }
@@ -222,7 +224,12 @@ class BitcoinRoutes {
     } else {
       let cpfpInfo;
       if (config.DATABASE.ENABLED) {
-        cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        try {
+          cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        } catch (e) {
+          res.status(500).send('failed to get CPFP info');
+          return;
+        }
       }
       if (cpfpInfo) {
         res.json(cpfpInfo);
@@ -392,9 +399,13 @@ class BitcoinRoutes {
 
   private async getBlockAuditSummary(req: Request, res: Response) {
     try {
-      const transactions = await blocks.$getBlockAuditSummary(req.params.hash);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
-      res.json(transactions);
+      const auditSummary = await blocks.$getBlockAuditSummary(req.params.hash);
+      if (auditSummary) {
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+        res.json(auditSummary);
+      } else {
+        return res.status(404).send(`audit not available`);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

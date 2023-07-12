@@ -24,6 +24,9 @@ export interface CpfpInfo {
   ancestors: Ancestor[];
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
+  effectiveFeePerVsize?: number;
+  sigops?: number;
+  adjustedVsize?: number;
 }
 
 export interface RbfInfo {
@@ -88,6 +91,7 @@ export interface SinglePoolStats {
   logo: string;
   slug: string;
   avgMatchRate: number;
+  avgFeeDelta: number;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -126,10 +130,15 @@ export interface PoolStat {
 export interface BlockExtension {
   totalFees?: number;
   medianFee?: number;
+  minFee?: number;
+  maxFee?: number;
   feeRange?: number[];
   reward?: number;
   coinbaseRaw?: string;
   matchRate?: number;
+  expectedFees?: number;
+  expectedWeight?: number;
+  feeDelta?: number;
   similarity?: number;
   pool?: {
     id: number;
@@ -145,7 +154,15 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  freshTxs: string[],
+  sigopTxs: string[],
+  fullrbfTxs: string[],
   matchRate: number,
+  expectedFees: number,
+  expectedWeight: number,
+  feeDelta?: number,
+  weightDelta?: number,
+  txDelta?: number,
   template: TransactionStripped[],
   transactions: TransactionStripped[],
 }
@@ -155,7 +172,8 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  context?: 'projected' | 'actual';
 }
 
 interface RbfTransaction extends TransactionStripped {

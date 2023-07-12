@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
 import { Observable } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
@@ -70,6 +70,10 @@ export class ApiService {
 
   list4YStatistics$(): Observable<OptimizedMempoolStats[]> {
     return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/4y');
+  }
+
+  listAllTimeStatistics$(): Observable<OptimizedMempoolStats[]> {
+    return this.httpClient.get<OptimizedMempoolStats[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/statistics/all');
   }
 
   getTransactionTimes$(txIds: string[]): Observable<number[]> {
@@ -238,16 +242,16 @@ export class ApiService {
     );
   }
 
-  getHistoricalBlockPrediction$(interval: string | undefined) : Observable<any> {
+  getHistoricalBlocksHealth$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/predictions` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
   }
 
-  getBlockAudit$(hash: string) : Observable<any> {
-    return this.httpClient.get<any>(
-      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`, { observe: 'response' }
+  getBlockAudit$(hash: string) : Observable<BlockAudit> {
+    return this.httpClient.get<BlockAudit>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/block/${hash}/audit-summary`
     );
   }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
+import { WuBytesPipe } from '../../shared/pipes/bytes-pipe/wubytes.pipe';
 import { formatNumber } from '@angular/common';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from '../../services/state.service';
@@ -24,6 +25,7 @@ import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/grap
 export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data: any[];
   @Input() filterSize = 100000;
+  @Input() limitFilterFee = 1;
   @Input() height: number | string = 200;
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
@@ -40,14 +42,18 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   };
   windowPreference: string;
   hoverIndexSerie = 0;
+  maxFee: number;
   feeLimitIndex: number;
+  maxFeeIndex: number;
   feeLevelsOrdered = [];
   chartColorsOrdered = chartColors;
   inverted: boolean;
   chartInstance: any = undefined;
+  weightMode: boolean = false;
 
   constructor(
     private vbytesPipe: VbytesPipe,
+    private wubytesPipe: WuBytesPipe,
     private stateService: StateService,
     private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,
@@ -98,8 +104,9 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   generateArray(mempoolStats: OptimizedMempoolStats[]) {
-    let finalArray: number[][][] = [];
+    const finalArray: number[][][] = [];
     let feesArray: number[][] = [];
+
     let maxTier = 0;
     for (let index = 37; index > -1; index--) {
       feesArray = [];
@@ -111,7 +118,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       });
       finalArray.push(feesArray);
     }
-    this.feeLimitIndex = maxTier;
+    this.maxFeeIndex = maxTier;
+
     finalArray.reverse();
     return finalArray;
   }
@@ -124,7 +132,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const newColors = [];
     for (let index = 0; index < series.length; index++) {
       const value = series[index];
-      if (index < this.feeLimitIndex) {
+      if (index >= this.feeLimitIndex && index <= this.maxFeeIndex) {
         newColors.push(this.chartColorsOrdered[index]);
         seriesGraph.push({
           zlevel: 0,
@@ -181,7 +189,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
           const positions = { top: (this.template === 'advanced') ? 0 : -30 };
-          positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 60;
+          positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 100;
           return positions;
         },
         extraCssText: `width: ${(this.template === 'advanced') ? '275px' : '200px'};
@@ -189,10 +197,19 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
-          type: 'line',
+          type: 'cross',
+          label: {
+            formatter: (params: any) => {
+              if (params.axisDimension === 'y') {
+                return this.vbytesPipe.transform(params.value, 2, 'vB', 'MvB', true)
+              } else {
+                return formatterXAxis(this.locale, this.windowPreference, params.value);
+              }
+            }
+          }
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let totalParcial = 0;
@@ -374,21 +391,26 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   orderLevels() {
     this.feeLevelsOrdered = [];
-    let maxIndex = Math.min(feeLevels.length, this.feeLimitIndex);
-    for (let i = 0; i < maxIndex; i++) {
+    const maxIndex = Math.min(feeLevels.length, this.maxFeeIndex);
+    for (let i = 0; i < feeLevels.length; i++) {
+      if (feeLevels[i] === this.limitFilterFee) {
+        this.feeLimitIndex = i;
+      }
+      if (feeLevels[i] <= feeLevels[this.maxFeeIndex]) {
         if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
-          if (i === maxIndex - 1) {
+          if (i === maxIndex || feeLevels[i] == null) {
             this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)}+`);
           } else {
             this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)} - ${(feeLevels[i + 1]  / 10).toFixed(1)}`);
           }
         } else {
-          if (i === maxIndex - 1) {
+          if (i === maxIndex || feeLevels[i] == null) {
             this.feeLevelsOrdered.push(`${feeLevels[i]}+`);
           } else {
             this.feeLevelsOrdered.push(`${feeLevels[i]} - ${feeLevels[i + 1]}`);
           }
         }
+      }
     }
     this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
   }

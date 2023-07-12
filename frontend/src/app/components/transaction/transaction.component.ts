@@ -19,7 +19,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -65,7 +65,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCachedTx$ = new Subject<string>();
   isCached: boolean = false;
   now = Date.now();
-  timeAvg$: Observable<number>;
+  da$: Observable<DifficultyAdjustment>;
   liquidUnblinding = new LiquidUnblinding();
   inputIndex: number;
   outputIndex: number;
@@ -86,6 +86,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   segwitEnabled: boolean;
   rbfEnabled: boolean;
   taprootEnabled: boolean;
+  hasEffectiveFeeRate: boolean;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -116,11 +117,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setFlowEnabled();
     });
 
-    this.timeAvg$ = timer(0, 1000)
-      .pipe(
-        switchMap(() => this.stateService.difficultyAdjustment$),
-        map((da) => da.timeAvg)
-      );
+    this.da$ = this.stateService.difficultyAdjustment$.pipe(
+      tap(() => {
+        this.now = Date.now();
+      })
+    );
 
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.fragmentParams = new URLSearchParams(fragment || '');
@@ -157,6 +158,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((cpfpInfo) => {
         if (!cpfpInfo || !this.tx) {
           this.cpfpInfo = null;
+          this.hasEffectiveFeeRate = false;
           return;
         }
         // merge ancestors/descendants
@@ -164,16 +166,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
           relatives.push(cpfpInfo.bestDescendant);
         }
-        let totalWeight =
-          this.tx.weight +
-          relatives.reduce((prev, val) => prev + val.weight, 0);
-        let totalFees =
-          this.tx.fee +
-          relatives.reduce((prev, val) => prev + val.fee, 0);
-
-        this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        const hasRelatives = !!relatives.length;
+        if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
+          let totalWeight =
+            this.tx.weight +
+            relatives.reduce((prev, val) => prev + val.weight, 0);
+          let totalFees =
+            this.tx.fee +
+            relatives.reduce((prev, val) => prev + val.fee, 0);
+          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+        } else {
+          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        }
 
         this.cpfpInfo = cpfpInfo;
+        this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
       });
 
     this.fetchRbfSubscription = this.fetchRbfHistory$
@@ -229,10 +236,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
+      this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
         this.mempoolPosition = txPosition.position;
         if (this.tx && !this.tx.status.confirmed) {
           this.stateService.markBlock$.next({
+            txid: txPosition.txid,
             mempoolPosition: this.mempoolPosition
           });
           this.txInBlockIndex = this.mempoolPosition.block;
@@ -352,6 +361,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           } else {
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
+                txid: tx.txid,
                 txFeePerVSize: tx.effectiveFeePerVsize,
                 mempoolPosition: this.mempoolPosition,
               });
@@ -359,6 +369,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               };
+              const hasRelatives = !!(tx.ancestors.length || tx.bestDescendant);
+              this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
             }
@@ -382,7 +394,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
       this.latestBlock = block;
 
-      if (txConfirmed && this.tx && !this.tx.status.confirmed) {
+      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
@@ -425,11 +437,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.mempoolBlocksSubscription = this.stateService.mempoolBlocks$.subscribe((mempoolBlocks) => {
+      this.now = Date.now();
+
       if (!this.tx || this.mempoolPosition) {
         return;
       }
-
-      this.now = Date.now();
 
       const txFeePerVSize =
         this.tx.effectiveFeePerVsize || this.tx.fee / (this.tx.weight / 4);
@@ -500,6 +512,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.hasEffectiveFeeRate = false;
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;

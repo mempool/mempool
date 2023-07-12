@@ -62,6 +62,10 @@ body {
   position: relative;
 }
 
+main {
+  margin-top: 24px;
+}
+
 .full-height {
   @media (max-width: 767.98px) {
     min-height: 100vh;
@@ -217,7 +221,7 @@ body {
 }
 
 .block-size, .blocks-container {
-  span {
+  .symbol {
     font-size: 16px;
     color: #fff !important;
   }
@@ -496,7 +500,7 @@ html:lang(ru) .card-title {
 }
 
 .fee-distribution-chart {
-  height: 250px;
+  height: 265px;
 }
 
 .fees-wrapper-tooltip-chart {
@@ -1143,7 +1147,7 @@ th {
   display: none;
 }
 
-app-master-page, app-liquid-master-page {
+app-master-page, app-liquid-master-page, app-bisq-master-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
