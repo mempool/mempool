@@ -144,8 +144,8 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
-      MAX_BLOCKS_BULK_QUERY: ""
-      DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
+      MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
       ...
 ```
 
