@@ -109,6 +109,14 @@ export class HashrateChartComponent implements OnInit {
         tap((response: any) => {
           const data = response.body;
 
+          // always include the latest difficulty
+          if (data.difficulty.length && data.difficulty[data.difficulty.length - 1].difficulty !== data.currentDifficulty) {
+            data.difficulty.push({
+              timestamp: Date.now() / 1000,
+              difficulty: data.currentDifficulty
+            });
+          }
+
           // We generate duplicated data point so the tooltip works nicely
           const diffFixed = [];
           let diffIndex = 1;
@@ -135,6 +143,14 @@ export class HashrateChartComponent implements OnInit {
               ++hashIndex;
             }
             ++diffIndex;
+          }
+
+          while (diffIndex <= data.difficulty.length) {
+            diffFixed.push({
+              timestamp: data.difficulty[diffIndex - 1].time,
+              difficulty: data.difficulty[diffIndex - 1].difficulty
+            });
+            diffIndex++;
           }
 
           let maResolution = 15;
