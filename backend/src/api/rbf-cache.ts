@@ -169,6 +169,19 @@ class RbfCache {
     }
   }
 
+  // is the transaction involved in a full rbf replacement?
+  public isFullRbf(txid: string): boolean {
+    const treeId = this.treeMap.get(txid);
+    if (!treeId) {
+      return false;
+    }
+    const tree = this.rbfTrees.get(treeId);
+    if (!tree) {
+      return false;
+    }
+    return tree?.fullRbf;
+  }
+
   private cleanup(): void {
     const now = Date.now();
     for (const txid of this.expiring.keys()) {
