@@ -12,46 +12,54 @@
 
           <form [formGroup]="radioGroupForm" class="formRadioGroup"
             [class]="(stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING) ? 'mining' : 'no-menu'" (click)="saveGraphPreference()">
-            <div *ngIf="!isMobile()" class="btn-group btn-group-toggle">
-              <label class="btn btn-primary btn-sm mr-2">
-                <a [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
-                  <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
-                </a>
-                </label>
+            <div class="small-buttons">
+              <a class="btn btn-primary btn-sm mb-0" [routerLink]="['/clock/mempool/0' | relativeUrl]" style="color: white" id="btn-clock">
+                <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true" i18n-title="master-page.clockview" title="Clock view"></fa-icon>
+              </a>
+              <a *ngIf="!isMobile()" class="btn btn-primary btn-sm mb-0" [routerLink]="['/tv' | relativeUrl]" style="color: white" id="btn-tv">
+                <fa-icon [icon]="['fas', 'tv']" [fixedWidth]="true" i18n-title="master-page.tvview" title="TV view"></fa-icon>
+              </a>
             </div>
-            <div class="btn-group btn-group-toggle" name="radioBasic">
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
-                <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
-                (LIVE)
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
-                <input type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h" formControlName="dateSpan">
-                24H
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1w'">
-                <input type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w" formControlName="dateSpan"> 1W
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
-                <input type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m" formControlName="dateSpan"> 1M
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
-                <input type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m" formControlName="dateSpan"> 3M
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
-                <input type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan"> 6M
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
-                <input type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y" formControlName="dateSpan"> 1Y
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
-                <input type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y" formControlName="dateSpan"> 2Y
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
-                <input type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan"> 3Y
-              </label>
-              <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '4y'">
-                <input type="radio" [value]="'4y'" [routerLink]="['/graphs' | relativeUrl]" fragment="4y" formControlName="dateSpan"> 4Y
-              </label>
+            <div class="btn-toggle-rows" name="radioBasic">
+              <div class="btn-group btn-group-toggle">
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2h'">
+                  <input type="radio" [value]="'2h'" [routerLink]="['/graphs' | relativeUrl]" fragment="2h" formControlName="dateSpan"> 2H
+                  (LIVE)
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '24h'">
+                  <input type="radio" [value]="'24h'" [routerLink]="['/graphs' | relativeUrl]" fragment="24h" formControlName="dateSpan">
+                  24H
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1w'">
+                  <input type="radio" [value]="'1w'" [routerLink]="['/graphs' | relativeUrl]" fragment="1w" formControlName="dateSpan"> 1W
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
+                  <input type="radio" [value]="'1m'" [routerLink]="['/graphs' | relativeUrl]" fragment="1m" formControlName="dateSpan"> 1M
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
+                  <input type="radio" [value]="'3m'" [routerLink]="['/graphs' | relativeUrl]" fragment="3m" formControlName="dateSpan"> 3M
+                </label>
+              </div>
+              <div class="btn-group btn-group-toggle">
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '6m'">
+                  <input type="radio" [value]="'6m'" [routerLink]="['/graphs' | relativeUrl]" fragment="6m" formControlName="dateSpan"> 6M
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1y'">
+                  <input type="radio" [value]="'1y'" [routerLink]="['/graphs' | relativeUrl]" fragment="1y" formControlName="dateSpan"> 1Y
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '2y'">
+                  <input type="radio" [value]="'2y'" [routerLink]="['/graphs' | relativeUrl]" fragment="2y" formControlName="dateSpan"> 2Y
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3y'">
+                  <input type="radio" [value]="'3y'" [routerLink]="['/graphs' | relativeUrl]" fragment="3y" formControlName="dateSpan"> 3Y
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '4y'">
+                  <input type="radio" [value]="'4y'" [routerLink]="['/graphs' | relativeUrl]" fragment="4y" formControlName="dateSpan"> 4Y
+                </label>
+                <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === 'all'">
+                  <input type="radio" [value]="'all'" [routerLink]="['/graphs' | relativeUrl]" fragment="all" formControlName="dateSpan"><span i18n="all">All</span>
+                </label>
+              </div>
             </div>
             <div class="small-buttons">
               <div ngbDropdown #myDrop="ngbDropdown">
@@ -62,7 +70,7 @@
                 <div class="dropdown-fees" ngbDropdownMenu aria-labelledby="dropdownFees">
                   <ul>
                     <ng-template ngFor let-feeData let-i="index" [ngForOf]="feeLevelDropdownData">
-                      <ng-template [ngIf]="feeData.fee <= 400">
+                      <ng-template [ngIf]="feeData.fee <= (feeLevels[maxFeeIndex])">
                         <li (click)="filterFeeIndex = feeData.fee"
                           [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
                           <span class="square" [ngStyle]="{'backgroundColor': feeData.color}"></span>
@@ -84,7 +92,7 @@
         </div>
         <div class="card-body">
           <div class="incoming-transactions-graph">
-            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'" [limitFee]="500"
+            <app-mempool-graph #mempoolgraph dir="ltr" [template]="'advanced'"
               [limitFilterFee]="filterFeeIndex" [height]="500" [left]="65" [right]="10"
               [data]="mempoolStats && mempoolStats.length ? mempoolStats : null"></app-mempool-graph>
           </div>

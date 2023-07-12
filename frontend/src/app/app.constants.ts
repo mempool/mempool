@@ -29,6 +29,14 @@ export const mempoolFeeColors = [
   'ba3243',
   'b92b48',
   'b9254b',
+  'b8214d',
+  'b71d4f',
+  'b61951',
+  'b41453',
+  'b30e55',
+  'b10857',
+  'b00259',
+  'ae005b',
 ];
 
 export const chartColors = [
@@ -69,6 +77,7 @@ export const chartColors = [
   "#3E2723",
   "#212121",
   "#263238",
+  "#801313",
 ];
 
 export const poolsColor = {
