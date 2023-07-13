@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse, IBackendInfo } from '../interfaces/websocket.interface';
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
-import { BlockExtended } from '../interfaces/node-api.interface';
+import { CacheService } from './cache.service';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -40,6 +40,7 @@ export class WebsocketService {
     private stateService: StateService,
     private apiService: ApiService,
     private transferState: TransferState,
+    private cacheService: CacheService,
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
@@ -239,13 +240,8 @@ export class WebsocketService {
 
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      let maxHeight = 0;
-      blocks.forEach((block: BlockExtended) => {
-        if (block.height > this.stateService.latestBlockHeight) {
-          maxHeight = Math.max(maxHeight, block.height);
-          this.stateService.blocks$.next([block, '']);
-        }
-      });
+      this.stateService.resetBlocks(blocks);
+      const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
       this.stateService.updateChainTip(maxHeight);
     }
 
@@ -260,7 +256,8 @@ export class WebsocketService {
     if (response.block) {
       if (response.block.height === this.stateService.latestBlockHeight + 1) {
         this.stateService.updateChainTip(response.block.height);
-        this.stateService.blocks$.next([response.block, response.txConfirmed || '']);
+        this.stateService.addBlock(response.block);
+        this.stateService.txConfirmed$.next([response.txConfirmed, response.block]);
       } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
         reinitBlocks = true;
       }
