@@ -39,13 +39,10 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
       })
     ).subscribe();
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        if (block) {
-          this.blockTimes.push([block.height, new Date(block.timestamp * 1000)]);
-          // using block-reported times, so ensure they are sorted chronologically
-          this.blockTimes = this.blockTimes.sort((a, b) => a[1].getTime() - b[1].getTime());
-          this.updateSegments();
-        }
+      .subscribe((blocks) => {
+        this.blockTimes = blocks.map(block => [block.height, new Date(block.timestamp * 1000)]);
+        this.blockTimes = this.blockTimes.sort((a, b) => a[1].getTime() - b[1].getTime());
+        this.updateSegments();
       });
   }
 
