@@ -39,6 +39,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
+  loadingCachedTx = false;
   waitingForTransaction = false;
   latestBlock: BlockExtended;
   transactionTime = -1;
@@ -203,6 +204,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.fetchCachedTxSubscription = this.fetchCachedTx$
     .pipe(
+      tap(() => {
+        this.loadingCachedTx = true;
+      }),
       switchMap((txId) =>
         this.apiService
           .getRbfCachedTx$(txId)
@@ -211,6 +215,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return of(null);
       })
     ).subscribe((tx) => {
+      this.loadingCachedTx = false;
       if (!tx) {
         return;
       }
@@ -342,6 +347,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
+          this.loadingCachedTx = false;
           this.waitingForTransaction = false;
           this.websocketService.startTrackTransaction(tx.txid);
           this.graphExpanded = false;
@@ -411,6 +417,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txReplacedSubscription = this.stateService.txReplaced$.subscribe((rbfTransaction) => {
       if (!this.tx) {
         this.error = new Error();
+        this.loadingCachedTx = false;
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
