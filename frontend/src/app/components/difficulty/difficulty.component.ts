@@ -67,11 +67,12 @@ export class DifficultyComponent implements OnInit {
   ngOnInit(): void {
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.difficultyEpoch$ = combineLatest([
-      this.stateService.blocks$.pipe(map(([block]) => block)),
+      this.stateService.blocks$,
       this.stateService.difficultyAdjustment$,
     ])
     .pipe(
-      map(([block, da]) => {
+      map(([blocks, da]) => {
+        const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
         let colorAdjustments = '#ffffff66';
         if (da.difficultyChange > 0) {
           colorAdjustments = '#3bcc49';
@@ -92,7 +93,7 @@ export class DifficultyComponent implements OnInit {
           colorPreviousAdjustments = '#ffffff66';
         }
 
-        const blocksUntilHalving = 210000 - (block.height % 210000);
+        const blocksUntilHalving = 210000 - (maxHeight % 210000);
         const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
         const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
         const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);

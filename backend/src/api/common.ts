@@ -1,3 +1,5 @@
+import * as bitcoinjs from 'bitcoinjs-lib';
+import { Request } from 'express';
 import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
@@ -86,18 +88,18 @@ export class Common {
         const match = spendMap.get(`${vin.txid}:${vin.vout}`);
         if (match && match.txid !== tx.txid) {
           replaced.add(match);
+          // remove this tx from the spendMap
+          // prevents the same tx being replaced more than once
+          for (const replacedVin of match.vin) {
+            const key = `${replacedVin.txid}:${replacedVin.vout}`;
+            spendMap.delete(key);
+          }
         }
+        const key = `${vin.txid}:${vin.vout}`;
+        spendMap.delete(key);
       }
       if (replaced.size) {
         matches[tx.txid] = { replaced: Array.from(replaced), replacedBy: tx };
-      }
-      // remove this tx from the spendMap
-      // prevents the same tx being replaced more than once
-      for (const vin of tx.vin) {
-        const key = `${vin.txid}:${vin.vout}`;
-        if (spendMap.get(key)?.txid === tx.txid) {
-          spendMap.delete(key);
-        }
       }
     }
     return matches;
@@ -510,6 +512,115 @@ export class Common {
 
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
+  }
+
+  static getTransactionFromRequest(req: Request, form: boolean): string {
+    let rawTx: any = typeof req.body === 'object' && form
+      ? Object.values(req.body)[0] as any
+      : req.body;
+    if (typeof rawTx !== 'string') {
+      throw Object.assign(new Error('Non-string request body'), { code: -1 });
+    }
+
+    // Support both upper and lower case hex
+    // Support both txHash= Form and direct API POST
+    const reg = form ? /^txHash=((?:[a-fA-F0-9]{2})+)$/ : /^((?:[a-fA-F0-9]{2})+)$/;
+    const matches = reg.exec(rawTx);
+    if (!matches || !matches[1]) {
+      throw Object.assign(new Error('Non-hex request body'), { code: -2 });
+    }
+
+    // Guaranteed to be a hex string of multiple of 2
+    // Guaranteed to be lower case
+    // Guaranteed to pass validation (see function below)
+    return this.validateTransactionHex(matches[1].toLowerCase());
+  }
+
+  private static validateTransactionHex(txhex: string): string {
+    // Do not mutate txhex
+
+    // We assume txhex to be valid hex (output of getTransactionFromRequest above)
+
+    // Check 1: Valid transaction parse
+    let tx: bitcoinjs.Transaction;
+    try {
+      tx = bitcoinjs.Transaction.fromHex(txhex);
+    } catch(e) {
+      throw Object.assign(new Error('Invalid transaction (could not parse)'), { code: -4 });
+    }
+
+    // Check 2: Simple size check
+    if (tx.weight() > config.MEMPOOL.MAX_PUSH_TX_SIZE_WEIGHT) {
+      throw Object.assign(new Error(`Transaction too large (max ${config.MEMPOOL.MAX_PUSH_TX_SIZE_WEIGHT} weight units)`), { code: -3 });
+    }
+
+    // Check 3: Check unreachable script in taproot (if not allowed)
+    if (!config.MEMPOOL.ALLOW_UNREACHABLE) {
+      tx.ins.forEach(input => {
+        const witness = input.witness;
+        // See BIP 341: Script validation rules
+        const hasAnnex = witness.length >= 2 &&
+          witness[witness.length - 1][0] === 0x50;
+        const scriptSpendMinLength = hasAnnex ? 3 : 2;
+        const maybeScriptSpend = witness.length >= scriptSpendMinLength;
+
+        if (maybeScriptSpend) {
+          const controlBlock = witness[witness.length - scriptSpendMinLength + 1];
+          if (controlBlock.length === 0 || !this.isValidLeafVersion(controlBlock[0])) {
+            // Skip this input, it's not taproot
+            return;
+          }
+          // Definitely taproot. Get script
+          const script = witness[witness.length - scriptSpendMinLength];
+          const decompiled = bitcoinjs.script.decompile(script);
+          if (!decompiled || decompiled.length < 2) {
+            // Skip this input
+            return;
+          }
+          // Iterate up to second last (will look ahead 1 item)
+          for (let i = 0; i < decompiled.length - 1; i++) {
+            const first = decompiled[i];
+            const second = decompiled[i + 1];
+            if (
+              first === bitcoinjs.opcodes.OP_FALSE &&
+              second === bitcoinjs.opcodes.OP_IF
+            ) {
+              throw Object.assign(new Error('Unreachable taproot scripts not allowed'), { code: -5 });
+            }
+          }
+        }
+      })
+    }
+
+    // Pass through the input string untouched
+    return txhex;
+  }
+
+  private static isValidLeafVersion(leafVersion: number): boolean {
+    // See Note 7 in BIP341
+    // https://github.com/bitcoin/bips/blob/66a1a8151021913047934ebab3f8883f2f8ca75b/bip-0341.mediawiki#cite_note-7
+    // "What constraints are there on the leaf version?"
+
+    // Must be an integer between 0 and 255
+    // Since we're parsing a byte
+    if (Math.floor(leafVersion) !== leafVersion || leafVersion < 0 || leafVersion > 255) {
+      return false;
+    }
+    // "the leaf version cannot be odd"
+    if ((leafVersion & 0x01) === 1) {
+      return false;
+    }
+    // "The values that comply to this rule are
+    // the 32 even values between 0xc0 and 0xfe
+    if (leafVersion >= 0xc0 && leafVersion <= 0xfe) {
+      return true;
+    }
+    // and also 0x66, 0x7e, 0x80, 0x84, 0x96, 0x98, 0xba, 0xbc, 0xbe."
+    if ([0x66, 0x7e, 0x80, 0x84, 0x96, 0x98, 0xba, 0xbc, 0xbe].includes(leafVersion)) {
+      return true;
+    }
+    // Otherwise, invalid
+    return false;
   }
 }
 
