@@ -55,7 +55,7 @@ class RbfCache {
           if (tree) {
             tree.interval = newTime - tree?.time;
             replacedTrees.push(tree);
-            fullRbf = fullRbf || tree.fullRbf;
+            fullRbf = fullRbf || tree.fullRbf || !tree.tx.rbf;
           }
         }
       } else {
