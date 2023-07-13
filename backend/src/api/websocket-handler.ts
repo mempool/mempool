@@ -333,6 +333,40 @@ class WebsocketHandler {
     });
   }
 
+  handleReorg(): void {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+
+    // update init data
+    this.updateSocketDataFields({
+      'blocks': blocks.getBlocks(),
+      'da': da?.previousTime ? da : undefined,
+    });
+
+    this.wss.clients.forEach((client) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const response = {};
+
+      if (client['want-blocks']) {
+        response['blocks'] = this.socketData['blocks'];
+      }
+      if (client['want-stats']) {
+        response['da'] = this.socketData['da'];
+      }
+
+      if (Object.keys(response).length) {
+        const serializedResponse = this.serializeResponse(response);
+        client.send(serializedResponse);
+      }
+    });
+  }
+
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {

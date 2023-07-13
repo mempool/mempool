@@ -1,11 +1,11 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
+import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
 import { BlockExtended, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { map, scan, shareReplay, tap } from 'rxjs/operators';
+import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 export interface MarkBlockState {
@@ -90,10 +90,12 @@ export class StateService {
   blockVSize: number;
   env: Env;
   latestBlockHeight = -1;
+  blocks: BlockExtended[] = [];
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$: ReplaySubject<[BlockExtended, string]>;
+  blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
+  blocks$: Observable<BlockExtended[]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -102,6 +104,7 @@ export class StateService {
   mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
   mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
   liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
+  txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
   txRbfInfo$ = new Subject<RbfTree>();
   rbfLatest$ = new Subject<RbfTree[]>();
@@ -167,8 +170,6 @@ export class StateService {
       }
     });
 
-    this.blocks$ = new ReplaySubject<[BlockExtended, string]>(this.env.KEEP_BLOCKS_AMOUNT);
-
     this.liveMempoolBlockTransactions$ = merge(
       this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
       this.mempoolBlockDelta$.pipe(map(delta => { return { delta }; })),
@@ -198,7 +199,14 @@ export class StateService {
       this.networkChanged$.next(this.env.BASE_MODULE);
     }
 
+    this.networkChanged$.subscribe((network) => {
+      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.blocksSubject$.next([]);
+    });
+
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
+
+    this.blocks$ = this.blocksSubject$.pipe(filter(blocks => blocks != null && blocks.length > 0));
 
     const savedTimePreference = this.storageService.getValue('time-preference-ltr');
     const rtlLanguage = (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he'));
@@ -335,5 +343,16 @@ export class StateService {
       this.latestBlockHeight = height;
       this.chainTip$.next(height);
     }
+  }
+
+  resetBlocks(blocks: BlockExtended[]): void {
+    this.blocks = blocks.reverse();
+    this.blocksSubject$.next(blocks);
+  }
+
+  addBlock(block: BlockExtended): void {
+    this.blocks.unshift(block);
+    this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
+    this.blocksSubject$.next(this.blocks);
   }
 }

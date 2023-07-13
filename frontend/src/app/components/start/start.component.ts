@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Inpu
 import { Subscription } from 'rxjs';
 import { MarkBlockState, StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
+import { BlockExtended } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-start',
@@ -55,8 +56,8 @@ export class StartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
-    this.blockCounterSubscription = this.stateService.blocks$.subscribe(() => {
-      this.blockCount++;
+    this.blockCounterSubscription = this.stateService.blocks$.subscribe((blocks) => {
+      this.blockCount = blocks.length;
       this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
       if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
@@ -110,9 +111,12 @@ export class StartComponent implements OnInit, OnDestroy {
       }
     });
     this.stateService.blocks$
-      .subscribe((blocks: any) => {
+      .subscribe((blocks: BlockExtended[]) => {
         this.countdown = 0;
         const block = blocks[0];
+        if (!block) {
+          return;
+        }
 
         for (const sb in specialBlocks) {
           if (specialBlocks[sb].networks.includes(this.stateService.network || 'mainnet')) {
