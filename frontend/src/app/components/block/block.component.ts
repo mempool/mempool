@@ -700,7 +700,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   loadedCacheBlock(block: BlockExtended): void {
-    if (block.height === this.block.height && block.id !== this.block.id) {
+    if (this.block && block.height === this.block.height && block.id !== this.block.id) {
       this.block.stale = true;
       this.block.canonical = block.id;
     }
