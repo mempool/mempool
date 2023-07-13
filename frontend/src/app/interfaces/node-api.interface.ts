@@ -39,6 +39,7 @@ export interface RbfTree extends RbfInfo {
   mined?: boolean;
   fullRbf: boolean;
   replaces: RbfTree[];
+  replacedBy?: RbfTransaction;
 }
 
 export interface DifficultyAdjustment {
@@ -176,9 +177,10 @@ export interface TransactionStripped {
   context?: 'projected' | 'actual';
 }
 
-interface RbfTransaction extends TransactionStripped {
+export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean,
+  fullRbf?: boolean,
 }
 export interface MempoolPosition {
   block: number,
