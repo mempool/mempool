@@ -560,7 +560,6 @@ export class Common {
         const witness = input.witness;
         // See BIP 341: Script validation rules
         const hasAnnex = witness.length >= 2 &&
-          witness[witness.length - 1].length > 1 &&
           witness[witness.length - 1][0] === 0x50;
         const scriptSpendMinLength = hasAnnex ? 3 : 2;
         const maybeScriptSpend = witness.length >= scriptSpendMinLength;
