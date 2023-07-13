@@ -27,7 +27,7 @@ export class BisqTransfersComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
   }
 
   ngOnChanges() {
