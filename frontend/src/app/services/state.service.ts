@@ -201,7 +201,7 @@ export class StateService {
 
     this.networkChanged$.subscribe((network) => {
       this.transactions$ = new ReplaySubject<TransactionStripped>(6);
-      this.blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
+      this.blocksSubject$.next([]);
     });
 
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;

@@ -135,23 +135,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         tap((blocks) => {
           this.latestBlockHeight = blocks[0].height;
         }),
-        scan((acc, [block]) => {
-          if (acc.find((b) => b.height == block.height)) {
-            return acc;
-          }
-          acc.unshift(block);
-          acc = acc.slice(0, 6);
-
+        switchMap((blocks) => {
           if (this.stateService.env.MINING_DASHBOARD === true) {
-            for (const block of acc) {
+            for (const block of blocks) {
               // @ts-ignore: Need to add an extra field for the template
               block.extras.pool.logo = `/resources/mining-pools/` +
                 block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
             }
           }
-
-          return acc;
-        }, []),
+          return of(blocks.slice(0, 6));
+        })
       );
 
     this.transactions$ = this.stateService.transactions$
