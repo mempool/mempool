@@ -566,7 +566,7 @@ export class Common {
 
         if (maybeScriptSpend) {
           const controlBlock = witness[witness.length - scriptSpendMinLength + 1];
-          if (controlBlock.length === 0 || (controlBlock[0] & 0xfe) < 0xc0) {
+          if (controlBlock.length === 0 || !this.isValidLeafVersion(controlBlock[0])) {
             // Skip this input, it's not taproot
             return;
           }
@@ -594,6 +594,33 @@ export class Common {
 
     // Pass through the input string untouched
     return txhex;
+  }
+
+  private static isValidLeafVersion(leafVersion: number): boolean {
+    // See Note 7 in BIP341
+    // https://github.com/bitcoin/bips/blob/66a1a8151021913047934ebab3f8883f2f8ca75b/bip-0341.mediawiki#cite_note-7
+    // "What constraints are there on the leaf version?"
+
+    // Must be an integer between 0 and 255
+    // Since we're parsing a byte
+    if (Math.floor(leafVersion) !== leafVersion || leafVersion < 0 || leafVersion > 255) {
+      return false;
+    }
+    // "the leaf version cannot be odd"
+    if ((leafVersion & 0x01) === 1) {
+      return false;
+    }
+    // "The values that comply to this rule are
+    // the 32 even values between 0xc0 and 0xfe
+    if (leafVersion >= 0xc0 && leafVersion <= 0xfe) {
+      return true;
+    }
+    // and also 0x66, 0x7e, 0x80, 0x84, 0x96, 0x98, 0xba, 0xbc, 0xbe."
+    if ([0x66, 0x7e, 0x80, 0x84, 0x96, 0x98, 0xba, 0xbc, 0xbe].includes(leafVersion)) {
+      return true;
+    }
+    // Otherwise, invalid
+    return false;
   }
 }
 
