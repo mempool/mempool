@@ -25,7 +25,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
   @Input() blockConversion: Price;
-  @Input() pixelAlign: boolean = false;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
@@ -219,7 +218,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
-        highlighting: this.auditHighlighting, pixelAlign: this.pixelAlign });
+        highlighting: this.auditHighlighting });
       this.start();
     }
   }
