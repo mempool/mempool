@@ -29,6 +29,7 @@ export class WebsocketService {
   private trackingTxId: string;
   private isTrackingMempoolBlock = false;
   private isTrackingRbf = false;
+  private isTrackingRbfSummary = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -185,6 +186,16 @@ export class WebsocketService {
     this.isTrackingRbf = false;
   }
 
+  startTrackRbfSummary() {
+    this.websocketSubject.next({ 'track-rbf-summary': true });
+    this.isTrackingRbfSummary = true;
+  }
+
+  stopTrackRbfSummary() {
+    this.websocketSubject.next({ 'track-rbf-summary': false });
+    this.isTrackingRbfSummary = false;
+  }
+
   startTrackBisqMarket(market: string) {
     this.websocketSubject.next({ 'track-bisq-market': market });
   }
@@ -281,6 +292,10 @@ export class WebsocketService {
 
     if (response.rbfLatest) {
       this.stateService.rbfLatest$.next(response.rbfLatest);
+    }
+
+    if (response.rbfLatestSummary) {
+      this.stateService.rbfLatestSummary$.next(response.rbfLatestSummary);
     }
 
     if (response.txReplaced) {
