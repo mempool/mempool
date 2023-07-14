@@ -1,15 +1,17 @@
-<div class="block-overview-graph">
-  <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
-  <div class="loader-wrapper" [class.hidden]="(!isLoading || disableSpinner) && !unavailable">
-    <div *ngIf="isLoading" class="spinner-border ml-3 loading" role="status"></div>
-    <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
-  </div>
 
-  <app-block-overview-tooltip
-    [tx]="selectedTx || hoverTx"
-    [cursorPosition]="tooltipPosition"
-    [clickable]="!!selectedTx"
-    [auditEnabled]="auditHighlighting"
-    [blockConversion]="blockConversion"
-  ></app-block-overview-tooltip>
+<div class="grid-align" [style.gridTemplateColumns]="'repeat(auto-fit, ' + resolution + 'px)'">
+  <div class="block-overview-graph">
+    <canvas class="block-overview-canvas" [class.clickable]="!!hoverTx" #blockCanvas></canvas>
+    <div class="loader-wrapper" [class.hidden]="(!isLoading || disableSpinner) && !unavailable">
+      <div *ngIf="isLoading" class="spinner-border ml-3 loading" role="status"></div>
+      <div *ngIf="!isLoading && unavailable" class="ml-3" i18n="block.not-available">not available</div>
+    </div>
+    <app-block-overview-tooltip
+      [tx]="selectedTx || hoverTx"
+      [cursorPosition]="tooltipPosition"
+      [clickable]="!!selectedTx"
+      [auditEnabled]="auditHighlighting"
+      [blockConversion]="blockConversion"
+    ></app-block-overview-tooltip>
+  </div>
 </div>
