@@ -18,6 +18,7 @@ export interface WebsocketResponse {
   txReplaced?: ReplacedTransaction;
   rbfInfo?: RbfTree;
   rbfLatest?: RbfTree[];
+  rbfLatestSummary?: ReplacementInfo[];
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
@@ -29,6 +30,7 @@ export interface WebsocketResponse {
   'track-asset'?: string;
   'track-mempool-block'?: number;
   'track-rbf'?: string;
+  'track-rbf-summary'?: boolean;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
   'refresh-blocks'?: boolean;
@@ -36,6 +38,16 @@ export interface WebsocketResponse {
 
 export interface ReplacedTransaction extends Transaction {
   txid: string;
+}
+
+export interface ReplacementInfo {
+  mined: boolean;
+  fullRbf: boolean;
+  txid: string;
+  oldFee: number;
+  oldVsize: number;
+  newFee: number;
+  newVsize: number;
 }
 export interface MempoolBlock {
   blink?: boolean;
