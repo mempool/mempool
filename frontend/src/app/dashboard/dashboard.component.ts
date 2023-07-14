@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -25,6 +25,17 @@ interface MempoolStatsData {
   weightPerSecond: any;
 }
 
+interface ReplacementInfo {
+  tree: RbfTree;
+  mined: boolean;
+  fullRbf: boolean;
+  txid: string;
+  oldFee: number;
+  oldVsize: number;
+  newFee: number;
+  newVsize: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -38,8 +49,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mempoolInfoData$: Observable<MempoolInfoData>;
   mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
-  blocks$: Observable<BlockExtended[]>;
   transactions$: Observable<TransactionStripped[]>;
+  replacements$: Observable<ReplacementInfo[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
   mempoolStats$: Observable<MempoolStatsData>;
@@ -64,6 +75,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
+    this.websocketService.startTrackRbf('all');
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$
       .pipe(
@@ -130,23 +142,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }),
       );
 
-    this.blocks$ = this.stateService.blocks$
-      .pipe(
-        tap((blocks) => {
-          this.latestBlockHeight = blocks[0].height;
-        }),
-        switchMap((blocks) => {
-          if (this.stateService.env.MINING_DASHBOARD === true) {
-            for (const block of blocks) {
-              // @ts-ignore: Need to add an extra field for the template
-              block.extras.pool.logo = `/resources/mining-pools/` +
-                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
-            }
-          }
-          return of(blocks.slice(0, 6));
-        })
-      );
-
     this.transactions$ = this.stateService.transactions$
       .pipe(
         scan((acc, tx) => {
@@ -158,6 +153,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return acc;
         }, []),
       );
+
+    this.replacements$ = this.stateService.rbfLatest$.pipe(
+      switchMap((rbfList) => {
+        const replacements = rbfList.slice(0, 6).map(rbfTree => {
+          let oldFee = 0;
+          let oldVsize = 0;
+          for (const replaced of rbfTree.replaces) {
+            oldFee += replaced.tx.fee;
+            oldVsize += replaced.tx.vsize;
+          }
+          this.checkFullRbf(rbfTree);
+          return {
+            tree: rbfTree,
+            txid: rbfTree.tx.txid,
+            mined: rbfTree.tx.mined,
+            fullRbf: rbfTree.tx.fullRbf,
+            oldFee,
+            oldVsize,
+            newFee: rbfTree.tx.fee,
+            newVsize: rbfTree.tx.vsize,
+          };
+        });
+        return of(replacements);
+      })
+    );
 
     this.mempoolStats$ = this.stateService.connectionState$
       .pipe(
@@ -218,5 +238,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  checkFullRbf(tree: RbfTree): void {
+    let fullRbf = false;
+    for (const replaced of tree.replaces) {
+      if (!replaced.tx.rbf) {
+        fullRbf = true;
+      }
+      replaced.replacedBy = tree.tx;
+      this.checkFullRbf(replaced);
+    }
+    tree.tx.fullRbf = fullRbf;
   }
 }
