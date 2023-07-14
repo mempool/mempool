@@ -130,6 +130,7 @@ export class HashrateChartComponent implements OnInit {
                 });
                 ++hashIndex;
               }
+              diffIndex++;
               break;
             }
 

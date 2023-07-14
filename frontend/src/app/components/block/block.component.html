@@ -100,7 +100,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-sm">
+      <div class="col-sm" [class.graph-col]="webGlEnabled && !showAudit">
         <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && !showAudit)">
           <tbody>
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
@@ -110,7 +110,7 @@
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="isLoadingOverview"
-            [resolution]="75"
+            [resolution]="86"
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
             [flip]="false"
@@ -227,7 +227,7 @@
       <div class="col-sm">
         <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container> <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
+          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
@@ -239,7 +239,7 @@
       <div class="col-sm" *ngIf="!isMobile">
         <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
+          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
