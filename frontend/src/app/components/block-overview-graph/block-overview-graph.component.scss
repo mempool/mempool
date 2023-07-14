@@ -6,8 +6,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  grid-column: 1/-1;
 }
 
+.grid-align {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 75px);
+  justify-content: center;
+}
 
 .block-overview-canvas {
   position: absolute;

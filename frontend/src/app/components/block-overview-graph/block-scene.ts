@@ -15,7 +15,6 @@ export default class BlockScene {
   gridWidth: number;
   gridHeight: number;
   gridSize: number;
-  pixelAlign: boolean;
   vbytesPerUnit: number;
   unitPadding: number;
   unitWidth: number;
@@ -24,24 +23,19 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign }:
+  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, pixelAlign: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
   ) {
-    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign });
+    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
-    if (this.pixelAlign) {
-      this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 2.5));
-      this.unitWidth = this.gridSize - (this.unitPadding);
-    } else {
-      this.unitPadding =  width / 500;
-      this.unitWidth = this.gridSize - (this.unitPadding * 2);
-    }
+    this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 5));
+    this.unitWidth = this.gridSize - (this.unitPadding * 2);
 
     this.dirty = true;
     if (this.initialised && this.scene) {
@@ -219,15 +213,14 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
-  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign }:
+  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
       { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, pixelAlign: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
   ): void {
     this.orientation = orientation;
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
-    this.pixelAlign = pixelAlign;
 
     this.scene = {
       count: 0,
@@ -353,12 +346,7 @@ export default class BlockScene {
   private gridToScreen(position: Square | void): Square {
     if (position) {
       const slotSize = (position.s * this.gridSize);
-      let squareSize;
-      if (this.pixelAlign) {
-        squareSize = slotSize - (this.unitPadding);
-      } else {
-        squareSize = slotSize - (this.unitPadding * 2);
-      }
+      const squareSize = slotSize - (this.unitPadding * 2);
 
       // The grid is laid out notionally left-to-right, bottom-to-top,
       // so we rotate and/or flip the y axis to match the target configuration.
@@ -434,7 +422,7 @@ export default class BlockScene {
 
   // calculates and returns the size of the tx in multiples of the grid size
   private txSize(tx: TxView): number {
-    const scale = Math.max(1, Math.round(Math.sqrt(tx.vsize / this.vbytesPerUnit)));
+    const scale = Math.max(1, Math.round(Math.sqrt(1.1 * tx.vsize / this.vbytesPerUnit)));
     return Math.min(this.gridWidth, Math.max(1, scale)); // bound between 1 and the max displayable size (just in case!)
   }
 
