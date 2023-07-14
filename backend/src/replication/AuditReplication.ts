@@ -66,6 +66,7 @@ class AuditReplication {
     if (syncResult) {
       if (syncResult.data?.template?.length) {
         await this.$saveAuditData(hash, syncResult.data);
+        logger.info(`Imported audit data from ${syncResult.server} for block ${syncResult.data.height} (${hash})`);
         success = true;
       }
       if (!syncResult.data && !syncResult.exists) {
