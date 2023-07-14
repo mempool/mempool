@@ -215,6 +215,10 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHover(value));
   }
 
+  setHighlight(tx: TxView, value: boolean): void {
+    this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
+  }
+
   private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting, pixelAlign }:
       { width: number, height: number, resolution: number, blockLimit: number,
         orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, pixelAlign: boolean }
