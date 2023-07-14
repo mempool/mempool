@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
 
-export async function $sync(path): Promise<{ data?: any, exists: boolean }> {
+export async function $sync(path): Promise<{ data?: any, exists: boolean, server?: string }> {
   // start with a random server so load is uniformly spread
   let allMissing = true;
   const offset = Math.floor(Math.random() * config.REPLICATION.SERVERS.length);
@@ -18,7 +18,7 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean }> {
     try {
       const result = await query(`https://${server}${path}`);
       if (result) {
-        return { data: result, exists: true };
+        return { data: result, exists: true, server };
       }
     } catch (e: any) {
       if (e?.response?.status === 404) {
