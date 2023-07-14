@@ -426,7 +426,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.highlightTx && this.highlightTx.txid !== this.searchText && this.scene) {
       this.scene.setHighlight(this.highlightTx, false);
       this.start();
-    } else if (this.searchText && this.searchText.length === 64) {
+    } else if (this.scene?.txs && this.searchText && this.searchText.length === 64) {
       this.highlightTx = this.scene.txs[this.searchText];
       if (this.highlightTx) {
         this.scene.setHighlight(this.highlightTx, true);
