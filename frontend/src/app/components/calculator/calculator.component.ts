@@ -130,4 +130,8 @@ export class CalculatorComponent implements OnInit {
     const result = numStr.match(re);
     return result ? result[0] : numStr;
   }
+
+  selectAll(event): void {
+    event.target.select();
+  }
 }
