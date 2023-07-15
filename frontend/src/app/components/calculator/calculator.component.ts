@@ -54,6 +54,9 @@ export class CalculatorComponent implements OnInit {
     ]).subscribe(([price, value]) => {
       const rate = (value / price).toFixed(8);
       const satsRate = Math.round(value / price * 100_000_000);
+      if (isNaN(value)) {
+        return;
+      }
       this.form.get('bitcoin').setValue(rate, { emitEvent: false });
       this.form.get('satoshis').setValue(satsRate, { emitEvent: false } );
     });
@@ -63,6 +66,9 @@ export class CalculatorComponent implements OnInit {
       this.form.get('bitcoin').valueChanges
     ]).subscribe(([price, value]) => {
       const rate = parseFloat((value * price).toFixed(8));
+      if (isNaN(value)) {
+        return;
+      }
       this.form.get('fiat').setValue(rate, { emitEvent: false } );
       this.form.get('satoshis').setValue(Math.round(value * 100_000_000), { emitEvent: false } );
     });
@@ -73,6 +79,9 @@ export class CalculatorComponent implements OnInit {
     ]).subscribe(([price, value]) => {
       const rate = parseFloat((value / 100_000_000 * price).toFixed(8));
       const bitcoinRate = (value / 100_000_000).toFixed(8);
+      if (isNaN(value)) {
+        return;
+      }
       this.form.get('fiat').setValue(rate, { emitEvent: false } );
       this.form.get('bitcoin').setValue(bitcoinRate, { emitEvent: false });
     });
@@ -88,7 +97,16 @@ export class CalculatorComponent implements OnInit {
     if (value === '.') {
       value = '0';
     }
-    const sanitizedValue = this.removeExtraDots(value);
+    let sanitizedValue = this.removeExtraDots(value);
+    if (name === 'bitcoin' && this.countDecimals(sanitizedValue) > 8) {
+      sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 8);
+    }
+    if (sanitizedValue === '') {
+      sanitizedValue = '0';
+    }
+    if (name === 'satoshis') {
+      sanitizedValue = parseFloat(sanitizedValue).toFixed(0);
+    }
     formControl.setValue(sanitizedValue, {emitEvent: true});
   }
 
@@ -99,5 +117,17 @@ export class CalculatorComponent implements OnInit {
     }
     const afterDotReplaced = afterDot.replace(/\./g, '');
     return `${beforeDot}.${afterDotReplaced}`;
+  }
+
+  countDecimals(numberString: string): number {
+    const decimalPos = numberString.indexOf('.');
+    if (decimalPos === -1) return 0;
+    return numberString.length - decimalPos - 1;
+  }
+
+  toFixedWithoutRounding(numStr: string, fixed: number): string {
+    const re = new RegExp(`^-?\\d+(?:.\\d{0,${(fixed || -1)}})?`);
+    const result = numStr.match(re);
+    return result ? result[0] : numStr;
   }
 }
