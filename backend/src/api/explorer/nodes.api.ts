@@ -80,17 +80,20 @@ class NodesApi {
 
       // Features      
       node.features = JSON.parse(node.features);
-      let maxBit = 0;
-      for (const feature of node.features) {
-        maxBit = Math.max(maxBit, feature.bit);
+      node.featuresBits = null;
+      if (node.features) {
+        let maxBit = 0;
+        for (const feature of node.features) {
+          maxBit = Math.max(maxBit, feature.bit);
+        }
+        maxBit = Math.ceil(maxBit / 4) * 4 - 1;
+        
+        node.featuresBits = new Array(maxBit + 1).fill(0);
+        for (const feature of node.features) {
+          node.featuresBits[feature.bit] = 1;
+        }
+        node.featuresBits = bin2hex(node.featuresBits.reverse().join(''));
       }
-      maxBit = Math.ceil(maxBit / 4) * 4 - 1;
-      
-      node.featuresBits = new Array(maxBit + 1).fill(0);
-      for (const feature of node.features) {
-        node.featuresBits[feature.bit] = 1;
-      }
-      node.featuresBits = bin2hex(node.featuresBits.reverse().join(''));
 
       // Active channels and capacity
       const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);

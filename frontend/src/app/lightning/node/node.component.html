@@ -102,10 +102,10 @@
                 </td>
               </ng-template>
             </tr>
-            <tr *ngIf="node.geolocation">
+            <tr *ngIf="node.geolocation && node.featuresBits">
               <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
             </tr>
-            <tr *ngIf="!node.geolocation" class="d-table-row d-md-none ">
+            <tr *ngIf="!node.geolocation && node.featuresBits" class="d-table-row d-md-none">
               <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
             </tr>
           </tbody>
