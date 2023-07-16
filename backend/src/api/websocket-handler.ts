@@ -236,7 +236,7 @@ class WebsocketHandler {
           }
 
           if (parsedMessage.action === 'init') {
-            if (!this.socketData['blocks']?.length || !this.socketData['da']) {
+            if (!this.socketData['blocks']?.length || !this.socketData['da'] || !this.socketData['backendInfo'] || !this.socketData['conversions']) {
               this.updateSocketData();
             }
             if (!this.socketData['blocks']?.length) {
