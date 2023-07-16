@@ -370,7 +370,11 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'found';
             } else {
               if (isFresh[tx.txid]) {
-                tx.status = 'fresh';
+                if (tx.rate - (tx.fee / tx.vsize) >= 0.1) {
+                  tx.status = 'freshcpfp';
+                } else {
+                  tx.status = 'fresh';
+                }
               } else if (isSigop[tx.txid]) {
                 tx.status = 'sigop';
               } else if (isFullRbf[tx.txid]) {
