@@ -457,6 +457,7 @@ class MempoolBlocks {
               };
               if (matched) {
                 descendants.push(relative);
+                mempoolTx.lastBoosted = Math.max(mempoolTx.lastBoosted || 0, mempool[txid].firstSeen || 0);
               } else {
                 ancestors.push(relative);
               }
