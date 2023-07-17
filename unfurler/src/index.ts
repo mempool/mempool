@@ -109,7 +109,10 @@ class Server {
         page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
       ])
       if (success === true) {
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot({
+          captureBeyondViewport: false,
+          clip: { width: 1200, height: 600, x: 0, y: 0, scale: 1 },
+        });
         return screenshot;
       } else if (success === false) {
         logger.warn(`failed to render ${path} for ${action} due to client-side error, e.g. requested an invalid txid`);

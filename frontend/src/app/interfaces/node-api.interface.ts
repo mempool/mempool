@@ -39,6 +39,7 @@ export interface RbfTree extends RbfInfo {
   mined?: boolean;
   fullRbf: boolean;
   replaces: RbfTree[];
+  replacedBy?: RbfTransaction;
 }
 
 export interface DifficultyAdjustment {
@@ -172,13 +173,15 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  rate?: number; // effective fee rate
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
   context?: 'projected' | 'actual';
 }
 
-interface RbfTransaction extends TransactionStripped {
+export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean,
+  fullRbf?: boolean,
 }
 export interface MempoolPosition {
   block: number,
