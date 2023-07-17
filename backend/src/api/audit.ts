@@ -1,12 +1,12 @@
 import config from '../config';
 import logger from '../logger';
-import { TransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
+import { MempoolTransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 import rbfCache from './rbf-cache';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
 class Audit {
-  auditBlock(transactions: TransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: TransactionExtended })
+  auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended })
    : { censored: string[], added: string[], fresh: string[], sigop: string[], fullrbf: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
       return { censored: [], added: [], fresh: [], sigop: [], fullrbf: [], score: 0, similarity: 1 };
@@ -14,7 +14,7 @@ class Audit {
 
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
-    const fresh: string[] = []; // missing, but firstSeen within PROPAGATION_MARGIN
+    const fresh: string[] = []; // missing, but firstSeen or lastBoosted within PROPAGATION_MARGIN
     const fullrbf: string[] = []; // either missing or present, and part of a fullrbf replacement
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
@@ -36,10 +36,13 @@ class Audit {
     // look for transactions that were expected in the template, but missing from the mined block
     for (const txid of projectedBlocks[0].transactionIds) {
       if (!inBlock[txid]) {
-        // tx is recent, may have reached the miner too late for inclusion
         if (rbfCache.isFullRbf(txid)) {
           fullrbf.push(txid);
         } else if (mempool[txid]?.firstSeen != null && (now - (mempool[txid]?.firstSeen || 0)) <= PROPAGATION_MARGIN) {
+          // tx is recent, may have reached the miner too late for inclusion
+          fresh.push(txid);
+        } else if (mempool[txid]?.lastBoosted != null && (now - (mempool[txid]?.lastBoosted || 0)) <= PROPAGATION_MARGIN) {
+          // tx was recently cpfp'd, miner may not have the latest effective rate
           fresh.push(txid);
         } else {
           isCensored[txid] = true;
