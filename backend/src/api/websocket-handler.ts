@@ -419,7 +419,7 @@ class WebsocketHandler {
     memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
-    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+    const latestTransactions = memPool.getLatestTransactions();
 
     // update init data
     const socketDataFields = {
