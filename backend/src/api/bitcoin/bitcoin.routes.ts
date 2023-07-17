@@ -121,7 +121,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', this.getBlockHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
-          .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', this.getAddressTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -546,25 +545,26 @@ class BitcoinRoutes {
     }
   }
 
-  private async getAddressTransactions(req: Request, res: Response) {
+  private async getAddressTransactions(req: Request, res: Response): Promise<void> {
     if (config.MEMPOOL.BACKEND === 'none') {
       res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
       return;
     }
 
     try {
-      const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
+      let lastTxId: string = '';
+      if (req.query.after_txid && typeof req.query.after_txid === 'string') {
+        lastTxId = req.query.after_txid;
+      }
+      const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, lastTxId);
       res.json(transactions);
     } catch (e) {
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
-        return res.status(413).send(e instanceof Error ? e.message : e);
+        res.status(413).send(e instanceof Error ? e.message : e);
+        return;
       }
       res.status(500).send(e instanceof Error ? e.message : e);
     }
-  }
-
-  private async getAdressTxChain(req: Request, res: Response) {
-    res.status(501).send('Not implemented');
   }
 
   private async getAddressPrefix(req: Request, res: Response) {
