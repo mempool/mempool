@@ -76,11 +76,14 @@ class Blocks {
     blockHash: string,
     blockHeight: number,
     onlyCoinbase: boolean,
+    txIds: string[] | null = null,
     quiet: boolean = false,
     addMempoolData: boolean = false,
   ): Promise<TransactionExtended[]> {
     const transactions: TransactionExtended[] = [];
-    const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
+    if (!txIds) {
+      txIds = await bitcoinApi.$getTxIdsForBlock(blockHash);
+    }
 
     const mempool = memPool.getMempool();
     let transactionsFound = 0;
@@ -554,7 +557,7 @@ class Blocks {
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
           const block: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(blockHash);
-          const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, true);
+          const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, null, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
 
           newlyIndexed++;
@@ -586,7 +589,7 @@ class Blocks {
 
     let fastForwarded = false;
     let handledBlocks = 0;
-    const blockHeightTip = await bitcoinApi.$getBlockHeightTip();
+    const blockHeightTip = await bitcoinCoreApi.$getBlockHeightTip();
     this.updateTimerProgress(timer, 'got block height tip');
 
     if (this.blocks.length === 0) {
@@ -639,11 +642,11 @@ class Blocks {
       }
 
       this.updateTimerProgress(timer, `getting block data for ${this.currentBlockHeight}`);
-      const blockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight);
+      const blockHash = await bitcoinCoreApi.$getBlockHash(this.currentBlockHeight);
       const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
       const block = BitcoinApi.convertBlock(verboseBlock);
-      const txIds: string[] = await bitcoinApi.$getTxIdsForBlock(blockHash);
-      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, false, true) as MempoolTransactionExtended[];
+      const txIds: string[] = verboseBlock.tx.map(tx => tx.txid);
+      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, txIds, false, true) as MempoolTransactionExtended[];
       if (config.MEMPOOL.BACKEND !== 'esplora') {
         // fill in missing transaction fee data from verboseBlock
         for (let i = 0; i < transactions.length; i++) {
