@@ -229,7 +229,9 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-rbf-summary'] != null) {
             if (parsedMessage['track-rbf-summary']) {
               client['track-rbf-summary'] = true;
-              response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              if (this.socketData['rbfSummary'] != null) {
+                response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              }
             } else {
               client['track-rbf-summary'] = false;
             }
