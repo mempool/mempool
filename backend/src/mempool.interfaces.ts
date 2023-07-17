@@ -237,6 +237,15 @@ export interface BlockSummary {
   transactions: TransactionStripped[];
 }
 
+export interface AuditSummary extends BlockAudit {
+  timestamp?: number,
+  size?: number,
+  weight?: number,
+  tx_count?: number,
+  transactions: TransactionStripped[];
+  template?: TransactionStripped[];
+}
+
 export interface BlockPrice {
   height: number;
   priceId: number;
