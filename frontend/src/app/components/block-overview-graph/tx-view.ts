@@ -38,7 +38,7 @@ export default class TxView implements TransactionStripped {
   value: number;
   feerate: number;
   rate?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
 
@@ -210,6 +210,7 @@ export default class TxView implements TransactionStripped {
       case 'fullrbf':
         return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
       case 'fresh':
+      case 'freshcpfp':
         return auditColors.missing;
       case 'added':
         return auditColors.added;
