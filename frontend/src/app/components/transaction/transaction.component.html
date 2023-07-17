@@ -19,6 +19,7 @@
 
       <div class="container-buttons">
         <app-confirmations
+          *ngIf="tx"
           [chainTip]="latestBlock?.height"
           [height]="tx?.status?.block_height"
           [replaced]="replaced"
