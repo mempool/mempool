@@ -3,7 +3,6 @@ import logger from '../../logger';
 import channelsApi from '../../api/explorer/channels.api';
 import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
 import config from '../../config';
-import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
 import lightningApi from '../../api/lightning/lightning-api-factory';
