@@ -56,7 +56,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {

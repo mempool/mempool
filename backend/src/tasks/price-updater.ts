@@ -153,6 +153,7 @@ class PriceUpdater {
       try {
         const p = 60 * 60 * 1000; // milliseconds in an hour
         const nowRounded = new Date(Math.round(new Date().getTime() / p) * p); // https://stackoverflow.com/a/28037042
+        this.latestPrices.time = nowRounded.getTime() / 1000;
         await PricesRepository.$savePrices(nowRounded.getTime() / 1000, this.latestPrices);
       } catch (e) {
         this.lastRun = previousRun + 5 * 60;

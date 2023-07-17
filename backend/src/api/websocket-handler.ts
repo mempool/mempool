@@ -12,7 +12,7 @@ import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import config from '../config';
 import transactionUtils from './transaction-utils';
-import rbfCache from './rbf-cache';
+import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
@@ -40,6 +40,7 @@ class WebsocketHandler {
 
   private socketData: { [key: string]: string } = {};
   private serializedInitData: string = '{}';
+  private lastRbfSummary: ReplacementInfo | null = null;
 
   constructor() { }
 
@@ -225,8 +226,19 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-rbf-summary'] != null) {
+            if (parsedMessage['track-rbf-summary']) {
+              client['track-rbf-summary'] = true;
+              if (this.socketData['rbfSummary'] != null) {
+                response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              }
+            } else {
+              client['track-rbf-summary'] = false;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
-            if (!this.socketData['blocks']?.length || !this.socketData['da']) {
+            if (!this.socketData['blocks']?.length || !this.socketData['da'] || !this.socketData['backendInfo'] || !this.socketData['conversions']) {
               this.updateSocketData();
             }
             if (!this.socketData['blocks']?.length) {
@@ -333,6 +345,40 @@ class WebsocketHandler {
     });
   }
 
+  handleReorg(): void {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+
+    // update init data
+    this.updateSocketDataFields({
+      'blocks': blocks.getBlocks(),
+      'da': da?.previousTime ? da : undefined,
+    });
+
+    this.wss.clients.forEach((client) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const response = {};
+
+      if (client['want-blocks']) {
+        response['blocks'] = this.socketData['blocks'];
+      }
+      if (client['want-stats']) {
+        response['da'] = this.socketData['da'];
+      }
+
+      if (Object.keys(response).length) {
+        const serializedResponse = this.serializeResponse(response);
+        client.send(serializedResponse);
+      }
+    });
+  }
+
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
@@ -361,10 +407,13 @@ class WebsocketHandler {
     const rbfChanges = rbfCache.getRbfChanges();
     let rbfReplacements;
     let fullRbfReplacements;
+    let rbfSummary;
     if (Object.keys(rbfChanges.trees).length) {
       rbfReplacements = rbfCache.getRbfTrees(false);
       fullRbfReplacements = rbfCache.getRbfTrees(true);
+      rbfSummary = rbfCache.getLatestRbfSummary();
     }
+
     for (const deletedTx of deletedTransactions) {
       rbfCache.evict(deletedTx.txid);
     }
@@ -372,10 +421,10 @@ class WebsocketHandler {
     memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
-    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+    const latestTransactions = memPool.getLatestTransactions();
 
     // update init data
-    this.updateSocketDataFields({
+    const socketDataFields = {
       'mempoolInfo': mempoolInfo,
       'vBytesPerSecond': vBytesPerSecond,
       'mempool-blocks': mBlocks,
@@ -383,7 +432,11 @@ class WebsocketHandler {
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
       'fees': recommendedFees,
-    });
+    };
+    if (rbfSummary) {
+      socketDataFields['rbfSummary'] = rbfSummary;
+    }
+    this.updateSocketDataFields(socketDataFields);
 
     // cache serialized objects to avoid stringify-ing the same thing for every client
     const responseCache = { ...this.socketData };
@@ -565,6 +618,10 @@ class WebsocketHandler {
         response['rbfLatest'] = getCachedResponse('rbfLatest', rbfReplacements);
       } else if (client['track-rbf'] === 'fullRbf' && fullRbfReplacements) {
         response['rbfLatest'] = getCachedResponse('fullrbfLatest', fullRbfReplacements);
+      }
+
+      if (client['track-rbf-summary'] && rbfSummary) {
+        response['rbfLatestSummary'] = getCachedResponse('rbfLatestSummary', rbfSummary);
       }
 
       if (Object.keys(response).length) {
