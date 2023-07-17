@@ -37,7 +37,7 @@ export class PoolComponent implements OnInit {
 
   auditAvailable = false;
 
-  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.blocks[0]?.height);
+  loadMoreSubject: BehaviorSubject<number> = new BehaviorSubject(this.blocks[this.blocks.length - 1]?.height);
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -91,7 +91,7 @@ export class PoolComponent implements OnInit {
           if (this.slug === undefined) {
             return [];
           }
-          return this.apiService.getPoolBlocks$(this.slug, this.blocks[0]?.height);
+          return this.apiService.getPoolBlocks$(this.slug, this.blocks[this.blocks.length - 1]?.height);
         }),
         tap((newBlocks) => {
           this.blocks = this.blocks.concat(newBlocks);
@@ -237,7 +237,7 @@ export class PoolComponent implements OnInit {
   }
 
   loadMore() {
-    this.loadMoreSubject.next(this.blocks[0]?.height);
+    this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
   }
 
   trackByBlock(index: number, block: BlockExtended) {
