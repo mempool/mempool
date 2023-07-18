@@ -127,6 +127,7 @@ class ChannelsApi {
         LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
         LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
         WHERE channels.status = 2 AND channels.closing_reason = 3
+        ORDER BY closing_date DESC
       `;
       const [rows]: any = await DB.query(query);
       return rows;
