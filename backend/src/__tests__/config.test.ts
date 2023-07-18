@@ -120,6 +120,13 @@ describe('Mempool Backend Config', () => {
         GEOLITE2_ASN: '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
         GEOIP2_ISP: '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
       });
+
+      expect(config.REPLICATION).toStrictEqual({
+        ENABLED: false,
+        AUDIT: false,
+        AUDIT_START_HEIGHT: 774000,
+        SERVERS: []
+      });
     });
   });
 
