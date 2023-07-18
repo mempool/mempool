@@ -206,16 +206,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
   }
-
-  checkFullRbf(tree: RbfTree): void {
-    let fullRbf = false;
-    for (const replaced of tree.replaces) {
-      if (!replaced.tx.rbf) {
-        fullRbf = true;
-      }
-      replaced.replacedBy = tree.tx;
-      this.checkFullRbf(replaced);
-    }
-    tree.tx.fullRbf = fullRbf;
-  }
 }
