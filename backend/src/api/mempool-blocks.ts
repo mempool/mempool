@@ -388,7 +388,7 @@ class MempoolBlocks {
     return this.$rustMakeBlockTemplates(newMempool, false, useAccelerations, accelerationPool);
   }
 
-  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], useAccelerations: boolean, accelerationPool?: number): Promise<void> {
+  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
     // GBT optimization requires that uids never get too sparse
     // as a sanity check, we should also explicitly prevent uint32 uid overflow
     if (this.nextUid + added.length >= Math.min(Math.max(262144, 2 * mempoolSize), MAX_UINT32)) {
@@ -397,8 +397,7 @@ class MempoolBlocks {
 
     if (!this.rustInitialized) {
       // need to reset the worker
-      await this.$rustMakeBlockTemplates(newMempool, true, useAccelerations, accelerationPool);
-      return;
+      return this.$rustMakeBlockTemplates(newMempool, true, useAccelerations, accelerationPool);
     }
 
     const start = Date.now();
@@ -435,13 +434,15 @@ class MempoolBlocks {
       if (mempoolSize !== resultMempoolSize) {
         throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
       } else {
-        this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
+        const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
+        this.removeUids(removedUids);
+        logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+        return processed;
       }
-      this.removeUids(removedUids);
-      logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
     } catch (e) {
       logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
       this.resetRustGbt();
+      return this.mempoolBlocks;
     }
   }
 

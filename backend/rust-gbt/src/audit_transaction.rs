@@ -130,7 +130,7 @@ impl AuditTransaction {
             score: 0.0,
             used: false,
             modified: false,
-            dirty: effective_fee_per_vsize != tx.effective_fee_per_vsize,
+            dirty: effective_fee_per_vsize != tx.effective_fee_per_vsize || fee_delta > 0.0,
         }
     }
 
