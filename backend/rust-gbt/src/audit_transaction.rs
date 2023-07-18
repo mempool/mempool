@@ -1,6 +1,6 @@
 use crate::{
     u32_hasher_types::{u32hashset_new, U32HasherState},
-    ThreadTransaction,
+    ThreadTransaction, thread_acceleration::ThreadAcceleration,
 };
 use std::{
     cmp::Ordering,
@@ -88,37 +88,42 @@ impl Ord for AuditTransaction {
 }
 
 #[inline]
-fn calc_fee_rate(fee: f64, vsize: f64) -> f64 {
-    fee / (if vsize == 0.0 { 1.0 } else { vsize })
+fn calc_fee_rate(fee: u64, vsize: f64) -> f64 {
+    (fee as f64) / (if vsize == 0.0 { 1.0 } else { vsize })
 }
 
 impl AuditTransaction {
-    pub fn from_thread_transaction(tx: &ThreadTransaction) -> Self {
+    pub fn from_thread_transaction(tx: &ThreadTransaction, maybe_acceleration: Option<Option<&ThreadAcceleration>>) -> Self {
+        let fee_delta = match maybe_acceleration {
+            Some(Some(acceleration)) => acceleration.delta,
+            _ => 0.0
+        };
+        let fee = (tx.fee as u64) + (fee_delta as u64);
         // rounded up to the nearest integer
         let is_adjusted = tx.weight < (tx.sigops * 20);
         let sigop_adjusted_vsize = ((tx.weight + 3) / 4).max(tx.sigops * 5);
         let sigop_adjusted_weight = tx.weight.max(tx.sigops * 20);
-        let effective_fee_per_vsize = if is_adjusted {
-            calc_fee_rate(tx.fee, f64::from(sigop_adjusted_weight) / 4.0)
+        let effective_fee_per_vsize = if is_adjusted || fee_delta > 0.0 {
+            calc_fee_rate(fee, f64::from(sigop_adjusted_weight) / 4.0)
         } else {
             tx.effective_fee_per_vsize
         };
         Self {
             uid: tx.uid,
             order: tx.order,
-            fee: tx.fee as u64,
+            fee,
             weight: tx.weight,
             sigop_adjusted_weight,
             sigop_adjusted_vsize,
             sigops: tx.sigops,
-            adjusted_fee_per_vsize: calc_fee_rate(tx.fee, f64::from(sigop_adjusted_vsize)),
+            adjusted_fee_per_vsize: calc_fee_rate(fee, f64::from(sigop_adjusted_vsize)),
             effective_fee_per_vsize,
             dependency_rate: f64::INFINITY,
             inputs: tx.inputs.clone(),
             relatives_set_flag: false,
             ancestors: u32hashset_new(),
             children: u32hashset_new(),
-            ancestor_fee: tx.fee as u64,
+            ancestor_fee: fee,
             ancestor_sigop_adjusted_weight: sigop_adjusted_weight,
             ancestor_sigop_adjusted_vsize: sigop_adjusted_vsize,
             ancestor_sigops: tx.sigops,
@@ -156,7 +161,7 @@ impl AuditTransaction {
         // grows, so if we think of 0 as "grew infinitely" then dependency_rate would be
         // the smaller of the two. If either side is NaN, the other side is returned.
         self.dependency_rate.min(calc_fee_rate(
-            self.ancestor_fee as f64,
+            self.ancestor_fee,
             f64::from(self.ancestor_sigop_adjusted_weight) / 4.0,
         ))
     }
@@ -172,7 +177,7 @@ impl AuditTransaction {
     #[inline]
     fn calc_new_score(&mut self) {
         self.score = self.adjusted_fee_per_vsize.min(calc_fee_rate(
-            self.ancestor_fee as f64,
+            self.ancestor_fee,
             f64::from(self.ancestor_sigop_adjusted_vsize),
         ));
     }

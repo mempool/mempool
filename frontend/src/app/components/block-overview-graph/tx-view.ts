@@ -38,7 +38,7 @@ export default class TxView implements TransactionStripped {
   vsize: number;
   value: number;
   feerate: number;
-  acc?: number;
+  acc?: boolean;
   rate?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';

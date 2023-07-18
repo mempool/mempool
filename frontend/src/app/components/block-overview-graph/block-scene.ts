@@ -150,7 +150,7 @@ export default class BlockScene {
     this.updateAll(startTime, 200, direction);
   }
 
-  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     const startTime = performance.now();
     const removed = this.removeBatch(remove, startTime, direction);
 
