@@ -85,7 +85,6 @@ class BlocksAuditRepositories {
         rows[0].sigopTxs = JSON.parse(rows[0].sigopTxs);
         rows[0].fullrbfTxs = JSON.parse(rows[0].fullrbfTxs);
         rows[0].acceleratedTxs = JSON.parse(rows[0].acceleratedTxs);
-        rows[0].transactions = JSON.parse(rows[0].transactions);
         rows[0].template = JSON.parse(rows[0].template);
 
         return rows[0];

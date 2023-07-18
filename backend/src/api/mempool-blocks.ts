@@ -337,7 +337,8 @@ class MempoolBlocks {
     this.rustGbtGenerator = new GbtGenerator();
   }
 
-  private async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+  public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    console.log('$rustMakeBlockTemplates');
     const start = Date.now();
 
     // reset mempool short ids
@@ -569,7 +570,7 @@ class MempoolBlocks {
 
   private dataToMempoolBlocks(transactionIds: string[], transactions: MempoolTransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
     if (!feeStats) {
-      feeStats = Common.calcEffectiveFeeStatistics(transactions);
+      feeStats = Common.calcEffectiveFeeStatistics(transactions.filter(tx => !tx.acceleration));
     }
     return {
       blockSize: totalSize,

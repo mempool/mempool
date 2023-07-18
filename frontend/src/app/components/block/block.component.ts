@@ -347,6 +347,9 @@ export class BlockComponent implements OnInit, OnDestroy {
         if (blockAudit?.template) {
           for (const tx of blockAudit.template) {
             inTemplate[tx.txid] = true;
+            if (tx.acc) {
+              isAccelerated[tx.txid] = true;
+            }
           }
           for (const tx of transactions) {
             inBlock[tx.txid] = true;

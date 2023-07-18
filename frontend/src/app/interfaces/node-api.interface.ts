@@ -176,6 +176,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   rate?: number; // effective fee rate
+  acc?: boolean;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
