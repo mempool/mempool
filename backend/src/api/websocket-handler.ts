@@ -397,7 +397,7 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions, true,);
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions, config.MEMPOOL_SERVICES.ACCELERATIONS);
       } else {
         await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
@@ -661,7 +661,7 @@ class WebsocketHandler {
       const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
-      const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
+      const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL || isAccelerated;
       if (separateAudit) {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
@@ -675,7 +675,7 @@ class WebsocketHandler {
         }
       } else {
         if ((config.MEMPOOL_SERVICES.ACCELERATIONS && !isAccelerated)) {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated);
+          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, false);
         } else {
           projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
         }
