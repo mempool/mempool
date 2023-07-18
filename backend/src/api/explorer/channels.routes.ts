@@ -11,6 +11,7 @@ class ChannelsRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/search/:search', this.$searchChannelsById)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels/:short_id', this.$getChannel)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels', this.$getChannelsForNode)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/penalties', this.$getPenaltyClosedChannels)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels-geo', this.$getAllChannelsGeo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/channels-geo/:publicKey', this.$getAllChannelsGeo)
     ;
@@ -103,6 +104,18 @@ class ChannelsRoutes {
       }
 
       res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPenaltyClosedChannels(req: Request, res: Response): Promise<void> {
+    try {
+      const channels = await channelsApi.$getPenaltyClosedChannels();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(channels);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

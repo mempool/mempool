@@ -35,6 +35,7 @@ import { TxFeeRatingComponent } from '../components/tx-fee-rating/tx-fee-rating.
 import { ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '../components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '../components/fiat-selector/fiat-selector.component';
+import { RateUnitSelectorComponent } from '../components/rate-unit-selector/rate-unit-selector.component';
 import { ColoredPriceDirective } from './directives/colored-price.directive';
 import { NoSanitizePipe } from './pipes/no-sanitize.pipe';
 import { MempoolBlocksComponent } from '../components/mempool-blocks/mempool-blocks.component';
@@ -82,6 +83,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
 import { TimestampComponent } from './components/timestamp/timestamp.component';
@@ -95,6 +97,10 @@ import { MempoolBlockOverviewComponent } from '../components/mempool-block-overv
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
+import { CalculatorComponent } from '../components/calculator/calculator.component';
+import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
+
+import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 
 @NgModule({
   declarations: [
@@ -106,6 +112,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     TxFeeRatingComponent,
     LanguageSelectorComponent,
     FiatSelectorComponent,
+    RateUnitSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     NoSanitizePipe,
@@ -171,6 +178,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -179,11 +187,14 @@ import { ClockComponent } from '../components/clock/clock.component';
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
-
+    CalculatorComponent,
+    BitcoinsatoshisPipe,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
+    OnlyVsizeDirective,
+    OnlyWeightDirective
   ],
   imports: [
     CommonModule,
@@ -200,6 +211,7 @@ import { ClockComponent } from '../components/clock/clock.component';
   ],
   providers: [
     VbytesPipe,
+    WuBytesPipe,
     RelativeUrlPipe,
     NoSanitizePipe,
     ShortenStringPipe,
@@ -225,6 +237,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     TxFeeRatingComponent,
     LanguageSelectorComponent,
     FiatSelectorComponent,
+    RateUnitSelectorComponent,
     ScriptpubkeyTypePipe,
     RelativeUrlPipe,
     Hex2asciiPipe,
@@ -284,6 +297,7 @@ import { ClockComponent } from '../components/clock/clock.component';
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
     TimestampComponent,
@@ -297,6 +311,9 @@ import { ClockComponent } from '../components/clock/clock.component';
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
+
+    OnlyVsizeDirective,
+    OnlyWeightDirective
   ]
 })
 export class SharedModule {

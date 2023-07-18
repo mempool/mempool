@@ -30,7 +30,9 @@
     "RUST_GBT": false,
     "CPFP_INDEXING": true,
     "MAX_BLOCKS_BULK_QUERY": 999,
-    "DISK_CACHE_BLOCK_INTERVAL": 999
+    "DISK_CACHE_BLOCK_INTERVAL": 999,
+    "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
+    "ALLOW_UNREACHABLE": true
   },
   "CORE_RPC": {
     "HOST": "__CORE_RPC_HOST__",
@@ -119,5 +121,11 @@
   },
   "CLIGHTNING": {
     "SOCKET": "__CLIGHTNING_SOCKET__"
+  },
+  "REPLICATION": {
+    "ENABLED": false,
+    "AUDIT": false,
+    "AUDIT_START_HEIGHT": 774000,
+    "SERVERS": []
   }
 }
