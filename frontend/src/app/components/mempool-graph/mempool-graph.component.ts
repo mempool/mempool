@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { VbytesPipe } from '../../shared/pipes/bytes-pipe/vbytes.pipe';
+import { WuBytesPipe } from '../../shared/pipes/bytes-pipe/wubytes.pipe';
 import { formatNumber } from '@angular/common';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from '../../services/state.service';
@@ -48,9 +49,11 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   chartColorsOrdered = chartColors;
   inverted: boolean;
   chartInstance: any = undefined;
+  weightMode: boolean = false;
 
   constructor(
     private vbytesPipe: VbytesPipe,
+    private wubytesPipe: WuBytesPipe,
     private stateService: StateService,
     private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,

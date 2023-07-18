@@ -14,11 +14,15 @@
           <tbody>
             <tr>
               <td i18n="mempool-block.median-fee">Median fee</td>
-              <td>~{{ mempoolBlock.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span> <span class="fiat"><app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
+              <td>~<app-fee-rate [fee]="mempoolBlock.medianFee" rounding="1.0-0"></app-fee-rate> <span class="fiat"><app-fiat [value]="mempoolBlock.medianFee * 140" digitsInfo="1.2-2" i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes" placement="bottom"></app-fiat></span></td>
             </tr>
             <tr>
               <td i18n="mempool-block.fee-span">Fee span</td>
-              <td><span class="yellow-color">{{ mempoolBlock.feeRange[0] | number:'1.0-0' }} - {{ mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1] | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+              <td><span class="yellow-color">
+                <app-fee-rate [fee]="mempoolBlock.feeRange[0]" [showUnit]="false" rounding="1.0-0"></app-fee-rate>
+                -
+                <app-fee-rate [fee]="mempoolBlock.feeRange[mempoolBlock.feeRange.length - 1]" rounding="1.0-0"></app-fee-rate>
+              </span></td>
             </tr>
             <tr>
               <td i18n="block.total-fees|Total fees in a block">Total fees</td>

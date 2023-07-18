@@ -17,7 +17,6 @@ export class RbfList implements OnInit, OnDestroy {
   rbfTrees$: Observable<RbfTree[]>;
   nextRbfSubject = new BehaviorSubject(null);
   urlFragmentSubscription: Subscription;
-  fullRbfEnabled: boolean;
   fullRbf: boolean;
   isLoading = true;
 
@@ -27,9 +26,7 @@ export class RbfList implements OnInit, OnDestroy {
     private apiService: ApiService,
     public stateService: StateService,
     private websocketService: WebsocketService,
-  ) {
-    this.fullRbfEnabled = stateService.env.FULL_RBF_ENABLED;
-  }
+  ) { }
 
   ngOnInit(): void {
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {

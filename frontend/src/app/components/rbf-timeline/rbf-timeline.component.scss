@@ -83,15 +83,26 @@
       transform: translateY(-50%);
       background: #105fb0;
       border-radius: 5px;
+
+      &.left {
+        right: 50%;
+      }
+      &.right {
+        left: 50%;
+      }
+
+      &.fullrbf {
+        background: #1bd8f4;
+      }
     }
     &.first-node {
-      .track {
-        left: 50%;
+      .track.left {
+        display: none;
       }
     }
     &:last-child {
-      .track {
-        right: 50%;
+      .track.right {
+        display: none;
       }
     }
   }
@@ -124,11 +135,6 @@
         &.rbf, &.rbf .shape {
           border-radius: 50%;
         }
-      }
-
-      .symbol::ng-deep {
-        display: block;
-        margin-top: -0.5em;
       }
 
       &.selected {
@@ -182,11 +188,17 @@
         height: 108px;
         bottom: 50%;
         border-right: solid 10px #105fb0;
+        &.fullrbf {
+          border-right: solid 10px #1bd8f4;
+        }
       }
 
       .corner {
         border-bottom: solid 10px #105fb0;
         border-bottom-right-radius: 10px;
+        &.fullrbf {
+          border-bottom: solid 10px #1bd8f4;
+        }
       }
     }
   }

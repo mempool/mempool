@@ -169,6 +169,7 @@ class Server {
   }
 
   async runMainUpdateLoop(): Promise<void> {
+    const start = Date.now();
     try {
       try {
         await memPool.$updateMemPoolInfo();
@@ -188,7 +189,9 @@ class Server {
       indexer.$run();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
-      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 1 : config.MEMPOOL.POLL_RATE_MS);
+      const elapsed = Date.now() - start;
+      const remainingTime = Math.max(0, config.MEMPOOL.POLL_RATE_MS - elapsed)
+      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
       this.backendRetryCount = 0;
     } catch (e: any) {
       this.backendRetryCount++;

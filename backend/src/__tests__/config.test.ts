@@ -40,9 +40,12 @@ describe('Mempool Backend Config', () => {
         AUDIT: false,
         ADVANCED_GBT_AUDIT: false,
         ADVANCED_GBT_MEMPOOL: false,
+        RUST_GBT: false,
         CPFP_INDEXING: false,
         MAX_BLOCKS_BULK_QUERY: 0,
         DISK_CACHE_BLOCK_INTERVAL: 6,
+        MAX_PUSH_TX_SIZE_WEIGHT: 400000,
+        ALLOW_UNREACHABLE: true,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
@@ -116,6 +119,13 @@ describe('Mempool Backend Config', () => {
         GEOLITE2_CITY: '/usr/local/share/GeoIP/GeoLite2-City.mmdb',
         GEOLITE2_ASN: '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
         GEOIP2_ISP: '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
+      });
+
+      expect(config.REPLICATION).toStrictEqual({
+        ENABLED: false,
+        AUDIT: false,
+        AUDIT_START_HEIGHT: 774000,
+        SERVERS: []
       });
     });
   });
