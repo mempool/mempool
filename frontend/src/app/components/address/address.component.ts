@@ -207,7 +207,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
-    this.electrsApiService.getAddressTransactionsFromHash$(this.address.address, this.lastTransactionTxId)
+    this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;
@@ -217,6 +217,10 @@ export class AddressComponent implements OnInit, OnDestroy {
       (error) => {
         this.isLoadingTransactions = false;
         this.retryLoadMore = true;
+        // In the unlikely event of the txid wasn't found in the mempool anymore and we must reload the page.
+        if (error.status === 422) {
+          window.location.reload();
+        }
       });
   }
 

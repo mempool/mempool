@@ -1,6 +1,10 @@
 <div class="container-xl" (window:resize)="onResize($event)">
 
   <div class="title-block" [class.time-ltr]="timeLtr" id="block">
+    <div *ngIf="block?.stale" class="alert alert-mempool" role="alert">
+      <span i18n="block.reorged|Block reorg" class="alert-text">This block does not belong to the main chain, it has been replaced by:</span>
+      <app-truncate [text]="block.canonical" [lastChars]="12" [link]="['/block/' | relativeUrl, block.canonical]" [maxWidth]="480"></app-truncate>
+    </div>
     <h1>
       <ng-container *ngIf="blockHeight == null || blockHeight > 0; else genesis" i18n="shared.block-title">Block</ng-container>
       <ng-template #genesis i18n="@@2303359202781425764">Genesis</ng-template>
@@ -22,6 +26,8 @@
     </h1>
 
     <div class="grow"></div>
+
+    <button *ngIf="block?.stale" type="button" class="btn btn-sm btn-danger container-button" i18n="block.stale|Stale block state">Stale</button>
 
     <button [routerLink]="['/' | relativeUrl]" class="btn btn-sm">&#10005;</button>
   </div>
@@ -94,7 +100,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-sm">
+      <div class="col-sm" [class.graph-col]="webGlEnabled && !showAudit">
         <table class="table table-borderless table-striped" *ngIf="!isMobile && !(webGlEnabled && !showAudit)">
           <tbody>
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
@@ -104,7 +110,7 @@
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="isLoadingOverview"
-            [resolution]="75"
+            [resolution]="86"
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
             [flip]="false"
@@ -121,11 +127,11 @@
     <ng-container *ngIf="!isLoadingBlock; else loadingRest">
       <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
         <td i18n="mempool-block.fee-span">Fee span</td>
-        <td><span>{{ block?.extras?.minFee | number:'1.0-0' }} - {{ block?.extras?.maxFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></span></td>
+        <td><app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0"></app-fee-rate> - <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0"></app-fee-rate></td>
       </tr>
       <tr *ngIf="block?.extras?.medianFee != undefined">
         <td class="td-width" i18n="block.median-fee">Median fee</td>
-        <td>~{{ block?.extras?.medianFee | number:'1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+        <td>~<app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate>
           <span class="fiat">
             <app-fiat [blockConversion]="blockConversion" [value]="block?.extras?.medianFee * 140" digitsInfo="1.2-2"
               i18n-ngbTooltip="Transaction fee tooltip" ngbTooltip="Based on average native segwit transaction of 140 vBytes"
@@ -221,7 +227,7 @@
       <div class="col-sm">
         <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container> <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="75"
+          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
@@ -233,7 +239,7 @@
       <div class="col-sm" *ngIf="!isMobile">
         <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="75"
+          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>

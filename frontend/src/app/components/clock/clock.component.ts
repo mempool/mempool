@@ -60,14 +60,11 @@ export class ClockComponent implements OnInit {
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks']);
 
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        if (block) {
-          this.blocks.unshift(block);
-          this.blocks = this.blocks.slice(0, 16);
-          if (this.blocks[this.blockIndex]) {
-            this.blockStyle = this.getStyleForBlock(this.blocks[this.blockIndex]);
-            this.cd.markForCheck();
-          }
+      .subscribe((blocks) => {
+        this.blocks = blocks.slice(0, 16);
+        if (this.blocks[this.blockIndex]) {
+          this.blockStyle = this.getStyleForBlock(this.blocks[this.blockIndex]);
+          this.cd.markForCheck();
         }
       });
 

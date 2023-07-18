@@ -12,7 +12,7 @@ import { Common } from './common';
 import loadingIndicators from './loading-indicators';
 import config from '../config';
 import transactionUtils from './transaction-utils';
-import rbfCache from './rbf-cache';
+import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
 import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
@@ -40,6 +40,7 @@ class WebsocketHandler {
 
   private socketData: { [key: string]: string } = {};
   private serializedInitData: string = '{}';
+  private lastRbfSummary: ReplacementInfo | null = null;
 
   constructor() { }
 
@@ -225,8 +226,19 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-rbf-summary'] != null) {
+            if (parsedMessage['track-rbf-summary']) {
+              client['track-rbf-summary'] = true;
+              if (this.socketData['rbfSummary'] != null) {
+                response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              }
+            } else {
+              client['track-rbf-summary'] = false;
+            }
+          }
+
           if (parsedMessage.action === 'init') {
-            if (!this.socketData['blocks']?.length || !this.socketData['da']) {
+            if (!this.socketData['blocks']?.length || !this.socketData['da'] || !this.socketData['backendInfo'] || !this.socketData['conversions']) {
               this.updateSocketData();
             }
             if (!this.socketData['blocks']?.length) {
@@ -333,7 +345,41 @@ class WebsocketHandler {
     });
   }
 
-  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended },
+  handleReorg(): void {
+    if (!this.wss) {
+      throw new Error('WebSocket.Server is not set');
+    }
+
+    const da = difficultyAdjustment.getDifficultyAdjustment();
+
+    // update init data
+    this.updateSocketDataFields({
+      'blocks': blocks.getBlocks(),
+      'da': da?.previousTime ? da : undefined,
+    });
+
+    this.wss.clients.forEach((client) => {
+      if (client.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
+      const response = {};
+
+      if (client['want-blocks']) {
+        response['blocks'] = this.socketData['blocks'];
+      }
+      if (client['want-stats']) {
+        response['da'] = this.socketData['da'];
+      }
+
+      if (Object.keys(response).length) {
+        const serializedResponse = this.serializeResponse(response);
+        client.send(serializedResponse);
+      }
+    });
+  }
+
+  async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
@@ -342,7 +388,11 @@ class WebsocketHandler {
     this.printLogs();
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+      if (config.MEMPOOL.RUST_GBT) {
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
+      } else {
+        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+      }
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
     }
@@ -357,10 +407,13 @@ class WebsocketHandler {
     const rbfChanges = rbfCache.getRbfChanges();
     let rbfReplacements;
     let fullRbfReplacements;
+    let rbfSummary;
     if (Object.keys(rbfChanges.trees).length) {
       rbfReplacements = rbfCache.getRbfTrees(false);
       fullRbfReplacements = rbfCache.getRbfTrees(true);
+      rbfSummary = rbfCache.getLatestRbfSummary();
     }
+
     for (const deletedTx of deletedTransactions) {
       rbfCache.evict(deletedTx.txid);
     }
@@ -368,10 +421,10 @@ class WebsocketHandler {
     memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
-    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+    const latestTransactions = memPool.getLatestTransactions();
 
     // update init data
-    this.updateSocketDataFields({
+    const socketDataFields = {
       'mempoolInfo': mempoolInfo,
       'vBytesPerSecond': vBytesPerSecond,
       'mempool-blocks': mBlocks,
@@ -379,7 +432,11 @@ class WebsocketHandler {
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
       'fees': recommendedFees,
-    });
+    };
+    if (rbfSummary) {
+      socketDataFields['rbfSummary'] = rbfSummary;
+    }
+    this.updateSocketDataFields(socketDataFields);
 
     // cache serialized objects to avoid stringify-ing the same thing for every client
     const responseCache = { ...this.socketData };
@@ -563,6 +620,10 @@ class WebsocketHandler {
         response['rbfLatest'] = getCachedResponse('fullrbfLatest', fullRbfReplacements);
       }
 
+      if (client['track-rbf-summary'] && rbfSummary) {
+        response['rbfLatestSummary'] = getCachedResponse('rbfLatestSummary', rbfSummary);
+      }
+
       if (Object.keys(response).length) {
         const serializedResponse = this.serializeResponse(response);
         client.send(serializedResponse);
@@ -570,7 +631,7 @@ class WebsocketHandler {
     });
   }
  
-  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: TransactionExtended[]): Promise<void> {
+  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -578,6 +639,10 @@ class WebsocketHandler {
     this.printLogs();
 
     const _memPool = memPool.getMempool();
+
+    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
+    memPool.handleMinedRbfTransactions(rbfTransactions);
+    memPool.removeFromSpendMap(transactions);
 
     if (config.MEMPOOL.AUDIT) {
       let projectedBlocks;
@@ -588,7 +653,11 @@ class WebsocketHandler {
       if (separateAudit) {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
-          projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          if (config.MEMPOOL.RUST_GBT) {
+            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool);
+          } else {
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+          }
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
@@ -597,7 +666,7 @@ class WebsocketHandler {
       }
 
       if (Common.indexingEnabled() && memPool.isInSync()) {
-        const { censored, added, fresh, sigop, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, fresh, sigop, fullrbf, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
@@ -625,6 +694,7 @@ class WebsocketHandler {
           missingTxs: censored,
           freshTxs: fresh,
           sigopTxs: sigop,
+          fullrbfTxs: fullrbf,
           matchRate: matchRate,
           expectedFees: totalFees,
           expectedWeight: totalWeight,
@@ -644,10 +714,6 @@ class WebsocketHandler {
       }
     }
 
-    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
-    memPool.handleMinedRbfTransactions(rbfTransactions);
-    memPool.removeFromSpendMap(transactions);
-
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
@@ -655,7 +721,11 @@ class WebsocketHandler {
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
-      await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      if (config.MEMPOOL.RUST_GBT) {
+        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
+      } else {
+        await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+      }
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
     }

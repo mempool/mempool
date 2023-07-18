@@ -41,8 +41,23 @@ class LndApi implements AbstractLightningApi {
   }
 
   async $getNetworkGraph(): Promise<ILightningApi.NetworkGraph> {
-    return axios.get<ILightningApi.NetworkGraph>(config.LND.REST_API_URL + '/v1/graph', this.axiosConfig)
+    const graph = await axios.get<ILightningApi.NetworkGraph>(config.LND.REST_API_URL + '/v1/graph', this.axiosConfig)
       .then((response) => response.data);
+
+    for (const node of graph.nodes) {
+      const nodeFeatures: ILightningApi.Feature[] = [];
+      for (const bit in node.features) {        
+        nodeFeatures.push({
+          bit: parseInt(bit, 10),
+          name: node.features[bit].name,  
+          is_required: node.features[bit].is_required,
+          is_known: node.features[bit].is_known,
+        });
+      }
+      node.features = nodeFeatures;
+    }
+
+    return graph;
   }
 }
 
