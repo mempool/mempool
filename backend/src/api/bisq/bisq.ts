@@ -7,7 +7,6 @@ import { SocksProxyAgent } from 'socks-proxy-agent';
 import { BisqBlocks, BisqBlock, BisqTransaction, BisqStats, BisqTrade } from './interfaces';
 import { Common } from '../common';
 import { BlockExtended } from '../../mempool.interfaces';
-import { StaticPool } from 'node-worker-threads-pool';
 import backendInfo from '../backend-info';
 import logger from '../../logger';
 
@@ -31,10 +30,6 @@ class Bisq {
   private priceUpdateCallbackFunction: ((price: number) => void) | undefined;
   private topDirectoryWatcher: fs.FSWatcher | undefined;
   private subdirectoryWatcher: fs.FSWatcher | undefined;
-  private jsonParsePool = new StaticPool({
-    size: 4,
-    task: (blob: string) => JSON.parse(blob),
-  });
 
   constructor() {}
 

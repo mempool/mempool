@@ -1,0 +1,52 @@
+.container-xl {
+  max-width: 1400px;
+}
+.container-xl.widget {
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-bottom: 0px;
+}
+
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.7rem !important;
+}
+
+.clear-link {
+  color: white;
+}
+
+.pool {
+  width: 15%;
+  @media (max-width: 575px) {
+    width: 75%;
+  }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+.pool-name {
+  display: inline-block;
+  vertical-align: text-top;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.liquidity {
+  width: 10%;
+  @media (max-width: 575px) {
+    width: 25%;
+  }
+}
+
+.fiat {
+  width: 15%;
+  @media (min-width: 768px) and (max-width: 991px) {
+    display: none !important;
+  }
+  @media (max-width: 575px) {
+    display: none !important;
+  }
+}

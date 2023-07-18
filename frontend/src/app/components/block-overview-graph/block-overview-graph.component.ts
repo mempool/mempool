@@ -6,6 +6,8 @@ import TxSprite from './tx-sprite';
 import TxView from './tx-view';
 import { Position } from './sprite-types';
 import { Price } from '../../services/price.service';
+import { StateService } from '../../services/state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -23,7 +25,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
   @Input() blockConversion: Price;
-  @Input() pixelAlign: boolean = false;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
@@ -44,16 +45,25 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   scene: BlockScene;
   hoverTx: TxView | void;
   selectedTx: TxView | void;
+  highlightTx: TxView | void;
   mirrorTx: TxView | void;
   tooltipPosition: Position;
 
   readyNextFrame = false;
 
+  searchText: string;
+  searchSubscription: Subscription;
+
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
+    private stateService: StateService,
   ) {
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
+    this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
+      this.searchText = text;
+      this.updateSearchHighlight();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -109,6 +119,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.scene.setup(transactions);
       this.readyNextFrame = true;
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -116,6 +127,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.enter(transactions, direction);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -123,6 +135,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.exit(direction);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -130,6 +143,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.replace(transactions || [], direction, sort);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -137,6 +151,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (this.scene) {
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
+      this.updateSearchHighlight();
     }
   }
 
@@ -203,7 +218,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
-        highlighting: this.auditHighlighting, pixelAlign: this.pixelAlign });
+        highlighting: this.auditHighlighting });
       this.start();
     }
   }
@@ -403,6 +418,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.mirrorTx = this.scene.txs[txid];
       this.scene.setHover(this.mirrorTx, true);
       this.start();
+    }
+  }
+
+  updateSearchHighlight(): void {
+    if (this.highlightTx && this.highlightTx.txid !== this.searchText && this.scene) {
+      this.scene.setHighlight(this.highlightTx, false);
+      this.start();
+    } else if (this.scene?.txs && this.searchText && this.searchText.length === 64) {
+      this.highlightTx = this.scene.txs[this.searchText];
+      if (this.highlightTx) {
+        this.scene.setHighlight(this.highlightTx, true);
+        this.start();
+      }
     }
   }
 
