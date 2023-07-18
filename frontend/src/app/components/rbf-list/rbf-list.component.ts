@@ -53,25 +53,6 @@ export class RbfList implements OnInit, OnDestroy {
     );
   }
 
-  toggleFullRbf(event) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      fragment: this.fullRbf ? null : 'fullrbf'
-    });
-  }
-
-  isFullRbf(tree: RbfTree): boolean {
-    return tree.fullRbf;
-  }
-
-  isMined(tree: RbfTree): boolean {
-    return tree.mined;
-  }
-
-  // pageChange(page: number) {
-  //   this.fromTreeSubject.next(this.lastTreeId);
-  // }
-
   ngOnDestroy(): void {
     this.websocketService.stopTrackRbf();
   }
