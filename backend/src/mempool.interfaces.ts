@@ -100,6 +100,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   adjustedVsize: number;
   adjustedFeePerVsize: number;
   inputs?: number[];
+  lastBoosted?: number;
 }
 
 export interface AuditTransaction {
@@ -234,6 +235,15 @@ export interface BlockExtended extends IEsploraApi.Block {
 export interface BlockSummary {
   id: string;
   transactions: TransactionStripped[];
+}
+
+export interface AuditSummary extends BlockAudit {
+  timestamp?: number,
+  size?: number,
+  weight?: number,
+  tx_count?: number,
+  transactions: TransactionStripped[];
+  template?: TransactionStripped[];
 }
 
 export interface BlockPrice {

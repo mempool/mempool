@@ -121,5 +121,11 @@
   },
   "CLIGHTNING": {
     "SOCKET": "__CLIGHTNING_SOCKET__"
+  },
+  "REPLICATION": {
+    "ENABLED": false,
+    "AUDIT": false,
+    "AUDIT_START_HEIGHT": 774000,
+    "SERVERS": []
   }
 }

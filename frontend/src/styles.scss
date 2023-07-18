@@ -45,8 +45,8 @@ $dropdown-link-hover-bg: #11131f;
 $dropdown-link-active-color: #fff;
 $dropdown-link-active-bg: #11131f;
 
-@import "~bootstrap/scss/bootstrap";
-@import '~tlite/tlite.css';
+@import "bootstrap/scss/bootstrap";
+@import 'tlite/tlite.css';
 
 html, body {
   height: 100%;
@@ -1163,4 +1163,11 @@ app-master-page, app-liquid-master-page, app-bisq-master-page {
 
 app-global-footer {
   margin-top: auto;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 0.5;
+  border-radius: 0.2rem;
 }

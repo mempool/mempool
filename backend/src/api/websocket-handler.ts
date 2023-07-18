@@ -229,14 +229,16 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-rbf-summary'] != null) {
             if (parsedMessage['track-rbf-summary']) {
               client['track-rbf-summary'] = true;
-              response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              if (this.socketData['rbfSummary'] != null) {
+                response['rbfLatestSummary'] = this.socketData['rbfSummary'];
+              }
             } else {
               client['track-rbf-summary'] = false;
             }
           }
 
           if (parsedMessage.action === 'init') {
-            if (!this.socketData['blocks']?.length || !this.socketData['da']) {
+            if (!this.socketData['blocks']?.length || !this.socketData['da'] || !this.socketData['backendInfo'] || !this.socketData['conversions']) {
               this.updateSocketData();
             }
             if (!this.socketData['blocks']?.length) {
@@ -419,7 +421,7 @@ class WebsocketHandler {
     memPool.addToSpendMap(newTransactions);
     const recommendedFees = feeApi.getRecommendedFee();
 
-    const latestTransactions = newTransactions.slice(0, 6).map((tx) => Common.stripTransaction(tx));
+    const latestTransactions = memPool.getLatestTransactions();
 
     // update init data
     const socketDataFields = {
