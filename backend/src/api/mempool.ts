@@ -9,7 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
-import accelerationApi from './services/acceleration';
+import accelerationApi, { Acceleration } from './services/acceleration';
 
 class Mempool {
   private inSync: boolean = false;

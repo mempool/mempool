@@ -64,7 +64,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
       return;
     }
     const samples = [];
-    const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
+    const txs = this.transactions.filter(tx => !tx.acc).map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
     const maxBlockVSize = this.stateService.env.BLOCK_WEIGHT_UNITS / 4;
     const sampleInterval = maxBlockVSize / this.numSamples;
     let cumVSize = 0;

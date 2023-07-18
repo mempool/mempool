@@ -174,7 +174,7 @@ class WebsocketHandler {
               }
               const tx = memPool.getMempool()[trackTxid];
               if (tx && tx.position) {
-                const position: { block: number, vsize: number, accelerated?: number } = {
+                const position: { block: number, vsize: number, accelerated?: boolean } = {
                   ...tx.position
                 };
                 if (tx.acceleration) {
@@ -397,7 +397,7 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions, true,);
       } else {
         await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
@@ -666,7 +666,7 @@ class WebsocketHandler {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
           if (config.MEMPOOL.RUST_GBT) {
-            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool);
+            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool, isAccelerated, block.extras.pool.id);
           } else {
             projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
           }
@@ -739,7 +739,7 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions, true);
       } else {
         await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }

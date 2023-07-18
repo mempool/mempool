@@ -147,7 +147,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
