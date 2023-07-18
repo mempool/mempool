@@ -6,6 +6,8 @@ If you are looking to use these Docker images to deploy your own instance of Mem
 
 See a video guide of this installation method by k3tan [on BitcoinTV.com](https://bitcointv.com/w/8fpAx6rf5CQ16mMhospwjg).
 
+**We only provide support for this installation method to <a href="https://mempool.space/enterprise">Enterprise sponsors</a>.**
+
 Jump to a section in this doc:
 - [Configure with Bitcoin Core Only](#configure-with-bitcoin-core-only)
 - [Configure with Bitcoin Core + Electrum Server](#configure-with-bitcoin-core--electrum-server)

@@ -2,7 +2,9 @@
 
 These instructions are mostly intended for developers. 
 
-If you choose to use these instructions for a production setup, be aware that you will still probably need to do additional configuration for your specific OS, environment, use-case, etc. We do our best here to provide a good starting point, but only proceed if you know what you're doing. Mempool does not provide support for custom setups.
+If you choose to use these instructions for a production setup, be aware that you will still probably need to do additional configuration for your specific OS, environment, use-case, etc. We do our best here to provide a good starting point, but only proceed if you know what you're doing.
+
+**We only provide support for this installation method to <a href="https://mempool.space/enterprise">Enterprise sponsors</a>.**
 
 See other ways to set up Mempool on [the main README](/../../#installation-methods).
 
