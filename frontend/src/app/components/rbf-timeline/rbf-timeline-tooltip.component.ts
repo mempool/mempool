@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
-import { RbfInfo } from '../../interfaces/node-api.interface';
+import { RbfTree } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-rbf-timeline-tooltip',
@@ -7,7 +7,7 @@ import { RbfInfo } from '../../interfaces/node-api.interface';
   styleUrls: ['./rbf-timeline-tooltip.component.scss'],
 })
 export class RbfTimelineTooltipComponent implements OnChanges {
-  @Input() rbfInfo: RbfInfo | void;
+  @Input() rbfInfo: RbfTree | null;
   @Input() cursorPosition: { x: number, y: number };
 
   tooltipPosition = null;

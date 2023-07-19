@@ -73,7 +73,7 @@
                           {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
                         </ng-template>
                         <div>
-                          <app-address-labels [vin]="vin" [channel]="tx._channels && tx._channels.inputs[vindex] || null"></app-address-labels>
+                          <app-address-labels [vin]="vin" [channel]="tx._channels && tx._channels.inputs[vindex] ? tx._channels.inputs[vindex] : null"></app-address-labels>
                         </div>
                       </ng-template>
                     </ng-container>

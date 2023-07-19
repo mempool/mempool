@@ -1,0 +1,30 @@
+.input-group-text {
+  width: 75px;
+}
+
+.bitcoin-satoshis-text {
+  font-size: 40px;
+}
+
+.fiat-text {
+  font-size: 24px;
+}
+
+.symbol {
+  font-style: italic;
+}
+
+@media (max-width: 767.98px) {
+  .bitcoin-satoshis-text {
+    font-size: 30px;
+  }
+}
+
+.sats {
+  font-size: 20px;
+  margin-left: 5px;
+}
+
+.row {
+  margin: auto;
+}

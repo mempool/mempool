@@ -175,39 +175,43 @@
   height: 18px;
 }
 
-.lastest-blocks-table {
+.lastest-replacements-table {
   width: 100%;
   text-align: left;
+  table-layout:fixed;
   tr, td, th {
     border: 0px;
-    padding-top: 0.65rem !important;
-    padding-bottom: 0.7rem !important;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
   }
-  .table-cell-height {
-    width: 15%;
+  td {
+    overflow:hidden;
+    width: 25%;
   }
-  .table-cell-mined {
-    width: 35%;
-    text-align: left;
+  .table-cell-txid {
+    width: 25%;
+    text-align: start;
   }
-  .table-cell-transaction-count {
-    display: none;
-    text-align: right;
-    width: 20%;
-    display: table-cell;
-  }
-  .table-cell-size {
-    display: none;
-    text-align: center;
-    width: 30%;
-    @media (min-width: 485px) {
-      display: table-cell;
-    }
-    @media (min-width: 768px) {
+  .table-cell-old-fee {
+    width: 25%;
+    text-align: end;
+
+    @media(max-width: 1080px) {
       display: none;
     }
-    @media (min-width: 992px) {
-      display: table-cell;
+  }
+  .table-cell-new-fee {
+    width: 20%;
+    text-align: end;
+  }
+  .table-cell-badges {
+    width: 23%;
+    padding-right: 0;
+    padding-left: 5px;
+    text-align: end;
+
+    .badge {
+      margin-left: 5px;
     }
   }
 }

@@ -19,6 +19,7 @@
 
       <div class="container-buttons">
         <app-confirmations
+          *ngIf="tx"
           [chainTip]="latestBlock?.height"
           [height]="tx?.status?.block_height"
           [replaced]="replaced"
@@ -306,7 +307,7 @@
 
   </ng-template>
 
-  <ng-template [ngIf]="isLoadingTx && !error">
+  <ng-template [ngIf]="(isLoadingTx && !error) || loadingCachedTx">
 
     <div class="box">
       <div class="row">
@@ -451,7 +452,7 @@
 
   </ng-template>
 
-  <ng-template [ngIf]="error">
+  <ng-template [ngIf]="error && !loadingCachedTx">
 
     <div class="text-center" *ngIf="waitingForTransaction; else errorTemplate">
       <h3 i18n="transaction.error.transaction-not-found">Transaction not found.</h3>

@@ -12,7 +12,7 @@ import {
   tap
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, timer, from, throwError } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -39,6 +39,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
+  loadingCachedTx = false;
   waitingForTransaction = false;
   latestBlock: BlockExtended;
   transactionTime = -1;
@@ -49,10 +50,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txReplacedSubscription: Subscription;
   txRbfInfoSubscription: Subscription;
   mempoolPositionSubscription: Subscription;
-  blocksSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   mempoolBlocksSubscription: Subscription;
+  blocksSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -131,6 +132,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.outputIndex = (!isNaN(vout) && vout >= 0) ? vout : null;
     });
 
+    this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
+      this.latestBlock = blocks[0];
+    });
+
     this.fetchCpfpSubscription = this.fetchCpfp$
       .pipe(
         switchMap((txId) =>
@@ -199,6 +204,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.fetchCachedTxSubscription = this.fetchCachedTx$
     .pipe(
+      tap(() => {
+        this.loadingCachedTx = true;
+      }),
       switchMap((txId) =>
         this.apiService
           .getRbfCachedTx$(txId)
@@ -207,6 +215,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         return of(null);
       })
     ).subscribe((tx) => {
+      this.loadingCachedTx = false;
       if (!tx) {
         return;
       }
@@ -338,6 +347,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
+          this.loadingCachedTx = false;
           this.waitingForTransaction = false;
           this.websocketService.startTrackTransaction(tx.txid);
           this.graphExpanded = false;
@@ -369,7 +379,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               };
-              const hasRelatives = !!(tx.ancestors.length || tx.bestDescendant);
+              const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
               this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
               this.fetchCpfp$.next(this.tx.txid);
@@ -391,9 +401,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
 
-    this.blocksSubscription = this.stateService.blocks$.subscribe(([block, txConfirmed]) => {
-      this.latestBlock = block;
-
+    this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
@@ -409,6 +417,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txReplacedSubscription = this.stateService.txReplaced$.subscribe((rbfTransaction) => {
       if (!this.tx) {
         this.error = new Error();
+        this.loadingCachedTx = false;
         this.waitingForTransaction = false;
       }
       this.rbfTransaction = rbfTransaction;
@@ -593,13 +602,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCachedTxSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.txRbfInfoSubscription.unsubscribe();
-    this.blocksSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
+    this.blocksSubscription.unsubscribe();
     this.leaveTransaction();
   }
 }
