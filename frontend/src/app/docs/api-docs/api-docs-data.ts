@@ -8936,8 +8936,8 @@ export const faqData = [
     type: "endpoint",
     category: "self-hosting",
     showConditions: bitcoinNetworks,
-    fragment: "host-my-own-instance-linux-server",
-    title: "How can I host my own instance on a Linux server?",
+    fragment: "host-my-own-instance-server",
+    title: "How can I host a Mempool instance on my own server?",
   },
   {
     type: "endpoint",
