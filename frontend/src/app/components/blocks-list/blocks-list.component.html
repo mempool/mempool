@@ -13,12 +13,12 @@
         <th *ngIf="indexingAvailable" class="pool text-left" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}" i18n="mining.pool-name"
           i18n-ngbTooltip="mining.pool-name" ngbTooltip="Pool" placement="bottom" #miningpool [disableTooltip]="!isEllipsisActive(miningpool)">Pool</th>
         <th class="timestamp" i18n="latest-blocks.timestamp" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Timestamp</th>
-        <th class="mined" i18n="latest-blocks.mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">Mined</th>
         <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.health" ngbTooltip="Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Health</th>
         <th *ngIf="indexingAvailable" class="reward text-right" i18n="latest-blocks.reward" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="latest-blocks.reward" ngbTooltip="Reward" placement="bottom" #reward [disableTooltip]="!isEllipsisActive(reward)">Reward</th>
         <th *ngIf="indexingAvailable && !widget" class="fees text-right" i18n="latest-blocks.fees" [class]="indexingAvailable ? '' : 'legacy'">Fees</th>
+        <th *ngIf="auditAvailable && !widget" class="fee-delta" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"></th>
         <th *ngIf="indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}"
           i18n-ngbTooltip="dashboard.txs" ngbTooltip="TXs" placement="bottom" #txs [disableTooltip]="!isEllipsisActive(txs)">TXs</th>
         <th *ngIf="!indexingAvailable" class="txs text-right" i18n="dashboard.txs" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">Transactions</th>
@@ -42,26 +42,18 @@
           <td class="timestamp" *ngIf="!widget" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
           </td>
-          <td class="mined" *ngIf="!widget" [class]="indexingAvailable ? '' : 'legacy'">
-            <app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time>
-          </td>
           <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             <a
+              *ngIf="block?.extras?.matchRate != null; else nullHealth"
               class="health-badge badge"
-              [class.badge-success]="auditScores[block.id] >= 99"
-              [class.badge-warning]="auditScores[block.id] >= 75 && auditScores[block.id] < 99"
-              [class.badge-danger]="auditScores[block.id] < 75"
-              [routerLink]="auditScores[block.id] != null ? ['/block/' | relativeUrl, block.id] : null"
+              [class.badge-success]="block.extras.matchRate >= 99"
+              [class.badge-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
+              [class.badge-danger]="block.extras.matchRate < 75"
+              [routerLink]="block.extras.matchRate != null ? ['/block/' | relativeUrl, block.id] : null"
               [state]="{ data: { block: block } }"
-              *ngIf="auditScores[block.id] != null; else nullHealth"
-            >{{ auditScores[block.id] }}%</a>
+            >{{ block.extras.matchRate }}%</a>
             <ng-template #nullHealth>
-              <ng-container *ngIf="!loadingScores; else loadingHealth">
-                <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
-              </ng-container>
-            </ng-template>
-            <ng-template #loadingHealth>
-              <span class="skeleton-loader" style="max-width: 60px"></span>
+              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
             </ng-template>
           </td>
           <td *ngIf="indexingAvailable" class="reward text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
@@ -69,6 +61,11 @@
           </td>
           <td *ngIf="indexingAvailable && !widget" class="fees text-right" [class]="indexingAvailable ? '' : 'legacy'">
             <app-amount [satoshis]="block.extras.totalFees" [noFiat]="true" digitsInfo="1.2-2"></app-amount>
+          </td>
+          <td *ngIf="auditAvailable" class="fee-delta" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
+            <span *ngIf="block.extras.feeDelta" class="difference" [class.positive]="block.extras.feeDelta >= 0" [class.negative]="block.extras.feeDelta < 0">
+              {{ block.extras.feeDelta > 0 ? '+' : '' }}{{ (block.extras.feeDelta * 100) | amountShortener: 2 }}%
+            </span>
           </td>
           <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">
             {{ block.tx_count | number }}
@@ -104,6 +101,9 @@
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td *ngIf="indexingAvailable && !widget" class="fees text-right" [class]="indexingAvailable ? '' : 'legacy'">
+              <span class="skeleton-loader" style="max-width: 75px"></span>
+            </td>
+            <td *ngIf="auditAvailable && !widget" class="fee-delta" [class]="indexingAvailable ? '' : 'legacy'">
               <span class="skeleton-loader" style="max-width: 75px"></span>
             </td>
             <td class="txs text-right" [ngClass]="{'widget': widget, 'legacy': !indexingAvailable}">

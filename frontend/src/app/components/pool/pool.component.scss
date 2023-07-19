@@ -188,9 +188,17 @@ div.scrollable {
   }
 }
 
-.block-count-title {
+.data-title {
   color: #4a68b9;
   font-size: 14px;
+}
+
+.clip {
+  @media (max-width: 576px) {
+    max-width: 85px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .table-data tr {

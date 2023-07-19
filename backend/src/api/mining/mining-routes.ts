@@ -26,7 +26,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlockPrediction)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlocksHealth)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores', this.$getBlockAuditScores)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/scores/:height', this.$getBlockAuditScores)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/score/:hash', this.$getBlockAuditScore)
@@ -244,15 +244,15 @@ class MiningRoutes {
     }
   }
 
-  private async $getHistoricalBlockPrediction(req: Request, res: Response) {
+  private async $getHistoricalBlocksHealth(req: Request, res: Response) {
     try {
-      const blockPredictions = await mining.$getBlockPredictionsHistory(req.params.interval);
-      const blockCount = await BlocksAuditsRepository.$getPredictionsCount();
+      const blocksHealth = await mining.$getBlocksHealthHistory(req.params.interval);
+      const blockCount = await BlocksAuditsRepository.$getBlocksHealthCount();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json(blockPredictions.map(prediction => [prediction.time, prediction.height, prediction.match_rate]));
+      res.json(blocksHealth.map(health => [health.time, health.height, health.match_rate]));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

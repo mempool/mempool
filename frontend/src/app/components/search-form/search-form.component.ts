@@ -80,6 +80,9 @@ export class SearchFormComponent implements OnInit {
         }
         return text.trim();
       }),
+      tap((text) => {
+        this.stateService.searchText$.next(text);
+      }),
       distinctUntilChanged(),
     );
 
@@ -153,7 +156,7 @@ export class SearchFormComponent implements OnInit {
           const matchesBlockHeight = this.regexBlockheight.test(searchText);
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
-          const matchesAddress = this.regexAddress.test(searchText);
+          const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
 
           if (matchesAddress && this.network === 'bisq') {
             searchText = 'B' + searchText;
@@ -198,7 +201,7 @@ export class SearchFormComponent implements OnInit {
     const searchText = result || this.searchForm.value.searchText.trim();
     if (searchText) {
       this.isSearching = true;
-      if (this.regexAddress.test(searchText)) {
+      if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
       } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
         this.navigate('/block/', searchText);

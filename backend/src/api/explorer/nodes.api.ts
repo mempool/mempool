@@ -3,6 +3,7 @@ import DB from '../../database';
 import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
+import { bin2hex } from '../../utils/format';
 
 class NodesApi {
   public async $getWorldNodes(): Promise<any> {
@@ -56,7 +57,8 @@ class NodesApi {
           UNIX_TIMESTAMP(updated_at) AS updated_at, color, sockets as sockets,
           as_number, city_id, country_id, subdivision_id, longitude, latitude,
           geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
-          geo_names_country.names as country, geo_names_subdivision.names as subdivision
+          geo_names_country.names as country, geo_names_subdivision.names as subdivision,
+          features
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
@@ -75,6 +77,23 @@ class NodesApi {
       node.subdivision = JSON.parse(node.subdivision);
       node.city = JSON.parse(node.city);
       node.country = JSON.parse(node.country);
+
+      // Features      
+      node.features = JSON.parse(node.features);
+      node.featuresBits = null;
+      if (node.features) {
+        let maxBit = 0;
+        for (const feature of node.features) {
+          maxBit = Math.max(maxBit, feature.bit);
+        }
+        maxBit = Math.ceil(maxBit / 4) * 4 - 1;
+        
+        node.featuresBits = new Array(maxBit + 1).fill(0);
+        for (const feature of node.features) {
+          node.featuresBits[feature.bit] = 1;
+        }
+        node.featuresBits = bin2hex(node.featuresBits.reverse().join(''));
+      }
 
       // Active channels and capacity
       const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);
@@ -373,7 +392,7 @@ class NodesApi {
 
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
-      const publicKeySearch = search.replace('%', '') + '%';
+      const publicKeySearch = search.replace(/[^a-zA-Z0-9]/g, '') + '%';
       const aliasSearch = search
         .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".  
         .replace(/[^a-zA-Z0-9 ]/g, '') // Remove all special characters and keep just A to Z, 0 to 9.
@@ -656,10 +675,19 @@ class NodesApi {
           alias_search,
           color,
           sockets,
-          status
+          status,
+          features
         )
-        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1)
-        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, alias_search = ?, color = ?, sockets = ?, status = 1`;
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1, ?)
+        ON DUPLICATE KEY UPDATE
+          updated_at = FROM_UNIXTIME(?),
+          alias = ?,
+          alias_search = ?,
+          color = ?,
+          sockets = ?,
+          status = 1,
+          features = ?
+      `;
 
       await DB.query(query, [
         node.pub_key,
@@ -668,11 +696,13 @@ class NodesApi {
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
         node.last_update,
         node.alias,
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
       ]);
     } catch (e) {
       logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));

@@ -32,8 +32,10 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/replaces', this.getRbfHistory)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'replacements', this.getRbfReplacements)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fullrbf/replacements', this.getFullRbfReplacements)
       .post(config.MEMPOOL.API_URL_PREFIX + 'tx/push', this.$postTransactionForm)
       .get(config.MEMPOOL.API_URL_PREFIX + 'donations', async (req, res) => {
         try {
@@ -94,6 +96,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash', this.getBlock)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/summary', this.getStrippedBlockTransactions)
       .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/audit-summary', this.getBlockAuditSummary)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
       .post(config.MEMPOOL.API_URL_PREFIX + 'psbt/addparents', this.postPsbtCompletion)
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
@@ -110,7 +113,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
-          .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/height', this.getBlockTipHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', this.getRawBlock)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/txids', this.getTxIdsForBlock)
@@ -119,7 +121,6 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', this.getBlockHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
-          .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/chain/:txId', this.getAddressTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -128,8 +129,9 @@ class BitcoinRoutes {
 
   private getInitData(req: Request, res: Response) {
     try {
-      const result = websocketHandler.getInitData();
-      res.json(result);
+      const result = websocketHandler.getSerializedInitData();
+      res.set('Content-Type', 'application/json');
+      res.send(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -208,6 +210,8 @@ class BitcoinRoutes {
           bestDescendant: tx.bestDescendant || null,
           descendants: tx.descendants || null,
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          sigops: tx.sigops,
+          adjustedVsize: tx.adjustedVsize,
         });
         return;
       }
@@ -219,7 +223,12 @@ class BitcoinRoutes {
     } else {
       let cpfpInfo;
       if (config.DATABASE.ENABLED) {
-        cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        try {
+          cpfpInfo = await transactionRepository.$getCpfpInfo(req.params.txId);
+        } catch (e) {
+          res.status(500).send('failed to get CPFP info');
+          return;
+        }
       }
       if (cpfpInfo) {
         res.json(cpfpInfo);
@@ -389,9 +398,13 @@ class BitcoinRoutes {
 
   private async getBlockAuditSummary(req: Request, res: Response) {
     try {
-      const transactions = await blocks.$getBlockAuditSummary(req.params.hash);
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
-      res.json(transactions);
+      const auditSummary = await blocks.$getBlockAuditSummary(req.params.hash);
+      if (auditSummary) {
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24 * 30).toUTCString());
+        res.json(auditSummary);
+      } else {
+        return res.status(404).send(`audit not available`);
+      }
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -532,25 +545,26 @@ class BitcoinRoutes {
     }
   }
 
-  private async getAddressTransactions(req: Request, res: Response) {
+  private async getAddressTransactions(req: Request, res: Response): Promise<void> {
     if (config.MEMPOOL.BACKEND === 'none') {
       res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
       return;
     }
 
     try {
-      const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, req.params.txId);
+      let lastTxId: string = '';
+      if (req.query.after_txid && typeof req.query.after_txid === 'string') {
+        lastTxId = req.query.after_txid;
+      }
+      const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, lastTxId);
       res.json(transactions);
     } catch (e) {
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
-        return res.status(413).send(e instanceof Error ? e.message : e);
+        res.status(413).send(e instanceof Error ? e.message : e);
+        return;
       }
       res.status(500).send(e instanceof Error ? e.message : e);
     }
-  }
-
-  private async getAdressTxChain(req: Request, res: Response) {
-    res.status(501).send('Not implemented');
   }
 
   private async getAddressPrefix(req: Request, res: Response) {
@@ -589,10 +603,14 @@ class BitcoinRoutes {
     }
   }
 
-  private async getBlockTipHeight(req: Request, res: Response) {
+  private getBlockTipHeight(req: Request, res: Response) {
     try {
-      const result = await bitcoinApi.$getBlockHeightTip();
-      res.json(result);
+      const result = blocks.getCurrentBlockHeight();
+      if (!result) {
+        return res.status(503).send(`Service Temporarily Unavailable`);
+      }
+      res.setHeader('content-type', 'text/plain');
+      res.send(result.toString());
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -638,8 +656,30 @@ class BitcoinRoutes {
 
   private async getRbfHistory(req: Request, res: Response) {
     try {
-      const result = rbfCache.getReplaces(req.params.txId);
-      res.json(result || []);
+      const replacements = rbfCache.getRbfTree(req.params.txId) || null;
+      const replaces = rbfCache.getReplaces(req.params.txId) || null;
+      res.json({
+        replacements,
+        replaces
+      });
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getRbfReplacements(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getRbfTrees(false);
+      res.json(result);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getFullRbfReplacements(req: Request, res: Response) {
+    try {
+      const result = rbfCache.getRbfTrees(true);
+      res.json(result);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -683,12 +723,7 @@ class BitcoinRoutes {
   private async $postTransaction(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
     try {
-      let rawTx;
-      if (typeof req.body === 'object') {
-        rawTx = Object.keys(req.body)[0];
-      } else {
-        rawTx = req.body;
-      }
+      const rawTx = Common.getTransactionFromRequest(req, false);
       const txIdResult = await bitcoinApi.$sendRawTransaction(rawTx);
       res.send(txIdResult);
     } catch (e: any) {
@@ -699,12 +734,8 @@ class BitcoinRoutes {
 
   private async $postTransactionForm(req: Request, res: Response) {
     res.setHeader('content-type', 'text/plain');
-    const matches = /tx=([a-z0-9]+)/.exec(req.body);
-    let txHex = '';
-    if (matches && matches[1]) {
-      txHex = matches[1];
-    }
     try {
+      const txHex = Common.getTransactionFromRequest(req, true);
       const txIdResult = await bitcoinClient.sendRawTransaction(txHex);
       res.send(txIdResult);
     } catch (e: any) {

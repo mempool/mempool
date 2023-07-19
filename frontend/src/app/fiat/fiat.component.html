@@ -8,7 +8,10 @@
 </span>
 
 <ng-template #noblockconversion>
-  <span [class]="colorClass" *ngIf="(conversions$ | async) as conversions">
+  <span [class]="colorClass" *ngIf="(conversions$ | async) as conversions; else noconversion">
     {{ (conversions[currency] > -1 ? conversions[currency] : 0) * value / 100000000 | fiatCurrency : digitsInfo : currency }}
   </span>
+  <ng-template #noconversion>
+    <span>&nbsp;</span>
+  </ng-template>
 </ng-template>

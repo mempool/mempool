@@ -401,7 +401,7 @@ class BlocksRepository {
   /**
    * Get average block health for all blocks for a single pool
    */
-  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number> {
+  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number | null> {
     const params: any[] = [];
     const query = `
       SELECT AVG(blocks_audits.match_rate) AS avg_match_rate
@@ -413,8 +413,8 @@ class BlocksRepository {
 
     try {
       const [rows] = await DB.query(query, params);
-      if (!rows[0] || !rows[0].avg_match_rate) {
-        return 0;
+      if (!rows[0] || rows[0].avg_match_rate == null) {
+        return null;
       }
       return Math.round(rows[0].avg_match_rate * 100) / 100;
     } catch (e) {
@@ -573,19 +573,6 @@ class BlocksRepository {
         'Cannot get block height from timestamp from the db. Reason: ' +
           (e instanceof Error ? e.message : e),
       );
-      throw e;
-    }
-  }
-
-  /**
-   * Return blocks height
-   */
-   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
-    try {
-      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -877,7 +864,7 @@ class BlocksRepository {
   /**
    * Get all blocks which have not be linked to a price yet
    */
-   public async $getBlocksWithoutPrice(): Promise<object[]> {
+  public async $getBlocksWithoutPrice(): Promise<object[]> {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
@@ -889,7 +876,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -909,7 +896,6 @@ class BlocksRepository {
         logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
@@ -928,7 +914,7 @@ class BlocksRepository {
       return blocks;
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinstatsindex. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -1032,10 +1018,14 @@ class BlocksRepository {
 
     // Match rate is not part of the blocks table, but it is part of APIs so we must include it
     extras.matchRate = null;
+    extras.expectedFees = null;
+    extras.expectedWeight = null;
     if (config.MEMPOOL.AUDIT) {
       const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
       if (auditScore != null) {
         extras.matchRate = auditScore.matchRate;
+        extras.expectedFees = auditScore.expectedFees;
+        extras.expectedWeight = auditScore.expectedWeight;
       }
     }
 
