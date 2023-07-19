@@ -675,7 +675,11 @@ class WebsocketHandler {
         }
       } else {
         if ((config.MEMPOOL_SERVICES.ACCELERATIONS)) {
-          projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(auditMempool, Object.keys(auditMempool).length, [], [], isAccelerated, block.extras.pool.id);
+          if (config.MEMPOOL.RUST_GBT) {
+            projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(auditMempool, Object.keys(auditMempool).length, [], [], isAccelerated, block.extras.pool.id);
+          } else {
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
+          }
         } else {
           projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
         }
