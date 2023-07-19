@@ -117,6 +117,26 @@ class ChannelsApi {
     }
   }
 
+  public async $getPenaltyClosedChannels(): Promise<any[]> {
+    try {
+      const query = `
+        SELECT n1.alias AS alias_left,
+          n2.alias AS alias_right,
+          channels.*
+        FROM channels
+        LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
+        WHERE channels.status = 2 AND channels.closing_reason = 3
+        ORDER BY closing_date DESC
+      `;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getPenaltyClosedChannels error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getUnresolvedClosedChannels(): Promise<any[]> {
     try {
       const query = `SELECT * FROM channels WHERE status = 2 AND closing_reason = 2 AND closing_resolved = 0 AND closing_transaction_id != ''`;

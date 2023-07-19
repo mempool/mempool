@@ -29,6 +29,7 @@ export class NodesPerISPChartComponent implements OnInit {
   sortBy = 'capacity';
   showUnknown = false;
   chartInstance = undefined;
+  indexingInProgress = false;
 
   @HostBinding('attr.dir') dir = 'ltr';
 
@@ -87,6 +88,8 @@ export class NodesPerISPChartComponent implements OnInit {
                 }
 
                 this.prepareChartOptions(data.ispRanking);
+
+                this.indexingInProgress = !data.ispRanking.length;
 
                 return {
                   taggedISP: data.ispRanking.length,
@@ -153,8 +156,9 @@ export class NodesPerISPChartComponent implements OnInit {
           },
           borderColor: '#000',
           formatter: () => {
+            const nodeCount = isp[4].toString();
             return `<b style="color: white">${isp[1]} (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)</b><br>` +
-              $localize`${isp[4].toString()} nodes` + `<br>` +
+              $localize`${nodeCount} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BTC`
             ;
           }
@@ -169,7 +173,7 @@ export class NodesPerISPChartComponent implements OnInit {
         color: 'grey',
       },
       value: totalShareOther,
-      name: 'Other' + (isMobile() || this.widget ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
         color: '#b1b1b1',
@@ -185,8 +189,9 @@ export class NodesPerISPChartComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
-          return `<b style="color: white">Other (${totalShareOther.toFixed(2)}%)</b><br>` +
-            $localize`${nodeCountOther.toString()} nodes` + `<br>` +
+          const nodeCount = nodeCountOther.toString();
+          return `<b style="color: white">` + $localize`Other (${totalShareOther.toFixed(2) + '%'})` + `</b><br>` +
+            $localize`${nodeCount} nodes` + `<br>` +
             $localize`${this.amountShortenerPipe.transform(capacityOther / 100000000, 2)} BTC`;
         }
       },

@@ -220,7 +220,7 @@ class HashratesRepository {
    * Delete hashrates from the database from timestamp
    */
   public async $deleteHashratesFromTimestamp(timestamp: number) {
-    logger.info(`Delete newer hashrates from timestamp ${new Date(timestamp * 1000).toUTCString()} from the database`);
+    logger.info(`Delete newer hashrates from timestamp ${new Date(timestamp * 1000).toUTCString()} from the database`, logger.tags.mining);
 
     try {
       await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp >= FROM_UNIXTIME(?)`, [timestamp]);

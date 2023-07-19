@@ -30,9 +30,14 @@
     }
   }
   .card-text {
-    font-size: 20px;
+    font-size: 18px;
     margin: auto;
     position: relative;
+    margin-bottom: 0.2rem;
+    &.bigger {
+      font-size: 20px;
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -46,6 +51,7 @@
     flex-direction: row;
   }
   .item {
+    min-width: 120px;
     max-width: 150px;
     margin: 0;
     width: -webkit-fill-available;
@@ -159,6 +165,7 @@
 
 .symbol {
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .epoch-progress {

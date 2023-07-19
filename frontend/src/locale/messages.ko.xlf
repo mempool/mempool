@@ -750,11 +750,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
@@ -775,11 +775,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">375,378</context>
+          <context context-type="linenumber">391,394</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -805,7 +805,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">89</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1074,7 +1074,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">282,284</context>
+          <context context-type="linenumber">283,285</context>
         </context-group>
         <note priority="1" from="description">transaction.version</note>
       </trans-unit>
@@ -1202,11 +1202,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">256,261</context>
+          <context context-type="linenumber">257,262</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">400,406</context>
+          <context context-type="linenumber">401,407</context>
         </context-group>
         <note priority="1" from="description">transaction.details</note>
       </trans-unit>
@@ -1223,11 +1223,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">243,247</context>
+          <context context-type="linenumber">244,248</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">371,377</context>
+          <context context-type="linenumber">372,378</context>
         </context-group>
         <note priority="1" from="description">Transaction inputs and outputs</note>
         <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
@@ -1245,7 +1245,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">244,243</context>
+          <context context-type="linenumber">246,245</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
@@ -1475,6 +1475,7 @@
       </trans-unit>
       <trans-unit id="1405c5f1a9834338ff13442c550927ab7144fdc8" datatype="html">
         <source>Community Integrations</source>
+        <target>커뮤니티 통합</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">181,183</context>
@@ -1486,7 +1487,7 @@
         <target>커뮤니티 연합</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">275,277</context>
+          <context context-type="linenumber">291,293</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
@@ -1495,7 +1496,7 @@
         <target>프로젝트 번역자</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">291,293</context>
+          <context context-type="linenumber">307,309</context>
         </context-group>
         <note priority="1" from="description">about.translators</note>
       </trans-unit>
@@ -1504,7 +1505,7 @@
         <target>프로젝트 참여자 목록 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">305,307</context>
+          <context context-type="linenumber">321,323</context>
         </context-group>
         <note priority="1" from="description">about.contributors</note>
       </trans-unit>
@@ -1513,7 +1514,7 @@
         <target>프로젝트 멤버들</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">317,319</context>
+          <context context-type="linenumber">333,335</context>
         </context-group>
         <note priority="1" from="description">about.project_members</note>
       </trans-unit>
@@ -1522,7 +1523,7 @@
         <target>프로젝트 관리자 목록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">330,332</context>
+          <context context-type="linenumber">346,348</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -1580,7 +1581,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/amount/amount.component.html</context>
-          <context context-type="linenumber">20,23</context>
+          <context context-type="linenumber">18,21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/asset-circulation/asset-circulation.component.html</context>
@@ -2043,7 +2044,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">mining.block-fee-rates</note>
       </trans-unit>
@@ -2092,7 +2093,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
@@ -2113,7 +2114,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">171,166</context>
+          <context context-type="linenumber">178,173</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
@@ -2134,6 +2135,7 @@
       </trans-unit>
       <trans-unit id="86c50fc2171298179283e3c9b6d79b57b821599b" datatype="html">
         <source>not available</source>
+        <target>사용할 수 없음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2153,7 +2155,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">472</context>
+          <context context-type="linenumber">473</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
@@ -2179,7 +2181,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">472</context>
+          <context context-type="linenumber">473</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2201,7 +2203,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">475,477</context>
+          <context context-type="linenumber">476,478</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
@@ -2213,7 +2215,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
         <note priority="1" from="description">Transaction fee rate</note>
         <note priority="1" from="meaning">transaction.fee-rate</note>
@@ -2295,11 +2297,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">477,480</context>
+          <context context-type="linenumber">478,481</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">488,490</context>
+          <context context-type="linenumber">489,491</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2329,13 +2331,14 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">268,271</context>
+          <context context-type="linenumber">269,272</context>
         </context-group>
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
       </trans-unit>
       <trans-unit id="1a8035ac608b083c29407327290b7cc9d6cbb95d" datatype="html">
         <source>Audit status</source>
+        <target>감사 상태</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2344,6 +2347,7 @@
       </trans-unit>
       <trans-unit id="180092a6b8a6151a05f4a7552a2fb75fd159dfa8" datatype="html">
         <source>Match</source>
+        <target>일치</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2352,6 +2356,7 @@
       </trans-unit>
       <trans-unit id="1aa4883bc4f1352f7a0bdd94810a9bf6dc22bd02" datatype="html">
         <source>Removed</source>
+        <target>제거됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">39</context>
@@ -2360,6 +2365,7 @@
       </trans-unit>
       <trans-unit id="f0136f1a1d77aa656e0ebd0f3c023118dd2a2776" datatype="html">
         <source>Marginal fee rate</source>
+        <target>한계 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2372,6 +2378,7 @@
       </trans-unit>
       <trans-unit id="d702ad6f00c620c9658ac1ad8184d5fe5bc099fb" datatype="html">
         <source>Recently broadcasted</source>
+        <target>최근 전파됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2380,6 +2387,7 @@
       </trans-unit>
       <trans-unit id="80e3b490720757978c99a7b5af3885faf202b955" datatype="html">
         <source>Added</source>
+        <target>추가됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">42</context>
@@ -2388,6 +2396,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Prediction Accuracy</source>
+        <target>블록 예측 정확도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -2398,12 +2407,13 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">mining.block-prediction-accuracy</note>
       </trans-unit>
       <trans-unit id="80065834848189518" datatype="html">
         <source>No data to display yet. Try again later.</source>
+        <target>아직 표시할 데이터가 없습니다. 나중에 다시 시도해주세요.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">108,103</context>
@@ -2419,6 +2429,7 @@
       </trans-unit>
       <trans-unit id="829186404427796443" datatype="html">
         <source>Match rate</source>
+        <target>일치율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-prediction-graph/block-prediction-graph.component.ts</context>
           <context context-type="linenumber">189,187</context>
@@ -2437,7 +2448,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">mining.block-rewards</note>
       </trans-unit>
@@ -2454,7 +2465,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">mining.block-sizes-weights</note>
       </trans-unit>
@@ -2495,7 +2506,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">264,266</context>
+          <context context-type="linenumber">265,267</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -2523,11 +2534,12 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">272,274</context>
+          <context context-type="linenumber">273,275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
         <source>Size per weight</source>
+        <target>무게당 사이즈</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">200,199</context>
@@ -2622,6 +2634,10 @@
           <context context-type="linenumber">8,9</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
         </context-group>
@@ -2638,6 +2654,7 @@
       </trans-unit>
       <trans-unit id="d2bcd3296d2850de762fb943060b7e086a893181" datatype="html">
         <source>Health</source>
+        <target>건강도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">56</context>
@@ -2654,6 +2671,7 @@
       </trans-unit>
       <trans-unit id="e5d8bb389c702588877f039d72178f219453a72d" datatype="html">
         <source>Unknown</source>
+        <target>알 수 없음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">67,70</context>
@@ -2732,6 +2750,7 @@
       </trans-unit>
       <trans-unit id="a1c8a44428c774facdd0b1e3ae42468c25666367" datatype="html">
         <source>Subsidy + fees</source>
+        <target>보상금 + 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">153,156</context>
@@ -2745,6 +2764,7 @@
       </trans-unit>
       <trans-unit id="23fa95fce7b4badf5ad584d4a1712d558266266f" datatype="html">
         <source>Expected</source>
+        <target>예상</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216</context>
@@ -2753,6 +2773,7 @@
       </trans-unit>
       <trans-unit id="7cbedd89f60daafaf0e56363900d666a4e02ffb1" datatype="html">
         <source>beta</source>
+        <target>베타</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">216,217</context>
@@ -2765,6 +2786,7 @@
       </trans-unit>
       <trans-unit id="1da6d9283e3222148d76c10c8e37abeeb66c93cb" datatype="html">
         <source>Actual</source>
+        <target>실제</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">218,222</context>
@@ -2828,11 +2850,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">284,283</context>
+          <context context-type="linenumber">291,290</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">371,368</context>
+          <context context-type="linenumber">378,375</context>
         </context-group>
         <note priority="1" from="description">block.difficulty</note>
       </trans-unit>
@@ -2856,6 +2878,7 @@
       </trans-unit>
       <trans-unit id="ccf00caac258749fa1c5fd488fb15368fa6fce37" datatype="html">
         <source>Audit</source>
+        <target>감사</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">297,301</context>
@@ -2872,7 +2895,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">248,253</context>
+          <context context-type="linenumber">249,254</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
@@ -3062,12 +3085,16 @@
         <source>Difficulty Adjustment</source>
         <target>난이도 조정</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
+          <context context-type="linenumber">1,5</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">1,5</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -3075,11 +3102,11 @@
         <source>Remaining</source>
         <target>남은</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">7,9</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">66,69</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.remaining</note>
@@ -3088,11 +3115,11 @@
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>블록<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">53,54</context>
         </context-group>
         <context-group purpose="location">
@@ -3113,11 +3140,11 @@
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>블록<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
         <context-group purpose="location">
@@ -3130,11 +3157,11 @@
         <source>Estimate</source>
         <target>추정</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">16,17</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">73,76</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.estimate</note>
@@ -3143,8 +3170,12 @@
         <source>Previous</source>
         <target>이전</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">31,33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.previous</note>
       </trans-unit>
@@ -3152,11 +3183,11 @@
         <source>Current Period</source>
         <target>현재 기간</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">80,83</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.current-period</note>
@@ -3165,10 +3196,109 @@
         <source>Next Halving</source>
         <target>다음 반감기</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">50,52</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.next-halving</note>
+      </trans-unit>
+      <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target>예측된 블록들: <x id="INTERPOLATION" equiv-text="{{ i }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.expected-blocks</note>
+      </trans-unit>
+      <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target>예상한 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.expected-block</note>
+      </trans-unit>
+      <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target>채굴된 블록들: <x id="INTERPOLATION" equiv-text="{{ i }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.mined-blocks</note>
+      </trans-unit>
+      <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target>채굴된 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.mined-block</note>
+      </trans-unit>
+      <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target>남은 블록: <x id="INTERPOLATION" equiv-text="{{ i }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.remaining-blocks</note>
+      </trans-unit>
+      <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target>남은 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.remaining-block</note>
+      </trans-unit>
+      <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target>현재 앞서있는 블록: <x id="INTERPOLATION" equiv-text="{{ i }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.blocks-ahead</note>
+      </trans-unit>
+      <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target>앞서있는 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.block-ahead</note>
+      </trans-unit>
+      <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target>현재 뒤처져있는 블록: <x id="INTERPOLATION" equiv-text="{{ i }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.blocks-behind</note>
+      </trans-unit>
+      <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target>뒤처진 <x id="INTERPOLATION" equiv-text="{{ i }}"/>개 블록</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.block-behind</note>
+      </trans-unit>
+      <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
+        <source>Average block time</source>
+        <target>평균 블록 생성 시간</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="linenumber">42,45</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.average-block-time</note>
       </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
@@ -3194,6 +3324,7 @@
       </trans-unit>
       <trans-unit id="49bba8e970aa3b1bec6fcff7228ef95ceb335f59" datatype="html">
         <source>Usually places your transaction in between the second and third mempool blocks</source>
+        <target>보통 트랜잭션이 두 번째와 세 번째 멤풀 블록에 배치됩니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -3215,6 +3346,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
+        <target>보통 트랜잭션이 첫 번째와 두 번째 멤풀 블록에 배치됩니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3325,7 +3457,7 @@
         <target>채굴</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">mining</note>
       </trans-unit>
@@ -3334,7 +3466,7 @@
         <target>채굴풀 순위</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -3347,7 +3479,7 @@
         <target>채굴풀 도미넌스</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.html</context>
@@ -3357,9 +3489,10 @@
       </trans-unit>
       <trans-unit id="5115edb23059f4dcfe6ce0a979e40962a149c35c" datatype="html">
         <source>Hashrate &amp; Difficulty</source>
+        <target>해시레이트 &amp; 난이도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">15,16</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
         <note priority="1" from="description">mining.hashrate-difficulty</note>
       </trans-unit>
@@ -3368,7 +3501,7 @@
         <target>라이트닝</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <note priority="1" from="description">lightning</note>
       </trans-unit>
@@ -3377,7 +3510,7 @@
         <target>네트워크당 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.html</context>
@@ -3395,9 +3528,10 @@
       </trans-unit>
       <trans-unit id="ea8db27e6db64f8b940711948c001a1100e5fe9f" datatype="html">
         <source>Lightning Network Capacity</source>
+        <target>라이트닝 네트워크 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
@@ -3415,9 +3549,10 @@
       </trans-unit>
       <trans-unit id="8573a1576789bd2c4faeaed23037c4917812c6cf" datatype="html">
         <source>Lightning Nodes Per ISP</source>
+        <target>통신사별 라이트닝 노드 수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
@@ -3427,9 +3562,10 @@
       </trans-unit>
       <trans-unit id="9d3ad4c6623870d96b65fb7a708fed6ce7c20044" datatype="html">
         <source>Lightning Nodes Per Country</source>
+        <target>국가별 라이트닝 노드 수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
@@ -3443,9 +3579,10 @@
       </trans-unit>
       <trans-unit id="af8560ca50882114be16c951650f83bca73161a7" datatype="html">
         <source>Lightning Nodes World Map</source>
+        <target>라이트닝 노드 세계지도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.html</context>
@@ -3459,9 +3596,10 @@
       </trans-unit>
       <trans-unit id="b482ceceb39c7a045cb2ab2c64f7091d21e63d44" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>라이트닝 노드 채널 세계지도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
@@ -3482,11 +3620,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">273,272</context>
+          <context context-type="linenumber">280,279</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">359,356</context>
+          <context context-type="linenumber">366,363</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -3513,13 +3651,14 @@
       </trans-unit>
       <trans-unit id="8105839921891777281" datatype="html">
         <source>Hashrate (MA)</source>
+        <target>해시레이트 (이동 평균)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">292,291</context>
+          <context context-type="linenumber">299,298</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">382,380</context>
+          <context context-type="linenumber">389,387</context>
         </context-group>
       </trans-unit>
       <trans-unit id="mining.pools-historical-dominance" datatype="html">
@@ -3578,6 +3717,7 @@
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>
+        <target>라이트닝 탐색기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">44,47</context>
@@ -3638,7 +3778,7 @@
         <target>보상 관련 데이터</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">mining.reward-stats</note>
       </trans-unit>
@@ -3647,7 +3787,7 @@
         <target>(144 블록)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">mining.144-blocks</note>
       </trans-unit>
@@ -3656,7 +3796,7 @@
         <target>최신 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -3669,7 +3809,7 @@
         <target>조정</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
@@ -3678,7 +3818,7 @@
         <target>트랜잭션을 비트코인 네트워크에 전송하기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
@@ -3701,6 +3841,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>채굴풀들의 운 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3709,6 +3850,7 @@
       </trans-unit>
       <trans-unit id="ea1a87734b5cc78ea8b268343497d92136855cd1" datatype="html">
         <source>Pools luck</source>
+        <target>채굴풀들의 운</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -3717,6 +3859,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>지난 한 주 동안의 모든 채굴풀의 전반적인 운입니다. 운이 100%보다 크면 현재 에포크의 평균 블록 생성 시간이 10분 미만이라는 뜻입니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3725,6 +3868,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>채굴풀 개수 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3733,6 +3877,7 @@
       </trans-unit>
       <trans-unit id="1107f1b39cd8474087d438971892967a331a6c7d" datatype="html">
         <source>Pools count</source>
+        <target>채굴풀 개수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17,19</context>
@@ -3741,6 +3886,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
+        <target>지난 한 주 동안 최소 한 블록 이상 발견한 고유한 채굴 풀의 수입니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3766,6 +3912,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
+        <target>지난 한 주 동안 발견된 블록의 수입니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -3791,6 +3938,7 @@
       </trans-unit>
       <trans-unit id="c16d236667af327bd474b149cb909d1cd06fa50c" datatype="html">
         <source>Avg Health</source>
+        <target>평균 건강도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -3821,7 +3969,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
-        <target>채굴 풀들의 운 (1주)</target>
+        <target>채굴풀들의 운 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">146,148</context>
@@ -3830,7 +3978,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
-        <target>채굴 풀 개수</target>
+        <target>채굴풀 개수 (1주)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">158,160</context>
@@ -3839,15 +3987,15 @@
       </trans-unit>
       <trans-unit id="mining.mining-pools" datatype="html">
         <source>Mining Pools</source>
-        <target>채굴 풀</target>
+        <target>채굴풀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">58</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6095122426142344316" datatype="html">
-        <source><x id="PH" equiv-text="i"/> blocks</source>
-        <target><x id="PH" equiv-text="i"/>블록</target>
+      <trans-unit id="312539377512157124" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/>개 블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -3856,9 +4004,46 @@
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">168,167</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">203,201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">206,205</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3666195172774554282" datatype="html">
+        <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>기타 (<x id="PH" equiv-text="percentage"/>)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">205</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">119,114</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">173,168</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2158ea60725d3a97aed6f0f00aa7df48d7bb42ff" datatype="html">
         <source>mining pool</source>
+        <target>채굴풀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -4077,7 +4262,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">290,291</context>
+          <context context-type="linenumber">291,292</context>
         </context-group>
         <note priority="1" from="description">transaction.hex</note>
       </trans-unit>
@@ -4109,6 +4294,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
+        <target>평균 블록 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4121,6 +4307,7 @@
       </trans-unit>
       <trans-unit id="a0d4ab5b063e7be1c9ea980f5fd6ce1b5384ad0b" datatype="html">
         <source>Average fees per block in the past 144 blocks</source>
+        <target>지난 144개 블록의 평균 블록당 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -4129,6 +4316,7 @@
       </trans-unit>
       <trans-unit id="0705223420d290a218e4ed83bd4d904454a9cee8" datatype="html">
         <source>BTC/block</source>
+        <target>BTC/블록</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21,24</context>
@@ -4138,6 +4326,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
+        <target>평균 거래 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4182,6 +4371,7 @@
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
         <source>Explore the full Bitcoin ecosystem</source>
+        <target>비트코인 네트워크 전체를 검색해 보세요</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -4262,6 +4452,7 @@
       </trans-unit>
       <trans-unit id="2abc4d0d3ae0b49fa9e94a2efb8c2e1a47e680f4" datatype="html">
         <source>Go to &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</source>
+        <target>&quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot; 로 이동</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">52</context>
@@ -4270,7 +4461,7 @@
       </trans-unit>
       <trans-unit id="75c20c8a9cd9723d45bee0230dd582d7c2e4ecbc" datatype="html">
         <source>Mempool by vBytes (sat/vByte)</source>
-        <target>Mempool by vBytes (sat.vByte)</target>
+        <target>vBytes별 멤풀 (sat.vByte)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">7</context>
@@ -4295,7 +4486,7 @@
         <target>필터</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">statistics.component-filter.title</note>
       </trans-unit>
@@ -4304,16 +4495,16 @@
         <target>뒤집기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <note priority="1" from="description">statistics.component-invert.title</note>
       </trans-unit>
       <trans-unit id="dc15ec15e6206b40133f2c1b06095ce75aaee1ef" datatype="html">
         <source>Transaction vBytes per second (vB/s)</source>
-        <target>초당 트랜잭션 vByte (vB / s)</target>
+        <target>초당 트랜잭션 vByte (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <note priority="1" from="description">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
@@ -4321,196 +4512,188 @@
         <source>Just now</source>
         <target>방금 전</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
         <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> 전</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">104</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">108</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">113</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">114</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">117</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="time-until" datatype="html">
+        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>~<x id="DATE" equiv-text="dateStrings.i18nYear"/> 후</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">126</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">128</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">139</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">140</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">142</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
         <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> 이후</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">149</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">150</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">153</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">155</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">159</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">160</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">164</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="time-until" datatype="html">
-        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
-        <target>~<x id="DATE" equiv-text="dateStrings.i18nMinute"/> 안에</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">82</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">84</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">85</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">86</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">91</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">93</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">94</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">95</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
@@ -4525,6 +4708,7 @@
       </trans-unit>
       <trans-unit id="72cfda88d5ab4851cba76abb402cae8f03ab6c6b" datatype="html">
         <source>This transaction replaced:</source>
+        <target>이 트랜잭션이 대체되었습니다:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">10,12</context>
@@ -4534,6 +4718,7 @@
       </trans-unit>
       <trans-unit id="ed1b6bfe4b7beca445156e6bb92a76d3cdebe945" datatype="html">
         <source>Replaced</source>
+        <target>대체됨</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">36,39</context>
@@ -4635,19 +4820,21 @@
       </trans-unit>
       <trans-unit id="53fbdc20554c4e68ae509f652b38ab80021c0739" datatype="html">
         <source>Flow</source>
+        <target>흐름</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">202,205</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">340,344</context>
+          <context context-type="linenumber">341,345</context>
         </context-group>
         <note priority="1" from="description">Transaction flow</note>
         <note priority="1" from="meaning">transaction.flow</note>
       </trans-unit>
       <trans-unit id="d0fd8887b50687cfc0fc1f6569f6fd6c5db4ffc0" datatype="html">
         <source>Hide diagram</source>
+        <target>도표 숨기기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">205,210</context>
@@ -4659,7 +4846,7 @@
         <target>더 보기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">225,227</context>
+          <context context-type="linenumber">226,228</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -4676,7 +4863,7 @@
         <target>숨기기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">227,233</context>
+          <context context-type="linenumber">228,234</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -4689,7 +4876,7 @@
         <target>도표 보기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">247,248</context>
+          <context context-type="linenumber">248,249</context>
         </context-group>
         <note priority="1" from="description">show-diagram</note>
       </trans-unit>
@@ -4698,7 +4885,7 @@
         <target>잠금 시간</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">286,288</context>
+          <context context-type="linenumber">287,289</context>
         </context-group>
         <note priority="1" from="description">transaction.locktime</note>
       </trans-unit>
@@ -4707,7 +4894,7 @@
         <target>트랜잭션을 찾을 수 없음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">449,450</context>
+          <context context-type="linenumber">450,451</context>
         </context-group>
         <note priority="1" from="description">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -4716,7 +4903,7 @@
         <target>멤풀에 포함될때까지 대기하는 중...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">450,455</context>
+          <context context-type="linenumber">451,456</context>
         </context-group>
         <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -4725,7 +4912,7 @@
         <target>유효 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">485,488</context>
+          <context context-type="linenumber">486,489</context>
         </context-group>
         <note priority="1" from="description">Effective transaction fee rate</note>
         <note priority="1" from="meaning">transaction.effective-fee-rate</note>
@@ -4871,6 +5058,7 @@
       </trans-unit>
       <trans-unit id="d70397ee91f6c9ec91f1c1dff88126f8f9b7c2c4" datatype="html">
         <source>Show more inputs to reveal fee data</source>
+        <target>수수료 정보를 표기하기 위해 더 많은 인풋을 보기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">290,293</context>
@@ -4879,6 +5067,7 @@
       </trans-unit>
       <trans-unit id="ea7c261363dc5f6134b7bacba2a1ef97f4ff7859" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="remaining&lt;/ng-template&gt;"/> 남음</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">332,333</context>
@@ -4887,6 +5076,7 @@
       </trans-unit>
       <trans-unit id="ac0c4b49e44c42db35ddf590fb5f78375a891b01" datatype="html">
         <source>other inputs</source>
+        <target>기타 인풋</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">12</context>
@@ -4895,6 +5085,7 @@
       </trans-unit>
       <trans-unit id="8900247c0476fea8fcbee57a72a1d1da5ddd40ff" datatype="html">
         <source>other outputs</source>
+        <target>기타 아웃풋</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">13</context>
@@ -4903,6 +5094,7 @@
       </trans-unit>
       <trans-unit id="3e242f213dd1a0754aad9164aa80887d67708500" datatype="html">
         <source>Input</source>
+        <target>인풋</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">42</context>
@@ -4915,6 +5107,7 @@
       </trans-unit>
       <trans-unit id="7a080851e25a41e898776a9c90cf8dbe81027f9a" datatype="html">
         <source>Output</source>
+        <target>아웃풋</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
           <context context-type="linenumber">43</context>
@@ -4927,6 +5120,7 @@
       </trans-unit>
       <trans-unit id="25d58cd5c18fd9c1c89d6062d67dcc2482161410" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit</source>
+        <target>이 트랜잭션은 네이티브 세그윗을 사용해 수수료를 <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% 절약했습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4953,6 +5147,7 @@
       </trans-unit>
       <trans-unit id="b6a3f6afdac6873e2d261647d834c02c91376893" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit</source>
+        <target>이 트랜잭션은 세그윗을 사용해 수수료를 <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% 절약했으며, 네이티브 세그윗으로 완전히 업그레이드하면 <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% 를 더 절약할 수 있습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4961,6 +5156,7 @@
       </trans-unit>
       <trans-unit id="a67530e246368aa7e5d010061fd84c3c4fe755c2" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
+        <target>이 트랜잭션은 네이티브 세그윗으로 업그레이드하면 수수료를 <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% 절약할 수 있으며, 세그윗-P2SH로 업그레이드하면 <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% 를 더 절약할 수 있습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">6</context>
@@ -4969,6 +5165,7 @@
       </trans-unit>
       <trans-unit id="17e9c05e053cbd29d3835d8ecb19508d0f07241b" datatype="html">
         <source>This transaction uses Taproot and thereby saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees</source>
+        <target>이 트랜잭션은 탭루트를 사용했으며 수수료를 최소 <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% 절약했습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -4977,6 +5174,7 @@
       </trans-unit>
       <trans-unit id="65d5167c4947e3ad81758d238a7ac7e893c261f0" datatype="html">
         <source>Taproot</source>
+        <target>탭루트</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5002,6 +5200,7 @@
       </trans-unit>
       <trans-unit id="47b821c7df420c96de0b22844a88c04d52628540" datatype="html">
         <source>This transaction uses Taproot and already saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees, but could save an additional <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% by fully using Taproot</source>
+        <target>이 트랜잭션은 탭루트를 사용해 이미 수수료를 최소 <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% 절약했지만, 탭루트를 완전히 사용하면 추가로 <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% 를 더 절약할 수 있습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">14</context>
@@ -5010,6 +5209,7 @@
       </trans-unit>
       <trans-unit id="aa31fc4d29f35b2fd36080bb6ff84be8eaab66fd" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% on fees by using Taproot</source>
+        <target>이 트랜잭션은 탭루트를 사용해 수수료를 <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% 절약할 수 있습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">16</context>
@@ -5018,6 +5218,7 @@
       </trans-unit>
       <trans-unit id="b0fb884cf71b19e3a4d146146d260ccedd9d50a5" datatype="html">
         <source>This transaction does not use Taproot</source>
+        <target>이 트랜잭션은 탭루트를 사용하지 않습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">18</context>
@@ -5035,6 +5236,7 @@
       </trans-unit>
       <trans-unit id="07883574bb93ea23b764861f56a525bdaf907513" datatype="html">
         <source>This transaction supports Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>이 트랜잭션은 수수료를 조정할 수 있는 Replace-By-Fee (RBF)를 지원합니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5160,17 +5362,23 @@
       </trans-unit>
       <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
+        <target> <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/> mempool.space는 비트코인 네트워크에 대한 데이터만 제공할 뿐입니다. <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> 자금을 회수하거나 트랜잭션을 더 빨리 컨펌시키는 것 등에 대해서는 도움을 드릴 수 없습니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <note priority="1" from="description">faq.big-disclaimer</note>
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>
+        <target>REST API 서비스</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">42,43</context>
         </context-group>
         <note priority="1" from="description">api-docs.title</note>
       </trans-unit>
@@ -5179,11 +5387,11 @@
         <target>엔드포인트</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">104,107</context>
+          <context context-type="linenumber">105,108</context>
         </context-group>
         <note priority="1" from="description">Api docs endpoint</note>
       </trans-unit>
@@ -5192,11 +5400,11 @@
         <target>설명</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">70,71</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">108,109</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
@@ -5204,7 +5412,7 @@
         <target>기본 푸시: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 작업: 'want', 데이터 : [ 'blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>을 사용하여 푸시하려는 것을 표시할 수 있습니다. 사용 가능: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, 및<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>주소와 관련된 트랜잭션을 푸시:<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/>’track-address’: ‘3PbJ…bF9B’<x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>을 사용하여 인풋 또는 아웃풋 주소를 포함한 새로운 트랜잭션을 받을 수 있습니다. 트랜잭션들은 행렬로 반환합니다. 새로운 트랜잭션일 경우<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>이고, 새롭게 컨펌된 트랜잭션일 경우<x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>입니다.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">109,110</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
@@ -5273,6 +5481,7 @@
       </trans-unit>
       <trans-unit id="4ca458fe3274d1c79640b052d57cf3b900b650b6" datatype="html">
         <source>Base fee</source>
+        <target>기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">29</context>
@@ -5285,6 +5494,7 @@
       </trans-unit>
       <trans-unit id="6acd06bd5a3af583cd46c6d9f7954d7a2b44095e" datatype="html">
         <source>mSats</source>
+        <target>mSats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">35</context>
@@ -5305,6 +5515,7 @@
       </trans-unit>
       <trans-unit id="fb2137ba0df55f21a9d6b6ad08d56d74ad852e0e" datatype="html">
         <source>This channel supports zero base fee routing</source>
+        <target>이 채널은 무료 기본 수수료 라우팅을 지원합니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">44</context>
@@ -5313,6 +5524,7 @@
       </trans-unit>
       <trans-unit id="3ec76ccfe1fdcbfd7ea152392f6472d93d4e8cab" datatype="html">
         <source>Zero base fee</source>
+        <target>무료 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">45</context>
@@ -5321,6 +5533,7 @@
       </trans-unit>
       <trans-unit id="b5e42e06ea8a4012a38eef209104bbd9dd1a0fc0" datatype="html">
         <source>This channel does not support zero base fee routing</source>
+        <target>이 채널은 무료 기본 수수료 라우팅을 지원하지 않습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">50</context>
@@ -5329,6 +5542,7 @@
       </trans-unit>
       <trans-unit id="09a1bc9c4198e87e9e974a51e86b181429b480d3" datatype="html">
         <source>Non-zero base fee</source>
+        <target>유료 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">51</context>
@@ -5337,6 +5551,7 @@
       </trans-unit>
       <trans-unit id="055060668d0b9902c37abfb6168a08a36eba4496" datatype="html">
         <source>Min HTLC</source>
+        <target>최소 HTLC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">57</context>
@@ -5345,6 +5560,7 @@
       </trans-unit>
       <trans-unit id="c3d94c1a5aef6211f4a902027bd08540d7222b0d" datatype="html">
         <source>Max HTLC</source>
+        <target>최대 HTLC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">63</context>
@@ -5353,6 +5569,7 @@
       </trans-unit>
       <trans-unit id="9fe79011b50c2ca1f9b7db7066046631bfc6b3cb" datatype="html">
         <source>Timelock delta</source>
+        <target>타임락 델타</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">69</context>
@@ -5361,6 +5578,7 @@
       </trans-unit>
       <trans-unit id="205c1b86ac1cc419c4d0cca51fdde418c4ffdc20" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> channels</source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ i }}"/> 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">79</context>
@@ -5369,10 +5587,15 @@
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">123,124</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
+          <context context-type="linenumber">211,208</context>
+        </context-group>
         <note priority="1" from="description">lightning.x-channels</note>
       </trans-unit>
       <trans-unit id="4e64e04c01e8f5fc09c41cb8942dcc3af0398b28" datatype="html">
         <source>Starting balance</source>
+        <target>시작 잔액</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-close-box/channel-close-box.component.html</context>
           <context context-type="linenumber">6</context>
@@ -5382,6 +5605,7 @@
       </trans-unit>
       <trans-unit id="5c4bfd47a4f4d7cb99912f028494fe2530d36d57" datatype="html">
         <source>Closing balance</source>
+        <target>종료 잔액</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-close-box/channel-close-box.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5391,6 +5615,7 @@
       </trans-unit>
       <trans-unit id="3bbd25c289760a3ba57e30df5ad5fe8977ab25a5" datatype="html">
         <source>lightning channel</source>
+        <target>라이트닝 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5399,6 +5624,7 @@
       </trans-unit>
       <trans-unit id="43c4133c7a0263d2e33dd4c2e74d40784b2e4b1c" datatype="html">
         <source>Inactive</source>
+        <target>비활성</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -5415,6 +5641,7 @@
       </trans-unit>
       <trans-unit id="b36e1450940b7f6028d8587568c7d669b53f7a06" datatype="html">
         <source>Active</source>
+        <target>활성</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">11,12</context>
@@ -5431,6 +5658,7 @@
       </trans-unit>
       <trans-unit id="4804b8e78964cee9e5c85f31fd982639b97780b2" datatype="html">
         <source>Closed</source>
+        <target>폐쇄</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">12,14</context>
@@ -5451,6 +5679,7 @@
       </trans-unit>
       <trans-unit id="1b051734b0ee9021991c91b3ed4e81c244322462" datatype="html">
         <source>Created</source>
+        <target>생성</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">23,26</context>
@@ -5463,6 +5692,7 @@
       </trans-unit>
       <trans-unit id="ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa" datatype="html">
         <source>Capacity</source>
+        <target>용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">27,28</context>
@@ -5474,6 +5704,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">43,46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">227</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
@@ -5519,6 +5757,7 @@
       </trans-unit>
       <trans-unit id="8fd0077b032e360ece45c4fd655f85b2400dcb83" datatype="html">
         <source>ppm</source>
+        <target>ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">34,35</context>
@@ -5539,6 +5778,7 @@
       </trans-unit>
       <trans-unit id="13142ad9637003749d667393aaae7a286d1eba5b" datatype="html">
         <source>Lightning channel</source>
+        <target>라이트닝 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -5551,6 +5791,7 @@
       </trans-unit>
       <trans-unit id="8dad9f60ff582b632a864f22c7466327793c3f09" datatype="html">
         <source>Last update</source>
+        <target>마지막 업데이트</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">40,41</context>
@@ -5583,18 +5824,20 @@
       </trans-unit>
       <trans-unit id="0c134c6787c6b763446c096ea5233ace6fd9116d" datatype="html">
         <source>Closing date</source>
+        <target>폐쇄 일시</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
         <note priority="1" from="description">lightning.closing_date</note>
       </trans-unit>
       <trans-unit id="1f0b0f2c90de4f3f0eb2c138eed38f4e9ac7a13e" datatype="html">
         <source>Closed by</source>
+        <target>폐쇄한 측 :</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">59,61</context>
@@ -5603,6 +5846,7 @@
       </trans-unit>
       <trans-unit id="cdd2ea2e12437df848ec474ac15af48859bd09a0" datatype="html">
         <source>Opening transaction</source>
+        <target>개설 트랜잭션</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">91,92</context>
@@ -5611,6 +5855,7 @@
       </trans-unit>
       <trans-unit id="50411064ac48e15659d1985b414ae91af0c8cd36" datatype="html">
         <source>Closing transaction</source>
+        <target>폐쇄 트랜잭션</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
           <context context-type="linenumber">100,102</context>
@@ -5619,6 +5864,7 @@
       </trans-unit>
       <trans-unit id="6008566722612122663" datatype="html">
         <source>Channel: <x id="PH" equiv-text="value.short_id"/></source>
+        <target>채널: <x id="PH" equiv-text="value.short_id"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -5626,6 +5872,7 @@
       </trans-unit>
       <trans-unit id="2408280550320842855" datatype="html">
         <source>Mutually closed</source>
+        <target>상호 폐쇄</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">20</context>
@@ -5633,6 +5880,7 @@
       </trans-unit>
       <trans-unit id="4610828009441770083" datatype="html">
         <source>Force closed</source>
+        <target>강제 폐쇄</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">24</context>
@@ -5640,6 +5888,7 @@
       </trans-unit>
       <trans-unit id="96508700250272816" datatype="html">
         <source>Force closed with penalty</source>
+        <target>페널티와 함께 강제 폐쇄</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -5647,6 +5896,7 @@
       </trans-unit>
       <trans-unit id="c9039b1b13b3ef165b66b3c5d79f810ab1ebb050" datatype="html">
         <source>Open</source>
+        <target>개설</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -5655,6 +5905,7 @@
       </trans-unit>
       <trans-unit id="a43e63c25599408ef14b33c80dd523021b21f846" datatype="html">
         <source>No channels to display</source>
+        <target>표시할 채널이 없습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">29,37</context>
@@ -5663,6 +5914,7 @@
       </trans-unit>
       <trans-unit id="fbaaeb297e70b9a800acf841b9d26c19d60651ef" datatype="html">
         <source>Alias</source>
+        <target>별칭</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">38,40</context>
@@ -5699,6 +5951,7 @@
       </trans-unit>
       <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
         <source>Status</source>
+        <target>상태</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">40,41</context>
@@ -5707,6 +5960,7 @@
       </trans-unit>
       <trans-unit id="0cd107458dce99721e72971d426a5a3106074331" datatype="html">
         <source>Channel ID</source>
+        <target>채널 ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">44,48</context>
@@ -5715,9 +5969,10 @@
       </trans-unit>
       <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
+        <target>sats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">63,67</context>
+          <context context-type="linenumber">63,68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -5767,6 +6022,7 @@
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
+        <target>평균</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5775,6 +6031,7 @@
       </trans-unit>
       <trans-unit id="ba9117dcc11814c44437cf9d7561874ba8b98a2a" datatype="html">
         <source>med</source>
+        <target>중앙값</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -5783,6 +6040,7 @@
       </trans-unit>
       <trans-unit id="ab456546aa39de3328fcfdf077f410b5ff1aa773" datatype="html">
         <source>Avg Capacity</source>
+        <target>평균 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -5795,6 +6053,7 @@
       </trans-unit>
       <trans-unit id="f68705670e611f13da1a43e90f9c97d8761dd9ef" datatype="html">
         <source>Avg Fee Rate</source>
+        <target>평균 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">26,28</context>
@@ -5807,6 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>라우팅 노드가 부과하는 평균 수수료율, 수수료율이 0.5% 또는 5000ppm을 초과하는 경우는 무시한 값</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -5815,6 +6075,7 @@
       </trans-unit>
       <trans-unit id="140fb39368f210ec945417f3eb23bf9564396e5c" datatype="html">
         <source>Avg Base Fee</source>
+        <target>평균 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">41,43</context>
@@ -5827,6 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>라우팅 노드가 부과하는 평균 기본 수수료, 기본 수수료가 5000ppm을 초과하는 경우는 무시한 값</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -5835,6 +6097,7 @@
       </trans-unit>
       <trans-unit id="2e72b276a3c5cc2ec27b4c8189639ba2fe62b6cb" datatype="html">
         <source>Med Capacity</source>
+        <target>중간 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">59,61</context>
@@ -5843,6 +6106,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
+        <target>중간 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -5851,6 +6115,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>라우팅 노드가 부과하는 수수료율의 중간값, 수수료율이 0.5% 또는 5000ppm을 초과하는 경우는 무시한 값</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -5859,6 +6124,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
+        <target>중간 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87,89</context>
@@ -5867,6 +6133,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>라우팅 노드가 부과하는 기본 수수료의 중간값, 기본 수수료가 5000ppm을 초과하는 경우는 무시한 값</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -5875,6 +6142,7 @@
       </trans-unit>
       <trans-unit id="de1c07e9943fc284461bb8fb4860faecf52a1568" datatype="html">
         <source>Lightning node group</source>
+        <target>라이트닝 노드 그룹</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5887,6 +6155,7 @@
       </trans-unit>
       <trans-unit id="6e2329529b1953198c7dfa0edb260554310bc636" datatype="html">
         <source>Nodes</source>
+        <target>노드 수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">25,29</context>
@@ -5923,6 +6192,7 @@
       </trans-unit>
       <trans-unit id="14a12efce56ffe89f839e50320bcf47e4e9ca4e4" datatype="html">
         <source>Liquidity</source>
+        <target>유동성</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -5955,6 +6225,7 @@
       </trans-unit>
       <trans-unit id="807cf11e6ac1cde912496f764c176bdfdd6b7e19" datatype="html">
         <source>Channels</source>
+        <target>채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">40,43</context>
@@ -5962,6 +6233,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">40,44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">149</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
@@ -6011,10 +6290,15 @@
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">194,193</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">259,257</context>
+        </context-group>
         <note priority="1" from="description">lightning.channels</note>
       </trans-unit>
       <trans-unit id="e4706894b195010f6814e54bf6570c729d69aaca" datatype="html">
         <source>Average size</source>
+        <target>평균 크기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">44,46</context>
@@ -6027,6 +6311,7 @@
       </trans-unit>
       <trans-unit id="ed31c09fd77c36238c13d83635f3fe5294c733d2" datatype="html">
         <source>Location</source>
+        <target>위치</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">74,77</context>
@@ -6067,6 +6352,7 @@
       </trans-unit>
       <trans-unit id="29c05e9a540827cdfa8e3b2e5e2f27aeb478916c" datatype="html">
         <source>Network Statistics</source>
+        <target>네트워크 통계</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -6075,6 +6361,7 @@
       </trans-unit>
       <trans-unit id="066e05b9a5db60850d907783fde6913e2e47cd5b" datatype="html">
         <source>Channels Statistics</source>
+        <target>채널 통계</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -6083,6 +6370,7 @@
       </trans-unit>
       <trans-unit id="0f33aeb084ac4d83cb0fe6f72648a8585b1b5e88" datatype="html">
         <source>Lightning Network History</source>
+        <target>라이트닝 네트워크 히스토리</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">49</context>
@@ -6091,6 +6379,7 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
+        <target>유동성 순위</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
@@ -6115,6 +6404,7 @@
       </trans-unit>
       <trans-unit id="c50bf442cf99f6fc5f8b687c460f33234b879869" datatype="html">
         <source>Connectivity Ranking</source>
+        <target>연결성 순위</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">76</context>
@@ -6127,6 +6417,7 @@
       </trans-unit>
       <trans-unit id="7b8687bbc13bbf62288689606dcab9784a3eb53b" datatype="html">
         <source>Fee distribution</source>
+        <target>수수료 분포</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6135,6 +6426,7 @@
       </trans-unit>
       <trans-unit id="7254919336112973896" datatype="html">
         <source>Outgoing Fees</source>
+        <target>인출 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">170</context>
@@ -6146,6 +6438,7 @@
       </trans-unit>
       <trans-unit id="484887099976974152" datatype="html">
         <source>Incoming Fees</source>
+        <target>인입 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">178</context>
@@ -6157,6 +6450,7 @@
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
+        <target>지난 한 주 동안의 변화율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -6173,6 +6467,7 @@
       </trans-unit>
       <trans-unit id="be6ebbb11d55adb8e821d503f8e10ccf43ed8b00" datatype="html">
         <source>Lightning node</source>
+        <target>라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6189,6 +6484,7 @@
       </trans-unit>
       <trans-unit id="af15c87bfed273bc095ba572cf27e3aaffc33b22" datatype="html">
         <source>Active capacity</source>
+        <target>활성 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -6201,6 +6497,7 @@
       </trans-unit>
       <trans-unit id="52ffa66bd0399a49d5aa8d6f8fa077a6e8db09c0" datatype="html">
         <source>Active channels</source>
+        <target>활성 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">26,30</context>
@@ -6213,6 +6510,7 @@
       </trans-unit>
       <trans-unit id="a43f25a9ac40e8e2441ff0be7a36b8e5d15534df" datatype="html">
         <source>Country</source>
+        <target>국가</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">44,47</context>
@@ -6221,6 +6519,7 @@
       </trans-unit>
       <trans-unit id="43b48b9c15083a164b401bf3775a4b99f3917699" datatype="html">
         <source>Average channel size</source>
+        <target>평균 채널 크기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">43,46</context>
@@ -6229,6 +6528,7 @@
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
+        <target>평균 채널 거리</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">59,60</context>
@@ -6259,6 +6559,7 @@
       </trans-unit>
       <trans-unit id="86d9619247d148019e5599707c39a36e880a2d23" datatype="html">
         <source>Exclusively on Tor</source>
+        <target>Tor 전용</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">96,98</context>
@@ -6276,6 +6577,7 @@
       </trans-unit>
       <trans-unit id="bc84b5a9a70217104a53c7139e30b392be6520b7" datatype="html">
         <source>Lease fee rate</source>
+        <target>임대 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">147,150</context>
@@ -6285,6 +6587,7 @@
       </trans-unit>
       <trans-unit id="ee807dd54b4a45eeba284744c64774de1ab5e4f1" datatype="html">
         <source>Lease base fee</source>
+        <target>임대 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">155,157</context>
@@ -6293,6 +6596,7 @@
       </trans-unit>
       <trans-unit id="5e348f3d51c3bb283c16572bee1e293ea991cf49" datatype="html">
         <source>Funding weight</source>
+        <target>자금 가중치</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">161,162</context>
@@ -6301,6 +6605,7 @@
       </trans-unit>
       <trans-unit id="8af4768ed9112268945c697923ce017fbe23e1b7" datatype="html">
         <source>Channel fee rate</source>
+        <target>채널 수수료율</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">171,174</context>
@@ -6310,6 +6615,7 @@
       </trans-unit>
       <trans-unit id="4e6d03f01a59434dee25104fe9478041db186ca8" datatype="html">
         <source>Channel base fee</source>
+        <target>채널 기본 수수료</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">179,181</context>
@@ -6318,6 +6624,7 @@
       </trans-unit>
       <trans-unit id="e8e09fa12864e94f094a2a7c8c97cfdf0cff8aab" datatype="html">
         <source>Compact lease</source>
+        <target>간소화된 임대</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">191,193</context>
@@ -6326,6 +6633,7 @@
       </trans-unit>
       <trans-unit id="aa687f4987e2d4e0010be692d402174962ece70e" datatype="html">
         <source>TLV extension records</source>
+        <target>TLV 확장 레코드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">202,205</context>
@@ -6334,6 +6642,7 @@
       </trans-unit>
       <trans-unit id="b371db1a7ab2167dc8dd91b48ea929d71bb4ef4c" datatype="html">
         <source>Open channels</source>
+        <target>개설된 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">243,246</context>
@@ -6342,6 +6651,7 @@
       </trans-unit>
       <trans-unit id="a2dff531c3d7477178553f579e0ec7c3ac7a6f30" datatype="html">
         <source>Closed channels</source>
+        <target>폐쇄된 채널</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">247,250</context>
@@ -6350,6 +6660,7 @@
       </trans-unit>
       <trans-unit id="2519445964020754921" datatype="html">
         <source>Node: <x id="PH" equiv-text="node.alias"/></source>
+        <target>노드: <x id="PH" equiv-text="node.alias"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -6357,6 +6668,7 @@
       </trans-unit>
       <trans-unit id="7cac1c3013423d82d5149a5854d709bd08411430" datatype="html">
         <source>(Tor nodes excluded)</source>
+        <target>(Tor 노드 제외)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -6377,6 +6689,7 @@
       </trans-unit>
       <trans-unit id="8199511328474154549" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>라이트닝 노드 채널 세계지도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -6384,6 +6697,7 @@
       </trans-unit>
       <trans-unit id="4390631969351833104" datatype="html">
         <source>No geolocation data available</source>
+        <target>사용 가능한 지리 정보가 없습니다</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">219,214</context>
@@ -6391,6 +6705,7 @@
       </trans-unit>
       <trans-unit id="a4d393ee035f4225083c22cc3909b26a05a87528" datatype="html">
         <source>Active channels map</source>
+        <target>활성 채널 지도</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels/node-channels.component.html</context>
           <context context-type="linenumber">2,3</context>
@@ -6399,6 +6714,7 @@
       </trans-unit>
       <trans-unit id="6391724349488018234" datatype="html">
         <source>Indexing in progress</source>
+        <target>인덱싱 진행 중</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -6410,6 +6726,7 @@
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
         <source>Clearnet and Darknet</source>
+        <target>클리어넷과 다크넷</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6421,6 +6738,7 @@
       </trans-unit>
       <trans-unit id="1282458597026430784" datatype="html">
         <source>Clearnet Only (IPv4, IPv6)</source>
+        <target>클리어넷 전용 (IPv4, IPv6)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6432,6 +6750,7 @@
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
+        <target>다크넷 전용 (Tor, I2P, cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -6443,6 +6762,7 @@
       </trans-unit>
       <trans-unit id="0bd8b27f60a1f098a53e06328426d818e3508ff9" datatype="html">
         <source>Share</source>
+        <target>공유</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
           <context context-type="linenumber">29,31</context>
@@ -6454,29 +6774,36 @@
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
-        <source><x id="PH" equiv-text="country.count.toString()"/> nodes</source>
+        <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/>개 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">103,102</context>
+          <context context-type="linenumber">104,103</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">137,136</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">157,156</context>
+          <context context-type="linenumber">158,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">189,188</context>
+          <context context-type="linenumber">191,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">104,102</context>
+          <context context-type="linenumber">105,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7ede3edfacd291eb9db08e11845d9efdf197f417" datatype="html">
         <source>Lightning nodes in <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ country?.name }}"/>의 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">3,4</context>
@@ -6485,6 +6812,7 @@
       </trans-unit>
       <trans-unit id="4498ec29c37744fef46809ebc3db67c5fb789917" datatype="html">
         <source>ISP Count</source>
+        <target>통신사 수</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">34,38</context>
@@ -6493,6 +6821,7 @@
       </trans-unit>
       <trans-unit id="90a6a964ba53464578003e3b4b2873ef5d2132a1" datatype="html">
         <source>Top ISP</source>
+        <target>최상위 통신사</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">38,40</context>
@@ -6501,6 +6830,7 @@
       </trans-unit>
       <trans-unit id="7246059109648045954" datatype="html">
         <source>Lightning nodes in <x id="PH" equiv-text="response.country.en"/></source>
+        <target><x id="PH" equiv-text="response.country.en"/>의 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
           <context context-type="linenumber">35</context>
@@ -6508,6 +6838,7 @@
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
         <source>Clearnet Capacity</source>
+        <target>클리어넷 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -6520,6 +6851,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
+        <target>하나 이상의 클리어넷 IP 주소를 공개한 노드에서 관리하는 유동성의 크기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -6528,6 +6860,7 @@
       </trans-unit>
       <trans-unit id="462d2233ddacc9869eb28e09b3b12f1d85556937" datatype="html">
         <source>Unknown Capacity</source>
+        <target>알 수 없는 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -6540,6 +6873,7 @@
       </trans-unit>
       <trans-unit id="26fb07e8754b87bba4bf12c5137ffa77dac389a8" datatype="html">
         <source>How much liquidity is running on nodes which ISP was not identifiable</source>
+        <target>통신사를 식별할 수 없는 노드에서 관리하는 유동성의 크기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -6548,6 +6882,7 @@
       </trans-unit>
       <trans-unit id="df3728b721159d25e68f5daf44aaab7fa25f1415" datatype="html">
         <source>Tor Capacity</source>
+        <target>Tor 용량</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">20,22</context>
@@ -6560,6 +6895,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
+        <target>Tor 주소만 공개한 노드에서 관리하는 유동성의 크기</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -6568,6 +6904,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>LN 노드를 호스팅하는 상위 100개 통신사</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -6576,17 +6913,19 @@
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">158,156</context>
+          <context context-type="linenumber">159,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">190,188</context>
+          <context context-type="linenumber">192,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
         <source>Lightning ISP</source>
+        <target>라이트닝 통신사</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6595,6 +6934,7 @@
       </trans-unit>
       <trans-unit id="41074627e075a9b1bd8197c474ea68a2b8276e54" datatype="html">
         <source>Top country</source>
+        <target>상위 국가</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">39,41</context>
@@ -6607,6 +6947,7 @@
       </trans-unit>
       <trans-unit id="5fad6872a652d922ad8822f4016e104b9a8cc113" datatype="html">
         <source>Top node</source>
+        <target>상위 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.html</context>
           <context context-type="linenumber">45,48</context>
@@ -6615,6 +6956,7 @@
       </trans-unit>
       <trans-unit id="5735693498020397727" datatype="html">
         <source>Lightning nodes on ISP: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</source>
+        <target>통신사 관할 내 라이트닝 노드: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -6626,6 +6968,7 @@
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
         <source>Lightning nodes on ISP: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></source>
+        <target>통신사 관할 내 라이트닝 노드: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">2,4</context>
@@ -6634,6 +6977,7 @@
       </trans-unit>
       <trans-unit id="ca0b795795658155d44ddca02e95f1feeeb4a88f" datatype="html">
         <source>ASN</source>
+        <target>ASN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">11,14</context>
@@ -6642,6 +6986,7 @@
       </trans-unit>
       <trans-unit id="e422817608e8d55e08b45a1da2e118eb42815af4" datatype="html">
         <source>Active nodes</source>
+        <target>활성 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">14,18</context>
@@ -6650,6 +6995,7 @@
       </trans-unit>
       <trans-unit id="5b727d251b06e9959cf24a90250a480d425339de" datatype="html">
         <source>Top 100 oldest lightning nodes</source>
+        <target>가장 오래된 상위 100개 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -6658,6 +7004,7 @@
       </trans-unit>
       <trans-unit id="4157312397261844620" datatype="html">
         <source>Oldest lightning nodes</source>
+        <target>가장 오래된 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.ts</context>
           <context context-type="linenumber">27</context>
@@ -6665,6 +7012,7 @@
       </trans-unit>
       <trans-unit id="47a30fc5a836252f8fe03e2949756b150684d934" datatype="html">
         <source>Oldest nodes</source>
+        <target>가장 오래된 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
           <context context-type="linenumber">36</context>
@@ -6673,6 +7021,7 @@
       </trans-unit>
       <trans-unit id="4034215342842066505" datatype="html">
         <source>Top lightning nodes</source>
+        <target>상위 라이트닝 노드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -6680,6 +7029,7 @@
       </trans-unit>
       <trans-unit id="af1176facd00a0580509fb2900ab0cf7f9b39ae7" datatype="html">
         <source>Indexing in progress</source>
+        <target>인덱싱 진행 중</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
           <context context-type="linenumber">52,55</context>

@@ -22,12 +22,15 @@ class LightningStatsUpdater {
    * Update the latest entry for each node every config.LIGHTNING.STATS_REFRESH_INTERVAL seconds
    */
   private async $logStatsDaily(): Promise<void> {
-    const date = new Date();
-    Common.setDateMidnight(date);
-    const networkGraph = await lightningApi.$getNetworkGraph();
-    await LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
-    
-    logger.debug(`Updated latest network stats`, logger.tags.ln);
+    try {
+      const date = new Date();
+      Common.setDateMidnight(date);
+      const networkGraph = await lightningApi.$getNetworkGraph();
+      await LightningStatsImporter.computeNetworkStats(date.getTime() / 1000, networkGraph);
+      logger.debug(`Updated latest network stats`, logger.tags.ln);
+    } catch (e) {
+      logger.err(`Exception in $logStatsDaily. Reason: ${(e instanceof Error ? e.message : e)}`);
+    }
   }
 }
 

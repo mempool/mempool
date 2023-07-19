@@ -17,3 +17,12 @@
     }
   }
 }
+
+.date {
+  @media (min-width: 767px) AND (max-width: 991px) {
+    display: none;
+  }
+  @media (max-width: 500px) {
+    display: none;
+  }
+}

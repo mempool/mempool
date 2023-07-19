@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
 import { StateService } from '../../services/state.service';
@@ -17,6 +17,7 @@ import { DOCUMENT } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutComponent implements OnInit {
+  @ViewChild('promoVideo') promoVideo: ElementRef;
   backendInfo$: Observable<IBackendInfo>;
   sponsors$: Observable<any>;
   translators$: Observable<ITranslators>;
@@ -68,7 +69,7 @@ export class AboutComponent implements OnInit {
       tap(() => this.goToAnchor())
     );
   }
-  
+
   ngAfterViewInit() {
     this.goToAnchor();
   }
@@ -89,5 +90,13 @@ export class AboutComponent implements OnInit {
     } else {
       this.showNavigateToSponsor = true;
     }
+  }
+
+  showSubtitles(language): boolean {
+    return ( this.locale.startsWith( language ) && !this.locale.startsWith('en') );
+  }
+
+  unmutePromoVideo(): void {
+    this.promoVideo.nativeElement.muted = false;
   }
 }

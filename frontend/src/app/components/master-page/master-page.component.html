@@ -1,7 +1,7 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]">
+  <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
       <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
@@ -17,9 +17,9 @@
     </ng-container>
   </a>
 
-  <div (window:resize)="onResize($event)" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
-    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <app-svg-images [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65" style="width: 30px; height: 30px; margin-right: 5px;"></app-svg-images>
+  <div (window:resize)="onResize()" ngbDropdown class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
+      <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'bitcoin' : network.val" width="20" height="20" viewBox="0 0 65 65"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <a ngbDropdownItem class="mainnet" [routerLink]="networkPaths['mainnet'] || '/'"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
@@ -62,10 +62,11 @@
 </nav>
 </header>
 
-<br />
+<app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
-<router-outlet></router-outlet>
+<main>
+  <router-outlet></router-outlet>
+</main>
 
-<br>
-
+<app-global-footer *ngIf="footerVisible"></app-global-footer>
 </ng-container>

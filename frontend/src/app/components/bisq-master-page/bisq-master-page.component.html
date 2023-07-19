@@ -40,8 +40,8 @@
   </a>
 
   <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
-    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <app-svg-images name="bisq" width="20" height="20" viewBox="0 0 75 75" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images>
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
+      <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" name="bisq" width="20" height="20" viewBox="0 0 80 80"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['mainnet'] || '/')" ngbDropdownItem class="mainnet"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
@@ -82,6 +82,10 @@
 
 <br />
 
-<router-outlet></router-outlet>
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<app-global-footer *ngIf="footerVisible"></app-global-footer>
 
 <br>

@@ -10,7 +10,7 @@
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
           </div>
-          <div class="symbol"><app-time kind="until" [time]="epochData.estimatedRetargetDate" [fastRender]="true"></app-time></div>
+          <div class="symbol"><app-time kind="until" [time]="epochData.estimatedRetargetDate" [fastRender]="true" [precision]="1"></app-time></div>
         </div>
         <div class="item">
           <h5 class="card-title" i18n="difficulty-box.estimate">Estimate</h5>
@@ -47,13 +47,14 @@
           </div>
         </div>
         <div class="item" *ngIf="showHalving">
-          <h5 class="card-title" i18n="difficulty-box.next-halving">Next Halving</h5>
+          <h5 class="card-title" i18n="difficulty-box.next-halving" i18n-ngbTooltip="difficulty-box.next-halving"
+          ngbTooltip="Next Halving" placement="bottom" #averagefee [disableTooltip]="!isEllipsisActive(averagefee)">Next Halving</h5>
           <div class="card-text">
             <ng-container *ngTemplateOutlet="epochData.blocksUntilHalving === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.blocksUntilHalving }"></ng-container>
             <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
             <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
           </div>
-          <div class="symbol"><app-time kind="until" [time]="epochData.timeUntilHalving" [fastRender]="true"></app-time></div>
+          <div class="symbol"><app-time kind="until" [time]="epochData.timeUntilHalving" [fastRender]="true" [precision]="1"></app-time></div>
         </div>
       </div>
     </div>
@@ -77,7 +78,7 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="difficulty-box.current-period">Current Period</h5>
+      <h5 class="card-title" i18n="difficulty-box.next-halving">Next Halving</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

@@ -1,0 +1,8 @@
+<div class="container p-lg-0 pb-0" style="max-width: 100%; margin-top: 7px" *ngIf="storageService.getValue('hideWarning') !== 'hidden'">
+  <div class="alert alert-danger mb-0 text-center">
+    <div class="message-container" i18n="warning-testnet">This is a test network. Coins have no value.</div>
+    <button type="button" class="close" (click)="dismissWarning()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+</div>

@@ -38,7 +38,7 @@
     </small>
   </div>
 
-  <div [class]="!widget ? 'bottom-padding' : 'pb-0'" class="container pb-lg-0">
+  <div *ngIf="!indexingInProgress else indexing" [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
     <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
     </div>
@@ -74,7 +74,6 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
 <ng-template #loadingReward>
@@ -98,4 +97,8 @@
       </p>
     </div>
   </div>
+</ng-template>
+
+<ng-template #indexing>
+  <div class="indexing-message" i18n="lightning.indexing-in-progress">Indexing in progress</div>
 </ng-template>

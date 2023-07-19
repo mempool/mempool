@@ -10,6 +10,7 @@
   .item {
     padding: 0 5px;
     width: 100%;
+    max-width: 150px;
     &:nth-child(1) {
       display: none;
       @media (min-width: 485px) {
@@ -38,6 +39,7 @@
     flex-direction: row;
   }
   .item {
+    min-width: 120px;
     max-width: 150px;
     margin: 0;
     width: -webkit-fill-available;
@@ -84,6 +86,9 @@
 .card-title {
   color: #4a68b9;
   font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .progress {
@@ -151,4 +156,5 @@
 
 .symbol {
   font-size: 13px;
+  white-space: nowrap;
 }
