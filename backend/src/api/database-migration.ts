@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 58;
+  private static currentVersion = 64;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -497,6 +497,7 @@ class DatabaseMigration {
       this.uniqueLog(logger.notice, this.blocksTruncatedMessage);
       await this.$executeQuery('DELETE FROM `pools`');
       await this.$executeQuery('ALTER TABLE pools AUTO_INCREMENT = 1');
+      await this.$executeQuery(`UPDATE state SET string = NULL WHERE name = 'pools_json_sha'`);
       this.uniqueLog(logger.notice, '`pools` table has been truncated`');
       await this.updateToSchemaVersion(56);
     }
@@ -509,6 +510,43 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 58) {
       // We only run some migration queries for this version
       await this.updateToSchemaVersion(58);
+    }
+
+    if (databaseSchemaVersion < 59 && (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet')) {
+      // https://github.com/mempool/mempool/issues/3360
+      await this.$executeQuery(`TRUNCATE prices`);
+    }
+
+    if (databaseSchemaVersion < 60 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD sigop_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(60);
+    }
+
+    if (databaseSchemaVersion < 61 && isBitcoin === true) {
+      // Break block templates into their own table
+      if (! await this.$checkIfTableExists('blocks_templates')) {
+        await this.$executeQuery('CREATE TABLE blocks_templates AS SELECT id, template FROM blocks_summaries WHERE template != "[]"');
+      }
+      await this.$executeQuery('ALTER TABLE blocks_templates MODIFY template JSON DEFAULT "[]"');
+      await this.$executeQuery('ALTER TABLE blocks_templates ADD PRIMARY KEY (id)');
+      await this.$executeQuery('ALTER TABLE blocks_summaries DROP COLUMN template');
+      await this.updateToSchemaVersion(61);
+    }
+
+    if (databaseSchemaVersion < 62 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_fees BIGINT UNSIGNED DEFAULT NULL');
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD expected_weight BIGINT UNSIGNED DEFAULT NULL');
+      await this.updateToSchemaVersion(62);
+    }
+
+    if (databaseSchemaVersion < 63 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_audits` ADD fullrbf_txs JSON DEFAULT "[]"');
+      await this.updateToSchemaVersion(63);
+    }
+
+    if (databaseSchemaVersion < 64 && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `nodes` ADD features text NULL');
+      await this.updateToSchemaVersion(64);
     }
   }
 
@@ -1028,7 +1066,7 @@ class DatabaseMigration {
   }
 
   public async $blocksReindexingTruncate(): Promise<void> {
-    logger.warn(`Truncating pools, blocks and hashrates for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
+    logger.warn(`Truncating pools, blocks, hashrates and difficulty_adjustments tables for re-indexing (using '--reindex-blocks'). You can cancel this command within 5 seconds`);
     await Common.sleep$(5000);
 
     await this.$executeQuery(`TRUNCATE blocks`);

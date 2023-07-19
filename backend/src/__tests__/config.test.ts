@@ -40,26 +40,32 @@ describe('Mempool Backend Config', () => {
         AUDIT: false,
         ADVANCED_GBT_AUDIT: false,
         ADVANCED_GBT_MEMPOOL: false,
+        RUST_GBT: false,
         CPFP_INDEXING: false,
         MAX_BLOCKS_BULK_QUERY: 0,
+        DISK_CACHE_BLOCK_INTERVAL: 6,
+        MAX_PUSH_TX_SIZE_WEIGHT: 400000,
+        ALLOW_UNREACHABLE: true,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
 
-      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000' });
+      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000', UNIX_SOCKET_PATH: null, RETRY_UNIX_SOCKET_AFTER: 30000 });
 
       expect(config.CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
         PORT: 8332,
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 60000
       });
 
       expect(config.SECOND_CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
         PORT: 8332,
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 60000
       });
 
       expect(config.DATABASE).toStrictEqual({
@@ -69,7 +75,8 @@ describe('Mempool Backend Config', () => {
         PORT: 3306,
         DATABASE: 'mempool',
         USERNAME: 'mempool',
-        PASSWORD: 'mempool'
+        PASSWORD: 'mempool',
+        TIMEOUT: 180000,
       });
 
       expect(config.SYSLOG).toStrictEqual({
@@ -106,6 +113,20 @@ describe('Mempool Backend Config', () => {
         BISQ_URL: 'https://bisq.markets/api',
         BISQ_ONION: 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
       });
+
+      expect(config.MAXMIND).toStrictEqual({
+        ENABLED: false,
+        GEOLITE2_CITY: '/usr/local/share/GeoIP/GeoLite2-City.mmdb',
+        GEOLITE2_ASN: '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
+        GEOIP2_ISP: '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
+      });
+
+      expect(config.REPLICATION).toStrictEqual({
+        ENABLED: false,
+        AUDIT: false,
+        AUDIT_START_HEIGHT: 774000,
+        SERVERS: []
+      });
     });
   });
 
@@ -141,4 +162,94 @@ describe('Mempool Backend Config', () => {
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
     });
   });
+
+  test('should ensure the docker start.sh script has default values', () => {
+    jest.isolateModules(() => {
+      const startSh = fs.readFileSync(`${__dirname}/../../../docker/backend/start.sh`, 'utf-8');
+      const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
+
+      function parseJson(jsonObj, root?) {
+        for (const [key, value] of Object.entries(jsonObj)) {
+          // We have a few cases where we can't follow the pattern
+          if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
+            console.log('skipping check for MEMPOOL_HTTP_PORT');
+            return;
+          }
+          switch (typeof value) {
+            case 'object': {
+              if (Array.isArray(value)) {
+                return;
+              } else {
+                parseJson(value, key);
+              }
+              break;
+            }
+            default: {
+              //The flattened string, i.e, __MEMPOOL_ENABLED__
+              const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+
+              //The string used as the environment variable, i.e, MEMPOOL_ENABLED
+              const envVarStr = `${root ? root : ''}_${key}`;
+
+              //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
+              const defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
+
+              console.log(`looking for ${defaultEntry} in the start.sh script`);
+              const re = new RegExp(defaultEntry);
+              expect(startSh).toMatch(re);
+
+              //The string that actually replaces the values in the config file
+              const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
+              console.log(`looking for ${sedStr} in the start.sh script`);
+              expect(startSh).toContain(sedStr);
+              break;
+            }
+          }
+        }
+      }
+      parseJson(fixture);
+    });
+  });
+
+  test('should ensure that the mempool-config.json Docker template has all the keys', () => {
+    jest.isolateModules(() => {
+      const fixture = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/mempool-config.template.json`, 'utf8'));
+      const dockerJson = fs.readFileSync(`${__dirname}/../../../docker/backend/mempool-config.json`, 'utf-8');
+
+      function parseJson(jsonObj, root?) {
+        for (const [key, value] of Object.entries(jsonObj)) {
+          switch (typeof value) {
+            case 'object': {
+              if (Array.isArray(value)) {
+                // numbers, arrays and booleans won't be enclosed by quotes
+                const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+                expect(dockerJson).toContain(`"${key}": ${replaceStr}`);
+                break;
+              } else {
+                //Check for top level config keys
+                expect(dockerJson).toContain(`"${key}"`);
+                parseJson(value, key);
+                break;
+              }
+            }
+            case 'string': {
+              // strings should be enclosed by quotes
+              const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+              expect(dockerJson).toContain(`"${key}": "${replaceStr}"`);
+              break;
+            }
+            default: {
+              // numbers, arrays and booleans won't be enclosed by quotes
+              const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
+              expect(dockerJson).toContain(`"${key}": ${replaceStr}`);
+              break;
+            }
+          }
+        };
+      }
+      parseJson(fixture);
+    });
+  });
+
+
 });

@@ -137,3 +137,18 @@ nav {
 .navbar-dark .navbar-nav .nav-link {
   color: #f1f1f1;
 }
+
+.current-network-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+:host-context(.rtl-layout) {
+  .current-network-svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
+}

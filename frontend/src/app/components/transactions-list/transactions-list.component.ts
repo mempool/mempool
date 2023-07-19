@@ -56,7 +56,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
@@ -182,14 +182,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   onScroll(): void {
-    const scrollHeight = document.body.scrollHeight;
-    const scrollTop = document.documentElement.scrollTop;
-    if (scrollHeight > 0){
-      const percentageScrolled = scrollTop * 100 / scrollHeight;
-      if (percentageScrolled > 70){
-        this.loadMore.emit();
-      }
-    }
+    this.loadMore.emit();
   }
 
   haveBlindedOutputValues(tx: Transaction): boolean {

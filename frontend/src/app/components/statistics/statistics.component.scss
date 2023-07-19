@@ -1,5 +1,5 @@
 .container-graph {
-  padding: 0px 15px 60px;
+  padding: 0px 15px 10px;
 }
 
 .card-header {
@@ -53,17 +53,17 @@
   }
 }
 .formRadioGroup.mining {
-  @media (min-width: 991px) {
+  @media (min-width: 1035px) {
     position: relative;
     top: -100px;
   }
-  @media (min-width: 830px) and (max-width: 991px) {
+  @media (min-width: 830px) and (max-width: 1035px) {
     position: relative;
     top: 0px;
   }
 }
 .formRadioGroup.no-menu {
-  @media (min-width: 991px) {
+  @media (min-width: 1035px) {
     position: relative;
     top: -33px;
   }
@@ -150,23 +150,76 @@
     margin: 0px 0px;
   }
   .btn {
-    width: 49.25%;
+    width: 50%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 1px 0;
+    margin-right: 0.5rem;
     @media (min-width: 830px) {
       width: auto;
     }
+
+    &:first-child {
+      margin-right: 0;
+      @media (min-width: 830px) {
+        margin-right: 0.5rem;
+      }
+    }
   }
   .dropdown {
-    width: 49.25%;
     display: flex;
+    width: 50%;
+    flex-grow: 1;
+    flex-shrink: 1;
     @media (min-width: 830px) {
       width: auto;
-      margin: 0px 5px;
+      margin-left: 0.5rem;
     }
   }
   #dropdownFees {
     width: 100%;
     @media (min-width: 830px) {
       width: auto;
+    }
+  }
+}
+
+.btn-toggle-rows {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: stretch;
+
+  .btn-group {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  @media (min-width: 500px) {
+    .btn-group:first-child > .btn:last-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .btn-group:last-child > .btn:first-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  @media (max-width: 499px) {
+    flex-direction: column;
+
+    .btn-group:first-child > .btn:first-child {
+      border-bottom-left-radius: 0;
+    }
+    .btn-group:first-child > .btn:last-child {
+      border-bottom-right-radius: 0;
+    }
+    .btn-group:last-child > .btn:first-child {
+      border-top-left-radius: 0;
+    }
+    .btn-group:last-child > .btn:last-child {
+      border-top-right-radius: 0;
     }
   }
 }

@@ -86,11 +86,6 @@ export class PoolPreviewComponent implements OnInit {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
-          poolStats.pool.addresses = poolStats.pool.addresses;
-
-          if (poolStats.reportedHashrate) {
-            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
-          }
 
           this.openGraphService.waitOver('pool-stats-' + this.slug);
 

@@ -29,7 +29,7 @@
   <ng-template #pegout>
     <ng-container *ngIf="line.pegout; else normal">
       <p *ngIf="!isConnector">Peg Out</p>
-      <p *ngIf="line.value != null"><app-amount [satoshis]="line.value"></app-amount></p>
+      <p *ngIf="line.displayValue != null"><app-amount [satoshis]="line.displayValue"></app-amount></p>
       <p class="address">
         <app-truncate [text]="line.pegout"></app-truncate>
       </p>
@@ -55,10 +55,26 @@
             <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin + 1 }}</p>
           </ng-container>
       </ng-container>
-      <p *ngIf="line.value == null && line.confidential" i18n="shared.confidential">Confidential</p>
-      <p *ngIf="line.value != null"><app-amount [blockConversion]="blockConversion" [satoshis]="line.value"></app-amount></p>
+      <p *ngIf="line.displayValue == null && line.confidential" i18n="shared.confidential">Confidential</p>
+      <p *ngIf="line.displayValue != null">
+        <ng-template [ngIf]="line.asset && line.asset !== nativeAssetId" [ngIfElse]="defaultOutput">
+          <div *ngIf="assetsMinimal && assetsMinimal[line.asset] else assetNotFound">
+            <ng-container *ngTemplateOutlet="assetBox; context:{ $implicit: line }"></ng-container>
+          </div>
+          <ng-template #assetNotFound>
+            {{ line.displayValue }} <span class="symbol">{{ line.asset | slice : 0 : 7 }}</span>
+          </ng-template>
+        </ng-template>
+        <ng-template #defaultOutput>
+          <app-amount [blockConversion]="blockConversion" [satoshis]="line.displayValue"></app-amount>
+        </ng-template>
+      </p>
       <p *ngIf="line.type !== 'fee' && line.address" class="address">
         <app-truncate [text]="line.address"></app-truncate>
       </p>
   </ng-template>
 </div>
+
+<ng-template #assetBox let-item>
+  {{ item.displayValue / pow(10, assetsMinimal[item.asset][3]) | number: '1.' + assetsMinimal[item.asset][3] + '-' + assetsMinimal[item.asset][3] }} <span class="symbol">{{ assetsMinimal[item.asset][1] }}</span>
+</ng-template>

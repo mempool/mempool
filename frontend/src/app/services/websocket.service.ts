@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { WebsocketResponse, IBackendInfo } from '../interfaces/websocket.interface';
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
 import { Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
-import { BlockExtended } from '../interfaces/node-api.interface';
+import { CacheService } from './cache.service';
 
-const OFFLINE_RETRY_AFTER_MS = 1000;
-const OFFLINE_PING_CHECK_AFTER_MS = 10000;
+const OFFLINE_RETRY_AFTER_MS = 2000;
+const OFFLINE_PING_CHECK_AFTER_MS = 30000;
 const EXPECT_PING_RESPONSE_AFTER_MS = 5000;
 
 const initData = makeStateKey('/api/v1/init-data');
@@ -28,6 +28,8 @@ export class WebsocketService {
   private isTrackingTx = false;
   private trackingTxId: string;
   private isTrackingMempoolBlock = false;
+  private isTrackingRbf = false;
+  private isTrackingRbfSummary = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -39,6 +41,7 @@ export class WebsocketService {
     private stateService: StateService,
     private apiService: ApiService,
     private transferState: TransferState,
+    private cacheService: CacheService,
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
@@ -118,7 +121,7 @@ export class WebsocketService {
       },
       (err: Error) => {
         console.log(err);
-        console.log(`WebSocket error, trying to reconnect in ${OFFLINE_RETRY_AFTER_MS} seconds`);
+        console.log(`WebSocket error`);
         this.goOffline();
       });
   }
@@ -173,6 +176,26 @@ export class WebsocketService {
     this.isTrackingMempoolBlock = false
   }
 
+  startTrackRbf(mode: 'all' | 'fullRbf') {
+    this.websocketSubject.next({ 'track-rbf': mode });
+    this.isTrackingRbf = true;
+  }
+
+  stopTrackRbf() {
+    this.websocketSubject.next({ 'track-rbf': 'stop' });
+    this.isTrackingRbf = false;
+  }
+
+  startTrackRbfSummary() {
+    this.websocketSubject.next({ 'track-rbf-summary': true });
+    this.isTrackingRbfSummary = true;
+  }
+
+  stopTrackRbfSummary() {
+    this.websocketSubject.next({ 'track-rbf-summary': false });
+    this.isTrackingRbfSummary = false;
+  }
+
   startTrackBisqMarket(market: string) {
     this.websocketSubject.next({ 'track-bisq-market': market });
   }
@@ -197,11 +220,13 @@ export class WebsocketService {
   }
 
   goOffline() {
+    const retryDelay = OFFLINE_RETRY_AFTER_MS + (Math.random() * OFFLINE_RETRY_AFTER_MS);
+    console.log(`trying to reconnect websocket in ${retryDelay} seconds`);
     this.goneOffline = true;
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
       this.startSubscription(true);
-    }, OFFLINE_RETRY_AFTER_MS);
+    }, retryDelay);
   }
 
   startOnlineCheck() {
@@ -212,7 +237,7 @@ export class WebsocketService {
       this.websocketSubject.next({action: 'ping'});
       this.onlineCheckTimeoutTwo = window.setTimeout(() => {
         if (!this.goneOffline) {
-          console.log('WebSocket response timeout, force closing, trying to reconnect in 10 seconds');
+          console.log('WebSocket response timeout, force closing');
           this.websocketSubject.complete();
           this.subscription.unsubscribe();
           this.goOffline();
@@ -222,15 +247,12 @@ export class WebsocketService {
   }
 
   handleResponse(response: WebsocketResponse) {
+    let reinitBlocks = false;
+
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      let maxHeight = 0;
-      blocks.forEach((block: BlockExtended) => {
-        if (block.height > this.stateService.latestBlockHeight) {
-          maxHeight = Math.max(maxHeight, block.height);
-          this.stateService.blocks$.next([block, false]);
-        }
-      });
+      this.stateService.resetBlocks(blocks);
+      const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
       this.stateService.updateChainTip(maxHeight);
     }
 
@@ -238,10 +260,17 @@ export class WebsocketService {
       this.stateService.mempoolTransactions$.next(response.tx);
     }
 
+    if (response['txPosition']) {
+      this.stateService.mempoolTxPosition$.next(response['txPosition']);
+    }
+
     if (response.block) {
-      if (response.block.height > this.stateService.latestBlockHeight) {
+      if (response.block.height === this.stateService.latestBlockHeight + 1) {
         this.stateService.updateChainTip(response.block.height);
-        this.stateService.blocks$.next([response.block, !!response.txConfirmed]);
+        this.stateService.addBlock(response.block);
+        this.stateService.txConfirmed$.next([response.txConfirmed, response.block]);
+      } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
+        reinitBlocks = true;
       }
 
       if (response.txConfirmed) {
@@ -255,6 +284,18 @@ export class WebsocketService {
 
     if (response.rbfTransaction) {
       this.stateService.txReplaced$.next(response.rbfTransaction);
+    }
+
+    if (response.rbfInfo) {
+      this.stateService.txRbfInfo$.next(response.rbfInfo);
+    }
+
+    if (response.rbfLatest) {
+      this.stateService.rbfLatest$.next(response.rbfLatest);
+    }
+
+    if (response.rbfLatestSummary) {
+      this.stateService.rbfLatestSummary$.next(response.rbfLatestSummary);
     }
 
     if (response.txReplaced) {
@@ -343,6 +384,10 @@ export class WebsocketService {
 
     if (response['git-commit']) {
       this.stateService.backendInfo$.next(response['git-commit']);
+    }
+
+    if (reinitBlocks) {
+      this.websocketSubject.next({'refresh-blocks': true});
     }
   }
 }

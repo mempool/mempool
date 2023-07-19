@@ -79,6 +79,7 @@ export namespace ILightningApi {
   }
 
   export interface Feature {
+    bit: number;
     name: string;
     is_required: boolean;
     is_known: boolean;

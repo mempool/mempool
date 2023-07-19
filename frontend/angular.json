@@ -38,6 +38,10 @@
             "translation": "src/locale/messages.de.xlf",
             "baseHref": "/de/"
           },
+          "da": {
+            "translation": "src/locale/messages.da.xlf",
+            "baseHref": "/da/"
+          },
           "es": {
             "translation": "src/locale/messages.es.xlf",
             "baseHref": "/es/"

@@ -54,7 +54,8 @@ src/resources/assets-testnet.json
 src/resources/assets-testnet.minimal.json
 src/resources/pools.json
 src/resources/mining-pools/*
-src/resources/*.mp4
+src/resources/**/*.mp4
+src/resources/**/*.vtt
 
 # environment config
 mempool-frontend-config.json
