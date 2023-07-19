@@ -379,7 +379,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
                 ancestors: tx.ancestors,
                 bestDescendant: tx.bestDescendant,
               };
-              const hasRelatives = !!(tx.ancestors.length || tx.bestDescendant);
+              const hasRelatives = !!(tx.ancestors?.length || tx.bestDescendant);
               this.hasEffectiveFeeRate = hasRelatives || (tx.effectiveFeePerVsize && (Math.abs(tx.effectiveFeePerVsize - tx.feePerVsize) > 0.01));
             } else {
               this.fetchCpfp$.next(this.tx.txid);

@@ -7,6 +7,7 @@ import bitcoinClient from './api/bitcoin/bitcoin-client';
 import priceUpdater from './tasks/price-updater';
 import PricesRepository from './repositories/PricesRepository';
 import config from './config';
+import auditReplicator from './replication/AuditReplication';
 
 export interface CoreIndex {
   name: string;
@@ -136,6 +137,7 @@ class Indexer {
       await blocks.$generateBlocksSummariesDatabase();
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
+      await auditReplicator.$sync();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
