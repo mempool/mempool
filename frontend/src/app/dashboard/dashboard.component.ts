@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
-import { filter, map, scan, share, switchMap } from 'rxjs/operators';
+import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
   transactions$: Observable<TransactionStripped[]>;
+  blocks$: Observable<BlockExtended[]>;
   replacements$: Observable<ReplacementInfo[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
@@ -142,6 +143,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
           acc = acc.slice(0, 6);
           return acc;
         }, []),
+      );
+
+    this.blocks$ = this.stateService.blocks$
+      .pipe(
+        tap((blocks) => {
+          this.latestBlockHeight = blocks[0].height;
+        }),
+        switchMap((blocks) => {
+          if (this.stateService.env.MINING_DASHBOARD === true) {
+            for (const block of blocks) {
+              // @ts-ignore: Need to add an extra field for the template
+              block.extras.pool.logo = `/resources/mining-pools/` +
+                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+            }
+          }
+          return of(blocks.slice(0, 6));
+        })
       );
 
     this.replacements$ = this.stateService.rbfLatestSummary$;
