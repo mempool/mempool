@@ -211,9 +211,12 @@ class MempoolBlocks {
     const start = Date.now();
 
     // reset mempool short ids
-    this.resetUids();
+    if (saveResults) {
+      this.resetUids();
+    }
+    // set missing short ids
     for (const tx of Object.values(newMempool)) {
-      this.setUid(tx, true);
+      this.setUid(tx, !saveResults);
     }
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
@@ -497,6 +500,8 @@ class MempoolBlocks {
       }
     }
 
+    const isAccelerated : { [txid: string]: boolean } = {};
+
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
     let mempoolTx: MempoolTransactionExtended;
@@ -526,10 +531,11 @@ class MempoolBlocks {
           }
 
           const acceleration = accelerations[txid];
-          if (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool))) {
+          if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
             mempoolTx.acceleration = true;
             for (const ancestor of mempoolTx.ancestors || []) {
               mempool[ancestor.txid].acceleration = true;
+              isAccelerated[ancestor.txid] = true;
             }
           } else {
             delete mempoolTx.acceleration;
