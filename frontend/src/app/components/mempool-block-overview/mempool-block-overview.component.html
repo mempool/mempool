@@ -1,10 +1,9 @@
 <app-block-overview-graph
   #blockGraph
   [isLoading]="isLoading$ | async"
-  [resolution]="75"
+  [resolution]="86"
   [blockLimit]="stateService.blockVSize"
   [orientation]="timeLtr ? 'right' : 'left'"
   [flip]="true"
-  [pixelAlign]="pixelAlign"
   (txClickEvent)="onTxClick($event)"
 ></app-block-overview-graph>

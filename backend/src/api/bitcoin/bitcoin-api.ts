@@ -65,17 +65,11 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return this.bitcoindClient.getChainTips()
-      .then((result: IBitcoinApi.ChainTips[]) => {
-        return result.find(tip => tip.status === 'active')!.height;
-      });
+    return this.bitcoindClient.getBlockCount();
   }
 
   $getBlockHashTip(): Promise<string> {
-    return this.bitcoindClient.getChainTips()
-      .then((result: IBitcoinApi.ChainTips[]) => {
-        return result.find(tip => tip.status === 'active')!.hash;
-      });
+    return this.bitcoindClient.getBestBlockHash();
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {

@@ -124,7 +124,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     )
     .pipe(
       switchMap(() => combineLatest([
-        this.stateService.blocks$.pipe(map(([block]) => block)),
+        this.stateService.blocks$.pipe(map((blocks) => blocks[0])),
         this.stateService.mempoolBlocks$
           .pipe(
             map((mempoolBlocks) => {
@@ -186,8 +186,11 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       });
 
-    this.blockSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
+    this.blockSubscription = this.stateService.blocks$.pipe(map((blocks) => blocks[0]))
+      .subscribe((block) => {
+        if (!block) {
+          return;
+        }
         if (this.chainTip === -1) {
           this.animateEntry = block.height === this.stateService.latestBlockHeight;
         } else {
@@ -221,8 +224,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
         } else {
           this.stateService.blocks$
-            .pipe(take(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT))
-            .subscribe(([block]) => {
+            .pipe(map((blocks) => blocks[0]))
+            .subscribe((block) => {
               if (this.stateService.latestBlockHeight === block.height) {
                 this.router.navigate([this.relativeUrlPipe.transform('/block/'), block.id], { state: { data: { block } }});
               }
@@ -297,7 +300,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
       if (!this.count) {
-        const lastBlock = blocks[blocks.length - 1];
+        const lastBlock = blocks[0];
         lastBlock.blockSize += block.blockSize;
         lastBlock.blockVSize += block.blockVSize;
         lastBlock.nTx += block.nTx;
@@ -308,7 +311,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     if (blocks.length) {
-      blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
+      blocks[0].isStack = blocks[0].blockVSize > this.stateService.blockVSize;
     }
     return blocks;
   }
