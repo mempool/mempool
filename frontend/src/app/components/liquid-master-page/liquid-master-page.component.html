@@ -44,9 +44,9 @@
     </ng-container>
   </a>
 
-  <div ngbDropdown (window:resize)="onResize($event)" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
-    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split" aria-haspopup="true">
-      <app-svg-images [name]="network.val === '' ? 'liquid' : network.val" width="22" height="22" viewBox="0 0 125 125" style="width: 30px; height: 30px; margin-right: 5px;"></app-svg-images>
+  <div ngbDropdown (window:resize)="onResize()" class="dropdown-container" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
+    <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle-split d-flex justify-content-center align-items-center" aria-haspopup="true">
+      <app-svg-images class="d-flex justify-content-center align-items-center current-network-svg" [name]="network.val === '' ? 'liquid' : network.val" width="20" height="20" viewBox="0 0 125 125"></app-svg-images>
     </button>
     <div ngbDropdownMenu [ngClass]="{'dropdown-menu-right' : isMobile}">
       <a [href]="env.MEMPOOL_WEBSITE_URL + urlLanguage + (networkPaths['mainnet'] || '')" ngbDropdownItem class="mainnet"><app-svg-images name="bitcoin" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet mr-1"></app-svg-images> Mainnet</a>
@@ -90,9 +90,12 @@
 </nav>
 </header>
 
-<br />
+<app-testnet-alert *ngIf="network.val === 'liquidtestnet'"></app-testnet-alert>
 
-<router-outlet></router-outlet>
+<main>
+  <router-outlet></router-outlet>
+</main>
 
-<br>
+<app-global-footer *ngIf="footerVisible"></app-global-footer>
+
 </ng-container>

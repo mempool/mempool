@@ -23,12 +23,13 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:4004"
+    "REST_API_URL": "http://127.0.0.1:5004",
+    "UNIX_SOCKET_PATH": "/elements/socket/esplora-liquid-testnet"
   },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
-    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "USERNAME": "__MEMPOOL_LIQUIDTESTNET_USER__",
     "PASSWORD": "__MEMPOOL_LIQUIDTESTNET_PASS__",
     "DATABASE": "mempool_liquidtestnet"

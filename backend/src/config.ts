@@ -31,12 +31,17 @@ interface IConfig {
     AUDIT: boolean;
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
+    RUST_GBT: boolean;
     CPFP_INDEXING: boolean;
     MAX_BLOCKS_BULK_QUERY: number;
     DISK_CACHE_BLOCK_INTERVAL: number;
+    MAX_PUSH_TX_SIZE_WEIGHT: number;
+    ALLOW_UNREACHABLE: boolean;
   };
   ESPLORA: {
     REST_API_URL: string;
+    UNIX_SOCKET_PATH: string | void | null;
+    RETRY_UNIX_SOCKET_AFTER: number;
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -84,6 +89,7 @@ interface IConfig {
     DATABASE: string;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -126,6 +132,12 @@ interface IConfig {
     GEOLITE2_ASN: string;
     GEOIP2_ISP: string;
   },
+  REPLICATION: {
+    ENABLED: boolean;
+    AUDIT: boolean;
+    AUDIT_START_HEIGHT: number;
+    SERVERS: string[];
+  }
 }
 
 const defaults: IConfig = {
@@ -157,12 +169,17 @@ const defaults: IConfig = {
     'AUDIT': false,
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,
+    'RUST_GBT': false,
     'CPFP_INDEXING': false,
     'MAX_BLOCKS_BULK_QUERY': 0,
     'DISK_CACHE_BLOCK_INTERVAL': 6,
+    'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
+    'ALLOW_UNREACHABLE': true,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
+    'UNIX_SOCKET_PATH': null,
+    'RETRY_UNIX_SOCKET_AFTER': 30000,
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
@@ -190,7 +207,8 @@ const defaults: IConfig = {
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 180000,
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -252,6 +270,12 @@ const defaults: IConfig = {
     'GEOLITE2_ASN': '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
     'GEOIP2_ISP': '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
   },
+  'REPLICATION': {
+    'ENABLED': false,
+    'AUDIT': false,
+    'AUDIT_START_HEIGHT': 774000,
+    'SERVERS': [],
+  }
 };
 
 class Config implements IConfig {
@@ -271,6 +295,7 @@ class Config implements IConfig {
   PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
+  REPLICATION: IConfig['REPLICATION'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -290,6 +315,7 @@ class Config implements IConfig {
     this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
+    this.REPLICATION = configs.REPLICATION;
   }
 
   merge = (...objects: object[]): IConfig => {

@@ -13,9 +13,9 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { StateService } from '../../services/state.service';
 
 @Component({
-  selector: 'app-block-prediction-graph',
-  templateUrl: './block-prediction-graph.component.html',
-  styleUrls: ['./block-prediction-graph.component.scss'],
+  selector: 'app-block-health-graph',
+  templateUrl: './block-health-graph.component.html',
+  styleUrls: ['./block-health-graph.component.scss'],
   styles: [`
     .loadingGraphs {
       position: absolute;
@@ -26,7 +26,7 @@ import { StateService } from '../../services/state.service';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockPredictionGraphComponent implements OnInit {
+export class BlockHealthGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -60,7 +60,7 @@ export class BlockPredictionGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@d7d5fcf50179ad70c938491c517efb82de2c8146:Block Prediction Accuracy`);
+    this.seoService.setTitle($localize`:@@d7d5fcf50179ad70c938491c517efb82de2c8146:Block Health`);
     this.miningWindowPreference = '24h';//this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -80,7 +80,7 @@ export class BlockPredictionGraphComponent implements OnInit {
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
-          return this.apiService.getHistoricalBlockPrediction$(timespan)
+          return this.apiService.getHistoricalBlocksHealth$(timespan)
             .pipe(
               tap((response) => {
                 this.prepareChartOptions(response.body);
@@ -163,7 +163,7 @@ export class BlockPredictionGraphComponent implements OnInit {
           hideOverlap: true,
           padding: [0, 5],
         },
-        data: data.map(prediction => prediction[0])
+        data: data.map(health => health[0])
       },
       yAxis: data.length === 0 ? undefined : [
         {
@@ -186,12 +186,12 @@ export class BlockPredictionGraphComponent implements OnInit {
       series: data.length === 0 ? undefined : [
         {
           zlevel: 0,
-          name: $localize`Match rate`,
-          data: data.map(prediction => ({
-            value: prediction[2],
-            block: prediction[1],
+          name: $localize`Health`,
+          data: data.map(health => ({
+            value: health[2],
+            block: health[1],
             itemStyle: {
-              color: this.getPredictionColor(prediction[2])
+              color: this.getHealthColor(health[2])
             }
           })),
           type: 'bar',
@@ -257,7 +257,7 @@ export class BlockPredictionGraphComponent implements OnInit {
     return 'rgb(' + gradient.red + ',' + gradient.green + ',' + gradient.blue + ')';
   }
 
-  getPredictionColor(matchRate) {
+  getHealthColor(matchRate) {
     return this.colorGradient(
       Math.pow((100 - matchRate) / 100, 0.5),
       {red: 67, green: 171, blue: 71},
@@ -294,7 +294,7 @@ export class BlockPredictionGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-fees-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-health-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

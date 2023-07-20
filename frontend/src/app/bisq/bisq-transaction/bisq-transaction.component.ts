@@ -112,7 +112,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
       this.error = error;
     });
 
-    this.latestBlock$ = this.stateService.blocks$.pipe(map((([block]) => block)));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
 
     this.stateService.bsqPrice$
       .subscribe((bsqPrice) => {

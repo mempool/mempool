@@ -1,12 +1,12 @@
 import { ILoadingIndicators } from '../services/state.service';
 import { Transaction } from './electrs.interface';
-import { BlockExtended, DifficultyAdjustment } from './node-api.interface';
+import { BlockExtended, DifficultyAdjustment, RbfTree } from './node-api.interface';
 
 export interface WebsocketResponse {
   block?: BlockExtended;
   blocks?: BlockExtended[];
   conversions?: any;
-  txConfirmed?: boolean;
+  txConfirmed?: string;
   historicalDate?: string;
   mempoolInfo?: MempoolInfo;
   vBytesPerSecond?: number;
@@ -16,6 +16,9 @@ export interface WebsocketResponse {
   tx?: Transaction;
   rbfTransaction?: ReplacedTransaction;
   txReplaced?: ReplacedTransaction;
+  rbfInfo?: RbfTree;
+  rbfLatest?: RbfTree[];
+  rbfLatestSummary?: ReplacementInfo[];
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
@@ -26,12 +29,25 @@ export interface WebsocketResponse {
   'track-address'?: string;
   'track-asset'?: string;
   'track-mempool-block'?: number;
+  'track-rbf'?: string;
+  'track-rbf-summary'?: boolean;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
+  'refresh-blocks'?: boolean;
 }
 
 export interface ReplacedTransaction extends Transaction {
   txid: string;
+}
+
+export interface ReplacementInfo {
+  mined: boolean;
+  fullRbf: boolean;
+  txid: string;
+  oldFee: number;
+  oldVsize: number;
+  newFee: number;
+  newVsize: number;
 }
 export interface MempoolBlock {
   blink?: boolean;
@@ -54,6 +70,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[],
   removed: string[],
+  changed?: { txid: string, rate: number | undefined }[];
 }
 
 export interface MempoolInfo {
@@ -71,7 +88,8 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'fresh' | 'added' | 'censored' | 'selected';
+  rate?: number; // effective fee rate
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
   context?: 'projected' | 'actual';
 }
 

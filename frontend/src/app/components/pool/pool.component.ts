@@ -68,7 +68,7 @@ export class PoolComponent implements OnInit {
           return this.apiService.getPoolStats$(slug);
         }),
         tap(() => {
-          this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
+          this.loadMoreSubject.next(this.blocks[0]?.height);
         }),
         map((poolStats) => {
           this.seoService.setTitle(poolStats.pool.name);
