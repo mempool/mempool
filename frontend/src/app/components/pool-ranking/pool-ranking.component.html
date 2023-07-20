@@ -139,6 +139,8 @@
           <td class="" *ngIf="this.miningWindowPreference === '24h'"><b>{{ miningStats.lastEstimatedHashrate}} {{
               miningStats.miningUnits.hashrateUnit }}</b></td>
           <td class=""><b>{{ miningStats.blockCount }}</b></td>
+          <td *ngIf="auditAvailable"></td>
+          <td *ngIf="auditAvailable"></td>
           <td class="d-none d-md-table-cell"><b>{{ miningStats.totalEmptyBlock }} ({{ miningStats.totalEmptyBlockRatio
               }}%)</b></td>
         </tr>
