@@ -1,0 +1,51 @@
+<div class="stats-wrapper" *ngIf="accelerationStats$ | async as stats; else loading">
+  <div class="stats-container">
+    <div class="item">
+      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <div class="card-text">
+        <div>{{ stats.count }}</div>
+        <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.fee-delta">Fee delta</h5>
+      <div class="card-text">
+        <div>{{ stats.totalFeeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span></div>
+        <div class="symbol" i18n="accelerator.paid-out-of-band">paid out of band</div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.success-rate">Success rate</h5>
+      <div class="card-text">
+        <div>{{ stats.successRate.toFixed(2) }} %</div>
+        <div class="symbol" i18n="accelerator.mined-next-block">mined in the next block</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="stats-container loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="mining.rewards">Miners Reward</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.fees-per-block">Avg Block Fees</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="mining.average-fee">Avg Tx Fee</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

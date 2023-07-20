@@ -10,6 +10,7 @@ import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-ch
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
+import { AcceleratorDashboardComponent } from '../components/accelerator-dashboard/accelerator-dashboard.component';
 import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.component';
 import { PoolComponent } from '../components/pool/pool.component';
 import { StartComponent } from '../components/start/start.component';
@@ -35,6 +36,17 @@ const routes: Routes = [
             path: '',
             component: MiningDashboardComponent,
           },
+        ]
+      },
+      {
+        path: 'acceleration',
+        data: { networks: ['bitcoin'] },
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: AcceleratorDashboardComponent,
+          }
         ]
       },
       {

@@ -85,6 +85,8 @@ import { GlobalFooterComponent } from './components/global-footer/global-footer.
 import { AcceleratePreviewComponent } from '../components/accelerate-preview/accelerate-preview.component';
 import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/accelerate-fee-graph.component';
 import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
+import { AccelerationsListComponent } from '../components/accelerations-list/accelerations-list.component';
+import { AccelerationStatsComponent } from '../components/acceleration-stats/acceleration-stats.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -190,6 +192,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     OnlyVsizeDirective,
     OnlyWeightDirective,
     MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
   ],
   imports: [
     CommonModule,
@@ -300,6 +304,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AcceleratePreviewComponent,
     AccelerateFeeGraphComponent,
     MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,
