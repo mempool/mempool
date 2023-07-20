@@ -64,7 +64,9 @@ li.nav-item {
 
 
 .navbar-collapse {
-  flex-basis: auto;
+  @media (min-width: 564px) {
+    flex-basis: auto;
+  }
   justify-content: flex-end;
 }
 
