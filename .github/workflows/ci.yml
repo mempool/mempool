@@ -99,3 +99,6 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
