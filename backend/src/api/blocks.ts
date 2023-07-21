@@ -171,7 +171,9 @@ class Blocks {
 
   private convertLiquidFees(block: IBitcoinApi.VerboseBlock): IBitcoinApi.VerboseBlock {
     block.tx.forEach(tx => {
-      tx.fee = Object.values(tx.fee || {}).reduce((total, output) => total + output, 0);
+      if (!isFinite(Number(tx.fee))) {
+        tx.fee = Object.values(tx.fee || {}).reduce((total, output) => total + output, 0);
+      }
     });
     return block;
   }
@@ -877,7 +879,7 @@ class Blocks {
 
     let height = blockHeight;
     let summary: BlockSummary;
-    if (cpfpSummary) {
+    if (cpfpSummary && !Common.isLiquid()) {
       summary = {
         id: hash,
         transactions: cpfpSummary.transactions.map(tx => {
