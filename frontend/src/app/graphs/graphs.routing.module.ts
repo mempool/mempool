@@ -17,6 +17,7 @@ import { StartComponent } from '../components/start/start.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { AccelerationFeesGraphComponent } from '../components/acceleration-fees-graph/acceleration-fees-graph.component';
 
 const routes: Routes = [
   {
@@ -104,6 +105,11 @@ const routes: Routes = [
             path: 'mining/block-sizes-weights',
             data: { networks: ['bitcoin'] },
             component: BlockSizesWeightsGraphComponent,
+          },
+          {
+            path: 'acceleration/fees',
+            data: { networks: ['bitcoin'] },
+            component: AccelerationFeesGraphComponent,
           },
           {
             path: 'lightning',

@@ -3,6 +3,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { GraphsRoutingModule } from './graphs.routing.module';
 import { SharedModule } from '../shared/shared.module';
 
+import { AccelerationFeesGraphComponent } from '../components/acceleration-fees-graph/acceleration-fees-graph.component';
 import { BlockFeesGraphComponent } from '../components/block-fees-graph/block-fees-graph.component';
 import { BlockRewardsGraphComponent } from '../components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '../components/block-fee-rates-graph/block-fee-rates-graph.component';
@@ -38,6 +39,7 @@ import { CommonModule } from '@angular/common';
 
     StatisticsComponent,
     GraphsComponent,
+    AccelerationFeesGraphComponent,
     BlockFeesGraphComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
