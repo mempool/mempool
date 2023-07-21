@@ -175,6 +175,43 @@
   height: 18px;
 }
 
+.lastest-blocks-table {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.7rem !important;
+  }
+  .table-cell-height {
+    width: 15%;
+  }
+  .table-cell-mined {
+    width: 35%;
+    text-align: left;
+  }
+  .table-cell-transaction-count {
+    display: none;
+    text-align: right;
+    width: 20%;
+    display: table-cell;
+  }
+  .table-cell-size {
+    display: none;
+    text-align: center;
+    width: 30%;
+    @media (min-width: 485px) {
+      display: table-cell;
+    }
+    @media (min-width: 768px) {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      display: table-cell;
+    }
+  }
+}
+
 .lastest-replacements-table {
   width: 100%;
   text-align: left;

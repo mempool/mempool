@@ -73,7 +73,7 @@
       </div>
     </div>
     <div class="col" style="max-height: 410px">
-      <div class="card">
+      <div class="card" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'; else latestBlocks">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/rbf' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.latest-rbf-replacements">Latest replacements</h5>
@@ -106,6 +106,46 @@
           </table>
         </div>
       </div>
+      <ng-template #latestBlocks>
+        <div class="card">
+          <div class="card-body">
+            <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
+              <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
+              <span>&nbsp;</span>
+              <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            </a>
+            <table class="table lastest-blocks-table">
+              <thead>
+                <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
+                <th *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
+                <th *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4" i18n="mining.pool-name">Pool</th>
+                <th class="table-cell-transaction-count" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
+                <th class="table-cell-size" i18n="dashboard.latest-blocks.size">Size</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
+                  <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+                  <td *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></td>
+                  <td *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4">
+                    <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+                      <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
+                        onError="this.src = '/resources/mining-pools/default.svg'">
+                      <span class="pool-name">{{ block.extras.pool.name }}</span>
+                    </a>
+                  </td>
+                  <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
+                  <td class="table-cell-size">
+                    <div class="progress">
+                      <div class="progress-bar progress-mempool {{ network$ | async }}" role="progressbar" [ngStyle]="{'width': (block.weight / stateService.env.BLOCK_WEIGHT_UNITS)*100 + '%' }">&nbsp;</div>
+                      <div class="progress-text" [innerHTML]="block.size | bytes: 2"></div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-template>
     </div>
     <div class="col" style="max-height: 410px">
       <div class="card">
@@ -180,10 +220,10 @@
 <ng-template #mempoolTable let-mempoolInfoData>
   <div class="mempool-info-data">
     <div class="item">
-      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.00001 || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
+      <h5 *ngIf="!mempoolInfoData.value || mempoolInfoData.value.memPoolInfo.mempoolminfee === mempoolInfoData.value.memPoolInfo.minrelaytxfee || (stateService.env.BASE_MODULE === 'liquid' && mempoolInfoData.value.memPoolInfo.mempoolminfee === 0.000001) else purgingText" class="card-title" i18n="dashboard.minimum-fee|Minimum mempool fee">Minimum fee</h5>
       <ng-template #purgingText><h5 class="card-title" i18n="dashboard.purging|Purgin below fee">Purging</h5></ng-template>
       <p class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loading">
-        <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee > 0.00001">&lt; </ng-template><app-fee-rate [fee]="mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000"></app-fee-rate>
+        <ng-template [ngIf]="mempoolInfoData.value.memPoolInfo.mempoolminfee !== mempoolInfoData.value.memPoolInfo.minrelaytxfee">&lt; </ng-template><app-fee-rate [fee]="mempoolInfoData.value.memPoolInfo.mempoolminfee * 100000"></app-fee-rate>
       </p>
     </div>
     <div class="item">
