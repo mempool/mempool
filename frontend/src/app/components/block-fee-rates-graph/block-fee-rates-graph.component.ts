@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
-import { Observable, Subscription, combineLatest, of } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
@@ -158,11 +158,11 @@ export class BlockFeeRatesGraphComponent implements OnInit {
                       avg += seriesData['Median'][i - y][1];
                     }
                     avg /= maResolution;
-                    medianMa.push([seriesData['Median'][i][0], avg]);
+                    medianMa.push([seriesData['Median'][i][0], avg, seriesData['Median'][i][2]]);
                   }
                   series.push({
                     zlevel: 1,
-                    name: 'MA',
+                    name: 'Moving average',
                     data: medianMa,
                     type: 'line',
                     showSymbol: false,
@@ -231,9 +231,9 @@ export class BlockFeeRatesGraphComponent implements OnInit {
 
           for (const rate of data.reverse()) {
             if (weightMode) {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1] / 4} sats/WU<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[1] / 4).toFixed(2)} sats/WU<br>`;
             } else {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1]} sats/vByte<br>`;
+              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1].toFixed(2)} sats/vByte<br>`;
             }
           }
 
