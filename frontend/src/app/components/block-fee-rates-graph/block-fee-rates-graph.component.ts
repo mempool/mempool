@@ -210,7 +210,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         top: this.widget ? 20 : (this.isMobile() ? 10 : 50),
       },
       tooltip: {
-        show: !this.isMobile() && !this.widget,
+        show: !this.isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'

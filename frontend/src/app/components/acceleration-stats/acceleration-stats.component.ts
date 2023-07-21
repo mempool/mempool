@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -11,13 +11,14 @@ import { StateService } from '../../services/state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccelerationStatsComponent implements OnInit {
+  @Input() timespan: '24h' | '1w' = '24h';
   public accelerationStats$: Observable<any>;
   private lastBlockHeight: number;
 
   constructor(private apiService: ApiService, private stateService: StateService) { }
 
   ngOnInit(): void {
-    this.accelerationStats$ = this.apiService.getAccelerations$().pipe(
+    this.accelerationStats$ = this.apiService.getAccelerations$(this.timespan).pipe(
       switchMap(accelerations => {
         let totalFeeDelta = 0;
         let totalMined = 0;
