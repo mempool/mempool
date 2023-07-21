@@ -7,9 +7,10 @@ WORKDIR /build
 COPY . .
 
 RUN apt-get update
-RUN apt-get install -y build-essential python3 pkg-config curl
+RUN apt-get install -y build-essential python3 pkg-config curl ca-certificates
 
 # Install Rust via rustup
+RUN CPU_ARCH=$(uname -m); if [ "$CPU_ARCH" = "armv7l" ]; then c_rehash; fi
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
 ENV PATH="/root/.cargo/bin:$PATH"
 
