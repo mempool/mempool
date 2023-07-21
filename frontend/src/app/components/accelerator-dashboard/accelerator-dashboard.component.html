@@ -58,16 +58,37 @@
       </div>
     </div>
 
-    <!-- Difficult adjustments -->
+    <!-- Latest blocks -->
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <a class="title-link" href="" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="dashboard.adjustments">Adjustments</h5>
+          <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
+            <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
           </a>
-          <app-difficulty-adjustments-table [attr.data-cy]="'difficulty-adjustments-table'"></app-difficulty-adjustments-table>
+          <table class="table lastest-blocks-table">
+            <thead>
+              <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
+              <th class="table-cell-pool" i18n="mining.pool-name">Pool</th>
+              <th class="table-cell-fee" i18n="block.median-fee">Median fee</th>
+              <th class="table-cell-acceleration-count" i18n="accelerator.transaction-count">Accelerations</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let block of blocks$ | async; let i = index">
+                <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
+                <td class="table-cell-pool">
+                  <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+                    <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
+                      onError="this.src = '/resources/mining-pools/default.svg'">
+                    <span class="pool-name">{{ block.extras.pool.name }}</span>
+                  </a>
+                </td>
+                <td class="table-cell-fee" ><app-fee-rate [fee]="block?.extras?.medianFee" rounding="1.0-0"></app-fee-rate></td>
+                <td class="table-cell-acceleration-count">{{ block.accelerationCount | number }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

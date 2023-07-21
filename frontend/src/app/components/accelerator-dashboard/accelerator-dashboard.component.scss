@@ -100,3 +100,32 @@
   text-decoration: none;
   color: inherit;
 }
+
+.lastest-blocks-table {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.8rem !important;
+  }
+  .table-cell-height {
+    width: 25%;
+  }
+  .table-cell-fee {
+    width: 25%;
+    text-align: right;
+  }
+  .table-cell-pool {
+    text-align: left;
+    width: 30%;
+
+    .pool-name {
+      margin-left: 1em;
+    }
+  }
+  .table-cell-acceleration-count {
+    text-align: right;
+    width: 20%;
+  }
+}

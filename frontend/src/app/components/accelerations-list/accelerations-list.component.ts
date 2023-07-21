@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, of, switchMap } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
@@ -39,7 +39,14 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.accelerations$ = this.apiService.getAccelerations$().pipe(
+    this.accelerations$ = this.apiService.getAccelerations$('24h').pipe(
+      switchMap(accelerations => {
+        if (this.widget) {
+          return of(accelerations.slice(0, 6));
+        } else {
+          return of(accelerations);
+        }
+      }),
       catchError((err) => {
         this.isLoading = false;
         return of([]);
