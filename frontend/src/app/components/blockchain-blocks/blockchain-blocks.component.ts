@@ -113,8 +113,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
           const animate = this.chainTip != null && latestHeight > this.chainTip;
 
           for (const block of blocks) {
-            block.extras.minFee = this.getMinBlockFee(block);
-            block.extras.maxFee = this.getMaxBlockFee(block);
+            if (block?.extras) {
+              block.extras.minFee = this.getMinBlockFee(block);
+              block.extras.maxFee = this.getMaxBlockFee(block);
+            }
           }
 
           this.blocks = blocks;
@@ -251,7 +253,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       if (height >= 0) {
         this.cacheService.loadBlock(height);
         block = this.cacheService.getCachedBlock(height) || null;
-        if (block) {
+        if (block?.extras) {
           block.extras.minFee = this.getMinBlockFee(block);
           block.extras.maxFee = this.getMaxBlockFee(block);
         }
@@ -293,8 +295,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   onBlockLoaded(block: BlockExtended) {
     const blockIndex = this.height - block.height;
     if (blockIndex >= 0 && blockIndex < this.blocks.length) {
-      block.extras.minFee = this.getMinBlockFee(block);
-      block.extras.maxFee = this.getMaxBlockFee(block);
+      if (block?.extras) {
+        block.extras.minFee = this.getMinBlockFee(block);
+        block.extras.maxFee = this.getMaxBlockFee(block);
+      }
       this.blocks[blockIndex] = block;
       this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);
     }

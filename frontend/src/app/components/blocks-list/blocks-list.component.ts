@@ -84,10 +84,10 @@ export class BlocksList implements OnInit {
         .pipe(
           switchMap((blocks) => {
             if (blocks[0].height <= this.lastBlockHeight) {
-              return [null]; // Return an empty stream so the last pipe is not executed
+              return of([]); // Return an empty stream so the last pipe is not executed
             }
             this.lastBlockHeight = blocks[0].height;
-            return blocks;
+            return of(blocks);
           })
         )
     ])
