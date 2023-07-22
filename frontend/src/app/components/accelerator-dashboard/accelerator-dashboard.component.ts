@@ -46,7 +46,7 @@ export class AcceleratorDashboardComponent implements OnInit {
           return of(blocks as AccelerationBlock[]);
         })
       ),
-      this.apiService.getAccelerations$('24h').pipe(
+      this.apiService.getAccelerationHistory$('24h').pipe(
         catchError((err) => {
           this.loadingBlocks = false;
           return of([]);
@@ -56,11 +56,11 @@ export class AcceleratorDashboardComponent implements OnInit {
       switchMap(([blocks, accelerations]) => {
         const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (acceleration.mined && !accelerationsByBlock[acceleration.block_hash]) {
-            accelerationsByBlock[acceleration.block_hash] = [];
+          if (acceleration.mined && !accelerationsByBlock[acceleration.blockHash]) {
+            accelerationsByBlock[acceleration.blockHash] = [];
           }
           if (acceleration.mined) {
-            accelerationsByBlock[acceleration.block_hash].push(acceleration);
+            accelerationsByBlock[acceleration.blockHash].push(acceleration);
           }
         }
         return of(blocks.slice(0, 6).map(block => {

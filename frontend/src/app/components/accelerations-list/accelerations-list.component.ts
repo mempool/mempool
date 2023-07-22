@@ -39,7 +39,7 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.accelerations$ = this.apiService.getAccelerations$('24h').pipe(
+    this.accelerations$ = this.apiService.getAccelerations$().pipe(
       switchMap(accelerations => {
         if (this.widget) {
           return of(accelerations.slice(0, 6));

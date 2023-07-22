@@ -18,16 +18,16 @@ export class AccelerationStatsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.accelerationStats$ = this.apiService.getAccelerations$(this.timespan).pipe(
+    this.accelerationStats$ = this.apiService.getAccelerationHistory$(this.timespan).pipe(
       switchMap(accelerations => {
         let totalFeeDelta = 0;
         let totalMined = 0;
         let totalCanceled = 0;
         for (const acceleration of accelerations) {
-          if (acceleration.mined) {
+          if (acceleration.status === 'completed' || acceleration.status === 'mined') {
             totalMined++;
             totalFeeDelta += acceleration.feeDelta;
-          } else if (acceleration.canceled) {
+          } else if (acceleration.status === 'failed') {
             totalCanceled++;
           }
         }

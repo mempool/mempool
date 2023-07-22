@@ -22,14 +22,14 @@
             </a>
           </td>
           <td class="fee text-right">
-            {{ acceleration.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
+            {{ acceleration.feePaid | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
           </td>
           <td class="fee-delta text-right">
             {{ acceleration.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
           </td>
           <td class="status text-right">
-            <span *ngIf="acceleration.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
-            <span *ngIf="acceleration.canceled" class="badge badge-danger" i18n="accelerator.canceled">Canceled</span>
+            <span *ngIf="acceleration.status === 'mined' || acceleration.status === 'completed'" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+            <span *ngIf="acceleration.status === 'failed'" class="badge badge-danger" i18n="accelerator.canceled">Canceled</span>
           </td>
         </tr>
       </tbody>
