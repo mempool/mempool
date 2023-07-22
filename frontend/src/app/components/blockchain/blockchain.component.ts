@@ -82,9 +82,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     }
     this.mempoolOffset = Math.max(0, width - this.dividerOffset);
     this.cd.markForCheck();
-    setTimeout(() => {
-      this.mempoolOffsetChange.emit(this.mempoolOffset);
-    }, 0);
+    this.mempoolOffsetChange.emit(this.mempoolOffset);
   }
 
   @HostListener('window:resize', ['$event'])
