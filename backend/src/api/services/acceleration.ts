@@ -11,7 +11,7 @@ export interface Acceleration {
 class AccelerationApi {
   public async $fetchAccelerations(): Promise<Acceleration[]> {
     if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      const response = await query(`${config.MEMPOOL_SERVICES.API}/accelerations`);
+      const response = await query(`${config.MEMPOOL_SERVICES.API}/accelerator/accelerations`);
       return (response as Acceleration[]) || [];
     } else {
       return [];
