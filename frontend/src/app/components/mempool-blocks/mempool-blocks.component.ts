@@ -31,6 +31,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
   @Input() allBlocks: boolean = false;
 
+  mempoolWidth: number = 0;
   @Output() widthChange: EventEmitter<number> = new EventEmitter();
 
   specialBlocks = specialBlocks;
@@ -155,7 +156,11 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         }),
         tap(() => {
           this.cd.markForCheck();
-          this.widthChange.emit(this.containerOffset + this.mempoolBlocks.length * this.blockOffset);
+          const width = this.containerOffset + this.mempoolBlocks.length * this.blockOffset;
+          if (this.mempoolWidth !== width) {
+            this.mempoolWidth = width;
+            this.widthChange.emit(this.mempoolWidth);
+          }
         })
       );
 

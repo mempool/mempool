@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, DoCheck } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MarkBlockState, StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
@@ -9,7 +9,7 @@ import { BlockExtended } from '../../interfaces/node-api.interface';
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
 })
-export class StartComponent implements OnInit, OnDestroy {
+export class StartComponent implements OnInit, OnDestroy, DoCheck {
   @Input() showLoadingIndicator = false;
 
   interval = 60;
@@ -43,6 +43,7 @@ export class StartComponent implements OnInit, OnDestroy {
   pageIndex: number = 0;
   pages: any[] = [];
   pendingMark: number | null = null;
+  pendingOffset: number | null = null;
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
@@ -52,6 +53,14 @@ export class StartComponent implements OnInit, OnDestroy {
     private stateService: StateService,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
+  }
+
+  ngDoCheck(): void {
+    if (this.pendingOffset != null) {
+      const offset = this.pendingOffset;
+      this.pendingOffset = null;
+      this.addConvertedScrollOffset(offset);
+    }
   }
 
   ngOnInit() {
@@ -429,6 +438,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   addConvertedScrollOffset(offset: number): void {
     if (!this.blockchainContainer?.nativeElement) {
+      this.pendingOffset = offset;
       return;
     }
     if (this.timeLtr) {
