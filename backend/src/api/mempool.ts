@@ -1,5 +1,5 @@
 import config from '../config';
-import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
@@ -103,6 +103,16 @@ class Mempool {
     this.addToSpendMap(Object.values(this.mempoolCache));
   }
 
+  public async $reloadMempool(expectedCount: number): Promise<void> {
+    const rawTransactions = await bitcoinApi.$getMempoolTransactions(expectedCount);
+    logger.info(`Inserting loaded mempool transactions into local cache`);
+    for (const transaction of rawTransactions) {
+      const extendedTransaction = transactionUtils.extendMempoolTransaction(transaction);
+      this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+    }
+    logger.info(`Done inserting loaded mempool transactions into local cache`);
+  }
+
   public async $updateMemPoolInfo() {
     this.mempoolInfo = await this.$getMempoolInfo();
   }
@@ -162,41 +172,54 @@ class Mempool {
     };
 
     let intervalTimer = Date.now();
-    for (const txid of transactions) {
-      if (!this.mempoolCache[txid]) {
-        try {
-          const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
-          this.updateTimerProgress(timer, 'fetched new transaction');
-          this.mempoolCache[txid] = transaction;
-          if (this.inSync) {
-            this.txPerSecondArray.push(new Date().getTime());
-            this.vBytesPerSecondArray.push({
-              unixTime: new Date().getTime(),
-              vSize: transaction.vsize,
-            });
-          }
-          hasChange = true;
-          newTransactions.push(transaction);
-        } catch (e: any) {
-          if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
-            this.missingTxCount++;
-          }
-          logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
-        }
-      }
 
-      if (Date.now() - intervalTimer > 5_000) {
-        
-        if (this.inSync) {
-          // Break and restart mempool loop if we spend too much time processing
-          // new transactions that may lead to falling behind on block height
-          logger.debug('Breaking mempool loop because the 5s time limit exceeded.');
-          break;
-        } else {
-          const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
-          logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
-          loadingIndicators.setProgress('mempool', progress);
-          intervalTimer = Date.now()
+    let loaded = false;
+    if (config.MEMPOOL.BACKEND === 'esplora' && currentMempoolSize < transactions.length * 0.5 && transactions.length > 20_000) {
+      logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
+      try {
+        await this.$reloadMempool(transactions.length);
+        loaded = true;
+      } catch (e) {
+        logger.err('failed to load mempool in bulk from esplora, falling back to fetching individual transactions');
+      }
+    }
+
+    if (!loaded) {
+      for (const txid of transactions) {
+        if (!this.mempoolCache[txid]) {
+          try {
+            const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
+            this.updateTimerProgress(timer, 'fetched new transaction');
+            this.mempoolCache[txid] = transaction;
+            if (this.inSync) {
+              this.txPerSecondArray.push(new Date().getTime());
+              this.vBytesPerSecondArray.push({
+                unixTime: new Date().getTime(),
+                vSize: transaction.vsize,
+              });
+            }
+            hasChange = true;
+            newTransactions.push(transaction);
+          } catch (e: any) {
+            if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
+              this.missingTxCount++;
+            }
+            logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
+          }
+        }
+
+        if (Date.now() - intervalTimer > 5_000) {
+          if (this.inSync) {
+            // Break and restart mempool loop if we spend too much time processing
+            // new transactions that may lead to falling behind on block height
+            logger.debug('Breaking mempool loop because the 5s time limit exceeded.');
+            break;
+          } else {
+            const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
+            logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
+            loadingIndicators.setProgress('mempool', progress);
+            intervalTimer = Date.now()
+          }
         }
       }
     }

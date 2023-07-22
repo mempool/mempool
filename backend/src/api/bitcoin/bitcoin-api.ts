@@ -59,6 +59,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getMempoolTransactions(expectedCount: number): Promise<IEsploraApi.Transaction[]> {
+    return Promise.resolve([]);
+  }
+
   $getTransactionHex(txId: string): Promise<string> {
     return this.$getRawTransaction(txId, true)
       .then((tx) => tx.hex || '');
