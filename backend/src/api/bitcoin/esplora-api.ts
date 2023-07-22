@@ -5,6 +5,8 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 
+import JsonStream from 'JSONStream';
+
 const axiosConnection = axios.create({
   httpAgent: new http.Agent({ keepAlive: true, })
 });
@@ -67,6 +69,27 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {
     return this.$queryWrapper<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId);
+  }
+
+  async $getMempoolTransactions(expectedCount: number): Promise<IEsploraApi.Transaction[]> {
+    const transactions: IEsploraApi.Transaction[] = [];
+    let count = 0;
+    return new Promise((resolve, reject) => {
+      axiosConnection.get(config.ESPLORA.REST_API_URL + '/mempool/txs', { ...this.activeAxiosConfig, timeout: 60000, responseType: 'stream' }).then(response => {
+        response.data.pipe(JsonStream.parse('*')).on('data', transaction => {
+          count++;
+          if (count % 10000 === 0) {
+            logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
+          }
+          transactions.push(transaction);
+        }).on('end', () => {
+          logger.info(`Fetched all ${count} of ${expectedCount} mempool transactions from esplora`);
+          resolve(transactions);
+        }).on('error', (err) => {
+          reject(err);
+        });
+      });
+    });
   }
 
   $getTransactionHex(txId: string): Promise<string> {

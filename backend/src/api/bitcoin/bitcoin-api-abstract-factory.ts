@@ -3,6 +3,7 @@ import { IEsploraApi } from './esplora-api.interface';
 export interface AbstractBitcoinApi {
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]>;
   $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean, lazyPrevouts?: boolean): Promise<IEsploraApi.Transaction>;
+  $getMempoolTransactions(expectedCount: number);
   $getTransactionHex(txId: string): Promise<string>;
   $getBlockHeightTip(): Promise<number>;
   $getBlockHashTip(): Promise<string>;
