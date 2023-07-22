@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
-import { Address, Transaction } from '../../interfaces/electrs.interface';
+import { Address, ScriptHash, Transaction } from '../../interfaces/electrs.interface';
 import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
@@ -72,7 +72,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.addressInfo = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
-          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(this.addressString)) {
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|[A-F0-9]{130}$/.test(this.addressString)) {
             this.addressString = this.addressString.toLowerCase();
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
@@ -83,8 +83,11 @@ export class AddressComponent implements OnInit, OnDestroy {
               .pipe(filter((state) => state === 2 && this.transactions && this.transactions.length > 0))
           )
           .pipe(
-            switchMap(() => this.electrsApiService.getAddress$(this.addressString)
-              .pipe(
+            switchMap(() => (
+              this.addressString.match(/[a-f0-9]{130}/)
+              ? this.electrsApiService.getPubKeyAddress$(this.addressString)
+              : this.electrsApiService.getAddress$(this.addressString)
+            ).pipe(
                 catchError((err) => {
                   this.isLoadingAddress = false;
                   this.error = err;
@@ -114,7 +117,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.updateChainStats();
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
-          return this.electrsApiService.getAddressTransactions$(address.address);
+          return address.is_pubkey
+              ? this.electrsApiService.getScriptHashTransactions$('41' + address.address + 'ac')
+              : this.electrsApiService.getAddressTransactions$(address.address);
         }),
         switchMap((transactions) => {
           this.tempTransactions = transactions;

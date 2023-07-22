@@ -281,3 +281,12 @@ export function isFeatureActive(network: string, height: number, feature: 'rbf' 
     return false;
   }
 }
+
+export async function calcScriptHash$(script: string): Promise<string> {
+  const buf = Uint8Array.from(script.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray
+    .map((bytes) => bytes.toString(16).padStart(2, '0'))
+    .join('');
+}
