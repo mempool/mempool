@@ -143,7 +143,10 @@ h2 {
 .p2pk-address {
 	display: inline-block;
 	margin-left: 1em;
-	max-width: 140px;
+	max-width: 100px;
+	@media (min-width: 576px) {
+		max-width: 200px
+	}
 }
 
 .grey-info-text {
