@@ -5,8 +5,6 @@ import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 
-import JsonStream from 'JSONStream';
-
 const axiosConnection = axios.create({
   httpAgent: new http.Agent({ keepAlive: true, })
 });
@@ -74,22 +72,30 @@ class ElectrsApi implements AbstractBitcoinApi {
   async $getMempoolTransactions(expectedCount: number): Promise<IEsploraApi.Transaction[]> {
     const transactions: IEsploraApi.Transaction[] = [];
     let count = 0;
-    return new Promise((resolve, reject) => {
-      axiosConnection.get(config.ESPLORA.REST_API_URL + '/mempool/txs', { ...this.activeAxiosConfig, timeout: 60000, responseType: 'stream' }).then(response => {
-        response.data.pipe(JsonStream.parse('*')).on('data', transaction => {
-          count++;
-          if (count % 10000 === 0) {
-            logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
+    let done = false;
+    let last_txid = '';
+    while (!done) {
+      try {
+        const result = await this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs' + (last_txid ? '/' + last_txid : ''));
+        if (result) {
+          for (const tx of result) {
+            transactions.push(tx);
+            count++;
           }
-          transactions.push(transaction);
-        }).on('end', () => {
-          logger.info(`Fetched all ${count} of ${expectedCount} mempool transactions from esplora`);
-          resolve(transactions);
-        }).on('error', (err) => {
-          reject(err);
-        });
-      });
-    });
+          logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
+          if (result.length > 0) {
+            last_txid = result[result.length - 1].txid;
+          } else {
+            done = true;
+          }
+        } else {
+          done = true;
+        }
+      } catch(err) {
+        logger.err('failed to fetch bulk mempool transactions from esplora');
+      }
+    }
+    return transactions;
   }
 
   $getTransactionHex(txId: string): Promise<string> {
