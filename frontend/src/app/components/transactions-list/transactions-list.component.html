@@ -23,7 +23,7 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': vin.prevout?.scriptpubkey_address === this.address && this.address !== ''
+                'highlight': this.address !== '' && (vin.prevout?.scriptpubkey_address === this.address || (vin.prevout?.scriptpubkey_type === 'p2pk' && vin.prevout?.scriptpubkey.slice(2, 132) === this.address))
               }">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
