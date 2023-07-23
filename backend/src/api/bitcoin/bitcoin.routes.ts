@@ -121,6 +121,8 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', this.getBlockHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash', this.getScriptHash)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs', this.getScriptHashTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -557,6 +559,45 @@ class BitcoinRoutes {
         lastTxId = req.query.after_txid;
       }
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, lastTxId);
+      res.json(transactions);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        res.status(413).send(e instanceof Error ? e.message : e);
+        return;
+      }
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getScriptHash(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      const addressData = await bitcoinApi.$getScriptHash(req.params.address);
+      res.json(addressData);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
+      }
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getScriptHashTransactions(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      let lastTxId: string = '';
+      if (req.query.after_txid && typeof req.query.after_txid === 'string') {
+        lastTxId = req.query.after_txid;
+      }
+      const transactions = await bitcoinApi.$getScriptHashTransactions(req.params.address, lastTxId);
       res.json(transactions);
     } catch (e) {
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
