@@ -64,13 +64,15 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
           this.address = null;
           this.addressInfo = null;
           this.addressString = params.get('id') || '';
-          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(this.addressString)) {
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|[A-F0-9]{130}$/.test(this.addressString)) {
             this.addressString = this.addressString.toLowerCase();
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
 
-          return this.electrsApiService.getAddress$(this.addressString)
-            .pipe(
+          return (this.addressString.match(/[a-f0-9]{130}/)
+              ? this.electrsApiService.getPubKeyAddress$(this.addressString)
+              : this.electrsApiService.getAddress$(this.addressString)
+            ).pipe(
               catchError((err) => {
                 this.isLoadingAddress = false;
                 this.error = err;

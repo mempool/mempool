@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
+import { Observable, from, of, switchMap } from 'rxjs';
+import { Transaction, Address, Outspend, Recent, Asset, ScriptHash } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
 import { BlockExtended } from '../interfaces/node-api.interface';
+import { calcScriptHash$ } from '../bitcoin.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -65,12 +66,40 @@ export class ElectrsApiService {
     return this.httpClient.get<Address>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address);
   }
 
+  getPubKeyAddress$(pubkey: string): Observable<Address> {
+    return this.getScriptHash$('41' + pubkey + 'ac').pipe(
+      switchMap((scripthash: ScriptHash) => {
+        return of({
+          ...scripthash,
+          address: pubkey,
+          is_pubkey: true,
+        });
+      })
+    );
+  }
+
+  getScriptHash$(script: string): Observable<ScriptHash> {
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<ScriptHash>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash))
+    );
+  }
+
   getAddressTransactions$(address: string,  txid?: string): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
       params = params.append('after_txid', txid);
     }
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
+  }
+
+  getScriptHashTransactions$(script: string,  txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
+    );
   }
 
   getAsset$(assetId: string): Observable<Asset> {
