@@ -99,12 +99,12 @@ function downloadMiningPoolLogos$() {
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (localHash !== poolLogo.sha) {
-                console.log(`${poolLogo.name} is different on the remote, downloading...`);
+                console.log(`${LOG_TAG} ${poolLogo.name} is different on the remote, downloading...`);
                 download(filePath, poolLogo.download_url);
                 downloadedCount++;
               }
             } else {
-              console.log(`${poolLogo.name} is missing, downloading...`);
+              console.log(`${LOG_TAG} ${poolLogo.name} is missing, downloading...`);
               download(filePath, poolLogo.download_url);
               downloadedCount++;
             }
@@ -164,12 +164,12 @@ function downloadPromoVideoSubtiles$() {
               const localHash = getLocalHash(filePath);
               console.log(`${LOG_TAG} remote subtitle hash ${language.name} ${language.sha}`);
               if (localHash !== language.sha) {
-                console.log(`${language.name} is different on the remote, updating`);
+                console.log(`${LOG_TAG} ${language.name} is different on the remote, updating`);
                 download(filePath, language.download_url);
                 downloadedCount++;
               }
             } else {
-              console.log(`${language.name} is missing, downloading`);
+              console.log(`${LOG_TAG} ${language.name} is missing, downloading`);
               download(filePath, language.download_url);
               downloadedCount++;
             }
