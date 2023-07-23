@@ -111,11 +111,11 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
-    throw new Error('Method getAddress not implemented.');
+    throw new Error('Method getScriptHash not implemented.');
   }
 
   $getScriptHashTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
-    throw new Error('Method getAddressTransactions not implemented.');
+    throw new Error('Method getScriptHashTransactions not implemented.');
   }
 
   $getAddressPrefix(prefix: string): string[] {
