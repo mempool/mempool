@@ -128,7 +128,7 @@ class Mempool {
           } else {
             done = true;
           }
-          if (Math.floor(count / expectedCount) < 1) {
+          if (Math.floor((count / expectedCount) * 100) < 100) {
             loadingIndicators.setProgress('mempool', count / expectedCount * 100);
           }
         } else {
@@ -247,7 +247,9 @@ class Mempool {
           } else {
             const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
             logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
-            loadingIndicators.setProgress('mempool', progress);
+            if (Math.floor(progress) < 100) {
+              loadingIndicators.setProgress('mempool', progress);
+            }
             intervalTimer = Date.now()
           }
         }
