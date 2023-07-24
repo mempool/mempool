@@ -28,7 +28,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install 1.70.x Rust toolchain
-        uses: dtolnay/rust-toolchain@1.70
+        uses: dtolnay/rust-toolchain@1.80
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
