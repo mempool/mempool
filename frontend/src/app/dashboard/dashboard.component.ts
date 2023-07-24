@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) { }
 
   ngAfterViewChecked(): void {
-    this.stateService.searchFocus$.next(true);
+    this.stateService.focusSearchInputDesktop();
   }
 
   ngOnDestroy(): void {
