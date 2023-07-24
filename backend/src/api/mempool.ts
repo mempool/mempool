@@ -104,10 +104,11 @@ class Mempool {
     this.addToSpendMap(Object.values(this.mempoolCache));
   }
 
-  public async $reloadMempool(expectedCount: number): Promise<void> {
+  public async $reloadMempool(expectedCount: number): Promise<MempoolTransactionExtended[]> {
     let count = 0;
     let done = false;
     let last_txid;
+    const newTransactions: MempoolTransactionExtended[] = [];
     loadingIndicators.setProgress('mempool', count / expectedCount * 100);
     while (!done) {
       try {
@@ -115,7 +116,10 @@ class Mempool {
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
-            this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+            if (!this.mempoolCache[extendedTransaction.txid]) {
+              newTransactions.push(extendedTransaction);
+              this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+            }
             count++;
           }
           logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
@@ -134,6 +138,7 @@ class Mempool {
         logger.err('failed to fetch bulk mempool transactions from esplora');
       }
     }
+    return newTransactions;
     logger.info(`Done inserting loaded mempool transactions into local cache`);
   }
 
@@ -177,7 +182,7 @@ class Mempool {
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
-    const newTransactions: MempoolTransactionExtended[] = [];
+    let newTransactions: MempoolTransactionExtended[] = [];
 
     this.mempoolCacheDelta = Math.abs(diff);
 
@@ -202,7 +207,7 @@ class Mempool {
       this.inSync = false;
       logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
       try {
-        await this.$reloadMempool(transactions.length);
+        newTransactions = await this.$reloadMempool(transactions.length);
         loaded = true;
       } catch (e) {
         logger.err('failed to load mempool in bulk from esplora, falling back to fetching individual transactions');

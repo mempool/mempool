@@ -604,7 +604,7 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-mempool-block'] >= 0) {
+      if (client['track-mempool-block'] >= 0 && memPool.isInSync()) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas[index]) {
           response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-${index}`, {
@@ -858,7 +858,7 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-mempool-block'] >= 0) {
+      if (client['track-mempool-block'] >= 0 && memPool.isInSync()) {
         const index = client['track-mempool-block'];
         if (mBlockDeltas && mBlockDeltas[index]) {
           response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-${index}`, {
