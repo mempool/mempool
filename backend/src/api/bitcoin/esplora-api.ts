@@ -69,33 +69,8 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.$queryWrapper<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId);
   }
 
-  async $getMempoolTransactions(expectedCount: number): Promise<IEsploraApi.Transaction[]> {
-    const transactions: IEsploraApi.Transaction[] = [];
-    let count = 0;
-    let done = false;
-    let last_txid = '';
-    while (!done) {
-      try {
-        const result = await this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs' + (last_txid ? '/' + last_txid : ''));
-        if (result) {
-          for (const tx of result) {
-            transactions.push(tx);
-            count++;
-          }
-          logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
-          if (result.length > 0) {
-            last_txid = result[result.length - 1].txid;
-          } else {
-            done = true;
-          }
-        } else {
-          done = true;
-        }
-      } catch(err) {
-        logger.err('failed to fetch bulk mempool transactions from esplora');
-      }
-    }
-    return transactions;
+  async $getMempoolTransactions(lastSeenTxid?: string): Promise<IEsploraApi.Transaction[]> {
+    return this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
   }
 
   $getTransactionHex(txId: string): Promise<string> {

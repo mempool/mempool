@@ -59,7 +59,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
-  $getMempoolTransactions(expectedCount: number): Promise<IEsploraApi.Transaction[]> {
+  $getMempoolTransactions(lastTxid: string): Promise<IEsploraApi.Transaction[]> {
     return Promise.resolve([]);
   }
 

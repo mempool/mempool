@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
 
 class Mempool {
   private inSync: boolean = false;
@@ -104,11 +105,34 @@ class Mempool {
   }
 
   public async $reloadMempool(expectedCount: number): Promise<void> {
-    const rawTransactions = await bitcoinApi.$getMempoolTransactions(expectedCount);
-    logger.info(`Inserting loaded mempool transactions into local cache`);
-    for (const transaction of rawTransactions) {
-      const extendedTransaction = transactionUtils.extendMempoolTransaction(transaction);
-      this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+    let count = 0;
+    let done = false;
+    let last_txid;
+    loadingIndicators.setProgress('mempool', count / expectedCount * 100);
+    while (!done) {
+      try {
+        const result = await bitcoinApi.$getMempoolTransactions(last_txid);
+        if (result) {
+          for (const tx of result) {
+            const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
+            this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+            count++;
+          }
+          logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
+          if (result.length > 0) {
+            last_txid = result[result.length - 1].txid;
+          } else {
+            done = true;
+          }
+          if (count < expectedCount) {
+            loadingIndicators.setProgress('mempool', count / expectedCount * 100);
+          }
+        } else {
+          done = true;
+        }
+      } catch(err) {
+        logger.err('failed to fetch bulk mempool transactions from esplora');
+      }
     }
     logger.info(`Done inserting loaded mempool transactions into local cache`);
   }
