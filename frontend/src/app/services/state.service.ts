@@ -138,6 +138,8 @@ export class StateService {
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
 
+  searchFocus$: Subject<boolean> = new Subject<boolean>();
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     @Inject(LOCALE_ID) private locale: string,

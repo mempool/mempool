@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -31,7 +31,7 @@ interface MempoolStatsData {
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewChecked {
   featuredAssets$: Observable<any>;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
@@ -56,6 +56,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private seoService: SeoService
   ) { }
+
+  ngAfterViewChecked(): void {
+    this.stateService.searchFocus$.next(true);
+  }
 
   ngOnDestroy(): void {
     this.currencySubscription.unsubscribe();
