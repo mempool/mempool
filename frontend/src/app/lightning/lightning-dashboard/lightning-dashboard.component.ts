@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { INodesRanking } from '../../interfaces/node-api.interface';
@@ -12,7 +12,7 @@ import { LightningApiService } from '../lightning-api.service';
   styleUrls: ['./lightning-dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightningDashboardComponent implements OnInit {
+export class LightningDashboardComponent implements OnInit, AfterViewChecked {
   statistics$: Observable<any>;
   nodesRanking$: Observable<INodesRanking>;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
@@ -30,4 +30,7 @@ export class LightningDashboardComponent implements OnInit {
     this.statistics$ = this.lightningApiService.getLatestStatistics$().pipe(share());
   }
 
+  ngAfterViewChecked(): void {
+    this.stateService.focusSearchInputDesktop();
+  }
 }
