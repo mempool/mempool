@@ -8,6 +8,7 @@ export interface AbstractBitcoinApi {
   $getBlockHeightTip(): Promise<number>;
   $getBlockHashTip(): Promise<string>;
   $getTxIdsForBlock(hash: string): Promise<string[]>;
+  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]>;
   $getBlockHash(height: number): Promise<string>;
   $getBlockHeader(hash: string): Promise<string>;
   $getBlock(hash: string): Promise<IEsploraApi.Block>;
