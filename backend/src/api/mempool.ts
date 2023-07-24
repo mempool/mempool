@@ -86,7 +86,7 @@ class Mempool {
     this.mempoolCache = mempoolData;
     let count = 0;
     for (const txid of Object.keys(this.mempoolCache)) {
-      if (this.mempoolCache[txid].sigops == null || this.mempoolCache[txid].effectiveFeePerVsize == null) {
+      if (!this.mempoolCache[txid].sigops || this.mempoolCache[txid].effectiveFeePerVsize == null) {
         this.mempoolCache[txid] = transactionUtils.extendMempoolTransaction(this.mempoolCache[txid]);
       }
       if (this.mempoolCache[txid].order == null) {
