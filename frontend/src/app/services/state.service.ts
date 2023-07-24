@@ -7,6 +7,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
+import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -356,5 +357,11 @@ export class StateService {
     this.blocks.unshift(block);
     this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
     this.blocksSubject$.next(this.blocks);
+  }
+
+  focusSearchInputDesktop() {
+    if (!hasTouchScreen()) {
+      this.searchFocus$.next(true);
+    }    
   }
 }

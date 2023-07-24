@@ -23,6 +23,6 @@ export class MiningDashboardComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    this.stateService.searchFocus$.next(true);
+    this.stateService.focusSearchInputDesktop();
   }
 }
