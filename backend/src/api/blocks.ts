@@ -80,40 +80,38 @@ class Blocks {
     quiet: boolean = false,
     addMempoolData: boolean = false,
   ): Promise<TransactionExtended[]> {
-    const transactions: TransactionExtended[] = [];
-    if (!txIds) {
-      txIds = await bitcoinApi.$getTxIdsForBlock(blockHash);
-    }
+    let transactions: TransactionExtended[] = [];
 
     const mempool = memPool.getMempool();
     let transactionsFound = 0;
     let transactionsFetched = 0;
 
-    for (let i = 0; i < txIds.length; i++) {
-      if (mempool[txIds[i]]) {
-        // We update blocks before the mempool (index.ts), therefore we can
-        // optimize here by directly fetching txs in the "outdated" mempool
-        transactions.push(mempool[txIds[i]]);
-        transactionsFound++;
-      } else if (config.MEMPOOL.BACKEND === 'esplora' || !memPool.hasPriority() || i === 0) {
-        // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
-        if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
-          logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
-        }
-        try {
-          const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, false, addMempoolData);
-          transactions.push(tx);
-          transactionsFetched++;
-        } catch (e) {
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      const rawTransactions = await bitcoinApi.$getTxsForBlock(blockHash);
+      transactions = rawTransactions.map(tx => transactionUtils.extendTransaction(tx));
+
+      if (!quiet) {
+        logger.debug(`${transactions.length} fetched through backend service.`);
+      }
+    } else {
+      if (!txIds) {
+        txIds = await bitcoinApi.$getTxIdsForBlock(blockHash);
+      }
+      for (let i = 0; i < txIds.length; i++) {
+        if (mempool[txIds[i]]) {
+          // We update blocks before the mempool (index.ts), therefore we can
+          // optimize here by directly fetching txs in the "outdated" mempool
+          transactions.push(mempool[txIds[i]]);
+          transactionsFound++;
+        } else if (!memPool.hasPriority() || i === 0) {
+          // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
+          if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
+            logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
+          }
           try {
-            if (config.MEMPOOL.BACKEND === 'esplora') {
-              // Try again with core
-              const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, true, addMempoolData);
-              transactions.push(tx);
-              transactionsFetched++;
-            } else {
-              throw e;
-            }
+            const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, false, addMempoolData);
+            transactions.push(tx);
+            transactionsFetched++;
           } catch (e) {
             if (i === 0) {
               const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
@@ -124,15 +122,15 @@ class Blocks {
             }
           }
         }
+
+        if (onlyCoinbase === true) {
+          break; // Fetch the first transaction and exit
+        }
       }
 
-      if (onlyCoinbase === true) {
-        break; // Fetch the first transaction and exit
+      if (!quiet) {
+        logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
       }
-    }
-
-    if (!quiet) {
-      logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
     }
 
     return transactions;

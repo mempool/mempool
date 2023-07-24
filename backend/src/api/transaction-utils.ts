@@ -53,7 +53,7 @@ class TransactionUtils {
     return (await this.$getTransactionExtended(txId, addPrevouts, lazyPrevouts, forceCore, true)) as MempoolTransactionExtended;
   }
 
-  private extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
+  public extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
     // @ts-ignore
     if (transaction.vsize) {
       // @ts-ignore

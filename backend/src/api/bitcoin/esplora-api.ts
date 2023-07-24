@@ -89,6 +89,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.$queryWrapper<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids');
   }
 
+  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+    return this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txs');
+  }
+
   $getBlockHash(height: number): Promise<string> {
     return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/block-height/' + height);
   }
