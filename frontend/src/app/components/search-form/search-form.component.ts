@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { EventType, NavigationStart, Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
@@ -47,6 +47,8 @@ export class SearchFormComponent implements OnInit {
     this.handleKeyDown($event);
   }
 
+  @ViewChild('searchInput') searchInput: ElementRef;
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -55,11 +57,24 @@ export class SearchFormComponent implements OnInit {
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private relativeUrlPipe: RelativeUrlPipe,
-    private elementRef: ElementRef,
-  ) { }
+    private elementRef: ElementRef
+  ) {
+  }
 
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    
+    this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
+      if (e.type === EventType.NavigationStart) {
+        this.searchInput.nativeElement.blur();
+      }
+    });
+
+    this.stateService.searchFocus$.subscribe(focus => {
+      if (this.searchInput && focus === true) {
+        this.searchInput.nativeElement.focus();
+      }
+    });
 
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
