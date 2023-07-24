@@ -124,7 +124,7 @@ class Mempool {
           } else {
             done = true;
           }
-          if (count < expectedCount) {
+          if (Math.floor(count / expectedCount) < 1) {
             loadingIndicators.setProgress('mempool', count / expectedCount * 100);
           }
         } else {
@@ -199,6 +199,7 @@ class Mempool {
 
     let loaded = false;
     if (config.MEMPOOL.BACKEND === 'esplora' && currentMempoolSize < transactions.length * 0.5 && transactions.length > 20_000) {
+      this.inSync = false;
       logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
       try {
         await this.$reloadMempool(transactions.length);
@@ -293,12 +294,6 @@ class Mempool {
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    if (!this.inSync && transactions.length === newMempoolSize) {
-      this.inSync = true;
-      logger.notice('The mempool is now in sync!');
-      loadingIndicators.setProgress('mempool', 100);
-    }
-
     this.mempoolCacheDelta = Math.abs(transactions.length - newMempoolSize);
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
@@ -308,6 +303,12 @@ class Mempool {
       this.updateTimerProgress(timer, 'running async mempool callback');
       await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, deletedTransactions);
       this.updateTimerProgress(timer, 'completed async mempool callback');
+    }
+
+    if (!this.inSync && transactions.length === newMempoolSize) {
+      this.inSync = true;
+      logger.notice('The mempool is now in sync!');
+      loadingIndicators.setProgress('mempool', 100);
     }
 
     const end = new Date().getTime();

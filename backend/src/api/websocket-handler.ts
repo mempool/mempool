@@ -644,7 +644,7 @@ class WebsocketHandler {
     memPool.handleMinedRbfTransactions(rbfTransactions);
     memPool.removeFromSpendMap(transactions);
 
-    if (config.MEMPOOL.AUDIT) {
+    if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
       let auditMempool = _memPool;
       // template calculation functions have mempool side effects, so calculate audits using
@@ -665,7 +665,7 @@ class WebsocketHandler {
         projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
       }
 
-      if (Common.indexingEnabled() && memPool.isInSync()) {
+      if (Common.indexingEnabled()) {
         const { censored, added, fresh, sigop, fullrbf, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
