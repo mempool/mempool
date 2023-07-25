@@ -15,7 +15,7 @@ class Audit {
     const matches: string[] = []; // present in both mined block and template
     const added: string[] = []; // present in mined block, not in template
     const fresh: string[] = []; // missing, but firstSeen or lastBoosted within PROPAGATION_MARGIN
-    const fullrbf: string[] = []; // either missing or present, and part of a fullrbf replacement
+    const rbf: string[] = []; // either missing or present, and either part of a full-rbf replacement, or a conflict with the mined block
     const isCensored = {}; // missing, without excuse
     const isDisplaced = {};
     let displacedWeight = 0;
@@ -36,8 +36,9 @@ class Audit {
     // look for transactions that were expected in the template, but missing from the mined block
     for (const txid of projectedBlocks[0].transactionIds) {
       if (!inBlock[txid]) {
-        if (rbfCache.isFullRbf(txid)) {
-          fullrbf.push(txid);
+        // allow missing transactions which either belong to a full rbf tree, or conflict with any transaction in the mined block
+        if (rbfCache.has(txid) && (rbfCache.isFullRbf(txid) || rbfCache.anyInSameTree(txid, (tx) => inBlock[tx.txid]))) {
+          rbf.push(txid);
         } else if (mempool[txid]?.firstSeen != null && (now - (mempool[txid]?.firstSeen || 0)) <= PROPAGATION_MARGIN) {
           // tx is recent, may have reached the miner too late for inclusion
           fresh.push(txid);
@@ -98,8 +99,8 @@ class Audit {
       if (inTemplate[tx.txid]) {
         matches.push(tx.txid);
       } else {
-        if (rbfCache.isFullRbf(tx.txid)) {
-          fullrbf.push(tx.txid);
+        if (rbfCache.has(tx.txid)) {
+          rbf.push(tx.txid);
         } else if (!isDisplaced[tx.txid]) {
           added.push(tx.txid);
         }
@@ -147,7 +148,7 @@ class Audit {
       added,
       fresh,
       sigop: [],
-      fullrbf,
+      fullrbf: rbf,
       score,
       similarity,
     };
