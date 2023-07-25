@@ -70,6 +70,9 @@ class Blocks {
    * @param blockHash
    * @param blockHeight
    * @param onlyCoinbase - Set to true if you only need the coinbase transaction
+   * @param txIds - optional ordered list of transaction ids if already known
+   * @param quiet - don't print non-essential logs
+   * @param addMempoolData - calculate sigops etc
    * @returns Promise<TransactionExtended[]>
    */
   private async $getTransactionsExtended(
@@ -80,60 +83,77 @@ class Blocks {
     quiet: boolean = false,
     addMempoolData: boolean = false,
   ): Promise<TransactionExtended[]> {
-    let transactions: TransactionExtended[] = [];
+    const isEsplora = config.MEMPOOL.BACKEND === 'esplora';
+    const transactionMap: { [txid: string]: TransactionExtended } = {};
+
+    if (!txIds) {
+      txIds = await bitcoinApi.$getTxIdsForBlock(blockHash);
+    }
 
     const mempool = memPool.getMempool();
-    let transactionsFound = 0;
-    let transactionsFetched = 0;
+    let foundInMempool = 0;
+    let totalFound = 0;
 
-    if (config.MEMPOOL.BACKEND === 'esplora') {
-      const rawTransactions = await bitcoinApi.$getTxsForBlock(blockHash);
-      transactions = rawTransactions.map(tx => transactionUtils.extendTransaction(tx));
-
-      if (!quiet) {
-        logger.debug(`${transactions.length} fetched through backend service.`);
-      }
-    } else {
-      if (!txIds) {
-        txIds = await bitcoinApi.$getTxIdsForBlock(blockHash);
-      }
-      for (let i = 0; i < txIds.length; i++) {
-        if (mempool[txIds[i]]) {
-          // We update blocks before the mempool (index.ts), therefore we can
-          // optimize here by directly fetching txs in the "outdated" mempool
-          transactions.push(mempool[txIds[i]]);
-          transactionsFound++;
-        } else if (!memPool.hasPriority() || i === 0) {
-          // Otherwise we fetch the tx data through backend services (esplora, electrum, core rpc...)
-          if (!quiet && (i % (Math.round((txIds.length) / 10)) === 0 || i + 1 === txIds.length)) { // Avoid log spam
-            logger.debug(`Indexing tx ${i + 1} of ${txIds.length} in block #${blockHeight}`);
-          }
-          try {
-            const tx = await transactionUtils.$getTransactionExtended(txIds[i], false, false, false, addMempoolData);
-            transactions.push(tx);
-            transactionsFetched++;
-          } catch (e) {
-            if (i === 0) {
-              const msg = `Cannot fetch coinbase tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e); 
-              logger.err(msg);
-              throw new Error(msg);
-            } else {
-              logger.err(`Cannot fetch tx ${txIds[i]}. Reason: ` + (e instanceof Error ? e.message : e));
-            }
-          }
+    // Copy existing transactions from the mempool
+    if (!onlyCoinbase) {
+      for (const txid of txIds) {
+        if (mempool[txid]) {
+          transactionMap[txid] = mempool[txid];
+          foundInMempool++;
+          totalFound++;
         }
-
-        if (onlyCoinbase === true) {
-          break; // Fetch the first transaction and exit
-        }
-      }
-
-      if (!quiet) {
-        logger.debug(`${transactionsFound} of ${txIds.length} found in mempool. ${transactionsFetched} fetched through backend service.`);
       }
     }
 
-    return transactions;
+    // Skip expensive lookups while mempool has priority
+    if (onlyCoinbase) {
+      try {
+        const coinbase = await transactionUtils.$getTransactionExtended(txIds[0], false, false, false, addMempoolData);
+        return [coinbase];
+      } catch (e) {
+        const msg = `Cannot fetch coinbase tx ${txIds[0]}. Reason: ` + (e instanceof Error ? e.message : e);
+        logger.err(msg);
+        throw new Error(msg);
+      }
+    }
+
+    // Fetch remaining txs in bulk
+    if (isEsplora && (txIds.length - totalFound > 500)) {
+      try {
+        const rawTransactions = await bitcoinApi.$getTxsForBlock(blockHash);
+        for (const tx of rawTransactions) {
+          if (!transactionMap[tx.txid]) {
+            transactionMap[tx.txid] = addMempoolData ? transactionUtils.extendMempoolTransaction(tx) : transactionUtils.extendTransaction(tx);
+            totalFound++;
+          }
+        }
+      } catch (e) {
+        logger.err(`Cannot fetch bulk txs for block ${blockHash}. Reason: ` + (e instanceof Error ? e.message : e));
+      }
+    }
+
+    // Fetch remaining txs individually
+    for (const txid of txIds.filter(txid => !transactionMap[txid])) {
+      if (!transactionMap[txid]) {
+        if (!quiet && (totalFound % (Math.round((txIds.length) / 10)) === 0 || totalFound + 1 === txIds.length)) { // Avoid log spam
+          logger.debug(`Indexing tx ${totalFound + 1} of ${txIds.length} in block #${blockHeight}`);
+        }
+        try {
+          const tx = await transactionUtils.$getTransactionExtended(txid, false, false, false, addMempoolData);
+          transactionMap[txid] = tx;
+          totalFound++;
+        } catch (e) {
+          logger.err(`Cannot fetch tx ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
+        }
+      }
+    }
+
+    if (!quiet) {
+      logger.debug(`${foundInMempool} of ${txIds.length} found in mempool. ${totalFound - foundInMempool} fetched through backend service.`);
+    }
+
+    // Return list of transactions, preserving block order
+    return txIds.map(txid => transactionMap[txid]).filter(tx => tx != null);
   }
 
   /**
