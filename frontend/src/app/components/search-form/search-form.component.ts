@@ -65,13 +65,15 @@ export class SearchFormComponent implements OnInit {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     
     this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
-      if (e.type === EventType.NavigationStart) {
+      if (this.searchInput && e.type === EventType.NavigationStart) {
         this.searchInput.nativeElement.blur();
       }
     });
 
-    this.stateService.searchFocus$.subscribe(focus => {
-      if (this.searchInput && focus === true) {
+    this.stateService.searchFocus$.subscribe(() => {
+      if (!this.searchInput) { // Try again a bit later once the view is properly initialized
+        setTimeout(() => this.searchInput.nativeElement.focus(), 100);
+      } else if (this.searchInput) {
         this.searchInput.nativeElement.focus();
       }
     });
