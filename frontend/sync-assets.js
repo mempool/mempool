@@ -2,11 +2,16 @@ let https = require('https');
 let fs = require('fs');
 let crypto = require('crypto');
 let { resolve } = require('path');
+const LOG_TAG = '[sync-assets]';
+
+if (parseInt(process.env.SKIP_SYNC) === 1) {
+  console.log(`${LOG_TAG} SKIP_SYNC is set, not checking any assets`);
+  process.exit(0);
+}
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
 
-const LOG_TAG = '[sync-assets]';
 let  PATH;
 if (process.argv[2]) {
   PATH = resolve(process.argv[2]);
