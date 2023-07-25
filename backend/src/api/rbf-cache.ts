@@ -100,6 +100,24 @@ class RbfCache {
     this.dirtyTrees.add(treeId);
   }
 
+  public has(txId: string): boolean {
+    return this.txs.has(txId);
+  }
+
+  public anyInSameTree(txId: string, predicate: (tx: RbfTransaction) => boolean): boolean {
+    const tree = this.getRbfTree(txId);
+    if (!tree) {
+      return false;
+    }
+    const txs = this.getTransactionsInTree(tree);
+    for (const tx of txs) {
+      if (predicate(tx)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public getReplacedBy(txId: string): string | undefined {
     return this.replacedBy.get(txId);
   }
