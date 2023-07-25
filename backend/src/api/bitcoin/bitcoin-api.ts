@@ -81,6 +81,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
   }
 
+  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getTxsForBlock not supported by the Bitcoin RPC API.');
+  }
+
   $getRawBlock(hash: string): Promise<Buffer> {
     return this.bitcoindClient.getBlock(hash, 0)
       .then((raw: string) => Buffer.from(raw, "hex"));
