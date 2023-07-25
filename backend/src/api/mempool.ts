@@ -149,8 +149,8 @@ class Mempool {
         logger.err('failed to fetch bulk mempool transactions from esplora');
       }
     }
-    return newTransactions;
     logger.info(`Done inserting loaded mempool transactions into local cache`);
+    return newTransactions;
   }
 
   public async $updateMemPoolInfo() {
@@ -219,7 +219,11 @@ class Mempool {
       logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
       try {
         newTransactions = await this.$reloadMempool(transactions.length);
-        redisCache.$addTransactions(newTransactions);
+        if (config.REDIS.ENABLED) {
+          for (const tx of newTransactions) {
+            await redisCache.$addTransaction(tx);
+          }
+        }
         loaded = true;
       } catch (e) {
         logger.err('failed to load mempool in bulk from esplora, falling back to fetching individual transactions');
