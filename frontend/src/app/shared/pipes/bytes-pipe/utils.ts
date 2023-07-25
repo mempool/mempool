@@ -332,6 +332,5 @@ export function hasTouchScreen(): boolean {
         /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
     }
   }
-  console.log(hasTouchScreen);
   return hasTouchScreen;
 }
