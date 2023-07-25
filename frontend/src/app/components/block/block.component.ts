@@ -339,7 +339,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const isSelected = {};
         const isFresh = {};
         const isSigop = {};
-        const isFullRbf = {};
+        const isRbf = {};
         this.numMissing = 0;
         this.numUnexpected = 0;
 
@@ -363,7 +363,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             isSigop[txid] = true;
           }
           for (const txid of blockAudit.fullrbfTxs || []) {
-            isFullRbf[txid] = true;
+            isRbf[txid] = true;
           }
           // set transaction statuses
           for (const tx of blockAudit.template) {
@@ -381,8 +381,8 @@ export class BlockComponent implements OnInit, OnDestroy {
                 }
               } else if (isSigop[tx.txid]) {
                 tx.status = 'sigop';
-              } else if (isFullRbf[tx.txid]) {
-                tx.status = 'fullrbf';
+              } else if (isRbf[tx.txid]) {
+                tx.status = 'rbf';
               } else {
                 tx.status = 'missing';
               }
@@ -398,8 +398,8 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'added';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
-            } else if (isFullRbf[tx.txid]) {
-              tx.status = 'fullrbf';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
             } else {
               tx.status = 'selected';
               isSelected[tx.txid] = true;
