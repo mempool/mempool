@@ -1,0 +1,8 @@
+[workspace]
+members = [
+	"./backend/rust-gbt",
+]
+
+[profile.release]
+lto = true
+codegen-units = 1

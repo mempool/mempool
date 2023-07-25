@@ -14,6 +14,7 @@ import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
 import { PriceService, Price } from '../../services/price.service';
+import { CacheService } from '../../services/cache.service';
 
 @Component({
   selector: 'app-block',
@@ -72,6 +73,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   auditSubscription: Subscription;
   keyNavigationSubscription: Subscription;
   blocksSubscription: Subscription;
+  cacheBlocksSubscription: Subscription;
   networkChangedSubscription: Subscription;
   queryParamsSubscription: Subscription;
   nextBlockSubscription: Subscription = undefined;
@@ -99,6 +101,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private relativeUrlPipe: RelativeUrlPipe,
     private apiService: ApiService,
     private priceService: PriceService,
+    private cacheService: CacheService,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -128,19 +131,29 @@ export class BlockComponent implements OnInit, OnDestroy {
         map((indicators) => indicators['blocktxs-' + this.blockHash] !== undefined ? indicators['blocktxs-' + this.blockHash] : 0)
       );
 
+    this.cacheBlocksSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
+      this.loadedCacheBlock(block);
+    });
+
     this.blocksSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
-        this.latestBlock = block;
-        this.latestBlocks.unshift(block);
-        this.latestBlocks = this.latestBlocks.slice(0, this.stateService.env.KEEP_BLOCKS_AMOUNT);
+      .subscribe((blocks) => {
+        this.latestBlock = blocks[0];
+        this.latestBlocks = blocks;
         this.setNextAndPreviousBlockLink();
 
-        if (block.id === this.blockHash) {
-          this.block = block;
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
-          if (block?.extras?.reward != undefined) {
-            this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+        for (const block of blocks) {
+          if (block.id === this.blockHash) {
+            this.block = block;
+            if (block.extras) {
+              block.extras.minFee = this.getMinBlockFee(block);
+              block.extras.maxFee = this.getMaxBlockFee(block);
+              if (block?.extras?.reward != undefined) {
+                this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+              }
+            }
+          } else if (block.height === this.block?.height) {
+            this.block.stale = true;
+            this.block.canonical = block.id;
           }
         }
       });
@@ -235,8 +248,10 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
-        block.extras.minFee = this.getMinBlockFee(block);
-        block.extras.maxFee = this.getMaxBlockFee(block);
+        if (block.extras) {
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
+        }
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
         this.nextBlockHeight = block.height + 1;
@@ -254,6 +269,13 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.transactionsError = null;
         this.isLoadingOverview = true;
         this.overviewError = null;
+
+        const cachedBlock = this.cacheService.getCachedBlock(block.height);
+        if (!cachedBlock) {
+          this.cacheService.loadBlock(block.height);
+        } else {
+          this.loadedCacheBlock(cachedBlock);
+        }
       }),
       throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
       shareReplay(1)
@@ -317,6 +339,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const isSelected = {};
         const isFresh = {};
         const isSigop = {};
+        const isRbf = {};
         this.numMissing = 0;
         this.numUnexpected = 0;
 
@@ -339,6 +362,9 @@ export class BlockComponent implements OnInit, OnDestroy {
           for (const txid of blockAudit.sigopTxs || []) {
             isSigop[txid] = true;
           }
+          for (const txid of blockAudit.fullrbfTxs || []) {
+            isRbf[txid] = true;
+          }
           // set transaction statuses
           for (const tx of blockAudit.template) {
             tx.context = 'projected';
@@ -347,7 +373,19 @@ export class BlockComponent implements OnInit, OnDestroy {
             } else if (inBlock[tx.txid]) {
               tx.status = 'found';
             } else {
-              tx.status = isFresh[tx.txid] ? 'fresh' : (isSigop[tx.txid] ? 'sigop' : 'missing');
+              if (isFresh[tx.txid]) {
+                if (tx.rate - (tx.fee / tx.vsize) >= 0.1) {
+                  tx.status = 'freshcpfp';
+                } else {
+                  tx.status = 'fresh';
+                }
+              } else if (isSigop[tx.txid]) {
+                tx.status = 'sigop';
+              } else if (isRbf[tx.txid]) {
+                tx.status = 'rbf';
+              } else {
+                tx.status = 'missing';
+              }
               isMissing[tx.txid] = true;
               this.numMissing++;
             }
@@ -360,6 +398,8 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'added';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
             } else {
               tx.status = 'selected';
               isSelected[tx.txid] = true;
@@ -445,6 +485,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.auditSubscription?.unsubscribe();
     this.keyNavigationSubscription?.unsubscribe();
     this.blocksSubscription?.unsubscribe();
+    this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
     this.timeLtrSubscription?.unsubscribe();
@@ -664,5 +705,12 @@ export class BlockComponent implements OnInit, OnDestroy {
       return block.extras.feeRange[block.extras.feeRange.length - 1];
     }
     return 0;
+  }
+
+  loadedCacheBlock(block: BlockExtended): void {
+    if (this.block && block.height === this.block.height && block.id !== this.block.id) {
+      this.block.stale = true;
+      this.block.canonical = block.id;
+    }
   }
 }

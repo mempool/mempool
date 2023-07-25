@@ -3,7 +3,6 @@ import logger from '../../logger';
 import channelsApi from '../../api/explorer/channels.api';
 import bitcoinApi from '../../api/bitcoin/bitcoin-api-factory';
 import config from '../../config';
-import { IEsploraApi } from '../../api/bitcoin/esplora-api.interface';
 import { ILightningApi } from '../../api/lightning/lightning-api.interface';
 import { $lookupNodeLocation } from './sync-tasks/node-locations';
 import lightningApi from '../../api/lightning/lightning-api-factory';
@@ -269,7 +268,11 @@ class NetworkSyncService {
   }
 
   private async $scanForClosedChannels(): Promise<void> {
-    if (this.closedChannelsScanBlock === blocks.getCurrentBlockHeight()) {
+    let currentBlockHeight = blocks.getCurrentBlockHeight();
+    if (config.MEMPOOL.ENABLED === false) { // https://github.com/mempool/mempool/issues/3582
+      currentBlockHeight = await bitcoinApi.$getBlockHeightTip();
+    }
+    if (this.closedChannelsScanBlock === currentBlockHeight) {
       logger.debug(`We've already scan closed channels for this block, skipping.`);
       return;
     }
@@ -305,7 +308,7 @@ class NetworkSyncService {
         }
       }
 
-      this.closedChannelsScanBlock = blocks.getCurrentBlockHeight();
+      this.closedChannelsScanBlock = currentBlockHeight;
       logger.debug(`Closed channels scan completed at block ${this.closedChannelsScanBlock}`, logger.tags.ln);
     } catch (e) {
       logger.err(`$scanForClosedChannels() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);

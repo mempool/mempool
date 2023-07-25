@@ -212,6 +212,47 @@
   }
 }
 
+.lastest-replacements-table {
+  width: 100%;
+  text-align: left;
+  table-layout:fixed;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.71rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+  td {
+    overflow:hidden;
+    width: 25%;
+  }
+  .table-cell-txid {
+    width: 25%;
+    text-align: start;
+  }
+  .table-cell-old-fee {
+    width: 25%;
+    text-align: end;
+
+    @media(max-width: 1080px) {
+      display: none;
+    }
+  }
+  .table-cell-new-fee {
+    width: 20%;
+    text-align: end;
+  }
+  .table-cell-badges {
+    width: 23%;
+    padding-right: 0;
+    padding-left: 5px;
+    text-align: end;
+
+    .badge {
+      margin-left: 5px;
+    }
+  }
+}
+
 .mempool-graph {
   height: 255px;
 }

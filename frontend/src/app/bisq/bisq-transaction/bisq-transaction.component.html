@@ -64,9 +64,10 @@
                     {{ bisqTx.burntFee / 100 | number: '1.2-2' }} <span class="symbol">BSQ</span> <span class="fiat"><app-bsq-amount [bsq]="bisqTx.burntFee" [forceFiat]="true" [green]="true"></app-bsq-amount></span>
                 </tr>
                 <tr>
-                  <td i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
+                  <td *only-vsize i18n="transaction.fee-per-vbyte|Transaction fee">Fee per vByte</td>
+                  <td *only-weight i18n="transaction.fee-per-wu|Transaction fee">Fee per weight unit</td>
                   <td *ngIf="!isLoadingTx; else loadingTxFee">
-                    {{ tx.fee / (tx.weight / 4) | feeRounding }} <span class="symbol">sat/vB</span>
+                    <app-fee-rate [fee]="tx.fee" [weight]="tx.weight"></app-fee-rate>
                     &nbsp;
                     <app-tx-fee-rating [tx]="tx"></app-tx-fee-rating>
                   </td>
