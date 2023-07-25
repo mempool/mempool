@@ -99,6 +99,13 @@ export namespace IEsploraApi {
     electrum?: boolean;
   }
 
+  export interface ScriptHash {
+    scripthash: string;
+    chain_stats: ChainStats;
+    mempool_stats: MempoolStats;
+    electrum?: boolean;
+  }
+
   export interface ChainStats {
     funded_txo_count: number;
     funded_txo_sum: number;
