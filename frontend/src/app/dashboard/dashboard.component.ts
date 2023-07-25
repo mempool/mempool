@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
@@ -31,7 +31,7 @@ interface MempoolStatsData {
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   featuredAssets$: Observable<any>;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewChecked {
     private seoService: SeoService
   ) { }
 
-  ngAfterViewChecked(): void {
+  ngAfterViewInit(): void {
     this.stateService.focusSearchInputDesktop();
   }
 
