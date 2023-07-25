@@ -117,7 +117,14 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
+    this.loadingBlocks$ = combineLatest([
+      this.stateService.isLoadingWebSocket$,
+      this.stateService.isLoadingMempool$
+    ]).pipe(
+      switchMap(([loadingBlocks, loadingMempool]) => {
+        return of(loadingBlocks || loadingMempool);
+      })
+    );
 
     this.mempoolBlocks$ = merge(
       of(true),
