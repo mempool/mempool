@@ -5,6 +5,7 @@ import logger from '../logger';
 import config from '../config';
 import { BlockExtended, BlockSummary, MempoolTransactionExtended } from '../mempool.interfaces';
 import rbfCache from './rbf-cache';
+import transactionUtils from './transaction-utils';
 
 enum NetworkDB {
   mainnet = 0,
@@ -20,7 +21,7 @@ class RedisCache {
   private schemaVersion = 1;
 
   private cacheQueue: MempoolTransactionExtended[] = [];
-  private txFlushLimit: number = 1000;
+  private txFlushLimit: number = 10000;
 
   constructor() {
     if (config.REDIS.ENABLED) {
@@ -81,7 +82,7 @@ class RedisCache {
 
   async $addTransaction(tx: MempoolTransactionExtended) {
     this.cacheQueue.push(tx);
-    if (this.cacheQueue.length > this.txFlushLimit) {
+    if (this.cacheQueue.length >= this.txFlushLimit) {
       await this.$flushTransactions();
     }
   }
@@ -89,15 +90,28 @@ class RedisCache {
   async $flushTransactions() {
     const success = await this.$addTransactions(this.cacheQueue);
     if (success) {
+      logger.info(`Flushed ${this.cacheQueue.length} transactions to Redis cache`);
       this.cacheQueue = [];
+    } else {
+      logger.err(`Failed to flush ${this.cacheQueue.length} transactions to Redis cache`);
     }
   }
 
-  async $addTransactions(newTransactions: MempoolTransactionExtended[]): Promise<boolean> {
+  private async $addTransactions(newTransactions: MempoolTransactionExtended[]): Promise<boolean> {
     try {
       await this.$ensureConnected();
       await Promise.all(newTransactions.map(tx => {
-        return this.client.json.set(`mempool:${tx.txid.slice(0,1)}`, tx.txid, tx);
+        const minified: any = { ...tx };
+        delete minified.hex;
+        for (const vin of minified.vin) {
+          delete vin.inner_redeemscript_asm;
+          delete vin.inner_witnessscript_asm;
+          delete vin.scriptsig_asm;
+        }
+        for (const vout of minified.vout) {
+          delete vout.scriptpubkey_asm;
+        }
+        return this.client.json.set(`mempool:${tx.txid.slice(0,1)}`, tx.txid, minified);
       }));
       return true;
     } catch (e) {
@@ -201,6 +215,7 @@ class RedisCache {
     const loadedBlockSummaries = await this.$getBlockSummaries();
     // Load mempool
     const loadedMempool = await this.$getMempool();
+    this.inflateLoadedTxs(loadedMempool);
     // Load rbf data
     const rbfTxs = await this.$getRbfEntries('tx');
     const rbfTrees = await this.$getRbfEntries('tree');
@@ -215,6 +230,22 @@ class RedisCache {
       trees: rbfTrees.map(loadedTree => loadedTree[1]),
       expiring: rbfExpirations,
     });
+  }
+
+  private inflateLoadedTxs(mempool: { [txid: string]: MempoolTransactionExtended }) {
+    for (const tx of Object.values(mempool)) {
+      for (const vin of tx.vin) {
+        if (vin.scriptsig) {
+          vin.scriptsig_asm = transactionUtils.convertScriptSigAsm(vin.scriptsig);
+          transactionUtils.addInnerScriptsToVin(vin);
+        }
+      }
+      for (const vout of tx.vout) {
+        if (vout.scriptpubkey) {
+          vout.scriptpubkey_asm = transactionUtils.convertScriptSigAsm(vout.scriptpubkey);
+        }
+      }
+    }
   }
 
 }
