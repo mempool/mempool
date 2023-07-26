@@ -3,6 +3,7 @@ import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import { Common } from './common';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
+import crypto from 'node:crypto';
 
 class TransactionUtils {
   constructor() { }
@@ -169,6 +170,14 @@ class TransactionUtils {
         txid.substr(56, 2),
       16
     );
+  }
+
+  public calcScriptHash(script: string): string {
+    if (!/^[0-9a-fA-F]*$/.test(script) || script.length % 2 !== 0) {
+      throw new Error('script is not a valid hex string');
+    }
+    const buf = Buffer.from(script, 'hex');
+    return crypto.createHash('sha256').update(buf).digest('hex');
   }
 }
 
