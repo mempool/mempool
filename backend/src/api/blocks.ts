@@ -105,11 +105,16 @@ class Blocks {
       }
     }
 
-    // Skip expensive lookups while mempool has priority
     if (onlyCoinbase) {
       try {
-        const coinbase = await transactionUtils.$getTransactionExtended(txIds[0], false, false, false, addMempoolData);
-        return [coinbase];
+        const coinbase = await transactionUtils.$getTransactionExtendedRetry(txIds[0], false, false, false, addMempoolData);
+        if (coinbase && coinbase.vin[0].is_coinbase) {
+          return [coinbase];
+        } else {
+          const msg = `Expected a coinbase tx, but the backend API returned something else`;
+          logger.err(msg);
+          throw new Error(msg);
+        }
       } catch (e) {
         const msg = `Cannot fetch coinbase tx ${txIds[0]}. Reason: ` + (e instanceof Error ? e.message : e);
         logger.err(msg);
@@ -134,17 +139,17 @@ class Blocks {
 
     // Fetch remaining txs individually
     for (const txid of txIds.filter(txid => !transactionMap[txid])) {
-      if (!transactionMap[txid]) {
-        if (!quiet && (totalFound % (Math.round((txIds.length) / 10)) === 0 || totalFound + 1 === txIds.length)) { // Avoid log spam
-          logger.debug(`Indexing tx ${totalFound + 1} of ${txIds.length} in block #${blockHeight}`);
-        }
-        try {
-          const tx = await transactionUtils.$getTransactionExtended(txid, false, false, false, addMempoolData);
-          transactionMap[txid] = tx;
-          totalFound++;
-        } catch (e) {
-          logger.err(`Cannot fetch tx ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
-        }
+      if (!quiet && (totalFound % (Math.round((txIds.length) / 10)) === 0 || totalFound + 1 === txIds.length)) { // Avoid log spam
+        logger.debug(`Indexing tx ${totalFound + 1} of ${txIds.length} in block #${blockHeight}`);
+      }
+      try {
+        const tx = await transactionUtils.$getTransactionExtendedRetry(txid, false, false, false, addMempoolData);
+        transactionMap[txid] = tx;
+        totalFound++;
+      } catch (e) {
+        const msg = `Cannot fetch tx ${txid}. Reason: ` + (e instanceof Error ? e.message : e);
+        logger.err(msg);
+        throw new Error(msg);
       }
     }
 
@@ -152,8 +157,25 @@ class Blocks {
       logger.debug(`${foundInMempool} of ${txIds.length} found in mempool. ${totalFound - foundInMempool} fetched through backend service.`);
     }
 
+    // Require the first transaction to be a coinbase
+    const coinbase = transactionMap[txIds[0]];
+    if (!coinbase || !coinbase.vin[0].is_coinbase) {
+      console.log(coinbase);
+      const msg = `Expected first tx in a block to be a coinbase, but found something else`;
+      logger.err(msg);
+      throw new Error(msg);
+    }
+
+    // Require all transactions to be present
+    // (we should have thrown an error already if a tx request failed)
+    if (txIds.some(txid => !transactionMap[txid])) {
+      const msg = `Failed to fetch ${txIds.length - totalFound} transactions from block`;
+      logger.err(msg);
+      throw new Error(msg);
+    }
+
     // Return list of transactions, preserving block order
-    return txIds.map(txid => transactionMap[txid]).filter(tx => tx != null);
+    return txIds.map(txid => transactionMap[txid]);
   }
 
   /**
@@ -667,14 +689,14 @@ class Blocks {
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = verboseBlock.tx.map(tx => tx.txid);
       const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, txIds, false, true) as MempoolTransactionExtended[];
-      if (config.MEMPOOL.BACKEND !== 'esplora') {
-        // fill in missing transaction fee data from verboseBlock
-        for (let i = 0; i < transactions.length; i++) {
-          if (!transactions[i].fee && transactions[i].txid === verboseBlock.tx[i].txid) {
-            transactions[i].fee = verboseBlock.tx[i].fee * 100_000_000;
-          }
+
+      // fill in missing transaction fee data from verboseBlock
+      for (let i = 0; i < transactions.length; i++) {
+        if (!transactions[i].fee && transactions[i].txid === verboseBlock.tx[i].txid) {
+          transactions[i].fee = verboseBlock.tx[i].fee * 100_000_000;
         }
       }
+
       const cpfpSummary: CpfpSummary = Common.calculateCpfp(block.height, transactions);
       const blockExtended: BlockExtended = await this.$getBlockExtended(block, cpfpSummary.transactions);
       const blockSummary: BlockSummary = this.summarizeBlockTransactions(block.id, cpfpSummary.transactions);
