@@ -3,6 +3,7 @@ import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import { Common } from './common';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
+import logger from '../logger';
 
 class TransactionUtils {
   constructor() { }
@@ -22,6 +23,23 @@ class TransactionUtils {
     };
   }
 
+  // Wrapper for $getTransactionExtended with an automatic retry direct to Core if the first API request fails.
+  // Propagates any error from the retry request.
+  public async $getTransactionExtendedRetry(txid: string, addPrevouts = false, lazyPrevouts = false, forceCore = false, addMempoolData = false): Promise<TransactionExtended> {
+    try {
+      const result = await this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, addMempoolData);
+      if (result) {
+        return result;
+      } else {
+        logger.err(`Cannot fetch tx ${txid}. Reason: backend returned null data`);
+      }
+    } catch (e) {
+      logger.err(`Cannot fetch tx ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    // retry direct from Core if first request failed
+    return this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, true, addMempoolData);
+  }
+
   /**
    * @param txId
    * @param addPrevouts
@@ -31,7 +49,7 @@ class TransactionUtils {
   public async $getTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false, addMempoolData = false): Promise<TransactionExtended> {
     let transaction: IEsploraApi.Transaction;
     if (forceCore === true) {
-      transaction  = await bitcoinCoreApi.$getRawTransaction(txId, true);
+      transaction  = await bitcoinCoreApi.$getRawTransaction(txId, false, addPrevouts, lazyPrevouts);
     } else {
       transaction  = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts, lazyPrevouts);
     }
