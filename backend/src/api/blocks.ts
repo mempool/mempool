@@ -160,7 +160,6 @@ class Blocks {
     // Require the first transaction to be a coinbase
     const coinbase = transactionMap[txIds[0]];
     if (!coinbase || !coinbase.vin[0].is_coinbase) {
-      console.log(coinbase);
       const msg = `Expected first tx in a block to be a coinbase, but found something else`;
       logger.err(msg);
       throw new Error(msg);
