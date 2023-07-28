@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { Subscription, Observable, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { MempoolBlock } from '../../interfaces/websocket.interface';
 import { StateService } from '../../services/state.service';
 import { Router } from '@angular/router';
-import { take, map, switchMap } from 'rxjs/operators';
+import { take, map, switchMap, tap } from 'rxjs/operators';
 import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -29,6 +29,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() count: number = null;
   @Input() spotlight: number = 0;
   @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
+  @Input() allBlocks: boolean = false;
+
+  mempoolWidth: number = 0;
+  @Output() widthChange: EventEmitter<number> = new EventEmitter();
 
   specialBlocks = specialBlocks;
   mempoolBlocks: MempoolBlock[] = [];
@@ -46,6 +50,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blockSubscription: Subscription;
   networkSubscription: Subscription;
   chainTipSubscription: Subscription;
+  keySubscription: Subscription;
+  isTabHiddenSubscription: Subscription;
   network = '';
   now = new Date().getTime();
   timeOffset = 0;
@@ -112,8 +118,15 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.calculateTransactionPosition();
     });
     this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
-    this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
-    this.loadingBlocks$ = this.stateService.isLoadingWebSocket$;
+    this.isTabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
+    this.loadingBlocks$ = combineLatest([
+      this.stateService.isLoadingWebSocket$,
+      this.stateService.isLoadingMempool$
+    ]).pipe(
+      switchMap(([loadingBlocks, loadingMempool]) => {
+        return of(loadingBlocks || loadingMempool);
+      })
+    );
 
     this.mempoolBlocks$ = merge(
       of(true),
@@ -121,7 +134,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     )
     .pipe(
       switchMap(() => combineLatest([
-        this.stateService.blocks$.pipe(map(([block]) => block)),
+        this.stateService.blocks$.pipe(map((blocks) => blocks[0])),
         this.stateService.mempoolBlocks$
           .pipe(
             map((mempoolBlocks) => {
@@ -143,16 +156,28 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.mempoolBlocksFull = JSON.parse(stringifiedBlocks);
           this.mempoolBlocks = this.reduceMempoolBlocksToFitScreen(JSON.parse(stringifiedBlocks));
 
+          this.now = Date.now();
+
           this.updateMempoolBlockStyles();
           this.calculateTransactionPosition();
+ 
           return this.mempoolBlocks;
+        }),
+        tap(() => {
+          this.cd.markForCheck();
+          const width = this.containerOffset + this.mempoolBlocks.length * this.blockOffset;
+          if (this.mempoolWidth !== width) {
+            this.mempoolWidth = width;
+            this.widthChange.emit(this.mempoolWidth);
+          }
         })
       );
 
     this.difficultyAdjustments$ = this.stateService.difficultyAdjustment$
       .pipe(
         map((da) => {
-          this.now = new Date().getTime();
+          this.now = Date.now();
+          this.cd.markForCheck();
           return da;
         })
       );
@@ -175,8 +200,11 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       });
 
-    this.blockSubscription = this.stateService.blocks$
-      .subscribe(([block]) => {
+    this.blockSubscription = this.stateService.blocks$.pipe(map((blocks) => blocks[0]))
+      .subscribe((block) => {
+        if (!block) {
+          return;
+        }
         if (this.chainTip === -1) {
           this.animateEntry = block.height === this.stateService.latestBlockHeight;
         } else {
@@ -198,7 +226,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.networkSubscription = this.stateService.networkChanged$
       .subscribe((network) => this.network = network);
 
-    this.stateService.keyNavigation$.subscribe((event) => {
+    this.keySubscription = this.stateService.keyNavigation$.subscribe((event) => {
       if (this.markIndex === undefined) {
         return;
       }
@@ -209,13 +237,12 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         if (this.mempoolBlocks[this.markIndex - 1]) {
           this.router.navigate([this.relativeUrlPipe.transform('mempool-block/'), this.markIndex - 1]);
         } else {
-          this.stateService.blocks$
-            .pipe(take(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT))
-            .subscribe(([block]) => {
-              if (this.stateService.latestBlockHeight === block.height) {
-                this.router.navigate([this.relativeUrlPipe.transform('/block/'), block.id], { state: { data: { block } }});
-              }
-            });
+          const blocks = this.stateService.blocksSubject$.getValue();
+          for (const block of (blocks || [])) {
+            if (this.stateService.latestBlockHeight === block.height) {
+              this.router.navigate([this.relativeUrlPipe.transform('/block/'), block.id], { state: { data: { block } }});
+            }
+          }
         }
       } else if (event.key === nextKey) {
         if (this.mempoolBlocks[this.markIndex + 1]) {
@@ -239,6 +266,8 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.networkSubscription.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
+    this.keySubscription.unsubscribe();
+    this.isTabHiddenSubscription.unsubscribe();
     clearTimeout(this.resetTransitionTimeout);
   }
 
@@ -254,7 +283,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
-    const blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
+    if (!this.allBlocks) {
+      blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
+    }
     while (blocks.length < blocksAmount) {
       blocks.push({
         blockSize: 0,
@@ -274,16 +306,16 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
     const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
-    let blocksAmount;
+    let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
     if (this.count) {
       blocksAmount = 8;
-    } else {
+    } else if (!this.allBlocks) {
       blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
     }
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
       if (!this.count) {
-        const lastBlock = blocks[blocks.length - 1];
+        const lastBlock = blocks[0];
         lastBlock.blockSize += block.blockSize;
         lastBlock.blockVSize += block.blockVSize;
         lastBlock.nTx += block.nTx;
@@ -294,7 +326,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     if (blocks.length) {
-      blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
+      blocks[0].isStack = blocks[0].blockVSize > this.stateService.blockVSize;
     }
     return blocks;
   }

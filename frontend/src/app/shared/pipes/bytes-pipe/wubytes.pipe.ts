@@ -17,7 +17,7 @@ export class WuBytesPipe implements PipeTransform {
         'TWU': {max: Number.MAX_SAFE_INTEGER, prev: 'GWU'}
     };
 
-    transform(input: any, decimal: number = 0, from: ByteUnit = 'WU', to?: ByteUnit): any {
+    transform(input: any, decimal: number = 0, from: ByteUnit = 'WU', to?: ByteUnit, plainText?: boolean): any {
 
         if (!(isNumberFinite(input) &&
                 isNumberFinite(decimal) &&
@@ -38,7 +38,7 @@ export class WuBytesPipe implements PipeTransform {
 
             const result = toDecimal(WuBytesPipe.calculateResult(format, bytes), decimal);
 
-            return WuBytesPipe.formatResult(result, to);
+            return WuBytesPipe.formatResult(result, to, plainText);
         }
 
         for (const key in WuBytesPipe.formats) {
@@ -47,12 +47,15 @@ export class WuBytesPipe implements PipeTransform {
 
                 const result = toDecimal(WuBytesPipe.calculateResult(format, bytes), decimal);
 
-                return WuBytesPipe.formatResult(result, key);
+                return WuBytesPipe.formatResult(result, key, plainText);
             }
         }
     }
 
-    static formatResult(result: number, unit: string): string {
+    static formatResult(result: number, unit: string, plainText: boolean): string {
+        if (plainText){
+            return `${result} ${unit}`;
+        }
         return `${result} <span class="symbol">${unit}</span>`;
     }
 

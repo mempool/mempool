@@ -7,15 +7,15 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "es2020",
+    "module": "ES2020",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
-      "es2018",
+      "ES2018",
       "dom",
       "dom.iterable"
     ]
@@ -24,5 +24,6 @@
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
     "strictTemplates": true,
+    "useDefineForClassFields": false
   }
 }

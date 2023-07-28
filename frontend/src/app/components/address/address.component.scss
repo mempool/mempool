@@ -81,6 +81,7 @@ h1 {
     top: 11px;
 	}
   @media (min-width: 768px) {
+    max-width: calc(100% - 180px);
     top: 17px;
   }
 }

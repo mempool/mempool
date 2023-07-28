@@ -39,6 +39,7 @@ export interface RbfTree extends RbfInfo {
   mined?: boolean;
   fullRbf: boolean;
   replaces: RbfTree[];
+  replacedBy?: RbfTransaction;
 }
 
 export interface DifficultyAdjustment {
@@ -91,6 +92,7 @@ export interface SinglePoolStats {
   logo: string;
   slug: string;
   avgMatchRate: number;
+  avgFeeDelta: number;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -153,6 +155,9 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  freshTxs: string[],
+  sigopTxs: string[],
+  fullrbfTxs: string[],
   matchRate: number,
   expectedFees: number,
   expectedWeight: number,
@@ -168,12 +173,15 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  rate?: number; // effective fee rate
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf';
+  context?: 'projected' | 'actual';
 }
 
-interface RbfTransaction extends TransactionStripped {
+export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean,
+  fullRbf?: boolean,
 }
 export interface MempoolPosition {
   block: number,
@@ -262,6 +270,7 @@ export interface IChannel {
   closing_transaction_id: string;
   closing_reason: string;
   updated_at: string;
+  closing_date?: string;
   created: string;
   status: number;
   node_left: INode,

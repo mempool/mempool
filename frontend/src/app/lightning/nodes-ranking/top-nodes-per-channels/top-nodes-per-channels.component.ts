@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { INodesRanking, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
+import { SeoService } from '../../../services/seo.service';
 import { StateService } from '../../../services/state.service';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
 import { LightningApiService } from '../../lightning-api.service';
@@ -22,6 +23,7 @@ export class TopNodesPerChannels implements OnInit {
   constructor(
     private apiService: LightningApiService,
     private stateService: StateService,
+    private seoService: SeoService,
   ) {}
 
   ngOnInit(): void {
@@ -32,6 +34,8 @@ export class TopNodesPerChannels implements OnInit {
     }
 
     if (this.widget === false) {
+      this.seoService.setTitle($localize`:@@c50bf442cf99f6fc5f8b687c460f33234b879869:Connectivity Ranking`);
+
       this.topNodesPerChannels$ = this.apiService.getTopNodesByChannels$().pipe(
         map((ranking) => {
           for (const i in ranking) {

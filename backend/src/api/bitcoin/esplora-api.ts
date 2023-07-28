@@ -69,6 +69,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.$queryWrapper<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId);
   }
 
+  async $getMempoolTransactions(lastSeenTxid?: string): Promise<IEsploraApi.Transaction[]> {
+    return this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
+  }
+
   $getTransactionHex(txId: string): Promise<string> {
     return this.$queryWrapper<string>(config.ESPLORA.REST_API_URL + '/tx/' + txId + '/hex');
   }
@@ -83,6 +87,10 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
     return this.$queryWrapper<string[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txids');
+  }
+
+  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+    return this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/block/' + hash + '/txs');
   }
 
   $getBlockHash(height: number): Promise<string> {
@@ -108,6 +116,14 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   $getAddressTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getAddressTransactions not implemented.');
+  }
+
+  $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
+    throw new Error('Method getScriptHash not implemented.');
+  }
+
+  $getScriptHashTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getScriptHashTransactions not implemented.');
   }
 
   $getAddressPrefix(prefix: string): string[] {

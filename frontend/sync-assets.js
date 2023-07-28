@@ -26,6 +26,8 @@ try {
   }
 }
 
+const githubSecret = process.env.GITHUB_TOKEN;
+
 function download(filename, url) {
   https.get(url, (response) => {
     if (response.statusCode < 200 || response.statusCode > 299) {
@@ -54,6 +56,12 @@ function downloadMiningPoolLogos$() {
       method: 'GET',
       headers: {'user-agent': 'node.js'}
     };
+
+    if (githubSecret) {
+      console.log('Downloading the mining pool logos with authentication');
+      options.headers['authorization'] = `Bearer ${githubSecret}`;
+      options.headers['X-GitHub-Api-Version'] = '2022-11-28';
+    }
 
     https.get(options, (response) => {
       const chunks_of_data = [];
@@ -109,6 +117,13 @@ function downloadPromoVideoSubtiles$() {
       headers: {'user-agent': 'node.js'}
     };
 
+    if (githubSecret) {
+      console.log('Downloading the promo video subtitles with authentication');
+      options.headers['authorization'] = `Bearer ${githubSecret}`;
+      options.headers['X-GitHub-Api-Version'] = '2022-11-28';
+    }
+
+
     https.get(options, (response) => {
       const chunks_of_data = [];
 
@@ -162,6 +177,12 @@ function downloadPromoVideo$() {
       method: 'GET',
       headers: {'user-agent': 'node.js'}
     };
+
+    if (githubSecret) {
+      console.log('Downloading the promo videos with authentication');
+      options.headers['authorization'] = `Bearer ${githubSecret}`;
+      options.headers['X-GitHub-Api-Version'] = '2022-11-28';
+    }
 
     https.get(options, (response) => {
       const chunks_of_data = [];

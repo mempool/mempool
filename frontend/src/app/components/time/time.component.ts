@@ -29,6 +29,7 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fixedRender = false;
   @Input() relative = false;
   @Input() precision: number = 0;
+  @Input() minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second';
   @Input() fractionDigits: number = 0;
 
   constructor(
@@ -96,9 +97,12 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     for (const [index, unit] of this.units.entries()) {
       let precisionUnit = this.units[Math.min(this.units.length - 1, index + this.precision)];
       counter = Math.floor(seconds / this.intervals[unit]);
-      const precisionCounter = Math.floor(seconds / this.intervals[precisionUnit]);
+      const precisionCounter = Math.round(seconds / this.intervals[precisionUnit]);
       if (precisionCounter > this.precisionThresholds[precisionUnit]) {
         precisionUnit = unit;
+      }
+      if (this.units.indexOf(precisionUnit) === this.units.indexOf(this.minUnit)) {
+        counter = Math.max(1, counter);
       }
       if (counter > 0) {
         let rounded = Math.round(seconds / this.intervals[precisionUnit]);
