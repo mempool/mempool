@@ -191,14 +191,14 @@ class WebsocketHandler {
               }
               if (/^[0-9a-fA-F]{130}$/.test(parsedMessage['track-address'])) {
                 client['track-address'] = null;
-                client['track-scripthash'] = transactionUtils.calcScriptHash('41' + matchedAddress + 'ac');
+                client['track-scriptpubkey'] = '41' + matchedAddress + 'ac';
               } else {
                 client['track-address'] = matchedAddress;
-                client['track-scripthash'] = null;
+                client['track-scriptpubkey'] = null;
               }
             } else {
               client['track-address'] = null;
-              client['track-scripthash'] = null;
+              client['track-scriptpubkey'] = null;
             }
           }
 
@@ -553,11 +553,11 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-scripthash']) {
+      if (client['track-scriptpubkey']) {
         const foundTransactions: TransactionExtended[] = [];
 
         for (const tx of newTransactions) {
-          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scripthash']);
+          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey']);
           if (someVin) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
@@ -571,7 +571,7 @@ class WebsocketHandler {
             }
             return;
           }
-          const someVout = tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scripthash']);
+          const someVout = tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey']);
           if (someVout) {
             if (config.MEMPOOL.BACKEND !== 'esplora') {
               try {
@@ -866,15 +866,15 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-scripthash']) {
+      if (client['track-scriptpubkey']) {
         const foundTransactions: TransactionExtended[] = [];
 
         transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scripthash'])) {
+          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey'])) {
             foundTransactions.push(tx);
             return;
           }
-          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scripthash'])) {
+          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey'])) {
             foundTransactions.push(tx);
           }
         });
