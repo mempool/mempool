@@ -5,7 +5,7 @@ const configFromFile = require(
 interface IConfig {
   MEMPOOL: {
     ENABLED: boolean;
-    NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
+    NETWORK: 'mainnet' | 'testnet' | 'signet' | 'regtest' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
     SPAWN_CLUSTER_PROCS: number;

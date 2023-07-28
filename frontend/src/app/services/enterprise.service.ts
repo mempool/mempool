@@ -38,6 +38,7 @@ export class EnterpriseService {
     this.stateService.env.LIQUID_ENABLED = false;
     this.stateService.env.LIQUID_TESTNET_ENABLED = false;
     this.stateService.env.SIGNET_ENABLED = false;
+    this.stateService.env.REGTEST_ENABLED = false;
     this.stateService.env.BISQ_ENABLED = false;
   }
 

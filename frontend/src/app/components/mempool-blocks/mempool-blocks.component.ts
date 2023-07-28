@@ -95,7 +95,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.chainTip = this.stateService.latestBlockHeight;
 
-    if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
+    if (['', 'testnet', 'signet', 'regtest'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
     }

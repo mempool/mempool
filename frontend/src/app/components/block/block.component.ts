@@ -676,6 +676,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         break;
       case 'signet':
+      case 'regtest':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
           return false;
         }
