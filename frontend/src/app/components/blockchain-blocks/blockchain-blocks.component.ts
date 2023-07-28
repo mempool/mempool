@@ -36,11 +36,13 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   emptyBlocks: BlockExtended[] = this.mountEmptyBlocks();
   markHeight: number;
   chainTip: number;
+  pendingMarkBlock: { animate: boolean, newBlockFromLeft: boolean };
   blocksSubscription: Subscription;
   blockPageSubscription: Subscription;
   networkSubscription: Subscription;
   tabHiddenSubscription: Subscription;
   markBlockSubscription: Subscription;
+  txConfirmedSubscription: Subscription;
   loadingBlocks$: Observable<boolean>;
   blockStyles = [];
   emptyBlockStyles = [];
@@ -82,7 +84,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.chainTip = this.stateService.latestBlockHeight;
     this.dynamicBlocksAmount = Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT);
 
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
@@ -104,31 +105,24 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     this.tabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     if (!this.static) {
       this.blocksSubscription = this.stateService.blocks$
-        .subscribe(([block, txConfirmed]) => {
-          if (this.blocks.some((b) => b.height === block.height)) {
+        .subscribe((blocks) => {
+          if (!blocks?.length) {
             return;
           }
+          const latestHeight = blocks[0].height;
+          const animate = this.chainTip != null && latestHeight > this.chainTip;
 
-          if (this.blocks.length && block.height !== this.blocks[0].height + 1) {
-            this.blocks = [];
-            this.blocksFilled = false;
+          for (const block of blocks) {
+            if (block?.extras) {
+              block.extras.minFee = this.getMinBlockFee(block);
+              block.extras.maxFee = this.getMaxBlockFee(block);
+            }
           }
 
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
-
-          this.blocks.unshift(block);
-          this.blocks = this.blocks.slice(0, this.dynamicBlocksAmount);
-
-          if (txConfirmed && block.height > this.chainTip) {
-            this.markHeight = block.height;
-            this.moveArrowToPosition(true, true);
-          } else {
-            this.moveArrowToPosition(true, false);
-          }
+          this.blocks = blocks;
 
           this.blockStyles = [];
-          if (this.blocksFilled && block.height > this.chainTip) {
+          if (animate) {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i, i ? -this.blockOffset : -this.dividerBlockOffset)));
             setTimeout(() => {
               this.blockStyles = [];
@@ -139,13 +133,23 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
             this.blocks.forEach((b, i) => this.blockStyles.push(this.getStyleForBlock(b, i)));
           }
 
-          if (this.blocks.length === this.dynamicBlocksAmount) {
-            this.blocksFilled = true;
-          }
+          this.chainTip = latestHeight;
 
-          this.chainTip = Math.max(this.chainTip, block.height);
+          if (this.pendingMarkBlock) {
+            this.moveArrowToPosition(this.pendingMarkBlock.animate, this.pendingMarkBlock.newBlockFromLeft);
+            this.pendingMarkBlock = null;
+          }
           this.cd.markForCheck();
         });
+
+      this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txid, block]) => {
+        if (txid) {
+          this.markHeight = block.height;
+          this.moveArrowToPosition(true, true);
+        } else {
+          this.moveArrowToPosition(true, false);
+        }
+      })
     } else {
       this.blockPageSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
         if (block.height <= this.height && block.height > this.height - this.count) {
@@ -164,9 +168,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       });
 
-      if (this.static) {
-        this.updateStaticBlocks();
-      }
+    if (this.static) {
+      this.updateStaticBlocks();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -190,6 +194,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (this.blockPageSubscription) {
       this.blockPageSubscription.unsubscribe();
     }
+    if (this.txConfirmedSubscription) {
+      this.txConfirmedSubscription.unsubscribe();
+    }
     this.networkSubscription.unsubscribe();
     this.tabHiddenSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
@@ -201,6 +208,9 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (this.markHeight === undefined) {
       this.arrowVisible = false;
       return;
+    }
+    if (this.chainTip == null) {
+      this.pendingMarkBlock = { animate, newBlockFromLeft };
     }
     const blockindex = this.blocks.findIndex((b) => b.height === this.markHeight);
     if (blockindex > -1) {
@@ -243,7 +253,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       if (height >= 0) {
         this.cacheService.loadBlock(height);
         block = this.cacheService.getCachedBlock(height) || null;
-        if (block) {
+        if (block?.extras) {
           block.extras.minFee = this.getMinBlockFee(block);
           block.extras.maxFee = this.getMaxBlockFee(block);
         }
@@ -285,8 +295,10 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
   onBlockLoaded(block: BlockExtended) {
     const blockIndex = this.height - block.height;
     if (blockIndex >= 0 && blockIndex < this.blocks.length) {
-      block.extras.minFee = this.getMinBlockFee(block);
-      block.extras.maxFee = this.getMaxBlockFee(block);
+      if (block?.extras) {
+        block.extras.minFee = this.getMinBlockFee(block);
+        block.extras.maxFee = this.getMaxBlockFee(block);
+      }
       this.blocks[blockIndex] = block;
       this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);
     }

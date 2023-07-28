@@ -37,7 +37,7 @@ export class NodeComponent implements OnInit {
   liquidityAd: ILiquidityAd;
   tlvRecords: CustomRecord[];
   avgChannelDistance$: Observable<number | null>;
-
+  showFeatures = false;
   kmToMiles = kmToMiles;
 
   constructor(
@@ -163,5 +163,10 @@ export class NodeComponent implements OnInit {
 
   onLoadingEvent(e) {
     this.channelListLoading = e;
+  }
+
+  toggleFeatures() {
+    this.showFeatures = !this.showFeatures;
+    return false;
   }
 }

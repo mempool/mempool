@@ -401,7 +401,7 @@ class BlocksRepository {
   /**
    * Get average block health for all blocks for a single pool
    */
-  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number> {
+  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number | null> {
     const params: any[] = [];
     const query = `
       SELECT AVG(blocks_audits.match_rate) AS avg_match_rate
@@ -413,8 +413,8 @@ class BlocksRepository {
 
     try {
       const [rows] = await DB.query(query, params);
-      if (!rows[0] || !rows[0].avg_match_rate) {
-        return 0;
+      if (!rows[0] || rows[0].avg_match_rate == null) {
+        return null;
       }
       return Math.round(rows[0].avg_match_rate * 100) / 100;
     } catch (e) {

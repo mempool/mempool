@@ -1,5 +1,5 @@
 import config from '../config';
-import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
@@ -9,6 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
+import { IEsploraApi } from './bitcoin/esplora-api.interface';
 
 class Mempool {
   private inSync: boolean = false;
@@ -19,7 +20,7 @@ class Mempool {
                                                     maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[]) => void) | undefined;
-  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
+  private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[]) => Promise<void>) | undefined;
 
   private txPerSecondArray: number[] = [];
@@ -69,7 +70,7 @@ class Mempool {
     this.mempoolChangedCallback = fn;
   }
 
-  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
+  public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]) => Promise<void>): void {
     this.$asyncMempoolChangedCallback = fn;
   }
@@ -84,18 +85,61 @@ class Mempool {
 
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
+    let count = 0;
     for (const txid of Object.keys(this.mempoolCache)) {
-      if (this.mempoolCache[txid].sigops == null || this.mempoolCache[txid].effectiveFeePerVsize == null) {
+      if (!this.mempoolCache[txid].sigops || this.mempoolCache[txid].effectiveFeePerVsize == null) {
         this.mempoolCache[txid] = transactionUtils.extendMempoolTransaction(this.mempoolCache[txid]);
       }
+      if (this.mempoolCache[txid].order == null) {
+        this.mempoolCache[txid].order = transactionUtils.txidToOrdering(txid);
+      }
+      count++;
     }
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
     }
     if (this.$asyncMempoolChangedCallback) {
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, [], []);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, count, [], []);
     }
     this.addToSpendMap(Object.values(this.mempoolCache));
+  }
+
+  public async $reloadMempool(expectedCount: number): Promise<MempoolTransactionExtended[]> {
+    let count = 0;
+    let done = false;
+    let last_txid;
+    const newTransactions: MempoolTransactionExtended[] = [];
+    loadingIndicators.setProgress('mempool', count / expectedCount * 100);
+    while (!done) {
+      try {
+        const result = await bitcoinApi.$getMempoolTransactions(last_txid);
+        if (result) {
+          for (const tx of result) {
+            const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
+            if (!this.mempoolCache[extendedTransaction.txid]) {
+              newTransactions.push(extendedTransaction);
+              this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
+            }
+            count++;
+          }
+          logger.info(`Fetched ${count} of ${expectedCount} mempool transactions from esplora`);
+          if (result.length > 0) {
+            last_txid = result[result.length - 1].txid;
+          } else {
+            done = true;
+          }
+          if (Math.floor((count / expectedCount) * 100) < 100) {
+            loadingIndicators.setProgress('mempool', count / expectedCount * 100);
+          }
+        } else {
+          done = true;
+        }
+      } catch(err) {
+        logger.err('failed to fetch bulk mempool transactions from esplora');
+      }
+    }
+    return newTransactions;
+    logger.info(`Done inserting loaded mempool transactions into local cache`);
   }
 
   public async $updateMemPoolInfo() {
@@ -138,7 +182,7 @@ class Mempool {
     const currentMempoolSize = Object.keys(this.mempoolCache).length;
     this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
-    const newTransactions: MempoolTransactionExtended[] = [];
+    let newTransactions: MempoolTransactionExtended[] = [];
 
     this.mempoolCacheDelta = Math.abs(diff);
 
@@ -156,41 +200,59 @@ class Mempool {
       }
     };
 
-    let loggerTimer = new Date().getTime() / 1000;
-    for (const txid of transactions) {
-      if (!this.mempoolCache[txid]) {
-        try {
-          const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
-          this.updateTimerProgress(timer, 'fetched new transaction');
-          this.mempoolCache[txid] = transaction;
-          if (this.inSync) {
-            this.txPerSecondArray.push(new Date().getTime());
-            this.vBytesPerSecondArray.push({
-              unixTime: new Date().getTime(),
-              vSize: transaction.vsize,
-            });
+    let intervalTimer = Date.now();
+
+    let loaded = false;
+    if (config.MEMPOOL.BACKEND === 'esplora' && currentMempoolSize < transactions.length * 0.5 && transactions.length > 20_000) {
+      this.inSync = false;
+      logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
+      try {
+        newTransactions = await this.$reloadMempool(transactions.length);
+        loaded = true;
+      } catch (e) {
+        logger.err('failed to load mempool in bulk from esplora, falling back to fetching individual transactions');
+      }
+    }
+
+    if (!loaded) {
+      for (const txid of transactions) {
+        if (!this.mempoolCache[txid]) {
+          try {
+            const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
+            this.updateTimerProgress(timer, 'fetched new transaction');
+            this.mempoolCache[txid] = transaction;
+            if (this.inSync) {
+              this.txPerSecondArray.push(new Date().getTime());
+              this.vBytesPerSecondArray.push({
+                unixTime: new Date().getTime(),
+                vSize: transaction.vsize,
+              });
+            }
+            hasChange = true;
+            newTransactions.push(transaction);
+          } catch (e: any) {
+            if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
+              this.missingTxCount++;
+            }
+            logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
           }
-          hasChange = true;
-          newTransactions.push(transaction);
-        } catch (e: any) {
-          if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
-            this.missingTxCount++;
-          }
-          logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
         }
-      }
-      const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-      if (elapsedSeconds > 4) {
-        const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
-        logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
-        loadingIndicators.setProgress('mempool', progress);
-        loggerTimer = new Date().getTime() / 1000;
-      }
-      // Break and restart mempool loop if we spend too much time processing
-      // new transactions that may lead to falling behind on block height
-      if (this.inSync && (new Date().getTime()) - start > 10_000) {
-        logger.debug('Breaking mempool loop because the 10s time limit exceeded.');
-        break;
+
+        if (Date.now() - intervalTimer > 5_000) {
+          if (this.inSync) {
+            // Break and restart mempool loop if we spend too much time processing
+            // new transactions that may lead to falling behind on block height
+            logger.debug('Breaking mempool loop because the 5s time limit exceeded.');
+            break;
+          } else {
+            const progress = (currentMempoolSize + newTransactions.length) / transactions.length * 100;
+            logger.debug(`Mempool is synchronizing. Processed ${newTransactions.length}/${diff} txs (${Math.round(progress)}%)`);
+            if (Math.floor(progress) < 100) {
+              loadingIndicators.setProgress('mempool', progress);
+            }
+            intervalTimer = Date.now()
+          }
+        }
       }
     }
 
@@ -235,24 +297,25 @@ class Mempool {
       }
     }
 
+    const newMempoolSize = currentMempoolSize + newTransactions.length - deletedTransactions.length;
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
-    if (!this.inSync && transactions.length === Object.keys(this.mempoolCache).length) {
-      this.inSync = true;
-      logger.notice('The mempool is now in sync!');
-      loadingIndicators.setProgress('mempool', 100);
-    }
-
-    this.mempoolCacheDelta = Math.abs(transactions.length - Object.keys(this.mempoolCache).length);
+    this.mempoolCacheDelta = Math.abs(transactions.length - newMempoolSize);
 
     if (this.mempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.mempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
     }
     if (this.$asyncMempoolChangedCallback && (hasChange || deletedTransactions.length)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, newTransactions, deletedTransactions);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, deletedTransactions);
       this.updateTimerProgress(timer, 'completed async mempool callback');
+    }
+
+    if (!this.inSync && transactions.length === newMempoolSize) {
+      this.inSync = true;
+      logger.notice('The mempool is now in sync!');
+      loadingIndicators.setProgress('mempool', 100);
     }
 
     const end = new Date().getTime();

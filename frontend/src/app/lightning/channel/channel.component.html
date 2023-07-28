@@ -75,13 +75,13 @@
   <div class="row row-cols-1 row-cols-md-2" *ngIf="!error">
     <div class="col">
       <app-channel-box [channel]="channel.node_left"></app-channel-box>
-      <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [local]="channel.node_left" [remote]="channel.node_right"></app-channel-close-box>
     </div>
     <div class="col">
       <app-channel-box [channel]="channel.node_right"></app-channel-box>
-      <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [local]="channel.node_right" [remote]="channel.node_left"></app-channel-close-box>
     </div>
   </div>
+
+  <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [left]="channel.node_left" [right]="channel.node_right"></app-channel-close-box>
 
   <br>
 

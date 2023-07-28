@@ -6,6 +6,7 @@ import { Common } from "./common";
 interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean;
+  fullRbf?: boolean;
 }
 
 interface RbfTree {
@@ -15,6 +16,16 @@ interface RbfTree {
   mined?: boolean;
   fullRbf: boolean;
   replaces: RbfTree[];
+}
+
+export interface ReplacementInfo {
+  mined: boolean;
+  fullRbf: boolean;
+  txid: string;
+  oldFee: number;
+  oldVsize: number;
+  newFee: number;
+  newVsize: number;
 }
 
 class RbfCache {
@@ -41,11 +52,15 @@ class RbfCache {
     this.txs.set(newTx.txid, newTxExtended);
 
     // maintain rbf trees
-    let fullRbf = false;
+    let txFullRbf = false;
+    let treeFullRbf = false;
     const replacedTrees: RbfTree[] = [];
     for (const replacedTxExtended of replaced) {
       const replacedTx = Common.stripTransaction(replacedTxExtended) as RbfTransaction;
       replacedTx.rbf = replacedTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
+      if (!replacedTx.rbf) {
+        txFullRbf = true;
+      }
       this.replacedBy.set(replacedTx.txid, newTx.txid);
       if (this.treeMap.has(replacedTx.txid)) {
         const treeId = this.treeMap.get(replacedTx.txid);
@@ -55,7 +70,7 @@ class RbfCache {
           if (tree) {
             tree.interval = newTime - tree?.time;
             replacedTrees.push(tree);
-            fullRbf = fullRbf || tree.fullRbf;
+            treeFullRbf = treeFullRbf || tree.fullRbf || !tree.tx.rbf;
           }
         }
       } else {
@@ -67,21 +82,40 @@ class RbfCache {
           fullRbf: !replacedTx.rbf,
           replaces: [],
         });
-        fullRbf = fullRbf || !replacedTx.rbf;
+        treeFullRbf = treeFullRbf || !replacedTx.rbf;
         this.txs.set(replacedTx.txid, replacedTxExtended);
       }
     }
+    newTx.fullRbf = txFullRbf;
     const treeId = replacedTrees[0].tx.txid;
     const newTree = {
       tx: newTx,
       time: newTime,
-      fullRbf,
+      fullRbf: treeFullRbf,
       replaces: replacedTrees
     };
     this.rbfTrees.set(treeId, newTree);
     this.updateTreeMap(treeId, newTree);
     this.replaces.set(newTx.txid, replacedTrees.map(tree => tree.tx.txid));
     this.dirtyTrees.add(treeId);
+  }
+
+  public has(txId: string): boolean {
+    return this.txs.has(txId);
+  }
+
+  public anyInSameTree(txId: string, predicate: (tx: RbfTransaction) => boolean): boolean {
+    const tree = this.getRbfTree(txId);
+    if (!tree) {
+      return false;
+    }
+    const txs = this.getTransactionsInTree(tree);
+    for (const tx of txs) {
+      if (predicate(tx)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public getReplacedBy(txId: string): string | undefined {
@@ -167,6 +201,19 @@ class RbfCache {
     if (this.txs.has(txid) && (fast || !this.expiring.has(txid))) {
       this.expiring.set(txid, fast ? Date.now() + (1000 * 60 * 10) : Date.now() + (1000 * 86400)); // 24 hours
     }
+  }
+
+  // is the transaction involved in a full rbf replacement?
+  public isFullRbf(txid: string): boolean {
+    const treeId = this.treeMap.get(txid);
+    if (!treeId) {
+      return false;
+    }
+    const tree = this.rbfTrees.get(treeId);
+    if (!tree) {
+      return false;
+    }
+    return tree?.fullRbf;
   }
 
   private cleanup(): void {
@@ -335,6 +382,27 @@ class RbfCache {
       this.dirtyTrees.add(root);
     }
     return tree;
+  }
+
+  public getLatestRbfSummary(): ReplacementInfo[] {
+    const rbfList = this.getRbfTrees(false);
+    return rbfList.slice(0, 6).map(rbfTree => {
+      let oldFee = 0;
+      let oldVsize = 0;
+      for (const replaced of rbfTree.replaces) {
+        oldFee += replaced.tx.fee;
+        oldVsize += replaced.tx.vsize;
+      }
+      return {
+        txid: rbfTree.tx.txid,
+        mined: !!rbfTree.tx.mined,
+        fullRbf: !!rbfTree.tx.fullRbf,
+        oldFee,
+        oldVsize,
+        newFee: rbfTree.tx.fee,
+        newVsize: rbfTree.tx.vsize,
+      };
+    });
   }
 }
 

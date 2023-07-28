@@ -64,7 +64,9 @@ li.nav-item {
 
 
 .navbar-collapse {
-  flex-basis: auto;
+  @media (min-width: 564px) {
+    flex-basis: auto;
+  }
   justify-content: flex-end;
 }
 
@@ -191,5 +193,20 @@ nav {
   @media (max-width: 767.98px) {
     margin: 33px 0px 0px -19px;
     font-size: 7px;
+  }
+}
+
+.current-network-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+:host-context(.rtl-layout) {
+  .current-network-svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 0px;
   }
 }

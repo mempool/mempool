@@ -19,6 +19,7 @@ export interface PoolInfo {
   blockCount: number;
   slug: string;
   avgMatchRate: number | null;
+  avgFeeDelta: number | null;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -33,6 +34,7 @@ export interface BlockAudit {
   missingTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
+  fullrbfTxs: string[],
   addedTxs: string[],
   matchRate: number,
   expectedFees?: number,
@@ -93,9 +95,12 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
   sigops: number;
   adjustedVsize: number;
   adjustedFeePerVsize: number;
+  inputs?: number[];
+  lastBoosted?: number;
 }
 
 export interface AuditTransaction {
@@ -125,9 +130,9 @@ export interface CompactThreadTransaction {
   weight: number;
   sigops: number;
   feePerVsize: number;
-  effectiveFeePerVsize?: number;
+  effectiveFeePerVsize: number;
   inputs: number[];
-  cpfpRoot?: string;
+  cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
 }
@@ -224,11 +229,21 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
   id: string;
   transactions: TransactionStripped[];
+}
+
+export interface AuditSummary extends BlockAudit {
+  timestamp?: number,
+  size?: number,
+  weight?: number,
+  tx_count?: number,
+  transactions: TransactionStripped[];
+  template?: TransactionStripped[];
 }
 
 export interface BlockPrice {

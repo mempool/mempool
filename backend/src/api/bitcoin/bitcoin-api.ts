@@ -29,6 +29,7 @@ class BitcoinApi implements AbstractBitcoinApi {
       weight: block.weight,
       previousblockhash: block.previousblockhash,
       mediantime: block.mediantime,
+      stale: block.confirmations === -1,
     };
   }
 
@@ -58,28 +59,30 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getMempoolTransactions(lastTxid: string): Promise<IEsploraApi.Transaction[]> {
+    return Promise.resolve([]);
+  }
+
   $getTransactionHex(txId: string): Promise<string> {
     return this.$getRawTransaction(txId, true)
       .then((tx) => tx.hex || '');
   }
 
   $getBlockHeightTip(): Promise<number> {
-    return this.bitcoindClient.getChainTips()
-      .then((result: IBitcoinApi.ChainTips[]) => {
-        return result.find(tip => tip.status === 'active')!.height;
-      });
+    return this.bitcoindClient.getBlockCount();
   }
 
   $getBlockHashTip(): Promise<string> {
-    return this.bitcoindClient.getChainTips()
-      .then((result: IBitcoinApi.ChainTips[]) => {
-        return result.find(tip => tip.status === 'active')!.hash;
-      });
+    return this.bitcoindClient.getBestBlockHash();
   }
 
   $getTxIdsForBlock(hash: string): Promise<string[]> {
     return this.bitcoindClient.getBlock(hash, 1)
       .then((rpcBlock: IBitcoinApi.Block) => rpcBlock.tx);
+  }
+
+  $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getTxsForBlock not supported by the Bitcoin RPC API.');
   }
 
   $getRawBlock(hash: string): Promise<Buffer> {
@@ -111,6 +114,14 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $getAddressTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getAddressTransactions not supported by the Bitcoin RPC API.');
+  }
+
+  $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
+    throw new Error('Method getScriptHash not supported by the Bitcoin RPC API.');
+  }
+
+  $getScriptHashTransactions(scripthash: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getScriptHashTransactions not supported by the Bitcoin RPC API.');
   }
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {

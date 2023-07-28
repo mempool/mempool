@@ -10,6 +10,9 @@
         <div class="selector">
           <app-fiat-selector></app-fiat-selector>
         </div>
+        <div class="selector">
+          <app-rate-unit-selector></app-rate-unit-selector>
+        </div>
         <ng-template #temporaryHidden>
           <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
           <p *ngIf="officialMempoolSpace && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Sign In</a></p>
