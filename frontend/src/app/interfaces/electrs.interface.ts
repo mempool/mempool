@@ -129,6 +129,22 @@ export interface Address {
   address: string;
   chain_stats: ChainStats;
   mempool_stats: MempoolStats;
+  is_pubkey?: boolean;
+}
+
+export interface ScriptHash {
+  electrum?: boolean;
+  scripthash: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
+}
+
+export interface AddressOrScriptHash {
+  electrum?: boolean;
+  address?: string;
+  scripthash?: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
 }
 
 export interface ChainStats {
