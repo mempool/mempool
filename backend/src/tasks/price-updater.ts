@@ -108,8 +108,8 @@ class PriceUpdater {
       this.lastRun = await PricesRepository.$getLatestPriceTime();
     }
 
-    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < config.PRICE_DATA_SERVER.UPDATE_FREQUENCY) {
-      // Refresh every UPDATE_FREQUENCY seconds at most
+    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < config.MEMPOOL.PRICE_UPDATE_FREQUENCY) {
+      // Refresh every PRICE_UPDATE_FREQUENCY seconds at most
       return;
     }
 
@@ -146,20 +146,20 @@ class PriceUpdater {
       }
     }
 
-    logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
-
     if (config.DATABASE.ENABLED === true) {
       // Save everything in db
       try {
         const p = 60 * 60 * 1000; // milliseconds in an hour
         const nowRounded = new Date(Math.round(new Date().getTime() / p) * p); // https://stackoverflow.com/a/28037042
-        this.latestPrices.time = nowRounded.getTime() / 1000;
         await PricesRepository.$savePrices(nowRounded.getTime() / 1000, this.latestPrices);
       } catch (e) {
         this.lastRun = previousRun + 5 * 60;
         logger.err(`Cannot save latest prices into db. Trying again in 5 minutes. Reason: ${(e instanceof Error ? e.message : e)}`);
       }
     }
+
+    this.latestPrices.time = Math.round(new Date().getTime() / 1000);
+    logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
 
     if (this.ratesChangedCallback) {
       this.ratesChangedCallback(this.latestPrices);

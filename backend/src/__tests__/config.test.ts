@@ -47,6 +47,7 @@ describe('Mempool Backend Config', () => {
         DISK_CACHE_BLOCK_INTERVAL: 6,
         MAX_PUSH_TX_SIZE_WEIGHT: 400000,
         ALLOW_UNREACHABLE: true,
+        PRICE_UPDATE_FREQUENCY: 3600,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
@@ -99,12 +100,6 @@ describe('Mempool Backend Config', () => {
         PORT: 9050,
         USERNAME: '',
         PASSWORD: ''
-      });
-
-      expect(config.PRICE_DATA_SERVER).toStrictEqual({
-        UPDATE_FREQUENCY: 3600,
-        TOR_URL: 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-        CLEARNET_URL: 'https://price.bisq.wiz.biz/getAllMarketPrices'
       });
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual({
@@ -163,8 +158,6 @@ describe('Mempool Backend Config', () => {
       expect(config.BISQ).toStrictEqual(fixture.BISQ);
 
       expect(config.SOCKS5PROXY).toStrictEqual(fixture.SOCKS5PROXY);
-
-      expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
 
