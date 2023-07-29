@@ -159,7 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             for (const block of blocks) {
               // @ts-ignore: Need to add an extra field for the template
               block.extras.pool.logo = `/resources/mining-pools/` +
-                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                block.extras.pool.slug + '.svg';
             }
           }
           return of(blocks.slice(0, 6));
