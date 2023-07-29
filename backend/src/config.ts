@@ -38,6 +38,7 @@ interface IConfig {
     DISK_CACHE_BLOCK_INTERVAL: number;
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
+    PRICE_UPDATE_FREQUENCY: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -115,11 +116,6 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
-  PRICE_DATA_SERVER: {
-    UPDATE_FREQUENCY: number;
-    TOR_URL: string;
-    CLEARNET_URL: string;
-  };
   EXTERNAL_DATA_SERVER: {
     MEMPOOL_API: string;
     MEMPOOL_ONION: string;
@@ -182,6 +178,7 @@ const defaults: IConfig = {
     'DISK_CACHE_BLOCK_INTERVAL': 6,
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
+    'PRICE_UPDATE_FREQUENCY': 3600,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
@@ -259,11 +256,6 @@ const defaults: IConfig = {
     'USERNAME': '',
     'PASSWORD': ''
   },
-  'PRICE_DATA_SERVER': {
-    'UPDATE_FREQUENCY': 3600,
-    'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
-  },
   'EXTERNAL_DATA_SERVER': {
     'MEMPOOL_API': 'https://mempool.space/api/v1',
     'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
@@ -304,7 +296,6 @@ class Config implements IConfig {
   LND: IConfig['LND'];
   CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
-  PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
@@ -325,7 +316,6 @@ class Config implements IConfig {
     this.LND = configs.LND;
     this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
-    this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
