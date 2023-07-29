@@ -49,6 +49,9 @@
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
   },
+  "PRICE_DATA_SERVER": {
+    "UPDATE_FREQUENCY": 300
+  },
   "REPLICATION": {
     "ENABLED": true,
     "AUDIT": true,
