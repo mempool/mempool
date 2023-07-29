@@ -102,6 +102,7 @@ describe('Mempool Backend Config', () => {
       });
 
       expect(config.PRICE_DATA_SERVER).toStrictEqual({
+        UPDATE_FREQUENCY: 3600,
         TOR_URL: 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
         CLEARNET_URL: 'https://price.bisq.wiz.biz/getAllMarketPrices'
       });

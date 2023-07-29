@@ -108,8 +108,8 @@ class PriceUpdater {
       this.lastRun = await PricesRepository.$getLatestPriceTime();
     }
 
-    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < 3600) {
-      // Refresh only once every hour
+    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < config.PRICE_DATA_SERVER.UPDATE_FREQUENCY) {
+      // Refresh every UPDATE_FREQUENCY seconds at most
       return;
     }
 

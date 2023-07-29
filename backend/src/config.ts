@@ -116,6 +116,7 @@ interface IConfig {
     PASSWORD: string;
   };
   PRICE_DATA_SERVER: {
+    UPDATE_FREQUENCY: number;
     TOR_URL: string;
     CLEARNET_URL: string;
   };
@@ -259,6 +260,7 @@ const defaults: IConfig = {
     'PASSWORD': ''
   },
   'PRICE_DATA_SERVER': {
+    'UPDATE_FREQUENCY': 3600,
     'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
     'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
   },

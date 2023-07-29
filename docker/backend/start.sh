@@ -95,6 +95,7 @@ __SOCKS5PROXY_USERNAME__=${SOCKS5PROXY_USERNAME:=""}
 __SOCKS5PROXY_PASSWORD__=${SOCKS5PROXY_PASSWORD:=""}
 
 # PRICE_DATA_SERVER
+__PRICE_DATA_SERVER_UPDATE_FREQUENCY__=${PRICE_DATA_SERVER_UPDATE_FREQUENCY:=300}
 __PRICE_DATA_SERVER_TOR_URL__=${PRICE_DATA_SERVER_TOR_URL:=http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices}
 __PRICE_DATA_SERVER_CLEARNET_URL__=${PRICE_DATA_SERVER_CLEARNET_URL:=https://price.bisq.wiz.biz/getAllMarketPrices}
 
@@ -226,6 +227,7 @@ sed -i "s!__SOCKS5PROXY_PORT__!${__SOCKS5PROXY_PORT__}!g" mempool-config.json
 sed -i "s!__SOCKS5PROXY_USERNAME__!${__SOCKS5PROXY_USERNAME__}!g" mempool-config.json
 sed -i "s!__SOCKS5PROXY_PASSWORD__!${__SOCKS5PROXY_PASSWORD__}!g" mempool-config.json
 
+sed -i "s!__PRICE_DATA_SERVER_UPDATE_FREQUENCY__!${__PRICE_DATA_SERVER_UPDATE_FREQUENCY__}!g" mempool-config.json
 sed -i "s!__PRICE_DATA_SERVER_TOR_URL__!${__PRICE_DATA_SERVER_TOR_URL__}!g" mempool-config.json
 sed -i "s!__PRICE_DATA_SERVER_CLEARNET_URL__!${__PRICE_DATA_SERVER_CLEARNET_URL__}!g" mempool-config.json
 
