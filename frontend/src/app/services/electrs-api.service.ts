@@ -67,7 +67,8 @@ export class ElectrsApiService {
   }
 
   getPubKeyAddress$(pubkey: string): Observable<Address> {
-    return this.getScriptHash$('41' + pubkey + 'ac').pipe(
+    const scriptpubkey = (pubkey.length === 130 ? '41' : '21') + pubkey + 'ac';
+    return this.getScriptHash$(scriptpubkey).pipe(
       switchMap((scripthash: ScriptHash) => {
         return of({
           ...scripthash,
