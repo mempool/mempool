@@ -276,7 +276,7 @@ class Mempool {
       logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
       setTimeout(() => {
         this.mempoolProtection = 2;
-        logger.warn('Mempool clear protection resumed.');
+        logger.warn('Mempool clear protection ended, normal operation resumed.');
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 

@@ -191,15 +191,22 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-address']) {
-            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100})$/
+            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|[0-9a-fA-F]{130})$/
               .test(parsedMessage['track-address'])) {
               let matchedAddress = parsedMessage['track-address'];
               if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(parsedMessage['track-address'])) {
                 matchedAddress = matchedAddress.toLowerCase();
               }
-              client['track-address'] = matchedAddress;
+              if (/^[0-9a-fA-F]{130}$/.test(parsedMessage['track-address'])) {
+                client['track-address'] = null;
+                client['track-scriptpubkey'] = '41' + matchedAddress + 'ac';
+              } else {
+                client['track-address'] = matchedAddress;
+                client['track-scriptpubkey'] = null;
+              }
             } else {
               client['track-address'] = null;
+              client['track-scriptpubkey'] = null;
             }
           }
 
@@ -554,6 +561,44 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-scriptpubkey']) {
+        const foundTransactions: TransactionExtended[] = [];
+
+        for (const tx of newTransactions) {
+          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey']);
+          if (someVin) {
+            if (config.MEMPOOL.BACKEND !== 'esplora') {
+              try {
+                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
+                foundTransactions.push(fullTx);
+              } catch (e) {
+                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+              }
+            } else {
+              foundTransactions.push(tx);
+            }
+            return;
+          }
+          const someVout = tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey']);
+          if (someVout) {
+            if (config.MEMPOOL.BACKEND !== 'esplora') {
+              try {
+                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
+                foundTransactions.push(fullTx);
+              } catch (e) {
+                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+              }
+            } else {
+              foundTransactions.push(tx);
+            }
+          }
+        }
+
+        if (foundTransactions.length) {
+          response['address-transactions'] = JSON.stringify(foundTransactions);
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -827,6 +872,33 @@ class WebsocketHandler {
             return;
           }
           if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
+            foundTransactions.push(tx);
+          }
+        });
+
+        if (foundTransactions.length) {
+          foundTransactions.forEach((tx) => {
+            tx.status = {
+              confirmed: true,
+              block_height: block.height,
+              block_hash: block.id,
+              block_time: block.timestamp,
+            };
+          });
+
+          response['block-transactions'] = JSON.stringify(foundTransactions);
+        }
+      }
+
+      if (client['track-scriptpubkey']) {
+        const foundTransactions: TransactionExtended[] = [];
+
+        transactions.forEach((tx) => {
+          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey'])) {
+            foundTransactions.push(tx);
+            return;
+          }
+          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey'])) {
             foundTransactions.push(tx);
           }
         });

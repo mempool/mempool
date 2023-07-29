@@ -166,31 +166,8 @@ export class AddressComponent implements OnInit, OnDestroy {
       });
 
     this.stateService.mempoolTransactions$
-      .subscribe((transaction) => {
-        if (this.transactions.some((t) => t.txid === transaction.txid)) {
-          return;
-        }
-
-        this.transactions.unshift(transaction);
-        this.transactions = this.transactions.slice();
-        this.txCount++;
-
-        if (transaction.vout.some((vout) => vout.scriptpubkey_address === this.address.address)) {
-          this.audioService.playSound('cha-ching');
-        } else {
-          this.audioService.playSound('chime');
-        }
-
-        transaction.vin.forEach((vin) => {
-          if (vin.prevout.scriptpubkey_address === this.address.address) {
-            this.sent += vin.prevout.value;
-          }
-        });
-        transaction.vout.forEach((vout) => {
-          if (vout.scriptpubkey_address === this.address.address) {
-            this.received += vout.value;
-          }
-        });
+      .subscribe(tx => {
+        this.addTransaction(tx);
       });
 
     this.stateService.blockTransactions$
@@ -200,10 +177,45 @@ export class AddressComponent implements OnInit, OnDestroy {
           tx.status = transaction.status;
           this.transactions = this.transactions.slice();
           this.audioService.playSound('magic');
+        } else {
+          if (this.addTransaction(transaction, false)) {
+            this.audioService.playSound('magic');
+          }
         }
         this.totalConfirmedTxCount++;
         this.loadedConfirmedTxCount++;
       });
+  }
+
+  addTransaction(transaction: Transaction, playSound: boolean = true): boolean {
+    if (this.transactions.some((t) => t.txid === transaction.txid)) {
+      return false;
+    }
+
+    this.transactions.unshift(transaction);
+    this.transactions = this.transactions.slice();
+    this.txCount++;
+
+    if (playSound) {
+      if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
+        this.audioService.playSound('cha-ching');
+      } else {
+        this.audioService.playSound('chime');
+      }
+    }
+
+    transaction.vin.forEach((vin) => {
+      if (vin?.prevout?.scriptpubkey_address === this.address.address) {
+        this.sent += vin.prevout.value;
+      }
+    });
+    transaction.vout.forEach((vout) => {
+      if (vout?.scriptpubkey_address === this.address.address) {
+        this.received += vout.value;
+      }
+    });
+
+    return true;
   }
 
   loadMore() {
