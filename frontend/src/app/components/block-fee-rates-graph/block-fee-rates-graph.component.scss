@@ -25,7 +25,8 @@
   flex-direction: column;
   padding: 0px 15px;
   width: 100%;
-  height: calc(100vh - 250px);
+  height: calc(100vh - 225px);
+  min-height: 400px;
   @media (min-width: 992px) {
     height: calc(100vh - 150px);
   }
