@@ -193,6 +193,7 @@ export class DifficultyComponent implements OnInit {
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event) {
     this.onPointerMove(event);
+    event.preventDefault();
   }
 
   @HostListener('pointermove', ['$event'])
