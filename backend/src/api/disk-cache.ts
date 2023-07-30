@@ -179,6 +179,7 @@ class DiskCache {
       return;
     }
     try {
+      const start = Date.now();
       let data: any = {};
       const cacheData = fs.readFileSync(DiskCache.FILE_NAME, 'utf8');
       if (cacheData) {
@@ -219,6 +220,8 @@ class DiskCache {
           logger.err('Error parsing ' + fileName + '. Skipping. Reason: ' + (e instanceof Error ? e.message : e));
         }
       }
+
+      logger.info(`Loaded mempool from disk cache in ${Date.now() - start} ms`);
 
       await memPool.$setMempool(data.mempool);
       if (!this.ignoreBlocksCache) {

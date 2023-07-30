@@ -360,14 +360,14 @@ class RbfCache {
 
   public async load({ txs, trees, expiring }): Promise<void> {
     txs.forEach(txEntry => {
-      this.txs.set(txEntry[0], txEntry[1]);
+      this.txs.set(txEntry.key, txEntry.value);
     });
     for (const deflatedTree of trees) {
       await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
     }
     expiring.forEach(expiringEntry => {
-      if (this.txs.has(expiringEntry[0])) {
-        this.expiring.set(expiringEntry[0], new Date(expiringEntry[1]).getTime());
+      if (this.txs.has(expiringEntry.key)) {
+        this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
       }
     });
     this.cleanup();
