@@ -72,7 +72,7 @@ class PriceUpdater {
     this.latestPrices = await PricesRepository.$getLatestConversionRates();
   }
 
-  public async $run(): Promise<void> {
+  public async $run(storeInDb: boolean = false): Promise<void> {
     if (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet') {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
@@ -89,7 +89,7 @@ class PriceUpdater {
     }
 
     try {
-      await this.$updatePrice();
+      await this.$updatePrice(storeInDb);
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
       }
@@ -103,7 +103,7 @@ class PriceUpdater {
   /**
    * Fetch last BTC price from exchanges, average them, and save it in the database once every hour
    */
-  private async $updatePrice(): Promise<void> {
+  private async $updatePrice(storeInDb: boolean): Promise<void> {
     if (this.lastRun === 0 && config.DATABASE.ENABLED === true) {
       this.lastRun = await PricesRepository.$getLatestPriceTime();
     }
@@ -146,7 +146,7 @@ class PriceUpdater {
       }
     }
 
-    if (config.DATABASE.ENABLED === true) {
+    if (config.DATABASE.ENABLED === true && storeInDb) {
       // Save everything in db
       try {
         const p = 60 * 60 * 1000; // milliseconds in an hour

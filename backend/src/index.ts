@@ -194,6 +194,7 @@ class Server {
         await memPool.$updateMempool(newMempool, pollRate);
       }
       indexer.$run();
+      priceUpdater.$run();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
