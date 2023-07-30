@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { combineLatest, Observable, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { StateService } from '../..//services/state.service';
@@ -61,6 +61,7 @@ export class DifficultyComponent implements OnInit {
 
   constructor(
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
@@ -189,9 +190,15 @@ export class DifficultyComponent implements OnInit {
     return shapes;
   }
 
+  @HostListener('pointerdown', ['$event'])
+  onPointerDown(event) {
+    this.onPointerMove(event);
+  }
+
   @HostListener('pointermove', ['$event'])
   onPointerMove(event) {
     this.tooltipPosition = { x: event.clientX, y: event.clientY };
+    this.cd.markForCheck();
   }
 
   onHover(event, rect): void {
