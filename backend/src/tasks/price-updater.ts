@@ -108,8 +108,8 @@ class PriceUpdater {
       this.lastRun = await PricesRepository.$getLatestPriceTime();
     }
 
-    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < config.MEMPOOL.PRICE_UPDATE_FREQUENCY) {
-      // Refresh every PRICE_UPDATE_FREQUENCY seconds at most
+    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < Math.min(config.MEMPOOL.PRICE_UPDATE_FREQUENCY, 3600)) {
+      // Refresh at least every hour or PRICE_UPDATE_FREQUENCY seconds
       return;
     }
 
