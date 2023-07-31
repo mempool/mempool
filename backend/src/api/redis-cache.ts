@@ -122,9 +122,10 @@ class RedisCache {
   async $removeTransactions(transactions: string[]) {
     try {
       await this.$ensureConnected();
-      for (let i = 0; i < Math.ceil(transactions.length / 1000); i++) {
-        await this.client.del(transactions.slice(i * 1000, (i + 1) * 1000).map(txid => `mempool:tx:${txid}`));
-        logger.info(`Deleted ${transactions.length} transactions from the Redis cache`);
+      for (let i = 0; i < Math.ceil(transactions.length / 10000); i++) {
+        const slice = transactions.slice(i * 10000, (i + 1) * 10000);
+        await this.client.unlink(slice.map(txid => `mempool:tx:${txid}`));
+        logger.debug(`Deleted ${slice.length} transactions from the Redis cache`);
       }
     } catch (e) {
       logger.warn(`Failed to remove ${transactions.length} transactions from Redis cache: ${e instanceof Error ? e.message : e}`);
@@ -143,7 +144,7 @@ class RedisCache {
   async $removeRbfEntry(type: string, txid: string): Promise<void> {
     try {
       await this.$ensureConnected();
-      await this.client.del(`rbf:${type}:${txid}`);
+      await this.client.unlink(`rbf:${type}:${txid}`);
     } catch (e) {
       logger.warn(`Failed to remove RBF ${type} from Redis cache: ${e instanceof Error ? e.message : e}`);
     }
