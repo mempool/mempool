@@ -107,6 +107,7 @@ class Mining {
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
         avgFeeDelta: poolInfo.avgFeeDelta,
+        poolUniqueId: poolInfo.poolUniqueId
       };
       poolsStats.push(poolStat);
     });
