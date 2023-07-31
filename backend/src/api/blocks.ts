@@ -419,8 +419,8 @@ class Blocks {
       let newlyIndexed = 0;
       let totalIndexed = indexedBlockSummariesHashesArray.length;
       let indexedThisRun = 0;
-      let timer = new Date().getTime() / 1000;
-      const startedAt = new Date().getTime() / 1000;
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
 
       for (const block of indexedBlocks) {
         if (indexedBlockSummariesHashes[block.hash] === true) {
@@ -428,13 +428,13 @@ class Blocks {
         }
 
         // Logging
-        const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
+        const elapsedSeconds = (Date.now() / 1000) - timer;
         if (elapsedSeconds > 5) {
-          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-          const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = indexedThisRun / elapsedSeconds;
           const progress = Math.round(totalIndexed / indexedBlocks.length * 10000) / 100;
-          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
-          timer = new Date().getTime() / 1000;
+          logger.debug(`Indexing block summary for #${block.height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexedBlocks.length} (${progress}%) | elapsed: ${runningFor.toFixed(2)} seconds`, logger.tags.mining);
+          timer = Date.now() / 1000;
           indexedThisRun = 0;
         }
 
@@ -477,18 +477,18 @@ class Blocks {
       // Logging
       let count = 0;
       let countThisRun = 0;
-      let timer = new Date().getTime() / 1000;
-      const startedAt = new Date().getTime() / 1000;
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
       for (const height of unindexedBlockHeights) {
         // Logging
         const hash = await bitcoinApi.$getBlockHash(height);
-        const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
+        const elapsedSeconds = (Date.now() / 1000) - timer;
         if (elapsedSeconds > 5) {
-          const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-          const blockPerSeconds = (countThisRun / elapsedSeconds);
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = countThisRun / elapsedSeconds;
           const progress = Math.round(count / unindexedBlockHeights.length * 10000) / 100;
-          logger.debug(`Indexing cpfp clusters for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlockHeights.length} (${progress}%) | elapsed: ${runningFor} seconds`);
-          timer = new Date().getTime() / 1000;
+          logger.debug(`Indexing cpfp clusters for #${height} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${count}/${unindexedBlockHeights.length} (${progress}%) | elapsed: ${runningFor.toFixed(2)} seconds`);
+          timer = Date.now() / 1000;
           countThisRun = 0;
         }
 
@@ -567,8 +567,8 @@ class Blocks {
       let totalIndexed = await blocksRepository.$blockCountBetweenHeight(currentBlockHeight, lastBlockToIndex);
       let indexedThisRun = 0;
       let newlyIndexed = 0;
-      const startedAt = new Date().getTime() / 1000;
-      let timer = new Date().getTime() / 1000;
+      const startedAt = Date.now() / 1000;
+      let timer = Date.now() / 1000;
 
       while (currentBlockHeight >= lastBlockToIndex) {
         const endBlock = Math.max(0, lastBlockToIndex, currentBlockHeight - chunkSize + 1);
@@ -588,13 +588,13 @@ class Blocks {
           }
           ++indexedThisRun;
           ++totalIndexed;
-          const elapsedSeconds = Math.max(1, new Date().getTime() / 1000 - timer);
+          const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5 || blockHeight === lastBlockToIndex) {
-            const runningFor = Math.max(1, Math.round((new Date().getTime() / 1000) - startedAt));
-            const blockPerSeconds = Math.max(1, indexedThisRun / elapsedSeconds);
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blockPerSeconds = indexedThisRun / elapsedSeconds;
             const progress = Math.round(totalIndexed / indexingBlockAmount * 10000) / 100;
-            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress}%) | elapsed: ${runningFor} seconds`, logger.tags.mining);
-            timer = new Date().getTime() / 1000;
+            logger.debug(`Indexing block #${blockHeight} | ~${blockPerSeconds.toFixed(2)} blocks/sec | total: ${totalIndexed}/${indexingBlockAmount} (${progress.toFixed(2)}%) | elapsed: ${runningFor.toFixed(2)} seconds`, logger.tags.mining);
+            timer = Date.now() / 1000;
             indexedThisRun = 0;
             loadingIndicators.setProgress('block-indexing', progress, false);
           }
