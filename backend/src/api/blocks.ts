@@ -438,7 +438,14 @@ class Blocks {
           indexedThisRun = 0;
         }
 
-        await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
+
+        if (config.MEMPOOL.BACKEND === 'esplora') {
+          const txs = (await bitcoinApi.$getTxsForBlock(block.hash)).map(tx => transactionUtils.extendTransaction(tx));
+          const cpfpSummary = await this.$indexCPFP(block.hash, block.height, txs);
+          await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
+        } else {
+          await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
+        }
 
         // Logging
         indexedThisRun++;
@@ -942,10 +949,15 @@ class Blocks {
         }),
       };
     } else {
-      // Call Core RPC
-      const block = await bitcoinClient.getBlock(hash, 2);
-      summary = this.summarizeBlock(block);
-      height = block.height;
+      if (config.MEMPOOL.BACKEND === 'esplora') {
+        const txs = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
+        summary = this.summarizeBlockTransactions(hash, txs);
+      } else {
+        // Call Core RPC
+        const block = await bitcoinClient.getBlock(hash, 2);
+        summary = this.summarizeBlock(block);
+        height = block.height;
+      }
     }
     if (height == null) {
       const block = await bitcoinApi.$getBlock(hash);
@@ -1068,8 +1080,17 @@ class Blocks {
       if (Common.blocksSummariesIndexingEnabled() && cleanBlock.fee_amt_percentiles === null) {
         cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
         if (cleanBlock.fee_amt_percentiles === null) {
-          const block = await bitcoinClient.getBlock(cleanBlock.hash, 2);
-          const summary = this.summarizeBlock(block);
+
+          let summary;
+          if (config.MEMPOOL.BACKEND === 'esplora') {
+            const txs = (await bitcoinApi.$getTxsForBlock(cleanBlock.hash)).map(tx => transactionUtils.extendTransaction(tx));
+            summary = this.summarizeBlockTransactions(cleanBlock.hash, txs);
+          } else {
+            // Call Core RPC
+            const block = await bitcoinClient.getBlock(cleanBlock.hash, 2);
+            summary = this.summarizeBlock(block);
+          }
+
           await BlocksSummariesRepository.$saveTransactions(cleanBlock.height, cleanBlock.hash, summary.transactions);
           cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
         }
@@ -1129,19 +1150,29 @@ class Blocks {
     return this.currentBlockHeight;
   }
 
-  public async $indexCPFP(hash: string, height: number): Promise<void> {
-    const block = await bitcoinClient.getBlock(hash, 2);
-    const transactions = block.tx.map(tx => {
-      tx.fee *= 100_000_000;
-      return tx;
-    });
+  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary> {
+    let transactions = txs;
+    if (!transactions) {
+      if (config.MEMPOOL.BACKEND === 'esplora') {
+        transactions = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
+      }
+      if (!transactions) {
+        const block = await bitcoinClient.getBlock(hash, 2);
+        transactions = block.tx.map(tx => {
+          tx.fee *= 100_000_000;
+          return tx;
+        });
+      }
+    }
 
-    const summary = Common.calculateCpfp(height, transactions);
+    const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
 
     await this.$saveCpfp(hash, height, summary);
 
     const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
     await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
+
+    return summary;
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {
