@@ -6,7 +6,7 @@ import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
 import feeApi from '../fee-api';
 import mempoolBlocks from '../mempool-blocks';
-import bitcoinApi, { bitcoinCoreApi } from './bitcoin-api-factory';
+import bitcoinApi from './bitcoin-api-factory';
 import { Common } from '../common';
 import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
@@ -483,7 +483,7 @@ class BitcoinRoutes {
           returnBlocks.push(localBlock);
           nextHash = localBlock.previousblockhash;
         } else {
-          const block = await bitcoinCoreApi.$getBlock(nextHash);
+          const block = await bitcoinApi.$getBlock(nextHash);
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
