@@ -1,3 +1,4 @@
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
@@ -12,6 +13,7 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import transactionUtils from '../api/transaction-utils';
 
 interface DatabaseBlock {
   id: string;
@@ -1036,8 +1038,17 @@ class BlocksRepository {
     {
       extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       if (extras.feePercentiles === null) {
-        const block = await bitcoinClient.getBlock(dbBlk.id, 2);
-        const summary = blocks.summarizeBlock(block);
+
+        let summary;
+        if (config.MEMPOOL.BACKEND === 'esplora') {
+          const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id)).map(tx => transactionUtils.extendTransaction(tx));
+          summary = blocks.summarizeBlockTransactions(dbBlk.id, txs);
+        } else {
+          // Call Core RPC
+          const block = await bitcoinClient.getBlock(dbBlk.id, 2);
+          summary = blocks.summarizeBlock(block);
+        }
+
         await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
