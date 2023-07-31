@@ -110,9 +110,9 @@
   },
   "optionalDependencies": {
     "@cypress/schematic": "^2.5.0",
-    "cypress": "^12.17.1",
+    "cypress": "^12.17.2",
     "cypress-fail-on-console-error": "~4.0.3",
-    "cypress-wait-until": "^1.7.2",
+    "cypress-wait-until": "^2.0.0",
     "mock-socket": "~9.2.1",
     "start-server-and-test": "~2.0.0"
   },
