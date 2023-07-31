@@ -1,5 +1,5 @@
 import config from '../config';
-import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
