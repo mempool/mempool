@@ -59,6 +59,7 @@ class RedisCache {
     try {
       await this.$ensureConnected();
       await this.client.set('blocks', JSON.stringify(blocks));
+      logger.debug(`Saved latest blocks to Redis cache`);
     } catch (e) {
       logger.warn(`Failed to update blocks in Redis cache: ${e instanceof Error ? e.message : e}`);
     }
@@ -68,8 +69,9 @@ class RedisCache {
     try {
       await this.$ensureConnected();
       await this.client.set('block-summaries', JSON.stringify(summaries));
+      logger.debug(`Saved latest block summaries to Redis cache`);
     } catch (e) {
-      logger.warn(`Failed to update blocks in Redis cache: ${e instanceof Error ? e.message : e}`);
+      logger.warn(`Failed to update block summaries in Redis cache: ${e instanceof Error ? e.message : e}`);
     }
   }
 
@@ -83,10 +85,10 @@ class RedisCache {
   async $flushTransactions() {
     const success = await this.$addTransactions(this.cacheQueue);
     if (success) {
-      logger.info(`Flushed ${this.cacheQueue.length} transactions to Redis cache`);
+      logger.debug(`Saved ${this.cacheQueue.length} transactions to Redis cache`);
       this.cacheQueue = [];
     } else {
-      logger.err(`Failed to flush ${this.cacheQueue.length} transactions to Redis cache`);
+      logger.err(`Failed to save ${this.cacheQueue.length} transactions to Redis cache`);
     }
   }
 
@@ -122,6 +124,7 @@ class RedisCache {
       await this.$ensureConnected();
       for (let i = 0; i < Math.ceil(transactions.length / 1000); i++) {
         await this.client.del(transactions.slice(i * 1000, (i + 1) * 1000).map(txid => `mempool:tx:${txid}`));
+        logger.info(`Deleted ${transactions.length} transactions from the Redis cache`);
       }
     } catch (e) {
       logger.warn(`Failed to remove ${transactions.length} transactions from Redis cache: ${e instanceof Error ? e.message : e}`);
