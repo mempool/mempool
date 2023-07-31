@@ -207,7 +207,7 @@ describe('Mempool Backend Config', () => {
               expect(startSh).toMatch(re);
 
               //The string that actually replaces the values in the config file
-              const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
+              const sedStr = 'sed -i.bak -e "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json && rm mempool-config.json.bak';
               console.log(`looking for ${sedStr} in the start.sh script`);
               expect(startSh).toContain(sedStr);
               break;
