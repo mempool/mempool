@@ -188,6 +188,122 @@ class TransactionUtils {
       16
     );
   }
+
+  public addInnerScriptsToVin(vin: IEsploraApi.Vin): void {
+    if (!vin.prevout) {
+      return;
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'p2sh') {
+      const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
+      vin.inner_redeemscript_asm = this.convertScriptSigAsm(redeemScript);
+      if (vin.witness && vin.witness.length > 2) {
+        const witnessScript = vin.witness[vin.witness.length - 1];
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
+      const witnessScript = vin.witness[vin.witness.length - 1];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness) {
+      const witnessScript = this.witnessToP2TRScript(vin.witness);
+      if (witnessScript !== null) {
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
+    }
+  }
+
+  public convertScriptSigAsm(hex: string): string {
+    const buf = Buffer.from(hex, 'hex');
+
+    const b: string[] = [];
+
+    let i = 0;
+    while (i < buf.length) {
+      const op = buf[i];
+      if (op >= 0x01 && op <= 0x4e) {
+        i++;
+        let push: number;
+        if (op === 0x4c) {
+          push = buf.readUInt8(i);
+          b.push('OP_PUSHDATA1');
+          i += 1;
+        } else if (op === 0x4d) {
+          push = buf.readUInt16LE(i);
+          b.push('OP_PUSHDATA2');
+          i += 2;
+        } else if (op === 0x4e) {
+          push = buf.readUInt32LE(i);
+          b.push('OP_PUSHDATA4');
+          i += 4;
+        } else {
+          push = op;
+          b.push('OP_PUSHBYTES_' + push);
+        }
+
+        const data = buf.slice(i, i + push);
+        if (data.length !== push) {
+          break;
+        }
+
+        b.push(data.toString('hex'));
+        i += data.length;
+      } else {
+        if (op === 0x00) {
+          b.push('OP_0');
+        } else if (op === 0x4f) {
+          b.push('OP_PUSHNUM_NEG1');
+        } else if (op === 0xb1) {
+          b.push('OP_CLTV');
+        } else if (op === 0xb2) {
+          b.push('OP_CSV');
+        } else if (op === 0xba) {
+          b.push('OP_CHECKSIGADD');
+        } else {
+          const opcode = bitcoinjs.script.toASM([ op ]);
+          if (opcode && op < 0xfd) {
+            if (/^OP_(\d+)$/.test(opcode)) {
+              b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+            } else {
+              b.push(opcode);
+            }
+          } else {
+            b.push('OP_RETURN_' + op);
+          }
+        }
+        i += 1;
+      }
+    }
+
+    return b.join(' ');
+  }
+
+  /**
+   * This function must only be called when we know the witness we are parsing
+   * is a taproot witness.
+   * @param witness An array of hex strings that represents the witness stack of
+   *                the input.
+   * @returns null if the witness is not a script spend, and the hex string of
+   *          the script item if it is a script spend.
+   */
+  public witnessToP2TRScript(witness: string[]): string | null {
+    if (witness.length < 2) return null;
+    // Note: see BIP341 for parsing details of witness stack
+
+    // If there are at least two witness elements, and the first byte of the
+    // last element is 0x50, this last element is called annex a and
+    // is removed from the witness stack.
+    const hasAnnex = witness[witness.length - 1].substring(0, 2) === '50';
+    // If there are at least two witness elements left, script path spending is used.
+    // Call the second-to-last stack element s, the script.
+    // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
+    if (hasAnnex && witness.length < 3) return null;
+    const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
+    return witness[positionOfScript];
+  }
 }
 
 export default new TransactionUtils();
