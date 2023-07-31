@@ -1,6 +1,6 @@
 {
   "SERVER": {
-    "HOST": "https://mempool.fra.mempool.space",
+    "HOST": "https://mempool.tk7.mempool.space",
     "HTTP_PORT": 8001
   },
   "MEMPOOL": {
