@@ -26,10 +26,10 @@
           <div class="col-lg-6">
             <p class="category">Explore</p>
             <p><a [routerLink]="['/mining' | relativeUrl]">Mining Dashboard</a></p>
-            <p><a [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
+            <p><a *ngIf="env.LIGHTNING" [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
             <p><a [routerLink]="['/blocks' | relativeUrl]">Recent Blocks</a></p>
             <p><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
-            <p *ngIf="officialMempoolSpace && env.LIGHTNING"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
+            <p *ngIf="officialMempoolSpace"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
             <p><a [routerLink]="['/docs/api' | relativeUrl]">API Documentation</a></p>
           </div>
           <div class="col-lg-6 links">
