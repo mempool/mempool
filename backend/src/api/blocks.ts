@@ -28,12 +28,13 @@ import chainTips from './chain-tips';
 import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
+import { calcBitsDifference } from './difficulty-adjustment';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
   private currentBlockHeight = 0;
-  private currentDifficulty = 0;
+  private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
@@ -666,14 +667,14 @@ class Blocks {
         const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
         this.updateTimerProgress(timer, 'got block for initial difficulty adjustment');
         this.lastDifficultyAdjustmentTime = block.timestamp;
-        this.currentDifficulty = block.difficulty;
+        this.currentBits = block.bits;
 
         if (blockHeightTip >= 2016) {
           const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
           this.updateTimerProgress(timer, 'got previous block hash for initial difficulty adjustment');
           const previousPeriodBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(previousPeriodBlockHash);
           this.updateTimerProgress(timer, 'got previous block for initial difficulty adjustment');
-          this.previousDifficultyRetarget = (block.difficulty - previousPeriodBlock.difficulty) / previousPeriodBlock.difficulty * 100;
+          this.previousDifficultyRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
           logger.debug(`Initial difficulty adjustment data set.`);
         }
       } else {
@@ -786,14 +787,18 @@ class Blocks {
             time: block.timestamp,
             height: block.height,
             difficulty: block.difficulty,
-            adjustment: Math.round((block.difficulty / this.currentDifficulty) * 1000000) / 1000000, // Remove float point noise
+            adjustment: Math.round(
+              // calcBitsDifference returns +- percentage, +100 returns to positive, /100 returns to ratio.
+              // Instead of actually doing /100, just reduce the multiplier.
+              (calcBitsDifference(this.currentBits, block.bits) + 100) * 10000
+            ) / 1000000, // Remove float point noise
           });
           this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
         }
 
-        this.previousDifficultyRetarget = (block.difficulty - this.currentDifficulty) / this.currentDifficulty * 100;
+        this.previousDifficultyRetarget = calcBitsDifference(this.currentBits, block.bits);
         this.lastDifficultyAdjustmentTime = block.timestamp;
-        this.currentDifficulty = block.difficulty;
+        this.currentBits = block.bits;
       }
 
       // wait for pending async callbacks to finish
