@@ -2,7 +2,10 @@
     <div class="container-fluid">
     <div class="row main">
       <div class="offset-lg-1 col-lg-4 col align-self-center branding">
-        <h5><ng-container i18n="about.about-the-project">The Mempool Open Source Project</ng-container><ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &reg;</ng-template></h5>
+        <div class="main-logo">
+          <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+          <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+        </div>
         <p><ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container><ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template></p>
         <div class="selector">
           <app-language-selector></app-language-selector>
@@ -17,9 +20,6 @@
           <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
           <p *ngIf="officialMempoolSpace && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Sign In</a></p>
         </ng-template>
-        <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
-        <p *ngIf="officialMempoolSpace && env.LIGHTNING" class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
-        <p><a [routerLink]="['/about' | relativeUrl]">About The Mempool Open Source Project®</a></p>
       </div>
       <div class="col-lg-6 col-md-10 offset-md-1 links outer">
         <div class="row">
@@ -28,6 +28,8 @@
             <p><a [routerLink]="['/mining' | relativeUrl]">Mining Dashboard</a></p>
             <p><a [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
             <p><a [routerLink]="['/blocks' | relativeUrl]">Recent Blocks</a></p>
+            <p><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
+            <p *ngIf="officialMempoolSpace && env.LIGHTNING"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
             <p><a [routerLink]="['/docs/api' | relativeUrl]">API Documentation</a></p>
           </div>
           <div class="col-lg-6 links">
