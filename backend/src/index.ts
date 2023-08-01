@@ -188,14 +188,14 @@ class Server {
       }
       const newMempool = await bitcoinApi.$getRawMempool();
       const numHandledBlocks = await blocks.$updateBlocks();
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool);
+        await memPool.$updateMempool(newMempool, pollRate);
       }
       indexer.$run();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
-      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
       const remainingTime = Math.max(0, pollRate - elapsed);
       setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
       this.backendRetryCount = 0;
