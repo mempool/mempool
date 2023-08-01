@@ -181,12 +181,12 @@ describe('Mempool Backend Config', () => {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
             console.log('skipping check for MEMPOOL_HTTP_PORT');
-            return;
+            continue;
           }
           switch (typeof value) {
             case 'object': {
               if (Array.isArray(value)) {
-                return;
+                continue;
               } else {
                 parseJson(value, key);
               }
