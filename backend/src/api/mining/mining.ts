@@ -438,6 +438,7 @@ class Mining {
     const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
       currentBits = oldestConsecutiveBlock.bits;
+      currentDifficulty = oldestConsecutiveBlock.difficulty;
     }
 
     let totalBlockChecked = 0;
