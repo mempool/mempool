@@ -182,7 +182,7 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool(transactions: string[]): Promise<void> {
+  public async $updateMempool(transactions: string[], pollRate: number): Promise<void> {
     logger.debug(`Updating mempool...`);
 
     // warn if this run stalls the main loop for more than 2 minutes
@@ -258,7 +258,7 @@ class Mempool {
           }
         }
 
-        if (Date.now() - intervalTimer > 5_000) {
+        if (Date.now() - intervalTimer > Math.max(pollRate * 2, 5_000)) {
           if (this.inSync) {
             // Break and restart mempool loop if we spend too much time processing
             // new transactions that may lead to falling behind on block height
@@ -270,7 +270,7 @@ class Mempool {
             if (Math.floor(progress) < 100) {
               loadingIndicators.setProgress('mempool', progress);
             }
-            intervalTimer = Date.now()
+            intervalTimer = Date.now();
           }
         }
       }
