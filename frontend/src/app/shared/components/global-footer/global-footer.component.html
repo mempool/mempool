@@ -42,13 +42,13 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-6 links">
+          <div class="col-lg-6 links" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
             <p class="category">Networks</p>
-            <p *ngIf="currentNetwork !== '' && currentNetwork !== 'mainnet'"><a [href]="networkLink('mainnet')">Mainnet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'testnet'"><a [href]="networkLink('testnet')">Testnet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'signet'"><a [href]="networkLink('signet')">Signet Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'liquid' && currentNetwork !== 'liquidtestnet'"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
-            <p *ngIf="currentNetwork !== 'bisq'"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')">Mainnet Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')">Testnet Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')">Signet Explorer</a></p>
+            <p *ngIf="env.LIQUID_ENABLED && (currentNetwork !== 'liquid') && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
+            <p *ngIf="env.BISQ_ENABLED && (currentNetwork !== 'bisq')"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
           </div>
           <div class="col-lg-6 links">
             <p class="category">Legal</p>
