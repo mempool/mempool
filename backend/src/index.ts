@@ -195,7 +195,8 @@ class Server {
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
-      const remainingTime = Math.max(0, config.MEMPOOL.POLL_RATE_MS - elapsed)
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
+      const remainingTime = Math.max(0, pollRate - elapsed);
       setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
       this.backendRetryCount = 0;
     } catch (e: any) {
