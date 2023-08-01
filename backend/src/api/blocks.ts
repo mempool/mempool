@@ -701,7 +701,7 @@ class Blocks {
       // fill in missing transaction fee data from verboseBlock
       for (let i = 0; i < transactions.length; i++) {
         if (!transactions[i].fee && transactions[i].txid === verboseBlock.tx[i].txid) {
-          transactions[i].fee = verboseBlock.tx[i].fee * 100_000_000;
+          transactions[i].fee = (verboseBlock.tx[i].fee * 100_000_000) || 0;
         }
       }
 
@@ -941,7 +941,7 @@ class Blocks {
         transactions: cpfpSummary.transactions.map(tx => {
           return {
             txid: tx.txid,
-            fee: tx.fee,
+            fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
             rate: tx.effectiveFeePerVsize
