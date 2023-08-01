@@ -423,6 +423,7 @@ class Mining {
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
     const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
+    let currentBits = genesisBlock.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
@@ -436,17 +437,18 @@ class Mining {
 
     const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
-      currentDifficulty = oldestConsecutiveBlock.difficulty;
+      currentBits = oldestConsecutiveBlock.bits;
     }
 
     let totalBlockChecked = 0;
     let timer = new Date().getTime() / 1000;
 
     for (const block of blocks) {
-      if (block.difficulty !== currentDifficulty) {
+      if (block.bits !== currentBits) {
         if (indexedHeights[block.height] === true) { // Already indexed
           if (block.height >= oldestConsecutiveBlock.height) {
             currentDifficulty = block.difficulty;
+            currentBits = block.bits;
           }
           continue;          
         }
@@ -464,6 +466,7 @@ class Mining {
         totalIndexed++;
         if (block.height >= oldestConsecutiveBlock.height) {
           currentDifficulty = block.difficulty;
+          currentBits = block.bits;
         }
     }
 
