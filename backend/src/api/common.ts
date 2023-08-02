@@ -108,7 +108,7 @@ export class Common {
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
     return {
       txid: tx.txid,
-      fee: tx.fee,
+      fee: tx.fee || 0,
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
       rate: tx.effectiveFeePerVsize,
