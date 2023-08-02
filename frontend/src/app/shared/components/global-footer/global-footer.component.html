@@ -42,14 +42,23 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-6 links" *ngIf="env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.BISQ_ENABLED || env.LIQUID_TESTNET_ENABLED">
+          <div class="col-lg-6 links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
             <p class="category">Networks</p>
             <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')">Mainnet Explorer</a></p>
             <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')">Testnet Explorer</a></p>
             <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')">Signet Explorer</a></p>
-            <p *ngIf="env.LIQUID_ENABLED && (currentNetwork !== 'liquid') && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
-            <p *ngIf="env.BISQ_ENABLED && (currentNetwork !== 'bisq')"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquidtestnet')">Liquid Testnet Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquid')"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
+            <p *ngIf="(officialMempoolSpace && (currentNetwork !== 'bisq'))"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
           </div>
+          <ng-template #toolBox>
+          <div class="col-lg-6 links">
+            <p class="category">Tools</p>
+            <p><a [routerLink]="['/clock/mempool/0']">Clock (Mempool)</a></p>
+            <p><a [routerLink]="['/clock/mined/0']">Clock (Mined)</a></p>
+            <p><a [routerLink]="['/tools/calculator']">BTC/Fiat Converter</a></p>
+          </div>
+          </ng-template>
           <div class="col-lg-6 links">
             <p class="category">Legal</p>
             <p><a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a></p>
