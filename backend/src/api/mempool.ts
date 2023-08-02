@@ -123,7 +123,7 @@ class Mempool {
     loadingIndicators.setProgress('mempool', count / expectedCount * 100);
     while (!done) {
       try {
-        const result = await bitcoinApi.$getMempoolTransactions(last_txid);
+        const result = await bitcoinApi.$getAllMempoolTransactions(last_txid);
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
@@ -231,31 +231,37 @@ class Mempool {
     }
 
     if (!loaded) {
-      for (const txid of transactions) {
-        if (!this.mempoolCache[txid]) {
-          try {
-            const transaction = await transactionUtils.$getMempoolTransactionExtended(txid, false, false, false);
-            this.updateTimerProgress(timer, 'fetched new transaction');
-            this.mempoolCache[txid] = transaction;
-            if (this.inSync) {
-              this.txPerSecondArray.push(new Date().getTime());
-              this.vBytesPerSecondArray.push({
-                unixTime: new Date().getTime(),
-                vSize: transaction.vsize,
-              });
-            }
-            hasChange = true;
-            newTransactions.push(transaction);
+      const remainingTxids = transactions.filter(txid => !this.mempoolCache[txid]);
+      const sliceLength = 10000;
+      for (let i = 0; i < Math.ceil(remainingTxids.length / sliceLength); i++) {
+        const slice = remainingTxids.slice(i * sliceLength, (i + 1) * sliceLength);
+        const txs = await transactionUtils.$getMempoolTransactionsExtended(slice, false, false, false);
+        logger.debug(`fetched ${txs.length} transactions`);
+        this.updateTimerProgress(timer, 'fetched new transactions');
 
-            if (config.REDIS.ENABLED) {
-              await redisCache.$addTransaction(transaction);
-            }
-          } catch (e: any) {
-            if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
-              this.missingTxCount++;
-            }
-            logger.debug(`Error finding transaction '${txid}' in the mempool: ` + (e instanceof Error ? e.message : e));
+        for (const transaction of txs) {
+          this.mempoolCache[transaction.txid] = transaction;
+          if (this.inSync) {
+            this.txPerSecondArray.push(new Date().getTime());
+            this.vBytesPerSecondArray.push({
+              unixTime: new Date().getTime(),
+              vSize: transaction.vsize,
+            });
           }
+          hasChange = true;
+          newTransactions.push(transaction);
+
+          if (config.REDIS.ENABLED) {
+            await redisCache.$addTransaction(transaction);
+          }
+        }
+
+        if (txs.length < slice.length) {
+          const missing = slice.length - txs.length;
+          if (config.MEMPOOL.BACKEND === 'esplora') {
+            this.missingTxCount += missing;
+          }
+          logger.debug(`Error finding ${missing} transactions in the mempool: `);
         }
 
         if (Date.now() - intervalTimer > Math.max(pollRate * 2, 5_000)) {
