@@ -23,7 +23,7 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
-                'highlight': this.address !== '' && (vin.prevout?.scriptpubkey_address === this.address || (vin.prevout?.scriptpubkey_type === 'p2pk' && vin.prevout?.scriptpubkey.slice(2, 132) === this.address))
+                'highlight': this.address !== '' && (vin.prevout?.scriptpubkey_address === this.address || (vin.prevout?.scriptpubkey_type === 'p2pk' && vin.prevout?.scriptpubkey.slice(2, -2) === this.address))
               }">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
@@ -56,8 +56,8 @@
                       <span i18n="transactions-list.peg-in">Peg-in</span>
                     </ng-container>
                     <ng-container *ngSwitchCase="vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk'">
-                      <span>P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey.slice(2, 132)]" title="{{ vin.prevout.scriptpubkey.slice(2, 132) }}">
-                        <app-truncate [text]="vin.prevout.scriptpubkey.slice(2, 132)" [lastChars]="8"></app-truncate>
+                      <span>P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vin.prevout.scriptpubkey.slice(2, -2)]" title="{{ vin.prevout.scriptpubkey.slice(2, -2) }}">
+                        <app-truncate [text]="vin.prevout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-truncate>
                       </a></span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
@@ -184,7 +184,7 @@
             <ng-template ngFor let-vout let-vindex="index" [ngForOf]="tx.vout.slice(0, getVoutLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
-                'highlight': this.address !== '' && (vout.scriptpubkey_address === this.address || (vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey.slice(2, 132) === this.address))
+                'highlight': this.address !== '' && (vout.scriptpubkey_address === this.address || (vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey.slice(2, -2) === this.address))
               }">
                 <td class="address-cell">
                   <a class="address" *ngIf="vout.scriptpubkey_address; else pubkey_type" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey_address]" title="{{ vout.scriptpubkey_address }}">
@@ -192,8 +192,8 @@
                   </a>
                   <ng-template #pubkey_type>
                     <ng-container *ngIf="vout.scriptpubkey_type === 'p2pk'; else scriptpubkey_type">
-                      P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, 132)]" title="{{ vout.scriptpubkey.slice(2, 132) }}">
-                        <app-truncate [text]="vout.scriptpubkey.slice(2, 132)" [lastChars]="8"></app-truncate>
+                      P2PK <a class="address p2pk-address" [routerLink]="['/address/' | relativeUrl, vout.scriptpubkey.slice(2, -2)]" title="{{ vout.scriptpubkey.slice(2, -2) }}">
+                        <app-truncate [text]="vout.scriptpubkey.slice(2, -2)" [lastChars]="8"></app-truncate>
                       </a>
                     </ng-container>
                   </ng-template>

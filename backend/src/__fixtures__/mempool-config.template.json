@@ -10,6 +10,7 @@
     "AUTOMATIC_BLOCK_REINDEXING": false,
     "POLL_RATE_MS": 3,
     "CACHE_DIR": "__MEMPOOL_CACHE_DIR__",
+    "CACHE_ENABLED": true,
     "CLEAR_PROTECTION_MINUTES": 4,
     "RECOMMENDED_FEE_PERCENTILE": 5,
     "BLOCK_WEIGHT_UNITS": 6,
@@ -131,5 +132,9 @@
   "MEMPOOL_SERVICES": {
     "API": "",
     "ACCELERATIONS": false
+  },
+  "REDIS": {
+    "ENABLED": false,
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock"
   }
 }

@@ -113,7 +113,7 @@ export class WebsocketService {
           this.stateService.connectionState$.next(2);
         }
 
-        if (this.stateService.connectionState$.value === 1) {
+        if (this.stateService.connectionState$.value !== 2) {
           this.stateService.connectionState$.next(2);
         }
 
