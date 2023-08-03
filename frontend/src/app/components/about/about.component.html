@@ -31,10 +31,12 @@
     <track label="Português" kind="captions" srclang="pt" src="/resources/promo-video/pt.vtt" [attr.default]="showSubtitles('pt') ? '' : null">
   </video>
 
-  <h3 class="mt-5">Sponsor the project</h3>
-  <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
-    <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)">See plans</a>
-  </div>
+  <ng-container *ngIf="officialMempoolSpace">
+    <h3 class="mt-5">Sponsor the project</h3>
+    <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
+      <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)">See plans</a>
+    </div>
+  </ng-container>
 
   <div class="enterprise-sponsor" id="enterprise-sponsors">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
@@ -196,31 +198,33 @@
     </div>
   </div>
 
-  <div *ngIf="profiles$ | async as profiles" id="community-sponsors">
-    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
-      <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
-      <div class="wrapper">
-        <ng-container>
-          <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
+  <ng-container *ngIf="officialMempoolSpace">
+    <div *ngIf="profiles$ | async as profiles" id="community-sponsors">
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
+        <div class="wrapper">
+          <ng-container>
+            <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
+              <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+                <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+              </a>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.chads.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
+        <div class="wrapper">
+          <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
             <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
               <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             </a>
           </ng-template>
-        </ng-container>
+        </div>
       </div>
     </div>
-
-    <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.chads.length > 0">
-      <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
-      <div class="wrapper">
-        <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
-          <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-            <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
-          </a>
-        </ng-template>
-      </div>
-    </div>
-  </div>
+  </ng-container>
 
   <div class="community-sponsor" style="margin-bottom: 68px">
     <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
