@@ -43,6 +43,7 @@ import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
+import rbfCache from './api/rbf-cache';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -106,6 +107,8 @@ class Server {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }
     }
+
+    rbfCache.init();
 
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
