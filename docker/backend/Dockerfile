@@ -22,6 +22,7 @@ FROM node:16.16.0-buster-slim
 WORKDIR /backend
 
 RUN chown 1000:1000 ./
+COPY --from=builder --chown=1000:1000 /build/package/rust-gbt ./rust-gbt/
 COPY --from=builder --chown=1000:1000 /build/package ./package/
 COPY --from=builder --chown=1000:1000 /build/GeoIP ./GeoIP/
 COPY --from=builder --chown=1000:1000 /build/mempool-config.json /build/start.sh /build/wait-for-it.sh ./
