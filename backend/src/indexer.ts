@@ -106,7 +106,7 @@ class Indexer {
     }
 
     try {
-      await priceUpdater.$run(true);
+      await priceUpdater.$run();
     } catch (e) {
       logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
     }

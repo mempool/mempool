@@ -114,7 +114,7 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "CPFP_INDEXING": false,
     "MAX_BLOCKS_BULK_QUERY": 0,
     "DISK_CACHE_BLOCK_INTERVAL": 6,
-    "PRICE_UPDATE_FREQUENCY": 3600
+    "PRICE_UPDATES_PER_HOUR": 1
   },
 ```
 
@@ -147,7 +147,7 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_CPFP_INDEXING: ""
       MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
       MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
-      MEMPOOL_PRICE_UPDATE_FREQUENCY: ""
+      MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
       ...
 ```
 

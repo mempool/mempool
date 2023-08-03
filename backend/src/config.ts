@@ -38,7 +38,7 @@ interface IConfig {
     DISK_CACHE_BLOCK_INTERVAL: number;
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
-    PRICE_UPDATE_FREQUENCY: number;
+    PRICE_UPDATES_PER_HOUR: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -178,7 +178,7 @@ const defaults: IConfig = {
     'DISK_CACHE_BLOCK_INTERVAL': 6,
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
-    'PRICE_UPDATE_FREQUENCY': 3600,
+    'PRICE_UPDATES_PER_HOUR': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

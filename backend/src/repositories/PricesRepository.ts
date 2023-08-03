@@ -65,7 +65,7 @@ class PricesRepository {
     
     try {
       await DB.query(`
-        INSERT IGNORE INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY)
+        INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY)
         VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?  )`,
         [time, prices.USD, prices.EUR, prices.GBP, prices.CAD, prices.CHF, prices.AUD, prices.JPY]
       );
