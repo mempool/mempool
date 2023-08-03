@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
-import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -159,7 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             for (const block of blocks) {
               // @ts-ignore: Need to add an extra field for the template
               block.extras.pool.logo = `/resources/mining-pools/` +
-                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                block.extras.pool.slug + '.svg';
             }
           }
           return of(blocks.slice(0, 6));
@@ -171,7 +171,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mempoolStats$ = this.stateService.connectionState$
       .pipe(
         filter((state) => state === 2),
-        switchMap(() => this.apiService.list2HStatistics$()),
+        switchMap(() => this.apiService.list2HStatistics$().pipe(
+          catchError((e) => {
+            return of(null);
+          })
+        )),
         switchMap((mempoolStats) => {
           return merge(
             this.stateService.live2Chart$
@@ -186,10 +190,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           );
         }),
         map((mempoolStats) => {
-          return {
-            mempool: mempoolStats,
-            weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
-          };
+          if (mempoolStats) {
+            return {
+              mempool: mempoolStats,
+              weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+            };
+          } else {
+            return null;
+          }
         }),
         share(),
       );
