@@ -89,7 +89,7 @@ export class PoolPreviewComponent implements OnInit {
 
           this.openGraphService.waitOver('pool-stats-' + this.slug);
 
-          const logoSrc = `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          const logoSrc = `/resources/mining-pools/` + poolStats.pool.slug + '.svg';
           if (logoSrc === this.lastImgSrc) {
             this.openGraphService.waitOver('pool-img-' + this.slug);
           }

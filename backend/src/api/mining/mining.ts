@@ -11,7 +11,7 @@ import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjust
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
-import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
+import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 import database from '../../database';
 
@@ -202,7 +202,7 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
@@ -313,7 +313,7 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
@@ -422,8 +422,9 @@ class Mining {
     }
 
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+    const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
+    let currentBits = genesisBlock.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
@@ -437,6 +438,7 @@ class Mining {
 
     const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
+      currentBits = oldestConsecutiveBlock.bits;
       currentDifficulty = oldestConsecutiveBlock.difficulty;
     }
 
@@ -444,10 +446,11 @@ class Mining {
     let timer = new Date().getTime() / 1000;
 
     for (const block of blocks) {
-      if (block.difficulty !== currentDifficulty) {
+      if (block.bits !== currentBits) {
         if (indexedHeights[block.height] === true) { // Already indexed
           if (block.height >= oldestConsecutiveBlock.height) {
             currentDifficulty = block.difficulty;
+            currentBits = block.bits;
           }
           continue;          
         }
@@ -465,6 +468,7 @@ class Mining {
         totalIndexed++;
         if (block.height >= oldestConsecutiveBlock.height) {
           currentDifficulty = block.difficulty;
+          currentBits = block.bits;
         }
     }
 
