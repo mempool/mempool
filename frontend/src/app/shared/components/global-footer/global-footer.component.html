@@ -1,7 +1,7 @@
 <footer>
     <div class="container-fluid">
     <div class="row main">
-      <div class="offset-lg-1 col-lg-4 col align-self-center branding">
+      <div class="offset-lg-1 col-lg-4 col align-self-center branding mt-2">
         <div class="main-logo">
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
@@ -17,14 +17,11 @@
           <app-rate-unit-selector></app-rate-unit-selector>
         </div>
         <div *ngIf="officialMempoolSpace && stateService.env.ACCELERATOR" class="cta">
-          <div *ngIf="loggedIn" class="mb-1"><small>Logged in<span *ngIf="username"> as {{ username}}</span></small></div>
-          <a *ngIf="loggedIn" class="btn btn-purple sponsor" [routerLink]="['/login' | relativeUrl]">My account</a>
-          <a *ngIf="!loggedIn" class="btn btn-purple sponsor" [routerLink]="['/accelerator' | relativeUrl]">Mempool Accelerator™</a>
+          <a class="btn btn-purple sponsor" [routerLink]="['/login' | relativeUrl]">
+            <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
+            <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In / Sign Up</span>
+          </a>
         </div>
-        <p *ngIf="!loggedIn && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/login' | relativeUrl]">Sign In</a></p>
-        <p class="cta-secondary"><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
-        <p *ngIf="officialMempoolSpace && env.LIGHTNING" class="cta-secondary"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
-        <p><a [routerLink]="['/about' | relativeUrl]">About The Mempool Open Source Project™</a></p>
       </div>
       <div class="col-lg-6 col-md-10 offset-md-1 links outer">
         <div class="row">
