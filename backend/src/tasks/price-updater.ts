@@ -25,7 +25,9 @@ export interface PriceHistory {
 
 class PriceUpdater {
   public historyInserted = false;
-  private lastRun = 0;
+  private timeBetweenUpdatesMs = 3600000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
+  private cyclePosition = -1;
+  private firstRun = true;
   private lastHistoricalRun = 0;
   private running = false;
   private feeds: PriceFeed[] = [];
@@ -41,6 +43,8 @@ class PriceUpdater {
     this.feeds.push(new CoinbaseApi());
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
+
+    this.setCyclePosition();
   }
 
   public getLatestPrices(): ApiPrice {
@@ -72,7 +76,7 @@ class PriceUpdater {
     this.latestPrices = await PricesRepository.$getLatestConversionRates();
   }
 
-  public async $run(storeInDb: boolean = false): Promise<void> {
+  public async $run(): Promise<void> {
     if (config.MEMPOOL.NETWORK === 'signet' || config.MEMPOOL.NETWORK === 'testnet') {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
@@ -89,7 +93,7 @@ class PriceUpdater {
     }
 
     try {
-      await this.$updatePrice(storeInDb);
+      await this.$updatePrice();
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
       }
@@ -100,21 +104,41 @@ class PriceUpdater {
     this.running = false;
   }
 
+  private getMillisecondsSinceBeginningOfHour(): number {
+    const now = new Date();
+    const beginningOfHour = new Date(now);
+    beginningOfHour.setMinutes(0, 0, 0);
+    return now.getTime() - beginningOfHour.getTime();
+  }
+
+  private setCyclePosition(): void {
+    const millisecondsSinceBeginningOfHour = this.getMillisecondsSinceBeginningOfHour();
+    for (let i = 0; i < config.MEMPOOL.PRICE_UPDATES_PER_HOUR; i++) {
+      if (this.timeBetweenUpdatesMs * i > millisecondsSinceBeginningOfHour) {
+        this.cyclePosition = i;
+        return;
+      }
+    }
+    this.cyclePosition = config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
+  }
+
   /**
    * Fetch last BTC price from exchanges, average them, and save it in the database once every hour
    */
-  private async $updatePrice(storeInDb: boolean): Promise<void> {
-    if (this.lastRun === 0 && config.DATABASE.ENABLED === true) {
-      this.lastRun = await PricesRepository.$getLatestPriceTime();
+  private async $updatePrice(): Promise<void> {
+    let forceUpdate = false;
+    if (this.firstRun === true && config.DATABASE.ENABLED === true) {
+      const lastUpdate = await PricesRepository.$getLatestPriceTime();
+      if (new Date().getTime() / 1000 - lastUpdate > this.timeBetweenUpdatesMs / 1000) {
+        forceUpdate = true;
+      }
+      this.firstRun = false;
     }
 
-    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < Math.min(config.MEMPOOL.PRICE_UPDATE_FREQUENCY, 3600)) {
-      // Refresh at least every hour or PRICE_UPDATE_FREQUENCY seconds
+    const millisecondsSinceBeginningOfHour = this.getMillisecondsSinceBeginningOfHour();
+    if (millisecondsSinceBeginningOfHour < this.timeBetweenUpdatesMs * this.cyclePosition && !forceUpdate) {
       return;
     }
-
-    const previousRun = this.lastRun;
-    this.lastRun = new Date().getTime() / 1000;
 
     for (const currency of this.currencies) {
       let prices: number[] = [];
@@ -146,14 +170,13 @@ class PriceUpdater {
       }
     }
 
-    if (config.DATABASE.ENABLED === true && storeInDb) {
+    if (config.DATABASE.ENABLED === true && this.cyclePosition === 0) {
       // Save everything in db
       try {
         const p = 60 * 60 * 1000; // milliseconds in an hour
         const nowRounded = new Date(Math.round(new Date().getTime() / p) * p); // https://stackoverflow.com/a/28037042
         await PricesRepository.$savePrices(nowRounded.getTime() / 1000, this.latestPrices);
       } catch (e) {
-        this.lastRun = previousRun + 5 * 60;
         logger.err(`Cannot save latest prices into db. Trying again in 5 minutes. Reason: ${(e instanceof Error ? e.message : e)}`);
       }
     }
@@ -165,7 +188,12 @@ class PriceUpdater {
       this.ratesChangedCallback(this.latestPrices);
     }
 
-    this.lastRun = new Date().getTime() / 1000;
+    if (!forceUpdate) {
+      this.cyclePosition++;
+      if (this.cyclePosition > config.MEMPOOL.PRICE_UPDATES_PER_HOUR) {
+        this.cyclePosition = 0;
+      }
+    }
 
     if (this.latestPrices.USD === -1) {
       this.latestPrices = await PricesRepository.$getLatestConversionRates();
