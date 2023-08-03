@@ -12,6 +12,7 @@ interface IConfig {
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
+    CACHE_ENABLED: boolean;
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
     BLOCK_WEIGHT_UNITS: number;
@@ -142,6 +143,10 @@ interface IConfig {
     API: string;
     ACCELERATIONS: boolean;
   },
+  REDIS: {
+    ENABLED: boolean;
+    UNIX_SOCKET_PATH: string;
+  },
 }
 
 const defaults: IConfig = {
@@ -154,6 +159,7 @@ const defaults: IConfig = {
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
+    'CACHE_ENABLED': true,
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
     'BLOCK_WEIGHT_UNITS': 4000000,
@@ -283,7 +289,11 @@ const defaults: IConfig = {
   'MEMPOOL_SERVICES': {
     'API': '',
     'ACCELERATIONS': false,
-  }
+  },
+  'REDIS': {
+    'ENABLED': false,
+    'UNIX_SOCKET_PATH': '',
+  },
 };
 
 class Config implements IConfig {
@@ -305,6 +315,7 @@ class Config implements IConfig {
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
+  REDIS: IConfig['REDIS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -326,6 +337,7 @@ class Config implements IConfig {
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
+    this.REDIS = configs.REDIS;
   }
 
   merge = (...objects: object[]): IConfig => {

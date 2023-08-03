@@ -111,6 +111,7 @@ export interface PoolInfo {
   regexes: string; // JSON array
   addresses: string; // JSON array
   emptyBlocks: number;
+  slug: string;
 }
 export interface PoolStat {
   pool: PoolInfo;

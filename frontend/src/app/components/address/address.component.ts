@@ -72,7 +72,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.addressInfo = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
-          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|[A-F0-9]{130}$/.test(this.addressString)) {
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
             this.addressString = this.addressString.toLowerCase();
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
@@ -84,7 +84,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           )
           .pipe(
             switchMap(() => (
-              this.addressString.match(/[a-f0-9]{130}/)
+              this.addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
               ? this.electrsApiService.getPubKeyAddress$(this.addressString)
               : this.electrsApiService.getAddress$(this.addressString)
             ).pipe(
@@ -118,7 +118,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
           return address.is_pubkey
-              ? this.electrsApiService.getScriptHashTransactions$('41' + address.address + 'ac')
+              ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address);
         }),
         switchMap((transactions) => {

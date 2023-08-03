@@ -79,7 +79,7 @@ export class PoolComponent implements OnInit {
           poolStats.pool.regexes = regexes.slice(0, -3);
 
           return Object.assign({
-            logo: `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
+            logo: `/resources/mining-pools/` + poolStats.pool.slug + '.svg'
           }, poolStats);
         })
       );
