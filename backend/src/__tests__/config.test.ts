@@ -23,6 +23,7 @@ describe('Mempool Backend Config', () => {
         AUTOMATIC_BLOCK_REINDEXING: false,
         POLL_RATE_MS: 2000,
         CACHE_DIR: './cache',
+        CACHE_ENABLED: true,
         CLEAR_PROTECTION_MINUTES: 20,
         RECOMMENDED_FEE_PERCENTILE: 50,
         BLOCK_WEIGHT_UNITS: 4000000,
@@ -127,6 +128,11 @@ describe('Mempool Backend Config', () => {
         AUDIT_START_HEIGHT: 774000,
         SERVERS: []
       });
+
+      expect(config.REDIS).toStrictEqual({
+        ENABLED: false,
+        UNIX_SOCKET_PATH: ''
+      });
     });
   });
 
@@ -160,6 +166,8 @@ describe('Mempool Backend Config', () => {
       expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.REDIS).toStrictEqual(fixture.REDIS);
     });
   });
 
@@ -173,12 +181,12 @@ describe('Mempool Backend Config', () => {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
             console.log('skipping check for MEMPOOL_HTTP_PORT');
-            return;
+            continue;
           }
           switch (typeof value) {
             case 'object': {
               if (Array.isArray(value)) {
-                return;
+                continue;
               } else {
                 parseJson(value, key);
               }

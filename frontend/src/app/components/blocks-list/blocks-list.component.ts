@@ -69,7 +69,7 @@ export class BlocksList implements OnInit {
                 if (this.stateService.env.BASE_MODULE === 'mempool') {
                   for (const block of blocks) {
                     // @ts-ignore: Need to add an extra field for the template
-                    block.extras.pool.logo = `/resources/mining-pools/` + block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                    block.extras.pool.logo = `/resources/mining-pools/` + block.extras.pool.slug + '.svg';
                   }
                 }
                 if (this.widget) {
@@ -103,7 +103,7 @@ export class BlocksList implements OnInit {
             if (this.isMempoolModule) {
               // @ts-ignore: Need to add an extra field for the template
               blocks[1][0].extras.pool.logo = `/resources/mining-pools/` +
-                blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                blocks[1][0].extras.pool.slug + '.svg';
             }
             acc.unshift(blocks[1][0]);
             acc = acc.slice(0, this.widget ? 6 : 15);

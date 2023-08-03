@@ -72,7 +72,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.addressInfo = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
-          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|[A-F0-9]{130}$/.test(this.addressString)) {
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
             this.addressString = this.addressString.toLowerCase();
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
@@ -84,7 +84,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           )
           .pipe(
             switchMap(() => (
-              this.addressString.match(/[a-f0-9]{130}/)
+              this.addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
               ? this.electrsApiService.getPubKeyAddress$(this.addressString)
               : this.electrsApiService.getAddress$(this.addressString)
             ).pipe(
@@ -118,7 +118,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
           return address.is_pubkey
-              ? this.electrsApiService.getScriptHashTransactions$('41' + address.address + 'ac')
+              ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address);
         }),
         switchMap((transactions) => {
@@ -166,31 +166,8 @@ export class AddressComponent implements OnInit, OnDestroy {
       });
 
     this.stateService.mempoolTransactions$
-      .subscribe((transaction) => {
-        if (this.transactions.some((t) => t.txid === transaction.txid)) {
-          return;
-        }
-
-        this.transactions.unshift(transaction);
-        this.transactions = this.transactions.slice();
-        this.txCount++;
-
-        if (transaction.vout.some((vout) => vout.scriptpubkey_address === this.address.address)) {
-          this.audioService.playSound('cha-ching');
-        } else {
-          this.audioService.playSound('chime');
-        }
-
-        transaction.vin.forEach((vin) => {
-          if (vin.prevout.scriptpubkey_address === this.address.address) {
-            this.sent += vin.prevout.value;
-          }
-        });
-        transaction.vout.forEach((vout) => {
-          if (vout.scriptpubkey_address === this.address.address) {
-            this.received += vout.value;
-          }
-        });
+      .subscribe(tx => {
+        this.addTransaction(tx);
       });
 
     this.stateService.blockTransactions$
@@ -200,10 +177,45 @@ export class AddressComponent implements OnInit, OnDestroy {
           tx.status = transaction.status;
           this.transactions = this.transactions.slice();
           this.audioService.playSound('magic');
+        } else {
+          if (this.addTransaction(transaction, false)) {
+            this.audioService.playSound('magic');
+          }
         }
         this.totalConfirmedTxCount++;
         this.loadedConfirmedTxCount++;
       });
+  }
+
+  addTransaction(transaction: Transaction, playSound: boolean = true): boolean {
+    if (this.transactions.some((t) => t.txid === transaction.txid)) {
+      return false;
+    }
+
+    this.transactions.unshift(transaction);
+    this.transactions = this.transactions.slice();
+    this.txCount++;
+
+    if (playSound) {
+      if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
+        this.audioService.playSound('cha-ching');
+      } else {
+        this.audioService.playSound('chime');
+      }
+    }
+
+    transaction.vin.forEach((vin) => {
+      if (vin?.prevout?.scriptpubkey_address === this.address.address) {
+        this.sent += vin.prevout.value;
+      }
+    });
+    transaction.vout.forEach((vout) => {
+      if (vout?.scriptpubkey_address === this.address.address) {
+        this.received += vout.value;
+      }
+    });
+
+    return true;
   }
 
   loadMore() {

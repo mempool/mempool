@@ -1,5 +1,5 @@
 import config from '../config';
-import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import { MempoolTransactionExtended, TransactionExtended, VbytesPerSecond } from '../mempool.interfaces';
 import logger from '../logger';
 import { Common } from './common';
@@ -9,7 +9,7 @@ import loadingIndicators from './loading-indicators';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
-import { IEsploraApi } from './bitcoin/esplora-api.interface';
+import redisCache from './redis-cache';
 
 class Mempool {
   private inSync: boolean = false;
@@ -86,6 +86,10 @@ class Mempool {
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
     let count = 0;
+    const redisTimer = Date.now();
+    if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
+      logger.debug(`Migrating ${Object.keys(this.mempoolCache).length} transactions from disk cache to Redis cache`);
+    }
     for (const txid of Object.keys(this.mempoolCache)) {
       if (!this.mempoolCache[txid].sigops || this.mempoolCache[txid].effectiveFeePerVsize == null) {
         this.mempoolCache[txid] = transactionUtils.extendMempoolTransaction(this.mempoolCache[txid]);
@@ -94,6 +98,13 @@ class Mempool {
         this.mempoolCache[txid].order = transactionUtils.txidToOrdering(txid);
       }
       count++;
+      if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
+        await redisCache.$addTransaction(this.mempoolCache[txid]);
+      }
+    }
+    if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
+      await redisCache.$flushTransactions();
+      logger.debug(`Finished migrating cache transactions in ${((Date.now() - redisTimer) / 1000).toFixed(2)} seconds`);
     }
     if (this.mempoolChangedCallback) {
       this.mempoolChangedCallback(this.mempoolCache, [], []);
@@ -138,8 +149,8 @@ class Mempool {
         logger.err('failed to fetch bulk mempool transactions from esplora');
       }
     }
-    return newTransactions;
     logger.info(`Done inserting loaded mempool transactions into local cache`);
+    return newTransactions;
   }
 
   public async $updateMemPoolInfo() {
@@ -171,7 +182,7 @@ class Mempool {
     return txTimes;
   }
 
-  public async $updateMempool(transactions: string[]): Promise<void> {
+  public async $updateMempool(transactions: string[], pollRate: number): Promise<void> {
     logger.debug(`Updating mempool...`);
 
     // warn if this run stalls the main loop for more than 2 minutes
@@ -208,6 +219,11 @@ class Mempool {
       logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
       try {
         newTransactions = await this.$reloadMempool(transactions.length);
+        if (config.REDIS.ENABLED) {
+          for (const tx of newTransactions) {
+            await redisCache.$addTransaction(tx);
+          }
+        }
         loaded = true;
       } catch (e) {
         logger.err('failed to load mempool in bulk from esplora, falling back to fetching individual transactions');
@@ -230,6 +246,10 @@ class Mempool {
             }
             hasChange = true;
             newTransactions.push(transaction);
+
+            if (config.REDIS.ENABLED) {
+              await redisCache.$addTransaction(transaction);
+            }
           } catch (e: any) {
             if (config.MEMPOOL.BACKEND === 'esplora' && e.response?.status === 404) {
               this.missingTxCount++;
@@ -238,7 +258,7 @@ class Mempool {
           }
         }
 
-        if (Date.now() - intervalTimer > 5_000) {
+        if (Date.now() - intervalTimer > Math.max(pollRate * 2, 5_000)) {
           if (this.inSync) {
             // Break and restart mempool loop if we spend too much time processing
             // new transactions that may lead to falling behind on block height
@@ -250,7 +270,7 @@ class Mempool {
             if (Math.floor(progress) < 100) {
               loadingIndicators.setProgress('mempool', progress);
             }
-            intervalTimer = Date.now()
+            intervalTimer = Date.now();
           }
         }
       }
@@ -274,7 +294,7 @@ class Mempool {
       logger.warn(`Mempool clear protection triggered because transactions.length: ${transactions.length} and currentMempoolSize: ${currentMempoolSize}.`);
       setTimeout(() => {
         this.mempoolProtection = 2;
-        logger.warn('Mempool clear protection resumed.');
+        logger.warn('Mempool clear protection ended, normal operation resumed.');
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
@@ -316,6 +336,13 @@ class Mempool {
       this.inSync = true;
       logger.notice('The mempool is now in sync!');
       loadingIndicators.setProgress('mempool', 100);
+    }
+
+    // Update Redis cache
+    if (config.REDIS.ENABLED) {
+      await redisCache.$flushTransactions();
+      await redisCache.$removeTransactions(deletedTransactions.map(tx => tx.txid));
+      await rbfCache.updateCache();
     }
 
     const end = new Date().getTime();

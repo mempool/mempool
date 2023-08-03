@@ -21,6 +21,10 @@ footer .row.main .branding {
   text-align: center;
 }
 
+footer .row.main .branding > p {
+  margin-bottom: 45px;
+}
+
 footer .row.main .branding .btn {
   display: inline-block;
   color: #fff !important;
@@ -87,6 +91,11 @@ footer .row.version p {
 
 footer .row.version p a {
   color: #09a3ba;
+}
+
+.main-logo {
+  max-width: 220px;
+  margin: 0 auto 20px auto;
 }
 
 @media (max-width: 992px) {
