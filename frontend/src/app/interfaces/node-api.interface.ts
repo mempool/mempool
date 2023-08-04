@@ -112,6 +112,7 @@ export interface PoolInfo {
   addresses: string; // JSON array
   emptyBlocks: number;
   slug: string;
+  poolUniqueId: number;
 }
 export interface PoolStat {
   pool: PoolInfo;
