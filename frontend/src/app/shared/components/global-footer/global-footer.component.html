@@ -1,7 +1,7 @@
 <footer>
     <div class="container-fluid">
     <div class="row main">
-      <div class="offset-lg-1 col-lg-4 col align-self-center branding">
+      <div class="offset-lg-1 col-lg-4 col align-self-center branding mt-2">
         <div class="main-logo">
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
@@ -16,10 +16,12 @@
         <div class="selector">
           <app-rate-unit-selector></app-rate-unit-selector>
         </div>
-        <ng-template #temporaryHidden>
-          <a *ngIf="officialMempoolSpace" class="cta btn btn-purple sponsor" [routerLink]="['/signup' | relativeUrl]">Support the Project</a>
-          <p *ngIf="officialMempoolSpace && env.BASE_MODULE === 'mempool'" class="cta-secondary"><a [routerLink]="['/signin' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Sign In</a></p>
-        </ng-template>
+        <div *ngIf="officialMempoolSpace && stateService.env.ACCELERATOR" class="cta">
+          <a class="btn btn-purple sponsor" [routerLink]="['/login' | relativeUrl]">
+            <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
+            <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In / Sign Up</span>
+          </a>
+        </div>
       </div>
       <div class="col-lg-6 col-md-10 offset-md-1 links outer">
         <div class="row">

@@ -21,6 +21,8 @@ import Audit from './audit';
 import { deepClone } from '../utils/clone';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
+import accelerationApi from './services/acceleration';
+import mempool from './mempool';
 
 // valid 'want' subscriptions
 const wantable = [
@@ -172,9 +174,15 @@ class WebsocketHandler {
               }
               const tx = memPool.getMempool()[trackTxid];
               if (tx && tx.position) {
+                const position: { block: number, vsize: number, accelerated?: boolean } = {
+                  ...tx.position
+                };
+                if (tx.acceleration) {
+                  position.accelerated = tx.acceleration;
+                }
                 response['txPosition'] = JSON.stringify({
                   txid: trackTxid,
-                  position: tx.position,
+                  position
                 });
               }
             } else {
@@ -390,7 +398,7 @@ class WebsocketHandler {
   }
 
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[]): Promise<void> {
+    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]): Promise<void> {
     if (!this.wss) {
       throw new Error('WebSocket.Server is not set');
     }
@@ -399,9 +407,9 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(newMempool, mempoolSize, newTransactions, deletedTransactions, config.MEMPOOL_SERVICES.ACCELERATIONS);
       } else {
-        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, true);
+        await mempoolBlocks.$updateBlockTemplates(newMempool, newTransactions, deletedTransactions, accelerationDelta, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
     } else {
       mempoolBlocks.updateMempoolBlocks(newMempool, true);
@@ -647,7 +655,10 @@ class WebsocketHandler {
         if (mempoolTx && mempoolTx.position) {
           response['txPosition'] = JSON.stringify({
             txid: trackTxid,
-            position: mempoolTx.position,
+            position: {
+              ...mempoolTx.position,
+              accelerated: mempoolTx.acceleration || undefined,
+            }
           });
         }
       }
@@ -695,6 +706,7 @@ class WebsocketHandler {
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
       let auditMempool = _memPool;
+      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
@@ -702,19 +714,27 @@ class WebsocketHandler {
         auditMempool = deepClone(_memPool);
         if (config.MEMPOOL.ADVANCED_GBT_AUDIT) {
           if (config.MEMPOOL.RUST_GBT) {
-            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool);
+            projectedBlocks = await mempoolBlocks.$oneOffRustBlockTemplates(auditMempool, isAccelerated, block.extras.pool.id);
           } else {
-            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false);
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
           }
         } else {
           projectedBlocks = mempoolBlocks.updateMempoolBlocks(auditMempool, false);
         }
       } else {
-        projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        if ((config.MEMPOOL_SERVICES.ACCELERATIONS)) {
+          if (config.MEMPOOL.RUST_GBT) {
+            projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(auditMempool, Object.keys(auditMempool).length, [], [], isAccelerated, block.extras.pool.id);
+          } else {
+            projectedBlocks = await mempoolBlocks.$makeBlockTemplates(auditMempool, false, isAccelerated, block.extras.pool.id);
+          }
+        } else {
+          projectedBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
+        }
       }
 
       if (Common.indexingEnabled()) {
-        const { censored, added, fresh, sigop, fullrbf, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
+        const { censored, added, fresh, sigop, fullrbf, accelerated, score, similarity } = Audit.auditBlock(transactions, projectedBlocks, auditMempool);
         const matchRate = Math.round(score * 100 * 100) / 100;
 
         const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
@@ -743,6 +763,7 @@ class WebsocketHandler {
           freshTxs: fresh,
           sigopTxs: sigop,
           fullrbfTxs: fullrbf,
+          acceleratedTxs: accelerated,
           matchRate: matchRate,
           expectedFees: totalFees,
           expectedWeight: totalWeight,
@@ -770,9 +791,9 @@ class WebsocketHandler {
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
       if (config.MEMPOOL.RUST_GBT) {
-        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions);
+        await mempoolBlocks.$rustUpdateBlockTemplates(_memPool, Object.keys(_memPool).length, [], transactions, true);
       } else {
-        await mempoolBlocks.$makeBlockTemplates(_memPool, true);
+        await mempoolBlocks.$makeBlockTemplates(_memPool, true, config.MEMPOOL_SERVICES.ACCELERATIONS);
       }
     } else {
       mempoolBlocks.updateMempoolBlocks(_memPool, true);
@@ -836,7 +857,10 @@ class WebsocketHandler {
           if (mempoolTx && mempoolTx.position) {
             response['txPosition'] = JSON.stringify({
               txid: trackTxid,
-              position: mempoolTx.position,
+              position: {
+                ...mempoolTx.position,
+                accelerated: mempoolTx.acceleration || undefined,
+              }
             });
           }
         }

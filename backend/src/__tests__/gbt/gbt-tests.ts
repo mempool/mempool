@@ -15,7 +15,7 @@ describe('Rust GBT', () => {
   test('should produce the same template as getBlockTemplate from Bitcoin Core', async () => {
     const rustGbt = new GbtGenerator();
     const { mempool, maxUid } = mempoolFromArrayBuffer(vectorBuffer.buffer);
-    const result = await rustGbt.make(mempool, maxUid);
+    const result = await rustGbt.make(mempool, [], maxUid);
 
     const blocks: [string, number][][] = result.blocks.map(block => {
       return block.map(uid => [vectorUidMap.get(uid) || 'missing', uid]);

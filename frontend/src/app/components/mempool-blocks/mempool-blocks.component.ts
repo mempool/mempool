@@ -26,6 +26,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() minimal: boolean = false;
   @Input() blockWidth: number = 125;
+  @Input() containerWidth: number = null;
   @Input() count: number = null;
   @Input() spotlight: number = 0;
   @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;

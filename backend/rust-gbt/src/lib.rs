@@ -9,6 +9,7 @@
 use napi::bindgen_prelude::Result;
 use napi_derive::napi;
 use thread_transaction::ThreadTransaction;
+use thread_acceleration::ThreadAcceleration;
 use tracing::{debug, info, trace};
 use tracing_log::LogTracer;
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
@@ -19,6 +20,7 @@ use std::sync::{Arc, Mutex};
 mod audit_transaction;
 mod gbt;
 mod thread_transaction;
+mod thread_acceleration;
 mod u32_hasher_types;
 
 use u32_hasher_types::{u32hashmap_with_capacity, U32HasherState};
@@ -74,10 +76,11 @@ impl GbtGenerator {
     ///
     /// Rejects if the thread panics or if the Mutex is poisoned.
     #[napi]
-    pub async fn make(&self, mempool: Vec<ThreadTransaction>, max_uid: u32) -> Result<GbtResult> {
+    pub async fn make(&self, mempool: Vec<ThreadTransaction>, accelerations: Vec<ThreadAcceleration>, max_uid: u32) -> Result<GbtResult> {
         trace!("make: Current State {:#?}", self.thread_transactions);
         run_task(
             Arc::clone(&self.thread_transactions),
+            accelerations,
             max_uid as usize,
             move |map| {
                 for tx in mempool {
@@ -96,11 +99,13 @@ impl GbtGenerator {
         &self,
         new_txs: Vec<ThreadTransaction>,
         remove_txs: Vec<u32>,
+        accelerations: Vec<ThreadAcceleration>,
         max_uid: u32,
     ) -> Result<GbtResult> {
         trace!("update: Current State {:#?}", self.thread_transactions);
         run_task(
             Arc::clone(&self.thread_transactions),
+            accelerations,
             max_uid as usize,
             move |map| {
                 for tx in new_txs {
@@ -141,6 +146,7 @@ pub struct GbtResult {
 /// to the `HashMap` as the only argument. (A move closure is recommended to meet the bounds)
 async fn run_task<F>(
     thread_transactions: Arc<Mutex<ThreadTransactionsMap>>,
+    accelerations: Vec<ThreadAcceleration>,
     max_uid: usize,
     callback: F,
 ) -> Result<GbtResult>
@@ -159,7 +165,7 @@ where
         callback(&mut map);
 
         info!("Starting gbt algorithm for {} elements...", map.len());
-        let result = gbt::gbt(&mut map, max_uid);
+        let result = gbt::gbt(&mut map, &accelerations, max_uid);
         info!("Finished gbt algorithm for {} elements...", map.len());
 
         debug!(

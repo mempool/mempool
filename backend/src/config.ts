@@ -139,6 +139,10 @@ interface IConfig {
     AUDIT_START_HEIGHT: number;
     SERVERS: string[];
   },
+  MEMPOOL_SERVICES: {
+    API: string;
+    ACCELERATIONS: boolean;
+  },
   REDIS: {
     ENABLED: boolean;
     UNIX_SOCKET_PATH: string;
@@ -282,6 +286,10 @@ const defaults: IConfig = {
     'AUDIT_START_HEIGHT': 774000,
     'SERVERS': [],
   },
+  'MEMPOOL_SERVICES': {
+    'API': '',
+    'ACCELERATIONS': false,
+  },
   'REDIS': {
     'ENABLED': false,
     'UNIX_SOCKET_PATH': '',
@@ -306,6 +314,7 @@ class Config implements IConfig {
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
+  MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
 
   constructor() {
@@ -327,6 +336,7 @@ class Config implements IConfig {
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
+    this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
   }
 

@@ -97,7 +97,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
@@ -182,6 +182,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
         } else {
           this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+        }
+        if (cpfpInfo.acceleration) {
+          this.tx.acceleration = cpfpInfo.acceleration;
         }
 
         this.cpfpInfo = cpfpInfo;

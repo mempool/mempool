@@ -137,5 +137,9 @@
       "trusted",
       "servers"
     ]
+  },
+  "MEMPOOL_SERVICES": {
+    "API": "https://mempool.space/api",
+    "ACCELERATIONS": false
   }
 }
