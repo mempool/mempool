@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { IBackendInfo } from '../../interfaces/websocket.interface';
 import { Router, ActivatedRoute } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
+import { map, share, tap } from 'rxjs/operators';
 import { ITranslators } from '../../interfaces/node-api.interface';
 import { DOCUMENT } from '@angular/common';
 
@@ -19,13 +19,15 @@ import { DOCUMENT } from '@angular/common';
 export class AboutComponent implements OnInit {
   @ViewChild('promoVideo') promoVideo: ElementRef;
   backendInfo$: Observable<IBackendInfo>;
-  sponsors$: Observable<any>;
-  translators$: Observable<ITranslators>;
-  allContributors$: Observable<any>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   showNavigateToSponsor = false;
+
+  profiles$: Observable<any>;
+  translators$: Observable<ITranslators>;
+  allContributors$: Observable<any>;
+  ogs$: Observable<any>;
 
   constructor(
     private websocketService: WebsocketService,
@@ -43,10 +45,13 @@ export class AboutComponent implements OnInit {
     this.seoService.setTitle($localize`:@@004b222ff9ef9dd4771b777950ca1d0e4cd4348a:About`);
     this.websocketService.want(['blocks']);
 
-    this.sponsors$ = this.apiService.getDonation$()
-      .pipe(
-        tap(() => this.goToAnchor())
-      );
+    this.profiles$ = this.apiService.getAboutPageProfiles$().pipe(
+      tap(() => {
+        this.goToAnchor()
+      }),
+      share(),
+    )
+
     this.translators$ = this.apiService.getTranslators$()
       .pipe(
         map((translators) => {
@@ -59,6 +64,9 @@ export class AboutComponent implements OnInit {
         }),
         tap(() => this.goToAnchor())
       );
+
+    this.ogs$ = this.apiService.getOgs$();
+
     this.allContributors$ = this.apiService.getContributor$().pipe(
       map((contributors) => {
         return {

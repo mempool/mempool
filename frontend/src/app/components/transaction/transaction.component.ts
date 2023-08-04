@@ -97,7 +97,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private electrsApiService: ElectrsApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private cacheService: CacheService,
     private websocketService: WebsocketService,
     private audioService: AudioService,
