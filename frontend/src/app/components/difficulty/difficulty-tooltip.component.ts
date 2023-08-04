@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input, OnChanges, HostListener } from '@angular/core';
 
 interface EpochProgress {
   base: string;
@@ -35,12 +35,15 @@ export class DifficultyTooltipComponent implements OnChanges {
   remaining: number;
   isAhead: boolean;
   isBehind: boolean;
+  isMobile: boolean;
 
   tooltipPosition = { x: 0, y: 0 };
 
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
 
-  constructor() {}
+  constructor() {
+    this.onResize();
+  }
 
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
@@ -62,5 +65,10 @@ export class DifficultyTooltipComponent implements OnChanges {
       this.isAhead = this.ahead > 0;
       this.isBehind = this.behind > 0;
     }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }
