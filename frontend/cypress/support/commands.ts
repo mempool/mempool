@@ -44,7 +44,7 @@
 
 'use strict'
 
-import 'cypress-wait-until';
+import '../../node_modules/cypress-wait-until';
 import { PageIdleDetector } from './PageIdleDetector';
 import { mockWebSocket } from './websocket';
 
