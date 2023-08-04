@@ -110,6 +110,7 @@
   },
   "optionalDependencies": {
     "@cypress/schematic": "^2.5.0",
+    "@types/cypress": "^1.1.3",
     "cypress": "^12.17.2",
     "cypress-fail-on-console-error": "~4.0.3",
     "cypress-wait-until": "^2.0.0",
