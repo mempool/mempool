@@ -341,7 +341,6 @@ class MempoolBlocks {
   }
 
   public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
-    console.log('$rustMakeBlockTemplates');
     const start = Date.now();
 
     // reset mempool short ids
