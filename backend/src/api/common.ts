@@ -108,9 +108,10 @@ export class Common {
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
     return {
       txid: tx.txid,
-      fee: tx.fee,
+      fee: tx.fee || 0,
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
+      acc: tx.acceleration || undefined,
       rate: tx.effectiveFeePerVsize,
     };
   }
@@ -460,7 +461,7 @@ export class Common {
     };
   }
 
-  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string }[]): EffectiveFeeStats {
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
     const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
 
     let weightCount = 0;

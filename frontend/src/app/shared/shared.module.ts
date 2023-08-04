@@ -219,6 +219,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AmountShortenerPipe,
   ],
   exports: [
+    MasterPageComponent,
     RouterModule,
     ReactiveFormsModule,
     NgbNavModule,

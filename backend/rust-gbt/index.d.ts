@@ -12,6 +12,10 @@ export interface ThreadTransaction {
   effectiveFeePerVsize: number
   inputs: Array<number>
 }
+export interface ThreadAcceleration {
+  uid: number
+  delta: number
+}
 export class GbtGenerator {
   constructor()
   /**
@@ -19,13 +23,13 @@ export class GbtGenerator {
    *
    * Rejects if the thread panics or if the Mutex is poisoned.
    */
-  make(mempool: Array<ThreadTransaction>, maxUid: number): Promise<GbtResult>
+  make(mempool: Array<ThreadTransaction>, accelerations: Array<ThreadAcceleration>, maxUid: number): Promise<GbtResult>
   /**
    * # Errors
    *
    * Rejects if the thread panics or if the Mutex is poisoned.
    */
-  update(newTxs: Array<ThreadTransaction>, removeTxs: Array<number>, maxUid: number): Promise<GbtResult>
+  update(newTxs: Array<ThreadTransaction>, removeTxs: Array<number>, accelerations: Array<ThreadAcceleration>, maxUid: number): Promise<GbtResult>
 }
 /**
  * The result from calling the gbt function.
