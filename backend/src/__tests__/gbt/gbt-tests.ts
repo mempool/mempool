@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { GbtGenerator, ThreadTransaction } from '../../../rust-gbt';
+import { GbtGenerator, ThreadTransaction } from 'rust-gbt';
 import path from 'path';
 
 const baseline = require('./test-data/target-template.json');
