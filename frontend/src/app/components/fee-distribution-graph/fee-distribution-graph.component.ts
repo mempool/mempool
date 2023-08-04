@@ -64,7 +64,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
       return;
     }
     const samples = [];
-    const txs = this.transactions.map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
+    const txs = this.transactions.filter(tx => !tx.acc).map(tx => { return { vsize: tx.vsize, rate: tx.rate || (tx.fee / tx.vsize) }; }).sort((a, b) => { return b.rate - a.rate; });
     const maxBlockVSize = this.stateService.env.BLOCK_WEIGHT_UNITS / 4;
     const sampleInterval = maxBlockVSize / this.numSamples;
     let cumVSize = 0;
@@ -74,14 +74,14 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
     this.labelInterval = this.numSamples / this.numLabels;
     while (nextSample <= maxBlockVSize) {
       if (txIndex >= txs.length) {
-        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, 0]);
+        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, 0.000001]);
         nextSample += sampleInterval;
         sampleIndex++;
         continue;
       }
 
       while (txs[txIndex] && nextSample < cumVSize + txs[txIndex].vsize) {
-        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, txs[txIndex].rate]);
+        samples.push([(1 - (sampleIndex / this.numSamples)) * 100, txs[txIndex].rate || 0.000001]);
         nextSample += sampleInterval;
         sampleIndex++;
       }
@@ -118,7 +118,9 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
         },
       },
       yAxis: {
-        type: 'value',
+        type: 'log',
+        min: 1,
+        max: this.data.reduce((min, val) => Math.max(min, val[1]), 1),
         // name: 'Effective Fee Rate s/vb',
         // nameLocation: 'middle',
         splitLine: {
@@ -129,12 +131,16 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
           }
         },
         axisLabel: {
+          show: true,
           formatter: (value: number): string => {
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
             const newVal = Math.round(unitValue / selectedPowerOfTen.divider);
             return `${newVal}${selectedPowerOfTen.unit}`;
           },
+        },
+        axisTick: {
+          show: true,
         }
       },
       series: [{

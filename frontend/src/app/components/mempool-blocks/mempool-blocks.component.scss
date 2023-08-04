@@ -170,3 +170,33 @@
   border-radius: 2px;
   z-index: -1;
 }
+
+.blink{
+  width:400px;
+  height:400px;
+  border-bottom: 35px solid #FFF;
+  animation: blink 0.2s infinite;
+}
+@keyframes blink{
+  0% {
+    border-bottom: 35px solid green;
+  }
+  50% {
+    border-bottom: 35px solid yellow;
+  }
+  100% {
+    border-bottom: 35px solid orange;
+  }
+}
+
+@-webkit-keyframes blink{
+  0% {
+    border-bottom: 35px solid green;
+  }
+  50% {
+    border-bottom: 35px solid yellow;
+  }
+  100% {
+    border-bottom: 35px solid orange;
+  }
+}

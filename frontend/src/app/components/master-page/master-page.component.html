@@ -1,5 +1,5 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
-<header>
+<header *ngIf="headerVisible">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">

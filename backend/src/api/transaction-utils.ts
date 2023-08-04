@@ -4,6 +4,7 @@ import { Common } from './common';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import logger from '../logger';
+import config from '../config';
 
 class TransactionUtils {
   constructor() { }
@@ -69,6 +70,24 @@ class TransactionUtils {
 
   public async $getMempoolTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended> {
     return (await this.$getTransactionExtended(txId, addPrevouts, lazyPrevouts, forceCore, true)) as MempoolTransactionExtended;
+  }
+
+  public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
+    if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
+      const results = await Promise.allSettled(txids.map(txid => this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, true)));
+      return (results.filter(r => r.status === 'fulfilled') as PromiseFulfilledResult<MempoolTransactionExtended>[]).map(r => r.value);
+    } else {
+      const transactions = await bitcoinApi.$getMempoolTransactions(txids);
+      return transactions.map(transaction => {
+        if (Common.isLiquid()) {
+          if (!isFinite(Number(transaction.fee))) {
+            transaction.fee = Object.values(transaction.fee || {}).reduce((total, output) => total + output, 0);
+          }
+        }
+
+        return this.extendMempoolTransaction(transaction);
+      });
+    }
   }
 
   public extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {

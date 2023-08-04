@@ -99,14 +99,20 @@
                     </ng-template>
                     <ng-template #estimationTmpl>
                       <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
-                        <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
+                        <span class="eta d-flex">
+                          <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
+                          <span class="ml-2"></span><a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.env.ACCELERATOR" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate ml-auto" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                        </span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
                         <ng-template [ngIf]="network === 'liquid' || network === 'liquidtestnet'" [ngIfElse]="timeEstimateDefault">
                           <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
+                          <span class="d-flex">
+                            <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
+                            <span class="ml-2"></span><a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.env.ACCELERATOR" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate ml-auto" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                          </span>
                         </ng-template>
                       </ng-template>
                     </ng-template>
@@ -488,7 +494,8 @@
         </td>
       </tr>
       <tr *ngIf="cpfpInfo && hasEffectiveFeeRate">
-        <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+        <td *ngIf="tx.acceleration" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
+        <td *ngIf="!tx.acceleration" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
             <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>

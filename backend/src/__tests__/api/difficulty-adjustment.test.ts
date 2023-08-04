@@ -1,4 +1,8 @@
-import { calcDifficultyAdjustment, DifficultyAdjustment } from '../../api/difficulty-adjustment';
+import {
+  calcBitsDifference,
+  calcDifficultyAdjustment,
+  DifficultyAdjustment,
+} from '../../api/difficulty-adjustment';
 
 describe('Mempool Difficulty Adjustment', () => {
   test('should calculate Difficulty Adjustments properly', () => {
@@ -85,5 +89,47 @@ describe('Mempool Difficulty Adjustment', () => {
       expect(result.previousRetarget).toStrictEqual(vector[0][3]);
       expect(result).toStrictEqual(vector[1]);
     }
+  });
+
+  test('should calculate Difficulty change from bits fields of two blocks', () => {
+    // Check same exponent + check min max for output
+    expect(calcBitsDifference(0x1d000200, 0x1d000100)).toEqual(100);
+    expect(calcBitsDifference(0x1d000400, 0x1d000100)).toEqual(300);
+    expect(calcBitsDifference(0x1d000800, 0x1d000100)).toEqual(300); // Actually 700
+    expect(calcBitsDifference(0x1d000100, 0x1d000200)).toEqual(-50);
+    expect(calcBitsDifference(0x1d000100, 0x1d000400)).toEqual(-75);
+    expect(calcBitsDifference(0x1d000100, 0x1d000800)).toEqual(-75); // Actually -87.5
+    // Check new higher exponent
+    expect(calcBitsDifference(0x1c000200, 0x1d000001)).toEqual(100);
+    expect(calcBitsDifference(0x1c000400, 0x1d000001)).toEqual(300);
+    expect(calcBitsDifference(0x1c000800, 0x1d000001)).toEqual(300);
+    expect(calcBitsDifference(0x1c000100, 0x1d000002)).toEqual(-50);
+    expect(calcBitsDifference(0x1c000100, 0x1d000004)).toEqual(-75);
+    expect(calcBitsDifference(0x1c000100, 0x1d000008)).toEqual(-75);
+    // Check new lower exponent
+    expect(calcBitsDifference(0x1d000002, 0x1c000100)).toEqual(100);
+    expect(calcBitsDifference(0x1d000004, 0x1c000100)).toEqual(300);
+    expect(calcBitsDifference(0x1d000008, 0x1c000100)).toEqual(300);
+    expect(calcBitsDifference(0x1d000001, 0x1c000200)).toEqual(-50);
+    expect(calcBitsDifference(0x1d000001, 0x1c000400)).toEqual(-75);
+    expect(calcBitsDifference(0x1d000001, 0x1c000800)).toEqual(-75);
+    // Check error when exponents are too far apart
+    expect(() => calcBitsDifference(0x1d000001, 0x1a000800)).toThrow(
+      /Impossible exponent difference/
+    );
+    // Check invalid inputs
+    expect(() => calcBitsDifference(0x7f000001, 0x1a000800)).toThrow(
+      /Invalid bits/
+    );
+    expect(() => calcBitsDifference(0, 0x1a000800)).toThrow(/Invalid bits/);
+    expect(() => calcBitsDifference(100.2783, 0x1a000800)).toThrow(
+      /Invalid bits/
+    );
+    expect(() => calcBitsDifference(0x00800000, 0x1a000800)).toThrow(
+      /Invalid bits/
+    );
+    expect(() => calcBitsDifference(0x1c000000, 0x1a000800)).toThrow(
+      /Invalid bits/
+    );
   });
 });

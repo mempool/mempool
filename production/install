@@ -1603,15 +1603,8 @@ fi
 ########################################
 # Electrs instance for Bitcoin Mainnet #
 ########################################
-
 if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Mainnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-mainnet" "${BITCOIN_ELECTRS_HOME}"
-
-    echo "[*] Configuring Bitcoin Mainnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-mainnet"
+    echo "[*] FIXME: must only crontab enabled daemons"
 fi
 
 ########################################
@@ -1619,13 +1612,7 @@ fi
 ########################################
 
 if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Testnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-testnet" "${BITCOIN_ELECTRS_HOME}"
-
-    echo "[*] Configuring Bitcoin Testnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-testnet"
+    echo "[*] FIXME: must only crontab enabled daemons"
 fi
 
 #######################################
@@ -1633,13 +1620,7 @@ fi
 #######################################
 
 if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Signet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-signet" "${BITCOIN_ELECTRS_HOME}"
-
-    echo "[*] Configuring Bitcoin Signet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${BITCOIN_ELECTRS_HOME}/electrs-start-signet"
+    echo "[*] FIXME: must only crontab enabled daemons"
 fi
 
 ########################################
@@ -1647,21 +1628,12 @@ fi
 ########################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-    echo "[*] Installing Elements Liquid electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquid" "${ELEMENTS_ELECTRS_HOME}"
-
     echo "[*] Installing Elements crontab"
     case $OS in
         FreeBSD)
-            echo "[*] FIXME: must only crontab enabled daemons"
             osSudo "${ROOT_USER}" crontab -u "${ELEMENTS_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab"
         ;;
     esac
-
-    echo "[*] Configuring Elements Liquid RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquid"
 fi
 
 ################################################
@@ -1690,7 +1662,6 @@ fi
 echo "[*] Installing crontabs"
 case $OS in
     FreeBSD)
-        echo "[*] FIXME: must only crontab enabled daemons"
         osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
         osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
     ;;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
@@ -11,6 +11,9 @@ import { NavigationService } from '../../services/navigation.service';
   styleUrls: ['./master-page.component.scss'],
 })
 export class MasterPageComponent implements OnInit {
+  @Input() headerVisible = true;
+  @Input() footerVisibleOverride: boolean | null = null;
+
   env: Env;
   network$: Observable<string>;
   connectionState$: Observable<number>;
@@ -38,10 +41,14 @@ export class MasterPageComponent implements OnInit {
     this.subdomain = this.enterpriseService.getSubdomain();
     this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
-      if (paths.mainnet.indexOf('docs') > -1) {
-        this.footerVisible = false;
+      if (this.footerVisibleOverride === null) {
+        if (paths.mainnet.indexOf('docs') > -1) {
+          this.footerVisible = false;
+        } else {
+          this.footerVisible = true;
+        }
       } else {
-        this.footerVisible = true;
+        this.footerVisible = this.footerVisibleOverride;
       }
     });
   }

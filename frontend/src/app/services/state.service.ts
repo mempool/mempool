@@ -47,6 +47,7 @@ export interface Env {
   TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
+  ACCELERATOR: boolean;
 }
 
 const defaultEnv: Env = {
@@ -77,6 +78,7 @@ const defaultEnv: Env = {
   'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
+  'ACCELERATOR': false,
 };
 
 @Injectable({
