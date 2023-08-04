@@ -111,3 +111,17 @@ app-fiat {
   margin: 0 0.25em;
   color: slategrey;
 }
+
+.claim-btn {
+  max-height: 32px;
+  @media (min-width: 850px) {
+    display: none;
+  }
+}
+
+.claim-btn-mobile {
+  max-height: 32px;
+  @media (max-width: 850px) {
+    display: none;
+  }
+}

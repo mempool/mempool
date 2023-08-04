@@ -129,6 +129,11 @@ describe('Mempool Backend Config', () => {
         SERVERS: []
       });
 
+      expect(config.MEMPOOL_SERVICES).toStrictEqual({
+        API: "",
+        ACCELERATIONS: false,
+      });
+
       expect(config.REDIS).toStrictEqual({
         ENABLED: false,
         UNIX_SOCKET_PATH: ''
@@ -166,6 +171,8 @@ describe('Mempool Backend Config', () => {
       expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
 
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
 
       expect(config.REDIS).toStrictEqual(fixture.REDIS);
     });

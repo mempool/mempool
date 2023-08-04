@@ -20,6 +20,7 @@ export interface PoolInfo {
   slug: string;
   avgMatchRate: number | null;
   avgFeeDelta: number | null;
+  poolUniqueId: number;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -36,6 +37,7 @@ export interface BlockAudit {
   sigopTxs: string[],
   fullrbfTxs: string[],
   addedTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
   expectedFees?: number,
   expectedWeight?: number,
@@ -91,6 +93,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     block: number,
     vsize: number,
   };
+  acceleration?: boolean;
   uid?: number;
 }
 
@@ -182,6 +185,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: boolean;
   rate?: number; // effective fee rate
 }
 

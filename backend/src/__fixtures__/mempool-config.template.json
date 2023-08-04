@@ -129,6 +129,10 @@
     "AUDIT_START_HEIGHT": 774000,
     "SERVERS": []
   },
+  "MEMPOOL_SERVICES": {
+    "API": "",
+    "ACCELERATIONS": false
+  },
   "REDIS": {
     "ENABLED": false,
     "UNIX_SOCKET_PATH": "/tmp/redis.sock"
