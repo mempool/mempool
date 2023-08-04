@@ -10,7 +10,7 @@ class PricesRoutes {
   private $getCurrentPrices(req: Request, res: Response): void {
     res.header('Pragma', 'public');
     res.header('Cache-control', 'public');
-    res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+    res.setHeader('Expires', new Date(Date.now() + 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR).toUTCString());
 
     res.json(pricesUpdater.getLatestPrices());
   }

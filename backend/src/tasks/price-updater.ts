@@ -25,7 +25,7 @@ export interface PriceHistory {
 
 class PriceUpdater {
   public historyInserted = false;
-  private timeBetweenUpdatesMs = 3600000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
+  private timeBetweenUpdatesMs = 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
   private cyclePosition = -1;
   private firstRun = true;
   private lastTime = -1;
