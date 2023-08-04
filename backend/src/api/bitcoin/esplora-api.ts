@@ -61,6 +61,25 @@ class ElectrsApi implements AbstractBitcoinApi {
       });
   }
 
+  $postWrapper<T>(url, body, responseType = 'json', params: any = undefined): Promise<T> {
+    return axiosConnection.post<T>(url, body, { ...this.activeAxiosConfig, responseType: responseType, params })
+      .then((response) => response.data)
+      .catch((e) => {
+        if (e?.code === 'ECONNREFUSED') {
+          this.fallbackToTcpSocket();
+          // Retry immediately
+          return axiosConnection.post<T>(url, body, this.activeAxiosConfig)
+            .then((response) => response.data)
+            .catch((e) => {
+              logger.warn(`Cannot query esplora through the unix socket nor the tcp socket. Exception ${e}`);
+              throw e;
+            });
+        } else {
+          throw e;
+        }
+      });
+  }
+
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
     return this.$queryWrapper<IEsploraApi.Transaction['txid'][]>(config.ESPLORA.REST_API_URL + '/mempool/txids');
   }
@@ -69,7 +88,11 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.$queryWrapper<IEsploraApi.Transaction>(config.ESPLORA.REST_API_URL + '/tx/' + txId);
   }
 
-  async $getMempoolTransactions(lastSeenTxid?: string): Promise<IEsploraApi.Transaction[]> {
+  async $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
+    return this.$postWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs', txids, 'json');
+  }
+
+  async $getAllMempoolTransactions(lastSeenTxid?: string): Promise<IEsploraApi.Transaction[]> {
     return this.$queryWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/mempool/txs' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
   }
 
