@@ -28,6 +28,7 @@ class PriceUpdater {
   private timeBetweenUpdatesMs = 3600000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
   private cyclePosition = -1;
   private firstRun = true;
+  private lastTime = -1;
   private lastHistoricalRun = 0;
   private running = false;
   private feeds: PriceFeed[] = [];
@@ -136,7 +137,13 @@ class PriceUpdater {
     }
 
     const millisecondsSinceBeginningOfHour = this.getMillisecondsSinceBeginningOfHour();
-    if (millisecondsSinceBeginningOfHour < this.timeBetweenUpdatesMs * this.cyclePosition && !forceUpdate) {
+
+    // Reset the cycle on new hour
+    if (this.lastTime > millisecondsSinceBeginningOfHour) {
+      this.cyclePosition = 0;
+    }
+    this.lastTime = millisecondsSinceBeginningOfHour;
+    if (millisecondsSinceBeginningOfHour < this.timeBetweenUpdatesMs * this.cyclePosition && !forceUpdate && this.cyclePosition !== 0) {
       return;
     }
 
@@ -190,9 +197,6 @@ class PriceUpdater {
 
     if (!forceUpdate) {
       this.cyclePosition++;
-      if (this.cyclePosition > config.MEMPOOL.PRICE_UPDATES_PER_HOUR) {
-        this.cyclePosition = 0;
-      }
     }
 
     if (this.latestPrices.USD === -1) {
