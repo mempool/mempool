@@ -50,6 +50,7 @@ export class GroupPreviewComponent implements OnInit {
               name: this.slug.replace(/-/gi, ' '),
               description: '',
             };
+            this.seoService.logSoft404();
             this.openGraphService.fail('ln-group-map-' + this.slug);
             this.openGraphService.fail('ln-group-data-' + this.slug);
             return of(null);
@@ -106,6 +107,7 @@ export class GroupPreviewComponent implements OnInit {
           };
         }),
         catchError(() => {
+          this.seoService.logSoft404();
           this.openGraphService.fail('ln-group-map-' + this.slug);
           this.openGraphService.fail('ln-group-data-' + this.slug);
           return of({

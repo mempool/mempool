@@ -70,11 +70,13 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
                     catchError((txError: HttpErrorResponse) => {
                       console.log(txError);
                       this.error = txError;
+                      this.seoService.logSoft404();
                       return of(null);
                     })
                   );
               }
               this.error = bisqTxError;
+              this.seoService.logSoft404();
               return of(null);
             })
           );
@@ -103,6 +105,7 @@ export class BisqTransactionComponent implements OnInit, OnDestroy {
       this.isLoadingTx = false;
 
       if (!tx) {
+        this.seoService.logSoft404();
         return;
       }
 

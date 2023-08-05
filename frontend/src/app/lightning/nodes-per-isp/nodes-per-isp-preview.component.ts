@@ -85,6 +85,7 @@ export class NodesPerISPPreview implements OnInit {
         }),
         catchError(err => {
           this.error = err;
+          this.seoService.logSoft404();
           this.openGraphService.fail('isp-map-' + this.id);
           this.openGraphService.fail('isp-data-' + this.id);
           return of({
