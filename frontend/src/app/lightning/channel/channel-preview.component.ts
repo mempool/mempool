@@ -54,6 +54,7 @@ export class ChannelPreviewComponent implements OnInit {
               }),
               catchError((err) => {
                 this.error = err;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('channel-map-' + this.shortId);
                 this.openGraphService.fail('channel-data-' + this.shortId);
                 return of(null);

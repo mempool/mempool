@@ -91,6 +91,7 @@ export class AddressComponent implements OnInit, OnDestroy {
                 catchError((err) => {
                   this.isLoadingAddress = false;
                   this.error = err;
+                  this.seoService.logSoft404();
                   console.log(err);
                   return of(null);
                 })
@@ -162,6 +163,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         this.error = error;
+        this.seoService.logSoft404();
         this.isLoadingAddress = false;
       });
 

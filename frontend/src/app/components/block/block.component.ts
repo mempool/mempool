@@ -206,6 +206,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                       this.error = err;
                       this.isLoadingBlock = false;
                       this.isLoadingOverview = false;
+                      this.seoService.logSoft404();
                       return EMPTY;
                     })
                   );
@@ -214,6 +215,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.error = err;
                   this.isLoadingBlock = false;
                   this.isLoadingOverview = false;
+                  this.seoService.logSoft404();
                   return EMPTY;
                 }),
               );
@@ -229,6 +231,7 @@ export class BlockComponent implements OnInit, OnDestroy {
               this.error = err;
               this.isLoadingBlock = false;
               this.isLoadingOverview = false;
+              this.seoService.logSoft404();
               return EMPTY;
             })
           );
