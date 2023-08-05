@@ -23,6 +23,8 @@ export interface AbstractBitcoinApi {
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend>;
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
   $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+
+  startHealthChecks(): void;
 }
 export interface BitcoinRpcCredentials {
   host: string;

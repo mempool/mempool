@@ -91,6 +91,10 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      bitcoinApi.startHealthChecks();
+    }
+
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
