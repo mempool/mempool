@@ -110,6 +110,7 @@ export interface PoolInfo {
   regexes: string; // JSON array
   addresses: string; // JSON array
   emptyBlocks: number;
+  slug: string;
 }
 export interface PoolStat {
   pool: PoolInfo;
@@ -174,7 +175,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf';
   context?: 'projected' | 'actual';
 }
 

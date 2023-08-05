@@ -7,6 +7,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
+import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -113,6 +114,7 @@ export class StateService {
   mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition}>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
+  isLoadingMempool$ = new BehaviorSubject<boolean>(true);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
@@ -137,6 +139,8 @@ export class StateService {
   hideAudit: BehaviorSubject<boolean>;
   fiatCurrency$: BehaviorSubject<string>;
   rateUnits$: BehaviorSubject<string>;
+
+  searchFocus$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -354,5 +358,11 @@ export class StateService {
     this.blocks.unshift(block);
     this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
     this.blocksSubject$.next(this.blocks);
+  }
+
+  focusSearchInputDesktop() {
+    if (!hasTouchScreen()) {
+      this.searchFocus$.next(true);
+    }    
   }
 }

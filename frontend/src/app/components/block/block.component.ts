@@ -144,10 +144,12 @@ export class BlockComponent implements OnInit, OnDestroy {
         for (const block of blocks) {
           if (block.id === this.blockHash) {
             this.block = block;
-            block.extras.minFee = this.getMinBlockFee(block);
-            block.extras.maxFee = this.getMaxBlockFee(block);
-            if (block?.extras?.reward != undefined) {
-              this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+            if (block.extras) {
+              block.extras.minFee = this.getMinBlockFee(block);
+              block.extras.maxFee = this.getMaxBlockFee(block);
+              if (block?.extras?.reward != undefined) {
+                this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
+              }
             }
           } else if (block.height === this.block?.height) {
             this.block.stale = true;
@@ -246,8 +248,10 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
-        block.extras.minFee = this.getMinBlockFee(block);
-        block.extras.maxFee = this.getMaxBlockFee(block);
+        if (block.extras) {
+          block.extras.minFee = this.getMinBlockFee(block);
+          block.extras.maxFee = this.getMaxBlockFee(block);
+        }
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
         this.nextBlockHeight = block.height + 1;
@@ -335,7 +339,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         const isSelected = {};
         const isFresh = {};
         const isSigop = {};
-        const isFullRbf = {};
+        const isRbf = {};
         this.numMissing = 0;
         this.numUnexpected = 0;
 
@@ -359,7 +363,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             isSigop[txid] = true;
           }
           for (const txid of blockAudit.fullrbfTxs || []) {
-            isFullRbf[txid] = true;
+            isRbf[txid] = true;
           }
           // set transaction statuses
           for (const tx of blockAudit.template) {
@@ -377,8 +381,8 @@ export class BlockComponent implements OnInit, OnDestroy {
                 }
               } else if (isSigop[tx.txid]) {
                 tx.status = 'sigop';
-              } else if (isFullRbf[tx.txid]) {
-                tx.status = 'fullrbf';
+              } else if (isRbf[tx.txid]) {
+                tx.status = 'rbf';
               } else {
                 tx.status = 'missing';
               }
@@ -394,8 +398,8 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'added';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
-            } else if (isFullRbf[tx.txid]) {
-              tx.status = 'fullrbf';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
             } else {
               tx.status = 'selected';
               isSelected[tx.txid] = true;

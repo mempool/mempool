@@ -113,7 +113,7 @@ export class WebsocketService {
           this.stateService.connectionState$.next(2);
         }
 
-        if (this.stateService.connectionState$.value === 1) {
+        if (this.stateService.connectionState$.value !== 2) {
           this.stateService.connectionState$.next(2);
         }
 
@@ -368,6 +368,11 @@ export class WebsocketService {
 
     if (response.loadingIndicators) {
       this.stateService.loadingIndicators$.next(response.loadingIndicators);
+      if (response.loadingIndicators.mempool != null && response.loadingIndicators.mempool < 100) {
+        this.stateService.isLoadingMempool$.next(true);
+      } else {
+        this.stateService.isLoadingMempool$.next(false);
+      }
     }
 
     if (response.mempoolInfo) {
