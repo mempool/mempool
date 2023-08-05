@@ -1,0 +1,26 @@
+name: 'Print images digest'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image Version'
+        required: false
+        default: 'latest'
+        type: string 
+jobs:
+  print-images-sha:
+    runs-on: 'ubuntu-latest'
+    name: Print digest for images
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: digest
+
+      - name: Run script
+        working-directory: digest
+        run: |
+          sh ./docker/scripts/get_image_digest.sh $VERSION
+        env: 
+          VERSION: ${{ github.event.inputs.version }}

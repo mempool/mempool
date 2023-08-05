@@ -139,7 +139,10 @@ class Server {
         page.waitForSelector('meta[property="og:preview:fail"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 }).then(() => false)
       ])
       if (success === true) {
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot({
+          captureBeyondViewport: false,
+          clip: { width: 1200, height: 600, x: 0, y: 0, scale: 1 },
+        });
         return screenshot;
       } else if (success === false) {
         logger.warn(`failed to render ${path} for ${action} due to client-side error, e.g. requested an invalid txid`);
@@ -283,7 +286,7 @@ class Server {
     const { lang, path } = parseLanguageUrl(rawPath);
     const matchedRoute = matchRoute(this.network, path);
     let ogImageUrl = config.SERVER.HOST + (matchedRoute.staticImg || matchedRoute.fallbackImg);
-    let ogTitle = 'The Mempool Open Source Project™';
+    let ogTitle = 'The Mempool Open Source Project®';
 
     const canonical = this.canonicalHost + rawPath;
 
@@ -298,7 +301,7 @@ class Server {
     <meta charset="utf-8">
     <title>${ogTitle}</title>
     <link rel="canonical" href="${canonical}" />
-    <meta name="description" content="The Mempool Open Source Project™ - Explore the full Bitcoin ecosystem with mempool.space™"/>
+    <meta name="description" content="The Mempool Open Source Project® - Explore the full Bitcoin ecosystem with mempool.space™"/>
     <meta property="og:image" content="${ogImageUrl}"/>
     <meta property="og:image:type" content="image/png"/>
     <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>

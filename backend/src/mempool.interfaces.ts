@@ -19,6 +19,8 @@ export interface PoolInfo {
   blockCount: number;
   slug: string;
   avgMatchRate: number | null;
+  avgFeeDelta: number | null;
+  poolUniqueId: number;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -32,13 +34,20 @@ export interface BlockAudit {
   hash: string,
   missingTxs: string[],
   freshTxs: string[],
+  sigopTxs: string[],
+  fullrbfTxs: string[],
   addedTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
+  expectedFees?: number,
+  expectedWeight?: number,
 }
 
 export interface AuditScore {
   hash: string,
   matchRate?: number,
+  expectedFees?: number
+  expectedWeight?: number
 }
 
 export interface MempoolBlock {
@@ -58,6 +67,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[];
   removed: string[];
+  changed: { txid: string, rate: number | undefined }[];
 }
 
 interface VinStrippedToScriptsig {
@@ -79,25 +89,55 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   descendants?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
-  deleteAfter?: number;
+  position?: {
+    block: number,
+    vsize: number,
+  };
+  acceleration?: boolean;
+  uid?: number;
+}
+
+export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
+  sigops: number;
+  adjustedVsize: number;
+  adjustedFeePerVsize: number;
+  inputs?: number[];
+  lastBoosted?: number;
 }
 
 export interface AuditTransaction {
-  txid: string;
+  uid: number;
   fee: number;
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize: number;
-  vin: string[];
+  sigops: number;
+  inputs: number[];
   relativesSet: boolean;
-  ancestorMap: Map<string, AuditTransaction>;
+  ancestorMap: Map<number, AuditTransaction>;
   children: Set<AuditTransaction>;
   ancestorFee: number;
   ancestorWeight: number;
+  ancestorSigops: number;
   score: number;
   used: boolean;
   modified: boolean;
   modifiedNode: HeapNode<AuditTransaction>;
+  dependencyRate?: number;
+}
+
+export interface CompactThreadTransaction {
+  uid: number;
+  fee: number;
+  weight: number;
+  sigops: number;
+  feePerVsize: number;
+  effectiveFeePerVsize: number;
+  inputs: number[];
+  cpfpRoot?: number;
+  cpfpChecked?: boolean;
+  dirty?: boolean;
 }
 
 export interface ThreadTransaction {
@@ -106,7 +146,7 @@ export interface ThreadTransaction {
   weight: number;
   feePerVsize: number;
   effectiveFeePerVsize?: number;
-  vin: string[];
+  inputs: number[];
   cpfpRoot?: string;
   cpfpChecked?: boolean;
 }
@@ -145,6 +185,8 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: boolean;
+  rate?: number; // effective fee rate
 }
 
 export interface BlockExtension {
@@ -153,6 +195,9 @@ export interface BlockExtension {
   feeRange: number[]; // fee rate percentiles
   reward: number;
   matchRate: number | null;
+  expectedFees: number | null;
+  expectedWeight: number | null;
+  similarity?: number;
   pool: {
     id: number; // Note - This is the `unique_id`, not to mix with the auto increment `id`
     name: string;
@@ -188,11 +233,21 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
   id: string;
   transactions: TransactionStripped[];
+}
+
+export interface AuditSummary extends BlockAudit {
+  timestamp?: number,
+  size?: number,
+  weight?: number,
+  tx_count?: number,
+  transactions: TransactionStripped[];
+  template?: TransactionStripped[];
 }
 
 export interface BlockPrice {
@@ -211,6 +266,28 @@ export interface MempoolStats {
   spent_txo_count: number;
   spent_txo_sum: number;
   tx_count: number;
+}
+
+export interface EffectiveFeeStats {
+  medianFee: number; // median effective fee rate
+  feeRange: number[]; // 2nd, 10th, 25th, 50th, 75th, 90th, 98th percentiles
+}
+
+export interface WorkingEffectiveFeeStats extends EffectiveFeeStats {
+  minFee: number;
+  maxFee: number;
+}
+
+export interface CpfpCluster {
+  root: string,
+  height: number,
+  txs: Ancestor[],
+  effectiveFeePerVsize: number,
+}
+
+export interface CpfpSummary {
+  transactions: TransactionExtended[];
+  clusters: CpfpCluster[];
 }
 
 export interface Statistic {
@@ -308,9 +385,11 @@ export interface IDifficultyAdjustment {
   remainingBlocks: number;
   remainingTime: number;
   previousRetarget: number;
+  previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
   timeOffset: number;
+  expectedBlocks: number;
 }
 
 export interface IndexedDifficultyAdjustment {

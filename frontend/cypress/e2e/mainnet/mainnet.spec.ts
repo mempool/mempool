@@ -127,7 +127,7 @@ describe('Mainnet', () => {
 
         cy.get('.search-box-container > .form-control').type('S').then(() => {
           cy.wait('@search-1wizS');
-          cy.get('app-search-results button.dropdown-item').should('have.length', 5);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 6);
         });
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
@@ -504,9 +504,17 @@ describe('Mainnet', () => {
 
     describe('RBF transactions', () => {
       it('shows RBF transactions properly (mobile)', () => {
+        cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
+          fixture: 'mainnet_tx_cached.json'
+        }).as('cached_tx');
+
+        cy.intercept('/api/v1/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5/rbf', {
+          fixture: 'mainnet_rbf_new.json'
+        }).as('rbf');
+
         cy.viewport('iphone-xr');
         cy.mockMempoolSocket();
-        cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
 
         cy.waitForSkeletonGone();
 
@@ -524,22 +532,30 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-mempool').should('be.visible');
-        cy.get('.alert-mempool').invoke('css', 'width').then((alertWidth) => {
+        cy.get('.alert').should('be.visible');
+        cy.get('.alert').invoke('css', 'width').then((alertWidth) => {
           cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
         });
 
-        cy.get('.btn-success').then(getRectangle).then((rectA) => {
-          cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
+          cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
         });
       });
 
       it('shows RBF transactions properly (desktop)', () => {
+        cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
+          fixture: 'mainnet_tx_cached.json'
+        }).as('cached_tx');
+
+        cy.intercept('/api/v1/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5/rbf', {
+          fixture: 'mainnet_rbf_new.json'
+        }).as('rbf');
+
         cy.viewport('macbook-16');
         cy.mockMempoolSocket();
-        cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
 
         cy.waitForSkeletonGone();
 
@@ -557,17 +573,17 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-mempool').should('be.visible');
+        cy.get('.alert').should('be.visible');
 
-        const alertLocator = '.alert-mempool';
+        const alertLocator = '.alert';
         const tableLocator = '.container-xl > :nth-child(3)';
 
         cy.get(tableLocator).invoke('css', 'width').then((firstWidth) => {
           cy.get(alertLocator).invoke('css', 'width').should('equal', firstWidth);
         });
 
-        cy.get('.btn-success').then(getRectangle).then((rectA) => {
-          cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
+          cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
         });

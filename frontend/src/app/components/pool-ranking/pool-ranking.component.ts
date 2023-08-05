@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding 
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from 'echarts';
-import { concat, Observable } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../..//services/storage.service';
@@ -73,7 +73,7 @@ export class PoolRankingComponent implements OnInit {
         }
       });
 
-    this.miningStatsObservable$ = concat(
+    this.miningStatsObservable$ = merge(
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
           startWith(this.radioGroupForm.controls.dateSpan.value), // (trigger when the page loads)
@@ -89,7 +89,7 @@ export class PoolRankingComponent implements OnInit {
             return this.miningService.getMiningStats(this.miningWindowPreference);
           })
         ),
-        this.stateService.blocks$
+        this.stateService.chainTip$
           .pipe(
             switchMap(() => {
               return this.miningService.getMiningStats(this.miningWindowPreference);
@@ -162,10 +162,10 @@ export class PoolRankingComponent implements OnInit {
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
                 pool.lastEstimatedHashrate.toString() + ' PH/s' +
-                `<br>` + $localize`${i} blocks`;
+                `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                $localize`${i} blocks`;
+                $localize`${ i }:INTERPOLATION: blocks`;
             }
           }
         },
@@ -195,13 +195,15 @@ export class PoolRankingComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
+          const percentage = totalShareOther.toFixed(2) + '%';
+          const i = totalBlockOther.toString();
           if (this.miningWindowPreference === '24h') {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
               totalEstimatedHashrateOther.toString() + ' PH/s' +
-              `<br>` + totalBlockOther.toString() + ` blocks`;
+              `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
           } else {
-            return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
-              totalBlockOther.toString() + ` blocks`;
+            return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
+              $localize`${ i }:INTERPOLATION: blocks`;
           }
         }
       },

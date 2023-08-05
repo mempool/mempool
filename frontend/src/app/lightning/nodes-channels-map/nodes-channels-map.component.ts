@@ -204,24 +204,33 @@ export class NodesChannelsMap implements OnInit {
 
   prepareChartOptions(nodes, channels) {
     let title: object;
-    if (channels.length === 0 && !this.placeholder) {
-      this.chartOptions = null;
-      return;
-    }
-
-    // empty map fallback
-    if (channels.length === 0 && this.placeholder) {
-      title = {
-        textStyle: {
-          color: 'white',
-          fontSize: 18
-        },
-        text: $localize`No geolocation data available`,
-        left: 'center',
-        top: 'center'
-      };
-      this.zoom = 1.5;
-      this.center = [0, 20];
+    if (channels.length === 0) {
+      if (!this.placeholder) {
+        this.isLoading = false;
+        title = {
+          textStyle: {
+            color: 'white',
+            fontSize: 18
+          },
+          text: $localize`No data to display yet. Try again later.`,
+          left: 'center',
+          top: 'center'
+        };
+        this.zoom = 1.5;
+        this.center = [0, 20];
+      } else { // used for Node and Channel preview components
+        title = {
+          textStyle: {
+            color: 'white',
+            fontSize: 18
+          },
+          text: $localize`No geolocation data available`,
+          left: 'center',
+          top: 'center'
+        };
+        this.zoom = 1.5;
+        this.center = [0, 20];
+      }
     }
 
     this.chartOptions = {

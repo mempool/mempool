@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Transaction, Address, Outspend, Recent, Asset } from '../interfaces/electrs.interface';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, from, of, switchMap } from 'rxjs';
+import { Transaction, Address, Outspend, Recent, Asset, ScriptHash } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
 import { BlockExtended } from '../interfaces/node-api.interface';
+import { calcScriptHash$ } from '../bitcoin.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -65,12 +66,41 @@ export class ElectrsApiService {
     return this.httpClient.get<Address>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address);
   }
 
-  getAddressTransactions$(address: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs');
+  getPubKeyAddress$(pubkey: string): Observable<Address> {
+    const scriptpubkey = (pubkey.length === 130 ? '41' : '21') + pubkey + 'ac';
+    return this.getScriptHash$(scriptpubkey).pipe(
+      switchMap((scripthash: ScriptHash) => {
+        return of({
+          ...scripthash,
+          address: pubkey,
+          is_pubkey: true,
+        });
+      })
+    );
   }
 
-  getAddressTransactionsFromHash$(address: string, txid: string): Observable<Transaction[]> {
-    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/chain/' + txid);
+  getScriptHash$(script: string): Observable<ScriptHash> {
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<ScriptHash>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash))
+    );
+  }
+
+  getAddressTransactions$(address: string,  txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
+  }
+
+  getScriptHashTransactions$(script: string,  txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
+    );
   }
 
   getAsset$(assetId: string): Observable<Asset> {

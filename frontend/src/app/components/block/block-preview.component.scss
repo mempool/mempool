@@ -44,11 +44,16 @@
   }
 }
 
+.table-col {
+  max-width: calc(100% - 470px);
+  overflow: hidden;
+}
+
 .chart-container {
   flex-grow: 0;
   flex-shrink: 0;
-  width: 470px;
-  min-width: 470px;
+  width: 480px;
+  min-width: 480px;
   padding: 0;
   margin-right: 15px;
 }

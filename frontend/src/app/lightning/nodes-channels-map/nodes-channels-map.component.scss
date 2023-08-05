@@ -4,6 +4,9 @@
   &.widget {
     height: 250px;
   }
+  &.graph {
+    margin-bottom: 20px;
+  }
 }
 
 .card-header {
@@ -132,4 +135,11 @@
   @media (max-width: 767.98px) {
     top: 450px;
   }
+}
+
+.indexing-message {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  margin-top: 100px;
 }

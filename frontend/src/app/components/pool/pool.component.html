@@ -38,12 +38,12 @@
               <tr *ngIf="!isMobile()" class="taller-row">
                 <td class="label addresses" i18n="mining.addresses">Addresses</td>
                 <td *ngIf="poolStats.pool.addresses.length else nodata" style="padding-top: 25px">
-                  <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]" class="first-address">
+                  <a  class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
                     {{ poolStats.pool.addresses[0] }}
                   </a>
                   <div>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg">
-                      <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
+                      <a class="addresses-data" *ngFor="let address of poolStats.pool.addresses | slice: 1"
                         [routerLink]="['/address' | relativeUrl, address]">{{
                         address }}<br></a>
                     </div>
@@ -67,13 +67,13 @@
                       [attr.aria-expanded]="!gfg" aria-controls="collapseExample">
                       <span i18n="show-all">Show all</span> ({{ poolStats.pool.addresses.length }})
                     </button>
-                    <a [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
-                      {{ poolStats.pool.addresses[0] | shortenString: 40 }}
+                    <a class="addresses-data" [routerLink]="['/address' | relativeUrl, poolStats.pool.addresses[0]]">
+                      {{ poolStats.pool.addresses[0] | shortenString: 30 }}
                     </a>
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="gfg" style="width: 100%">
-                      <a *ngFor="let address of poolStats.pool.addresses | slice: 1"
+                      <a class="addresses-data" *ngFor="let address of poolStats.pool.addresses | slice: 1"
                         [routerLink]="['/address' | relativeUrl, address]">{{
-                        address | shortenString: 40 }}<br></a>
+                        address | shortenString: 30 }}<br></a>
                     </div>
                   </div>
                 </td>
@@ -88,22 +88,25 @@
 
               <!-- Hashrate desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.hashrate-24h">Hashrate (24h)</td>
                 <td class="data">
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
-                      <ng-template *ngIf="poolStats.luck; else noreported">
-                        <td>{{ poolStats.reportedHashrate | amountShortener : 1 : 'H/s' }}</td>
-                        <td>{{ formatNumber(poolStats.luck, this.locale, '1.2-2') }}%</td>
-                      </ng-template>
+                      <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true"></app-amount></td>
+                      <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                      <td class="text-center" *ngIf="auditAvailable; else emptyTd"><span class="health-badge badge" [class.badge-success]="poolStats.avgBlockHealth >= 99"
+                          [class.badge-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.badge-danger]="poolStats.avgBlockHealth < 75"
+                          *ngIf="poolStats.avgBlockHealth != null; else nullHealth">{{ poolStats.avgBlockHealth }}%</span>
+                          <ng-template #nullHealth>
+                            <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                          </ng-template>
+                      </td>
                     </tbody>
                   </table>
                 </td>
@@ -111,49 +114,46 @@
               <!-- Hashrate mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan="2">
-                  <span class="label" i18n="mining.hashrate-24h">Hashrate (24h)</span>
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
-                      <ng-template *ngIf="poolStats.luck; else noreported">
-                        <td>{{ poolStats.reportedHashrate | amountShortener : 1 : 'H/s' }}</td>
-                        <td>{{ formatNumber(poolStats.luck, this.locale, '1.2-2') }}%</td>
-                      </ng-template>
+                      <td class="text-center"><app-amount [satoshis]="poolStats.totalReward" digitsInfo="1.0-0" [noFiat]="true"></app-amount></td>
+                      <td class="text-center">{{ poolStats.estimatedHashrate | amountShortener : 1 : 'H/s' }}</td>
+                      <td *ngIf="auditAvailable; else emptyTd" class="text-center"><span class="health-badge badge" [class.badge-success]="poolStats.avgBlockHealth >= 99"
+                          [class.badge-warning]="poolStats.avgBlockHealth >= 75 && poolStats.avgBlockHealth < 99" [class.badge-danger]="poolStats.avgBlockHealth < 75"
+                          *ngIf="poolStats.avgBlockHealth != null; else nullHealth">{{ poolStats.avgBlockHealth }}%</span>
+                          <ng-template #nullHealth>
+                            <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+                          </ng-template>
+                      </td>
                     </tbody>
                   </table>
                 </td>
               </tr>
 
-              <ng-template #noreported>
-                <td>~</td>
-                <td>~</td>
-              </ng-template>
-
               <!-- Mined blocks desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.mined-blocks">Mined blocks</td>
                 <td class="data">
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="24h">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
                     </tbody>
                   </table>
@@ -162,21 +162,20 @@
               <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined blocks</span>
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="24h">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['24h'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['24h'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['1w'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['1w'], this.locale, '1.0-0') }}%)</td>
-                      <td>{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
+                      <td class="text-center">{{ formatNumber(poolStats.blockCount['all'], this.locale, '1.0-0') }} ({{ formatNumber(100 *
                         poolStats.blockShare['all'], this.locale, '1.0-0') }}%)</td>
                     </tbody>
                   </table>
@@ -213,8 +212,9 @@
         <th class="timestamp" i18n="latest-blocks.timestamp">Timestamp</th>
         <th class="mined" i18n="latest-blocks.mined">Mined</th>
         <th class="coinbase text-left" i18n="latest-blocks.coinbasetag">Coinbase tag</th>
+        <th *ngIf="auditAvailable" class="health text-right" i18n="latest-blocks.health">Health</th>
         <th class="reward text-right" i18n="latest-blocks.reward">Reward</th>
-        <th class="fees text-right" i18n="latest-blocks.fees">Fees</th>
+        <th *ngIf="!auditAvailable" class="fees text-right" i18n="latest-blocks.fees">Fees</th>
         <th class="txs text-right" i18n="dashboard.txs">TXs</th>
         <th class="size" i18n="latest-blocks.size">Size</th>
       </thead>
@@ -234,10 +234,24 @@
               {{ block.extras.coinbaseRaw | hex2ascii }}
             </span>
           </td>
+          <td *ngIf="auditAvailable" class="health text-right">
+            <a
+              class="health-badge badge"
+              [class.badge-success]="block.extras.matchRate >= 99"
+              [class.badge-warning]="block.extras.matchRate >= 75 && block.extras.matchRate < 99"
+              [class.badge-danger]="block.extras.matchRate < 75"
+              [routerLink]="block.extras.matchRate != null ? ['/block/' | relativeUrl, block.id] : null"
+              [state]="{ data: { block: block } }"
+              *ngIf="block.extras.matchRate != null; else nullHealth"
+            >{{ block.extras.matchRate }}%</a>
+            <ng-template #nullHealth>
+              <span class="health-badge badge badge-secondary" i18n="unknown">Unknown</span>
+            </ng-template>
+          </td>
           <td class="reward text-right">
             <app-amount [satoshis]="block.extras.reward" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
           </td>
-          <td class="fees text-right">
+          <td *ngIf="!auditAvailable" class="fees text-right">
             <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-2" [noFiat]="true"></app-amount>
           </td>
           <td class="txs text-right">
@@ -364,24 +378,23 @@
 
               <!-- Hashrate desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.hashrate-24h">Hashrate (24h)</td>
                 <td class="data">
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center" *ngIf="auditAvailable">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -391,23 +404,22 @@
               <!-- Hashrate mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan="2">
-                  <span class="label" i18n="mining.hashrate-24h">Hashrate (24h)</span>
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%" i18n="mining.estimated">Estimated</th>
-                        <th scope="col" class="block-count-title" style="width: 37%" i18n="mining.reported">Reported</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="mining.luck">Luck</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center" *ngIf="auditAvailable">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -417,24 +429,23 @@
 
               <!-- Mined blocks desktop -->
               <tr *ngIf="!isMobile()" class="taller-row">
-                <td class="label" i18n="mining.mined-blocks">Mined blocks</td>
                 <td class="data">
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 37%">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 26%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -444,23 +455,22 @@
               <!-- Mined blocks mobile -->
               <tr *ngIf="isMobile()">
                 <td colspan=2>
-                  <span class="label" i18n="mining.mined-blocks">Mined blocks</span>
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title" style="width: 33%">24h</th>
-                        <th scope="col" class="block-count-title" style="width: 37%">1w</th>
-                        <th scope="col" class="block-count-title" style="width: 30%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <div class="skeleton-loader data"></div>
                       </td>
                     </tbody>
@@ -475,4 +485,8 @@
       </div>
     </div>
   </div>
+</ng-template>
+
+<ng-template #emptyTd>
+  <td class="text-center"></td>
 </ng-template>

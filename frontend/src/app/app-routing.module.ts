@@ -4,6 +4,7 @@ import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
+import { ClockComponent } from './components/clock/clock.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { AboutComponent } from './components/about/about.component';
@@ -14,12 +15,14 @@ import { TrademarkPolicyComponent } from './components/trademark-policy/trademar
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
+import { RbfList } from './components/rbf-list/rbf-list.component';
 import { LiquidMasterPageComponent } from './components/liquid-master-page/liquid-master-page.component';
 import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
 import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
 import { AssetsComponent } from './components/assets/assets.component';
 import { AssetComponent } from './components/asset/asset.component';
 import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
+import { CalculatorComponent } from './components/calculator/calculator.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -55,6 +58,10 @@ let routes: Routes = [
           {
             path: 'blocks',
             component: BlocksList,
+          },
+          {
+            path: 'rbf',
+            component: RbfList,
           },
           {
             path: 'terms-of-service',
@@ -163,6 +170,10 @@ let routes: Routes = [
             component: BlocksList,
           },
           {
+            path: 'rbf',
+            component: RbfList,
+          },
+          {
             path: 'terms-of-service',
             component: TermsOfServiceComponent
           },
@@ -265,6 +276,14 @@ let routes: Routes = [
         component: BlocksList,
       },
       {
+        path: 'rbf',
+        component: RbfList,
+      },
+      {
+        path: 'tools/calculator',
+        component: CalculatorComponent
+      },
+      {
         path: 'terms-of-service',
         component: TermsOfServiceComponent
       },
@@ -341,6 +360,18 @@ let routes: Routes = [
         loadChildren: () => import('./previews.module').then(m => m.PreviewsModule)
       },
     ],
+  },
+  {
+    path: 'clock',
+    redirectTo: 'clock/mempool/0'
+  },
+  {
+    path: 'clock/:mode',
+    redirectTo: 'clock/:mode/0'
+  },
+  {
+    path: 'clock/:mode/:index',
+    component: ClockComponent,
   },
   {
     path: 'status',

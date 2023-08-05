@@ -36,25 +36,25 @@
 <ng-template #tableHeader>
   <thead>
     <th class="alias text-left" i18n="lightning.alias">Alias</th>
-    <th class="alias text-left d-none d-md-table-cell">&nbsp;</th>
-    <th class="alias text-left d-none d-md-table-cell" i18n="status">Status</th>
-    <th *ngIf="status !== 'closed'" class="channels text-left d-none d-md-table-cell" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
-    <th *ngIf="status === 'closed'" class="channels text-left d-none d-md-table-cell" i18n="channels.closing_date">Closing date</th>
-    <th class="capacity text-right d-none d-md-table-cell" i18n="lightning.capacity">Capacity</th>
-    <th class="capacity text-right" i18n="channels.id">Channel ID</th>
+    <th class="nodedetails text-left">&nbsp;</th>
+    <th class="status text-left" i18n="status">Status</th>
+    <th class="feerate text-left" *ngIf="status !== 'closed'" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</th>
+    <th class="feerate text-left" *ngIf="status === 'closed'" i18n="channels.closing_date">Closing date</th>
+    <th class="liquidity text-right" i18n="lightning.capacity">Capacity</th>
+    <th class="channelid text-right" i18n="channels.id">Channel ID</th>
   </thead>
 </ng-template>
 
 <ng-template #tableTemplate let-channel let-node="node">
   <td class="alias text-left">
-    <div>{{ node.alias || '?' }}</div>
+    <app-truncate [text]="node.alias || '?'" [maxWidth]="200" [lastChars]="6"></app-truncate>
     <div class="second-line">
       <app-truncate [text]="node.public_key" [maxWidth]="200" [lastChars]="6" [link]="['/lightning/node' | relativeUrl, node.public_key]">
         <app-clipboard [text]="node.public_key" size="small"></app-clipboard>
       </app-truncate>
     </div>
   </td>
-  <td class="alias text-left d-none d-md-table-cell">
+  <td class="nodedetails text-left">
     <div class="second-line"><ng-container *ngTemplateOutlet="xChannels; context: {$implicit: node.channels }"></ng-container></div>
     <div class="second-line">
       <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
@@ -64,7 +64,7 @@
       </ng-template>
     </div>
   </td>
-  <td class="d-none d-md-table-cell">
+  <td class="status">
     <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
     <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
     <ng-template [ngIf]="channel.status === 2">
@@ -74,20 +74,20 @@
       </ng-template>
     </ng-template>
   </td>
-  <td *ngIf="status !== 'closed'" class="capacity text-left d-none d-md-table-cell">
+  <td *ngIf="status !== 'closed'" class="feerate text-left">
     {{ channel.fee_rate }} <span class="symbol">ppm ({{ channel.fee_rate / 10000 | number }}%)</span>
   </td>
-  <td *ngIf="status === 'closed'" class="capacity text-left d-none d-md-table-cell">
+  <td *ngIf="status === 'closed'" class="feerate text-left">
     <app-timestamp [unixTime]="channel.closing_date"></app-timestamp>
   </td>
-  <td class="capacity text-right d-none d-md-table-cell">
+  <td class="liquidity text-right">
     <app-amount *ngIf="channel.capacity > 100000000; else smallchannel" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
     <ng-template #smallchannel>
       {{ channel.capacity | amountShortener: 1 }}
       <span class="sats" i18n="shared.sats">sats</span>
     </ng-template>
-</td>
-  <td class="capacity text-right">
+  </td>
+  <td class="channelid text-right">
     <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
    </td>
 </ng-template>
@@ -100,19 +100,19 @@
       <td class="alias text-left" style="width: 370px;">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="alias text-left">
+      <td class="nodedetails text-left">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="capacity text-left d-none d-md-table-cell">
+      <td class="status text-left">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="channels text-left d-none d-md-table-cell">
+      <td class="feerate text-left">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="channels text-right d-none d-md-table-cell">
+      <td class="liquidity text-right">
         <span class="skeleton-loader"></span>
       </td>
-      <td class="channels text-left">
+      <td class="channelid text-left">
         <span class="skeleton-loader"></span>
       </td>
     </tr>

@@ -3,6 +3,7 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 import { BlockExtended } from '../../interfaces/node-api.interface';
+import { CacheService } from '../../services/cache.service';
 
 @Component({
   selector: 'app-tx-fee-rating',
@@ -23,12 +24,12 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private stateService: StateService,
+    private cacheService: CacheService,
     private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
-    this.blocksSubscription = this.stateService.blocks$.subscribe(([block]) => {
-      this.blocks.push(block);
+    this.blocksSubscription = this.cacheService.loadedBlocks$.subscribe((block) => {
       if (this.tx.status.confirmed && this.tx.status.block_height === block.height && block?.extras?.medianFee > 0) {
         this.calculateRatings(block);
         this.cd.markForCheck();
@@ -41,8 +42,9 @@ export class TxFeeRatingComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.tx.status.confirmed) {
       return;
     }
+    this.cacheService.loadBlock(this.tx.status.block_height);
 
-    const foundBlock = this.blocks.find((b) => b.height === this.tx.status.block_height);
+    const foundBlock = this.cacheService.getCachedBlock(this.tx.status.block_height) || null;
     if (foundBlock && foundBlock?.extras?.medianFee > 0) {
       this.calculateRatings(foundBlock);
     }

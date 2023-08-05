@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, of, EMPTY } from 'rxjs';
+import { catchError, map, switchMap, tap, share } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
 import { LightningApiService } from '../lightning-api.service';
@@ -37,7 +37,8 @@ export class NodeComponent implements OnInit {
   liquidityAd: ILiquidityAd;
   tlvRecords: CustomRecord[];
   avgChannelDistance$: Observable<number | null>;
-
+  showFeatures = false;
+  nodeOwner$: Observable<any>;
   kmToMiles = kmToMiles;
 
   constructor(
@@ -45,6 +46,7 @@ export class NodeComponent implements OnInit {
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -148,6 +150,24 @@ export class NodeComponent implements OnInit {
         return null;
       })
     ) as Observable<number | null>;
+
+    this.nodeOwner$ = this.activatedRoute.paramMap
+      .pipe(
+        switchMap((params: ParamMap) => {
+          return this.apiService.getNodeOwner$(params.get('public_key')).pipe(
+            switchMap((response) =>  {
+              if (response.status === 204) {
+                return of(false);
+              }
+              return of(response.body);
+            }),
+            catchError(() => {
+              return of(false);
+            })
+          )
+        }),
+        share(),
+      );
   }
 
   toggleShowDetails(): void {
@@ -164,5 +184,10 @@ export class NodeComponent implements OnInit {
 
   onLoadingEvent(e) {
     this.channelListLoading = e;
+  }
+
+  toggleFeatures() {
+    this.showFeatures = !this.showFeatures;
+    return false;
   }
 }

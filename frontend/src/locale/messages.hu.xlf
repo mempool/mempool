@@ -750,11 +750,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
@@ -775,11 +775,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">385,389</context>
+          <context context-type="linenumber">391,394</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -805,7 +805,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">89</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -1074,7 +1074,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">282,284</context>
+          <context context-type="linenumber">283,285</context>
         </context-group>
         <note priority="1" from="description">transaction.version</note>
       </trans-unit>
@@ -1202,11 +1202,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">256,261</context>
+          <context context-type="linenumber">257,262</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">400,406</context>
+          <context context-type="linenumber">401,407</context>
         </context-group>
         <note priority="1" from="description">transaction.details</note>
       </trans-unit>
@@ -1223,11 +1223,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">243,247</context>
+          <context context-type="linenumber">244,248</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">371,377</context>
+          <context context-type="linenumber">372,378</context>
         </context-group>
         <note priority="1" from="description">Transaction inputs and outputs</note>
         <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
@@ -1245,7 +1245,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">244,243</context>
+          <context context-type="linenumber">246,245</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4d6066e445db90780e4b30ca93398be0b6567eda" datatype="html">
@@ -1449,9 +1449,10 @@
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
         <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
+        <target>Mempoolunk és blokklánc-felfedezőnk a Bitcoin közösség számára, a tranzakciós díjak piacára és a többrétegű ökoszisztémára összpontosítva, teljesen önállóan, megbízható harmadik felek nélkül.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">13,17</context>
+          <context context-type="linenumber">13,16</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a24b1c6a9c4334ba204e4cec2dd9f32ea33d043f" datatype="html">
@@ -1459,7 +1460,7 @@
         <target>Céges Szponzorok 🚀</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">29,32</context>
+          <context context-type="linenumber">19,22</context>
         </context-group>
         <note priority="1" from="description">about.sponsors.enterprise.withRocket</note>
       </trans-unit>
@@ -1468,7 +1469,7 @@
         <target>Közösségi Szponzorok ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">177,180</context>
+          <context context-type="linenumber">167,170</context>
         </context-group>
         <note priority="1" from="description">about.sponsors.withHeart</note>
       </trans-unit>
@@ -1477,7 +1478,7 @@
         <target>Közösségi Integrációk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">191,193</context>
+          <context context-type="linenumber">181,183</context>
         </context-group>
         <note priority="1" from="description">about.community-integrations</note>
       </trans-unit>
@@ -1486,7 +1487,7 @@
         <target>Közösségi Szövetségesek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">285,287</context>
+          <context context-type="linenumber">291,293</context>
         </context-group>
         <note priority="1" from="description">about.alliances</note>
       </trans-unit>
@@ -1495,7 +1496,7 @@
         <target>Projekt Fordítók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">301,303</context>
+          <context context-type="linenumber">307,309</context>
         </context-group>
         <note priority="1" from="description">about.translators</note>
       </trans-unit>
@@ -1504,7 +1505,7 @@
         <target>Projekt Kontribútorok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">315,317</context>
+          <context context-type="linenumber">321,323</context>
         </context-group>
         <note priority="1" from="description">about.contributors</note>
       </trans-unit>
@@ -1513,7 +1514,7 @@
         <target>Projekt Tagok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">327,329</context>
+          <context context-type="linenumber">333,335</context>
         </context-group>
         <note priority="1" from="description">about.project_members</note>
       </trans-unit>
@@ -1522,7 +1523,7 @@
         <target>Projekt Fenntartók</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
-          <context context-type="linenumber">340,342</context>
+          <context context-type="linenumber">346,348</context>
         </context-group>
         <note priority="1" from="description">about.maintainers</note>
       </trans-unit>
@@ -1531,7 +1532,7 @@
         <target>Részletek</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/bisq-master-page/bisq-master-page.component.html</context>
@@ -1649,6 +1650,7 @@
       </trans-unit>
       <trans-unit id="49cef95661d86f4341788ce40068d58801adc6e6" datatype="html">
         <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>There many transactions on this address, more than your backend can handle. See more on <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/>setting up a stronger backend<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/> Consider viewing this address on the official Mempool website instead: </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>Sok tranzakció van ezen a címen, többet, mint amennyit a háttérrendszere képes kezelni. További információ<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;/docs/faq#address-lookup-issues&quot;&gt;"/> az erősebb háttérrendszer beállításáról<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. <x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/><x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>Fontolja meg ennek a címnek a megtekintését a hivatalos Mempool webhelyen:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">134,137</context>
@@ -2042,7 +2044,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">mining.block-fee-rates</note>
       </trans-unit>
@@ -2091,7 +2093,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
@@ -2112,7 +2114,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">171,166</context>
+          <context context-type="linenumber">178,173</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
@@ -2153,7 +2155,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">472</context>
+          <context context-type="linenumber">473</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
@@ -2179,7 +2181,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">472</context>
+          <context context-type="linenumber">473</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2201,7 +2203,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">475,477</context>
+          <context context-type="linenumber">476,478</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
@@ -2213,7 +2215,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
         <note priority="1" from="description">Transaction fee rate</note>
         <note priority="1" from="meaning">transaction.fee-rate</note>
@@ -2295,11 +2297,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">477,480</context>
+          <context context-type="linenumber">478,481</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">488,490</context>
+          <context context-type="linenumber">489,491</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -2329,7 +2331,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">268,271</context>
+          <context context-type="linenumber">269,272</context>
         </context-group>
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
@@ -2405,7 +2407,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">mining.block-prediction-accuracy</note>
       </trans-unit>
@@ -2446,7 +2448,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">mining.block-rewards</note>
       </trans-unit>
@@ -2463,7 +2465,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">mining.block-sizes-weights</note>
       </trans-unit>
@@ -2504,7 +2506,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">264,266</context>
+          <context context-type="linenumber">265,267</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -2532,11 +2534,12 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">272,274</context>
+          <context context-type="linenumber">273,275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
         <source>Size per weight</source>
+        <target>Méret súlyonként</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">200,199</context>
@@ -2631,6 +2634,10 @@
           <context context-type="linenumber">8,9</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">75</context>
         </context-group>
@@ -2683,11 +2690,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">52,55</context>
+          <context context-type="linenumber">55,58</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">96,100</context>
+          <context context-type="linenumber">99,103</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
@@ -2843,11 +2850,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">284,283</context>
+          <context context-type="linenumber">291,290</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">371,368</context>
+          <context context-type="linenumber">378,375</context>
         </context-group>
         <note priority="1" from="description">block.difficulty</note>
       </trans-unit>
@@ -2888,19 +2895,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">248,253</context>
+          <context context-type="linenumber">249,254</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">86,88</context>
+          <context context-type="linenumber">93,95</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">96,98</context>
+          <context context-type="linenumber">103,105</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">218,222</context>
+          <context context-type="linenumber">221,225</context>
         </context-group>
         <note priority="1" from="description">Transaction Details</note>
         <note priority="1" from="meaning">transaction.details</note>
@@ -2919,10 +2926,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
           <context context-type="linenumber">70,75</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">109,115</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
@@ -3082,12 +3085,16 @@
         <source>Difficulty Adjustment</source>
         <target>Bányászási Nehézségifok</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
+          <context context-type="linenumber">1,5</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
           <context context-type="linenumber">1,5</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">dashboard.difficulty-adjustment</note>
       </trans-unit>
@@ -3095,23 +3102,24 @@
         <source>Remaining</source>
         <target>Hátramaradt</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">7,9</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">66,69</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.remaining</note>
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-template"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> blokkok <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">53,54</context>
         </context-group>
         <context-group purpose="location">
@@ -3130,12 +3138,13 @@
       </trans-unit>
       <trans-unit id="b7ef3894d9b6f157c400ddc937c70c9881ecd896" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>block<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;block&lt;/span&gt;&lt;/ng-template&gt;           &lt;/div&gt;"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/> blokk <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
         <context-group purpose="location">
@@ -3148,11 +3157,11 @@
         <source>Estimate</source>
         <target>Becslés</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">16,17</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">73,76</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.estimate</note>
@@ -3161,8 +3170,12 @@
         <source>Previous</source>
         <target>Előző</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">31,33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.previous</note>
       </trans-unit>
@@ -3170,11 +3183,11 @@
         <source>Current Period</source>
         <target>Mostani Periódus</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">80,83</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.current-period</note>
@@ -3183,13 +3196,113 @@
         <source>Next Halving</source>
         <target>Következő Felezés</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">50,52</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.next-halving</note>
       </trans-unit>
+      <trans-unit id="0c65c3ee0ce537e507e0b053b479012e5803d2cf" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokkra várva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.expected-blocks</note>
+      </trans-unit>
+      <trans-unit id="ec9f27d00a7778cd1cfe1806105d2ca3314fa506" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block expected</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk várva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.expected-block</note>
+      </trans-unit>
+      <trans-unit id="b89cb92adf0a831d4a263ecdba02139abbda02ae" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk bányászva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.mined-blocks</note>
+      </trans-unit>
+      <trans-unit id="4f7e823fd45c6def13a3f15f678888c7fe254fa5" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block mined</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk bányászva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.mined-block</note>
+      </trans-unit>
+      <trans-unit id="229dfb17b342aa8b9a1db27557069445ea1a7051" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk hátramaradt</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.remaining-blocks</note>
+      </trans-unit>
+      <trans-unit id="13ff0d092caf85cd23815f0235e316dc3a6d1bbe" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block remaining</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokk hátramaradt</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.remaining-block</note>
+      </trans-unit>
+      <trans-unit id="4f78348af343fb64016891d67b53bdab473f9dbf" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokkal előrébb</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.blocks-ahead</note>
+      </trans-unit>
+      <trans-unit id="15c5f3475966bf3be381378b046a65849f0f6bb6" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block ahead</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokkal előrébb</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.block-ahead</note>
+      </trans-unit>
+      <trans-unit id="697b8cb1caaf1729809bc5c065d4dd873810550a" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> blocks behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokkal lemaradva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.blocks-behind</note>
+      </trans-unit>
+      <trans-unit id="32137887e3f5a25b3a016eb03357f4e363fccb0b" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> block behind</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> blokkal lemaradva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty-tooltip.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.block-behind</note>
+      </trans-unit>
+      <trans-unit id="5e78899c9b98f29856ce3c7c265e1344bc7a5a18" datatype="html">
+        <source>Average block time</source>
+        <target>Átlagos blokk idő</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
+          <context context-type="linenumber">42,45</context>
+        </context-group>
+        <note priority="1" from="description">difficulty-box.average-block-time</note>
+      </trans-unit>
       <trans-unit id="6ff9e8b67bc2cda7569dc0996d4c2fd858c5d4e6" datatype="html">
         <source>Either 2x the minimum, or the Low Priority rate (whichever is lower)</source>
+        <target>Vagy a minimum 2x-e, vagy az alacsony prioritási arány (amelyik alacsonyabb)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -3233,6 +3346,7 @@
       </trans-unit>
       <trans-unit id="eeeeabc97373285d75acf0f013f68434a6f1935b" datatype="html">
         <source>Usually places your transaction in between the first and second mempool blocks</source>
+        <target>Ez tranzakciót általában az első és a második mempoolblokk közé helyezi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
           <context context-type="linenumber">9,10</context>
@@ -3343,7 +3457,7 @@
         <target>Bányászat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">mining</note>
       </trans-unit>
@@ -3352,7 +3466,7 @@
         <target>Pool Rangsorolás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -3365,7 +3479,7 @@
         <target>Pool Fölény</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.html</context>
@@ -3378,7 +3492,7 @@
         <target>Hashráta és Nehézség</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">15,16</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
         <note priority="1" from="description">mining.hashrate-difficulty</note>
       </trans-unit>
@@ -3387,7 +3501,7 @@
         <target>Villám</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <note priority="1" from="description">lightning</note>
       </trans-unit>
@@ -3396,7 +3510,7 @@
         <target>Villám Nodeok Hálózatonként</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.html</context>
@@ -3417,7 +3531,7 @@
         <target>Villám Hálózati Kapacítás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.html</context>
@@ -3438,7 +3552,7 @@
         <target>Villám Node Szolgáltatónként</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
@@ -3451,7 +3565,7 @@
         <target>Villám Nodeok Országonként</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
@@ -3468,7 +3582,7 @@
         <target>Villám Node Világ Térkép</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.html</context>
@@ -3485,7 +3599,7 @@
         <target>Villám Node Csatorna Világ Térkép</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
@@ -3506,11 +3620,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">273,272</context>
+          <context context-type="linenumber">280,279</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">359,356</context>
+          <context context-type="linenumber">366,363</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -3540,15 +3654,16 @@
         <target>Hashráta (MA)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">292,291</context>
+          <context context-type="linenumber">299,298</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">382,380</context>
+          <context context-type="linenumber">389,387</context>
         </context-group>
       </trans-unit>
       <trans-unit id="mining.pools-historical-dominance" datatype="html">
         <source>Pools Historical Dominance</source>
+        <target>Történelmi Pool Fölény</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -3556,6 +3671,7 @@
       </trans-unit>
       <trans-unit id="5ee5eb7db86675abd5f0b0db835bf362ee9b23ff" datatype="html">
         <source>Indexing network hashrate</source>
+        <target>Hálózati hashrate indexelése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">2</context>
@@ -3563,6 +3679,7 @@
       </trans-unit>
       <trans-unit id="439adfcf08f5035e2fd9e4c15e40eef92f6cc780" datatype="html">
         <source>Indexing pools hashrate</source>
+        <target>Indexelő poolok hashrátája</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3661,7 +3778,7 @@
         <target>Jutalmi statisztikák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">mining.reward-stats</note>
       </trans-unit>
@@ -3670,7 +3787,7 @@
         <target>(144 blokk)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">11</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">mining.144-blocks</note>
       </trans-unit>
@@ -3679,7 +3796,7 @@
         <target>Legutóbbi blokkok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -3692,7 +3809,7 @@
         <target>Módosítás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
@@ -3701,7 +3818,7 @@
         <target>Tranzakció Küldése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">92</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
@@ -3724,6 +3841,7 @@
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
         <source>Pools luck (1 week)</source>
+        <target>Pool szerencse (1 hét)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -3741,6 +3859,7 @@
       </trans-unit>
       <trans-unit id="e910ea39a964514d51802d34cad96c75b14947d1" datatype="html">
         <source>The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes.</source>
+        <target>Ez az összes bányászati mempool általános szerencséje az elmúlt héten. A 100%-ál nagyobb szerencse azt jelenti, hogy az átlagos blokkidő az aktuális korszakban kevesebb mint 10 perc.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">11,15</context>
@@ -3749,6 +3868,7 @@
       </trans-unit>
       <trans-unit id="9740454c3c55ca2cfa437ff9ec07374c9b9d25b5" datatype="html">
         <source>Pools count (1w)</source>
+        <target>Pool szám (1w)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -3766,6 +3886,7 @@
       </trans-unit>
       <trans-unit id="500e13dffc7300bf7e4822a6bbf29a71a55d7b75" datatype="html">
         <source>How many unique pools found at least one block over the past week.</source>
+        <target>Hány egyedi pool talált legalább egy blokkot az elmúlt héten.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">19,23</context>
@@ -3791,6 +3912,7 @@
       </trans-unit>
       <trans-unit id="c9e8defa185fa8e342548958bf206de97afc97a6" datatype="html">
         <source>The number of blocks found over the past week.</source>
+        <target>Az elmúlt héten talált blokkok száma.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">27,31</context>
@@ -3847,6 +3969,7 @@
       </trans-unit>
       <trans-unit id="8ef3568472375e791e861ca1ef76d4cb66eef8ef" datatype="html">
         <source>Pools Luck (1w)</source>
+        <target>Pool Szerencse (1w)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">146,148</context>
@@ -3855,6 +3978,7 @@
       </trans-unit>
       <trans-unit id="e1ea393882afe8ac40ff7637a33a5a46bdb3e0ce" datatype="html">
         <source>Pools Count (1w)</source>
+        <target>Pool Szám (1w)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">158,160</context>
@@ -3869,9 +3993,9 @@
           <context context-type="linenumber">58</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6095122426142344316" datatype="html">
-        <source><x id="PH" equiv-text="i"/> blocks</source>
-        <target><x id="PH" equiv-text="i"/> blokk</target>
+      <trans-unit id="312539377512157124" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
+        <target><x id="INTERPOLATION" equiv-text="i"/> blokkok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">165,163</context>
@@ -3879,6 +4003,42 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">168,167</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">203,201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">206,205</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3666195172774554282" datatype="html">
+        <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
+        <target>Egyéb (<x id="PH" equiv-text="percentage"/>)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
+          <context context-type="linenumber">205</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">119,114</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">173,168</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2158ea60725d3a97aed6f0f00aa7df48d7bb42ff" datatype="html">
@@ -3951,6 +4111,7 @@
       </trans-unit>
       <trans-unit id="cc657077942054572b255be033d634cf601c50b6" datatype="html">
         <source>Hashrate (24h)</source>
+        <target>Hashráta (24h)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">91,93</context>
@@ -4034,6 +4195,7 @@
       </trans-unit>
       <trans-unit id="88cb6e7b056be423b78e369ae1592c9e751095b8" datatype="html">
         <source>Mined blocks</source>
+        <target>Bányászott blokkok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">141,143</context>
@@ -4093,18 +4255,20 @@
       </trans-unit>
       <trans-unit id="7e93f7285e22e5a3c58cdde2205d4d2b5bfc079c" datatype="html">
         <source>Transaction hex</source>
+        <target>Tranzakciós hex</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">290,291</context>
+          <context context-type="linenumber">291,292</context>
         </context-group>
         <note priority="1" from="description">transaction.hex</note>
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
+        <target>Bányász Jutalma</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">5</context>
@@ -4121,6 +4285,7 @@
       </trans-unit>
       <trans-unit id="79b0842a2010172290ad09062bf51f09d8842f65" datatype="html">
         <source>Amount being paid to miners in the past 144 blocks</source>
+        <target>A bányászoknak fizetett összeg az elmúlt 144 blokkban</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -4129,6 +4294,7 @@
       </trans-unit>
       <trans-unit id="1d9f405ab98a5f79d98b439de29fc8baca46b97c" datatype="html">
         <source>Avg Block Fees</source>
+        <target>Átlag Blokk Díjjak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4141,6 +4307,7 @@
       </trans-unit>
       <trans-unit id="a0d4ab5b063e7be1c9ea980f5fd6ce1b5384ad0b" datatype="html">
         <source>Average fees per block in the past 144 blocks</source>
+        <target>Átlagos díjak blokkonként az elmúlt 144 blokkban</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">18,20</context>
@@ -4159,6 +4326,7 @@
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
+        <target>Átlag Tx Díj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">30</context>
@@ -4171,6 +4339,7 @@
       </trans-unit>
       <trans-unit id="8be96dc461529381c812f64962c62f4228d01470" datatype="html">
         <source>Fee paid on average for each transaction in the past 144 blocks</source>
+        <target>Átlagosan fizetett díj minden tranzakció után az elmúlt 144 blokkban</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">31,32</context>
@@ -4202,6 +4371,7 @@
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
         <source>Explore the full Bitcoin ecosystem</source>
+        <target>Fedezze fel a teljes Bitcoin ökoszisztémát</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4,5</context>
@@ -4219,6 +4389,7 @@
       </trans-unit>
       <trans-unit id="0673b255ba8db0bc5e2cccd5962d31dc88c24578" datatype="html">
         <source>Bitcoin Block Height</source>
+        <target>Bitcoin Blokk Magasság</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">3</context>
@@ -4227,6 +4398,7 @@
       </trans-unit>
       <trans-unit id="8b786a14d8c948e31bfb84369f123847a21dbf50" datatype="html">
         <source>Bitcoin Transaction</source>
+        <target>Bitcoin Tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">9</context>
@@ -4235,6 +4407,7 @@
       </trans-unit>
       <trans-unit id="aacf72635ebf6cfe00590e3a426ea6002c43a729" datatype="html">
         <source>Bitcoin Address</source>
+        <target>Bitcoin Cím</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">15</context>
@@ -4243,6 +4416,7 @@
       </trans-unit>
       <trans-unit id="97089c008af92d87389ff1ec5fb2cc96a6ecef0e" datatype="html">
         <source>Bitcoin Block</source>
+        <target>Bitcoin Blokk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">21</context>
@@ -4251,6 +4425,7 @@
       </trans-unit>
       <trans-unit id="e89c09d708a1da5f6a59ba6c38ba3db78031fe0e" datatype="html">
         <source>Bitcoin Addresses</source>
+        <target>Bitcoin Cím</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">27</context>
@@ -4259,6 +4434,7 @@
       </trans-unit>
       <trans-unit id="67f25165b857428d046fe5eb67fc44c5c3d94e87" datatype="html">
         <source>Lightning Nodes</source>
+        <target>Villám Nodeok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">35</context>
@@ -4267,6 +4443,7 @@
       </trans-unit>
       <trans-unit id="db5ca37068eaee3f8b909d3b8b476164527cd8c3" datatype="html">
         <source>Lightning Channels</source>
+        <target>Villám Csatornák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">43</context>
@@ -4275,6 +4452,7 @@
       </trans-unit>
       <trans-unit id="2abc4d0d3ae0b49fa9e94a2efb8c2e1a47e680f4" datatype="html">
         <source>Go to &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</source>
+        <target>Ide menny &amp;quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&amp;quot;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">52</context>
@@ -4308,7 +4486,7 @@
         <target>Filter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">statistics.component-filter.title</note>
       </trans-unit>
@@ -4317,7 +4495,7 @@
         <target>Invertál</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <note priority="1" from="description">statistics.component-invert.title</note>
       </trans-unit>
@@ -4326,7 +4504,7 @@
         <target>vBájtnyi tranzakciók másodpercenként (vB/s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <note priority="1" from="description">statistics.transaction-vbytes-per-second</note>
       </trans-unit>
@@ -4334,196 +4512,188 @@
         <source>Just now</source>
         <target>Épp most</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
         <target><x id="DATE" equiv-text="dateStrings.i18nYear"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">103</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">104</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">108</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">109</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">113</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">114</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">117</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-since/time-since.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="time-until" datatype="html">
+        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <target>~<x id="DATE" equiv-text="dateStrings.i18nYear"/> belül</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">126</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">128</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">139</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">140</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">142</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-span" datatype="html">
         <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
         <target><x id="DATE" equiv-text="dateStrings.i18nYear"/> után</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">149</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">150</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">153</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">155</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">159</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">160</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">82</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">164</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-span/time-span.component.ts</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="time-until" datatype="html">
-        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></source>
-        <target>~<x id="DATE" equiv-text="dateStrings.i18nMinute"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">82</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">84</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">85</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">86</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">91</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">93</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">94</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">95</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time-until/time-until.component.ts</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
@@ -4538,6 +4708,7 @@
       </trans-unit>
       <trans-unit id="72cfda88d5ab4851cba76abb402cae8f03ab6c6b" datatype="html">
         <source>This transaction replaced:</source>
+        <target>Ezt a tranzakció ezt cserélte:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">10,12</context>
@@ -4578,7 +4749,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">67,70</context>
+          <context context-type="linenumber">70,73</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
@@ -4594,11 +4765,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">13,15</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">13,15</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
         <note priority="1" from="description">Transaction first seen</note>
         <note priority="1" from="meaning">transaction.first-seen</note>
@@ -4656,7 +4827,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">340,344</context>
+          <context context-type="linenumber">341,345</context>
         </context-group>
         <note priority="1" from="description">Transaction flow</note>
         <note priority="1" from="meaning">transaction.flow</note>
@@ -4675,7 +4846,7 @@
         <target>Továbbiak megjelenítése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">225,227</context>
+          <context context-type="linenumber">226,228</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -4692,7 +4863,7 @@
         <target>Kevesebb megjelenítése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">227,233</context>
+          <context context-type="linenumber">228,234</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -4705,7 +4876,7 @@
         <target>Diagram megjelenítése</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">247,248</context>
+          <context context-type="linenumber">248,249</context>
         </context-group>
         <note priority="1" from="description">show-diagram</note>
       </trans-unit>
@@ -4714,7 +4885,7 @@
         <target>Zárolási idő</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">286,288</context>
+          <context context-type="linenumber">287,289</context>
         </context-group>
         <note priority="1" from="description">transaction.locktime</note>
       </trans-unit>
@@ -4723,7 +4894,7 @@
         <target>Nem található tranzakció.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">449,450</context>
+          <context context-type="linenumber">450,451</context>
         </context-group>
         <note priority="1" from="description">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -4732,7 +4903,7 @@
         <target>Várakozás arra hogy a mempoolban feltünjön...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">450,455</context>
+          <context context-type="linenumber">451,456</context>
         </context-group>
         <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -4741,7 +4912,7 @@
         <target>Effektív díj ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">485,488</context>
+          <context context-type="linenumber">486,489</context>
         </context-group>
         <note priority="1" from="description">Effective transaction fee rate</note>
         <note priority="1" from="meaning">transaction.effective-fee-rate</note>
@@ -4887,6 +5058,7 @@
       </trans-unit>
       <trans-unit id="d70397ee91f6c9ec91f1c1dff88126f8f9b7c2c4" datatype="html">
         <source>Show more inputs to reveal fee data</source>
+        <target>További bemenetek megjelenítése a díjadatok megjelenítéséhez</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
           <context context-type="linenumber">290,293</context>
@@ -4948,6 +5120,7 @@
       </trans-unit>
       <trans-unit id="25d58cd5c18fd9c1c89d6062d67dcc2482161410" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using native SegWit</source>
+        <target>Ez a tranzakció <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% -ot takarított meg a díjakból a natív SegWit használatával</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4974,6 +5147,7 @@
       </trans-unit>
       <trans-unit id="b6a3f6afdac6873e2d261647d834c02c91376893" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% on fees by using SegWit and could save <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% more by fully upgrading to native SegWit</source>
+        <target>Ez a tranzakció <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  '1.0-0' }}"/>% -os díjakat takarított meg a SegWit használatával, és további <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% -os megtakarítást érhetett el, ha teljes mértékben vált a natív SegWitre</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">4</context>
@@ -4982,6 +5156,7 @@
       </trans-unit>
       <trans-unit id="a67530e246368aa7e5d010061fd84c3c4fe755c2" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% on fees by upgrading to native SegWit or <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% by upgrading to SegWit-P2SH</source>
+        <target>Ez a tranzakció <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialSegwitGains * 100 | number : '1.0-0' }}"/>% -ot takaríthat meg a díjakból, ha natív SegWitre vált, vagy <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialP2shSegwitGains * 100 | number:  '1.0-0' }}"/>% -ot, ha SegWit-P2SH-ra frissít</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">6</context>
@@ -4990,6 +5165,7 @@
       </trans-unit>
       <trans-unit id="17e9c05e053cbd29d3835d8ecb19508d0f07241b" datatype="html">
         <source>This transaction uses Taproot and thereby saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees</source>
+        <target>Ez a tranzakció Taprootot használ, és ezáltal legalább <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% -ot takarít meg a díjakon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">12</context>
@@ -5024,6 +5200,7 @@
       </trans-unit>
       <trans-unit id="47b821c7df420c96de0b22844a88c04d52628540" datatype="html">
         <source>This transaction uses Taproot and already saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% on fees, but could save an additional <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% by fully using Taproot</source>
+        <target>Ez a tranzakció Taprootot használ, és már legalább <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: '1.0-0' }}"/>% -ot megtakarított a díjakból, de további <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% -ot takaríthat meg a Taproot teljes használatával</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">14</context>
@@ -5032,6 +5209,7 @@
       </trans-unit>
       <trans-unit id="aa31fc4d29f35b2fd36080bb6ff84be8eaab66fd" datatype="html">
         <source>This transaction could save <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% on fees by using Taproot</source>
+        <target>Ez a tranzakció <x id="INTERPOLATION" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: '1.0-0' }}"/>% -ot takaríthat meg a díjakból a Taproot használatával</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">16</context>
@@ -5040,6 +5218,7 @@
       </trans-unit>
       <trans-unit id="b0fb884cf71b19e3a4d146146d260ccedd9d50a5" datatype="html">
         <source>This transaction does not use Taproot</source>
+        <target>Ez a tranzakció nem használja a Taproot-ot</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">18</context>
@@ -5057,6 +5236,7 @@
       </trans-unit>
       <trans-unit id="07883574bb93ea23b764861f56a525bdaf907513" datatype="html">
         <source>This transaction supports Replace-By-Fee (RBF) allowing fee bumping</source>
+        <target>Ez a tranzakció támogatja a Replace-By-Fee (RBF) funkciót, amely lehetővé teszi a díjak felfutását</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5182,9 +5362,14 @@
       </trans-unit>
       <trans-unit id="8f2791f5d9656271dd6c385f5ad572716e90f4a2" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, confirming your transaction quicker, etc.</source>
+        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help you with"/>A mempool.space csupán adatokat szolgáltat a Bitcoin hálózatáról.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Nem segíthet a pénzeszközök visszaszerzésében, a tranzakció gyorsabb visszaigazolásában stb.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
+          <context context-type="linenumber">14</context>
         </context-group>
         <note priority="1" from="description">faq.big-disclaimer</note>
       </trans-unit>
@@ -5193,7 +5378,7 @@
         <target>REST API szolgáltatás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">41,42</context>
+          <context context-type="linenumber">42,43</context>
         </context-group>
         <note priority="1" from="description">api-docs.title</note>
       </trans-unit>
@@ -5202,11 +5387,11 @@
         <target>Végpont</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">104,107</context>
+          <context context-type="linenumber">105,108</context>
         </context-group>
         <note priority="1" from="description">Api docs endpoint</note>
       </trans-unit>
@@ -5215,11 +5400,11 @@
         <target>Leírás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">70,71</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">108,109</context>
+          <context context-type="linenumber">109,110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a706b1ded7506620b153dbcdea8108e6691bbbd9" datatype="html">
@@ -5227,7 +5412,7 @@
         <target>Alaphelyzeti push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> művelet: 'kell', data: ['blocks', ...] <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> hogy kifejezd mit szeretnél pusholni. Elérhető: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Pusholjon tranzakciókat címekhez fogva: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="'track-ad"/> 'cím-követés': '3PbJ...bF9B' <x id="INTERPOLATION_1" equiv-text="{{ '}' }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> az összes új tranzakció fogadásához, amely ezt a címet tartalmazza bemenetként vagy kimenetként. Tranzakciók tömbjét adja vissza. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>cím-tranzakciók<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>új mempool tranzakciókhoz , és <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-tranzakciók<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> az új blokk megerősített tranzakciókhoz.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">109,110</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
@@ -5324,12 +5509,13 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">180,182</context>
+          <context context-type="linenumber">183,185</context>
         </context-group>
         <note priority="1" from="description">shared.m-sats</note>
       </trans-unit>
       <trans-unit id="fb2137ba0df55f21a9d6b6ad08d56d74ad852e0e" datatype="html">
         <source>This channel supports zero base fee routing</source>
+        <target>Ez a csatorna támogatja a nulla alapdíjas útválasztást</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">44</context>
@@ -5347,6 +5533,7 @@
       </trans-unit>
       <trans-unit id="b5e42e06ea8a4012a38eef209104bbd9dd1a0fc0" datatype="html">
         <source>This channel does not support zero base fee routing</source>
+        <target>Ez a csatorna nem támogatja a nulla alapdíjas útválasztást</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
           <context context-type="linenumber">50</context>
@@ -5400,6 +5587,10 @@
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">123,124</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
+          <context context-type="linenumber">211,208</context>
+        </context-group>
         <note priority="1" from="description">lightning.x-channels</note>
       </trans-unit>
       <trans-unit id="4e64e04c01e8f5fc09c41cb8942dcc3af0398b28" datatype="html">
@@ -5440,7 +5631,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">13,14</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -5457,7 +5648,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">12,13</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -5474,7 +5665,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">13,14</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -5495,7 +5686,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">29,30</context>
+          <context context-type="linenumber">36,37</context>
         </context-group>
         <note priority="1" from="description">lightning.created</note>
       </trans-unit>
@@ -5508,11 +5699,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
           <context context-type="linenumber">43,46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">227</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
@@ -5541,6 +5740,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">60,62</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
+          <context context-type="linenumber">13,14</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
@@ -5578,11 +5781,11 @@
         <target>Villám csatorna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">2,5</context>
+          <context context-type="linenumber">4,7</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">117,119</context>
+          <context context-type="linenumber">116,118</context>
         </context-group>
         <note priority="1" from="description">lightning.channel</note>
       </trans-unit>
@@ -5591,11 +5794,11 @@
         <target>Utolsó frissítés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">33,34</context>
+          <context context-type="linenumber">40,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">73,75</context>
+          <context context-type="linenumber">76,78</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
@@ -5611,11 +5814,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
         <note priority="1" from="description">lightning.last-update</note>
       </trans-unit>
@@ -5624,11 +5827,11 @@
         <target>Zárási dátum</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">37,38</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">42,43</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
         <note priority="1" from="description">lightning.closing_date</note>
       </trans-unit>
@@ -5637,7 +5840,7 @@
         <target>Lezárva átala</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">52,54</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
         <note priority="1" from="description">lightning.closed_by</note>
       </trans-unit>
@@ -5646,7 +5849,7 @@
         <target>Nyitó tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">84,85</context>
+          <context context-type="linenumber">91,92</context>
         </context-group>
         <note priority="1" from="description">lightning.opening-transaction</note>
       </trans-unit>
@@ -5655,7 +5858,7 @@
         <target>Záró tranzakció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
-          <context context-type="linenumber">93,95</context>
+          <context context-type="linenumber">100,102</context>
         </context-group>
         <note priority="1" from="description">lightning.closing-transaction</note>
       </trans-unit>
@@ -5677,6 +5880,7 @@
       </trans-unit>
       <trans-unit id="4610828009441770083" datatype="html">
         <source>Force closed</source>
+        <target>Kényszer zárva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">24</context>
@@ -5684,6 +5888,7 @@
       </trans-unit>
       <trans-unit id="96508700250272816" datatype="html">
         <source>Force closed with penalty</source>
+        <target>Kényszer zárva büntető díjjal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/closing-type/closing-type.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -5736,11 +5941,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">10,11</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">10,12</context>
+          <context context-type="linenumber">11,13</context>
         </context-group>
         <note priority="1" from="description">lightning.alias</note>
       </trans-unit>
@@ -5767,7 +5972,7 @@
         <target>sats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">63,67</context>
+          <context context-type="linenumber">63,68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -5817,6 +6022,7 @@
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
+        <target>átlag</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -5825,6 +6031,7 @@
       </trans-unit>
       <trans-unit id="ba9117dcc11814c44437cf9d7561874ba8b98a2a" datatype="html">
         <source>med</source>
+        <target>közép</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">6,9</context>
@@ -5859,6 +6066,7 @@
       </trans-unit>
       <trans-unit id="db1f0c0605ab0c4a904523635982253ff72eed40" datatype="html">
         <source>The average fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított átlagos díjtétel, figyelmen kívül hagyva a &gt; 0,5% -os vagy 5000ppm-es díjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">28,30</context>
@@ -5880,6 +6088,7 @@
       </trans-unit>
       <trans-unit id="0a46218f4a7b17b6445460898d75ab78e7e7979b" datatype="html">
         <source>The average base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított átlagos alapdíj, figyelmen kívül hagyva az alapdíjakat &gt; 5000ppm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">43,45</context>
@@ -5897,6 +6106,7 @@
       </trans-unit>
       <trans-unit id="2c1c39e28735f607d62dbf3272eb792451c265a5" datatype="html">
         <source>Med Fee Rate</source>
+        <target>Közép Díj Ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">72,74</context>
@@ -5905,6 +6115,7 @@
       </trans-unit>
       <trans-unit id="cb4dae32e1b4d6a2ba6287d9f7bd859ca7259468" datatype="html">
         <source>The median fee rate charged by routing nodes, ignoring fee rates &gt; 0.5% or 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított medián díjtétel, figyelmen kívül hagyva a &gt; 0,5% vagy 5000 ppm díjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">74,76</context>
@@ -5913,6 +6124,7 @@
       </trans-unit>
       <trans-unit id="a541dbcef4908bf2e767e77d7a09cc62450e8e56" datatype="html">
         <source>Med Base Fee</source>
+        <target>Közép Alapdíj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">87,89</context>
@@ -5921,6 +6133,7 @@
       </trans-unit>
       <trans-unit id="b8539025268617abfcab1c3f2a2c60cd8d7485fb" datatype="html">
         <source>The median base fee charged by routing nodes, ignoring base fees &gt; 5000ppm</source>
+        <target>Az útválasztási nódok által felszámított medián alapdíj, figyelmen kívül hagyva a &gt; 5000ppm alapdíjakat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
           <context context-type="linenumber">89,91</context>
@@ -5929,6 +6142,7 @@
       </trans-unit>
       <trans-unit id="de1c07e9943fc284461bb8fb4860faecf52a1568" datatype="html">
         <source>Lightning node group</source>
+        <target>Villám node csoport</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
           <context context-type="linenumber">3,5</context>
@@ -6005,10 +6219,6 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">11,12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
           <context context-type="linenumber">12,13</context>
         </context-group>
         <note priority="1" from="description">lightning.liquidity</note>
@@ -6023,6 +6233,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">40,44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">149</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node-statistics-chart/node-statistics-chart.component.ts</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
@@ -6062,15 +6280,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">12,13</context>
+          <context context-type="linenumber">14,15</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">12,13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">194,193</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
+          <context context-type="linenumber">259,257</context>
         </context-group>
         <note priority="1" from="description">lightning.channels</note>
       </trans-unit>
@@ -6104,7 +6326,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">47,49</context>
+          <context context-type="linenumber">50,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
@@ -6120,16 +6342,17 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">15,17</context>
+          <context context-type="linenumber">17,20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">15,17</context>
+          <context context-type="linenumber">17,20</context>
         </context-group>
         <note priority="1" from="description">lightning.location</note>
       </trans-unit>
       <trans-unit id="29c05e9a540827cdfa8e3b2e5e2f27aeb478916c" datatype="html">
         <source>Network Statistics</source>
+        <target>Hálózati Statisztikák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
@@ -6138,6 +6361,7 @@
       </trans-unit>
       <trans-unit id="066e05b9a5db60850d907783fde6913e2e47cd5b" datatype="html">
         <source>Channels Statistics</source>
+        <target>Csatorna Statisztika</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">24</context>
@@ -6146,6 +6370,7 @@
       </trans-unit>
       <trans-unit id="0f33aeb084ac4d83cb0fe6f72648a8585b1b5e88" datatype="html">
         <source>Lightning Network History</source>
+        <target>Villámhálózati Események</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">49</context>
@@ -6154,13 +6379,22 @@
       </trans-unit>
       <trans-unit id="2d9883d230a47fbbb2ec969e32a186597ea27405" datatype="html">
         <source>Liquidity Ranking</source>
+        <target>Likviditási Besorolás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
+          <context context-type="linenumber">4,9</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
+          <context context-type="linenumber">4,9</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.html</context>
@@ -6170,6 +6404,7 @@
       </trans-unit>
       <trans-unit id="c50bf442cf99f6fc5f8b687c460f33234b879869" datatype="html">
         <source>Connectivity Ranking</source>
+        <target>Csatlakozottsági Besorolás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">76</context>
@@ -6182,6 +6417,7 @@
       </trans-unit>
       <trans-unit id="7b8687bbc13bbf62288689606dcab9784a3eb53b" datatype="html">
         <source>Fee distribution</source>
+        <target>Díj eloszlás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6190,6 +6426,7 @@
       </trans-unit>
       <trans-unit id="7254919336112973896" datatype="html">
         <source>Outgoing Fees</source>
+        <target>Kimenő Díjak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">170</context>
@@ -6201,6 +6438,7 @@
       </trans-unit>
       <trans-unit id="484887099976974152" datatype="html">
         <source>Incoming Fees</source>
+        <target>Beérkező Díjak</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-fee-chart/node-fee-chart.component.ts</context>
           <context context-type="linenumber">178</context>
@@ -6212,6 +6450,7 @@
       </trans-unit>
       <trans-unit id="027f48063a5512e5c26b6ca88f7d7734e2d333a7" datatype="html">
         <source>Percentage change past week</source>
+        <target>Százalékos változás a múlt héten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node-statistics/node-statistics.component.html</context>
           <context context-type="linenumber">5,7</context>
@@ -6235,11 +6474,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">2,4</context>
+          <context context-type="linenumber">4,6</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">260,262</context>
+          <context context-type="linenumber">263,265</context>
         </context-group>
         <note priority="1" from="description">lightning.node</note>
       </trans-unit>
@@ -6252,19 +6491,20 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">27,30</context>
+          <context context-type="linenumber">30,33</context>
         </context-group>
         <note priority="1" from="description">lightning.active-capacity</note>
       </trans-unit>
       <trans-unit id="52ffa66bd0399a49d5aa8d6f8fa077a6e8db09c0" datatype="html">
         <source>Active channels</source>
+        <target>Aktív csatornák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
           <context context-type="linenumber">26,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">34,38</context>
+          <context context-type="linenumber">37,41</context>
         </context-group>
         <note priority="1" from="description">lightning.active-channels</note>
       </trans-unit>
@@ -6277,27 +6517,21 @@
         </context-group>
         <note priority="1" from="description">country</note>
       </trans-unit>
-      <trans-unit id="674378571ab7e72a386f27fd3281558bae821d9d" datatype="html">
-        <source>No node found for public key &quot;<x id="INTERPOLATION" equiv-text="{{ node.public_key | shortenString : 12}}"/>&quot;</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">17,19</context>
-        </context-group>
-        <note priority="1" from="description">lightning.node-not-found</note>
-      </trans-unit>
       <trans-unit id="43b48b9c15083a164b401bf3775a4b99f3917699" datatype="html">
         <source>Average channel size</source>
+        <target>Átlag csatorna méret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">40,43</context>
+          <context context-type="linenumber">43,46</context>
         </context-group>
         <note priority="1" from="description">lightning.active-channels-avg</note>
       </trans-unit>
       <trans-unit id="008e9fb48f07f545af73b3f676dc60cc3a829765" datatype="html">
         <source>Avg channel distance</source>
+        <target>Átlag csatorna távolság</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">56,57</context>
+          <context context-type="linenumber">59,60</context>
         </context-group>
         <note priority="1" from="description">lightning.avg-distance</note>
       </trans-unit>
@@ -6306,7 +6540,7 @@
         <target>Szín</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">79,81</context>
+          <context context-type="linenumber">82,84</context>
         </context-group>
         <note priority="1" from="description">lightning.color</note>
       </trans-unit>
@@ -6315,7 +6549,7 @@
         <target>ISP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">86,87</context>
+          <context context-type="linenumber">89,90</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
@@ -6325,67 +6559,75 @@
       </trans-unit>
       <trans-unit id="86d9619247d148019e5599707c39a36e880a2d23" datatype="html">
         <source>Exclusively on Tor</source>
+        <target>Exkluzívan a Tor-on</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">93,95</context>
+          <context context-type="linenumber">96,98</context>
         </context-group>
         <note priority="1" from="description">tor</note>
       </trans-unit>
       <trans-unit id="e128630e07a4c467f51b246a31c5734d5fb1a2c2" datatype="html">
         <source>Liquidity ad</source>
+        <target>Likviditási hirdetés</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">138,141</context>
+          <context context-type="linenumber">141,144</context>
         </context-group>
         <note priority="1" from="description">node.liquidity-ad</note>
       </trans-unit>
       <trans-unit id="bc84b5a9a70217104a53c7139e30b392be6520b7" datatype="html">
         <source>Lease fee rate</source>
+        <target>Lízing díj ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">144,147</context>
+          <context context-type="linenumber">147,150</context>
         </context-group>
         <note priority="1" from="description">Liquidity ad lease fee rate</note>
         <note priority="1" from="meaning">liquidity-ad.lease-fee-rate</note>
       </trans-unit>
       <trans-unit id="ee807dd54b4a45eeba284744c64774de1ab5e4f1" datatype="html">
         <source>Lease base fee</source>
+        <target>Lízing alapdíj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">152,154</context>
+          <context context-type="linenumber">155,157</context>
         </context-group>
         <note priority="1" from="description">liquidity-ad.lease-base-fee</note>
       </trans-unit>
       <trans-unit id="5e348f3d51c3bb283c16572bee1e293ea991cf49" datatype="html">
         <source>Funding weight</source>
+        <target>A finanszírozás súlya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">158,159</context>
+          <context context-type="linenumber">161,162</context>
         </context-group>
         <note priority="1" from="description">liquidity-ad.funding-weight</note>
       </trans-unit>
       <trans-unit id="8af4768ed9112268945c697923ce017fbe23e1b7" datatype="html">
         <source>Channel fee rate</source>
+        <target>Csatorna díj ráta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">168,171</context>
+          <context context-type="linenumber">171,174</context>
         </context-group>
         <note priority="1" from="description">Liquidity ad channel fee rate</note>
         <note priority="1" from="meaning">liquidity-ad.channel-fee-rate</note>
       </trans-unit>
       <trans-unit id="4e6d03f01a59434dee25104fe9478041db186ca8" datatype="html">
         <source>Channel base fee</source>
+        <target>Csatorna alapdíj</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">176,178</context>
+          <context context-type="linenumber">179,181</context>
         </context-group>
         <note priority="1" from="description">liquidity-ad.channel-base-fee</note>
       </trans-unit>
       <trans-unit id="e8e09fa12864e94f094a2a7c8c97cfdf0cff8aab" datatype="html">
         <source>Compact lease</source>
+        <target>Kompakt lízing</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">188,190</context>
+          <context context-type="linenumber">191,193</context>
         </context-group>
         <note priority="1" from="description">liquidity-ad.compact-lease</note>
       </trans-unit>
@@ -6394,7 +6636,7 @@
         <target>TLV kiterjesztési esemény</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">199,202</context>
+          <context context-type="linenumber">202,205</context>
         </context-group>
         <note priority="1" from="description">node.tlv.records</note>
       </trans-unit>
@@ -6403,7 +6645,7 @@
         <target>Nyitott csatornák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">240,243</context>
+          <context context-type="linenumber">243,246</context>
         </context-group>
         <note priority="1" from="description">lightning.open-channels</note>
       </trans-unit>
@@ -6412,7 +6654,7 @@
         <target>Lezárt csatornák</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">244,247</context>
+          <context context-type="linenumber">247,250</context>
         </context-group>
         <note priority="1" from="description">lightning.open-channels</note>
       </trans-unit>
@@ -6426,6 +6668,7 @@
       </trans-unit>
       <trans-unit id="7cac1c3013423d82d5149a5854d709bd08411430" datatype="html">
         <source>(Tor nodes excluded)</source>
+        <target>(Tor nódok kiszűrve)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
           <context context-type="linenumber">8,11</context>
@@ -6446,6 +6689,7 @@
       </trans-unit>
       <trans-unit id="8199511328474154549" datatype="html">
         <source>Lightning Nodes Channels World Map</source>
+        <target>Villám Nódok Csatorna Világtérképe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -6453,6 +6697,7 @@
       </trans-unit>
       <trans-unit id="4390631969351833104" datatype="html">
         <source>No geolocation data available</source>
+        <target>Geolokációs adat nem elérhető</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
           <context context-type="linenumber">219,214</context>
@@ -6460,6 +6705,7 @@
       </trans-unit>
       <trans-unit id="a4d393ee035f4225083c22cc3909b26a05a87528" datatype="html">
         <source>Active channels map</source>
+        <target>Aktív csatorna térkép</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels/node-channels.component.html</context>
           <context context-type="linenumber">2,3</context>
@@ -6468,6 +6714,7 @@
       </trans-unit>
       <trans-unit id="6391724349488018234" datatype="html">
         <source>Indexing in progress</source>
+        <target>Indexelés folyamatban</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">121,116</context>
@@ -6477,8 +6724,9 @@
           <context context-type="linenumber">112,107</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1055322764280599360" datatype="html">
-        <source>Reachable on Clearnet Only</source>
+      <trans-unit id="599038141003770125" datatype="html">
+        <source>Clearnet and Darknet</source>
+        <target>Clearnet és Darknet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">164,161</context>
@@ -6488,8 +6736,9 @@
           <context context-type="linenumber">303,302</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2760682261176173881" datatype="html">
-        <source>Reachable on Clearnet and Darknet</source>
+      <trans-unit id="1282458597026430784" datatype="html">
+        <source>Clearnet Only (IPv4, IPv6)</source>
+        <target>Csakis Clearnet (IPv4, IPv6)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">185,182</context>
@@ -6499,8 +6748,9 @@
           <context context-type="linenumber">295,294</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1191036460161514668" datatype="html">
-        <source>Reachable on Darknet Only</source>
+      <trans-unit id="2165336009914523952" datatype="html">
+        <source>Darknet Only (Tor, I2P, cjdns)</source>
+        <target>Csak Darknet (Tor, I2P, cjdns)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">206,203</context>
@@ -6524,30 +6774,36 @@
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
       <trans-unit id="5222540403093176126" datatype="html">
-        <source><x id="PH" equiv-text="country.count.toString()"/> nodes</source>
-        <target><x id="PH" equiv-text="country.count.toString()"/> nódok</target>
+        <source><x id="PH" equiv-text="nodeCount"/> nodes</source>
+        <target><x id="PH" equiv-text="nodeCount"/> nodeok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">103,102</context>
+          <context context-type="linenumber">104,103</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
+          <context context-type="linenumber">137,136</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">157,156</context>
+          <context context-type="linenumber">158,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">189,188</context>
+          <context context-type="linenumber">191,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC kapacitás</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
-          <context context-type="linenumber">104,102</context>
+          <context context-type="linenumber">105,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7ede3edfacd291eb9db08e11845d9efdf197f417" datatype="html">
         <source>Lightning nodes in <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></source>
+        <target>Villámnodeok itt <x id="INTERPOLATION" equiv-text="{{ country?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
           <context context-type="linenumber">3,4</context>
@@ -6595,6 +6851,7 @@
       </trans-unit>
       <trans-unit id="ccabb31683868066778a1d664aa53ee9fcf77d6b" datatype="html">
         <source>How much liquidity is running on nodes advertising at least one clearnet IP address</source>
+        <target>Mennyi likviditás fut a legalább egy clearnet IP-címet hirdető nódokon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -6616,6 +6873,7 @@
       </trans-unit>
       <trans-unit id="26fb07e8754b87bba4bf12c5137ffa77dac389a8" datatype="html">
         <source>How much liquidity is running on nodes which ISP was not identifiable</source>
+        <target>Mennyi likviditás fut azon nódokon, amelyek internetszolgáltatója nem volt azonosítható</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -6637,6 +6895,7 @@
       </trans-unit>
       <trans-unit id="23549ef4e1f846f06abcf07ceecb115945a0cf61" datatype="html">
         <source>How much liquidity is running on nodes advertising only Tor addresses</source>
+        <target>Mennyi likviditás fut a csak Tor-címeket hirdető nódokon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">22,23</context>
@@ -6645,6 +6904,7 @@
       </trans-unit>
       <trans-unit id="e008f2a76179fdcd7110b41ca624131f91075949" datatype="html">
         <source>Top 100 ISPs hosting LN nodes</source>
+        <target>A 100 legjobb LN-nódot szolgáltató internetszolgáltató</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.html</context>
           <context context-type="linenumber">31,33</context>
@@ -6656,11 +6916,11 @@
         <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">158,156</context>
+          <context context-type="linenumber">159,157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">190,188</context>
+          <context context-type="linenumber">192,190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
@@ -6696,6 +6956,7 @@
       </trans-unit>
       <trans-unit id="5735693498020397727" datatype="html">
         <source>Lightning nodes on ISP: <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</source>
+        <target>Villám nódok az internetszolgáltatón: <x id="PH" equiv-text="response.isp"/> [MINT<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>]</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -6707,6 +6968,7 @@
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
         <source>Lightning nodes on ISP: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></source>
+        <target>Villámnódok az internetszolgáltatón: <x id="INTERPOLATION" equiv-text="{{ isp?.name }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
           <context context-type="linenumber">2,4</context>
@@ -6733,6 +6995,7 @@
       </trans-unit>
       <trans-unit id="5b727d251b06e9959cf24a90250a480d425339de" datatype="html">
         <source>Top 100 oldest lightning nodes</source>
+        <target>100 legrégebbi lightning nodeok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.html</context>
           <context context-type="linenumber">3,7</context>
@@ -6741,26 +7004,11 @@
       </trans-unit>
       <trans-unit id="4157312397261844620" datatype="html">
         <source>Oldest lightning nodes</source>
+        <target>Legidősebb villám nodeok</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="71bb1ed9da9ebb92cf35925bc6fe0a8fbc325625" datatype="html">
-        <source>Top 100 nodes liquidity ranking</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
-          <context context-type="linenumber">3,7</context>
-        </context-group>
-        <note priority="1" from="description">lightning.top-100-liquidity</note>
-      </trans-unit>
-      <trans-unit id="99786bd2106b708e4514d0121964affb19bee636" datatype="html">
-        <source>Top 100 nodes connectivity ranking</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
-          <context context-type="linenumber">3,7</context>
-        </context-group>
-        <note priority="1" from="description">lightning.top-100-connectivity</note>
       </trans-unit>
       <trans-unit id="47a30fc5a836252f8fe03e2949756b150684d934" datatype="html">
         <source>Oldest nodes</source>

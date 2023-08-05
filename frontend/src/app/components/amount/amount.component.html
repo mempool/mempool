@@ -1,7 +1,6 @@
 <ng-container *ngIf="!noFiat && (viewFiat$ | async) && (conversions$ | async) as conversions; else viewFiatVin">
   <span class="fiat" *ngIf="blockConversion; else noblockconversion">
-    {{ addPlus && satoshis >= 0 ? '+' : '' }}
-    {{
+    {{ addPlus && satoshis >= 0 ? '+' : '' }}{{
       (
         (blockConversion.price[currency] > -1 ? blockConversion.price[currency] : null) ??
         (blockConversion.price['USD']    > -1 ? blockConversion.price['USD'] * blockConversion.exchangeRates['USD' + currency] : null) ?? 0
@@ -9,8 +8,7 @@
     }}
   </span>
   <ng-template #noblockconversion>
-    <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}
-      {{ (conversions[currency] > -1 ? conversions[currency] : 0) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency }}
+    <span class="fiat">{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ (conversions[currency] > -1 ? conversions[currency] : 0) * satoshis / 100000000 | fiatCurrency : digitsInfo : currency }}
     </span>
   </ng-template>
 </ng-container>

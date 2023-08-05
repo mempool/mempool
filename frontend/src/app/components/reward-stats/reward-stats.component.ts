@@ -29,11 +29,12 @@ export class RewardStatsComponent implements OnInit {
       // Or when we receive a newer block, newer than the latest reward stats api call
       this.stateService.blocks$
         .pipe(
-          switchMap((block) => {
-            if (block[0].height <= this.lastBlockHeight) {
+          switchMap((blocks) => {
+            const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
+            if (maxHeight <= this.lastBlockHeight) {
               return []; // Return an empty stream so the last pipe is not executed
             }
-            this.lastBlockHeight = block[0].height;
+            this.lastBlockHeight = maxHeight;
             return this.apiService.getRewardStats$();
           })
         )

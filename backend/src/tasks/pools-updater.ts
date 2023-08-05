@@ -17,7 +17,9 @@ class PoolsUpdater {
   treeUrl: string = config.MEMPOOL.POOLS_JSON_TREE_URL;
 
   public async updatePoolsJson(): Promise<void> {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
+    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false ||
+      config.MEMPOOL.ENABLED === false
+    ) {
       return;
     }
 
@@ -60,7 +62,7 @@ class PoolsUpdater {
       if (this.currentSha === null) {
         logger.info(`Downloading pools-v2.json for the first time from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       } else {
-        logger.warn(`pools-v2.json is outdated, fetch latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
+        logger.warn(`pools-v2.json is outdated, fetching latest from ${this.poolsUrl} over ${network}`, logger.tags.mining);
       }
       const poolsJson = await this.query(this.poolsUrl);
       if (poolsJson === undefined) {
@@ -69,7 +71,7 @@ class PoolsUpdater {
       poolsParser.setMiningPools(poolsJson);
 
       if (config.DATABASE.ENABLED === false) { // Don't run db operations
-        logger.info('Mining pools-v2.json import completed (no database)');
+        logger.info(`Mining pools-v2.json (${githubSha}) import completed (no database)`);
         return;
       }
 
@@ -82,7 +84,7 @@ class PoolsUpdater {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, logger.tags.mining);
         await DB.query('ROLLBACK;');
       }
-      logger.info('PoolsUpdater completed');
+      logger.info(`Mining pools-v2.json (${githubSha}) import completed`);
 
     } catch (e) {
       this.lastRun = now - (oneWeek - oneDay); // Try again in 24h instead of waiting next week
