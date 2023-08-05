@@ -105,6 +105,8 @@ class FailoverRouter {
 
     this.sortHosts();
 
+    logger.debug(`Tomahawk ranking: ${this.hosts.map(host => '\navg latency ' + Math.round(host.latency).toString().padStart(5, ' ') + ' | reachable? ' + !(host.unreachable || false).toString().padStart(5, ' ') + ' | in sync? ' + !(host.outOfSync || false).toString().padStart(5, ' ') + ` | ${host.host}`).join('')}`);
+
     // switch if the current host is out of sync or significantly slower than the next best alternative
     if (this.activeHost.outOfSync || this.activeHost.unreachable || (!this.activeHost.preferred && this.activeHost.latency > (this.hosts[0].latency * 2) + 50)) {
       if (this.activeHost.unreachable) {
@@ -196,7 +198,7 @@ class FailoverRouter {
   }
 
   public async $post<T>(path, data: any, responseType = 'json'): Promise<T> {
-    return this.$query<T>('post', path, null, responseType);
+    return this.$query<T>('post', path, data, responseType);
   }
 }
 
