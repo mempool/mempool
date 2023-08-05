@@ -674,7 +674,11 @@ class Blocks {
           this.updateTimerProgress(timer, 'got previous block hash for initial difficulty adjustment');
           const previousPeriodBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(previousPeriodBlockHash);
           this.updateTimerProgress(timer, 'got previous block for initial difficulty adjustment');
-          this.previousDifficultyRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
+          if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+            this.previousDifficultyRetarget = NaN;
+          } else {
+            this.previousDifficultyRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
+          }
           logger.debug(`Initial difficulty adjustment data set.`);
         }
       } else {
@@ -783,20 +787,31 @@ class Blocks {
 
       if (block.height % 2016 === 0) {
         if (Common.indexingEnabled()) {
+          let adjustment;
+          if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+            adjustment = NaN;
+          } else {
+            adjustment = Math.round(
+              // calcBitsDifference returns +- percentage, +100 returns to positive, /100 returns to ratio.
+              // Instead of actually doing /100, just reduce the multiplier.
+              (calcBitsDifference(this.currentBits, block.bits) + 100) * 10000
+            ) / 1000000; // Remove float point noise
+          }
+
           await DifficultyAdjustmentsRepository.$saveAdjustments({
             time: block.timestamp,
             height: block.height,
             difficulty: block.difficulty,
-            adjustment: Math.round(
-              // calcBitsDifference returns +- percentage, +100 returns to positive, /100 returns to ratio.
-              // Instead of actually doing /100, just reduce the multiplier.
-              (calcBitsDifference(this.currentBits, block.bits) + 100) * 10000
-            ) / 1000000, // Remove float point noise
+            adjustment,
           });
           this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
         }
 
-        this.previousDifficultyRetarget = calcBitsDifference(this.currentBits, block.bits);
+        if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+          this.previousDifficultyRetarget = NaN;
+        } else {
+          this.previousDifficultyRetarget = calcBitsDifference(this.currentBits, block.bits);
+        }
         this.lastDifficultyAdjustmentTime = block.timestamp;
         this.currentBits = block.bits;
       }

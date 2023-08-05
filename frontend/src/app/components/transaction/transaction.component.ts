@@ -220,8 +220,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((tx) => {
       this.loadingCachedTx = false;
       if (!tx) {
+        this.seoService.logSoft404();
         return;
       }
+      this.seoService.clearSoft404();
 
       if (!this.tx) {
         this.tx = tx;
@@ -338,8 +340,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((tx: Transaction) => {
           if (!tx) {
             this.fetchCachedTx$.next(this.txId);
+            this.seoService.logSoft404();
             return;
           }
+          this.seoService.clearSoft404();
 
           this.tx = tx;
           this.setFeatures();
@@ -400,6 +404,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         (error) => {
           this.error = error;
+          this.seoService.logSoft404();
           this.isLoadingTx = false;
         }
       );
@@ -487,6 +492,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.waitingForTransaction = true;
     }
     this.error = error;
+    this.seoService.logSoft404();
     this.isLoadingTx = false;
     return of(false);
   }

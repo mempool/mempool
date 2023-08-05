@@ -61,6 +61,7 @@ export class PoolPreviewComponent implements OnInit {
               }),
               catchError(() => {
                 this.isLoading = false;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('pool-hash-' + this.slug);
                 return of([slug]);
               })
@@ -70,6 +71,7 @@ export class PoolPreviewComponent implements OnInit {
           return this.apiService.getPoolStats$(slug).pipe(
             catchError(() => {
               this.isLoading = false;
+              this.seoService.logSoft404();
               this.openGraphService.fail('pool-stats-' + this.slug);
               return of(null);
             })
