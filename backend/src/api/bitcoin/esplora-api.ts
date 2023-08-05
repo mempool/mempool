@@ -32,7 +32,7 @@ class FailoverRouter {
     // setup list of hosts
     this.hosts = (config.ESPLORA.FALLBACK || []).map(domain => {
       return {
-        host: 'https://' + domain + '/api',
+        host: domain,
         rtts: [],
         rtt: Infinity,
         failures: 0,
