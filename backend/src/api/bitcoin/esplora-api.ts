@@ -108,7 +108,7 @@ class FailoverRouter {
     logger.debug(`Tomahawk ranking: ${this.hosts.map(host => '\navg rtt ' + Math.round(host.rtt).toString().padStart(5, ' ') + ' | reachable? ' + (!host.unreachable || false).toString().padStart(5, ' ') + ' | in sync? ' + (!host.outOfSync || false).toString().padStart(5, ' ') + ` | ${host.host}`).join('')}`);
 
     // switch if the current host is out of sync or significantly slower than the next best alternative
-    if (this.activeHost.outOfSync || this.activeHost.unreachable || (!this.activeHost.preferred && this.activeHost.rtt > (this.hosts[0].rtt * 2) + 50)) {
+    if (this.activeHost.outOfSync || this.activeHost.unreachable || (this.activeHost !== this.hosts[0] && this.hosts[0].preferred) || (!this.activeHost.preferred && this.activeHost.rtt > (this.hosts[0].rtt * 2) + 50)) {
       if (this.activeHost.unreachable) {
         logger.warn(`Unable to reach ${this.activeHost.host}, failing over to next best alternative`);
       } else if (this.activeHost.outOfSync) {
