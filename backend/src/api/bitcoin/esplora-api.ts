@@ -7,8 +7,8 @@ import logger from '../../logger';
 
 interface FailoverHost {
   host: string,
-  latencies: number[],
-  latency: number
+  rtts: number[],
+  rtt: number
   failures: number,
   socket?: boolean,
   outOfSync?: boolean,
@@ -33,15 +33,15 @@ class FailoverRouter {
     this.hosts = (config.ESPLORA.FALLBACK || []).map(domain => {
       return {
         host: 'https://' + domain + '/api',
-        latencies: [],
-        latency: Infinity,
+        rtts: [],
+        rtt: Infinity,
         failures: 0,
       };
     });
     this.activeHost = {
       host: config.ESPLORA.UNIX_SOCKET_PATH || config.ESPLORA.REST_API_URL,
-      latencies: [],
-      latency: 0,
+      rtts: [],
+      rtt: 0,
       failures: 0,
       socket: !!config.ESPLORA.UNIX_SOCKET_PATH,
       preferred: true,
@@ -52,13 +52,13 @@ class FailoverRouter {
   }
 
   public startHealthChecks(): void {
-    // use axios interceptors to measure request latency
+    // use axios interceptors to measure request rtt
     this.pollConnection.interceptors.request.use((config) => {
       config['meta'] = { startTime: Date.now() };
       return config;
     });
     this.pollConnection.interceptors.response.use((response) => {
-      response.config['meta'].latency = Date.now() - response.config['meta'].startTime;
+      response.config['meta'].rtt = Date.now() - response.config['meta'].startTime;
       return response;
     });
 
@@ -67,7 +67,7 @@ class FailoverRouter {
     }
   }
 
-  // start polling hosts to measure availability & latency
+  // start polling hosts to measure availability & rtt
   private async pollHosts(): Promise<void> {
     if (this.pollTimer) {
       clearTimeout(this.pollTimer);
@@ -82,16 +82,16 @@ class FailoverRouter {
     }));
     const maxHeight = results.reduce((max, result) => Math.max(max, result.status === 'fulfilled' ? result.value?.data || 0 : 0), 0);
 
-    // update latencies & sync status
+    // update rtts & sync status
     for (let i = 0; i < results.length; i++) {
       const host = this.hosts[i];
       const result = results[i].status === 'fulfilled' ? (results[i] as PromiseFulfilledResult<AxiosResponse<number, any>>).value : null;
       if (result) {
         const height = result.data;
-        const latency = result.config['meta'].latency;
-        host.latencies.unshift(latency);
-        host.latencies.slice(0, 5);
-        host.latency = host.latencies.reduce((acc, l) => acc + l, 0) / host.latencies.length;
+        const rtt = result.config['meta'].rtt;
+        host.rtts.unshift(rtt);
+        host.rtts.slice(0, 5);
+        host.rtt = host.rtts.reduce((acc, l) => acc + l, 0) / host.rtts.length;
         if (height == null || isNaN(height) || (maxHeight - height > 2)) {
           host.outOfSync = true;
         } else {
@@ -105,10 +105,10 @@ class FailoverRouter {
 
     this.sortHosts();
 
-    logger.debug(`Tomahawk ranking: ${this.hosts.map(host => '\navg latency ' + Math.round(host.latency).toString().padStart(5, ' ') + ' | reachable? ' + !(host.unreachable || false).toString().padStart(5, ' ') + ' | in sync? ' + !(host.outOfSync || false).toString().padStart(5, ' ') + ` | ${host.host}`).join('')}`);
+    logger.debug(`Tomahawk ranking: ${this.hosts.map(host => '\navg rtt ' + Math.round(host.rtt).toString().padStart(5, ' ') + ' | reachable? ' + (!host.unreachable || false).toString().padStart(5, ' ') + ' | in sync? ' + (!host.outOfSync || false).toString().padStart(5, ' ') + ` | ${host.host}`).join('')}`);
 
     // switch if the current host is out of sync or significantly slower than the next best alternative
-    if (this.activeHost.outOfSync || this.activeHost.unreachable || (!this.activeHost.preferred && this.activeHost.latency > (this.hosts[0].latency * 2) + 50)) {
+    if (this.activeHost.outOfSync || this.activeHost.unreachable || (!this.activeHost.preferred && this.activeHost.rtt > (this.hosts[0].rtt * 2) + 50)) {
       if (this.activeHost.unreachable) {
         logger.warn(`Unable to reach ${this.activeHost.host}, failing over to next best alternative`);
       } else if (this.activeHost.outOfSync) {
@@ -128,8 +128,8 @@ class FailoverRouter {
     this.hosts.sort((a, b) => {
       if ((a.unreachable || a.outOfSync) === (b.unreachable || b.outOfSync)) {
         if  (a.preferred === b.preferred) {
-          // lower latency is best
-          return a.latency - b.latency;
+          // lower rtt is best
+          return a.rtt - b.rtt;
         } else { // unless we have a preferred host
           return a.preferred ? -1 : 1;
         }
