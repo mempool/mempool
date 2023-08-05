@@ -2,6 +2,7 @@ import config from "../config";
 import logger from "../logger";
 import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import { IEsploraApi } from "./bitcoin/esplora-api.interface";
 import { Common } from "./common";
 import redisCache from "./redis-cache";
 
@@ -383,6 +384,7 @@ class RbfCache {
       });
       logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.staleCount = 0;
+      await this.checkTrees();
       this.cleanup();
     } catch (e) {
       logger.err('failed to restore RBF cache: ' + (e instanceof Error ? e.message : e));
@@ -479,6 +481,57 @@ class RbfCache {
       this.addTree(root, tree);
     }
     return tree;
+  }
+
+  private async checkTrees(): Promise<void> {
+    const found: { [txid: string]: boolean } = {};
+    const txids = Array.from(this.txs.values()).map(tx => tx.txid).filter(txid => {
+      return !this.expiring.has(txid) && !this.getRbfTree(txid)?.mined;
+    });
+
+    const processTxs = (txs: IEsploraApi.Transaction[]): void => {
+      for (const tx of txs) {
+        found[tx.txid] = true;
+        if (tx.status?.confirmed) {
+          const tree = this.getRbfTree(tx.txid);
+          if (tree) {
+            this.setTreeMined(tree, tx.txid);
+            tree.mined = true;
+            this.evict(tx.txid, false);
+          }
+        }
+      }
+    };
+
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      const sliceLength = 10000;
+      for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
+        const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
+        try {
+          const txs = await bitcoinApi.$getRawTransactions(slice);
+          processTxs(txs);
+        } catch (err) {
+          logger.err('failed to fetch some cached rbf transactions');
+        }
+      }
+    } else {
+      const txs: IEsploraApi.Transaction[] = [];
+      for (const txid of txids) {
+        try {
+          const tx = await bitcoinApi.$getRawTransaction(txid, true, false);
+          txs.push(tx);
+        } catch (err) {
+          // some 404s are expected, so continue quietly
+        }
+      }
+      processTxs(txs);
+    }
+
+    for (const txid of txids) {
+      if (!found[txid]) {
+        this.evict(txid, false);
+      }
+    }
   }
 
   public getLatestRbfSummary(): ReplacementInfo[] {

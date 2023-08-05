@@ -213,6 +213,10 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txId);
   }
 
+  async $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
+    return this.$postWrapper<IEsploraApi.Transaction[]>(config.ESPLORA.REST_API_URL + '/txs', txids, 'json');
+  }
+
   async $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
     return this.failoverRouter.$post<IEsploraApi.Transaction[]>('/internal/mempool/txs', txids, 'json');
   }

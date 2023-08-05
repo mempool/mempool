@@ -60,6 +60,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getRawTransactions not supported by the Bitcoin RPC API.');
+  }
+
   $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getMempoolTransactions not supported by the Bitcoin RPC API.');
   }
