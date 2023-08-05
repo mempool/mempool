@@ -7,7 +7,8 @@ updates:
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
     allow:
       - dependency-type: "production"
 
@@ -18,7 +19,8 @@ updates:
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
     allow:
       - dependency-type: "production"
 
@@ -28,7 +30,8 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
 
   - package-ecosystem: docker
     directory: "/docker/frontend"
@@ -36,7 +39,8 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -44,4 +48,5 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]

@@ -10,11 +10,15 @@ cp /etc/nginx/nginx.conf /patch/nginx.conf
 sed -i "s/__MEMPOOL_FRONTEND_HTTP_PORT__/${__MEMPOOL_FRONTEND_HTTP_PORT__}/g" /patch/nginx.conf
 cat /patch/nginx.conf > /etc/nginx/nginx.conf
 
+if [ "${LIGHTNING_DETECTED_PORT}" != "" ];then
+  export LIGHTNING=true
+fi
+
 # Runtime overrides - read env vars defined in docker compose
 
 __TESTNET_ENABLED__=${TESTNET_ENABLED:=false}
 __SIGNET_ENABLED__=${SIGNET_ENABLED:=false}
-__LIQUID_ENABLED__=${LIQUID_EANBLED:=false}
+__LIQUID_ENABLED__=${LIQUID_ENABLED:=false}
 __LIQUID_TESTNET_ENABLED__=${LIQUID_TESTNET_ENABLED:=false}
 __BISQ_ENABLED__=${BISQ_ENABLED:=false}
 __BISQ_SEPARATE_BACKEND__=${BISQ_SEPARATE_BACKEND:=false}

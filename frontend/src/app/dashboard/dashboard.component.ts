@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
-import { filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
-import { MempoolInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
@@ -31,15 +31,16 @@ interface MempoolStatsData {
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   featuredAssets$: Observable<any>;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
   mempoolLoadingStatus$: Observable<number>;
   vBytesPerSecondLimit = 1667;
-  blocks$: Observable<BlockExtended[]>;
   transactions$: Observable<TransactionStripped[]>;
+  blocks$: Observable<BlockExtended[]>;
+  replacements$: Observable<ReplacementInfo[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
   mempoolStats$: Observable<MempoolStatsData>;
@@ -56,14 +57,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private seoService: SeoService
   ) { }
 
+  ngAfterViewInit(): void {
+    this.stateService.focusSearchInputDesktop();
+  }
+
   ngOnDestroy(): void {
     this.currencySubscription.unsubscribe();
+    this.websocketService.stopTrackRbfSummary();
   }
 
   ngOnInit(): void {
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.websocketService.want(['blocks', 'stats', 'mempool-blocks', 'live-2h-chart']);
+    this.websocketService.startTrackRbfSummary();
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.mempoolLoadingStatus$ = this.stateService.loadingIndicators$
       .pipe(
@@ -130,30 +137,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }),
       );
 
-    this.blocks$ = this.stateService.blocks$
-      .pipe(
-        tap(([block]) => {
-          this.latestBlockHeight = block.height;
-        }),
-        scan((acc, [block]) => {
-          if (acc.find((b) => b.height == block.height)) {
-            return acc;
-          }
-          acc.unshift(block);
-          acc = acc.slice(0, 6);
-
-          if (this.stateService.env.MINING_DASHBOARD === true) {
-            for (const block of acc) {
-              // @ts-ignore: Need to add an extra field for the template
-              block.extras.pool.logo = `/resources/mining-pools/` +
-                block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
-            }
-          }
-
-          return acc;
-        }, []),
-      );
-
     this.transactions$ = this.stateService.transactions$
       .pipe(
         scan((acc, tx) => {
@@ -166,10 +149,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }, []),
       );
 
+    this.blocks$ = this.stateService.blocks$
+      .pipe(
+        tap((blocks) => {
+          this.latestBlockHeight = blocks[0].height;
+        }),
+        switchMap((blocks) => {
+          if (this.stateService.env.MINING_DASHBOARD === true) {
+            for (const block of blocks) {
+              // @ts-ignore: Need to add an extra field for the template
+              block.extras.pool.logo = `/resources/mining-pools/` +
+                block.extras.pool.slug + '.svg';
+            }
+          }
+          return of(blocks.slice(0, 6));
+        })
+      );
+
+    this.replacements$ = this.stateService.rbfLatestSummary$;
+
     this.mempoolStats$ = this.stateService.connectionState$
       .pipe(
         filter((state) => state === 2),
-        switchMap(() => this.apiService.list2HStatistics$()),
+        switchMap(() => this.apiService.list2HStatistics$().pipe(
+          catchError((e) => {
+            return of(null);
+          })
+        )),
         switchMap((mempoolStats) => {
           return merge(
             this.stateService.live2Chart$
@@ -184,10 +190,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
           );
         }),
         map((mempoolStats) => {
-          return {
-            mempool: mempoolStats,
-            weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
-          };
+          if (mempoolStats) {
+            return {
+              mempool: mempoolStats,
+              weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+            };
+          } else {
+            return null;
+          }
         }),
         share(),
       );

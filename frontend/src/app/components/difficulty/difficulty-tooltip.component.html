@@ -1,0 +1,59 @@
+<div
+  #tooltip
+  *ngIf="status"
+  class="difficulty-tooltip"
+  [style.visibility]="status ? 'visible' : 'hidden'"
+  [style.left]="tooltipPosition.x + 'px'"
+  [style.top]="tooltipPosition.y + (isMobile ? -60 : 0) + 'px'"
+>
+<ng-container *ngIf="!isMobile" [ngSwitch]="status">
+  <ng-container *ngSwitchCase="'mined'">
+    <ng-container *ngIf="isAhead">
+      <ng-container *ngTemplateOutlet="expected === 1 ? expectedMinedBlocksSingular : expectedMinedBlocksPlural; context: {$implicit: expected }"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="!isAhead">
+      <ng-container *ngTemplateOutlet="mined === 1 ? minedBlocksSingular : minedBlocksPlural; context: {$implicit: mined }"></ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'remaining'">
+    <ng-container *ngTemplateOutlet="remaining === 1 ? remainingBlocksSingular : remainingBlocksPlural; context: {$implicit: remaining }"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ahead'">
+    <ng-container *ngTemplateOutlet="ahead === 1 ? aheadBlocksSingular : aheadBlocksPlural; context: {$implicit: ahead }"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'behind'">
+    <ng-container *ngTemplateOutlet="behind === 1 ? behindBlocksSingular : behindBlocksPlural; context: {$implicit: behind }"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'next'">
+    <span class="next-block" i18n="@@bdf0e930eb22431140a2eaeacd809cc5f8ebd38c">Next Block</span>
+  </ng-container>
+</ng-container>
+<ng-container *ngIf="isMobile">
+  <ng-container *ngIf="isAhead">
+    <ng-container *ngTemplateOutlet="expected === 1 ? minedBlocksSingular : minedBlocksPlural; context: {$implicit: expected }"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="!isAhead">
+    <ng-container *ngTemplateOutlet="mined === 1 ? minedBlocksSingular : minedBlocksPlural; context: {$implicit: mined }"></ng-container>
+  </ng-container>
+  <br>
+  <ng-container *ngTemplateOutlet="remaining === 1 ? remainingBlocksSingular : remainingBlocksPlural; context: {$implicit: remaining }"></ng-container>
+  <br>
+  <ng-container *ngIf="ahead > 0">
+    <ng-container *ngTemplateOutlet="ahead === 1 ? aheadBlocksSingular : aheadBlocksPlural; context: {$implicit: ahead }"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="behind > 0">
+    <ng-container *ngTemplateOutlet="behind === 1 ? behindBlocksSingular : behindBlocksPlural; context: {$implicit: behind }"></ng-container>
+  </ng-container>
+</ng-container>
+</div>
+
+<ng-template #expectedMinedBlocksPlural let-i i18n="difficulty-box.expected-blocks">{{ i }} blocks expected</ng-template>
+<ng-template #expectedMinedBlocksSingular let-i i18n="difficulty-box.expected-block">{{ i }} block expected</ng-template>
+<ng-template #minedBlocksPlural let-i i18n="difficulty-box.mined-blocks">{{ i }} blocks mined</ng-template>
+<ng-template #minedBlocksSingular let-i i18n="difficulty-box.mined-block">{{ i }} block mined</ng-template>
+<ng-template #remainingBlocksPlural let-i i18n="difficulty-box.remaining-blocks">{{ i }} blocks remaining</ng-template>
+<ng-template #remainingBlocksSingular let-i i18n="difficulty-box.remaining-block">{{ i }} block remaining</ng-template>
+<ng-template #aheadBlocksPlural let-i i18n="difficulty-box.blocks-ahead">{{ i }} blocks ahead</ng-template>
+<ng-template #aheadBlocksSingular let-i i18n="difficulty-box.block-ahead">{{ i }} block ahead</ng-template>
+<ng-template #behindBlocksPlural let-i i18n="difficulty-box.blocks-behind">{{ i }} blocks behind</ng-template>
+<ng-template #behindBlocksSingular let-i i18n="difficulty-box.block-behind">{{ i }} block behind</ng-template>

@@ -1,10 +1,13 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, OnInit } from '@angular/core';
 import { tap } from 'rxjs';
 import { Price, PriceService } from '../../services/price.service';
+import { StateService } from '../../services/state.service';
+import { environment } from '../../../environments/environment';
 
 interface Xput {
   type: 'input' | 'output' | 'fee';
   value?: number;
+  displayValue?: number;
   index?: number;
   txid?: string;
   vin?: number;
@@ -16,6 +19,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  asset?: string;
 }
 
 @Component({
@@ -27,13 +31,19 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
   @Input() line: Xput | void;
   @Input() cursorPosition: { x: number, y: number };
   @Input() isConnector: boolean = false;
+  @Input() assetsMinimal: any;
 
   tooltipPosition = { x: 0, y: 0 };
   blockConversion: Price;
 
+  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+
   @ViewChild('tooltip') tooltipElement: ElementRef<HTMLCanvasElement>;
 
-  constructor(private priceService: PriceService) {}
+  constructor(
+    private priceService: PriceService,
+    private stateService: StateService,
+  ) {}
 
   ngOnChanges(changes): void {
     if (changes.line?.currentValue) {
@@ -59,5 +69,9 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
       }
       this.tooltipPosition = { x, y };
     }
+  }
+
+  pow(base: number, exponent: number): number {
+    return Math.pow(base, exponent);
   }
 }

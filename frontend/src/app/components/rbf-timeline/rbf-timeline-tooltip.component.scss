@@ -1,0 +1,25 @@
+.rbf-tooltip {
+  position: fixed;
+  z-index: 3;
+  background: rgba(#11131f, 0.95);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+  color: #b1b1b1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 15px;
+  text-align: left;
+  pointer-events: none;
+
+  .badge {
+    margin-right: 1em;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.td-width {
+  padding-right: 10px;
+}

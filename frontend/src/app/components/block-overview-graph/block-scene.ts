@@ -34,7 +34,7 @@ export default class BlockScene {
     this.width = width;
     this.height = height;
     this.gridSize = this.width / this.gridWidth;
-    this.unitPadding =  width / 500;
+    this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 5));
     this.unitWidth = this.gridSize - (this.unitPadding * 2);
 
     this.dirty = true;
@@ -150,7 +150,7 @@ export default class BlockScene {
     this.updateAll(startTime, 200, direction);
   }
 
-  update(add: TransactionStripped[], remove: string[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     const startTime = performance.now();
     const removed = this.removeBatch(remove, startTime, direction);
 
@@ -172,6 +172,16 @@ export default class BlockScene {
         this.place(tx);
       });
     } else {
+      // update effective rates
+      change.forEach(tx => {
+        if (this.txs[tx.txid]) {
+          this.txs[tx.txid].acc = tx.acc;
+          this.txs[tx.txid].feerate = tx.rate || (this.txs[tx.txid].fee / this.txs[tx.txid].vsize);
+          this.txs[tx.txid].rate = tx.rate;
+          this.txs[tx.txid].dirty = true;
+        }
+      });
+
       // try to insert new txs directly
       const remaining = [];
       add.map(tx => new TxView(tx, this)).sort(feeRateDescending).forEach(tx => {
@@ -198,6 +208,10 @@ export default class BlockScene {
 
   setHover(tx: TxView, value: boolean): void {
     this.animateUntil = Math.max(this.animateUntil, tx.setHover(value));
+  }
+
+  setHighlight(tx: TxView, value: boolean): void {
+    this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
   private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
@@ -409,7 +423,7 @@ export default class BlockScene {
 
   // calculates and returns the size of the tx in multiples of the grid size
   private txSize(tx: TxView): number {
-    const scale = Math.max(1, Math.round(Math.sqrt(tx.vsize / this.vbytesPerUnit)));
+    const scale = Math.max(1, Math.round(Math.sqrt(1.1 * tx.vsize / this.vbytesPerUnit)));
     return Math.min(this.gridWidth, Math.max(1, scale)); // bound between 1 and the max displayable size (just in case!)
   }
 

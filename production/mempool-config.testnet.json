@@ -10,7 +10,11 @@
     "AUDIT": true,
     "ADVANCED_GBT_AUDIT": true,
     "ADVANCED_GBT_MEMPOOL": true,
-    "POLL_RATE_MS": 1000
+    "RUST_GBT": true,
+    "POLL_RATE_MS": 1000,
+    "DISK_CACHE_BLOCK_INTERVAL": 1,
+    "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
+    "ALLOW_UNREACHABLE": true
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"
@@ -21,12 +25,13 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:4002"
+    "REST_API_URL": "http://127.0.0.1:5002",
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-testnet"
   },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
-    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "USERNAME": "__MEMPOOL_TESTNET_USER__",
     "PASSWORD": "__MEMPOOL_TESTNET_PASS__",
     "DATABASE": "mempool_testnet"

@@ -16,6 +16,7 @@
   @media (max-width: 575px) {
     height: calc(100% - 230px);
   };
+  margin-bottom: 25px;
 }
 
 .chart {
@@ -32,15 +33,6 @@
   @media (max-width: 485px) {
     max-height: 200px;
   }
-}
-
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
 }
 
 @media (max-width: 767.98px) {
@@ -68,10 +60,13 @@
     margin-bottom: 5px;
   }
   .item {
-    max-width: 160px;
+    max-width: 150px;
     width: 50%;
     display: inline-block;
     margin: 0px auto 20px;
+    @media (min-width: 485px) {
+      max-width: 160px;
+    }
     &:nth-child(2) {
       order: 2;
       @media (min-width: 485px) {
@@ -164,4 +159,14 @@
     padding-left: 105px;
     padding-right: 105px;
   }
+}
+
+.indexing-message {
+  font-size: 15px;
+  color: grey;
+  font-weight: bold;
+  width: 100%;
+  padding-top: 100px;
+  text-align: center;
+  height: 240px;
 }

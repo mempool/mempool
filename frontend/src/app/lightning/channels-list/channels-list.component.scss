@@ -32,3 +32,35 @@
     flex-grow: 1;
   }
 }
+
+.alias {
+  padding-left: 0;
+}
+
+.feerate {
+  @media (max-width: 815px) {
+    display: none;
+  }
+}
+
+.status {
+  @media (max-width: 710px) {
+    display: none;
+  }
+}
+
+.nodedetails {
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+.liquidity {
+  @media (max-width: 500px) {
+    display: none;
+  }
+}
+
+.channelid {
+  padding-right: 0;
+}

@@ -1,4 +1,4 @@
 <div *ngFor="let item of tabData">
   <p *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</p>
-  <a *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 ) && ( !item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled ) )" [routerLink]="['./']" fragment="{{ item.fragment }}" (click)="navLinkClick($event)">{{ item.title }}</a>
+  <a *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 ) && ( !item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ) || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled ) )" [routerLink]="['./']" fragment="{{ item.fragment }}" (click)="navLinkClick($event)">{{ item.title }}</a>
 </div>

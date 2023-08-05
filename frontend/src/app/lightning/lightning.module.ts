@@ -29,10 +29,12 @@ import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels
 import { NodesRanking } from '../lightning/nodes-ranking/nodes-ranking.component';
 import { TopNodesPerChannels } from '../lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component';
 import { TopNodesPerCapacity } from '../lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component';
+import { JusticeList } from '../lightning/justice-list/justice-list.component';
 import { OldestNodes } from '../lightning/nodes-ranking/oldest-nodes/oldest-nodes.component';
 import { NodesRankingsDashboard } from '../lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 import { NodeChannels } from '../lightning/nodes-channels/node-channels.component';
 import { GroupComponent } from './group/group.component';
+import { NodeOwnerComponent } from './node-owner/node-owner.component';
 
 @NgModule({
   declarations: [
@@ -60,10 +62,12 @@ import { GroupComponent } from './group/group.component';
     NodesRanking,
     TopNodesPerChannels,
     TopNodesPerCapacity,
+    JusticeList,
     OldestNodes,
     NodesRankingsDashboard,
     NodeChannels,
     GroupComponent,
+    NodeOwnerComponent,
   ],
   imports: [
     CommonModule,
@@ -97,9 +101,11 @@ import { GroupComponent } from './group/group.component';
     NodesRanking,
     TopNodesPerChannels,
     TopNodesPerCapacity,
+    JusticeList,
     OldestNodes,
     NodesRankingsDashboard,
     NodeChannels,
+    NodeOwnerComponent,
   ],
   providers: [
     LightningApiService,

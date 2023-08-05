@@ -6,7 +6,8 @@
     "MINED_BLOCKS_CACHE": 144,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
-    "POLL_RATE_MS": 1000
+    "POLL_RATE_MS": 1000,
+    "DISK_CACHE_BLOCK_INTERVAL": 1
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"
@@ -22,12 +23,13 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:4001"
+    "REST_API_URL": "http://127.0.0.1:5001",
+    "UNIX_SOCKET_PATH": "/elements/socket/esplora-liquid-mainnet"
   },
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
-    "PORT": 3306,
+    "SOCKET": "/var/run/mysql/mysql.sock",
     "USERNAME": "__MEMPOOL_LIQUID_USER__",
     "PASSWORD": "__MEMPOOL_LIQUID_PASS__",
     "DATABASE": "mempool_liquid"

@@ -1,7 +1,7 @@
 <div class="container-xl about-page">
 
   <div class="intro">
-    <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&trade;</span>
+    <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&reg;</span>
     <img class="logo" src="/resources/mempool-logo-bigger.png" />
     <div class="version">
       v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]
@@ -13,7 +13,31 @@
     <p i18n>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</p>
   </div>
 
-  <video src="/resources/mempool-promo.mp4" poster="/resources/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true"></video>
+  <video #promoVideo (click)="unmutePromoVideo()" (touchstart)="unmutePromoVideo()" src="/resources/promo-video/mempool-promo.mp4" poster="/resources/promo-video/mempool-promo.jpg" controls loop playsinline [autoplay]="true" [muted]="true">
+    <track label="English" kind="captions" srclang="en" src="/resources/promo-video/en.vtt" [attr.default]="showSubtitles('en') ? '' : null">
+    <track label="日本語" kind="captions" srclang="ja" src="/resources/promo-video/ja.vtt" [attr.default]="showSubtitles('ja') ? '' : null">
+    <track label="中文" kind="captions" srclang="zh" src="/resources/promo-video/zh.vtt" [attr.default]="showSubtitles('zh') ? '' : null">
+    <track label="Svenska" kind="captions" srclang="sv" src="/resources/promo-video/sv.vtt" [attr.default]="showSubtitles('sv') ? '' : null">
+    <track label="Čeština" kind="captions" srclang="cs" src="/resources/promo-video/cs.vtt" [attr.default]="showSubtitles('cs') ? '' : null">
+    <track label="Suomi" kind="captions" srclang="fi" src="/resources/promo-video/fi.vtt" [attr.default]="showSubtitles('fi') ? '' : null">
+    <track label="Français" kind="captions" srclang="fr" src="/resources/promo-video/fr.vtt" [attr.default]="showSubtitles('fr') ? '' : null">
+    <track label="Deutsch" kind="captions" srclang="de" src="/resources/promo-video/de.vtt" [attr.default]="showSubtitles('de') ? '' : null">
+    <track label="Italiano" kind="captions" srclang="it" src="/resources/promo-video/it.vtt" [attr.default]="showSubtitles('it') ? '' : null">
+    <track label="Lietuvių" kind="captions" srclang="lt" src="/resources/promo-video/lt.vtt" [attr.default]="showSubtitles('lt') ? '' : null">
+    <track label="Norsk" kind="captions" srclang="nb" src="/resources/promo-video/nb.vtt" [attr.default]="showSubtitles('nb') ? '' : null">
+    <track label="فارسی" kind="captions" srclang="fa" src="/resources/promo-video/fa.vtt" [attr.default]="showSubtitles('fa') ? '' : null">
+    <track label="Polski" kind="captions" srclang="pl" src="/resources/promo-video/pl.vtt" [attr.default]="showSubtitles('pl') ? '' : null">
+    <track label="Română" kind="captions" srclang="ro" src="/resources/promo-video/ro.vtt" [attr.default]="showSubtitles('ro') ? '' : null">
+    <track label="Português" kind="captions" srclang="pt" src="/resources/promo-video/pt.vtt" [attr.default]="showSubtitles('pt') ? '' : null">
+  </video>
+
+  <ng-container *ngIf="false && officialMempoolSpace">
+    <h3 class="mt-5">Sponsor the project</h3>
+    <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
+      <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Community</a>
+      <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Enterprise</a>
+    </div>
+  </ng-container>
 
   <div class="enterprise-sponsor" id="enterprise-sponsors">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
@@ -91,22 +115,7 @@
         <span>Blockstream</span>
       </a>
       <a href="https://unchained.com/" target="_blank" title="Unchained">
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 216 216" class="image" style="enable-background:new 0 0 216 216;">
-        <style type="text/css">
-          .ucst0{fill:#002248;}
-          .ucst1{opacity:0.5;fill:#FFFFFF;}
-          .ucst2{fill:#FFFFFF;}
-          .ucst3{opacity:0.75;fill:#FFFFFF;}
-        </style>
-        <rect class="ucst0" width="216" height="216"/>
-        <g>
-          <g>
-            <path class="ucst1" d="M108,39.5V108l59.3,34.2V73.8L108,39.5z M126.9,95.4c0,2,1.1,3.8,2.8,4.8l27.9,16l0,10.8L125,108.2c-4.6-2.6-7.4-7.5-7.4-12.8l-0.1-22.7c0-1.9,0.5-3.7,1.4-5.3c0.9-1.5,2.2-2.9,3.8-3.8c3.3-1.9,7.2-1.9,10.5,0l24.5,14.2l-0.2,10.7l-29-16.8c-0.5-0.3-0.9-0.2-1.2,0c-0.3,0.2-0.6,0.5-0.6,1L126.9,95.4z"/>
-            <path class="ucst2" d="M108,39.5L48.7,73.8v68.5L108,108V39.5z M99.7,93.1c0,5.3-2.8,10.2-7.4,12.8l-19.6,11.4c-1.7,1-3.5,1.4-5.3,1.5c-1.8,0-3.6-0.5-5.2-1.4c-3.3-1.9-5.3-5.3-5.3-9.1V80l9.4-5.2l-0.1,33.5c0,0.6,0.3,0.9,0.6,1c0.3,0.2,0.7,0.3,1.2,0l19.6-11.4c1.7-1,2.8-2.8,2.8-4.8L90.3,61l9.4-5.4L99.7,93.1z"/>
-            <path class="ucst3" d="M108,108l-59.3,34.2l59.3,34.2l59.3-34.2L108,108z M133.8,152l-24.5,14.2l-9.2-5.5l29.1-16.7c0.5-0.3,0.6-0.7,0.6-1c0-0.3-0.1-0.7-0.6-1l-19.7-11.2c-1.7-1-3.8-1-5.5,0l-27.8,16.1l-9.4-5.4l32.6-18.7c4.6-2.6,10.2-2.6,14.8,0l19.7,11.2c1.7,0.9,3,2.3,3.9,3.9c0.9,1.5,1.4,3.3,1.4,5.2C139.1,146.7,137.1,150.1,133.8,152z"/>
-          </g>
-        </g>
-        </svg>
+        <svg id="Layer_1" width="78" height="78" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156.68 156.68"><defs><style>.cls-unchained-1{fill:#fff;}</style></defs><path class="cls-unchained-1" d="m78.34,0C35.07,0,0,35.07,0,78.34s35.07,78.34,78.34,78.34,78.34-35.07,78.34-78.34S121.6,0,78.34,0ZM20.23,109.5c-4.99-9.28-7.81-19.89-7.81-31.16C12.42,41.93,41.93,12.42,78.34,12.42c33.15,0,60.58,24.46,65.23,56.32h-37.48c-45.29,0-71.19,20.05-85.85,40.76Zm58.11,34.76c-12.42,0-24.04-3.44-33.96-9.41,3.94-8.85,9.11-18.7,15.84-28.9,20.99-31.8,52.2-31.19,76.49-31.19h7.45c.06,1.18.1,2.38.1,3.58,0,36.41-29.51,65.92-65.92,65.92Z"/><path class="cls-unchained-1" d="m91.98,42.4l-3.62-1.18c-3.94-1.29-7.03-4.38-8.32-8.32l-1.18-3.63c-.13-.39-.68-.39-.81,0l-1.18,3.63c-1.29,3.94-4.38,7.03-8.32,8.32l-3.62,1.18c-.39.13-.39.68,0,.81l3.62,1.18c3.94,1.29,7.03,4.38,8.32,8.32l1.18,3.63c.13.39.68.39.81,0l1.18-3.63c1.29-3.94,4.38-7.03,8.32-8.32l3.62-1.18c.39-.13.39-.68,0-.81Z"/></svg>
         <span>Unchained</span>
       </a>
       <a href="https://gemini.com/" target="_blank" title="Gemini">
@@ -117,6 +126,18 @@
           </g>
         </svg>
         <span>Gemini</span>
+      </a>
+      <a href="https://bullbitcoin.com/" target="_blank" title="Bull Bitcoin">
+        <svg aria-hidden="true" class="image" viewBox="0 -5 40 40" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#a)" fill-rule="evenodd" clip-rule="evenodd" fill="#e21924">
+            <path d="M21.92 14.59a1.18 1.18 0 0 0-1.18-1.18h-1.82v2.36h1.82a1.18 1.18 0 0 0 1.18-1.18ZM21 17.07h-2v2.45h2a1.23 1.23 0 1 0 0-2.45Z"/>
+            <path d="M36.43 0 35 5.59l-8 2.64-2.43-3.61-4.74 2.05-4.74-2.05-2.43 3.61-8-2.64L3.21 0 0 7.86l7.89 5.86-5.56 4 5.56 1.12 2.69-.49v3.17l3.59 4.38.68 3.19 5 2.87 5-2.87.68-3.19 3.59-4.38v-3.17l2.7.49 5.56-1.12-5.56-4 7.89-5.86zM24.69 18.45a2.5 2.5 0 0 1-2.5 2.5h-1.11v1.56h-1.26V21h-.9v1.56h-1.27V21H15.3v-1.42h.64a.9.9 0 0 0 .9-.9V14.3a.901.901 0 0 0-.9-.91h-.64V12h2.35v-1.5h1.27V12h.9v-1.5h1.26V12h.68A2.269 2.269 0 0 1 24 14.31a2.25 2.25 0 0 1-.92 1.82 2.52 2.52 0 0 1 1.58 2.32z"/>
+          </g>
+          <defs>
+            <clipPath id="a"><path fill="#fff" d="M0 0h160v32H0z"/></clipPath>
+          </defs>
+        </svg>
+        <span>Bull Bitcoin</span>
       </a>
       <a href="https://exodus.com/" target="_blank" title="Exodus">
         <svg width="80" height="80" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,19 +181,59 @@
         </svg>
         <span>Exodus</span>
       </a>
+      <a href="https://www.luminex.io" target="_blank" title="Luminex">
+        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="66.95" height="80" viewBox="0 0 300.43 385" style="padding-top: 10px;">
+          <defs>
+            <style>
+              .lum-cls-1 {
+                fill: #f2ea25;
+              }
+            </style>
+          </defs>
+          <path class="lum-cls-1" d="m309.02,90.04c0,49.65-38.73,90.04-95.34,90.04s-95.34-40.39-95.34-90.04S153.77,0,213.69,0c56.28,0,95.34,40.39,95.34,90.04Zm-63.56,0c0-20.52-14.23-37.07-31.78-37.07s-31.78,16.55-31.78,37.07,14.23,37.07,31.78,37.07,31.78-16.55,31.78-37.07Z"/>
+          <path class="lum-cls-1" d="m311.87,372.67h-66.34l-31.84-47.76-31.84,47.76h-66.34l58.38-90.22-53.07-79.61h66.34l26.54,42.46,26.53-42.46h66.34l-53.07,79.61,58.38,90.22Z"/>
+          <rect class="lum-cls-1" width="60.69" height="372.67"/>
+        </svg>
+        <span>Luminex</span>
+      </a>
     </div>
   </div>
 
-  <div class="community-sponsor" id="community-sponsors">
-    <h3 i18n="about.sponsors.withHeart">Community Sponsors ❤️</h3>
+  <ng-container *ngIf="officialMempoolSpace">
+    <div *ngIf="profiles$ | async as profiles" id="community-sponsors">
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
+        <div class="wrapper">
+          <ng-container>
+            <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
+              <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+                <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+              </a>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
 
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.chads.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
+        <div class="wrapper">
+          <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
+            <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+              <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+            </a>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="community-sponsor" style="margin-bottom: 68px">
+    <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
     <div class="wrapper">
-      <ng-container *ngIf="sponsors$ | async as sponsors; else loadingSponsors">
-        <ng-template ngFor let-sponsor [ngForOf]="sponsors">
-          <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored" [title]="sponsor.handle">
-            <img class="image" [src]="'/api/v1/donations/images/' + sponsor.handle" />
-          </a>
-        </ng-template>
+      <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
+        <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
+          <img class="image" [src]="'/api/v1/donations/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+        </a>
       </ng-container>
     </div>
   </div>
@@ -185,14 +246,14 @@
         <span>Umbrel</span>
       </a>
       <a href="https://github.com/rootzoll/raspiblitz" target="_blank" title="RaspiBlitz">
-        <img class="image" src="/resources/profile/raspiblitz.jpg" />
+        <img class="image" src="/resources/profile/raspiblitz.svg" />
         <span>RaspiBlitz</span>
       </a>
-      <a href="https://github.com/mynodebtc/mynode" target="_blank" title="MyNode">
-        <img class="image" src="/resources/profile/mynodebtc.jpg" />
-        <span>MyNode</span>
+      <a href="https://github.com/mynodebtc/mynode" target="_blank" title="myNode">
+        <img class="image" src="/resources/profile/mynodebtc.png" />
+        <span>myNode</span>
       </a>
-      <a href="https://github.com/RoninDojo/RoninDojo" target="_blank" title="RoninDojo">
+      <a href="https://code.samourai.io/ronindojo/RoninDojo" target="_blank" title="RoninDojo">
         <img class="image" src="/resources/profile/ronindojo.png" />
         <span>RoninDojo</span>
       </a>
@@ -204,12 +265,12 @@
         <img class="image" src="/resources/profile/nix-bitcoin.png" />
         <span>NixOS</span>
       </a>
-      <a href="https://github.com/Start9Labs/embassy-os" target="_blank" title="EmbassyOS">
+      <a href="https://github.com/Start9Labs/start-os" target="_blank" title="StartOS">
         <img class="image" src="/resources/profile/start9.png" />
-        <span>EmbassyOS</span>
+        <span>StartOS</span>
       </a>
       <a href="https://github.com/btcpayserver/btcpayserver" target="_blank" title="BTCPay Server">
-        <img class="image" src="/resources/profile/btcpayserver.svg" />
+        <img class="image not-rounded" src="/resources/profile/btcpayserver.svg" />
         <span>BTCPay</span>
       </a>
       <a href="https://github.com/bisq-network/bisq" target="_blank" title="Bisq">
@@ -237,7 +298,7 @@
         <span>Sparrow</span>
       </a>
       <a href="https://github.com/ACINQ/phoenix" target="_blank" title="Phoenix Wallet by ACINQ">
-        <img class="image" src="/resources/profile/phoenix.jpg" />
+        <img class="image not-rounded" src="/resources/profile/phoenix.svg" />
         <span>Phoenix</span>
       </a>
       <a href="https://github.com/lnbits/lnbits-legend" target="_blank" title="LNbits">
@@ -268,6 +329,26 @@
         <img class="image" src="/resources/profile/nunchuk.svg" />
         <span>Nunchuk</span>
       </a>
+      <a href="https://github.com/bitcoin-s/bitcoin-s" target="_blank" title="bitcoin-s">
+        <img class="image" src="/resources/profile/bitcoin-s.svg" />
+        <span>bitcoin-s</span>
+      </a>
+      <a href="https://github.com/EdgeApp" target="_blank" title="Edge">
+        <img class="image not-rounded" src="/resources/profile/edge.svg" />
+        <span>Edge</span>
+      </a>
+      <a href="https://github.com/GaloyMoney" target="_blank" title="Galoy">
+        <img class="image" src="/resources/profile/galoy.svg" />
+        <span>Galoy</span>
+      </a>
+      <a href="https://github.com/BoltzExchange" target="_blank" title="Boltz">
+        <img class="image" src="/resources/profile/boltz.svg" />
+        <span>Boltz</span>
+      </a>
+      <a href="https://github.com/MutinyWallet" target="_blank" title="Mutiny">
+        <img class="image not-rounded" src="/resources/profile/mutiny.svg" />
+        <span>Mutiny</span>
+      </a>
     </div>
   </div>
 
@@ -292,7 +373,7 @@
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
           <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
-            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" />
+            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
@@ -306,7 +387,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -318,7 +399,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.core">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -363,7 +444,7 @@
       Trademark Notice<br>
     </div>
     <p>
-      The Mempool Open Source Project&trade;, mempool.space&trade;, the mempool logo&trade;, the mempool.space logos&trade;, the mempool square logo&trade;, and the mempool blocks logo&trade; are either registered trademarks or trademarks of Mempool Space K.K in Japan, the United States, and/or other countries.
+      The Mempool Open Source Project&reg;, mempool.space&trade;, the mempool logo&reg;, the mempool.space logos&trade;, the mempool square logo&reg;, and the mempool blocks logo&trade; are either registered trademarks or trademarks of Mempool Space K.K in Japan, the United States, and/or other countries.
     </p>
     <p>
       While our software is available under an open source software license, the copyright license does not include an implied right or license to use our trademarks. See our <a href="https://mempool.space/trademark-policy">Trademark Policy and Guidelines</a> for more details, published on &lt;https://mempool.space/trademark-policy&gt;.
@@ -372,27 +453,14 @@
 
   <div class="footer-links">
     <a href="/3rdpartylicenses.txt">Third-party Licenses</a>
-    <a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a>
-    <div class="social-icons">
-      <a target="_blank" href="https://github.com/mempool/mempool">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" class="svg-inline--fa fa-github fa-w-16 fa-2x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
-      </a>
-      <a target="_blank" href="https://twitter.com/mempool">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" class="svg-inline--fa fa-twitter fa-w-16 fa-2x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
-      </a>
-      <a target="_blank" href="https://matrix.to/#/#mempool:bitcoin.kyoto">
-        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="matrix" class="svg-inline--fa fa-matrix fa-w-16 fa-2x" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1792"><path fill="currentColor" d="M40.467 163.152v1465.696H145.92V1664H0V128h145.92v35.152zm450.757 464.64v74.14h2.069c19.79-28.356 43.717-50.215 71.483-65.575 27.765-15.656 59.963-23.336 96-23.336 34.56 0 66.165 6.795 94.818 20.086 28.652 13.293 50.216 37.22 65.28 70.893 16.246-23.926 38.4-45.194 66.166-63.507 27.766-18.314 60.848-27.472 98.954-27.472 28.948 0 55.828 3.545 80.64 10.635 24.812 7.088 45.785 18.314 63.508 33.968 17.722 15.656 31.31 35.742 41.354 60.85 9.747 25.107 14.768 55.236 14.768 90.683v366.573h-150.35V865.28c0-18.314-.59-35.741-2.068-51.987-1.476-16.247-5.316-30.426-11.52-42.24-6.499-12.112-15.656-21.563-28.062-28.653-12.405-7.088-29.242-10.634-50.214-10.634-21.268 0-38.4 4.135-51.397 12.112-12.997 8.27-23.336 18.608-30.72 31.901-7.386 12.997-12.407 27.765-14.77 44.602-2.363 16.542-3.84 33.379-3.84 50.216v305.133H692.971v-307.2c0-16.247-.294-32.197-1.18-48.149-.591-15.95-3.84-30.424-9.157-44.011-5.317-13.293-14.178-24.223-26.585-32.197-12.406-7.976-30.425-12.112-54.646-12.112-7.088 0-16.542 1.478-28.062 4.726-11.52 3.25-23.04 9.157-33.968 18.02-10.93 8.86-20.383 21.563-28.063 38.103-7.68 16.543-11.52 38.4-11.52 65.28v317.834H349.44V627.792zm1004.309 1001.056V163.152H1390.08V128H1536v1536h-145.92v-35.152z"/></svg>
-      </a>
-    </div>
   </div>
 
-  <div class="footer-version" *ngIf="officialMempoolSpace">
-    {{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]
-  </div>
-
+  <br>
 </div>
+
 
 <ng-template #loadingSponsors>
   <br>
   <div class="spinner-border text-light"></div>
 </ng-template>
+

@@ -11,19 +11,23 @@ import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjust
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
-import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
+import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
+import database from '../../database';
 
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
   public lastWeeklyHashrateIndexingDate: number | null = null;
+  
+  public reindexHashrateRequested = false;
+  public reindexDifficultyAdjustmentRequested = false;
 
   /**
-   * Get historical block predictions match rate
+   * Get historical blocks health
    */
-   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
-    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+   public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
@@ -102,6 +106,8 @@ class Mining {
         emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+        avgFeeDelta: poolInfo.avgFeeDelta,
+        poolUniqueId: poolInfo.poolUniqueId
       };
       poolsStats.push(poolStat);
     });
@@ -141,6 +147,9 @@ class Mining {
     const blockCount1w: number = await BlocksRepository.$blockCount(pool.id, '1w');
     const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
 
+    const avgHealth = await BlocksRepository.$getAvgBlockHealthPerPoolId(pool.id);    
+    const totalReward = await BlocksRepository.$getTotalRewardForPoolId(pool.id);    
+
     let currentEstimatedHashrate = 0;
     try {
       currentEstimatedHashrate = await bitcoinClient.getNetworkHashPs(totalBlock24h);
@@ -162,6 +171,8 @@ class Mining {
       },
       estimatedHashrate: currentEstimatedHashrate * (blockCount24h / totalBlock24h),
       reportedHashrate: null,
+      avgBlockHealth: avgHealth,
+      totalReward: totalReward,
     };
   }
 
@@ -191,7 +202,7 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
@@ -284,6 +295,14 @@ class Mining {
    * Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexHashrateRequested === true) {
+      logger.notice(`hashrates will now be re-indexed`);
+      await database.query(`TRUNCATE hashrates`);
+      this.lastHashrateIndexingDate = 0;
+      this.reindexHashrateRequested = false;
+    }
+
     // We only run this once a day around midnight
     const today = new Date().getUTCDate();
     if (today === this.lastHashrateIndexingDate) {
@@ -294,7 +313,7 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
@@ -389,6 +408,13 @@ class Mining {
    * Index difficulty adjustments
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexDifficultyAdjustmentRequested === true) {
+      logger.notice(`difficulty_adjustments will now be re-indexed`);
+      await database.query(`TRUNCATE difficulty_adjustments`);
+      this.reindexDifficultyAdjustmentRequested = false;
+    }
+
     const indexedHeightsArray = await DifficultyAdjustmentsRepository.$getAdjustmentsHeights();
     const indexedHeights = {};
     for (const height of indexedHeightsArray) {
@@ -396,8 +422,9 @@ class Mining {
     }
 
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+    const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
+    let currentBits = genesisBlock.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
@@ -411,6 +438,7 @@ class Mining {
 
     const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
+      currentBits = oldestConsecutiveBlock.bits;
       currentDifficulty = oldestConsecutiveBlock.difficulty;
     }
 
@@ -418,10 +446,11 @@ class Mining {
     let timer = new Date().getTime() / 1000;
 
     for (const block of blocks) {
-      if (block.difficulty !== currentDifficulty) {
+      if (block.bits !== currentBits) {
         if (indexedHeights[block.height] === true) { // Already indexed
           if (block.height >= oldestConsecutiveBlock.height) {
             currentDifficulty = block.difficulty;
+            currentBits = block.bits;
           }
           continue;          
         }
@@ -439,6 +468,7 @@ class Mining {
         totalIndexed++;
         if (block.height >= oldestConsecutiveBlock.height) {
           currentDifficulty = block.difficulty;
+          currentBits = block.bits;
         }
     }
 
@@ -446,7 +476,7 @@ class Mining {
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
       if (elapsedSeconds > 5) {
         const progress = Math.round(totalBlockChecked / blocks.length * 100);
-        logger.info(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`, logger.tags.mining);
+        logger.debug(`Indexing difficulty adjustment at block #${block.height} | Progress: ${progress}%`, logger.tags.mining);
         timer = new Date().getTime() / 1000;
       }
     }
@@ -467,11 +497,11 @@ class Mining {
     }
     this.blocksPriceIndexingRunning = true;
 
+    let totalInserted = 0;
     try {
       const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
       const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
 
-      let totalInserted = 0;
       const blocksPrices: BlockPrice[] = [];
 
       for (const block of blocksWithoutPrices) {
@@ -516,7 +546,13 @@ class Mining {
       }
     } catch (e) {
       this.blocksPriceIndexingRunning = false;
-      throw e;
+      logger.err(`Cannot index block prices. ${e}`);
+    }
+
+    if (totalInserted > 0) {
+      logger.info(`Indexing blocks prices completed. Indexed ${totalInserted}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing blocks prices completed. Indexed 0.`, logger.tags.mining);
     }
 
     this.blocksPriceIndexingRunning = false;
@@ -552,8 +588,10 @@ class Mining {
       currentBlockHeight -= 10000;
     }
 
-    if (totalIndexed) {
-      logger.info(`Indexing missing coinstatsindex data completed`, logger.tags.mining);
+    if (totalIndexed > 0) {
+      logger.info(`Indexing missing coinstatsindex data completed. Indexed ${totalIndexed}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing missing coinstatsindex data completed. Indexed 0.`, logger.tags.mining);
     }
   }
 

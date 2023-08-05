@@ -3,21 +3,21 @@
   <div *ngIf="widget">
     <div class="pool-distribution" *ngIf="(nodesPerAsObservable$ | async) as stats; else loadingReward">
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.clearnet-capacity">Clearnet Capacity</h5>
+        <h5 class="card-title" i18n="lightning.clearnet-capacity">Clearnet Capacity</h5>
         <p class="card-text" i18n-ngbTooltip="lightning.clearnet-capacity-desc"
           ngbTooltip="How much liquidity is running on nodes advertising at least one clearnet IP address" placement="bottom">
           <app-amount [satoshis]="stats.clearnetCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.unknown-capacity">Unknown Capacity</h5>
+        <h5 class="card-title" i18n="lightning.unknown-capacity">Unknown Capacity</h5>
         <p class="card-text" i18n-ngbTooltip="lightning.unknown-capacity-desc"
         ngbTooltip="How much liquidity is running on nodes which ISP was not identifiable" placement="bottom">
           <app-amount [satoshis]="stats.unknownCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="lightning.tor-capacity">Tor Capacity</h5>
+        <h5 class="card-title" i18n="lightning.tor-capacity">Tor Capacity</h5>
         <p class="card-text" i18n-ngbTooltip="lightning.tor-capacity-desc"
         ngbTooltip="How much liquidity is running on nodes advertising only Tor addresses" placement="bottom">
           <app-amount [satoshis]="stats.torCapacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
@@ -38,7 +38,7 @@
     </small>
   </div>
 
-  <div [class]="!widget ? 'bottom-padding' : 'pb-0'" class="container pb-lg-0">
+  <div *ngIf="!indexingInProgress else indexing" [class]="!widget ? '' : 'pb-0'" class="container pb-lg-0">
     <div [class]="widget ? 'chart-widget' : 'chart'" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)">
     </div>
@@ -74,28 +74,31 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
 <ng-template #loadingReward>
   <div class="pool-distribution">
     <div class="item">
-      <h5 class="card-title d-inline-block" i18n="lightning.clearnet-capacity">Clearnet Capacity</h5>
+      <h5 class="card-title" i18n="lightning.clearnet-capacity">Clearnet Capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title d-inline-block" i18n="lightning.unknown-capacity">Unknown Capacity</h5>
+      <h5 class="card-title" i18n="lightning.unknown-capacity">Unknown Capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title d-inline-block" i18n="lightning.tor-capacity">Tor Capacity</h5>
+      <h5 class="card-title" i18n="lightning.tor-capacity">Tor Capacity</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
   </div>
+</ng-template>
+
+<ng-template #indexing>
+  <div class="indexing-message" i18n="lightning.indexing-in-progress">Indexing in progress</div>
 </ng-template>

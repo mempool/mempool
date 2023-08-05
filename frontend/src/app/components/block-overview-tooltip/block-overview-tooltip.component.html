@@ -25,12 +25,23 @@
       <tr>
         <td class="td-width" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
         <td>
-          {{ feeRate | feeRounding }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+          <app-fee-rate [fee]="feeRate"></app-fee-rate>
         </td>
       </tr>
-      <tr>
+      <tr *ngIf="effectiveRate && effectiveRate !== feeRate">
+        <td *ngIf="!this.acceleration" class="td-width" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
+        <td *ngIf="this.acceleration" class="td-width" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Accelerated fee rate</td>
+        <td>
+          <app-fee-rate [fee]="effectiveRate"></app-fee-rate>
+        </td>
+      </tr>
+      <tr *only-vsize>
         <td class="td-width" i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
         <td [innerHTML]="'&lrm;' + (vsize | vbytes: 2)"></td>
+      </tr>
+      <tr *only-weight>
+        <td class="td-width" i18n="transaction.weight|Transaction Weight">Weight</td>
+        <td [innerHTML]="'&lrm;' + ((vsize * 4) | wuBytes: 2)"></td>
       </tr>
       <tr *ngIf="auditEnabled && tx && tx.status && tx.status.length">
         <td class="td-width" i18n="transaction.audit-status">Audit status</td>
@@ -38,9 +49,13 @@
           <td *ngSwitchCase="'found'"><span class="badge badge-success" i18n="transaction.audit.match">Match</span></td>
           <td *ngSwitchCase="'censored'"><span class="badge badge-danger" i18n="transaction.audit.removed">Removed</span></td>
           <td *ngSwitchCase="'missing'"><span class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span></td>
+          <td *ngSwitchCase="'sigop'"><span class="badge badge-warning" i18n="transaction.audit.sigop">High sigop count</span></td>
           <td *ngSwitchCase="'fresh'"><span class="badge badge-warning" i18n="transaction.audit.recently-broadcasted">Recently broadcasted</span></td>
+          <td *ngSwitchCase="'freshcpfp'"><span class="badge badge-warning" i18n="transaction.audit.recently-cpfped">Recently CPFP'd</span></td>
           <td *ngSwitchCase="'added'"><span class="badge badge-warning" i18n="transaction.audit.added">Added</span></td>
           <td *ngSwitchCase="'selected'"><span class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span></td>
+          <td *ngSwitchCase="'rbf'"><span class="badge badge-warning" i18n="transaction.audit.conflicting">Conflicting</span></td>
+          <td *ngSwitchCase="'accelerated'"><span class="badge badge-success" i18n="transaction.audit.accelerated">Accelerated</span></td>
         </ng-container>
       </tr>
     </tbody>

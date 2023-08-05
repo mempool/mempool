@@ -88,15 +88,10 @@ export class PoolPreviewComponent implements OnInit {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
-          poolStats.pool.addresses = poolStats.pool.addresses;
-
-          if (poolStats.reportedHashrate) {
-            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
-          }
 
           this.openGraphService.waitOver('pool-stats-' + this.slug);
 
-          const logoSrc = `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          const logoSrc = `/resources/mining-pools/` + poolStats.pool.slug + '.svg';
           if (logoSrc === this.lastImgSrc) {
             this.openGraphService.waitOver('pool-img-' + this.slug);
           }

@@ -256,7 +256,7 @@ export class LightningStatisticsChartComponent implements OnInit {
       series: data.channel_count.length === 0 ? [] : [
         {
           zlevel: 1,
-          name: 'Channels',
+          name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,
           showSymbol: false,
           symbol: 'none',
           data: data.channel_count,

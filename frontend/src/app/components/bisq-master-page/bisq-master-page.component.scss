@@ -17,6 +17,12 @@ li.nav-item {
   padding-right: 10px;
 }
 
+@media (max-width: 992px) {
+  footer > .container-fluid {
+    padding-bottom: 35px;
+  }
+}
+
 @media (min-width: 992px) {
   .navbar {
     padding: 0rem 2rem;
@@ -140,4 +146,19 @@ nav {
 
 .navbar-brand {
   margin-right: 5px;
+}
+
+.current-network-svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+:host-context(.rtl-layout) {
+  .current-network-svg {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
 }

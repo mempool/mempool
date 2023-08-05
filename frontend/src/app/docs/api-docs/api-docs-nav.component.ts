@@ -16,6 +16,7 @@ export class ApiDocsNavComponent implements OnInit {
   env: Env;
   tabData: any[];
   auditEnabled: boolean;
+  officialMempoolInstance: boolean;
 
   constructor(
     private stateService: StateService
@@ -23,6 +24,7 @@ export class ApiDocsNavComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
+    this.officialMempoolInstance = this.env.OFFICIAL_MEMPOOL_SPACE;
     this.auditEnabled = this.env.AUDIT;
     if (this.whichTab === 'rest') {
       this.tabData = restApiDocsData;
