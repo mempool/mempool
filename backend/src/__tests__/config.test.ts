@@ -47,6 +47,7 @@ describe('Mempool Backend Config', () => {
         DISK_CACHE_BLOCK_INTERVAL: 6,
         MAX_PUSH_TX_SIZE_WEIGHT: 400000,
         ALLOW_UNREACHABLE: true,
+        PRICE_UPDATES_PER_HOUR: 1,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
@@ -101,11 +102,6 @@ describe('Mempool Backend Config', () => {
         PASSWORD: ''
       });
 
-      expect(config.PRICE_DATA_SERVER).toStrictEqual({
-        TOR_URL: 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-        CLEARNET_URL: 'https://price.bisq.wiz.biz/getAllMarketPrices'
-      });
-
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual({
         MEMPOOL_API: 'https://mempool.space/api/v1',
         MEMPOOL_ONION: 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
@@ -127,6 +123,11 @@ describe('Mempool Backend Config', () => {
         AUDIT: false,
         AUDIT_START_HEIGHT: 774000,
         SERVERS: []
+      });
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual({
+        API: "",
+        ACCELERATIONS: false,
       });
 
       expect(config.REDIS).toStrictEqual({
@@ -163,9 +164,9 @@ describe('Mempool Backend Config', () => {
 
       expect(config.SOCKS5PROXY).toStrictEqual(fixture.SOCKS5PROXY);
 
-      expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
-
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
 
       expect(config.REDIS).toStrictEqual(fixture.REDIS);
     });

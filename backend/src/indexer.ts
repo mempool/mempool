@@ -105,6 +105,12 @@ class Indexer {
       return;
     }
 
+    try {
+      await priceUpdater.$run();
+    } catch (e) {
+      logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
     // Do not attempt to index anything unless Bitcoin Core is fully synced
     const blockchainInfo = await bitcoinClient.getBlockchainInfo();
     if (blockchainInfo.blocks !== blockchainInfo.headers) {
@@ -119,8 +125,6 @@ class Indexer {
     await this.checkAvailableCoreIndexes();
 
     try {
-      await priceUpdater.$run();
-
       const chainValid = await blocks.$generateBlockDatabase();
       if (chainValid === false) {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
