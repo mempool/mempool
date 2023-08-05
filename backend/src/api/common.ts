@@ -59,11 +59,11 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[]): { [txid: string]: MempoolTransactionExtended[] } {
+  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: MempoolTransactionExtended[] } {
     const matches: { [txid: string]: MempoolTransactionExtended[] } = {};
 
     // For small N, a naive nested loop is extremely fast, but it doesn't scale
-    if (added.length < 1000 && deleted.length < 50) {
+    if (added.length < 1000 && deleted.length < 50 && !forceScalable) {
       added.forEach((addedTx) => {
         const foundMatches = deleted.filter((deletedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
