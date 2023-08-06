@@ -30,7 +30,7 @@ const routes = {
   },
   lightning: {
     title: "Lightning",
-    fallbackImg: '/resources/previews/lightning.png',
+    fallbackImg: '/resources/img/lightning.png',
     routes: {
       node: {
         render: true,
@@ -68,7 +68,7 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/previews/mining.png',
+    fallbackImg: '/resources/img/mining.png',
     routes: {
       pool: {
         render: true,
@@ -83,13 +83,13 @@ const routes = {
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/previews/dashboard.png',
+    fallbackImg: '/resources/img/dashboard.png',
     routes: {
       ...routes // all routes supported
     }
   },
   liquid: {
-    fallbackImg: '/resources/liquid/liquid-network-preview.png',
+    fallbackImg: '/resources/img/liquid.png',
     routes: { // only block, address & tx routes supported
       block: routes.block,
       address: routes.address,
@@ -97,7 +97,7 @@ const networks = {
     }
   },
   bisq: {
-    fallbackImg: '/resources/bisq/bisq-markets-preview.png',
+    fallbackImg: '/resources/img/bisq.png',
     routes: {} // no routes supported
   }
 };
