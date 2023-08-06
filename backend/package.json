@@ -31,6 +31,7 @@
     "reindex-updated-pools": "npm run start-production --update-pools",
     "reindex-all-blocks": "npm run start-production --update-pools --reindex-blocks",
     "test": "./node_modules/.bin/jest --coverage",
+    "test:ci": "CI=true ./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
     "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
