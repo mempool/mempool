@@ -50,6 +50,12 @@ class Server {
     this.canonicalHost = canonical;
 
     this.startServer();
+
+    setTimeout(async () => {
+      logger.info(`killing myself now`);
+      await this.stopServer();
+      process.exit(0);
+    }, 3600_000 * (1 + Math.random()))
   }
 
   async startServer() {
