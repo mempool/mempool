@@ -72,11 +72,9 @@ export class SeoService {
 
   clearSoft404() {
     window['soft404'] = false;
-    console.log('cleared soft 404');
   }
 
   logSoft404() {
     window['soft404'] = true;
-    console.log('set soft 404');
   }
 }
