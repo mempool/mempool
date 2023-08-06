@@ -339,6 +339,10 @@ export class StateService {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
   }
 
+  isAnyTestnet(): boolean {
+    return ['testnet', 'signet', 'liquidtestnet'].includes(this.network);
+  }
+
   resetChainTip() {
     this.latestBlockHeight = -1;
     this.chainTip$.next(-1);

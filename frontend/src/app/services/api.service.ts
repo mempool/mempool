@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
   PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
@@ -312,6 +312,19 @@ export class ApiService {
   }
 
   getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+    if (this.stateService.isAnyTestnet()) {
+      return of({
+        prices: [],
+        exchangeRates: {
+          USDEUR: 0,
+          USDGBP: 0,
+          USDCAD: 0,
+          USDCHF: 0,
+          USDAUD: 0,
+          USDJPY: 0,
+        }
+      });
+    }
     return this.httpClient.get<Conversion>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
