@@ -28,6 +28,7 @@ export interface WebsocketResponse {
   'track-tx'?: string;
   'track-address'?: string;
   'track-addresses'?: string[];
+  'track-scriptpubkeys'?: string[];
   'track-asset'?: string;
   'track-mempool-block'?: number;
   'track-rbf'?: string;

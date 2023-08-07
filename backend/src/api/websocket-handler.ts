@@ -245,6 +245,20 @@ class WebsocketHandler {
             }
           }
 
+          if (parsedMessage && parsedMessage['track-scriptpubkeys'] && Array.isArray(parsedMessage['track-scriptpubkeys'])) {
+            const spks: string[] = [];
+            for (const spk of parsedMessage['track-scriptpubkeys']) {
+              if (/^[a-fA-F0-9]+$/.test(spk)) {
+                spks.push(spk);
+              }
+            }
+            if (spks.length) {
+              client['track-scriptpubkeys'] = spks;
+            } else {
+              client['track-scriptpubkeys'] = null;
+            }
+          }
+
           if (parsedMessage && parsedMessage['track-asset']) {
             if (/^[a-fA-F0-9]{64}$/.test(parsedMessage['track-asset'])) {
               client['track-asset'] = parsedMessage['track-asset'];
@@ -597,6 +611,27 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-scriptpubkeys']) {
+        const spkMap: { [spk: string]: AddressTransactions } = {};
+        for (const spk of client['track-scriptpubkeys'] || []) {
+          const foundTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          // txs may be missing prevouts in non-esplora backends
+          // so fetch the full transactions now
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+          if (fullTransactions?.length) {
+            spkMap[spk] = {
+              mempool: fullTransactions,
+              confirmed: [],
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(spkMap).length > 0) {
+          response['multi-scriptpubkey-transactions'] = JSON.stringify(spkMap);
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -911,6 +946,24 @@ class WebsocketHandler {
 
         if (Object.keys(addressMap).length > 0) {
           response['multi-address-transactions'] = JSON.stringify(addressMap);
+        }
+      }
+
+      if (client['track-scriptpubkeys']) {
+        const spkMap: { [spk: string]: AddressTransactions } = {};
+        for (const spk of client['track-scriptpubkeys'] || []) {
+          const fullTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          if (fullTransactions?.length) {
+            spkMap[spk] = {
+              mempool: [],
+              confirmed: fullTransactions,
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(spkMap).length > 0) {
+          response['multi-scriptpubkey-transactions'] = JSON.stringify(spkMap);
         }
       }
 
