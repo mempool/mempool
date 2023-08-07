@@ -186,7 +186,9 @@ describe('Mempool Backend Config', () => {
         for (const [key, value] of Object.entries(jsonObj)) {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
-            console.log('skipping check for MEMPOOL_HTTP_PORT');
+            if (process.env.CI) {
+              console.log('skipping check for MEMPOOL_HTTP_PORT');
+            }
             continue;
           }
           switch (typeof value) {
@@ -208,13 +210,17 @@ describe('Mempool Backend Config', () => {
               //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
               const defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
 
-              console.log(`looking for ${defaultEntry} in the start.sh script`);
+              if (process.env.CI) {
+                console.log(`looking for ${defaultEntry} in the start.sh script`);
+              }
               const re = new RegExp(defaultEntry);
               expect(startSh).toMatch(re);
 
               //The string that actually replaces the values in the config file
               const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
-              console.log(`looking for ${sedStr} in the start.sh script`);
+              if (process.env.CI) {
+                console.log(`looking for ${sedStr} in the start.sh script`);
+              }
               expect(startSh).toContain(sedStr);
               break;
             }
