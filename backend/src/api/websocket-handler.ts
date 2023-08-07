@@ -190,18 +190,14 @@ class WebsocketHandler {
                 matchedAddress = matchedAddress.toLowerCase();
               }
               if (/^04[a-fA-F0-9]{128}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = null;
-                client['track-scriptpubkey'] = '41' + matchedAddress + 'ac';
+                client['track-address'] = '41' + matchedAddress + 'ac';
               } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = null;
-                client['track-scriptpubkey'] = '21' + matchedAddress + 'ac';
+                client['track-address'] = '21' + matchedAddress + 'ac';
               } else {
                 client['track-address'] = matchedAddress;
-                client['track-scriptpubkey'] = null;
               }
             } else {
               client['track-address'] = null;
-              client['track-scriptpubkey'] = null;
             }
           }
 
@@ -532,16 +528,6 @@ class WebsocketHandler {
         }
       }
 
-      if (client['track-scriptpubkey']) {
-        const foundTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
-        // txs may be missing prevouts in non-esplora backends
-        // so fetch the full transactions now
-        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
-        if (foundTransactions.length) {
-          response['address-transactions'] = JSON.stringify(fullTransactions);
-        }
-      }
-
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -794,23 +780,6 @@ class WebsocketHandler {
 
       if (client['track-address']) {
         const foundTransactions: TransactionExtended[] = Array.from(addressCache[client['track-address']]?.values() || []);
-
-        if (foundTransactions.length) {
-          foundTransactions.forEach((tx) => {
-            tx.status = {
-              confirmed: true,
-              block_height: block.height,
-              block_hash: block.id,
-              block_time: block.timestamp,
-            };
-          });
-
-          response['block-transactions'] = JSON.stringify(foundTransactions);
-        }
-      }
-
-      if (client['track-scriptpubkey']) {
-        const foundTransactions: TransactionExtended[] = Array.from(addressCache[client['track-scriptpubkey']]?.values() || []);
 
         if (foundTransactions.length) {
           foundTransactions.forEach((tx) => {
