@@ -47,7 +47,7 @@ jobs:
 
       - name: Unit Tests
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm run test
+        run: npm run test:ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Build
