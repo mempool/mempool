@@ -24,6 +24,12 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 
+interface AddressTransactions {
+  mempool: MempoolTransactionExtended[],
+  confirmed: MempoolTransactionExtended[],
+  removed: string[],
+}
+
 // valid 'want' subscriptions
 const wantable = [
   'blocks',
@@ -210,6 +216,32 @@ class WebsocketHandler {
               }
             } else {
               client['track-address'] = null;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-addresses'] && Array.isArray(parsedMessage['track-addresses'])) {
+            const addressMap: { [address: string]: string } = {};
+            for (const address of parsedMessage['track-addresses']) {
+              if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/.test(address)) {
+                let matchedAddress = address;
+                if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(address)) {
+                  matchedAddress = matchedAddress.toLowerCase();
+                }
+                if (/^04[a-fA-F0-9]{128}$/.test(address)) {
+                  addressMap[address] = '41' + matchedAddress + 'ac';
+                } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(address)) {
+                  addressMap[address] = '21' + matchedAddress + 'ac';
+                } else {
+                  addressMap[address] = matchedAddress;
+                }
+              } else {
+                // skip invalid address formats
+              }
+            }
+            if (Object.keys(addressMap).length > 0) {
+              client['track-addresses'] = addressMap;
+            } else {
+              client['track-addresses'] = null;
             }
           }
 
@@ -544,6 +576,27 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-addresses']) {
+        const addressMap: { [address: string]: AddressTransactions } = {};
+        for (const [address, key] of Object.entries(client['track-addresses'] || {})) {
+          const foundTransactions = Array.from(addressCache[key as string]?.values() || []);
+          // txs may be missing prevouts in non-esplora backends
+          // so fetch the full transactions now
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+          if (fullTransactions?.length) {
+            addressMap[address] = {
+              mempool: fullTransactions,
+              confirmed: [],
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(addressMap).length > 0) {
+          response['multi-address-transactions'] = JSON.stringify(addressMap);
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -840,6 +893,24 @@ class WebsocketHandler {
           });
 
           response['block-transactions'] = JSON.stringify(foundTransactions);
+        }
+      }
+
+      if (client['track-addresses']) {
+        const addressMap: { [address: string]: AddressTransactions } = {};
+        for (const [address, key] of Object.entries(client['track-addresses'] || {})) {
+          const fullTransactions = Array.from(addressCache[key as string]?.values() || []);
+          if (fullTransactions?.length) {
+            addressMap[address] = {
+              mempool: [],
+              confirmed: fullTransactions,
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(addressMap).length > 0) {
+          response['multi-address-transactions'] = JSON.stringify(addressMap);
         }
       }
 
