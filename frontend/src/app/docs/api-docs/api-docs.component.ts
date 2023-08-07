@@ -57,6 +57,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
         }
       }
       window.addEventListener('scroll', that.onDocScroll, { passive: true });
+      this.scrollBlockchain();
     }, 1 );
   }
 
@@ -114,6 +115,11 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
 
   onDocScroll() {
     this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+  }
+
+  scrollBlockchain(): void {
+    const blockchainEl = document.querySelector<HTMLElement>(".blockchain-wrapper");
+    blockchainEl.scroll( ( document.querySelector<HTMLElement>("#divider").getBoundingClientRect().left - blockchainEl.getBoundingClientRect().left ) / 2, 0);
   }
 
   anchorLinkClick( event: any ) {
