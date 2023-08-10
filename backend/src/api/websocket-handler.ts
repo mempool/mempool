@@ -198,18 +198,14 @@ class WebsocketHandler {
                 matchedAddress = matchedAddress.toLowerCase();
               }
               if (/^04[a-fA-F0-9]{128}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = null;
-                client['track-scriptpubkey'] = '41' + matchedAddress + 'ac';
-              } else if (/^|(02|03)[a-fA-F0-9]{64}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = null;
-                client['track-scriptpubkey'] = '21' + matchedAddress + 'ac';
+                client['track-address'] = '41' + matchedAddress + 'ac';
+              } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(parsedMessage['track-address'])) {
+                client['track-address'] = '21' + matchedAddress + 'ac';
               } else {
                 client['track-address'] = matchedAddress;
-                client['track-scriptpubkey'] = null;
               }
             } else {
               client['track-address'] = null;
-              client['track-scriptpubkey'] = null;
             }
           }
 
@@ -488,6 +484,9 @@ class WebsocketHandler {
       }
     }
 
+    // pre-compute address transactions
+    const addressCache = this.makeAddressCache(newTransactions);
+
     this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
         return;
@@ -527,78 +526,13 @@ class WebsocketHandler {
       }
 
       if (client['track-address']) {
-        const foundTransactions: TransactionExtended[] = [];
+        const foundTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
+        // txs may be missing prevouts in non-esplora backends
+        // so fetch the full transactions now
+        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
 
-        for (const tx of newTransactions) {
-          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address']);
-          if (someVin) {
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
-                foundTransactions.push(fullTx);
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-              }
-            } else {
-              foundTransactions.push(tx);
-            }
-            return;
-          }
-          const someVout = tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address']);
-          if (someVout) {
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
-                foundTransactions.push(fullTx);
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-              }
-            } else {
-              foundTransactions.push(tx);
-            }
-          }
-        }
-
-        if (foundTransactions.length) {
-          response['address-transactions'] = JSON.stringify(foundTransactions);
-        }
-      }
-
-      if (client['track-scriptpubkey']) {
-        const foundTransactions: TransactionExtended[] = [];
-
-        for (const tx of newTransactions) {
-          const someVin = tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey']);
-          if (someVin) {
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
-                foundTransactions.push(fullTx);
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-              }
-            } else {
-              foundTransactions.push(tx);
-            }
-            return;
-          }
-          const someVout = tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey']);
-          if (someVout) {
-            if (config.MEMPOOL.BACKEND !== 'esplora') {
-              try {
-                const fullTx = await transactionUtils.$getMempoolTransactionExtended(tx.txid, true);
-                foundTransactions.push(fullTx);
-              } catch (e) {
-                logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
-              }
-            } else {
-              foundTransactions.push(tx);
-            }
-          }
-        }
-
-        if (foundTransactions.length) {
-          response['address-transactions'] = JSON.stringify(foundTransactions);
+        if (fullTransactions.length) {
+          response['address-transactions'] = JSON.stringify(fullTransactions);
         }
       }
 
@@ -606,7 +540,6 @@ class WebsocketHandler {
         const foundTransactions: TransactionExtended[] = [];
 
         newTransactions.forEach((tx) => {
-
           if (client['track-asset'] === Common.nativeAssetId) {
             if (tx.vin.some((vin) => !!vin.is_pegin)) {
               foundTransactions.push(tx);
@@ -805,6 +738,9 @@ class WebsocketHandler {
     const fees = feeApi.getRecommendedFee();
     const mempoolInfo = memPool.getMempoolInfo();
 
+    // pre-compute address transactions
+    const addressCache = this.makeAddressCache(transactions);
+
     // update init data
     this.updateSocketDataFields({
       'mempoolInfo': mempoolInfo,
@@ -867,44 +803,7 @@ class WebsocketHandler {
       }
 
       if (client['track-address']) {
-        const foundTransactions: TransactionExtended[] = [];
-
-        transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_address === client['track-address'])) {
-            foundTransactions.push(tx);
-            return;
-          }
-          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_address === client['track-address'])) {
-            foundTransactions.push(tx);
-          }
-        });
-
-        if (foundTransactions.length) {
-          foundTransactions.forEach((tx) => {
-            tx.status = {
-              confirmed: true,
-              block_height: block.height,
-              block_hash: block.id,
-              block_time: block.timestamp,
-            };
-          });
-
-          response['block-transactions'] = JSON.stringify(foundTransactions);
-        }
-      }
-
-      if (client['track-scriptpubkey']) {
-        const foundTransactions: TransactionExtended[] = [];
-
-        transactions.forEach((tx) => {
-          if (tx.vin && tx.vin.some((vin) => !!vin.prevout && vin.prevout.scriptpubkey_type === 'p2pk' && vin.prevout.scriptpubkey === client['track-scriptpubkey'])) {
-            foundTransactions.push(tx);
-            return;
-          }
-          if (tx.vout && tx.vout.some((vout) => vout.scriptpubkey_type === 'p2pk' && vout.scriptpubkey === client['track-scriptpubkey'])) {
-            foundTransactions.push(tx);
-          }
-        });
+        const foundTransactions: TransactionExtended[] = Array.from(addressCache[client['track-address']]?.values() || []);
 
         if (foundTransactions.length) {
           foundTransactions.forEach((tx) => {
@@ -980,6 +879,52 @@ class WebsocketHandler {
     return '{'
         + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
         + '}';
+  }
+
+  private makeAddressCache(transactions: MempoolTransactionExtended[]): { [address: string]: Set<MempoolTransactionExtended> } {
+    const addressCache: { [address: string]: Set<MempoolTransactionExtended> } = {};
+    for (const tx of transactions) {
+      for (const vin of tx.vin) {
+        if (vin?.prevout?.scriptpubkey_address) {
+          if (!addressCache[vin.prevout.scriptpubkey_address]) {
+            addressCache[vin.prevout.scriptpubkey_address] = new Set();
+          }
+          addressCache[vin.prevout.scriptpubkey_address].add(tx);
+        }
+        if (vin?.prevout?.scriptpubkey) {
+          if (!addressCache[vin.prevout.scriptpubkey]) {
+            addressCache[vin.prevout.scriptpubkey] = new Set();
+          }
+          addressCache[vin.prevout.scriptpubkey].add(tx);
+        }
+      }
+      for (const vout of tx.vout) {
+        if (vout?.scriptpubkey_address) {
+          if (!addressCache[vout?.scriptpubkey_address]) {
+            addressCache[vout?.scriptpubkey_address] = new Set();
+          }
+          addressCache[vout?.scriptpubkey_address].add(tx);
+        }
+        if (vout?.scriptpubkey) {
+          if (!addressCache[vout.scriptpubkey]) {
+            addressCache[vout.scriptpubkey] = new Set();
+          }
+          addressCache[vout.scriptpubkey].add(tx);
+        }
+      }
+    }
+    return addressCache;
+  }
+
+  private async getFullTransactions(transactions: MempoolTransactionExtended[]): Promise<MempoolTransactionExtended[]> {
+    for (let i = 0; i < transactions.length; i++) {
+      try {
+        transactions[i] = await transactionUtils.$getMempoolTransactionExtended(transactions[i].txid, true);
+      } catch (e) {
+        logger.debug('Error finding transaction in mempool: ' + (e instanceof Error ? e.message : e));
+      }
+    }
+    return transactions;
   }
 
   private printLogs(): void {
