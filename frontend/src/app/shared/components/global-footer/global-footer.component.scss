@@ -12,13 +12,9 @@ footer p {
 }
 
 footer .row.main {
-  padding: 40px 0;
-  max-width: 1200px;
+  padding: 40px 0 24px 0;
+  max-width: 1140px;
   margin: 0 auto;
-}
-
-footer .row.main .branding {
-  text-align: center;
 }
 
 footer .row.main .branding > p {
@@ -38,16 +34,20 @@ footer .row.main .branding .cta {
   margin: 25px auto 25px auto;
 }
 
-footer .row.main .links.outer {
-  padding-left: 24px;
-  padding-top: 10px;
+footer .link-tree .links:nth-child(1), footer .link-tree .links:nth-child(4) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+footer .link-tree .links p {
+  padding-right: 5px;
 }
 
 footer .row.main .links > div:first-child {
   margin-bottom: 20px;
 }
 
-footer .row.main .links .category {
+footer .links .category {
   color: #4a68b9;
   font-weight: 700;
 }
@@ -56,13 +56,27 @@ footer .row.main .links .category:not(:first-child) {
   margin-top: 1rem;
 }
 
+footer .site-options {
+  float: right;
+  margin-top: -8px;
+}
+
 footer .selector {
-  margin: 20px 0;
+  margin: 20px 5px;
+  display: inline-block;
+}
+
+footer .row.link-tree {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 footer .row.social-links {
   text-align: center;
-  margin-bottom: 24px;
+  margin: 24px 0;
 }
 
 footer .row.social-links a {
@@ -90,22 +104,79 @@ footer .row.version p a {
 }
 
 .main-logo {
-  max-width: 220px;
-  margin: 0 auto 20px auto;
+  width: 220px;
+  margin: 0;
+  display: inline-block;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
 
-  footer .row.main .links.outer {
+  .main-logo {
+    width: 200px;
+  }
+
+  footer .row.main {
+    max-width: 90%;
+  }
+
+  footer .row.link-tree {
+    max-width: 90%;
+    font-size: 13px;
+    gap: 20px;
+  }
+
+  footer .row.social-links svg {
+    width: 18px;
+  }
+
+}
+
+@media (max-width: 900px) {
+
+  .main-logo {
+    width: 220px;
+  }
+
+  footer .row.link-tree {
+    font-size: 16px;
+  }
+
+  footer .row.social-links svg {
+    width: 20px;
+  }
+
+  footer .row.link-tree {
+    display: block;
     text-align: center;
   }
 
-  footer .row.main .links.outer > .row {
-    margin-top: 20px;
-  }
-
-  footer .row.main .links.outer > .row > div:first-child {
+  footer .link-tree .links {
     margin-bottom: 20px;
   }
 
+  footer .row.main .branding {
+    text-align: center;
+  }
+
+  .main-logo {
+    display: block;
+    margin: 0 auto;
+  }
+
+  footer .site-options {
+    float: none;
+    margin-top: 30px;
+  }
+
+  footer .row.social-links {
+    margin: 48px 0 24px 0;
+  }
+
+  footer .selector {
+    margin: 10px 0 0 0;
+  }
+
+  footer .selector:not(:last-child) {
+    margin-right: 10px;
+  }
 }
