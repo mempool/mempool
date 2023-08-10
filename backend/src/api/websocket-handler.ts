@@ -201,19 +201,9 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-address']) {
-            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/
-              .test(parsedMessage['track-address'])) {
-              let matchedAddress = parsedMessage['track-address'];
-              if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(parsedMessage['track-address'])) {
-                matchedAddress = matchedAddress.toLowerCase();
-              }
-              if (/^04[a-fA-F0-9]{128}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = '41' + matchedAddress + 'ac';
-              } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = '21' + matchedAddress + 'ac';
-              } else {
-                client['track-address'] = matchedAddress;
-              }
+            const validAddress = this.testAddress(parsedMessage['track-address']);
+            if (validAddress) {
+              client['track-address'] = validAddress;
             } else {
               client['track-address'] = null;
             }
@@ -222,20 +212,9 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-addresses'] && Array.isArray(parsedMessage['track-addresses'])) {
             const addressMap: { [address: string]: string } = {};
             for (const address of parsedMessage['track-addresses']) {
-              if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/.test(address)) {
-                let matchedAddress = address;
-                if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(address)) {
-                  matchedAddress = matchedAddress.toLowerCase();
-                }
-                if (/^04[a-fA-F0-9]{128}$/.test(address)) {
-                  addressMap[address] = '41' + matchedAddress + 'ac';
-                } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(address)) {
-                  addressMap[address] = '21' + matchedAddress + 'ac';
-                } else {
-                  addressMap[address] = matchedAddress;
-                }
-              } else {
-                // skip invalid address formats
+              const validAddress = this.testAddress(address);
+              if (validAddress) {
+                addressMap[address] = validAddress;
               }
             }
             if (Object.keys(addressMap).length > 0) {
@@ -1034,6 +1013,28 @@ class WebsocketHandler {
     return '{'
         + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
         + '}';
+  }
+
+  // checks if an address conforms to a valid format
+  // returns the canonical form:
+  //  - lowercase for bech32(m)
+  //  - lowercase scriptpubkey for P2PK
+  // or false if invalid
+  private testAddress(address): string | false {
+    if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/.test(address)) {
+      if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(address)) {
+        address = address.toLowerCase();
+      }
+      if (/^04[a-fA-F0-9]{128}$/.test(address)) {
+        return '41' + address + 'ac';
+      } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(address)) {
+        return '21' + address + 'ac';
+      } else {
+        return address;
+      }
+    } else {
+      return false;
+    }
   }
 
   private makeAddressCache(transactions: MempoolTransactionExtended[]): { [address: string]: Set<MempoolTransactionExtended> } {
