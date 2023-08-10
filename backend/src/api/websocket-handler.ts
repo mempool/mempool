@@ -228,7 +228,7 @@ class WebsocketHandler {
             const spks: string[] = [];
             for (const spk of parsedMessage['track-scriptpubkeys']) {
               if (/^[a-fA-F0-9]+$/.test(spk)) {
-                spks.push(spk);
+                spks.push(spk.toLowerCase());
               }
             }
             if (spks.length) {
