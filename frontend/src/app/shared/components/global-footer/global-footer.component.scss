@@ -180,3 +180,15 @@ footer .row.version p a {
     margin-right: 10px;
   }
 }
+
+@media (max-width: 500px) {
+
+  footer .selector {
+    display: block;
+  }
+
+  footer .selector:not(:last-child) {
+    margin-right: 0;
+  }
+
+}
