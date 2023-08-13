@@ -31,6 +31,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() spotlight: number = 0;
   @Input() getHref?: (index) => string = (index) => `/mempool-block/${index}`;
   @Input() allBlocks: boolean = false;
+  @Input() forceRtl: boolean = false;
 
   mempoolWidth: number = 0;
   @Output() widthChange: EventEmitter<number> = new EventEmitter();
@@ -102,7 +103,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
-      this.timeLtr = !!ltr;
+      this.timeLtr = !this.forceRtl && !!ltr;
       this.cd.markForCheck();
     });
 
@@ -283,7 +284,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
-    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const innerWidth = this.containerWidth || (this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2);
     let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
     if (!this.allBlocks) {
       blocksAmount = Math.min(this.stateService.env.MEMPOOL_BLOCKS_AMOUNT, Math.floor(innerWidth / (this.blockWidth + this.blockPadding)));
@@ -306,7 +307,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   reduceMempoolBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
-    const innerWidth = this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2;
+    const innerWidth = this.containerWidth || (this.stateService.env.BASE_MODULE !== 'liquid' && window.innerWidth <= 767.98 ? window.innerWidth : window.innerWidth / 2);
     let blocksAmount = this.stateService.env.MEMPOOL_BLOCKS_AMOUNT;
     if (this.count) {
       blocksAmount = 8;
@@ -316,7 +317,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     while (blocks.length > blocksAmount) {
       const block = blocks.pop();
       if (!this.count) {
-        const lastBlock = blocks[0];
+        const lastBlock = blocks[blocks.length - 1];
         lastBlock.blockSize += block.blockSize;
         lastBlock.blockVSize += block.blockVSize;
         lastBlock.nTx += block.nTx;
@@ -327,7 +328,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
     if (blocks.length) {
-      blocks[0].isStack = blocks[0].blockVSize > this.stateService.blockVSize;
+      blocks[blocks.length - 1].isStack = blocks[blocks.length - 1].blockVSize > this.stateService.blockVSize;
     }
     return blocks;
   }
