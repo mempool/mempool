@@ -250,25 +250,25 @@ class Server {
       || rawPath.startsWith('/api/v1/translators/images')
       || rawPath.startsWith('/resources/profile')
     ) {
-      if (isSearchCrawler(req.headers['user-agent'])) {
+      if (isPreviewCrawler(req)) {
+        res.status(404).send();
+        return;
+      } else {
         if (this.secureHost) {
           https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
         } else {
           http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
         }
         return;
-      } else {
-        res.status(404).send();
-        return;
       }
     }
 
     let result = '';
     try {
-      if (isSearchCrawler(req.headers['user-agent'])) {
-        result = await this.renderSEOPage(rawPath);
-      } else {
+      if (isPreviewCrawler(req)) {
         result = await this.renderUnfurlMeta(rawPath);
+      } else {
+        result = await this.renderSEOPage(rawPath);
       }
       if (result && result.length) {
         if (result === '404') {
@@ -349,6 +349,6 @@ function capitalize(str) {
   }
 }
 
-function isSearchCrawler(useragent: string): boolean {
-  return /googlebot|applebot|bingbot/i.test(useragent);
+function isPreviewCrawler(req: Request): boolean {
+  return req?.header('X-Unfurl-Type') === 'preview';
 }
