@@ -115,11 +115,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
 
-    this.mempoolBlocks.map(() => {
-      this.updateMempoolBlockStyles();
-      this.calculateTransactionPosition();
-    });
-    this.reduceMempoolBlocksToFitScreen(this.mempoolBlocks);
     this.isTabHiddenSubscription = this.stateService.isTabHidden$.subscribe((tabHidden) => this.tabHidden = tabHidden);
     this.loadingBlocks$ = combineLatest([
       this.stateService.isLoadingWebSocket$,
@@ -207,14 +202,17 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         if (!block) {
           return;
         }
+
+        const isNewBlock = block.height > this.chainTip;
+
         if (this.chainTip === -1) {
           this.animateEntry = block.height === this.stateService.latestBlockHeight;
         } else {
-          this.animateEntry = block.height > this.chainTip;
+          this.animateEntry = isNewBlock;
         }
 
         this.chainTip = this.stateService.latestBlockHeight;
-        if ((block?.extras?.similarity == null || block?.extras?.similarity > 0.5) && !this.tabHidden) {
+        if (isNewBlock && (block?.extras?.similarity == null || block?.extras?.similarity > 0.5) && !this.tabHidden) {
           this.blockIndex++;
         }
       });
