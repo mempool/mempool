@@ -299,6 +299,7 @@ export interface Statistic {
   total_fee: number;
   mempool_byte_weight: number;
   fee_data: string;
+  min_fee: number;
 
   vsize_1: number;
   vsize_2: number;
@@ -345,6 +346,7 @@ export interface OptimizedStatistic {
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
+  min_fee: number;
   vsizes: number[];
 }
 
