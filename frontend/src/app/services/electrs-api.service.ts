@@ -54,6 +54,12 @@ export class ElectrsApiService {
     return this.httpClient.get<Outspend[]>(this.apiBaseUrl + this.apiBasePath + '/api/tx/' + hash + '/outspends');
   }
 
+  getOutspendsBatched$(txids: string[]): Observable<Outspend[][]> {
+    let params = new HttpParams();
+    params = params.append('txids', txids.join(','));
+    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/txs/outspends', { params });
+  }
+
   getBlockTransactions$(hash: string, index: number = 0): Observable<Transaction[]> {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash + '/txs/' + index);
   }

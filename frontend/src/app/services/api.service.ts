@@ -138,14 +138,6 @@ export class ApiService {
     return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
   }
 
-  getOutspendsBatched$(txIds: string[]): Observable<Outspend[][]> {
-    let params = new HttpParams();
-    txIds.forEach((txId: string) => {
-      params = params.append('txId[]', txId);
-    });
-    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
-  }
-
   getAboutPageProfiles$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/services/sponsors');
   }

@@ -112,6 +112,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'txs/outspends', this.$getOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', this.getRawBlock)
@@ -192,6 +193,26 @@ class BitcoinRoutes {
 
     try {
       const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txIds);
+      res.json(batchedOutspends);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getOutspends(req: Request, res: Response) {
+    const txids_csv = req.query.txids;
+    if (!txids_csv || typeof txids_csv !== 'string') {
+      res.status(500).send('Invalid txids format');
+      return;
+    }
+    const txids = txids_csv.split(',');
+    if (txids.length > 50) {
+      res.status(400).send('Too many txids requested');
+      return;
+    }
+
+    try {
+      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txids);
       res.json(batchedOutspends);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
