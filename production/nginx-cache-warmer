@@ -153,6 +153,9 @@ warmURLs=(
 	'/api/v1/lightning/nodes/rankings/age'
 )
 
+echo "waiting for mempool backend to start..."
+sleep 60
+
 while true
 do
 	echo "starting warm cache cycle..."
