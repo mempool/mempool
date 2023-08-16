@@ -202,7 +202,7 @@ describe('Mempool Backend Config', () => {
               let defaultEntry;
               //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
               if (Array.isArray(value)) {
-                defaultEntry = `${replaceStr}=\$\{${envVarStr}:=\[]}`;
+                defaultEntry = `${replaceStr}=\${${envVarStr}:=[]}`;
                 if (process.env.CI) {
                   console.log(`looking for ${defaultEntry} in the start.sh script`);
                 }
