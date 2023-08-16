@@ -109,11 +109,15 @@ class Server {
 
   setUpRoutes() {
     if (puppeteerEnabled) {
+      this.app.get('/unfurl/render*', async (req, res) => { return this.renderPreview(req, res) })
       this.app.get('/render*', async (req, res) => { return this.renderPreview(req, res) })
     } else {
+      this.app.get('/unfurl/render*', async (req, res) => { return this.renderDisabled(req, res) })
       this.app.get('/render*', async (req, res) => { return this.renderDisabled(req, res) })
     }
-    this.app.get('*', (req, res) => { return this.renderHTML(req, res) })
+    this.app.get('/unfurl*', (req, res) => { return this.renderHTML(req, res, true) })
+    this.app.get('/slurp*', (req, res) => { return this.renderHTML(req, res, false) })
+    this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
   async clusterTask({ page, data: { url, path, action } }) {
@@ -240,7 +244,7 @@ class Server {
     }
   }
 
-  async renderHTML(req, res) {
+  async renderHTML(req, res, unfurl: boolean = false) {
     // drop requests for static files
     const rawPath = req.params[0];
     const match = rawPath.match(/\.[\w]+$/);
@@ -250,7 +254,7 @@ class Server {
       || rawPath.startsWith('/api/v1/translators/images')
       || rawPath.startsWith('/resources/profile')
     ) {
-      if (isPreviewCrawler(req)) {
+      if (unfurl) {
         res.status(404).send();
         return;
       } else {
@@ -265,7 +269,7 @@ class Server {
 
     let result = '';
     try {
-      if (isPreviewCrawler(req)) {
+      if (unfurl) {
         result = await this.renderUnfurlMeta(rawPath);
       } else {
         result = await this.renderSEOPage(rawPath);
@@ -347,8 +351,4 @@ function capitalize(str) {
   } else {
     return str;
   }
-}
-
-function isPreviewCrawler(req: Request): boolean {
-  return req?.header('X-Unfurl-Type') === 'preview';
 }
