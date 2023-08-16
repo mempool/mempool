@@ -505,10 +505,13 @@ class RbfCache {
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
       const sliceLength = 10000;
+      let count = 0;
       for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
         const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
         try {
           const txs = await bitcoinApi.$getRawTransactions(slice);
+          count += txs.length;
+          logger.info(`Fetched ${count} of ${txids.length} unknown-status RBF transactions from esplora`);
           processTxs(txs);
         } catch (err) {
           logger.err('failed to fetch some cached rbf transactions');
