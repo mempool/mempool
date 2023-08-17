@@ -65,7 +65,7 @@
     "@angular/animations": "^16.1.5",
     "@angular/cli": "^16.1.4",
     "@angular/common": "^16.1.5",
-    "@angular/compiler": "^16.1.5",
+    "@angular/compiler": "^16.2.1",
     "@angular/core": "^16.1.5",
     "@angular/forms": "^16.1.5",
     "@angular/localize": "^16.1.5",
