@@ -9,6 +9,7 @@ import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { MenuGroup } from '../interfaces/services.interface';
 
+// Todo - move to config.json
 const SERVICES_API_PREFIX = `/api/v1/services`;
 
 @Injectable({
@@ -348,43 +349,8 @@ export class ApiService {
       return of(null);
     }
 
-    return of([
-      {
-        title: 'Lightning',
-        i18n: '',
-        items: [
-          {
-            title: 'Nodes',
-            i18n: '',
-            faIcon: 'network-wired',
-            link: '/services/lightning/nodes'
-          }
-        ]
-      },
-      {
-        title: 'Enterprise',
-        i18n: '',
-        items: [
-          {
-            title: 'Settings',
-            i18n: '',
-            faIcon: 'id-card-alt',
-            link: '/services/enterprise/settings'
-          },
-          {
-            title: 'IP Whitelist',
-            i18n: '',
-            faIcon: 'check-circle',
-            link: '/services/enterprise/ip-whitelist'
-          }
-        ]
-      }
-    ]);
-
-    // return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account`, {
-    //   headers: {
-    //     'Authorization': auth.token
-    //   }
-    // });
+    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`, {
+      headers: { 'Authorization': auth.token }
+    });
   }
 }
