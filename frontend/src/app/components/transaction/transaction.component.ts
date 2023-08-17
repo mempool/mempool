@@ -82,6 +82,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   blockConversion: Price;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
+  acceleratorAvailable: boolean = false;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -107,6 +108,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
       (network) => (this.network = network)
