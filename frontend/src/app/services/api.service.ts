@@ -7,6 +7,7 @@ import { StateService } from './state.service';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
+import { MenuGroup } from '../interfaces/services.interface';
 
 const SERVICES_API_PREFIX = `/api/v1/services`;
 
@@ -334,9 +335,56 @@ export class ApiService {
   /**
    * Services
    */
-  getNodeOwner$(publicKey: string) {
+  
+  getNodeOwner$(publicKey: string): Observable<any> {
     let params = new HttpParams()
       .set('node_public_key', publicKey);
     return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
+  }
+
+  getUserMenuGroups$(): Observable<MenuGroup[]> {
+    const auth = JSON.parse(localStorage.getItem('auth') || '');
+    if (!auth) {
+      return of(null);
+    }
+
+    return of([
+      {
+        title: 'Lightning',
+        i18n: '',
+        items: [
+          {
+            title: 'Nodes',
+            i18n: '',
+            faIcon: 'network-wired',
+            link: '/services/lightning/nodes'
+          }
+        ]
+      },
+      {
+        title: 'Enterprise',
+        i18n: '',
+        items: [
+          {
+            title: 'Settings',
+            i18n: '',
+            faIcon: 'id-card-alt',
+            link: '/services/enterprise/settings'
+          },
+          {
+            title: 'IP Whitelist',
+            i18n: '',
+            faIcon: 'check-circle',
+            link: '/services/enterprise/ip-whitelist'
+          }
+        ]
+      }
+    ]);
+
+    // return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account`, {
+    //   headers: {
+    //     'Authorization': auth.token
+    //   }
+    // });
   }
 }

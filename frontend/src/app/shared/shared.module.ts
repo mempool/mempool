@@ -4,9 +4,10 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MasterPageComponent } from '../components/master-page/master-page.component';
+import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
@@ -135,6 +136,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AmountComponent,
     AboutComponent,
     MasterPageComponent,
+    MenuComponent,
     PreviewTitleComponent,
     BisqMasterPageComponent,
     LiquidMasterPageComponent,
@@ -220,6 +222,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
   ],
   exports: [
     MasterPageComponent,
+    MenuComponent,
     RouterModule,
     ReactiveFormsModule,
     NgbNavModule,
@@ -359,5 +362,20 @@ export class SharedModule {
     library.addIcons(faQrcode);
     library.addIcons(faArrowRightArrowLeft);
     library.addIcons(faExchangeAlt);
+    library.addIcons(faList);
+    library.addIcons(faFastForward);
+    library.addIcons(faWallet);
+    library.addIcons(faUserClock);
+    library.addIcons(faWrench);
+    library.addIcons(faUserFriends);
+    library.addIcons(faQuestionCircle);
+    library.addIcons(faHistory);
+    library.addIcons(faSignOutAlt);
+    library.addIcons(faKey);
+    library.addIcons(faSuitcase);
+    library.addIcons(faIdCardAlt);
+    library.addIcons(faNetworkWired);
+    library.addIcons(faUserCheck);
+    library.addIcons(faCircleCheck);
   }
 }

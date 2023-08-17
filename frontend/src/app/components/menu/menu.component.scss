@@ -1,0 +1,46 @@
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 65px;
+  left: 0;
+  background-color: #1d1f31;
+  overflow-x: hidden;
+  box-shadow: 0px 0px 15px 0px #000;
+  overflow-y: scroll;
+  height: 100vh;
+  @media (max-width: 991px) {
+    top: 80px;
+  };
+  @media (max-width: 572px) {
+    top: 120px;
+  }
+}
+
+.sidenav.open {
+  width: 235px;
+  @media (max-width: 400px) {
+    width: 100%;
+  }
+}
+.sidenav.close {
+  width: 0px;
+}
+
+.sidenav a {
+  text-decoration: none;
+  font-size: 20x;
+  color: lightgray;
+  margin-left: 20px;
+  display: block;
+}
+.sidenav a:hover {
+  color: white;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
