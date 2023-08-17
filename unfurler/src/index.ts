@@ -8,6 +8,7 @@ import ReusablePage from './concurrency/ReusablePage';
 import ReusableSSRPage from './concurrency/ReusablePage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute } from './routes';
+import nodejsPath from 'path';
 import logger from './logger';
 import { TimeoutError } from "puppeteer";
 const puppeteerConfig = require('../puppeteer.config.json');
@@ -50,6 +51,12 @@ class Server {
     this.canonicalHost = canonical;
 
     this.startServer();
+
+    setTimeout(async () => {
+      logger.info(`killing myself now`);
+      await this.stopServer();
+      process.exit(0);
+    }, 3600_000 * (1 + Math.random()))
   }
 
   async startServer() {
@@ -222,11 +229,7 @@ class Server {
 
       if (!img) {
         // proxy fallback image from the frontend
-        if (this.secureHost) {
-          https.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
-        } else {
-          http.get(config.SERVER.HOST + matchedRoute.fallbackImg, (got) => got.pipe(res));
-        }
+        res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
       } else {
         res.contentType('image/png');
         res.send(img);
