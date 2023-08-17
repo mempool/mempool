@@ -191,30 +191,31 @@ describe('Mempool Backend Config', () => {
             }
             continue;
           }
-          switch (typeof value) {
-            case 'object': {
-              if (Array.isArray(value)) {
-                continue;
-              } else {
-                parseJson(value, key);
-              }
-              break;
-            }
-            default: {
+
+          if (root) {
               //The flattened string, i.e, __MEMPOOL_ENABLED__
               const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
 
               //The string used as the environment variable, i.e, MEMPOOL_ENABLED
               const envVarStr = `${root ? root : ''}_${key}`;
 
+              let defaultEntry;
               //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
-              const defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
-
-              if (process.env.CI) {
-                console.log(`looking for ${defaultEntry} in the start.sh script`);
+              if (Array.isArray(value)) {
+                defaultEntry = `${replaceStr}=\${${envVarStr}:=[]}`;
+                if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                //Regex matching does not work with the array values
+                expect(startSh).toContain(defaultEntry);
+              } else {
+                 defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
+                 if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                const re = new RegExp(defaultEntry);
+                expect(startSh).toMatch(re);
               }
-              const re = new RegExp(defaultEntry);
-              expect(startSh).toMatch(re);
 
               //The string that actually replaces the values in the config file
               const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
@@ -222,11 +223,13 @@ describe('Mempool Backend Config', () => {
                 console.log(`looking for ${sedStr} in the start.sh script`);
               }
               expect(startSh).toContain(sedStr);
-              break;
             }
+          else {
+            parseJson(value, key);
           }
         }
       }
+
       parseJson(fixture);
     });
   });
