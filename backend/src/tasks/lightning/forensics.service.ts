@@ -94,7 +94,7 @@ class ForensicsService {
           logger.info(`Fetched outspends for ${allOutspends.length} txs from esplora for LN forensics`);
           await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
         } catch (e) {
-          logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/txs/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+          logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/internal-api/txs/outspends/by-txid'}. Reason ${e instanceof Error ? e.message : e}`);
         }
         // fetch spending transactions in bulk and load into txCache
         const newSpendingTxids: { [txid: string]: boolean } = {};
