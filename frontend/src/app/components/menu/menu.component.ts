@@ -20,4 +20,8 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
     this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
   }
+
+  logout(): void {
+    console.log('logout');
+  }
 }
