@@ -59,7 +59,7 @@ export class MasterPageComponent implements OnInit {
     });
     
     this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
-    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
+    this.refreshAuth();
   }
 
   collapse(): void {
@@ -72,6 +72,14 @@ export class MasterPageComponent implements OnInit {
 
   brandClick(e): void {
     this.stateService.resetScroll$.next(true);
+  }
+
+  onLoggedOut() {
+    this.refreshAuth();
+  }
+
+  refreshAuth(): void {
+    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
   }
 
   hamburgerClick(): void {

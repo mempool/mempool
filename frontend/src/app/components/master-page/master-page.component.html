@@ -1,4 +1,4 @@
-<app-menu *ngIf="servicesEnabled"></app-menu>
+<app-menu *ngIf="servicesEnabled" (loggedOut)="onLoggedOut()"></app-menu>
 
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header *ngIf="headerVisible" style="position: fixed; width: 100%; z-index: 100;">

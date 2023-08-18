@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
@@ -13,6 +13,7 @@ export class MenuComponent implements OnInit {
   navOpen: boolean = false;
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
   userAuth: any | undefined;
+  @Output() loggedOut = new EventEmitter<boolean>();
 
   constructor(
     private apiService: ApiService
@@ -25,6 +26,7 @@ export class MenuComponent implements OnInit {
 
   logout(): void {
     this.apiService.logout$().subscribe();
+    this.loggedOut.emit(true);
   }
 
   hambugerClick() {

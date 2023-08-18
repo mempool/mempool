@@ -1,18 +1,25 @@
-<div class="sidenav" [class]="navOpen ? 'open': 'close'" *ngIf="userMenuGroups$ | async as menuGroups">
+<div class="sidenav" [class]="navOpen ? 'open': 'close'">
   <nav>
     <span *ngIf="userAuth"><strong>@ {{ userAuth.user.username }}</strong></span>
+    <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0" routerLink="/login" role="tab">
+      <fa-icon [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
+      <span style="font-size: 20px;">Sign in</span>
+    </a>
 
-    <div *ngFor="let group of menuGroups" style="height: max-content;">
-      <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase">
-        <span>{{ group.title }}</span>
-      </h6>
-      <ul class="nav flex-column" *ngFor="let item of group.items">
-        <li class="nav-item d-flex justify-content-start align-items-center" (click)="navOpen = false;">
-          <fa-icon [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
-          <button *ngIf="item.link === 'logout'" class="btn nav-link" role="tab" (click)="logout()">{{ item.title }}</button>
-          <a *ngIf="item.title !== 'Logout'" class="nav-link" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
-        </li>
-      </ul>
-    </div>
+    <ng-container *ngIf="userMenuGroups$ | async as menuGroups">
+      <div *ngFor="let group of menuGroups" style="height: max-content;">
+        <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase">
+          <span>{{ group.title }}</span>
+        </h6>
+        <ul class="nav flex-column" *ngFor="let item of group.items">
+          <li class="nav-item d-flex justify-content-start align-items-center" (click)="navOpen = false;">
+            <fa-icon [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
+            <button *ngIf="item.link === 'logout'" class="btn nav-link" role="tab" (click)="logout()">{{ item.title }}</button>
+            <a *ngIf="item.title !== 'Logout'" class="nav-link" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+
   </nav>
 </div>
