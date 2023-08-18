@@ -27,6 +27,7 @@ export class MasterPageComponent implements OnInit {
   networkPaths$: Observable<Record<string, string>>;
   footerVisible = true;
   userAuth: any | undefined;
+  servicesEnabled = false;
 
   @ViewChild(MenuComponent)
   private menuComponent!: MenuComponent;
@@ -57,6 +58,7 @@ export class MasterPageComponent implements OnInit {
       }
     });
     
+    this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
   }
 
