@@ -82,7 +82,8 @@ class TransactionUtils {
             results.push(result);
           }
         } catch {
-          // skip failures
+          // we don't always expect to find a transaction for every txid
+          // so it's fine to silently skip failures
         }
       }
       return results;
