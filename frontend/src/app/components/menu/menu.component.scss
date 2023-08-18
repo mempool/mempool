@@ -37,6 +37,9 @@
 }
 .sidenav nav {
   height: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 30px;
   padding-bottom: 50px;
   @media (max-width: 572px) {
     padding-bottom: 100px;

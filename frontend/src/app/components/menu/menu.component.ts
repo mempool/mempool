@@ -12,12 +12,14 @@ import { MenuGroup } from '../../interfaces/services.interface';
 export class MenuComponent implements OnInit {
   navOpen: boolean = false;
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
+  userAuth: any | undefined;
 
   constructor(
     private apiService: ApiService
   ) {}
 
   ngOnInit(): void {
+    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
     this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
   }
 

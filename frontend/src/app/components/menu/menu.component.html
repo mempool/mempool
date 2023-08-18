@@ -1,5 +1,7 @@
 <div class="sidenav" [class]="navOpen ? 'open': 'close'" *ngIf="userMenuGroups$ | async as menuGroups">
-  <nav class="pt-3 pl-4 pr-4">
+  <nav>
+    <span *ngIf="userAuth"><strong>@ {{ userAuth.user.username }}</strong></span>
+
     <div *ngFor="let group of menuGroups" style="height: max-content;">
       <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase">
         <span>{{ group.title }}</span>
