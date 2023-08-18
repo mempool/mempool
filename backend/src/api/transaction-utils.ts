@@ -74,8 +74,18 @@ class TransactionUtils {
 
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
-      const results = await Promise.allSettled(txids.map(txid => this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, true)));
-      return (results.filter(r => r.status === 'fulfilled') as PromiseFulfilledResult<MempoolTransactionExtended>[]).map(r => r.value);
+      const results: MempoolTransactionExtended[] = [];
+      for (const txid of txids) {
+        try {
+          const result = await this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore);
+          if (result) {
+            results.push(result);
+          }
+        } catch {
+          // skip failures
+        }
+      }
+      return results;
     } else {
       const transactions = await bitcoinApi.$getMempoolTransactions(txids);
       return transactions.map(transaction => {
