@@ -1,18 +1,16 @@
 <div class="sidenav" [class]="navOpen ? 'open': 'close'" *ngIf="userMenuGroups$ | async as menuGroups">
-  <div class="pt-3 pl-4 pr-4">
-    <nav>
-      <div *ngFor="let group of menuGroups" >
-        <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase">
-          <span>{{ group.title }}</span>
-        </h6>
-        <ul class="nav flex-column" *ngFor="let item of group.items">
-          <li class="nav-item d-flex justify-content-start align-items-center" (click)="navOpen = false;">
-            <fa-icon [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
-            <a *ngIf="item.link === 'logout'" class="nav-link" role="tab" (click)="logout()">{{ item.title }}</a>
-            <a *ngIf="item.title !== 'Logout'" class="nav-link" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
+  <nav class="pt-3 pl-4 pr-4">
+    <div *ngFor="let group of menuGroups" style="height: max-content;">
+      <h6 class="d-flex justify-content-between align-items-center mt-4 mb-2 text-uppercase">
+        <span>{{ group.title }}</span>
+      </h6>
+      <ul class="nav flex-column" *ngFor="let item of group.items">
+        <li class="nav-item d-flex justify-content-start align-items-center" (click)="navOpen = false;">
+          <fa-icon [icon]="['fas', item.faIcon]" [fixedWidth]="true"></fa-icon>
+          <button *ngIf="item.link === 'logout'" class="btn nav-link" role="tab" (click)="logout()">{{ item.title }}</button>
+          <a *ngIf="item.title !== 'Logout'" class="nav-link" [routerLink]="[item.link]" role="tab">{{ item.title }}</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 </div>

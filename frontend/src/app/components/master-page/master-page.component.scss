@@ -86,7 +86,6 @@ li.nav-item {
 
 .navbar-brand {
   position: relative;
-  height: 65px;
 }
 
 .navbar-brand.dual-logos {
@@ -208,5 +207,24 @@ nav {
     height: 20px;
     margin-left: 5px;
     margin-right: 0px;
+  }
+}
+
+.profile_image_container {
+  width: 35px;
+  margin-right: 15px;
+  text-align: center;
+  align-self: center;
+  cursor: pointer;
+}
+.profile_image {
+  height: 35px;
+  border-radius: 10px;
+}
+
+.content-padding {
+  padding-top: 65px;
+  @media (max-width: 572px) {
+    padding-top: 100px;
   }
 }

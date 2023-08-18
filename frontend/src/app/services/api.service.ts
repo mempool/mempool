@@ -353,4 +353,16 @@ export class ApiService {
       headers: { 'Authorization': auth.token }
     });
   }
+
+  logout$() {
+    const auth = JSON.parse(localStorage.getItem('auth') || '');
+    if (!auth) {
+      return;
+    }
+
+    localStorage.setItem('auth', null);
+    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {
+      headers: { 'Authorization': auth.token }
+    });
+  }
 }

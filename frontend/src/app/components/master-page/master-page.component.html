@@ -3,6 +3,12 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header *ngIf="headerVisible" style="position: fixed; width: 100%; z-index: 100;">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <!-- Hamburger -->
+  <div class="profile_image_container" (click)="hamburgerClick()">
+    <img *ngIf="userAuth" [src]="'/api/v1/services/account/image/' + userAuth.user.username" class="profile_image">
+    <app-svg-images *ngIf="!userAuth" name="hamburger" height=40></app-svg-images>
+  </div>
+
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
@@ -63,6 +69,8 @@
   </div>
 </nav>
 </header>
+
+<div class="content-padding"></div>
 
 <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 

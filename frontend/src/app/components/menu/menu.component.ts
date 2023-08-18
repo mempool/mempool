@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
@@ -10,7 +10,7 @@ import { MenuGroup } from '../../interfaces/services.interface';
 })
 
 export class MenuComponent implements OnInit {
-  navOpen: boolean = true;
+  navOpen: boolean = false;
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
 
   constructor(
@@ -22,6 +22,10 @@ export class MenuComponent implements OnInit {
   }
 
   logout(): void {
-    console.log('logout');
+    this.apiService.logout$().subscribe();
+  }
+
+  hambugerClick() {
+    this.navOpen = !this.navOpen;
   }
 }

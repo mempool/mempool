@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
+import { MenuComponent } from '../menu/menu.component';
 
 @Component({
   selector: 'app-master-page',
@@ -25,6 +26,10 @@ export class MasterPageComponent implements OnInit {
   networkPaths: { [network: string]: string };
   networkPaths$: Observable<Record<string, string>>;
   footerVisible = true;
+  userAuth: any | undefined;
+
+  @ViewChild(MenuComponent)
+  private menuComponent!: MenuComponent;
 
   constructor(
     public stateService: StateService,
@@ -51,6 +56,8 @@ export class MasterPageComponent implements OnInit {
         this.footerVisible = this.footerVisibleOverride;
       }
     });
+    
+    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
   }
 
   collapse(): void {
@@ -63,5 +70,11 @@ export class MasterPageComponent implements OnInit {
 
   brandClick(e): void {
     this.stateService.resetScroll$.next(true);
+  }
+
+  hamburgerClick(): void {
+    if (this.menuComponent) {
+      this.menuComponent.hambugerClick();
+    }
   }
 }

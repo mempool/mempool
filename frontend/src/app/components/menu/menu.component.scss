@@ -1,34 +1,31 @@
 .sidenav {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 65px;
-  left: 0;
+  z-index: 10;
   background-color: #1d1f31;
-  overflow-x: hidden;
   box-shadow: 0px 0px 15px 0px #000;
+  width: 0px;
+  height: calc(100vh - 65px);
+  overflow-x: hidden;
   overflow-y: scroll;
-  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 65px;
   @media (max-width: 991px) {
-    top: 80px;
-  };
+    height: calc(100vh - 65px - 55px);
+  }
   @media (max-width: 572px) {
-    top: 120px;
+    top: 100px;
+    height: calc(100vh - 105px);
   }
 }
 
 .sidenav.open {
   width: 235px;
-  @media (max-width: 400px) {
-    width: 100%;
-  }
 }
 .sidenav.close {
   width: 0px;
 }
 
-.sidenav a {
+.sidenav a, button{
   text-decoration: none;
   font-size: 20x;
   color: lightgray;
@@ -37,6 +34,13 @@
 }
 .sidenav a:hover {
   color: white;
+}
+.sidenav nav {
+  height: auto;
+  padding-bottom: 50px;
+  @media (max-width: 572px) {
+    padding-bottom: 100px;
+  }
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
