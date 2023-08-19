@@ -258,12 +258,14 @@ class Server {
         res.status(404).send();
         return;
       } else {
+        logger.info('proxying resource "' + req.url + '"');
         if (this.secureHost) {
-          https.get(config.SERVER.HOST + ':4200' + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
             res.writeHead(got.statusCode, got.headers);
             return got.pipe(res);
-          });        } else {
-          http.get(config.SERVER.HOST + ':4200' + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+          });
+        } else {
+          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
             res.writeHead(got.statusCode, got.headers);
             return got.pipe(res);
           });
@@ -271,6 +273,8 @@ class Server {
         return;
       }
     }
+
+    logger.info((unfurl ? 'unfurling ' : 'slurping  "') + req.url + '"');
 
     let result = '';
     try {
