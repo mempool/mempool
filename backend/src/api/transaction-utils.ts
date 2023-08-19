@@ -75,7 +75,7 @@ class TransactionUtils {
 
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
-      const limiter = pLimit(32); // Run 32 requests at a time
+      const limiter = pLimit(8); // Run 8 requests at a time
       const results = await Promise.allSettled(txids.map(
         txid => limiter(() => this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore))
       ));
