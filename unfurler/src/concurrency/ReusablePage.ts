@@ -11,7 +11,7 @@ const BROWSER_TIMEOUT = 8000;
 const maxAgeMs = (config.PUPPETEER.MAX_PAGE_AGE || (24 * 60 * 60)) * 1000;
 const maxConcurrency = config.PUPPETEER.CLUSTER_SIZE;
 
-interface RepairablePage extends puppeteer.Page {
+export interface RepairablePage extends puppeteer.Page {
   repairRequested?: boolean;
   language?: string | null;
   createdAt?: number;

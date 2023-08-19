@@ -5,7 +5,7 @@ import * as https from 'https';
 import config from './config';
 import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
-import ReusableSSRPage from './concurrency/ReusablePage';
+import ReusableSSRPage from './concurrency/ReusableSSRPage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute } from './routes';
 import nodejsPath from 'path';
