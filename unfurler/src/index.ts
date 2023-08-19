@@ -259,9 +259,14 @@ class Server {
         return;
       } else {
         if (this.secureHost) {
-          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
-        } else {
-          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
+          https.get(config.SERVER.HOST + ':4200' + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+            res.writeHead(got.statusCode, got.headers);
+            return got.pipe(res);
+          });        } else {
+          http.get(config.SERVER.HOST + ':4200' + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+            res.writeHead(got.statusCode, got.headers);
+            return got.pipe(res);
+          });
         }
         return;
       }
