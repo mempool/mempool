@@ -5,7 +5,7 @@ import * as https from 'https';
 import config from './config';
 import { Cluster } from 'puppeteer-cluster';
 import ReusablePage from './concurrency/ReusablePage';
-import ReusableSSRPage from './concurrency/ReusablePage';
+import ReusableSSRPage from './concurrency/ReusableSSRPage';
 import { parseLanguageUrl } from './language/lang';
 import { matchRoute } from './routes';
 import nodejsPath from 'path';
@@ -120,8 +120,9 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
-  async clusterTask({ page, data: { url, path, action } }) {
+  async clusterTask({ page, data: { url, path, action, reqUrl } }) {
     try {
+      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
         // switch language
@@ -156,20 +157,21 @@ class Server {
         });
         return screenshot;
       } else if (success === false) {
-        logger.warn(`failed to render ${path} for ${action} due to client-side error, e.g. requested an invalid txid`);
+        logger.warn(`failed to render ${reqUrl} for ${action} due to client-side error, e.g. requested an invalid txid`);
         page.repairRequested = true;
       } else {
-        logger.warn(`failed to render ${path} for ${action} due to puppeteer timeout`);
+        logger.warn(`failed to render ${reqUrl} for ${action} due to puppeteer timeout`);
         page.repairRequested = true;
       }
     } catch (e) {
-      logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
   }
 
-  async ssrClusterTask({ page, data: { url, path, action } }) {
+  async ssrClusterTask({ page, data: { url, path, action, reqUrl } }) {
     try {
+      logger.info(`slurping "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
         // switch language
@@ -207,7 +209,7 @@ class Server {
         let html = await page.content();
         return html;
       } else {
-        logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+        logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
         page.repairRequested = true;
       }
     }
@@ -228,7 +230,9 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot' });
+        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
+      } else {
+        logger.info('rendering not enabled for page "' + req.url + '"');
       }
 
       if (!img) {
@@ -258,10 +262,17 @@ class Server {
         res.status(404).send();
         return;
       } else {
+        logger.info('proxying resource "' + req.url + '"');
         if (this.secureHost) {
-          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
+          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+            res.writeHead(got.statusCode, got.headers);
+            return got.pipe(res);
+          });
         } else {
-          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => got.pipe(res));
+          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+            res.writeHead(got.statusCode, got.headers);
+            return got.pipe(res);
+          });
         }
         return;
       }
@@ -270,9 +281,10 @@ class Server {
     let result = '';
     try {
       if (unfurl) {
+        logger.info('unfurling "' + req.url + '"');
         result = await this.renderUnfurlMeta(rawPath);
       } else {
-        result = await this.renderSEOPage(rawPath);
+        result = await this.renderSEOPage(rawPath, req.url);
       }
       if (result && result.length) {
         if (result === '404') {
@@ -326,8 +338,8 @@ class Server {
 </html>`;
   }
 
-  async renderSEOPage(rawPath: string): Promise<string> {
-    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr' });
+  async renderSEOPage(rawPath: string, reqUrl: string): Promise<string> {
+    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr', reqUrl });
     // remove javascript to prevent double hydration
     if (html && html.length) {
       html = html.replaceAll(/<script.*<\/script>/g, "");
