@@ -5,6 +5,7 @@ import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import logger from '../logger';
 import config from '../config';
+import pLimit from '../utils/p-limit';
 
 class TransactionUtils {
   constructor() { }
@@ -74,19 +75,12 @@ class TransactionUtils {
 
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
-      const results: MempoolTransactionExtended[] = [];
-      for (const txid of txids) {
-        try {
-          const result = await this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore);
-          if (result) {
-            results.push(result);
-          }
-        } catch {
-          // we don't always expect to find a transaction for every txid
-          // so it's fine to silently skip failures
-        }
-      }
-      return results;
+      const limiter = pLimit(32); // Run 32 requests at a time
+      const results = await Promise.allSettled(txids.map(
+        txid => limiter(() => this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore))
+      ));
+      return results.filter(reply => reply.status === 'fulfilled')
+        .map(r => (r as PromiseFulfilledResult<MempoolTransactionExtended>).value);
     } else {
       const transactions = await bitcoinApi.$getMempoolTransactions(txids);
       return transactions.map(transaction => {
