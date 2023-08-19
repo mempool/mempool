@@ -120,8 +120,9 @@ class Server {
     this.app.get('*', (req, res) => { return this.renderHTML(req, res, false) })
   }
 
-  async clusterTask({ page, data: { url, path, action } }) {
+  async clusterTask({ page, data: { url, path, action, reqUrl } }) {
     try {
+      logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
         // switch language
@@ -156,20 +157,21 @@ class Server {
         });
         return screenshot;
       } else if (success === false) {
-        logger.warn(`failed to render ${path} for ${action} due to client-side error, e.g. requested an invalid txid`);
+        logger.warn(`failed to render ${reqUrl} for ${action} due to client-side error, e.g. requested an invalid txid`);
         page.repairRequested = true;
       } else {
-        logger.warn(`failed to render ${path} for ${action} due to puppeteer timeout`);
+        logger.warn(`failed to render ${reqUrl} for ${action} due to puppeteer timeout`);
         page.repairRequested = true;
       }
     } catch (e) {
-      logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
   }
 
-  async ssrClusterTask({ page, data: { url, path, action } }) {
+  async ssrClusterTask({ page, data: { url, path, action, reqUrl } }) {
     try {
+      logger.info(`slurping "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
         // switch language
@@ -207,7 +209,7 @@ class Server {
         let html = await page.content();
         return html;
       } else {
-        logger.err(`failed to render ${path} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
+        logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
         page.repairRequested = true;
       }
     }
@@ -228,8 +230,7 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
-        logger.info('rendering "' + req.url + '"');
-        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot' });
+        img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');
       }
@@ -277,14 +278,13 @@ class Server {
       }
     }
 
-    logger.info((unfurl ? 'unfurling ' : 'slurping  "') + req.url + '"');
-
     let result = '';
     try {
       if (unfurl) {
+        logger.info('unfurling "' + req.url + '"');
         result = await this.renderUnfurlMeta(rawPath);
       } else {
-        result = await this.renderSEOPage(rawPath);
+        result = await this.renderSEOPage(rawPath, req.url);
       }
       if (result && result.length) {
         if (result === '404') {
@@ -338,8 +338,8 @@ class Server {
 </html>`;
   }
 
-  async renderSEOPage(rawPath: string): Promise<string> {
-    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr' });
+  async renderSEOPage(rawPath: string, reqUrl: string): Promise<string> {
+    let html = await this.ssrCluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'ssr', reqUrl });
     // remove javascript to prevent double hydration
     if (html && html.length) {
       html = html.replaceAll(/<script.*<\/script>/g, "");

@@ -17,6 +17,7 @@ export interface RepairablePage extends puppeteer.Page {
   createdAt?: number;
   free?: boolean;
   index?: number;
+  clusterGroup?: string;
 }
 
 interface ResourceData {
@@ -76,7 +77,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
     for (let i = 0; i < maxConcurrency; i++) {
       const newPage = await this.initPage();
       newPage.index = this.pages.length;
-      logger.info(`initialized page ${newPage.index}`);
+      logger.info(`initialized page ${newPage.clusterGroup}:${newPage.index}`);
       this.pages.push(newPage);
     }
   }
@@ -87,6 +88,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
 
   protected async initPage(): Promise<RepairablePage> {
     const page = await (this.browser as puppeteer.Browser).newPage() as RepairablePage;
+    page.clusterGroup = 'unfurler';
     page.language = null;
     page.createdAt = Date.now();
     let defaultUrl
@@ -129,6 +131,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
 
   protected async repairPage(page) {
     // create a new page
+    logger.debug(`Repairing page ${page.clusterGroup}:${page.index}`);
     const newPage = await this.initPage();
     newPage.free = true;
     // replace the old page
@@ -138,7 +141,7 @@ export default class ReusablePage extends ConcurrencyImplementation {
     try {
       await page.goto('about:blank', {timeout: 200}); // prevents memory leak (maybe?)
     } catch (e) {
-      logger.err('unexpected page repair error');
+      logger.err(`unexpected page repair error ${page.clusterGroup}:${page.index}`);
     }
     await page.close();
     return newPage;

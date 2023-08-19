@@ -19,6 +19,7 @@ export default class ReusableSSRPage extends ReusablePage {
 
   protected async initPage(): Promise<RepairablePage> {
     const page = await (this.browser as puppeteer.Browser).newPage() as RepairablePage;
+    page.clusterGroup = 'slurper';
     page.language = null;
     page.createdAt = Date.now();
     const defaultUrl = mempoolHost + '/about';
