@@ -228,7 +228,10 @@ class Server {
 
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
+        logger.info('rendering "' + req.url + '"');
         img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot' });
+      } else {
+        logger.info('rendering not enabled for page "' + req.url + '"');
       }
 
       if (!img) {
