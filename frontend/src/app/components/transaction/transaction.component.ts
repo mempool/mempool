@@ -11,7 +11,7 @@ import {
   mergeMap,
   tap
 } from 'rxjs/operators';
-import { Transaction } from '../../interfaces/electrs.interface';
+import { Transaction, Vout } from '../../interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, Subject, from, throwError } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
@@ -399,7 +399,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.blockConversion = price;
             })
           ).subscribe();
-      
+
           setTimeout(() => { this.applyFragment(); }, 0);
         },
         (error) => {
@@ -602,6 +602,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, 1);
     }
+  }
+
+  getTotalTxOutput(tx: Transaction): number {
+    return tx.vout.map((v: Vout) => v.value || 0).reduce((a: number, b: number) => a + b);
   }
 
   ngOnDestroy() {

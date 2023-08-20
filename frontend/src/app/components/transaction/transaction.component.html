@@ -481,7 +481,7 @@
       <tr *ngIf="isMobile && (network === 'liquid' || network === 'liquidtestnet' || !featuresEnabled)"></tr>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="tx.fee"></app-fiat></span></td>
+        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="tx.fee"></app-fiat></span> &nbsp; {{ tx.fee / (getTotalTxOutput(tx) + tx.fee) * 100 | feeRounding }}<span class="symbol"> %</span></td>
       </tr>
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
