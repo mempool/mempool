@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
@@ -50,5 +50,12 @@ export class MenuComponent implements OnInit {
 
   hambugerClick() {
     this.navOpen = !this.navOpen;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.isServices) {
+      this.navOpen = !this.isSmallScreen();
+    }
   }
 }

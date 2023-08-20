@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Inject, LOCALE_ID, HostListener } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
 import { Env, StateService } from '../../../services/state.service';
@@ -47,6 +47,8 @@ export class GlobalFooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.isServices = this.router.url.includes('/services/');
+    this.addPadding = this.isServices && !this.isSmallScreen();
+
     this.env = this.stateService.env;
     this.backendInfo$ = this.stateService.backendInfo$;
     this.servicesBackendInfo$ = this.stateService.servicesBackendInfo$;
@@ -71,7 +73,6 @@ export class GlobalFooterComponent implements OnInit {
       } else {
         this.username = null;
       }
-      this.addPadding = url[0].path === 'services' && !this.isSmallScreen();
       this.cd.markForCheck();
     })
   }
@@ -97,5 +98,11 @@ export class GlobalFooterComponent implements OnInit {
 
   isSmallScreen() {
     return window.innerWidth <= 767.98;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.addPadding = this.router.url.includes('/services/') && !this.isSmallScreen();
+    this.cd.markForCheck();
   }
 }
