@@ -452,3 +452,70 @@ Corresponding `docker-compose.yml` overrides:
       MAXMIND_GEOIP2_ISP": "/backend/GeoIP/GeoIP2-ISP.mmdb"
       ...
 ```
+
+The frontend also has some settings that can be overridden. Below is an example config of the `mempool-frontend-config.json` file and the corresponding section of the `docker-compose.yml` file.
+
+`mempool-frontend-config.json`:
+
+```json
+  {
+    "TESTNET_ENABLED": false,
+    "SIGNET_ENABLED": false,
+    "LIQUID_ENABLED": false,
+    "LIQUID_TESTNET_ENABLED": false,
+    "BISQ_ENABLED": false,
+    "BISQ_SEPARATE_BACKEND": false,
+    "ITEMS_PER_PAGE": 10,
+    "KEEP_BLOCKS_AMOUNT": 8,
+    "NGINX_PROTOCOL": "http",
+    "NGINX_HOSTNAME": "127.0.0.1",
+    "NGINX_PORT": "80",
+    "BLOCK_WEIGHT_UNITS": 4000000,
+    "MEMPOOL_BLOCKS_AMOUNT": 8,
+    "BASE_MODULE": "mempool",
+    "MEMPOOL_WEBSITE_URL": "https://mempool.space",
+    "LIQUID_WEBSITE_URL": "https://liquid.network",
+    "BISQ_WEBSITE_URL": "https://bisq.markets",
+    "MINING_DASHBOARD": true,
+    "AUDIT": false,
+    "MAINNET_BLOCK_AUDIT_START_HEIGHT": 0,
+    "TESTNET_BLOCK_AUDIT_START_HEIGHT": 0,
+    "SIGNET_BLOCK_AUDIT_START_HEIGHT": 0,
+    "LIGHTNING": false,
+    "HISTORICAL_PRICE": true,
+    "ACCELERATOR": false
+  }
+```
+
+`docker-compose.yml`:
+
+```yml
+  web:
+    environment:
+      TESTNET_ENABLED: ""
+      SIGNET_ENABLED: ""
+      LIQUID_ENABLED: ""
+      LIQUID_TESTNET_ENABLED: ""
+      BISQ_ENABLED: ""
+      BISQ_SEPARATE_BACKEND: ""
+      ITEMS_PER_PAGE: ""
+      KEEP_BLOCKS_AMOUNT: ""
+      NGINX_PROTOCOL: ""
+      NGINX_HOSTNAME: ""
+      NGINX_PORT: ""
+      BLOCK_WEIGHT_UNITS: ""
+      MEMPOOL_BLOCKS_AMOUNT: ""
+      BASE_MODULE: ""
+      MEMPOOL_WEBSITE_URL: ""
+      LIQUID_WEBSITE_URL: ""
+      BISQ_WEBSITE_URL: ""
+      MINING_DASHBOARD: ""
+      AUDIT: ""
+      MAINNET_BLOCK_AUDIT_START_HEIGHT: ""
+      TESTNET_BLOCK_AUDIT_START_HEIGHT: ""
+      SIGNET_BLOCK_AUDIT_START_HEIGHT: ""
+      LIGHTNING: ""
+      HISTORICAL_PRICE: ""
+      ACCELERATOR: ""
+      ...
+```
