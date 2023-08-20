@@ -4,7 +4,7 @@ import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITrans
   PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
 import { Observable, of } from 'rxjs';
 import { StateService } from './state.service';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { MenuGroup } from '../interfaces/services.interface';
@@ -36,6 +36,10 @@ export class ApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
+
+    this.getServicesBackendInfo$().subscribe(version => {
+      this.stateService.servicesBackendInfo$.next(version);
+    })
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
@@ -366,5 +370,9 @@ export class ApiService {
     return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {
       headers: { 'Authorization': auth.token }
     });
+  }
+
+  getServicesBackendInfo$(): Observable<IBackendInfo> {
+    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
   }
 }

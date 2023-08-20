@@ -8,6 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
+import { ApiService } from './api.service';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -48,6 +49,7 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
+  SERVICES: boolean;
 }
 
 const defaultEnv: Env = {
@@ -79,6 +81,7 @@ const defaultEnv: Env = {
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
+  'SERVICES': false,
 };
 
 @Injectable({
@@ -120,6 +123,7 @@ export class StateService {
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
+  servicesBackendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
   chainTip$ = new ReplaySubject<number>(-1);

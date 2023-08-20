@@ -20,6 +20,7 @@ export class GlobalFooterComponent implements OnInit {
   env: Env;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   backendInfo$: Observable<IBackendInfo>;
+  servicesBackendInfo$: Observable<IBackendInfo>;
   frontendGitCommitHash = this.stateService.env.GIT_COMMIT_HASH;
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
   urlLanguage: string;
@@ -29,6 +30,8 @@ export class GlobalFooterComponent implements OnInit {
   loggedIn = false;
   username = null;
   urlSubscription: Subscription;
+  addPadding = false;
+  isServices = false;
 
   constructor(
     public stateService: StateService,
@@ -38,12 +41,15 @@ export class GlobalFooterComponent implements OnInit {
     private storageService: StorageService,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.isServices = this.router.url.includes('/services/');
     this.env = this.stateService.env;
     this.backendInfo$ = this.stateService.backendInfo$;
+    this.servicesBackendInfo$ = this.stateService.servicesBackendInfo$;
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
@@ -65,6 +71,7 @@ export class GlobalFooterComponent implements OnInit {
       } else {
         this.username = null;
       }
+      this.addPadding = url[0].path === 'services' && !this.isSmallScreen();
       this.cd.markForCheck();
     })
   }
@@ -88,4 +95,7 @@ export class GlobalFooterComponent implements OnInit {
     }
   }
 
+  isSmallScreen() {
+    return window.innerWidth <= 767.98;
+  }
 }
