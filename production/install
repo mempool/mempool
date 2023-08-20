@@ -530,6 +530,7 @@ osCertbotDryRun()
 zfsCreateFilesystems()
 {
     zfs create -o "mountpoint=/backup" "${ZPOOL}/backup"
+    zfs create -o "mountpoint=/var/cache/nginx" "${ZPOOL}/cache"
 
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
@@ -1641,19 +1642,11 @@ fi
 ################################################
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
-    echo "[*] Installing Elements Liquid Testnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
-
     echo "[*] Installing Elements Liquid Testnet RPC credentials"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
-
-    echo "[*] Configuring Elements LiquidTestnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
 fi
 
 ################################
@@ -1860,8 +1853,6 @@ chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 echo "[*] Adding Nginx configuration"
 osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-mkdir -p /var/cache/nginx/services /var/cache/nginx/api
-chown "${NGINX_USER}:${NGINX_GROUP}" /var/cache/nginx/services /var/cache/nginx/api
 ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
