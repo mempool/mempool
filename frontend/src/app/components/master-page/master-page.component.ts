@@ -5,6 +5,7 @@ import { LanguageService } from '../../services/language.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
 import { MenuComponent } from '../menu/menu.component';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-master-page',
@@ -37,6 +38,7 @@ export class MasterPageComponent implements OnInit {
     private languageService: LanguageService,
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
+    private storageService: StorageService
   ) { }
 
   ngOnInit(): void {
@@ -74,12 +76,12 @@ export class MasterPageComponent implements OnInit {
     this.stateService.resetScroll$.next(true);
   }
 
-  onLoggedOut() {
+  onLoggedOut(): void {
     this.refreshAuth();
   }
 
   refreshAuth(): void {
-    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
+    this.userAuth = this.storageService.getAuth();
   }
 
   hamburgerClick(): void {

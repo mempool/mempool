@@ -8,6 +8,7 @@ import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
 import { MenuGroup } from '../interfaces/services.interface';
+import { StorageService } from './storage.service';
 
 // Todo - move to config.json
 const SERVICES_API_PREFIX = `/api/v1/services`;
@@ -22,6 +23,7 @@ export class ApiService {
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
+    private storageService: StorageService
   ) {
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
@@ -336,7 +338,7 @@ export class ApiService {
   /**
    * Services
    */
-  
+
   getNodeOwner$(publicKey: string): Observable<any> {
     let params = new HttpParams()
       .set('node_public_key', publicKey);
@@ -344,7 +346,7 @@ export class ApiService {
   }
 
   getUserMenuGroups$(): Observable<MenuGroup[]> {
-    const auth = JSON.parse(localStorage.getItem('auth') || '');
+    const auth = this.storageService.getAuth();
     if (!auth) {
       return of(null);
     }
@@ -354,10 +356,10 @@ export class ApiService {
     });
   }
 
-  logout$() {
-    const auth = JSON.parse(localStorage.getItem('auth') || '');
+  logout$(): Observable<any> {
+    const auth = this.storageService.getAuth();
     if (!auth) {
-      return;
+      return of(null);
     }
 
     localStorage.setItem('auth', null);

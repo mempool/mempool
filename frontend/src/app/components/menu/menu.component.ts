@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-menu',
@@ -16,11 +17,12 @@ export class MenuComponent implements OnInit {
   @Output() loggedOut = new EventEmitter<boolean>();
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private storageService: StorageService
   ) {}
 
   ngOnInit(): void {
-    this.userAuth = JSON.parse(localStorage.getItem('auth') || '') ?? null;
+    this.userAuth = this.storageService.getAuth();
     this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
   }
 
