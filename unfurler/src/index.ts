@@ -30,6 +30,9 @@ class Server {
   secureHost = true;
   canonicalHost: string;
 
+  seoQueueLength: number = 0;
+  unfurlQueueLength: number = 0;
+
   constructor() {
     this.app = express();
     this.mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
@@ -121,6 +124,7 @@ class Server {
   }
 
   async clusterTask({ page, data: { url, path, action, reqUrl } }) {
+    const start = Date.now();
     try {
       logger.info(`rendering "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
@@ -155,6 +159,7 @@ class Server {
           captureBeyondViewport: false,
           clip: { width: 1200, height: 600, x: 0, y: 0, scale: 1 },
         });
+        logger.info(`rendered unfurl img in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
         return screenshot;
       } else if (success === false) {
         logger.warn(`failed to render ${reqUrl} for ${action} due to client-side error, e.g. requested an invalid txid`);
@@ -170,13 +175,14 @@ class Server {
   }
 
   async ssrClusterTask({ page, data: { url, path, action, reqUrl } }) {
+    const start = Date.now();
     try {
       logger.info(`slurping "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
       const urlParts = parseLanguageUrl(path);
       if (page.language !== urlParts.lang) {
         // switch language
         page.language = urlParts.lang;
-        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}` ;
+        const localizedUrl = urlParts.lang ? `${this.mempoolHost}/${urlParts.lang}${urlParts.path}` : `${this.mempoolHost}${urlParts.path}`;
         await page.goto(localizedUrl, { waitUntil: "load" });
       } else {
         const loaded = await page.evaluate(async (path) => {
@@ -199,14 +205,17 @@ class Server {
         return !!window['soft404'];
       });
       if (is404) {
+        logger.info(`slurp 404 in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
         return '404';
       } else {
         let html = await page.content();
+        logger.info(`rendered slurp in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
         return html;
       }
     } catch (e) {
       if (e instanceof TimeoutError) {
         let html = await page.content();
+        logger.info(`rendered partial slurp in ${Date.now() - start}ms for "${reqUrl}" on tab ${page.clusterGroup}:${page.index}`);
         return html;
       } else {
         logger.err(`failed to render ${reqUrl} for ${action}: ` + (e instanceof Error ? e.message : `${e}`));
@@ -221,6 +230,8 @@ class Server {
 
   async renderPreview(req, res) {
     try {
+      this.unfurlQueueLength++;
+      const start = Date.now();
       const rawPath = req.params[0];
 
       let img = null;
@@ -231,6 +242,7 @@ class Server {
       // don't bother unless the route is definitely renderable
       if (rawPath.includes('/preview/') && matchedRoute.render) {
         img = await this.cluster?.execute({ url: this.mempoolHost + rawPath, path: rawPath, action: 'screenshot', reqUrl: req.url });
+        logger.info(`unfurl returned "${req.url}" in ${Date.now() - start}ms | ${this.unfurlQueueLength - 1} tasks in queue`);
       } else {
         logger.info('rendering not enabled for page "' + req.url + '"');
       }
@@ -245,6 +257,8 @@ class Server {
     } catch (e) {
       logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
       res.status(500).send(e instanceof Error ? e.message : e);
+    } finally {
+      this.unfurlQueueLength--;
     }
   }
 
@@ -284,7 +298,10 @@ class Server {
         logger.info('unfurling "' + req.url + '"');
         result = await this.renderUnfurlMeta(rawPath);
       } else {
+        this.seoQueueLength++;
+        const start = Date.now();
         result = await this.renderSEOPage(rawPath, req.url);
+        logger.info(`slurp returned "${req.url}" in ${Date.now() - start}ms | ${this.seoQueueLength - 1} tasks in queue`);
       }
       if (result && result.length) {
         if (result === '404') {
@@ -298,6 +315,10 @@ class Server {
     } catch (e) {
       logger.err(e instanceof Error ? e.message : `${e} ${req.params[0]}`);
       res.status(500).send(e instanceof Error ? e.message : e);
+    } finally {
+      if (!unfurl) {
+        this.seoQueueLength--;
+      }
     }
   }
 

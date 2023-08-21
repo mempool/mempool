@@ -49,7 +49,7 @@ export default class ReusableSSRPage extends ReusablePage {
       await page.goto(defaultUrl, { waitUntil: "networkidle0" });
       await page.waitForSelector('meta[property="og:meta:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 });
     } catch (e) {
-      logger.err(`failed to load frontend during ssr page initialization: ` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to load frontend during ssr page initialization ${page.clusterGroup}:${page.index}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
     page.free = true;
