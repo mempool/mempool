@@ -1,0 +1,3 @@
+I hereby accept the terms of the Contributor License Agreement in the CONTRIBUTING.md file with sha256 hash c80c5ee4c71c5a76a1f6cd35339bd0c45b25b491933ea7b02a66470e9f43a6fd.
+
+Signed: TheBlueMatt
