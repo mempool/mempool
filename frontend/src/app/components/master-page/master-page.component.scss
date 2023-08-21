@@ -225,12 +225,12 @@ nav {
   align-self: center;
   cursor: pointer;
   &.anon {
-    border: 1px solid lightgrey;
-    color: grey;
-    border-radius: 10px;
+    border: 1.5px solid lightgrey;
+    color: lightgrey;
+    border-radius: 5px;
   }
 }
 .profile_image {
   height: 35px;
-  border-radius: 10px;
+  border-radius: 5px;
 }
