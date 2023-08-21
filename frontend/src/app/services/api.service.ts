@@ -105,7 +105,7 @@ export class ApiService {
   }
 
   getAboutPageProfiles$(): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/about-page');
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/services/sponsors');
   }
 
   getOgs$(): Observable<any> {
