@@ -22,7 +22,7 @@ export default class ReusableSSRPage extends ReusablePage {
     page.clusterGroup = 'slurper';
     page.language = null;
     page.createdAt = Date.now();
-    const defaultUrl = mempoolHost + '/about';
+    const defaultUrl = mempoolHost + '/preview/block/1';
 
     page.on('pageerror', (err) => {
       console.log(err);
@@ -39,7 +39,7 @@ export default class ReusableSSRPage extends ReusablePage {
           headers: {"Access-Control-Allow-Origin": "*"},
           body: mockImageBuffer
         });
-      } else if (!['document', 'script', 'xhr', 'fetch'].includes(req.resourceType())) {
+      } else if (req.resourceType() === 'media') {
         return req.abort();
       } else {
         return req.continue();

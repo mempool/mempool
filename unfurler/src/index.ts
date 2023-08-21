@@ -28,6 +28,7 @@ class Server {
   mempoolUrl: URL;
   network: string;
   secureHost = true;
+  secureMempoolHost = true;
   canonicalHost: string;
 
   seoQueueLength: number = 0;
@@ -38,6 +39,7 @@ class Server {
     this.mempoolHost = config.MEMPOOL.HTTP_HOST + (config.MEMPOOL.HTTP_PORT ? ':' + config.MEMPOOL.HTTP_PORT : '');
     this.mempoolUrl = new URL(this.mempoolHost);
     this.secureHost = config.SERVER.HOST.startsWith('https');
+    this.secureMempoolHost = config.MEMPOOL.HTTP_HOST.startsWith('https');
     this.network = config.MEMPOOL.NETWORK || 'bitcoin';
 
     let canonical;
@@ -277,13 +279,13 @@ class Server {
         return;
       } else {
         logger.info('proxying resource "' + req.url + '"');
-        if (this.secureHost) {
-          https.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+        if (this.secureMempoolHost) {
+          https.get(this.mempoolHost + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
             res.writeHead(got.statusCode, got.headers);
             return got.pipe(res);
           });
         } else {
-          http.get(config.SERVER.HOST + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
+          http.get(this.mempoolHost + rawPath, { headers: { 'user-agent': 'mempoolunfurl' }}, (got) => {
             res.writeHead(got.statusCode, got.headers);
             return got.pipe(res);
           });

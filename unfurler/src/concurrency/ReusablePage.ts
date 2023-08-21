@@ -142,8 +142,9 @@ export default class ReusablePage extends ConcurrencyImplementation {
       await page.goto('about:blank', {timeout: 200}); // prevents memory leak (maybe?)
     } catch (e) {
       logger.err(`unexpected page repair error ${page.clusterGroup}:${page.index}`);
+    } finally {
+      await page.close();
     }
-    await page.close();
     return newPage;
   }
 
