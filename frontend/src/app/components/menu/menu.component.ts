@@ -34,7 +34,6 @@ export class MenuComponent implements OnInit {
     }
 
     this.isServicesPage = this.router.url.includes('/services/');
-    this.navOpen = this.isServicesPage && !this.isSmallScreen();
   }
 
   isSmallScreen() {
@@ -51,20 +50,19 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  onLinkClick() {
-    if (!this.isServicesPage || this.isSmallScreen()) {
-      this.navOpen = false;
-    }
+  onLinkClick(link) {
+    this.navOpen = false;
+    this.router.navigateByUrl(link);
   }
 
   hambugerClick() {
     this.navOpen = !this.navOpen;
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    if (this.isServicesPage) {
-      this.navOpen = !this.isSmallScreen();
+  @HostListener('window:click', ['$event'])
+  onClick(event) {
+    if (event.target.id === 'empty-area') {
+      this.navOpen = false;
     }
   }
 }

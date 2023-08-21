@@ -1,3 +1,11 @@
+.sticky-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
 li.nav-item.active {
   background-color: #653b9c;
 }
@@ -225,11 +233,4 @@ nav {
 .profile_image {
   height: 35px;
   border-radius: 10px;
-}
-
-.content-padding {
-  padding-top: 65px;
-  @media (max-width: 572px) {
-    padding-top: 100px;
-  }
 }
