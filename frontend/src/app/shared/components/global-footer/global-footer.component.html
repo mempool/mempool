@@ -77,9 +77,7 @@
       <div class="col-sm-12" *ngIf="!isServicesPage">
         <p *ngIf="officialMempoolSpace">{{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]</p>
         <p *ngIf="!officialMempoolSpace">v{{ packetJsonVersion }} [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</p>
-      </div>
-      <div class="col-sm-12" *ngIf="isServicesPage">
-        <p>{{ (servicesBackendInfo$ | async)?.hostname }} (v{{ (servicesBackendInfo$ | async )?.version }}) [<a target="_blank" href="https://github.com/mempool/mempool.space/commit/{{ (servicesBackendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (servicesBackendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]</p>
+        <p *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">{{ (servicesBackendInfo$ | async)?.hostname }} (v{{ (servicesBackendInfo$ | async )?.version }}) [{{ (servicesBackendInfo$ | async )?.gitCommit | slice:0:8 }}]</p>
       </div>
     </div>
   </div>

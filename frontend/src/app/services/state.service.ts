@@ -50,6 +50,7 @@ export interface Env {
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
+  PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
 
 const defaultEnv: Env = {
