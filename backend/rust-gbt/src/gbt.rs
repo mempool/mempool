@@ -335,13 +335,15 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let Some(ancestor) = audit_pool
+        if let Some(ancestor) = audit_pool
             .get(*ancestor_id as usize)
-            .expect("audit_pool contains all ancestors") else { todo!() };
-        total_fee += ancestor.fee;
-        total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
-        total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
-        total_sigops += ancestor.sigops;
+            .expect("audit_pool contains all ancestors")
+        {
+            total_fee += ancestor.fee;
+            total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
+            total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
+            total_sigops += ancestor.sigops;
+        } else { todo!() };
     }
 
     if let Some(Some(tx)) = audit_pool.get_mut(txid as usize) {
