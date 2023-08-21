@@ -4,10 +4,17 @@
 <header *ngIf="headerVisible" style="position: fixed; width: 100%; z-index: 100;">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <!-- Hamburger -->
-  <div *ngIf="servicesEnabled" class="profile_image_container" (click)="hamburgerClick()">
-    <img *ngIf="userAuth" [src]="'/api/v1/services/account/image/' + userAuth.user.username" class="profile_image">
-    <app-svg-images *ngIf="!userAuth" name="hamburger" height=40></app-svg-images>
-  </div>
+  <ng-container *ngIf="servicesEnabled">
+    <div *ngIf="user" class="profile_image_container" [class]="{'anon': !user.imageMd5}" (click)="hamburgerClick()">
+      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/image/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
+      <app-svg-images *ngIf="!user.imageMd5" name="anon"></app-svg-images>
+    </div>
+    <div *ngIf="user === null" class="profile_image_container" (click)="hamburgerClick()">
+      <app-svg-images name="hamburger" height="40"></app-svg-images>
+    </div>
+    <!-- Empty placeholder -->
+    <div *ngIf="user === undefined" class="profile_image_container"></div>
+  </ng-container>
 
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">

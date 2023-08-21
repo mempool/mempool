@@ -6,6 +6,7 @@ import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
 import { MenuComponent } from '../menu/menu.component';
 import { StorageService } from '../../services/storage.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-master-page',
@@ -28,6 +29,7 @@ export class MasterPageComponent implements OnInit {
   networkPaths$: Observable<Record<string, string>>;
   footerVisible = true;
   userAuth: any | undefined;
+  user: any = undefined;
   servicesEnabled = false;
 
   @ViewChild(MenuComponent)
@@ -38,7 +40,8 @@ export class MasterPageComponent implements OnInit {
     private languageService: LanguageService,
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private apiService: ApiService,
   ) { }
 
   ngOnInit(): void {
@@ -81,7 +84,7 @@ export class MasterPageComponent implements OnInit {
   }
 
   refreshAuth(): void {
-    this.userAuth = this.storageService.getAuth();
+    this.apiService.getUserInfo$().subscribe(user => this.user = user);
   }
 
   hamburgerClick(): void {

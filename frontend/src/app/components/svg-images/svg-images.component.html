@@ -79,6 +79,11 @@
       <path stroke-width="0.5" stroke-linecap="round" d="M0.5 2.5 H7 M0.5 5 H5.5 M0.5 7.5 H7"></path>
     </svg>
   </ng-container>
+  <ng-container *ngSwitchCase="'anon'">
+    <svg [attr.width]="width" [attr.height]="height" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.5v-2a3 3 0 116 0v2c0 1.11-.603 2.08-1.5 2.599v1.224a1 1 0 00.629.928l2.05.82A3.693 3.693 0 0118.5 18.5h-13c0-1.51.92-2.868 2.321-3.428l2.05-.82a1 1 0 00.629-.929v-1.224A2.999 2.999 0 019 9.5z"></path>
+    </svg>
+  </ng-container>
 </ng-container>
 
 <ng-template #bitcoinLogo let-color let-width="width" let-height="height" let-viewBox="viewBox">

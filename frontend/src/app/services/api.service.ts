@@ -362,6 +362,17 @@ export class ApiService {
     });
   }
 
+  getUserInfo$(): Observable<any> {
+    const auth = this.storageService.getAuth();
+    if (!auth) {
+      return of(null);
+    }
+
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`, {
+      headers: { 'Authorization': auth.token }
+    });
+  }
+
   logout$(): Observable<any> {
     const auth = this.storageService.getAuth();
     if (!auth) {
