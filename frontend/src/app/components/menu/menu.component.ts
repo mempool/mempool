@@ -42,8 +42,13 @@ export class MenuComponent implements OnInit {
   }
 
   logout(): void {
-    this.apiService.logout$().subscribe();
-    this.loggedOut.emit(true);
+    this.apiService.logout$().subscribe(() => {
+      this.loggedOut.emit(true);
+      if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
+        this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
+        this.router.navigateByUrl('/');
+      }
+    });
   }
 
   onLinkClick() {

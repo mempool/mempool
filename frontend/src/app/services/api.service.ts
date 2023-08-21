@@ -368,7 +368,7 @@ export class ApiService {
       return of(null);
     }
 
-    localStorage.setItem('auth', null);
+    localStorage.removeItem('auth');
     return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {
       headers: { 'Authorization': auth.token }
     });
