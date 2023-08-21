@@ -65,4 +65,9 @@ export class MenuComponent implements OnInit {
       this.navOpen = false;
     }
   }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event) {
+    this.navOpen = false;
+  }
 }
