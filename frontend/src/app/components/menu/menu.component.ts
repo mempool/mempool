@@ -4,6 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-menu',
@@ -17,20 +18,23 @@ export class MenuComponent implements OnInit {
   navOpen: boolean = false;
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
   userAuth: any | undefined;
-  isServices = false;
+  isServicesPage = false;
 
   constructor(
     private apiService: ApiService,
     private storageService: StorageService,
-    private router: Router
+    private router: Router,
+    private stateService: StateService
   ) {}
 
   ngOnInit(): void {
     this.userAuth = this.storageService.getAuth();
-    this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
+    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
+      this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
+    }
 
-    this.isServices = this.router.url.includes('/services/');
-    this.navOpen = this.isServices && !this.isSmallScreen();
+    this.isServicesPage = this.router.url.includes('/services/');
+    this.navOpen = this.isServicesPage && !this.isSmallScreen();
   }
 
   isSmallScreen() {
@@ -43,7 +47,7 @@ export class MenuComponent implements OnInit {
   }
 
   onLinkClick() {
-    if (!this.isServices || this.isSmallScreen()) {
+    if (!this.isServicesPage || this.isSmallScreen()) {
       this.navOpen = false;
     }
   }
@@ -54,7 +58,7 @@ export class MenuComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    if (this.isServices) {
+    if (this.isServicesPage) {
       this.navOpen = !this.isSmallScreen();
     }
   }

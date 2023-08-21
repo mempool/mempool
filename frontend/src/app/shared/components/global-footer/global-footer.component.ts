@@ -31,7 +31,7 @@ export class GlobalFooterComponent implements OnInit {
   username = null;
   urlSubscription: Subscription;
   addPadding = false;
-  isServices = false;
+  isServicesPage = false;
 
   constructor(
     public stateService: StateService,
@@ -46,8 +46,8 @@ export class GlobalFooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isServices = this.router.url.includes('/services/');
-    this.addPadding = this.isServices && !this.isSmallScreen();
+    this.isServicesPage = this.router.url.includes('/services/');
+    this.addPadding = this.isServicesPage && !this.isSmallScreen();
 
     this.env = this.stateService.env;
     this.backendInfo$ = this.stateService.backendInfo$;

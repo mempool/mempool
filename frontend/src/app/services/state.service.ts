@@ -49,7 +49,7 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
-  SERVICES: boolean;
+  GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
 }
 
 const defaultEnv: Env = {
@@ -81,7 +81,6 @@ const defaultEnv: Env = {
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
-  'SERVICES': false,
 };
 
 @Injectable({

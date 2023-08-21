@@ -37,9 +37,11 @@ export class ApiService {
       this.apiBasePath = network ? '/' + network : '';
     });
 
-    this.getServicesBackendInfo$().subscribe(version => {
-      this.stateService.servicesBackendInfo$.next(version);
-    })
+    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
+      this.getServicesBackendInfo$().subscribe(version => {
+        this.stateService.servicesBackendInfo$.next(version);
+      })
+    }
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {

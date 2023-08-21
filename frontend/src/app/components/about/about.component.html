@@ -4,8 +4,8 @@
     <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&reg;</span>
     <img class="logo" src="/resources/mempool-logo-bigger.png" />
     <div class="version">
-      <span *ngIf="!stateService.env.SERVICES">v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
-      <span *ngIf="stateService.env.SERVICES">v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool.space/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
+      <span *ngIf="!stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
+      <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool.space/commit/{{ frontendGitCommitHash }}">{{ stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE }}</a>]</span>
     </div>
   </div>
 
