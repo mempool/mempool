@@ -250,8 +250,8 @@ class Server {
       }
 
       if (!img) {
-        // proxy fallback image from the frontend
-        res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
+        // send local fallback image file
+        res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackFile));
       } else {
         res.contentType('image/png');
         res.send(img);
