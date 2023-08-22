@@ -5,7 +5,7 @@
     <img class="logo" src="/resources/mempool-logo-bigger.png" />
     <div class="version">
       <span>v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
-      <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE"><br>v{{ stateService.env.PACKAGE_JSON_VERSION_MEMPOOL_SPACE }} [{{ stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE }}]</span>
+      <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">[{{ stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE }}]</span>
     </div>
   </div>
 
