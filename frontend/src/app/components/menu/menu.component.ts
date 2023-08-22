@@ -73,11 +73,17 @@ export class MenuComponent implements OnInit {
   @HostListener('window:click', ['$event'])
   onClick(event) {
     const cssClasses = event.target.className;
+    if (!cssClasses.indexOf) { // Click on chart or non html thingy, close the menu
+      this.navOpen = false;
+      return;
+    }
+
     const isHamburger = cssClasses.indexOf('profile_image') !== -1;
     const isMenu = cssClasses.indexOf('menu-click') !== -1;
-
-    if (!isHamburger && !this.isServicesPage && !isMenu) {
+    const isServicesPageOnMobile = this.isServicesPage && this.isSmallScreen();
+    if (!isHamburger && !isMenu && (!this.isServicesPage || isServicesPageOnMobile)) {
       this.navOpen = false;
+      return;
     }
   }
 }
