@@ -82,7 +82,7 @@
   <div class="flex-grow-1">
     <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
-    <main>
+    <main style="max-width: 100vw;">
       <router-outlet></router-outlet>
     </main>
 
