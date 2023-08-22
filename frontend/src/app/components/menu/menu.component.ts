@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
 import { StorageService } from '../../services/storage.service';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { StateService } from '../../services/state.service';
 
 @Component({
@@ -34,6 +34,15 @@ export class MenuComponent implements OnInit {
     }
 
     this.isServicesPage = this.router.url.includes('/services/');
+    this.navOpen = this.isServicesPage && !this.isSmallScreen();
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (!this.isServicesPage) {
+          this.navOpen = false;
+        }
+      }
+    });
   }
 
   isSmallScreen() {
@@ -51,7 +60,9 @@ export class MenuComponent implements OnInit {
   }
 
   onLinkClick(link) {
-    this.navOpen = false;
+    if (!this.isServicesPage || this.isSmallScreen()) {
+      this.navOpen = false;
+    }
     this.router.navigateByUrl(link);
   }
 
@@ -61,13 +72,12 @@ export class MenuComponent implements OnInit {
 
   @HostListener('window:click', ['$event'])
   onClick(event) {
-    if (event.target.id === 'empty-area') {
+    const cssClasses = event.target.className;
+    const isHamburger = cssClasses.indexOf('profile_image') !== -1;
+    const isMenu = cssClasses.indexOf('menu-click') !== -1;
+
+    if (!isHamburger && !this.isServicesPage && !isMenu) {
       this.navOpen = false;
     }
-  }
-
-  @HostListener('window:scroll', ['$event'])
-  onScroll(event) {
-    this.navOpen = false;
   }
 }

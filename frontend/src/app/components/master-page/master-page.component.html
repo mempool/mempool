@@ -1,5 +1,3 @@
-<app-menu *ngIf="servicesEnabled" (loggedOut)="onLoggedOut()"></app-menu>
-
 <ng-container *ngIf="{ val: network$ | async } as network">
 <header *ngIf="headerVisible" class="sticky-header">
 
@@ -78,11 +76,18 @@
 </nav>
 </header>
 
-<app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
+<div class="d-flex" style="overflow: clip">
+  <app-menu *ngIf="servicesEnabled" (loggedOut)="onLoggedOut()"></app-menu>
 
-<main>
-  <router-outlet></router-outlet>
-</main>
+  <div class="flex-grow-1">
+    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
-<app-global-footer *ngIf="footerVisible"></app-global-footer>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+
+    <app-global-footer *ngIf="footerVisible"></app-global-footer>
+  </div>
+</div>
+
 </ng-container>
