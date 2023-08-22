@@ -28,6 +28,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
+  @ViewChild('blockchainWrapper', { static: true }) blockchainWrapper: ElementRef;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
   resetScrollSubscription: Subscription; 
 
@@ -48,6 +49,9 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   lastMouseX: number;
   velocity: number = 0;
   mempoolOffset: number = 0;
+
+  private resizeObserver: ResizeObserver;
+  chainWidth: number = window.innerWidth;
 
   constructor(
     private stateService: StateService,
@@ -70,10 +74,10 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
       this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
       if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
-        this.onResize();
+        this.onResize(this.chainWidth);
       }
     });
-    this.onResize();
+    this.onResize(this.chainWidth);
     this.updatePages();
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
@@ -151,6 +155,16 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
         this.stateService.resetScroll$.next(false);
       } 
     });
+
+    if ('ResizeObserver' in window && this.blockchainWrapper?.nativeElement) {
+      this.resizeObserver = new ResizeObserver(entries => {
+        const newChainWidth = entries[0].contentRect.width;
+        if (newChainWidth != this.chainWidth) {
+          this.onResize(newChainWidth);
+        }
+      });
+      this.resizeObserver.observe(this.blockchainWrapper.nativeElement);
+    }
   }
 
   onMempoolOffsetChange(offset): void {
@@ -171,9 +185,9 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+  onResize(width): void {
+    this.chainWidth = width;
+    this.isMobile = this.chainWidth <= 767.98;
     let firstVisibleBlock;
     let offset;
     if (this.blockchainContainer?.nativeElement != null) {
@@ -188,7 +202,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
       });
     }
 
-    this.blocksPerPage = Math.ceil(window.innerWidth / this.blockWidth);
+    this.blocksPerPage = Math.ceil(this.chainWidth / this.blockWidth);
     this.pageWidth = this.blocksPerPage * this.blockWidth;
     this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
 
@@ -295,7 +309,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   onScroll(e) {
     const middlePage = this.pageIndex === 0 ? this.pages[0] : this.pages[1];
     // compensate for css transform
-    const translation = (this.isMobile ? window.innerWidth * 0.95 : window.innerWidth * 0.5);
+    const translation = (this.isMobile ? this.chainWidth * 0.95 : this.chainWidth * 0.5);
     const backThreshold = middlePage.offset + (this.pageWidth * 0.5) + translation;
     const forwardThreshold = middlePage.offset - (this.pageWidth * 0.5) + translation;
     const scrollLeft = this.getConvertedScrollOffset();
@@ -414,10 +428,10 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
 
   blockInViewport(height: number): boolean {
     const firstHeight = this.pages[0].height;
-    const translation = (this.isMobile ? window.innerWidth * 0.95 : window.innerWidth * 0.5);
+    const translation = (this.isMobile ? this.chainWidth * 0.95 : this.chainWidth * 0.5);
     const firstX = this.pages[0].offset - this.getConvertedScrollOffset() + translation;
     const xPos = firstX + ((firstHeight - height) * 155);
-    return xPos > -55 && xPos < (window.innerWidth - 100);
+    return xPos > -55 && xPos < (this.chainWidth - 100);
   }
 
   getConvertedScrollOffset(): number {
