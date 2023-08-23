@@ -7,6 +7,10 @@
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
         </div>
+        <p class="d-block d-sm-none">
+          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+          <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
+        </p>
         <div class="site-options d-flex justify-content-center align-items-center">
           <div class="selector">
             <app-language-selector></app-language-selector>
@@ -26,7 +30,11 @@
           <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
           <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In / Sign Up</span>
         </a>
-    </div>
+        <p class="d-none d-sm-block">
+          <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
+          <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
+        </p>
+      </div>
     </div>
     <div class="row col-md-12 link-tree">
         <div class="links">
