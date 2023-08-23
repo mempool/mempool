@@ -7,7 +7,7 @@
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
         </div>
-        <div class="site-options">
+        <div class="site-options d-flex justify-content-center align-items-center">
           <div class="selector">
             <app-language-selector></app-language-selector>
           </div>
@@ -17,8 +17,16 @@
           <div class="selector">
             <app-rate-unit-selector></app-rate-unit-selector>
           </div>
+          <a class="btn btn-purple sponsor d-none d-sm-flex justify-content-center" [routerLink]="['/login' | relativeUrl]">
+            <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
+            <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In / Sign Up</span>
+          </a>
         </div>
-      </div>
+        <a class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-3 mb-2" [routerLink]="['/login' | relativeUrl]">
+          <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
+          <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In / Sign Up</span>
+        </a>
+    </div>
     </div>
     <div class="row col-md-12 link-tree">
         <div class="links">

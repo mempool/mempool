@@ -110,6 +110,13 @@ footer .row.version p a {
   display: inline-block;
 }
 
+footer .sponsor {
+  height: 31px;
+  align-items: center;
+  margin-left: 5px;
+  max-width: 160px;
+}
+
 @media (max-width: 1200px) {
 
   .main-logo {
@@ -167,15 +174,11 @@ footer .row.version p a {
 
   footer .site-options {
     float: none;
-    margin-top: 30px;
+    margin-top: 20px;
   }
 
   footer .row.social-links {
     margin: 48px 0 24px 0;
-  }
-
-  footer .selector {
-    margin: 10px 0 0 0;
   }
 
   footer .selector:not(:last-child) {
