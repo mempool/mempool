@@ -15,6 +15,12 @@ footer .row.main {
   padding: 40px 0 24px 0;
   max-width: 1140px;
   margin: 0 auto;
+  &.services {
+    @media (min-width: 1201px) {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+  }
 }
 
 footer .row.main .branding > p {
@@ -72,6 +78,12 @@ footer .row.link-tree {
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;
+  &.services {
+    @media (min-width: 1201px) {
+      padding-left: 65px;
+      padding-right: 65px;
+    }
+  }
 }
 
 footer .row.social-links {
@@ -182,6 +194,53 @@ footer .sponsor {
   }
 
   footer .selector:not(:last-child) {
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 1147px) {
+
+  .services.main-logo {
+    width: 220px;
+  }
+
+  footer .services.row.link-tree {
+    font-size: 16px;
+  }
+
+  footer .services.row.social-links svg {
+    width: 20px;
+  }
+
+  footer .services.row.link-tree {
+    display: block;
+    text-align: center;
+  }
+
+  footer .services.link-tree .links {
+    margin-bottom: 20px;
+  }
+
+  footer .services.row.main .branding {
+    text-align: center;
+    padding: 0px;
+  }
+
+  .services.main-logo {
+    display: block;
+    margin: 0 auto;
+  }
+
+  footer .services.site-options {
+    float: none;
+    margin-top: 15px;
+  }
+
+  footer .services.row.social-links {
+    margin: 48px 0 24px 0;
+  }
+
+  footer .services.selector:not(:last-child) {
     margin-right: 10px;
   }
 }

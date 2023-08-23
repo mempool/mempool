@@ -30,7 +30,6 @@ export class GlobalFooterComponent implements OnInit {
   loggedIn = false;
   username = null;
   urlSubscription: Subscription;
-  addPadding = false;
   isServicesPage = false;
 
   constructor(
@@ -47,7 +46,6 @@ export class GlobalFooterComponent implements OnInit {
 
   ngOnInit(): void {
     this.isServicesPage = this.router.url.includes('/services/');
-    this.addPadding = this.isServicesPage && !this.isSmallScreen();
 
     this.env = this.stateService.env;
     this.backendInfo$ = this.stateService.backendInfo$;
@@ -94,15 +92,5 @@ export class GlobalFooterComponent implements OnInit {
     if( network === 'bisq' ) {
       return (this.env.BASE_MODULE === 'bisq' ? '' : this.env.BISQ_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
-  }
-
-  isSmallScreen() {
-    return window.innerWidth <= 767.98;
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.addPadding = this.router.url.includes('/services/') && !this.isSmallScreen();
-    this.cd.markForCheck();
   }
 }
