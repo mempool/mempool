@@ -22,7 +22,7 @@ export default class ReusableSSRPage extends ReusablePage {
     page.clusterGroup = 'slurper';
     page.language = null;
     page.createdAt = Date.now();
-    const defaultUrl = mempoolHost + '/about';
+    const defaultUrl = mempoolHost + '/preview/block/1';
 
     page.on('pageerror', (err) => {
       console.log(err);
@@ -39,7 +39,7 @@ export default class ReusableSSRPage extends ReusablePage {
           headers: {"Access-Control-Allow-Origin": "*"},
           body: mockImageBuffer
         });
-      } else if (!['document', 'script', 'xhr', 'fetch'].includes(req.resourceType())) {
+      } else if (req.resourceType() === 'media') {
         return req.abort();
       } else {
         return req.continue();
@@ -49,7 +49,7 @@ export default class ReusableSSRPage extends ReusablePage {
       await page.goto(defaultUrl, { waitUntil: "networkidle0" });
       await page.waitForSelector('meta[property="og:meta:ready"]', { timeout: config.PUPPETEER.RENDER_TIMEOUT || 3000 });
     } catch (e) {
-      logger.err(`failed to load frontend during ssr page initialization: ` + (e instanceof Error ? e.message : `${e}`));
+      logger.err(`failed to load frontend during ssr page initialization ${page.clusterGroup}:${page.index}: ` + (e instanceof Error ? e.message : `${e}`));
       page.repairRequested = true;
     }
     page.free = true;
