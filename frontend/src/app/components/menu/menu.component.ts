@@ -68,6 +68,7 @@ export class MenuComponent implements OnInit {
 
   hambugerClick() {
     this.navOpen = !this.navOpen;
+    this.stateService.menuOpen$.next(this.navOpen);
   }
 
   @HostListener('window:click', ['$event'])

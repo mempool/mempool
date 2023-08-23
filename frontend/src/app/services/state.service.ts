@@ -147,6 +147,7 @@ export class StateService {
   rateUnits$: BehaviorSubject<string>;
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
+  menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,

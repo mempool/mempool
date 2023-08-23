@@ -30,7 +30,8 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   blockCounterSubscription: Subscription;
   @ViewChild('blockchainWrapper', { static: true }) blockchainWrapper: ElementRef;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
-  resetScrollSubscription: Subscription; 
+  resetScrollSubscription: Subscription;
+  menuSubscription: Subscription;
 
   isMobile: boolean = false;
   isiOS: boolean = false;
@@ -52,6 +53,9 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
 
   private resizeObserver: ResizeObserver;
   chainWidth: number = window.innerWidth;
+  menuOpen: boolean = false;
+  menuSliding: boolean = false;
+  menuTimeout: number;
 
   constructor(
     private stateService: StateService,
@@ -74,10 +78,10 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
       this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
       if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
-        this.onResize(this.chainWidth);
+        this.onResize();
       }
     });
-    this.onResize(this.chainWidth);
+    this.onResize();
     this.updatePages();
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
@@ -156,15 +160,12 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
       } 
     });
 
-    if ('ResizeObserver' in window && this.blockchainWrapper?.nativeElement) {
-      this.resizeObserver = new ResizeObserver(entries => {
-        const newChainWidth = entries[0].contentRect.width;
-        if (newChainWidth != this.chainWidth) {
-          this.onResize(newChainWidth);
-        }
-      });
-      this.resizeObserver.observe(this.blockchainWrapper.nativeElement);
-    }
+    this.menuSubscription = this.stateService.menuOpen$.subscribe((open) => {
+      if (this.menuOpen !== open) {
+        this.menuOpen = open;
+        this.applyMenuScroll(this.menuOpen);
+      }
+    });
   }
 
   onMempoolOffsetChange(offset): void {
@@ -185,8 +186,16 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  onResize(width): void {
-    this.chainWidth = width;
+  applyMenuScroll(opening: boolean): void {
+    this.menuSliding = true;
+    window.clearTimeout(this.menuTimeout);
+    this.menuTimeout = window.setTimeout(() => {
+      this.menuSliding = false;
+    }, 300);
+  }
+
+  onResize(): void {
+    this.chainWidth = window.innerWidth;
     this.isMobile = this.chainWidth <= 767.98;
     let firstVisibleBlock;
     let offset;
@@ -472,5 +481,6 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     this.markBlockSubscription.unsubscribe();
     this.blockCounterSubscription.unsubscribe();
     this.resetScrollSubscription.unsubscribe();
+    this.menuSubscription.unsubscribe();
   }
 }
