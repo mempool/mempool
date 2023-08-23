@@ -8,7 +8,7 @@
       <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/image/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
       <app-svg-images style="color: lightgrey; fill: lightgray" *ngIf="!user.imageMd5" name="anon"></app-svg-images>
     </div>
-    <div *ngIf="user === null" class="profile_image_container" (click)="hamburgerClick($event)">
+    <div *ngIf="false && user === null" class="profile_image_container" (click)="hamburgerClick($event)">
       <app-svg-images name="hamburger" height="40"></app-svg-images>
     </div>
     <!-- Empty placeholder -->
