@@ -87,9 +87,10 @@ export class MasterPageComponent implements OnInit {
     this.apiService.getUserInfo$().subscribe(user => this.user = user);
   }
 
-  hamburgerClick(): void {
+  hamburgerClick(event): void {
     if (this.menuComponent) {
       this.menuComponent.hambugerClick();
+      event.stopPropagation();
     }
   }
 }
