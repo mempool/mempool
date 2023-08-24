@@ -89,7 +89,7 @@ export class MasterPageComponent implements OnInit {
 
   hamburgerClick(event): void {
     if (this.menuComponent) {
-      this.menuComponent.hambugerClick();
+      this.menuComponent.hamburgerClick();
       event.stopPropagation();
     }
   }

@@ -66,8 +66,9 @@ export class MenuComponent implements OnInit {
     this.router.navigateByUrl(link);
   }
 
-  hambugerClick() {
+  hamburgerClick() {
     this.navOpen = !this.navOpen;
+    this.stateService.menuOpen$.next(this.navOpen);
   }
 
   @HostListener('window:click', ['$event'])
