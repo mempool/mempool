@@ -396,7 +396,7 @@ class Server {
       try {
         const data = await matchedRoute.sip.getData(matchedRoute.params);
         logger.info(`sip data fetched for "${req.url}" in ${Date.now() - start}ms`);
-        res.render(matchedRoute.sip.template, { canonical, ogImageUrl, ogTitle, matchedRoute, data });
+        res.render(matchedRoute.sip.template, { canonicalHost: this.canonicalHost, canonical, ogImageUrl, ogTitle, matchedRoute, data });
         logger.info(`sip returned "${req.url}" in ${Date.now() - start}ms`);
       } catch (e) {
         logger.err(`failed to sip ${req.url}: ` + (e instanceof Error ? e.message : `${e}`));

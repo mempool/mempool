@@ -50,6 +50,7 @@ const routes = {
           return {
             block,
             transactions,
+            canonicalPath: `/block/${blockId}`,
           };
         }
       }

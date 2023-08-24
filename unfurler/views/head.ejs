@@ -1,7 +1,11 @@
 <head>
   <meta charset="utf-8">
   <title><%= ogTitle %></title>
-  <link rel="canonical" href="<%= canonical %>" />
+  <% if (data && data.canonicalPath) { %>
+    <link rel="canonical" href="<%= canonicalHost + data.canonicalPath %>" />
+  <% } else { %>
+    <link rel="canonical" href="<%= canonical %>" />
+  <% } %>
   <meta name="description" content="The Mempool Open Source Project® - Explore the full Bitcoin ecosystem with mempool.space™"/>
   <meta property="og:image" content="<%= ogImageUrl %>"/>
   <meta property="og:image:type" content="image/png"/>
