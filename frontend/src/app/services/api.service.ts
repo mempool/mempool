@@ -388,4 +388,8 @@ export class ApiService {
   getServicesBackendInfo$(): Observable<IBackendInfo> {
     return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
   }
+
+  estimate$(txInput: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
+  }
 }

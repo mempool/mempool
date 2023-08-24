@@ -228,11 +228,15 @@
   }
 }
 
+.link.accelerator {
+  cursor: pointer;
+}
+
 .accelerate {
   align-self: auto;
   margin-top: 3px;
+  margin-left: 10px;
   @media (min-width: 850px) {
     justify-self: start;
-    margin-left: 0px;
   }
 }
