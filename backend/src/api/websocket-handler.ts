@@ -27,7 +27,7 @@ import mempool from './mempool';
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
   confirmed: MempoolTransactionExtended[],
-  removed: string[],
+  removed: MempoolTransactionExtended[],
 }
 
 // valid 'want' subscriptions
@@ -572,15 +572,16 @@ class WebsocketHandler {
       if (client['track-addresses']) {
         const addressMap: { [address: string]: AddressTransactions } = {};
         for (const [address, key] of Object.entries(client['track-addresses'] || {})) {
-          const foundTransactions = Array.from(addressCache[key as string]?.values() || []);
+          const newTransactions = Array.from(addressCache[key as string]?.values() || []);
+          const removedTransactions = Array.from(removedAddressCache[key as string]?.values() || []);
           // txs may be missing prevouts in non-esplora backends
           // so fetch the full transactions now
-          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
           if (fullTransactions?.length) {
             addressMap[address] = {
               mempool: fullTransactions,
               confirmed: [],
-              removed: [],
+              removed: removedTransactions,
             };
           }
         }
@@ -593,15 +594,16 @@ class WebsocketHandler {
       if (client['track-scriptpubkeys']) {
         const spkMap: { [spk: string]: AddressTransactions } = {};
         for (const spk of client['track-scriptpubkeys'] || []) {
-          const foundTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          const newTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          const removedTransactions = Array.from(removedAddressCache[spk as string]?.values() || []);
           // txs may be missing prevouts in non-esplora backends
           // so fetch the full transactions now
-          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
           if (fullTransactions?.length) {
             spkMap[spk] = {
               mempool: fullTransactions,
               confirmed: [],
-              removed: [],
+              removed: removedTransactions,
             };
           }
         }
