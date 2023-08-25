@@ -102,6 +102,61 @@ const routes = {
       }
     }
   },
+  tx: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Transaction: ${path[0]}`;
+    },
+    sip: {
+      template: 'tx',
+      async getData (params: string[]) {
+        if (params?.length) {
+          let txid = params[0];
+          const [transaction, times, cpfp, rbf, outspends]: any[] = await Promise.all([
+            sipFetchJSON(config.API.ESPLORA + `/tx/${txid}`),
+            sipFetchJSON(config.API.MEMPOOL + `/transaction-times?txId[]=${txid}`),
+            sipFetchJSON(config.API.MEMPOOL + `/cpfp/${txid}`),
+            sipFetchJSON(config.API.MEMPOOL + `/tx/${txid}/rbf`),
+            sipFetchJSON(config.API.MEMPOOL + `/outspends?txId[]=${txid}`),
+          ])
+          const features = transaction ? {
+            segwit: transaction.vin.some((v) => v.prevout && ['v0_p2wsh', 'v0_p2wpkh'].includes(v.prevout.scriptpubkey_type)),
+            taproot: transaction.vin.some((v) => v.prevout && v.prevout.scriptpubkey_type === 'v1_p2tr'),
+            rbf: transaction.vin.some((v) => v.sequence < 0xfffffffe),
+          } : {};
+          return {
+            transaction,
+            times,
+            cpfp,
+            rbf,
+            outspends,
+            features,
+            hex2ascii: function(hex) {
+              const opPush = hex.split(' ').filter((_, i, a) => i > 0 && /^OP_PUSH/.test(a[i - 1]));
+              if (opPush[0]) {
+                hex = opPush[0];
+              }
+              if (!hex) {
+                return '';
+              }
+              const bytes: number[] = [];
+              for (let i = 0; i < hex.length; i += 2) {
+                bytes.push(parseInt(hex.substr(i, 2), 16));
+              }
+              return new TextDecoder('utf8').decode(Uint8Array.from(bytes)).replace(/\uFFFD/g, '').replace(/\\0/g, '');
+            },
+          }
+        }
+      }
+    },
+    routes: {
+      push: {
+        title: "Push Transaction",
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
+    }
+  },
   enterprise: {
     title: "Mempool Enterprise",
     fallbackImg: '/resources/previews/enterprise.jpg',
@@ -177,19 +232,6 @@ const routes = {
     title: "Trademark Policy",
     fallbackImg: '/resources/previews/trademark-policy.jpg',
   },
-  tx: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Transaction: ${path[0]}`;
-    },
-    routes: {
-      push: {
-        title: "Push Transaction",
-        fallbackImg: '/resources/previews/tx-push.jpg',
-      }
-    }
-  }
 };
 
 const networks = {
