@@ -1045,11 +1045,9 @@ osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_RE
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
-echo "[*] Building NodeJS v20.4.0 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.4.0 --shared-zlib'
-echo "[*] Building NodeJS v18.16.1 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v18.16.1 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 18.16.1'
+echo "[*] Building NodeJS v20.5.1 via nvm.sh"
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.5.1 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.5.1'
 
 ####################
 # Tor installation #
