@@ -1857,22 +1857,22 @@ ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
 
-if [ "${TOR_INSTALL}" = ON ];then
-    echo "[*] Read tor v3 onion hostnames"
-
-    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
-    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-
-    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
-        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-    fi
-
-    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
-        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-    fi
-fi
+#if [ "${TOR_INSTALL}" = ON ];then
+#    echo "[*] Read tor v3 onion hostnames"
+#
+#    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
+#    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+#
+#    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
+#        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
+#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+#    fi
+#
+#    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
+#        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
+#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+#    fi
+#fi
 
 ##### OS systemd
 
@@ -1896,13 +1896,26 @@ echo "[*] Updating system startup configuration"
 case $OS in
 
     FreeBSD)
-        echo 'nginx_enable="YES"' >> /etc/rc.conf
-        echo 'bitcoin_enable="YES"' >> /etc/rc.conf
-        echo 'tor_enable="YES"' >> /etc/rc.conf
-        echo 'postfix_enable="YES"' >> /etc/rc.conf
-        echo 'mysql_enable="YES"' >> /etc/rc.conf
-        echo 'mysql_dbdir="/mysql"' >> /etc/rc.conf
-        echo 'tor_enable="YES"' >> /etc/rc.conf
+        cat >> /etc/rc.conf <<EOF
+moused_nondefault_enable="NO"
+
+nginx_enable="YES"
+nginx_profiles="mempool"
+nginx_mempool_flags="-p /mempool"
+nginx_mempool_configfile="/mempool/mempool/nginx/nginx.conf"
+
+mysql_enable="YES"
+mysql_dbdir="/mysql"
+mysql_args="--innodb-buffer-pool-size=8G --bind-address 127.0.0.1"
+
+kld_list="nvidia"
+nvidia_xorg_enable="YES"
+
+dbus_enable="YES"
+tor_enable="YES"
+bitcoin_enable="YES"
+postfix_enable="YES"
+EOF
     ;;
 
     Debian)
@@ -2038,12 +2051,12 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 
 ##### finish
 
-if [ "${TOR_INSTALL}" = ON ];then
-    echo "Your auto-generated Tor addresses are:"
-    echo "${NGINX_MEMPOOL_ONION}"
-    echo "${NGINX_BISQ_ONION}"
-    echo "${NGINX_LIQUID_ONION}"
-fi
+#if [ "${TOR_INSTALL}" = ON ];then
+#    echo "Your auto-generated Tor addresses are:"
+#    echo "${NGINX_MEMPOOL_ONION}"
+#    echo "${NGINX_BISQ_ONION}"
+#    echo "${NGINX_LIQUID_ONION}"
+#fi
 
 echo
 echo 'Please reboot to start all the services.'
