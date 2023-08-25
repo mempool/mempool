@@ -79,12 +79,14 @@
           <td><%= data.block.merkle_root %></td>
         </tr>
       </table>
-      <h2><%= data.transactions.length %> Transactions</h2>
-      <ol>
-        <% data.transactions.forEach((txid, i) => { %>
-          <li><a href="/tx/<%= txid %>"><%= txid %></a><% if (i === 0) { %> (Coinbase)<% } %></li>
-        <% }); %>
-      </ol>
+      <% if (data.transactions) { %>
+        <h2><%= data.transactions.length %> Transactions</h2>
+        <ol>
+          <% data.transactions.forEach((txid, i) => { %>
+            <li><a href="/tx/<%= txid %>"><%= txid %></a><% if (i === 0) { %> (Coinbase)<% } %></li>
+          <% }); %>
+        </ol>
+      <% } %>
     </div>
     <%- include('footer'); %>
   </body>

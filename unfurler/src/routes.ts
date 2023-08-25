@@ -1,5 +1,17 @@
 import fetch from 'node-fetch-commonjs';
 import config from './config';
+import http from 'node:http';
+import https from 'node:https';
+
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
+const agentSelector = function(_parsedURL: any) {
+    if (_parsedURL.protocol == 'http:') {
+        return httpAgent;
+    } else {
+        return httpsAgent;
+    }
+}
 
 interface Match {
   render: boolean;
@@ -14,6 +26,15 @@ interface Match {
 interface SipTemplate {
   template: string;
   getData: Function;
+}
+
+async function sipFetchJSON(url, defaultVal = null) {
+  try {
+    const response = await fetch(url, { agent: agentSelector });
+    return response.ok ? response.json() : defaultVal;
+  } catch (error) {
+    return defaultVal;
+  }
 }
 
 const routes = {
@@ -41,11 +62,11 @@ const routes = {
         if (params?.length) {
           let blockId = params[0];
           if (blockId.length !== 64) {
-            blockId = await (await fetch(config.API.ESPLORA + `/block-height/${blockId}`)).text();
+            blockId = await (await fetch(config.API.ESPLORA + `/block-height/${blockId}`, { agent: agentSelector })).text();
           }
           const [block, transactions] = await Promise.all([
-            (await fetch(config.API.MEMPOOL + `/block/${blockId}`)).json(),
-            (await fetch(config.API.ESPLORA + `/block/${blockId}/txids`)).json()
+            sipFetchJSON(config.API.MEMPOOL + `/block/${blockId}`),
+            sipFetchJSON(config.API.ESPLORA + `/block/${blockId}/txids`),
           ])
           return {
             block,
