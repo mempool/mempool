@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
+import { StorageService } from '../../services/storage.service';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -47,7 +48,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   selectFeeRateIndex = 2;
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private storageService: StorageService
   ) { }
 
   ngOnDestroy(): void {
@@ -79,8 +81,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           }
 
           if (this.estimate.userBalance <= 0) {
-            this.error = `not_enough_balance`;
-            this.scrollToPreviewWithTimeout('mempoolError', 'center');
+            if (this.isLoggedIn()) {
+              this.error = `not_enough_balance`;
+              this.scrollToPreviewWithTimeout('mempoolError', 'center');
+            }
           }
           
           // Make min extra fee at least 50% of the current tx fee
@@ -165,5 +169,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
         this.scrollToPreviewWithTimeout('mempoolError', 'center');
       }
     });
+  }
+
+  isLoggedIn() {
+    const auth = this.storageService.getAuth();
+    return auth !== null;
   }
 }

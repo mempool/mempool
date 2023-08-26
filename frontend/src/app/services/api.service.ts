@@ -357,9 +357,7 @@ export class ApiService {
       return of(null);
     }
 
-    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`, {
-      headers: { 'Authorization': auth.token }
-    });
+    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
   }
 
   getUserInfo$(): Observable<any> {
@@ -368,9 +366,7 @@ export class ApiService {
       return of(null);
     }
 
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`, {
-      headers: { 'Authorization': auth.token }
-    });
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
   }
 
   logout$(): Observable<any> {
@@ -380,9 +376,7 @@ export class ApiService {
     }
 
     localStorage.removeItem('auth');
-    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {
-      headers: { 'Authorization': auth.token }
-    });
+    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
   }
 
   getServicesBackendInfo$(): Observable<IBackendInfo> {

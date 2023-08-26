@@ -219,7 +219,7 @@
       </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-3" *ngIf="isLoggedIn()">
       <div class="col">
         <div class="d-flex justify-content-end">
           <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()">Accelerate</button>
