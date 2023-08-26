@@ -52,6 +52,12 @@ export class SeoService {
     this.resetTitle();
   }
 
+  setDescription(newDescription: string): void {
+    this.metaService.updateTag({ name: 'description', content: newDescription});
+    this.metaService.updateTag({ name: 'twitter:description', content: newDescription});
+    this.metaService.updateTag({ property: 'og:description', content: newDescription});
+  }
+
   getTitle(): string {
     if (this.network === 'testnet')
       return this.baseTitle + ' - Bitcoin Testnet';
