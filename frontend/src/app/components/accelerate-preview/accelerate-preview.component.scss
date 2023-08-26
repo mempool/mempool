@@ -18,3 +18,10 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.table-accelerator {
+  table-layout: fixed;
+  & tr {
+    text-wrap: wrap;
+  }
+}
