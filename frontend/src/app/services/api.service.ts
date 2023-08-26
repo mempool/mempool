@@ -392,4 +392,8 @@ export class ApiService {
   estimate$(txInput: string) {
     return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
+
+  accelerate$(txInput: string, userBid: number) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
+  }
 }

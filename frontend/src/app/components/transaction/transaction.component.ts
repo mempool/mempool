@@ -83,7 +83,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   blockConversion: Price;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
-  acceleratorAvailable: boolean = false;
 
   featuresEnabled: boolean;
   segwitEnabled: boolean;
@@ -93,6 +92,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   accelerateCtaType: 'alert' | 'button' = 'alert';
   acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
+  scrollIntoAccelPreview = false;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -504,12 +504,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accelerateCtaType = 'button';
   }
 
-  onAccelerateClicked(): void {
+  onAccelerateClicked() {
     if (!this.txId) {
       return;
     }
-
     this.showAccelerationSummary = true && this.acceleratorAvailable;
+    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    return false;
   }
 
   handleLoadElectrsTransactionError(error: any): Observable<any> {
