@@ -93,6 +93,8 @@ import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
+import { AcceleratePreviewComponent } from '../components/accelerate-preview/accelerate-preview.component';
+import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
 
 import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
@@ -189,6 +191,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
+    AcceleratePreviewComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
     MempoolBlockOverviewComponent,
@@ -196,7 +199,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockComponent,
     ClockFaceComponent,
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
+    MempoolErrorComponent,
   ],
   imports: [
     CommonModule,
@@ -310,6 +314,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     GeolocationComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
+    AcceleratePreviewComponent,
+    MempoolErrorComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

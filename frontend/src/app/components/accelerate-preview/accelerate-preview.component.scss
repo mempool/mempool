@@ -1,0 +1,20 @@
+.fee-card {
+  padding: 15px;
+  background-color: #1d1f31;
+}
+
+.btn-border {
+  border: solid 1px black;
+  background-color: #0c4a87;
+}
+
+.feerate.active {
+  background-color: #105fb0 !important;
+  opacity: 1;
+  border: 1px solid white !important;
+}
+
+.estimateDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

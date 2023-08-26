@@ -1,0 +1,231 @@
+<div class="row" *ngIf="showSuccess">
+  <div class="col" id="successAlert">
+    <div class="alert alert-success">
+      Transaction has now been submitted to mining pools for acceleration. You can track the progress <a class="alert-link" routerLink="/services/accelerator/history">here</a>.
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="error">
+  <div class="col" id="mempoolError">
+    <app-mempool-error [error]="error"></app-mempool-error>
+  </div>
+</div>
+
+<div class="row" *ngIf="!error && estimate?.txSummary?.ancestorCount ?? 0 > 1">
+  <div class="col">
+    <div class="alert alert-mempool">
+      <small>This transactions is part of a CPFP tree. Fee rates (in sats/vb) are provided for your information. Change in the CPFP tree will lead to different fee rates values.</small>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="estimate">
+  <div [class]="{estimateDisabled: error}">
+    <div class="row mb-3">
+      <div class="col">
+        <table class="table table-borderless table-border table-dark">
+          <tbody>
+            <!-- NEXT BLOCK TX FEE -->
+            <tr>
+              <td style="width: 45%" class="pb-0">
+                Next block market price
+              </td>
+              <td class="pb-0 text-right" style="font-size: 20px">
+                {{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 pb-0 text-muted">
+                <i><small>Currently estimated fee to get into next block</small></i>
+              </td>
+              <td class="pt-0 pb-0 text-right">
+                <span>
+                  {{ estimate.nextBlockFee| number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="fiat"><app-fiat [value]="estimate.nextBlockFee"></app-fiat></span>
+                </span>
+              </td>
+            </tr>
+            
+            <!-- CURRENT TX FEE -->
+            <tr>
+              <td style="width: 45%" class="pb-0">
+                Fees paid in-band
+              </td>
+              <td class="pb-0 text-right" style="font-size: 20px">
+                <small>~</small>{{ (estimate.txSummary.effectiveFee / estimate.txSummary.effectiveVsize) | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 text-muted">
+                <i><small>What you already paid when you made the transaction</small></i>
+              </td>
+              <td class="pt-0 text-right">
+                <span>
+                  {{ estimate.txSummary.effectiveFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="fiat"><app-fiat [value]="estimate.txSummary.effectiveFee"></app-fiat></span>
+                </span>
+              </td>
+            </tr>
+            
+            <!-- MIN EXTRA FEE FOR NEXT BLOCK -->
+            <tr style="border-top: 1px solid lightgrey">
+              <td style="width: 45%" class="pb-0">
+                Extra fee required
+              </td>
+              <td class="pb-1 text-right">
+                {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                <span class="fiat"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 text-muted">
+                <i><small>Difference between the next block fee and your tx fee</small></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h6>How much more are you willing to pay at most to get into the next block?</h6>
+    <div class="row">
+      <div class="col">
+        <small class="form-text text-muted mb-2">
+          The maximum extra transaction fee you're willing to pay to get into the next block. If the next block market price becomes too expensive for you, we will automatically cancel your acceleration request. Final charged fee may be smaller based on the fee market.
+        </small>
+        <div class="form-group">
+          <div class="fee-card">
+            <div class="d-flex mb-2">
+              <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === 1}" (click)="setUserBid(2, 1)">{{ (estimate.txSummary.effectiveFee + minExtraCost * 2) / estimate.txSummary.effectiveVsize | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></button>
+              <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === 2}" (click)="setUserBid(5, 2)">{{ (estimate.txSummary.effectiveFee + minExtraCost * 5) / estimate.txSummary.effectiveVsize | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></button>
+              <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === 3}" (click)="setUserBid(10, 3)">{{ (estimate.txSummary.effectiveFee + minExtraCost * 10) / estimate.txSummary.effectiveVsize | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></button>
+              <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === 4}" (click)="setUserBid(20, 4)">{{ (estimate.txSummary.effectiveFee + minExtraCost * 20) / estimate.txSummary.effectiveVsize | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h6>Acceleration summary</h6>
+    <div class="row mb-3">
+      <div class="col">
+        <table class="table table-borderless table-border table-dark">
+          <tbody>
+            <!-- USER MAX BID -->
+            <tr>
+              <td style="width: 45%" class="pb-0">
+                Your maximum tx fees
+              </td>
+              <td class="pb-0 text-right" style="font-size: 20px">
+                ~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 pb-0 text-muted">
+                <i><small>The maximum extra transaction fee you're willing to pay</small></i>
+              </td>
+              <td class="pt-0 pb-0 text-right">
+                <span>
+                  {{ userBid | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="fiat"><app-fiat [value]="userBid"></app-fiat></span>
+                </span>
+              </td>
+            </tr>
+
+            <!-- MEMPOOL BASE FEE -->
+            <tr>
+              <td style="width: 45%" class="pb-0">
+                Mempool Accelerator™ fee
+              </td>
+              <td class="pb-0 text-right">
+                +{{ estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                <span class="fiat"><app-fiat [value]="estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 pb-0 text-muted">
+                <i><small>mempool.space fee</small></i>
+              </td>
+              <td class="pt-0 pb-0 text-right text-muted">
+                <small>
+                  {{ estimate.mempoolBaseFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="fiat"><app-fiat [value]="estimate.mempoolBaseFee" colorClass="text-success"></app-fiat></span>
+                </small>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 text-muted">
+                <i><small>Transaction vsize fee</small></i>
+              </td>
+              <td class="pt-0 pb-0 text-right text-muted">
+                <small>
+                  {{ estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="fiat"><app-fiat [value]="estimate.vsizeFee" colorClass="text-success"></app-fiat></span>
+                </small>
+              </td>
+            </tr>
+
+            <!-- NEXT BLOCK ESTIMATE -->
+            <tr style="border-top: 1px solid lightgrey">
+              <td style="width: 45%" class="pb-0 pt-3">
+                <b style="background-color: #5E35B1" class="p-1 pl-0">Estimated acceleration cost</b>
+              </td>
+              <td class="pb-0 pt-3 text-right">
+                <span style="background-color: #5E35B1" class="p-1 pl-0">
+                  {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                  <span class="fiat"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 pb-0">
+                <i><small class="text-muted">Cost if your tx is accelerated using </small><small>{{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
+              </td>
+            </tr>
+
+            <!-- MAX COST -->
+            <tr>
+              <td style="width: 45%;" class="pt-2 pb-0">
+                Maximum acceleration cost
+              </td>
+              <td class="pt-2 pb-0 text-right">
+                {{ maxCost | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                <span class="fiat">
+                  <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 45%" class="pt-0 pb-3">
+                <i><small class="text-muted">Cost if your tx is accelerated using </small><small>~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
+              </td>
+            </tr>
+
+            <!-- USER BALANCE -->
+            <tr style="border-top: 1px dashed grey">
+              <td style="width: 45%" class="pt-2">
+                Available balance
+              </td>
+              <td class="pt-2 text-right">
+                {{ estimate.userBalance | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                <span class="fiat">
+                  <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()">Accelerate</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-container>
