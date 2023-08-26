@@ -2,6 +2,7 @@ interface Match {
   render: boolean;
   title: string;
   fallbackImg: string;
+  fallbackFile: string;
   staticImg?: string;
   networkMode: string;
 }
@@ -30,7 +31,8 @@ const routes = {
   },
   lightning: {
     title: "Lightning",
-    fallbackImg: '/resources/img/lightning.png',
+    fallbackImg: '/resources/previews/lightning.png',
+    fallbackFile: '/resources/img/lightning.png',
     routes: {
       node: {
         render: true,
@@ -68,7 +70,8 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/img/mining.png',
+    fallbackImg: '/resources/previews/mining.png',
+    fallbackFile: '/resources/img/mining.png',
     routes: {
       pool: {
         render: true,
@@ -83,13 +86,15 @@ const routes = {
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/img/dashboard.png',
+    fallbackImg: '/resources/previews/dashboard.png',
+    fallbackFile: '/resources/img/dashboard.png',
     routes: {
       ...routes // all routes supported
     }
   },
   liquid: {
-    fallbackImg: '/resources/img/liquid.png',
+    fallbackImg: '/resources/liquid/liquid-network-preview.png',
+    fallbackFile: '/resources/img/liquid',
     routes: { // only block, address & tx routes supported
       block: routes.block,
       address: routes.address,
@@ -97,7 +102,8 @@ const networks = {
     }
   },
   bisq: {
-    fallbackImg: '/resources/img/bisq.png',
+    fallbackImg: '/resources/bisq/bisq-markets-preview.png',
+    fallbackFile: '/resources/img/bisq.png',
     routes: {} // no routes supported
   }
 };
@@ -107,6 +113,7 @@ export function matchRoute(network: string, path: string): Match {
     render: false,
     title: '',
     fallbackImg: '',
+    fallbackFile: '',
     networkMode: 'mainnet'
   }
 
@@ -121,6 +128,7 @@ export function matchRoute(network: string, path: string): Match {
 
   let route = networks[network] || networks.bitcoin;
   match.fallbackImg = route.fallbackImg;
+  match.fallbackFile = route.fallbackFile;
 
   // traverse the route tree until we run out of route or tree, or hit a renderable match
   while (!route.render && route.routes && parts.length && route.routes[parts[0]]) {
@@ -128,6 +136,7 @@ export function matchRoute(network: string, path: string): Match {
     parts.shift();
     if (route.fallbackImg) {
       match.fallbackImg = route.fallbackImg;
+      match.fallbackFile = route.fallbackFile;
     }
   }
 
