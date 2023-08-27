@@ -234,3 +234,8 @@ nav {
   height: 35px;
   border-radius: 5px;
 }
+
+main {
+  transition: 0.2s;
+  transition-property: max-width;
+}
