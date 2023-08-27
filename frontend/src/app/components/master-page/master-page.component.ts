@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
@@ -31,9 +32,10 @@ export class MasterPageComponent implements OnInit {
   userAuth: any | undefined;
   user: any = undefined;
   servicesEnabled = false;
+  menuOpen = false;
 
   @ViewChild(MenuComponent)
-  private menuComponent!: MenuComponent;
+  public menuComponent!: MenuComponent;
 
   constructor(
     public stateService: StateService,
@@ -42,6 +44,7 @@ export class MasterPageComponent implements OnInit {
     private navigationService: NavigationService,
     private storageService: StorageService,
     private apiService: ApiService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -65,14 +68,21 @@ export class MasterPageComponent implements OnInit {
     
     this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.refreshAuth();
+
+    const isServicesPage = this.router.url.includes('/services/');
+    this.menuOpen = isServicesPage && !this.isSmallScreen();
   }
 
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
   }
 
+  isSmallScreen() {
+    return window.innerWidth <= 767.98;
+  }
+
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = this.isSmallScreen();
   }
 
   brandClick(e): void {
@@ -90,7 +100,12 @@ export class MasterPageComponent implements OnInit {
   hamburgerClick(event): void {
     if (this.menuComponent) {
       this.menuComponent.hamburgerClick();
+      this.menuOpen = this.menuComponent.navOpen;
       event.stopPropagation();
     }
+  }
+
+  menuToggled(isOpen: boolean): void {
+    this.menuOpen = isOpen;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
@@ -13,9 +13,10 @@ import { StateService } from '../../services/state.service';
 })
 
 export class MenuComponent implements OnInit {
+  @Input() navOpen: boolean = false;
   @Output() loggedOut = new EventEmitter<boolean>();
-
-  navOpen: boolean = false;
+  @Output() menuToggled = new EventEmitter<boolean>();
+  
   userMenuGroups$: Observable<MenuGroup[]> | undefined;
   userAuth: any | undefined;
   isServicesPage = false;
@@ -34,15 +35,18 @@ export class MenuComponent implements OnInit {
     }
 
     this.isServicesPage = this.router.url.includes('/services/');
-    this.navOpen = this.isServicesPage && !this.isSmallScreen();
-
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (!this.isServicesPage) {
-          this.navOpen = false;
+          this.toggleMenu(false);
         }
       }
     });
+  }
+
+  toggleMenu(toggled: boolean) {
+    this.navOpen = toggled;
+    this.menuToggled.emit(toggled);
   }
 
   isSmallScreen() {
@@ -61,13 +65,13 @@ export class MenuComponent implements OnInit {
 
   onLinkClick(link) {
     if (!this.isServicesPage || this.isSmallScreen()) {
-      this.navOpen = false;
+      this.toggleMenu(false);
     }
     this.router.navigateByUrl(link);
   }
 
   hamburgerClick() {
-    this.navOpen = !this.navOpen;
+    this.toggleMenu(!this.navOpen);
     this.stateService.menuOpen$.next(this.navOpen);
   }
 
@@ -78,7 +82,7 @@ export class MenuComponent implements OnInit {
 
     if (!cssClasses.indexOf) { // Click on chart or non html thingy, close the menu
       if (!this.isServicesPage || isServicesPageOnMobile) {
-        this.navOpen = false;
+        this.toggleMenu(false);
       }
       return;
     }
@@ -86,8 +90,7 @@ export class MenuComponent implements OnInit {
     const isHamburger = cssClasses.indexOf('profile_image') !== -1;
     const isMenu = cssClasses.indexOf('menu-click') !== -1;
     if (!isHamburger && !isMenu && (!this.isServicesPage || isServicesPageOnMobile)) {
-      this.navOpen = false;
-      return;
+      this.toggleMenu(false);
     }
   }
 }
