@@ -1,4 +1,4 @@
-FROM node:16.16.0-buster-slim AS builder
+FROM node:16.20.2-buster-slim AS builder
 
 ARG commitHash
 ENV MEMPOOL_COMMIT_HASH=${commitHash}
@@ -17,7 +17,7 @@ ENV PATH="/root/.cargo/bin:$PATH"
 RUN npm install --omit=dev --omit=optional
 RUN npm run package
 
-FROM node:16.16.0-buster-slim
+FROM node:16.20.2-buster-slim
 
 WORKDIR /backend
 
