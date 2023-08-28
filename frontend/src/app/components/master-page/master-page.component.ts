@@ -29,7 +29,6 @@ export class MasterPageComponent implements OnInit {
   networkPaths: { [network: string]: string };
   networkPaths$: Observable<Record<string, string>>;
   footerVisible = true;
-  userAuth: any | undefined;
   user: any = undefined;
   servicesEnabled = false;
   menuOpen = false;
@@ -94,7 +93,7 @@ export class MasterPageComponent implements OnInit {
   }
 
   refreshAuth(): void {
-    this.apiService.getUserInfo$().subscribe(user => this.user = user);
+    this.user = this.storageService.getAuth()?.user ?? null;
   }
 
   hamburgerClick(event): void {

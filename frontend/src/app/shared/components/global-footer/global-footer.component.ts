@@ -28,7 +28,6 @@ export class GlobalFooterComponent implements OnInit {
   networkPaths: { [network: string]: string };
   currentNetwork = '';
   loggedIn = false;
-  username = null;
   urlSubscription: Subscription;
   isServicesPage = false;
 
@@ -64,13 +63,7 @@ export class GlobalFooterComponent implements OnInit {
     });
 
     this.urlSubscription = this.route.url.subscribe((url) => {
-      this.loggedIn = JSON.parse(this.storageService.getValue('auth')) !== null;
-      const auth = JSON.parse(this.storageService.getValue('auth'));
-      if (auth?.user?.username) {
-        this.username = auth.user.username;
-      } else {
-        this.username = null;
-      }
+      this.loggedIn = this.storageService.getAuth() !== null;
       this.cd.markForCheck();
     })
   }

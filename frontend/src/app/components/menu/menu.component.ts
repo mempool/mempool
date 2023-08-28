@@ -30,6 +30,11 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.userAuth = this.storageService.getAuth();
+    if (this.userAuth && this.userAuth.user && !this.userAuth.user.imageMd5) {
+      this.logout();
+      return;
+    }
+    
     if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
       this.userMenuGroups$ = this.apiService.getUserMenuGroups$();
     }
