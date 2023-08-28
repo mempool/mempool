@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { MenuGroup } from '../../interfaces/services.interface';
@@ -12,7 +12,7 @@ import { StateService } from '../../services/state.service';
   styleUrls: ['./menu.component.scss']
 })
 
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
   @Input() navOpen: boolean = false;
   @Output() loggedOut = new EventEmitter<boolean>();
   @Output() menuToggled = new EventEmitter<boolean>();
@@ -97,5 +97,9 @@ export class MenuComponent implements OnInit {
     if (!isHamburger && !isMenu && (!this.isServicesPage || isServicesPageOnMobile)) {
       this.toggleMenu(false);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stateService.menuOpen$.next(false);
   }
 }
