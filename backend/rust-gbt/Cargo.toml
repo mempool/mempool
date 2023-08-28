@@ -6,8 +6,6 @@ authors = ["mononaut"]
 edition = "2021"
 publish = false
 
-[workspace]
-
 [lib]
 crate-type = ["cdylib"]
 
