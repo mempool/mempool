@@ -85,7 +85,7 @@ Install dependencies with `npm` and build the backend:
 
 ```
 cd backend
-npm install
+npm install --no-install-links # npm@9.4.2 and later can omit the --no-install-links
 npm run build
 ```
 
