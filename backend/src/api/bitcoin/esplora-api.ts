@@ -302,11 +302,11 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   async $getBatchedOutspendsInternal(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
-    return this.failoverRouter.$post<IEsploraApi.Outspend[][]>('/internal-api/txs/outspends/by-txid', txids, 'json');
+    return this.failoverRouter.$post<IEsploraApi.Outspend[][]>('/internal/txs/outspends/by-txid', txids, 'json');
   }
 
   async $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]> {
-    return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal-api/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
+    return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
   public startHealthChecks(): void {
