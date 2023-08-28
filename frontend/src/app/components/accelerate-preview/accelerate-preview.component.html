@@ -173,7 +173,7 @@
               </td>
               <td class="pb-0 pt-3 text-right">
                 <span style="background-color: #5E35B1" class="p-1 pl-0">
-                  {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                  {{ estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
                   <span class="fiat"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                 </span>
               </td>
@@ -190,7 +190,7 @@
                 Maximum acceleration cost
               </td>
               <td class="pt-2 pb-0 text-right">
-                {{ maxCost | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                {{ maxCost | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
                 <span class="fiat">
                   <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                 </span>
@@ -208,7 +208,7 @@
                 Available balance
               </td>
               <td class="pt-2 text-right">
-                {{ estimate.userBalance | number }} <span class="symbol" i18n="shared.sats|sats">satss</span>
+                {{ estimate.userBalance | number }} <span class="symbol" i18n="shared.sats|sats">sats</span>
                 <span class="fiat">
                   <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                 </span>
