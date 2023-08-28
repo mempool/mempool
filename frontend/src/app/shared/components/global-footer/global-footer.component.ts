@@ -30,6 +30,7 @@ export class GlobalFooterComponent implements OnInit {
   loggedIn = false;
   urlSubscription: Subscription;
   isServicesPage = false;
+  servicesEnabled = false;
 
   constructor(
     public stateService: StateService,
@@ -44,6 +45,7 @@ export class GlobalFooterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.isServicesPage = this.router.url.includes('/services/');
 
     this.env = this.stateService.env;
