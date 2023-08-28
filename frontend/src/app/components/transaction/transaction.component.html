@@ -7,7 +7,7 @@
     </div>
 
     <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-mempool alert-dismissible" role="alert">
-      <span><a class="link accelerator" (click)="onAccelerateClicked()">Accelerate</a> this transaction using the Mempool Accelerator &trade;</span>
+      <span><a class="link accelerator" (click)="onAccelerateClicked()">Accelerate</a> this transaction using Mempool Accelerator &trade;</span>
       <button type="button" class="close" aria-label="Close" (click)="dismissAccelAlert()">
         <span aria-hidden="true">&times;</span>
       </button>
