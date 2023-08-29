@@ -25,3 +25,10 @@
     text-wrap: wrap;
   }
 }
+
+.accelerate-cols {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-top: 1em;
+}

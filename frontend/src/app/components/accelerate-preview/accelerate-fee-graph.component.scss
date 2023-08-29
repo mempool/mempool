@@ -1,0 +1,147 @@
+.fee-graph {
+  height: 100%;
+  width: 20%;
+  min-width: 100px;
+  max-width: 150px;
+  max-height: 100vh;
+  margin-left: 4em;
+  margin-right: 1.5em;
+  padding-bottom: 63px;
+
+  .column {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #181b2d;
+
+    .bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .fill {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        opacity: 0.75;
+        pointer-events: none;
+      }
+
+      .fee {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .line {
+        position: absolute;
+        right: 0;
+        top: 0;
+        left: -4.5em;
+        border-top: dashed white 1.5px;
+
+        .fee-rate {
+          width: 100%;
+          position: absolute;
+          left: 0;
+          right: 0.2em;
+          font-size: 0.8em;
+          display: flex;
+          flex-direction: row-reverse;
+          justify-content: space-between;
+          margin: 0;
+
+          .label {
+            margin-right: .2em;
+          }
+
+          .rate .symbol {
+            color: white;
+          }
+        }
+      }
+
+      &.tx {
+        .fill {
+          background: #105fb0;
+        }
+        .line {
+          .fee-rate {
+            top: 0;
+          }
+        }
+        .fee {
+          opacity: 1;
+          z-index: 11;
+        }
+      }
+
+      &.target {
+        .fill {
+          background: #3bcc49;
+        }
+        .fee {
+          opacity: 1;
+          z-index: 11;
+        }
+        .line .fee-rate {
+          bottom: 2px;
+        }
+      }
+
+      &.max {
+        cursor: pointer;
+        .line .fee-rate {
+          .label {
+            opacity: 0;
+          }
+          bottom: 2px;
+        }
+        &.active, &:hover {
+          .fill {
+            background: #653b9c;
+          }
+          .line {
+            .fee-rate .label {
+              opacity: 1;
+            }
+          }
+        }
+      }
+
+      &:hover {
+        .fill {
+          z-index: 10;
+        }
+        .line {
+          z-index: 11;
+        }
+        .fee {
+          opacity: 1;
+          z-index: 12;
+        }
+      }
+    }
+
+    &:hover > .bar:not(:hover) {
+      &.target, &.max {
+        .fee {
+          opacity: 0;
+        }
+        .line .fee-rate .label {
+          opacity: 0;
+        }
+      }
+    }
+  }
+  
+  .vsize {
+    text-align: center;
+  }
+}
