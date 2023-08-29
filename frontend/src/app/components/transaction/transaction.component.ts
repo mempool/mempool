@@ -174,34 +174,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe((cpfpInfo) => {
-        if (!cpfpInfo || !this.tx) {
-          this.cpfpInfo = null;
-          this.hasEffectiveFeeRate = false;
-          return;
-        }
-        // merge ancestors/descendants
-        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
-        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
-          relatives.push(cpfpInfo.bestDescendant);
-        }
-        const hasRelatives = !!relatives.length;
-        if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
-          let totalWeight =
-            this.tx.weight +
-            relatives.reduce((prev, val) => prev + val.weight, 0);
-          let totalFees =
-            this.tx.fee +
-            relatives.reduce((prev, val) => prev + val.fee, 0);
-          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-        } else {
-          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
-        }
-        if (cpfpInfo.acceleration) {
-          this.tx.acceleration = cpfpInfo.acceleration;
-        }
-
-        this.cpfpInfo = cpfpInfo;
-        this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
+        this.setCpfpInfo(cpfpInfo);
       });
 
     this.fetchRbfSubscription = this.fetchRbfHistory$
@@ -272,6 +245,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             mempoolPosition: this.mempoolPosition
           });
           this.txInBlockIndex = this.mempoolPosition.block;
+
+          if (txPosition.cpfp !== undefined) {
+            this.setCpfpInfo(txPosition.cpfp);
+          }
         }
       } else {
         this.mempoolPosition = null;
@@ -532,6 +509,37 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.transactionTime = transactionTimes[0];
         }
       });
+  }
+
+  setCpfpInfo(cpfpInfo: CpfpInfo): void {
+    if (!cpfpInfo || !this.tx) {
+      this.cpfpInfo = null;
+      this.hasEffectiveFeeRate = false;
+      return;
+    }
+    // merge ancestors/descendants
+    const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+    if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+      relatives.push(cpfpInfo.bestDescendant);
+    }
+    const hasRelatives = !!relatives.length;
+    if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
+      const totalWeight =
+        this.tx.weight +
+        relatives.reduce((prev, val) => prev + val.weight, 0);
+      const totalFees =
+        this.tx.fee +
+        relatives.reduce((prev, val) => prev + val.fee, 0);
+      this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+    } else {
+      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+    }
+    if (cpfpInfo.acceleration) {
+      this.tx.acceleration = cpfpInfo.acceleration;
+    }
+
+    this.cpfpInfo = cpfpInfo;
+    this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
   setFeatures(): void {

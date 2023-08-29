@@ -104,6 +104,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   adjustedFeePerVsize: number;
   inputs?: number[];
   lastBoosted?: number;
+  cpfpDirty?: boolean;
 }
 
 export interface AuditTransaction {
