@@ -79,13 +79,14 @@
 <div class="d-flex" style="overflow: clip">
   <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
 
-  <div class="flex-grow-1">
+  <div class="flex-grow-1 d-flex flex-column">
     <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
     <main style="min-width: 375px" [style]="menuOpen ? 'max-width: calc(100vw - 225px)' : 'max-width: 100vw'">
       <router-outlet></router-outlet>
     </main>
 
+    <div class="flex-grow-1"></div>
     <app-global-footer *ngIf="footerVisible"></app-global-footer>
   </div>
 </div>
