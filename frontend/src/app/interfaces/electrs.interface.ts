@@ -19,7 +19,7 @@ export interface Transaction {
   ancestors?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
-  acceleration?: number;
+  acceleration?: boolean;
   deleteAfter?: number;
   _unblinded?: any;
   _deduced?: boolean;
