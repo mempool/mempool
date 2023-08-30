@@ -228,20 +228,22 @@
               </ng-container>
   
               <!-- USER BALANCE -->
-              <tr class="group-first group-last" style="border-top: 1px dashed grey">
-                <td class="item">
-                  Available balance
-                </td>
-                <td class="amt">
-                  {{ estimate.userBalance | number }}
-                </td>
-                <td class="units">
-                  <span class="symbol" i18n="shared.sats|sats">sats</span>
-                  <span class="fiat">
-                    <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
-                  </span>
-                </td>
-              </tr>
+              <ng-container *ngIf="estimate.userBalance < maxCost">
+                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                  <td class="item">
+                    Available balance
+                  </td>
+                  <td class="amt">
+                    {{ estimate.userBalance | number }}
+                  </td>
+                  <td class="units">
+                    <span class="symbol" i18n="shared.sats|sats">sats</span>
+                    <span class="fiat">
+                      <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
+                    </span>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
