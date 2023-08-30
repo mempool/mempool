@@ -28,17 +28,17 @@
   </div>
 
   <div *ngIf="widget">
-    <div class="acceleration-fees" *ngIf="(statsObservable$ | async) as stats; else loadingStats">
-      <div class="item">
-        <h5 class="card-title" i18n="mining.???">???</h5>
+    <div class="acceleration-fees">
+      <div class="item" *ngIf="(hrStatsObservable$ | async) as stats; else loadingHrStats">
+        <h5 class="card-title" i18n="mining.avg-fee-delta-24h">Avg Fee Delta (24h)</h5>
         <p class="card-text">
-          ???
+          {{ stats.avgFeeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
         </p>
       </div>
-      <div class="item">
-        <h5 class="card-title" i18n="block.???">???</h5>
+      <div class="item" *ngIf="(statsObservable$ | async) as stats; else loadingStats">
+        <h5 class="card-title" i18n="mining.avg-fee-delta-1w">Avg Fee Delta (1w)</h5>
         <p class="card-text">
-          ???
+          {{ stats.avgFeeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
         </p>
       </div>
     </div>
@@ -53,19 +53,19 @@
 
 </div>
 
+<ng-template #loadingHrStats>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.avg-fee-delta-24h">Avg Fee Delta (24h)</h5>
+    <p class="card-text">
+      <span class="skeleton-loader skeleton-loader-big"></span>
+    </p>
+  </div>
+</ng-template>
 <ng-template #loadingStats>
-  <div class="acceleration-fees">
-    <div class="item">
-      <h5 class="card-title" i18n="mining.???">???</h5>
-      <p class="card-text">
-        <span class="skeleton-loader skeleton-loader-big"></span>
-      </p>
-    </div>
-    <div class="item">
-      <h5 class="card-title" i18n="block.???">???</h5>
-      <p class="card-text">
-        <span class="skeleton-loader skeleton-loader-big"></span>
-      </p>
-    </div>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.avg-fee-delta-1w">Avg Fee Delta (1w)</h5>
+    <p class="card-text">
+      <span class="skeleton-loader skeleton-loader-big"></span>
+    </p>
   </div>
 </ng-template>

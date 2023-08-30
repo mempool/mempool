@@ -41,6 +41,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     renderer: 'svg',
   };
 
+  hrStatsObservable$: Observable<any>;
   statsObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
@@ -84,6 +85,19 @@ export class BlockFeeRatesGraphComponent implements OnInit {
           }
         });
     }
+
+    this.hrStatsObservable$ = combineLatest([
+      this.apiService.getHistoricalBlockFeeRates$('24h'),
+      this.stateService.rateUnits$
+    ]).pipe(
+      map(([response, rateUnits]) => {
+        return {
+          blockCount: parseInt(response.headers.get('x-total-count'), 10),
+          avgMedianRate: response.body.length ? response.body.reduce((acc, rate) => acc + rate.avgFee_50, 0) / response.body.length : 0,
+        };
+      }),
+      share(),
+    );
 
     this.statsObservable$ = combineLatest([
         this.widget ? of(this.miningWindowPreference) : this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith(this.radioGroupForm.controls.dateSpan.value)),
