@@ -48,6 +48,7 @@ export class NodesMap implements OnInit, OnChanges {
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@af8560ca50882114be16c951650f83bca73161a7:Lightning Nodes World Map`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.node-channel-map:See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
 
     if (!this.inputNodes$) {

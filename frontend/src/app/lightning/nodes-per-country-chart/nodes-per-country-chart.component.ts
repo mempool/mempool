@@ -44,7 +44,7 @@ export class NodesPerCountryChartComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@9d3ad4c6623870d96b65fb7a708fed6ce7c20044:Lightning Nodes Per Country`);
-
+    this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-country-overview:See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.`);
     this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
         map(data => {

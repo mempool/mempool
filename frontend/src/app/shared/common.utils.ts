@@ -136,3 +136,12 @@ export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2
 export function kmToMiles(km: number): number {
   return km * 0.62137119;
 }
+
+export function seoDescriptionNetwork(network: string): string {
+  if( network === 'liquidtestnet' || network === 'testnet' ) {
+    return ' Testnet';
+  } else if( network === 'signet' || network === 'testnet' ) {
+    return ' ' + network.charAt(0).toUpperCase() + network.slice(1);
+  }
+  return '';
+}
