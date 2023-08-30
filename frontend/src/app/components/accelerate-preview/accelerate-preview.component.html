@@ -13,13 +13,15 @@
 </div>
 
 <div class="accelerate-cols">
-  <app-accelerate-fee-graph
-    [tx]="tx"
-    [estimate]="estimate"
-    [maxRateOptions]="maxRateOptions"
-    [maxRateIndex]="selectFeeRateIndex"
-    (setUserBid)="setUserBid($event)"
-  ></app-accelerate-fee-graph>
+  <ng-container *ngIf="!isMobile">
+    <app-accelerate-fee-graph
+      [tx]="tx"
+      [estimate]="estimate"
+      [maxRateOptions]="maxRateOptions"
+      [maxRateIndex]="selectFeeRateIndex"
+      (setUserBid)="setUserBid($event)"
+    ></app-accelerate-fee-graph>
+  </ng-container>
 
   <ng-container *ngIf="estimate">
     <div [class]="{estimateDisabled: error}">

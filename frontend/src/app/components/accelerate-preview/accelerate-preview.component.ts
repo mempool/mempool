@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
@@ -57,6 +57,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   userBid = 0;
   selectFeeRateIndex = 1;
   showTable: 'estimated' | 'maximum' = 'maximum';
+  isMobile: boolean = window.innerWidth <= 767.98;
 
   maxRateOptions: RateOption[] = [];
 
@@ -196,5 +197,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   isLoggedIn() {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }
