@@ -3,6 +3,7 @@ import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
+import { nextRoundNumber } from '../../shared/common.utils';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -47,13 +48,15 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   estimateSubscription: Subscription;
   accelerationSubscription: Subscription;
   estimate: any;
+  hasAncestors: boolean = false;
   minExtraCost = 0;
   minBidAllowed = 0;
   maxBidAllowed = 0;
   defaultBid = 0;
   maxCost = 0;
   userBid = 0;
-  selectFeeRateIndex = 2;
+  selectFeeRateIndex = 1;
+  showTable: 'estimated' | 'maximum' = 'maximum';
 
   maxRateOptions: RateOption[] = [];
 
@@ -96,11 +99,13 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               this.scrollToPreviewWithTimeout('mempoolError', 'center');
             }
           }
+
+          this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           
           // Make min extra fee at least 50% of the current tx fee
-          this.minExtraCost = Math.round(Math.max(this.estimate.cost, this.estimate.txSummary.effectiveFee / 2));
+          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
 
-          this.maxRateOptions = [2, 5, 10, 20].map((multiplier, index) => {
+          this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
             return {
               fee: this.minExtraCost * multiplier,
               rate: (this.estimate.txSummary.effectiveFee + (this.minExtraCost * multiplier)) / this.estimate.txSummary.effectiveVsize,

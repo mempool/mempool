@@ -1,9 +1,8 @@
 .fee-graph {
   height: 100%;
-  width: 20%;
-  min-width: 100px;
-  max-width: 150px;
-  max-height: 100vh;
+  min-width: 120px;
+  width: 120px;
+  max-height: 90vh;
   margin-left: 4em;
   margin-right: 1.5em;
   padding-bottom: 63px;
@@ -20,6 +19,7 @@
       left: 0;
       right: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
 
@@ -34,8 +34,15 @@
       }
 
       .fee {
-        position: absolute;
+        font-size: 0.9em;
         opacity: 0;
+        pointer-events: none;
+      }
+
+      .spacer {
+        width: 100%;
+        height: 1px;
+        flex-grow: 1;
         pointer-events: none;
       }
 
@@ -69,7 +76,7 @@
 
       &.tx {
         .fill {
-          background: #105fb0;
+          background: #3bcc49;
         }
         .line {
           .fee-rate {
@@ -77,6 +84,7 @@
           }
         }
         .fee {
+          position: absolute;
           opacity: 1;
           z-index: 11;
         }
@@ -84,9 +92,10 @@
 
       &.target {
         .fill {
-          background: #3bcc49;
+          background: #653b9c;
         }
         .fee {
+          position: absolute;
           opacity: 1;
           z-index: 11;
         }
@@ -105,7 +114,7 @@
         }
         &.active, &:hover {
           .fill {
-            background: #653b9c;
+            background: #105fb0;
           }
           .line {
             .fee-rate .label {
@@ -138,10 +147,11 @@
           opacity: 0;
         }
       }
+      &.max {
+        .fill {
+          background: none;
+        }
+      }
     }
-  }
-  
-  .vsize {
-    text-align: center;
   }
 }

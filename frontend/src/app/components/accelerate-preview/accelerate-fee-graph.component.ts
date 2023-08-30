@@ -52,7 +52,7 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
         rate: option.rate,
         style: this.getStyle(option.rate, maxRate, baseHeight),
         class: 'max',
-        label: 'max',
+        label: 'maximum',
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
@@ -62,14 +62,14 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
       rate: this.estimate.targetFeeRate,
       style: this.getStyle(this.estimate.targetFeeRate, maxRate, baseHeight),
       class: 'target',
-      label: 'expected',
+      label: 'next block',
       fee: this.estimate.nextBlockFee - this.estimate.txSummary.effectiveFee
     });
     bars.push({
       rate: baseRate,
       style: this.getStyle(baseRate, maxRate, 0),
       class: 'tx',
-      label: 'paid',
+      label: '',
       fee: this.estimate.txSummary.effectiveFee,
     });
     this.bars = bars;
