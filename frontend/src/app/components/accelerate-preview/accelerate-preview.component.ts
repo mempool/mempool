@@ -1,7 +1,9 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
+import { Transaction } from '../../interfaces/electrs.interface';
+import { nextRoundNumber } from '../../shared/common.utils';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -20,9 +22,15 @@ export type TxSummary = {
   ancestorCount: number; // Number of ancestors
 }
 
-export const DEFAULT_BID_RATIO = 5;
-export const MIN_BID_RATIO = 2;
-export const MAX_BID_RATIO = 20;
+export interface RateOption {
+  fee: number;
+  rate: number;
+  index: number;
+}
+
+export const MIN_BID_RATIO = 1;
+export const DEFAULT_BID_RATIO = 2;
+export const MAX_BID_RATIO = 4;
 
 @Component({
   selector: 'app-accelerate-preview',
@@ -30,7 +38,7 @@ export const MAX_BID_RATIO = 20;
   styleUrls: ['accelerate-preview.component.scss']
 })
 export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() txid: string | undefined;
+  @Input() tx: Transaction | undefined;
   @Input() scrollEvent: boolean;
 
   math = Math;
@@ -39,13 +47,18 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   estimateSubscription: Subscription;
   accelerationSubscription: Subscription;
   estimate: any;
+  hasAncestors: boolean = false;
   minExtraCost = 0;
   minBidAllowed = 0;
   maxBidAllowed = 0;
   defaultBid = 0;
   maxCost = 0;
   userBid = 0;
-  selectFeeRateIndex = 2;
+  selectFeeRateIndex = 1;
+  showTable: 'estimated' | 'maximum' = 'maximum';
+  isMobile: boolean = window.innerWidth <= 767.98;
+
+  maxRateOptions: RateOption[] = [];
 
   constructor(
     private apiService: ApiService,
@@ -65,7 +78,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnInit() {
-    this.estimateSubscription = this.apiService.estimate$(this.txid).pipe(
+    this.estimateSubscription = this.apiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
           this.estimate = undefined;
@@ -86,14 +99,23 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
               this.scrollToPreviewWithTimeout('mempoolError', 'center');
             }
           }
+
+          this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           
           // Make min extra fee at least 50% of the current tx fee
-          this.minExtraCost = Math.max(this.estimate.cost, this.estimate.txSummary.effectiveFee / 2);
-          this.minExtraCost = Math.round(this.minExtraCost);
+          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
+
+          this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
+            return {
+              fee: this.minExtraCost * multiplier,
+              rate: (this.estimate.txSummary.effectiveFee + (this.minExtraCost * multiplier)) / this.estimate.txSummary.effectiveVsize,
+              index,
+            };
+          });
 
           this.minBidAllowed = this.minExtraCost * MIN_BID_RATIO;
-          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
           this.defaultBid = this.minExtraCost * DEFAULT_BID_RATIO;
+          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
 
           this.userBid = this.defaultBid;
           if (this.userBid < this.minBidAllowed) {
@@ -121,10 +143,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   /**
    * User changed his bid
    */
-  setUserBid(multiplier: number, index: number) {
+  setUserBid({ fee, index }: { fee: number, index: number}) {
     if (this.estimate) {
       this.selectFeeRateIndex = index;
-      this.userBid = Math.max(0, this.minExtraCost * multiplier);
+      this.userBid = Math.max(0, fee);
       this.maxCost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
     }
   }
@@ -156,7 +178,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       this.accelerationSubscription.unsubscribe();
     }
     this.accelerationSubscription = this.apiService.accelerate$(
-      this.txid,
+      this.tx.txid,
       this.userBid
     ).subscribe({
       next: () => {
@@ -174,5 +196,10 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   isLoggedIn() {
     const auth = this.storageService.getAuth();
     return auth !== null;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }
