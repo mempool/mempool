@@ -98,7 +98,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
             this.isLoading = true;
             this.storageService.setValue('miningWindowPreference', timespan);
             this.timespan = timespan;
-            return this.apiService.getAccelerations$();
+            return this.apiService.getAccelerationHistory$();
           })
         ),
         this.radioGroupForm.get('dateSpan').valueChanges.pipe(
@@ -128,11 +128,11 @@ export class AccelerationFeesGraphComponent implements OnInit {
     const blockAccelerations = {};
 
     for (const acceleration of accelerations) {
-      if (acceleration.mined) {
-        if (!blockAccelerations[acceleration.block_height]) {
-          blockAccelerations[acceleration.block_height] = [];
+      if (acceleration.status === 'mined' || acceleration.status === 'completed') {
+        if (!blockAccelerations[acceleration.blockHeight]) {
+          blockAccelerations[acceleration.blockHeight] = [];
         }
-        blockAccelerations[acceleration.block_height].push(acceleration);
+        blockAccelerations[acceleration.blockHeight].push(acceleration);
       }
     }
 

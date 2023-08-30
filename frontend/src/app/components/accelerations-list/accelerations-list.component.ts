@@ -39,12 +39,12 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.accelerations$ = this.apiService.getAccelerations$().pipe(
+    this.accelerations$ = this.apiService.getAccelerationHistory$().pipe(
       switchMap(accelerations => {
         if (this.widget) {
-          return of(accelerations.slice(0, 6));
+          return of(accelerations.slice(-6).reverse());
         } else {
-          return of(accelerations);
+          return of(accelerations.reverse());
         }
       }),
       catchError((err) => {

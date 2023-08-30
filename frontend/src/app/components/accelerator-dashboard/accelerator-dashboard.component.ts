@@ -56,10 +56,10 @@ export class AcceleratorDashboardComponent implements OnInit {
       switchMap(([blocks, accelerations]) => {
         const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (acceleration.mined && !accelerationsByBlock[acceleration.blockHash]) {
+          if (['mined', 'completed'].includes(acceleration.status) && !accelerationsByBlock[acceleration.blockHash]) {
             accelerationsByBlock[acceleration.blockHash] = [];
           }
-          if (acceleration.mined) {
+          if (['mined', 'completed'].includes(acceleration.status)) {
             accelerationsByBlock[acceleration.blockHash].push(acceleration);
           }
         }

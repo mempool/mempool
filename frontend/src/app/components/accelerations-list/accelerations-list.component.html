@@ -28,6 +28,7 @@
             {{ acceleration.feeDelta | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
           </td>
           <td class="status text-right">
+            <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="transaction.rbf.mined">Pending</span>
             <span *ngIf="acceleration.status === 'mined' || acceleration.status === 'completed'" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
             <span *ngIf="acceleration.status === 'failed'" class="badge badge-danger" i18n="accelerator.canceled">Canceled</span>
           </td>

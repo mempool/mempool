@@ -18,6 +18,7 @@ import { StatisticsComponent } from '../components/statistics/statistics.compone
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { AccelerationFeesGraphComponent } from '../components/acceleration-fees-graph/acceleration-fees-graph.component';
+import { AccelerationsListComponent } from '../components/accelerations-list/accelerations-list.component';
 
 const routes: Routes = [
   {
@@ -49,6 +50,11 @@ const routes: Routes = [
             component: AcceleratorDashboardComponent,
           }
         ]
+      },
+      {
+        path: 'acceleration-list',
+        data: { networks: ['bitcoin'] },
+        component: AccelerationsListComponent,
       },
       {
         path: 'mempool-block/:id',
