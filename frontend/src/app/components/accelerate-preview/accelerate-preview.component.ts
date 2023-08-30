@@ -28,10 +28,9 @@ export interface RateOption {
   index: number;
 }
 
-export const DEFAULT_BID_RATIO = 5;
-export const MIN_BID_RATIO = 2;
-export const MAX_BID_RATIO = 20;
-
+export const MIN_BID_RATIO = 1;
+export const DEFAULT_BID_RATIO = 2;
+export const MAX_BID_RATIO = 4;
 
 @Component({
   selector: 'app-accelerate-preview',
@@ -115,8 +114,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           });
 
           this.minBidAllowed = this.minExtraCost * MIN_BID_RATIO;
-          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
           this.defaultBid = this.minExtraCost * DEFAULT_BID_RATIO;
+          this.maxBidAllowed = this.minExtraCost * MAX_BID_RATIO;
 
           this.userBid = this.defaultBid;
           if (this.userBid < this.minBidAllowed) {
