@@ -144,3 +144,12 @@ export function nextRoundNumber(num: number): number {
   num /= factor;
   return factor * (roundNumbers.find(val => val >= num) || roundNumbers[roundNumbers.length - 1]);
 }
+
+export function seoDescriptionNetwork(network: string): string {
+  if( network === 'liquidtestnet' || network === 'testnet' ) {
+    return ' Testnet';
+  } else if( network === 'signet' || network === 'testnet' ) {
+    return ' ' + network.charAt(0).toUpperCase() + network.slice(1);
+  }
+  return '';
+}

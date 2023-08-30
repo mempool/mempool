@@ -5,6 +5,8 @@ import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-blocks-list',
@@ -35,6 +37,7 @@ export class BlocksList implements OnInit {
     private websocketService: WebsocketService,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
+    private seoService: SeoService,
   ) {
   }
 
@@ -49,6 +52,14 @@ export class BlocksList implements OnInit {
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
+
+    this.seoService.setTitle($localize`:@@meta.title.blocks-list:Blocks`);
+    if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
+      this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
+    } else {
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
+    }
+
 
     this.blocks$ = combineLatest([
       this.fromHeightSubject.pipe(

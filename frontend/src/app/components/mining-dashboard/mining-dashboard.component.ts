@@ -18,6 +18,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
     private router: Router
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Mining Dashboard`);
+    this.seoService.setDescription($localize`:@@meta.description.mining.dashboard:Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.`);
   }
 
   ngOnInit(): void {
@@ -29,7 +30,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
     this.router.events.subscribe((e: NavigationStart) => {
       if (e.type === EventType.NavigationStart) {
         if (e.url.indexOf('graphs') === -1) { // The mining dashboard and the graph component are part of the same module so we can't use ngAfterViewInit in graphs.component.ts to blur the input
-          this.stateService.focusSearchInputDesktop(); 
+          this.stateService.focusSearchInputDesktop();
         }
       }
     });
