@@ -8,6 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
+import { ApiService } from './api.service';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -48,6 +49,8 @@ export interface Env {
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
+  GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
+  PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
 
 const defaultEnv: Env = {
@@ -120,6 +123,7 @@ export class StateService {
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
+  servicesBackendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
   chainTip$ = new ReplaySubject<number>(-1);
@@ -143,6 +147,7 @@ export class StateService {
   rateUnits$: BehaviorSubject<string>;
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
+  menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,

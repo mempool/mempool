@@ -130,7 +130,7 @@
 }
 
 .table {
-  	tr td {
+  tr td {
 		padding: 0.75rem 0.5rem;
 		@media (min-width: 576px) {
 			padding: 0.75rem 0.75rem;
@@ -138,7 +138,7 @@
 		&:last-child {
 			text-align: right;
 			@media (min-width: 850px) {
-			text-align: left;
+        text-align: left;
 			}
 		}
 		.btn {
@@ -218,21 +218,52 @@
   }
 }
 
+.link.accelerator {
+  cursor: pointer;
+}
+
 .eta {
   display: flex;
-  justify-content: end;
   flex-wrap: wrap;
   align-content: center;
   @media (min-width: 850px) {
-    justify-content: space-between;
+    justify-content: left !important;    
   }
 }
 
 .accelerate {
+  display: flex !important;
   align-self: auto;
   margin-top: 3px;
-  @media (min-width: 850px) {
-    justify-self: start;
+  margin-left: auto;
+  background-color: #653b9c;
+  @media (max-width: 849px) {
+    margin-left: 5px;
+  }
+}
+
+.etaDeepMempool {
+  display: flex !important;
+  justify-content: end;
+  flex-wrap: wrap;
+  align-content: center;
+  @media (max-width: 995px) {
+    justify-content: left !important;
+  }
+  @media (max-width: 849px) {
+    justify-content: right !important;
+  }
+}
+
+.accelerateDeepMempool {
+  align-self: auto;
+  margin-top: 3px;
+  margin-left: auto;
+  background-color: #653b9c;
+  @media (max-width: 995px) {
     margin-left: 0px;
+  }
+  @media (max-width: 849px) {
+    margin-left: 5px;
   }
 }
