@@ -28,7 +28,10 @@
 .feerate.active {
   background-color: #105fb0 !important;
   opacity: 1;
-  border: 1px solid white !important;
+  border: 1px solid #007fff !important;
+}
+.feerate:focus {
+  box-shadow: none !important;
 }
 
 .estimateDisabled {
@@ -39,6 +42,24 @@
 .table-toggle {
   width: 100%;
   margin-top: 0.5em;
+}
+
+.tab {
+  &:first-child {
+    margin-right: 1px;
+  }
+  border: solid 1px black;
+  border-bottom: none;
+  background-color: #323655;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+.tab.active {
+  background-color: #5d659d !important;
+  opacity: 1;
+}
+.tab:focus {
+  box-shadow: none !important;
 }
 
 .table-accelerator {

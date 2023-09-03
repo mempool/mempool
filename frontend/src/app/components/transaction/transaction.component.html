@@ -6,8 +6,11 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-mempool alert-dismissible" role="alert">
-      <span><a class="link accelerator" (click)="onAccelerateClicked()">Accelerate</a> this transaction using Mempool Accelerator &trade;</span>
+    <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-dismissible alert-purple" role="alert">
+      <div>
+        <a class="btn btn-sm blink-bg" (click)="onAccelerateClicked()">Accelerate</a>
+        <span class="align-middle">this transaction using Mempool Accelerator &trade;</span>
+      </div>
       <button type="button" class="close" aria-label="Close" (click)="dismissAccelAlert()">
         <span aria-hidden="true">&times;</span>
       </button>

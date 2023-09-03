@@ -75,7 +75,7 @@
                 <ng-container *ngFor="let option of maxRateOptions">
                   <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
                     <span class="fee">{{ option.fee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
-                    <span class="rate">~ <app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
+                    <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
                   </button>
                 </ng-container>
               </div>
@@ -88,12 +88,12 @@
       <div class="row mb-3">
         <div class="col">
           <div class="table-toggle btn-group btn-group-toggle">
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
+            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
               <span>Estimated cost</span>
-            </div>
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
+            </button>
+            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
               <span>Maximum cost</span>
-            </div>
+            </button>
           </div>
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
