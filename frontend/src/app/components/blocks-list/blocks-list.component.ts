@@ -48,18 +48,16 @@ export class BlocksList implements OnInit {
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
+      this.seoService.setTitle($localize`:@@meta.title.blocks-list:Blocks`);
+      if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
+        this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
+      } else {
+        this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
+      }
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-
-    this.seoService.setTitle($localize`:@@meta.title.blocks-list:Blocks`);
-    if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
-      this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
-    } else {
-      this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
-    }
-
 
     this.blocks$ = combineLatest([
       this.fromHeightSubject.pipe(
