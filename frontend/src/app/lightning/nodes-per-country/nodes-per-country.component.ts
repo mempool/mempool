@@ -33,6 +33,7 @@ export class NodesPerCountry implements OnInit {
       .pipe(
         map(response => {
           this.seoService.setTitle($localize`Lightning nodes in ${response.country.en}`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-country:Explore all the Lightning nodes hosted in ${response.country.en} and see an overview of each node's capacity, number of open channels, and more.`);
 
           this.country = {
             name: response.country.en,
@@ -47,7 +48,7 @@ export class NodesPerCountry implements OnInit {
               iso: response.nodes[i].iso_code,
             };
           }
-          
+
           const sumLiquidity = response.nodes.reduce((partialSum, a) => partialSum + a.capacity, 0);
           const sumChannels = response.nodes.reduce((partialSum, a) => partialSum + a.channels, 0);
           const isps = {};
@@ -70,14 +71,14 @@ export class NodesPerCountry implements OnInit {
               isps[node.isp].asns.push(node.as_number);
             }
             isps[node.isp].count++;
-            
+
             if (isps[node.isp].count > topIsp.count) {
               topIsp.count = isps[node.isp].count;
               topIsp.id = isps[node.isp].asns.join(',');
               topIsp.name = node.isp;
             }
           }
-          
+
           return {
             nodes: response.nodes,
             sumLiquidity: sumLiquidity,

@@ -15,6 +15,7 @@ import { CacheService } from '../../services/cache.service';
 import { OpenGraphService } from '../../services/opengraph.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { CpfpInfo } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 
@@ -87,6 +88,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} transaction with txid {txid}.`);
           this.resetTransaction();
           return merge(
             of(true),
