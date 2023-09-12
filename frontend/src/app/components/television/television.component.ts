@@ -37,6 +37,7 @@ export class TelevisionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@46ce8155c9ab953edeec97e8950b5a21e67d7c4e:TV view`);
+    this.seoService.setDescription($localize`:@@meta.description.tv:See Bitcoin blocks and mempool congestion in real-time in a simplified format perfect for a TV.`);
     this.websocketService.want(['blocks', 'live-2h-chart', 'mempool-blocks']);
 
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {

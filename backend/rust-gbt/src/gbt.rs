@@ -5,7 +5,7 @@ use tracing::{info, trace};
 use crate::{
     audit_transaction::{partial_cmp_uid_score, AuditTransaction},
     u32_hasher_types::{u32hashset_new, u32priority_queue_with_capacity, U32HasherState},
-    GbtResult, ThreadTransactionsMap,
+    GbtResult, ThreadTransactionsMap, thread_acceleration::ThreadAcceleration,
 };
 
 const MAX_BLOCK_WEIGHT_UNITS: u32 = 4_000_000 - 4_000;
@@ -53,7 +53,13 @@ impl Ord for TxPriority {
 // TODO: Make gbt smaller to fix these lints.
 #[allow(clippy::too_many_lines)]
 #[allow(clippy::cognitive_complexity)]
-pub fn gbt(mempool: &mut ThreadTransactionsMap, max_uid: usize) -> GbtResult {
+pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAcceleration], max_uid: usize) -> GbtResult {
+    let mut indexed_accelerations = Vec::with_capacity(max_uid + 1);
+    indexed_accelerations.resize(max_uid + 1, None);
+    for acceleration in accelerations {
+        indexed_accelerations[acceleration.uid as usize] = Some(acceleration);
+    }
+
     let mempool_len = mempool.len();
     let mut audit_pool: AuditPool = Vec::with_capacity(max_uid + 1);
     audit_pool.resize(max_uid + 1, None);
@@ -63,7 +69,8 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, max_uid: usize) -> GbtResult {
 
     info!("Initializing working structs");
     for (uid, tx) in &mut *mempool {
-        let audit_tx = AuditTransaction::from_thread_transaction(tx);
+        let acceleration = indexed_accelerations.get(*uid as usize);
+        let audit_tx = AuditTransaction::from_thread_transaction(tx, acceleration.copied());
         // Safety: audit_pool and mempool_stack must always contain the same transactions
         audit_pool[*uid as usize] = Some(ManuallyDrop::new(audit_tx));
         mempool_stack.push(*uid);
@@ -328,13 +335,15 @@ fn set_relatives(txid: u32, audit_pool: &mut AuditPool) {
     let mut total_sigops: u32 = 0;
 
     for ancestor_id in &ancestors {
-        let Some(ancestor) = audit_pool
+        if let Some(ancestor) = audit_pool
             .get(*ancestor_id as usize)
-            .expect("audit_pool contains all ancestors") else { todo!() };
-        total_fee += ancestor.fee;
-        total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
-        total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
-        total_sigops += ancestor.sigops;
+            .expect("audit_pool contains all ancestors")
+        {
+            total_fee += ancestor.fee;
+            total_sigop_adjusted_weight += ancestor.sigop_adjusted_weight;
+            total_sigop_adjusted_vsize += ancestor.sigop_adjusted_vsize;
+            total_sigops += ancestor.sigops;
+        } else { todo!() };
     }
 
     if let Some(Some(tx)) = audit_pool.get_mut(txid as usize) {

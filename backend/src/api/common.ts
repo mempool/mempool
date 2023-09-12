@@ -59,10 +59,12 @@ export class Common {
     return arr;
   }
 
-  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[]): { [txid: string]: MempoolTransactionExtended[] } {
+  static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: MempoolTransactionExtended[] } {
     const matches: { [txid: string]: MempoolTransactionExtended[] } = {};
-    added
-      .forEach((addedTx) => {
+
+    // For small N, a naive nested loop is extremely fast, but it doesn't scale
+    if (added.length < 1000 && deleted.length < 50 && !forceScalable) {
+      added.forEach((addedTx) => {
         const foundMatches = deleted.filter((deletedTx) => {
           // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
           return addedTx.fee > deletedTx.fee
@@ -73,9 +75,40 @@ export class Common {
               addedTx.vin.some((vin) => vin.txid === deletedVin.txid && vin.vout === deletedVin.vout));
             });
         if (foundMatches?.length) {
-          matches[addedTx.txid] = foundMatches;
+          matches[addedTx.txid] = [...new Set(foundMatches)];
         }
       });
+    } else {
+      // for large N, build a lookup table of prevouts we can check in ~constant time
+      const deletedSpendMap: { [txid: string]: { [vout: number]: MempoolTransactionExtended } } = {};
+      for (const tx of deleted) {
+        for (const vin of tx.vin) {
+          if (!deletedSpendMap[vin.txid]) {
+            deletedSpendMap[vin.txid] = {};
+          }
+          deletedSpendMap[vin.txid][vin.vout] = tx;
+        }
+      }
+
+      for (const addedTx of added) {
+        const foundMatches = new Set<MempoolTransactionExtended>();
+        for (const vin of addedTx.vin) {
+          const deletedTx = deletedSpendMap[vin.txid]?.[vin.vout];
+          if (deletedTx && deletedTx.txid !== addedTx.txid
+              // The new tx must, absolutely speaking, pay at least as much fee as the replaced tx.
+              && addedTx.fee > deletedTx.fee
+              // The new transaction must pay more fee per kB than the replaced tx.
+              && addedTx.adjustedFeePerVsize > deletedTx.adjustedFeePerVsize
+          ) {
+            foundMatches.add(deletedTx);
+          }
+          if (foundMatches.size) {
+            matches[addedTx.txid] = [...foundMatches];
+          }
+        }
+      }
+    }
+
     return matches;
   }
 
@@ -108,9 +141,10 @@ export class Common {
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
     return {
       txid: tx.txid,
-      fee: tx.fee,
+      fee: tx.fee || 0,
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
+      acc: tx.acceleration || undefined,
       rate: tx.effectiveFeePerVsize,
     };
   }
@@ -460,7 +494,7 @@ export class Common {
     };
   }
 
-  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string }[]): EffectiveFeeStats {
+  static calcEffectiveFeeStatistics(transactions: { weight: number, fee: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
     const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
 
     let weightCount = 0;

@@ -17,6 +17,7 @@ const auditColors = {
   missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
   added: hexToColor('0099ff'),
   selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
+  accelerated: hexToColor('8F5FF6'),
 };
 
 // convert from this class's update format to TxSprite's update format
@@ -37,8 +38,9 @@ export default class TxView implements TransactionStripped {
   vsize: number;
   value: number;
   feerate: number;
+  acc?: boolean;
   rate?: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
 
@@ -63,6 +65,7 @@ export default class TxView implements TransactionStripped {
     this.vsize = tx.vsize;
     this.value = tx.value;
     this.feerate = tx.rate || (tx.fee / tx.vsize); // sort by effective fee rate where available
+    this.acc = tx.acc;
     this.rate = tx.rate;
     this.status = tx.status;
     this.initialised = false;
@@ -199,6 +202,11 @@ export default class TxView implements TransactionStripped {
     const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
     // Normal mode
     if (!this.scene?.highlightingEnabled) {
+      if (this.acc) {
+        return auditColors.accelerated;
+      } else {
+        return feeLevelColor;
+      }
       return feeLevelColor;
     }
     // Block audit
@@ -207,7 +215,7 @@ export default class TxView implements TransactionStripped {
         return auditColors.censored;
       case 'missing':
       case 'sigop':
-      case 'fullrbf':
+      case 'rbf':
         return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
       case 'fresh':
       case 'freshcpfp':
@@ -216,6 +224,8 @@ export default class TxView implements TransactionStripped {
         return auditColors.added;
       case 'selected':
         return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+      case 'accelerated':
+        return auditColors.accelerated;
       case 'found':
         if (this.context === 'projected') {
           return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
@@ -223,7 +233,11 @@ export default class TxView implements TransactionStripped {
           return feeLevelColor;
         }
       default:
-        return feeLevelColor;
+        if (this.acc) {
+          return auditColors.accelerated;
+        } else {
+          return feeLevelColor;
+        }
     }
   }
 }

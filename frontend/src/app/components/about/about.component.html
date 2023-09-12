@@ -4,7 +4,8 @@
     <span style="margin-left: auto; margin-right: -20px; margin-bottom: -20px">&reg;</span>
     <img class="logo" src="/resources/mempool-logo-bigger.png" />
     <div class="version">
-      v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]
+      <span>v{{ packetJsonVersion }} [<a href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</span>
+      <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">[{{ stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE }}]</span>
     </div>
   </div>
 
@@ -30,6 +31,14 @@
     <track label="Română" kind="captions" srclang="ro" src="/resources/promo-video/ro.vtt" [attr.default]="showSubtitles('ro') ? '' : null">
     <track label="Português" kind="captions" srclang="pt" src="/resources/promo-video/pt.vtt" [attr.default]="showSubtitles('pt') ? '' : null">
   </video>
+
+  <ng-container *ngIf="false && officialMempoolSpace">
+    <h3 class="mt-5">Sponsor the project</h3>
+    <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
+      <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Community</a>
+      <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Enterprise</a>
+    </div>
+  </ng-container>
 
   <div class="enterprise-sponsor" id="enterprise-sponsors">
     <h3 i18n="about.sponsors.enterprise.withRocket">Enterprise Sponsors 🚀</h3>
@@ -173,34 +182,44 @@
         </svg>
         <span>Exodus</span>
       </a>
-      <a href="https://www.luminex.io" target="_blank" title="Luminex">
-        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="66.95" height="80" viewBox="0 0 300.43 385" style="padding-top: 10px;">
-          <defs>
-            <style>
-              .lum-cls-1 {
-                fill: #f2ea25;
-              }
-            </style>
-          </defs>
-          <path class="lum-cls-1" d="m309.02,90.04c0,49.65-38.73,90.04-95.34,90.04s-95.34-40.39-95.34-90.04S153.77,0,213.69,0c56.28,0,95.34,40.39,95.34,90.04Zm-63.56,0c0-20.52-14.23-37.07-31.78-37.07s-31.78,16.55-31.78,37.07,14.23,37.07,31.78,37.07,31.78-16.55,31.78-37.07Z"/>
-          <path class="lum-cls-1" d="m311.87,372.67h-66.34l-31.84-47.76-31.84,47.76h-66.34l58.38-90.22-53.07-79.61h66.34l26.54,42.46,26.53-42.46h66.34l-53.07,79.61,58.38,90.22Z"/>
-          <rect class="lum-cls-1" width="60.69" height="372.67"/>
-        </svg>
-        <span>Luminex</span>
-      </a>
     </div>
   </div>
 
-  <div class="community-sponsor" id="community-sponsors">
-    <h3 i18n="about.sponsors.withHeart">Community Sponsors ❤️</h3>
+  <ng-container *ngIf="officialMempoolSpace">
+    <div *ngIf="profiles$ | async as profiles" id="community-sponsors">
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.whales.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Whale Sponsors</h3>
+        <div class="wrapper">
+          <ng-container>
+            <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
+              <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+                <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+              </a>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
 
+      <div class="community-sponsor" style="margin-bottom: 68px" *ngIf="profiles.chads.length > 0">
+        <h3 i18n="about.sponsors.withHeart">Chad Sponsors</h3>
+        <div class="wrapper">
+          <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
+            <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
+              <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+            </a>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="community-sponsor" style="margin-bottom: 68px">
+    <h3 i18n="about.sponsors.withHeart">OG Sponsors ❤️</h3>
     <div class="wrapper">
-      <ng-container *ngIf="sponsors$ | async as sponsors; else loadingSponsors">
-        <ng-template ngFor let-sponsor [ngForOf]="sponsors">
-          <a [href]="'https://twitter.com/' + sponsor.handle" target="_blank" rel="sponsored" [title]="sponsor.handle">
-            <img class="image" [src]="'/api/v1/donations/images/' + sponsor.handle" />
-          </a>
-        </ng-template>
+      <ng-container *ngIf="ogs$ | async as ogs; else loadingSponsors">
+        <a *ngFor="let ogSponsor of ogs" [href]="'https://twitter.com/' + ogSponsor.handle" target="_blank" rel="sponsored" [title]="ogSponsor.handle">
+          <img class="image" [src]="'/api/v1/donations/images/' + ogSponsor.handle" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+        </a>
       </ng-container>
     </div>
   </div>
@@ -224,7 +243,7 @@
         <img class="image" src="/resources/profile/ronindojo.png" />
         <span>RoninDojo</span>
       </a>
-      <a href="https://github.com/runcitadel/core" target="_blank" title="Citadel">
+      <a href="https://github.com/runcitadel" target="_blank" title="Citadel">
         <img class="image" src="/resources/profile/runcitadel.svg" />
         <span>Citadel</span>
       </a>
@@ -340,7 +359,7 @@
       <div class="wrapper">
         <ng-template ngFor let-translator [ngForOf]="translators">
           <a [href]="'https://twitter.com/' + translator.value" target="_blank" [title]="translator.key">
-            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" />
+            <img class="image" [src]="'/api/v1/translators/images/' + translator.value" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
           </a>
         </ng-template>
       </div>
@@ -354,7 +373,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.regular">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -366,7 +385,7 @@
       <div class="wrapper">
         <ng-template ngFor let-contributor [ngForOf]="contributors.core">
           <a [href]="'https://github.com/' + contributor.name" target="_blank" [title]="contributor.name">
-            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" />
+            <img class="image" [src]="'/api/v1/contributors/images/' + contributor.id" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             <span>{{ contributor.name }}</span>
           </a>
         </ng-template>
@@ -411,7 +430,7 @@
       Trademark Notice<br>
     </div>
     <p>
-      The Mempool Open Source Project&trade;, mempool.space&trade;, the mempool logo&reg;, the mempool.space logos&trade;, the mempool square logo&reg;, and the mempool blocks logo&trade; are either registered trademarks or trademarks of Mempool Space K.K in Japan, the United States, and/or other countries.
+      The Mempool Open Source Project&reg;, mempool.space&trade;, the mempool logo&reg;, the mempool.space logos&trade;, the mempool square logo&reg;, and the mempool blocks logo&trade; are either registered trademarks or trademarks of Mempool Space K.K in Japan, the United States, and/or other countries.
     </p>
     <p>
       While our software is available under an open source software license, the copyright license does not include an implied right or license to use our trademarks. See our <a href="https://mempool.space/trademark-policy">Trademark Policy and Guidelines</a> for more details, published on &lt;https://mempool.space/trademark-policy&gt;.

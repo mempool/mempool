@@ -23,6 +23,7 @@ describe('Mempool Backend Config', () => {
         AUTOMATIC_BLOCK_REINDEXING: false,
         POLL_RATE_MS: 2000,
         CACHE_DIR: './cache',
+        CACHE_ENABLED: true,
         CLEAR_PROTECTION_MINUTES: 20,
         RECOMMENDED_FEE_PERCENTILE: 50,
         BLOCK_WEIGHT_UNITS: 4000000,
@@ -46,11 +47,17 @@ describe('Mempool Backend Config', () => {
         DISK_CACHE_BLOCK_INTERVAL: 6,
         MAX_PUSH_TX_SIZE_WEIGHT: 400000,
         ALLOW_UNREACHABLE: true,
+        PRICE_UPDATES_PER_HOUR: 1,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
 
-      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000', UNIX_SOCKET_PATH: null, RETRY_UNIX_SOCKET_AFTER: 30000 });
+      expect(config.ESPLORA).toStrictEqual({
+        REST_API_URL: 'http://127.0.0.1:3000',
+        UNIX_SOCKET_PATH: null,
+        RETRY_UNIX_SOCKET_AFTER: 30000,
+        FALLBACK: [],
+       });
 
       expect(config.CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
@@ -100,11 +107,6 @@ describe('Mempool Backend Config', () => {
         PASSWORD: ''
       });
 
-      expect(config.PRICE_DATA_SERVER).toStrictEqual({
-        TOR_URL: 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-        CLEARNET_URL: 'https://price.bisq.wiz.biz/getAllMarketPrices'
-      });
-
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual({
         MEMPOOL_API: 'https://mempool.space/api/v1',
         MEMPOOL_ONION: 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
@@ -126,6 +128,16 @@ describe('Mempool Backend Config', () => {
         AUDIT: false,
         AUDIT_START_HEIGHT: 774000,
         SERVERS: []
+      });
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual({
+        API: "",
+        ACCELERATIONS: false,
+      });
+
+      expect(config.REDIS).toStrictEqual({
+        ENABLED: false,
+        UNIX_SOCKET_PATH: ''
       });
     });
   });
@@ -157,9 +169,11 @@ describe('Mempool Backend Config', () => {
 
       expect(config.SOCKS5PROXY).toStrictEqual(fixture.SOCKS5PROXY);
 
-      expect(config.PRICE_DATA_SERVER).toStrictEqual(fixture.PRICE_DATA_SERVER);
-
       expect(config.EXTERNAL_DATA_SERVER).toStrictEqual(fixture.EXTERNAL_DATA_SERVER);
+
+      expect(config.MEMPOOL_SERVICES).toStrictEqual(fixture.MEMPOOL_SERVICES);
+
+      expect(config.REDIS).toStrictEqual(fixture.REDIS);
     });
   });
 
@@ -172,41 +186,50 @@ describe('Mempool Backend Config', () => {
         for (const [key, value] of Object.entries(jsonObj)) {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
-            console.log('skipping check for MEMPOOL_HTTP_PORT');
-            return;
-          }
-          switch (typeof value) {
-            case 'object': {
-              if (Array.isArray(value)) {
-                return;
-              } else {
-                parseJson(value, key);
-              }
-              break;
+            if (process.env.CI) {
+              console.log('skipping check for MEMPOOL_HTTP_PORT');
             }
-            default: {
+            continue;
+          }
+
+          if (root) {
               //The flattened string, i.e, __MEMPOOL_ENABLED__
               const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
 
               //The string used as the environment variable, i.e, MEMPOOL_ENABLED
               const envVarStr = `${root ? root : ''}_${key}`;
 
+              let defaultEntry;
               //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
-              const defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
-
-              console.log(`looking for ${defaultEntry} in the start.sh script`);
-              const re = new RegExp(defaultEntry);
-              expect(startSh).toMatch(re);
+              if (Array.isArray(value)) {
+                defaultEntry = `${replaceStr}=\${${envVarStr}:=[]}`;
+                if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                //Regex matching does not work with the array values
+                expect(startSh).toContain(defaultEntry);
+              } else {
+                 defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
+                 if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                const re = new RegExp(defaultEntry);
+                expect(startSh).toMatch(re);
+              }
 
               //The string that actually replaces the values in the config file
               const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
-              console.log(`looking for ${sedStr} in the start.sh script`);
+              if (process.env.CI) {
+                console.log(`looking for ${sedStr} in the start.sh script`);
+              }
               expect(startSh).toContain(sedStr);
-              break;
             }
+          else {
+            parseJson(value, key);
           }
         }
       }
+
       parseJson(fixture);
     });
   });

@@ -49,7 +49,7 @@
         </div>
       </ng-template>
     </div>
-    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
+    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
   </div>
 </ng-container>
 

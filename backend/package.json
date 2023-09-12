@@ -22,19 +22,20 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "npm run build-rust && npm run tsc && npm run create-resources",
+    "build": "npm run rust-build && npm run tsc && npm run create-resources",
     "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
-    "package": "npm run build && rm -rf package && mv dist package && mv node_modules package && mv rust-gbt package && npm run package-rm-build-deps",
-    "package-rm-build-deps": "(cd package/node_modules; rm -r typescript @typescript-eslint @napi-rs ../rust-gbt/target ../rust-gbt/node_modules ../rust-gbt/src)",
+    "package": "./npm_package.sh",
+    "package-rm-build-deps": "./npm_package_rm_build_deps.sh",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=16384 dist/index.js",
     "reindex-updated-pools": "npm run start-production --update-pools",
     "reindex-all-blocks": "npm run start-production --update-pools --reindex-blocks",
     "test": "./node_modules/.bin/jest --coverage",
+    "test:ci": "CI=true ./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
     "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
-    "build-rust": "cd rust-gbt && npm install"
+    "rust-build": "cd rust-gbt && npm run build-release"
   },
   "dependencies": {
     "@babel/core": "^7.21.3",
@@ -45,15 +46,16 @@
     "crypto-js": "~4.1.1",
     "express": "~4.18.2",
     "maxmind": "~4.3.11",
-    "mysql2": "~3.5.2",
+    "mysql2": "~3.6.0",
     "rust-gbt": "file:./rust-gbt",
+    "redis": "^4.6.6",
     "socks-proxy-agent": "~7.0.0",
     "typescript": "~4.9.3",
     "ws": "~8.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
     "@babel/code-frame": "^7.18.6",
+    "@babel/core": "^7.21.3",
     "@types/compression": "^1.7.2",
     "@types/crypto-js": "^4.1.1",
     "@types/express": "^4.17.17",

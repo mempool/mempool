@@ -30,6 +30,7 @@ import generalLightningRoutes from './api/explorer/general.routes';
 import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
 import networkSyncService from './tasks/lightning/network-sync.service';
 import statisticsRoutes from './api/statistics/statistics.routes';
+import pricesRoutes from './api/prices/prices.routes';
 import miningRoutes from './api/mining/mining-routes';
 import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
@@ -41,6 +42,7 @@ import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
+import redisCache from './api/redis-cache';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -89,6 +91,10 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      bitcoinApi.startHealthChecks();
+    }
+
     if (config.DATABASE.ENABLED) {
       await DB.checkDbConnection();
       try {
@@ -122,7 +128,11 @@ class Server {
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
-      await diskCache.$loadMempoolCache();
+      if (config.MEMPOOL.CACHE_ENABLED) {
+        await diskCache.$loadMempoolCache();
+      } else if (config.REDIS.ENABLED) {
+        await redisCache.$loadCache();
+      }
     }
 
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && cluster.isPrimary) {
@@ -183,14 +193,16 @@ class Server {
       }
       const newMempool = await bitcoinApi.$getRawMempool();
       const numHandledBlocks = await blocks.$updateBlocks();
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool);
+        await memPool.$updateMempool(newMempool, pollRate);
       }
       indexer.$run();
+      priceUpdater.$run();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
-      const remainingTime = Math.max(0, config.MEMPOOL.POLL_RATE_MS - elapsed)
+      const remainingTime = Math.max(0, pollRate - elapsed);
       setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
       this.backendRetryCount = 0;
     } catch (e: any) {
@@ -255,6 +267,7 @@ class Server {
   
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
+    pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
     }

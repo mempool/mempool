@@ -34,6 +34,7 @@ export class ChannelPreviewComponent implements OnInit {
           this.openGraphService.waitFor('channel-data-' + this.shortId);
           this.error = null;
           this.seoService.setTitle(`Channel: ${params.get('short_id')}`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.channel:Overview for Lightning channel ${params.get('short_id')}. See channel capacity, the Lightning nodes involved, related on-chain transactions, and more.`);
           return this.lightningApiService.getChannel$(params.get('short_id'))
             .pipe(
               tap((data) => {
@@ -54,6 +55,7 @@ export class ChannelPreviewComponent implements OnInit {
               }),
               catchError((err) => {
                 this.error = err;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('channel-map-' + this.shortId);
                 this.openGraphService.fail('channel-data-' + this.shortId);
                 return of(null);

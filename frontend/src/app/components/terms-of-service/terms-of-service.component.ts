@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-terms-of-service',
@@ -10,5 +11,11 @@ export class TermsOfServiceComponent {
 
   constructor(
     private stateService: StateService,
+    private seoService: SeoService,
   ) { }
+
+  ngOnInit(): void {
+    this.seoService.setTitle('Terms of Service');
+    this.seoService.setDescription('Out of respect for the Bitcoin community, the mempool.space website is Bitcoin Only and does not display any advertising.');
+  }
 }

@@ -13,6 +13,7 @@ import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
 
@@ -206,6 +207,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                       this.error = err;
                       this.isLoadingBlock = false;
                       this.isLoadingOverview = false;
+                      this.seoService.logSoft404();
                       return EMPTY;
                     })
                   );
@@ -214,6 +216,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.error = err;
                   this.isLoadingBlock = false;
                   this.isLoadingOverview = false;
+                  this.seoService.logSoft404();
                   return EMPTY;
                 }),
               );
@@ -229,6 +232,7 @@ export class BlockComponent implements OnInit, OnDestroy {
               this.error = err;
               this.isLoadingBlock = false;
               this.isLoadingOverview = false;
+              this.seoService.logSoft404();
               return EMPTY;
             })
           );
@@ -258,6 +262,11 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.setNextAndPreviousBlockLink();
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
+        if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+          this.seoService.setDescription($localize`:@@meta.description.liquid.block:See size, weight, fee range, included transactions, and more for Liquid${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        } else {
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.block:See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        }
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block?.extras?.reward !== undefined) {
@@ -322,7 +331,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         ]);
       })
     )
-    .subscribe(([transactions, blockAudit]) => {      
+    .subscribe(([transactions, blockAudit]) => {
       if (transactions) {
         this.strippedTransactions = transactions;
       } else {
@@ -339,13 +348,17 @@ export class BlockComponent implements OnInit, OnDestroy {
         const isSelected = {};
         const isFresh = {};
         const isSigop = {};
-        const isFullRbf = {};
+        const isRbf = {};
+        const isAccelerated = {};
         this.numMissing = 0;
         this.numUnexpected = 0;
 
         if (blockAudit?.template) {
           for (const tx of blockAudit.template) {
             inTemplate[tx.txid] = true;
+            if (tx.acc) {
+              isAccelerated[tx.txid] = true;
+            }
           }
           for (const tx of transactions) {
             inBlock[tx.txid] = true;
@@ -363,7 +376,10 @@ export class BlockComponent implements OnInit, OnDestroy {
             isSigop[txid] = true;
           }
           for (const txid of blockAudit.fullrbfTxs || []) {
-            isFullRbf[txid] = true;
+            isRbf[txid] = true;
+          }
+          for (const txid of blockAudit.acceleratedTxs || []) {
+            isAccelerated[txid] = true;
           }
           // set transaction statuses
           for (const tx of blockAudit.template) {
@@ -381,13 +397,16 @@ export class BlockComponent implements OnInit, OnDestroy {
                 }
               } else if (isSigop[tx.txid]) {
                 tx.status = 'sigop';
-              } else if (isFullRbf[tx.txid]) {
-                tx.status = 'fullrbf';
+              } else if (isRbf[tx.txid]) {
+                tx.status = 'rbf';
               } else {
                 tx.status = 'missing';
               }
               isMissing[tx.txid] = true;
               this.numMissing++;
+            }
+            if (isAccelerated[tx.txid]) {
+              tx.status = 'accelerated';
             }
           }
           for (const [index, tx] of transactions.entries()) {
@@ -398,12 +417,15 @@ export class BlockComponent implements OnInit, OnDestroy {
               tx.status = 'added';
             } else if (inTemplate[tx.txid]) {
               tx.status = 'found';
-            } else if (isFullRbf[tx.txid]) {
-              tx.status = 'fullrbf';
+            } else if (isRbf[tx.txid]) {
+              tx.status = 'rbf';
             } else {
               tx.status = 'selected';
               isSelected[tx.txid] = true;
               this.numUnexpected++;
+            }
+            if (isAccelerated[tx.txid]) {
+              tx.status = 'accelerated';
             }
           }
           for (const tx of transactions) {
@@ -664,7 +686,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.setAuditAvailable(false);
     }
   }
-  
+
   isAuditAvailableFromBlockHeight(blockHeight: number): boolean {
     if (!this.auditSupported) {
       return false;

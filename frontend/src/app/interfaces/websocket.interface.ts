@@ -70,7 +70,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[],
   removed: string[],
-  changed?: { txid: string, rate: number | undefined }[];
+  changed?: { txid: string, rate: number | undefined, acc: boolean | undefined }[];
 }
 
 export interface MempoolInfo {
@@ -88,13 +88,14 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: boolean; // is accelerated?
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
 export interface IBackendInfo {
-  hostname: string;
+  hostname?: string;
   gitCommit: string;
   version: string;
 }

@@ -27,6 +27,7 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
   sigops?: number;
   adjustedVsize?: number;
+  acceleration?: boolean;
 }
 
 export interface RbfInfo {
@@ -110,6 +111,8 @@ export interface PoolInfo {
   regexes: string; // JSON array
   addresses: string; // JSON array
   emptyBlocks: number;
+  slug: string;
+  poolUniqueId: number;
 }
 export interface PoolStat {
   pool: PoolInfo;
@@ -158,6 +161,7 @@ export interface BlockAudit extends BlockExtended {
   freshTxs: string[],
   sigopTxs: string[],
   fullrbfTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
   expectedFees: number,
   expectedWeight: number,
@@ -174,7 +178,8 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'fullrbf';
+  acc?: boolean;
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
@@ -186,6 +191,7 @@ export interface RbfTransaction extends TransactionStripped {
 export interface MempoolPosition {
   block: number,
   vsize: number,
+  accelerated?: boolean
 }
 
 export interface RewardStats {
