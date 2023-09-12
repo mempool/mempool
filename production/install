@@ -1793,7 +1793,7 @@ case $OS in
 esac
 
 # wait for mysql to start
-sleep 5
+sleep 10
 
 mysql << _EOF_
 create database mempool;
