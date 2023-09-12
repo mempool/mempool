@@ -26,7 +26,7 @@ class Mining {
   /**
    * Get historical blocks health
    */
-   public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+  public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
     return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -56,7 +56,7 @@ class Mining {
   /**
    * Get historical block fee rates percentiles
    */
-   public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFeeRates(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -66,7 +66,7 @@ class Mining {
   /**
    * Get historical block sizes
    */
-   public async $getHistoricalBlockSizes(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockSizes(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockSizes(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -76,7 +76,7 @@ class Mining {
   /**
    * Get historical block weights
    */
-   public async $getHistoricalBlockWeights(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockWeights(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockWeights(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -107,6 +107,7 @@ class Mining {
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
         avgFeeDelta: poolInfo.avgFeeDelta,
+        poolUniqueId: poolInfo.poolUniqueId
       };
       poolsStats.push(poolStat);
     });
@@ -592,6 +593,20 @@ class Mining {
     } else {
       logger.debug(`Indexing missing coinstatsindex data completed. Indexed 0.`, logger.tags.mining);
     }
+  }
+
+  /**
+   * List existing mining pools
+   */
+  public async $listPools(): Promise<{name: string, slug: string, unique_id: number}[] | null> {
+    const [rows] = await database.query(`
+      SELECT
+        name,
+        slug,
+        unique_id
+      FROM pools`
+    );
+    return rows as {name: string, slug: string, unique_id: number}[];
   }
 
   private getDateMidnight(date: Date): Date {

@@ -1,3 +1,11 @@
+.sticky-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
 li.nav-item.active {
   background-color: #653b9c;
 }
@@ -86,7 +94,6 @@ li.nav-item {
 
 .navbar-brand {
   position: relative;
-  height: 65px;
 }
 
 .navbar-brand.dual-logos {
@@ -102,7 +109,7 @@ nav {
 
 .connection-badge {
   position: absolute;
-  top: 22px;
+  top: 12px;
   width: 100%;
 }
 
@@ -209,4 +216,26 @@ nav {
     margin-left: 5px;
     margin-right: 0px;
   }
+}
+
+.profile_image_container {
+  width: 35px;
+  margin-right: 15px;
+  text-align: center;
+  align-self: center;
+  cursor: pointer;
+  &.anon {
+    border: 1.5px solid lightgrey;
+    color: lightgrey;
+    border-radius: 5px;
+  }
+}
+.profile_image {
+  height: 35px;
+  border-radius: 5px;
+}
+
+main {
+  transition: 0.2s;
+  transition-property: max-width;
 }

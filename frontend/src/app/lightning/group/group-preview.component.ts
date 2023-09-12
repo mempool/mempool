@@ -31,6 +31,7 @@ export class GroupPreviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle(`Mempool.Space Lightning Nodes`);
+    this.seoService.setDescription(`See all Lightning nodes run by mempool.space -- these are the nodes that provide the data on the mempool.space Lightning dashboard.`);
 
     this.nodes$ = this.activatedRoute.paramMap
       .pipe(
@@ -50,6 +51,7 @@ export class GroupPreviewComponent implements OnInit {
               name: this.slug.replace(/-/gi, ' '),
               description: '',
             };
+            this.seoService.logSoft404();
             this.openGraphService.fail('ln-group-map-' + this.slug);
             this.openGraphService.fail('ln-group-data-' + this.slug);
             return of(null);
@@ -106,6 +108,7 @@ export class GroupPreviewComponent implements OnInit {
           };
         }),
         catchError(() => {
+          this.seoService.logSoft404();
           this.openGraphService.fail('ln-group-map-' + this.slug);
           this.openGraphService.fail('ln-group-data-' + this.slug);
           return of({

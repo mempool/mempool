@@ -2,12 +2,13 @@ import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
 import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
+import { ApiService } from './api.service';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -47,6 +48,9 @@ export interface Env {
   TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
   SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
   HISTORICAL_PRICE: boolean;
+  ACCELERATOR: boolean;
+  GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
+  PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
 
 const defaultEnv: Env = {
@@ -77,6 +81,7 @@ const defaultEnv: Env = {
   'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
   'HISTORICAL_PRICE': true,
+  'ACCELERATOR': false,
 };
 
 @Injectable({
@@ -111,13 +116,14 @@ export class StateService {
   utxoSpent$ = new Subject<object>();
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();
-  mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition}>();
+  mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
+  servicesBackendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
   chainTip$ = new ReplaySubject<number>(-1);
@@ -141,6 +147,7 @@ export class StateService {
   rateUnits$: BehaviorSubject<string>;
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
+  menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -335,6 +342,10 @@ export class StateService {
 
   isLiquid() {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
+
+  isAnyTestnet(): boolean {
+    return ['testnet', 'signet', 'liquidtestnet'].includes(this.network);
   }
 
   resetChainTip() {

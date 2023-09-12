@@ -49,6 +49,7 @@ export class NodePreviewComponent implements OnInit {
         }),
         map((node) => {
           this.seoService.setTitle(`Node: ${node.alias}`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.node:Overview for the Lightning network node named ${node.alias}. See channels, capacity, location, fee stats, and more.`);
 
           const socketsObject = [];
           const socketTypesMap = {};
@@ -81,6 +82,7 @@ export class NodePreviewComponent implements OnInit {
         }),
         catchError(err => {
           this.error = err;
+          this.seoService.logSoft404();
           this.openGraphService.fail('node-map-' + this.publicKey);
           this.openGraphService.fail('node-data-' + this.publicKey);
           return [{

@@ -2,11 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
   PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { StateService } from './state.service';
-import { WebsocketResponse } from '../interfaces/websocket.interface';
+import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
+import { MenuGroup } from '../interfaces/services.interface';
+import { StorageService } from './storage.service';
+
+// Todo - move to config.json
+const SERVICES_API_PREFIX = `/api/v1/services`;
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +23,7 @@ export class ApiService {
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
+    private storageService: StorageService
   ) {
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
@@ -30,6 +36,12 @@ export class ApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
+
+    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
+      this.getServicesBackendInfo$().subscribe(version => {
+        this.stateService.servicesBackendInfo$.next(version);
+      })
+    }
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
@@ -92,15 +104,11 @@ export class ApiService {
     return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
   }
 
-  requestDonation$(amount: number, orderId: string): Observable<any> {
-    const params = {
-      amount: amount,
-      orderId: orderId,
-    };
-    return this.httpClient.post<any>(this.apiBaseUrl + '/api/v1/donations', params);
+  getAboutPageProfiles$(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/services/sponsors');
   }
 
-  getDonation$(): Observable<any[]> {
+  getOgs$(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations');
   }
 
@@ -110,10 +118,6 @@ export class ApiService {
 
   getContributor$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/contributors');
-  }
-
-  checkDonation$(orderId: string): Observable<any[]> {
-    return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/donations/check?order_id=' + orderId);
   }
 
   getInitData$(): Observable<WebsocketResponse> {
@@ -318,9 +322,72 @@ export class ApiService {
   }
 
   getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+    if (this.stateService.isAnyTestnet()) {
+      return of({
+        prices: [],
+        exchangeRates: {
+          USDEUR: 0,
+          USDGBP: 0,
+          USDCAD: 0,
+          USDCHF: 0,
+          USDAUD: 0,
+          USDJPY: 0,
+        }
+      });
+    }
     return this.httpClient.get<Conversion>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
     );
+  }
+
+  /**
+   * Services
+   */
+
+  getNodeOwner$(publicKey: string): Observable<any> {
+    let params = new HttpParams()
+      .set('node_public_key', publicKey);
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
+  }
+
+  getUserMenuGroups$(): Observable<MenuGroup[]> {
+    const auth = this.storageService.getAuth();
+    if (!auth) {
+      return of(null);
+    }
+
+    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
+  }
+
+  getUserInfo$(): Observable<any> {
+    const auth = this.storageService.getAuth();
+    if (!auth) {
+      return of(null);
+    }
+
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
+  }
+
+  logout$(): Observable<any> {
+    const auth = this.storageService.getAuth();
+    if (!auth) {
+      return of(null);
+    }
+
+    localStorage.removeItem('auth');
+    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
+  }
+
+  getServicesBackendInfo$(): Observable<IBackendInfo> {
+    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
+  }
+
+  estimate$(txInput: string) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
+  }
+
+  accelerate$(txInput: string, userBid: number) {
+    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
   }
 }

@@ -25,8 +25,27 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:5002",
-    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-testnet"
+    "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-testnet",
+    "FALLBACK": [
+      "http://node201.fmt.mempool.space:3002",
+      "http://node202.fmt.mempool.space:3002",
+      "http://node203.fmt.mempool.space:3002",
+      "http://node204.fmt.mempool.space:3002",
+      "http://node205.fmt.mempool.space:3002",
+      "http://node206.fmt.mempool.space:3002",
+      "http://node201.fra.mempool.space:3002",
+      "http://node202.fra.mempool.space:3002",
+      "http://node203.fra.mempool.space:3002",
+      "http://node204.fra.mempool.space:3002",
+      "http://node205.fra.mempool.space:3002",
+      "http://node206.fra.mempool.space:3002",
+      "http://node201.tk7.mempool.space:3002",
+      "http://node202.tk7.mempool.space:3002",
+      "http://node203.tk7.mempool.space:3002",
+      "http://node204.tk7.mempool.space:3002",
+      "http://node205.tk7.mempool.space:3002",
+      "http://node206.tk7.mempool.space:3002"
+    ]
   },
   "DATABASE": {
     "ENABLED": true,
