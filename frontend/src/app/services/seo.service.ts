@@ -10,6 +10,7 @@ import { StateService } from './state.service';
 export class SeoService {
   network = '';
   baseTitle = 'mempool';
+  baseDescription = 'Explore the full Bitcoin ecosystem with The Mempool Open Project™.';
 
   constructor(
     private titleService: Title,
@@ -52,6 +53,18 @@ export class SeoService {
     this.resetTitle();
   }
 
+  setDescription(newDescription: string): void {
+    this.metaService.updateTag({ name: 'description', content: newDescription});
+    this.metaService.updateTag({ name: 'twitter:description', content: newDescription});
+    this.metaService.updateTag({ property: 'og:description', content: newDescription});
+  }
+
+  resetDescription(): void {
+    this.metaService.updateTag({ name: 'description', content: this.getDescription()});
+    this.metaService.updateTag({ name: 'twitter:description', content: this.getDescription()});
+    this.metaService.updateTag({ property: 'og:description', content: this.getDescription()});
+  }
+
   getTitle(): string {
     if (this.network === 'testnet')
       return this.baseTitle + ' - Bitcoin Testnet';
@@ -64,6 +77,15 @@ export class SeoService {
     if (this.network === 'bisq')
       return this.baseTitle + ' - Bisq Markets';
     return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
+  }
+
+  getDescription(): string {
+    if ( (this.network === 'testnet') || (this.network === 'signet') || (this.network === '') || (this.network == 'mainnet') )
+      return this.baseDescription + ' See the real-time status of your transactions, browse network stats, and more.';
+    if ( (this.network === 'liquid') || (this.network === 'liquidtestnet') )
+      return this.baseDescription + ' See Liquid transactions & assets, get network info, and more.';
+    if (this.network === 'bisq')
+      return this.baseDescription + ' See Bisq market prices, trading activity, and more.';
   }
 
   ucfirst(str: string) {

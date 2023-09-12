@@ -6,6 +6,13 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
+    <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-mempool alert-dismissible" role="alert">
+      <span><a class="link accelerator" (click)="onAccelerateClicked()">Accelerate</a> this transaction using Mempool Accelerator &trade;</span>
+      <button type="button" class="close" aria-label="Close" (click)="dismissAccelAlert()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
@@ -66,11 +73,21 @@
           <div class="col-sm">
             <ng-container *ngTemplateOutlet="feeTable"></ng-container>
           </div>
-
         </div>
       </div>
 
     </ng-template>
+
+    <!-- Accelerator -->
+    <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
+      <div class="title mt-3" id="acceleratePreviewAnchor">
+        <h2>Accelerate</h2>
+      </div>
+      <div class="box">
+        <app-accelerate-preview [tx]="tx" [scrollEvent]="scrollIntoAccelPreview"></app-accelerate-preview>
+      </div>
+
+    </ng-container>
 
     <ng-template #unconfirmedTemplate>
 
@@ -92,16 +109,16 @@
                   </ng-template>
                 </ng-template>
                 <tr *ngIf="!replaced && !isCached">
-                  <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+                  <td class="td-width align-items-center align-middle" i18n="transaction.eta|Transaction ETA">ETA</td>
                   <td>
                     <ng-template [ngIf]="this.mempoolPosition?.block == null" [ngIfElse]="estimationTmpl">
                       <span class="skeleton-loader"></span>
                     </ng-template>
                     <ng-template #estimationTmpl>
                       <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
-                        <span class="eta d-flex">
+                        <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
                           <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                          <span class="ml-2"></span><a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.env.ACCELERATOR && stateService.network === ''" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate ml-auto" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                          <a *ngIf="acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                         </span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
@@ -109,9 +126,9 @@
                           <app-time kind="until" [time]="(60 * 1000 * this.mempoolPosition.block) + now" [fastRender]="false" [fixedRender]="true"></app-time>
                         </ng-template>
                         <ng-template #timeEstimateDefault>
-                          <span class="d-flex">
+                          <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
                             <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-                            <span class="ml-2"></span><a *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.env.ACCELERATOR && stateService.network === ''" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn badge badge-primary accelerate ml-auto" i18n="transaction.accelerate|Accelerate button label">Accelerate</a>
+                            <a *ngIf="acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                           </span>
                         </ng-template>
                       </ng-template>

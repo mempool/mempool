@@ -136,3 +136,20 @@ export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2
 export function kmToMiles(km: number): number {
   return km * 0.62137119;
 }
+
+const roundNumbers = [1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 600, 700, 750, 800, 900, 1000];
+export function nextRoundNumber(num: number): number {
+  const log = Math.floor(Math.log10(num));
+  const factor = log >= 3 ? Math.pow(10, log - 2) : 1;
+  num /= factor;
+  return factor * (roundNumbers.find(val => val >= num) || roundNumbers[roundNumbers.length - 1]);
+}
+
+export function seoDescriptionNetwork(network: string): string {
+  if( network === 'liquidtestnet' || network === 'testnet' ) {
+    return ' Testnet';
+  } else if( network === 'signet' || network === 'testnet' ) {
+    return ' ' + network.charAt(0).toUpperCase() + network.slice(1);
+  }
+  return '';
+}

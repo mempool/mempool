@@ -586,13 +586,25 @@ class WebsocketHandler {
 
         const mempoolTx = newMempool[trackTxid];
         if (mempoolTx && mempoolTx.position) {
-          response['txPosition'] = JSON.stringify({
+          const positionData = {
             txid: trackTxid,
             position: {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
             }
-          });
+          };
+          if (mempoolTx.cpfpDirty) {
+            positionData['cpfp'] = {
+              ancestors: mempoolTx.ancestors,
+              bestDescendant: mempoolTx.bestDescendant || null,
+              descendants: mempoolTx.descendants || null,
+              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+              sigops: mempoolTx.sigops,
+              adjustedVsize: mempoolTx.adjustedVsize,
+              acceleration: mempoolTx.acceleration
+            };
+          }
+          response['txPosition'] = JSON.stringify(positionData);
         }
       }
 
