@@ -128,7 +128,7 @@
                         <ng-template #timeEstimateDefault>
                           <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
                             <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-                            <a *ngIf="!tx.acceleration && cceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                            <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                           </span>
                         </ng-template>
                       </ng-template>
