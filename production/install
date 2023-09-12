@@ -530,6 +530,7 @@ osCertbotDryRun()
 zfsCreateFilesystems()
 {
     zfs create -o "mountpoint=/backup" "${ZPOOL}/backup"
+    zfs create -o "mountpoint=/var/cache/nginx" "${ZPOOL}/cache"
 
     zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
     zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
@@ -1044,11 +1045,9 @@ osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_RE
 echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | zsh'
 
-echo "[*] Building NodeJS v20.4.0 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.4.0 --shared-zlib'
-echo "[*] Building NodeJS v18.16.1 via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v18.16.1 --shared-zlib'
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 18.16.1'
+echo "[*] Building NodeJS v20.5.1 via nvm.sh"
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v20.5.1 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 20.5.1'
 
 ####################
 # Tor installation #
@@ -1641,19 +1640,11 @@ fi
 ################################################
 
 if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
-    echo "[*] Installing Elements Liquid Testnet electrs start script"
-    osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/electrs-start-liquidtestnet" "${ELEMENTS_ELECTRS_HOME}"
-
     echo "[*] Installing Elements Liquid Testnet RPC credentials"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
-
-    echo "[*] Configuring Elements LiquidTestnet RPC credentials in electrs start script"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
-    osSudo "${ROOT_USER}" sed -i.orig "s!__ELECTRS_DATA_ROOT__!${ELECTRS_DATA_ROOT}!" "${ELEMENTS_ELECTRS_HOME}/electrs-start-liquidtestnet"
 fi
 
 ################################
@@ -1802,7 +1793,7 @@ case $OS in
 esac
 
 # wait for mysql to start
-sleep 5
+sleep 10
 
 mysql << _EOF_
 create database mempool;
@@ -1860,28 +1851,26 @@ chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 echo "[*] Adding Nginx configuration"
 osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-mkdir -p /var/cache/nginx/services /var/cache/nginx/api
-chown "${NGINX_USER}:${NGINX_GROUP}" /var/cache/nginx/services /var/cache/nginx/api
 ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
 
-if [ "${TOR_INSTALL}" = ON ];then
-    echo "[*] Read tor v3 onion hostnames"
-
-    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
-    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-
-    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
-        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-    fi
-
-    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
-        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
-        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-    fi
-fi
+#if [ "${TOR_INSTALL}" = ON ];then
+#    echo "[*] Read tor v3 onion hostnames"
+#
+#    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
+#    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+#
+#    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
+#        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
+#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
+#    fi
+#
+#    if [ "${BISQ_MAINNET_ENABLE}" = "ON" ];then
+#        NGINX_BISQ_ONION=$(cat "${TOR_RESOURCES}/bisq/hostname")
+#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_BISQ_ONION__!${NGINX_BISQ_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+#    fi
+#fi
 
 ##### OS systemd
 
@@ -1905,13 +1894,26 @@ echo "[*] Updating system startup configuration"
 case $OS in
 
     FreeBSD)
-        echo 'nginx_enable="YES"' >> /etc/rc.conf
-        echo 'bitcoin_enable="YES"' >> /etc/rc.conf
-        echo 'tor_enable="YES"' >> /etc/rc.conf
-        echo 'postfix_enable="YES"' >> /etc/rc.conf
-        echo 'mysql_enable="YES"' >> /etc/rc.conf
-        echo 'mysql_dbdir="/mysql"' >> /etc/rc.conf
-        echo 'tor_enable="YES"' >> /etc/rc.conf
+        cat >> /etc/rc.conf <<EOF
+moused_nondefault_enable="NO"
+
+nginx_enable="YES"
+nginx_profiles="mempool"
+nginx_mempool_flags="-p /mempool"
+nginx_mempool_configfile="/mempool/mempool/nginx/nginx.conf"
+
+mysql_enable="YES"
+mysql_dbdir="/mysql"
+mysql_args="--innodb-buffer-pool-size=8G --bind-address 127.0.0.1"
+
+kld_list="nvidia"
+nvidia_xorg_enable="YES"
+
+dbus_enable="YES"
+tor_enable="YES"
+bitcoin_enable="YES"
+postfix_enable="YES"
+EOF
     ;;
 
     Debian)
@@ -2047,12 +2049,12 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 
 ##### finish
 
-if [ "${TOR_INSTALL}" = ON ];then
-    echo "Your auto-generated Tor addresses are:"
-    echo "${NGINX_MEMPOOL_ONION}"
-    echo "${NGINX_BISQ_ONION}"
-    echo "${NGINX_LIQUID_ONION}"
-fi
+#if [ "${TOR_INSTALL}" = ON ];then
+#    echo "Your auto-generated Tor addresses are:"
+#    echo "${NGINX_MEMPOOL_ONION}"
+#    echo "${NGINX_BISQ_ONION}"
+#    echo "${NGINX_LIQUID_ONION}"
+#fi
 
 echo
 echo 'Please reboot to start all the services.'

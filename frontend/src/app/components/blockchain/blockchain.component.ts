@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, HostListener, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 
@@ -8,12 +8,13 @@ import { StateService } from '../../services/state.service';
   styleUrls: ['./blockchain.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockchainComponent implements OnInit, OnDestroy {
+export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   @Input() pages: any[] = [];
   @Input() pageIndex: number;
   @Input() blocksPerPage: number = 8;
   @Input() minScrollWidth: number = 0;
   @Input() scrollableMempool: boolean = false;
+  @Input() containerWidth: number;
 
   @Output() mempoolOffsetChange: EventEmitter<number> = new EventEmitter();
 
@@ -85,19 +86,25 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.mempoolOffsetChange.emit(this.mempoolOffset);
   }
 
-  @HostListener('window:resize', ['$event'])
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.containerWidth) {
+      this.onResize();
+    }
+  }
+
   onResize(): void {
-    if (window.innerWidth >= 768) {
+    const width = this.containerWidth || window.innerWidth;
+    if (width >= 768) {
       if (this.stateService.isLiquid()) {
         this.dividerOffset = 420;
       } else {
-        this.dividerOffset = window.innerWidth * 0.5;
+        this.dividerOffset = width * 0.5;
       }
     } else {
       if (this.stateService.isLiquid()) {
-        this.dividerOffset = window.innerWidth * 0.5;
+        this.dividerOffset = width * 0.5;
       } else {
-        this.dividerOffset = window.innerWidth * 0.95;
+        this.dividerOffset = width * 0.95;
       }
     }
     this.cd.markForCheck();

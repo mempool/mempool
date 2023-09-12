@@ -451,6 +451,7 @@ class MempoolBlocks {
   private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const [txid, rate] of rates) {
       if (txid in mempool) {
+        mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
         mempool[txid].effectiveFeePerVsize = rate;
         mempool[txid].cpfpChecked = false;
       }
@@ -494,6 +495,9 @@ class MempoolBlocks {
               }
             }
           });
+          if (mempoolTx.ancestors?.length !== ancestors.length || mempoolTx.descendants?.length !== descendants.length) {
+            mempoolTx.cpfpDirty = true;
+          }
           Object.assign(mempoolTx, {ancestors, descendants, bestDescendant: null, cpfpChecked: true});
         }
       }
@@ -531,12 +535,21 @@ class MempoolBlocks {
 
           const acceleration = accelerations[txid];
           if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
+            if (!mempoolTx.acceleration) {
+              mempoolTx.cpfpDirty = true;
+            }
             mempoolTx.acceleration = true;
             for (const ancestor of mempoolTx.ancestors || []) {
+              if (!mempool[ancestor.txid].acceleration) {
+                mempool[ancestor.txid].cpfpDirty = true;
+              }
               mempool[ancestor.txid].acceleration = true;
               isAccelerated[ancestor.txid] = true;
             }
           } else {
+            if (mempoolTx.acceleration) {
+              mempoolTx.cpfpDirty = true;
+            }
             delete mempoolTx.acceleration;
           }
 

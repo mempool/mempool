@@ -27,7 +27,7 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
   sigops?: number;
   adjustedVsize?: number;
-  acceleration?: number;
+  acceleration?: boolean;
 }
 
 export interface RbfInfo {

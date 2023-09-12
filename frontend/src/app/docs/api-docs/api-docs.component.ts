@@ -43,7 +43,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (this.faqTemplates) {
       this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }
-    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
     this.mobileViewport = window.innerWidth <= 992;
   }
 
@@ -113,7 +113,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   }
 
   onDocScroll() {
-    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
   }
 
   anchorLinkClick( event: any ) {

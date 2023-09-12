@@ -83,6 +83,7 @@ export class PoolComponent implements OnInit {
         }),
         map((poolStats) => {
           this.seoService.setTitle(poolStats.pool.name);
+          this.seoService.setDescription($localize`:@@meta.description.mining.pool:See mining pool stats for ${poolStats.pool.name}\: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.`);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
