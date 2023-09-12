@@ -95,7 +95,7 @@ export interface TransactionStripped {
 }
 
 export interface IBackendInfo {
-  hostname: string;
+  hostname?: string;
   gitCommit: string;
   version: string;
 }

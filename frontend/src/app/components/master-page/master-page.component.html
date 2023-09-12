@@ -1,6 +1,20 @@
 <ng-container *ngIf="{ val: network$ | async } as network">
-<header *ngIf="headerVisible">
+<header *ngIf="headerVisible" class="sticky-header">
+
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <!-- Hamburger -->
+  <ng-container *ngIf="servicesEnabled">
+    <div *ngIf="user" class="profile_image_container" [class]="{'anon': !user.imageMd5}" (click)="hamburgerClick($event)">
+      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/image/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
+      <app-svg-images style="color: lightgrey; fill: lightgray" *ngIf="!user.imageMd5" name="anon"></app-svg-images>
+    </div>
+    <div *ngIf="false && user === null" class="profile_image_container" (click)="hamburgerClick($event)">
+      <app-svg-images name="hamburger" height="40"></app-svg-images>
+    </div>
+    <!-- Empty placeholder -->
+    <div *ngIf="user === undefined" class="profile_image_container"></div>
+  </ng-container>
+
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
@@ -62,11 +76,19 @@
 </nav>
 </header>
 
-<app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
+<div class="d-flex" style="overflow: clip">
+  <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
 
-<main>
-  <router-outlet></router-outlet>
-</main>
+  <div class="flex-grow-1 d-flex flex-column">
+    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
 
-<app-global-footer *ngIf="footerVisible"></app-global-footer>
+    <main style="min-width: 375px" [style]="menuOpen ? 'max-width: calc(100vw - 225px)' : 'max-width: 100vw'">
+      <router-outlet></router-outlet>
+    </main>
+
+    <div class="flex-grow-1"></div>
+    <app-global-footer *ngIf="footerVisible"></app-global-footer>
+  </div>
+</div>
+
 </ng-container>

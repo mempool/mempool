@@ -79,6 +79,7 @@ export class BisqTransactionsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
     this.seoService.setTitle($localize`:@@add4cd82e3e38a3110fe67b3c7df56e9602644ee:Transactions`);
+    this.seoService.setDescription($localize`:@@meta.description.bisq.transactions:See recent BSQ transactions: amount, txid, associated Bitcoin block, transaction type, and more.`);
 
     this.radioGroupForm = this.formBuilder.group({
       txTypes: [this.txTypesDefaultChecked],

@@ -19,6 +19,8 @@ import { WebsocketService } from '../../services/websocket.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
+import { StorageService } from '../../services/storage.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -88,6 +90,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfEnabled: boolean;
   taprootEnabled: boolean;
   hasEffectiveFeeRate: boolean;
+  accelerateCtaType: 'alert' | 'button' = 'alert';
+  acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+  showAccelerationSummary = false;
+  scrollIntoAccelPreview = false;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -104,13 +110,21 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private priceService: PriceService,
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
+    this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
-      (network) => (this.network = network)
+      (network) => {
+        this.network = network;
+        this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+      }
     );
+
+    this.accelerateCtaType = (this.storageService.getValue('accel-cta-type') as 'alert' | 'button') ?? 'alert';
 
     this.setFlowEnabled();
     this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
@@ -161,34 +175,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe((cpfpInfo) => {
-        if (!cpfpInfo || !this.tx) {
-          this.cpfpInfo = null;
-          this.hasEffectiveFeeRate = false;
-          return;
-        }
-        // merge ancestors/descendants
-        const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
-        if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
-          relatives.push(cpfpInfo.bestDescendant);
-        }
-        const hasRelatives = !!relatives.length;
-        if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
-          let totalWeight =
-            this.tx.weight +
-            relatives.reduce((prev, val) => prev + val.weight, 0);
-          let totalFees =
-            this.tx.fee +
-            relatives.reduce((prev, val) => prev + val.fee, 0);
-          this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
-        } else {
-          this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
-        }
-        if (cpfpInfo.acceleration) {
-          this.tx.acceleration = cpfpInfo.acceleration;
-        }
-
-        this.cpfpInfo = cpfpInfo;
-        this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
+        this.setCpfpInfo(cpfpInfo);
       });
 
     this.fetchRbfSubscription = this.fetchRbfHistory$
@@ -259,6 +246,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             mempoolPosition: this.mempoolPosition
           });
           this.txInBlockIndex = this.mempoolPosition.block;
+
+          if (txPosition.cpfp !== undefined) {
+            this.setCpfpInfo(txPosition.cpfp);
+          }
         }
       } else {
         this.mempoolPosition = null;
@@ -297,6 +288,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} transaction with txid {txid}.`);
           this.resetTransaction();
           return merge(
             of(true),
@@ -399,7 +391,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.blockConversion = price;
             })
           ).subscribe();
-      
+
           setTimeout(() => { this.applyFragment(); }, 0);
         },
         (error) => {
@@ -486,6 +478,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setGraphSize();
   }
 
+  dismissAccelAlert(): void {
+    this.storageService.setValue('accel-cta-type', 'button');
+    this.accelerateCtaType = 'button';
+  }
+
+  onAccelerateClicked() {
+    if (!this.txId) {
+      return;
+    }
+    this.showAccelerationSummary = true && this.acceleratorAvailable;
+    this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
+    return false;
+  }
+
   handleLoadElectrsTransactionError(error: any): Observable<any> {
     if (error.status === 404 && /^[a-fA-F0-9]{64}$/.test(this.txId)) {
       this.websocketService.startMultiTrackTransaction(this.txId);
@@ -505,6 +511,37 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.transactionTime = transactionTimes[0];
         }
       });
+  }
+
+  setCpfpInfo(cpfpInfo: CpfpInfo): void {
+    if (!cpfpInfo || !this.tx) {
+      this.cpfpInfo = null;
+      this.hasEffectiveFeeRate = false;
+      return;
+    }
+    // merge ancestors/descendants
+    const relatives = [...(cpfpInfo.ancestors || []), ...(cpfpInfo.descendants || [])];
+    if (cpfpInfo.bestDescendant && !cpfpInfo.descendants?.length) {
+      relatives.push(cpfpInfo.bestDescendant);
+    }
+    const hasRelatives = !!relatives.length;
+    if (!cpfpInfo.effectiveFeePerVsize && hasRelatives) {
+      const totalWeight =
+        this.tx.weight +
+        relatives.reduce((prev, val) => prev + val.weight, 0);
+      const totalFees =
+        this.tx.fee +
+        relatives.reduce((prev, val) => prev + val.fee, 0);
+      this.tx.effectiveFeePerVsize = totalFees / (totalWeight / 4);
+    } else {
+      this.tx.effectiveFeePerVsize = cpfpInfo.effectiveFeePerVsize;
+    }
+    if (cpfpInfo.acceleration) {
+      this.tx.acceleration = cpfpInfo.acceleration;
+    }
+
+    this.cpfpInfo = cpfpInfo;
+    this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
   setFeatures(): void {
