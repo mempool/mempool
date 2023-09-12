@@ -29,7 +29,8 @@ export class BisqDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.setTitle(`Markets`);
+    this.seoService.setTitle($localize`:@@meta.title.bisq.markets:Markets`);
+    this.seoService.setDescription($localize`:@@meta.description.bisq.markets:Explore the full Bitcoin ecosystem with The Mempool Open Project™. See Bisq market prices, trading activity, and more.`);
     this.websocketService.want(['blocks']);
 
     this.volumes$ = this.bisqApiService.getAllVolumesDay$()

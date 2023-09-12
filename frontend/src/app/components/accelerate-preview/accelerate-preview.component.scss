@@ -1,0 +1,88 @@
+.fee-card {
+  padding: 15px;
+  background-color: #1d1f31;
+
+  .feerate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .fee {
+      font-size: 1.2em;
+    }
+    .rate {
+      font-size: 0.9em;
+      .symbol {
+        color: white;
+      }
+    }
+  }
+}
+
+.btn-border {
+  border: solid 1px black;
+  background-color: #0c4a87;
+}
+
+.feerate.active {
+  background-color: #105fb0 !important;
+  opacity: 1;
+  border: 1px solid white !important;
+}
+
+.estimateDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.table-toggle {
+  width: 100%;
+  margin-top: 0.5em;
+}
+
+.table-accelerator {
+  tr {
+    text-wrap: wrap;
+
+    td {
+      padding-top: 0;
+      padding-bottom: 0;
+      vertical-align: baseline;
+    }
+
+    &.group-first {
+      td {
+        padding-top: 0.75rem;
+      }
+    }
+    &.group-last {
+      td {
+        padding-bottom: 0.75rem;
+      }
+    }
+  }
+  td {
+    &:first-child {
+      width: 100vw;
+    }
+    &.info {
+      color: #6c757d;
+    }
+    &.amt {
+      text-align: right;
+      padding-right: 0.2em;
+    }
+    &.units {
+      padding-left: 0.2em;
+      white-space: nowrap;
+    }
+  }
+}
+
+.accelerate-cols {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-top: 1em;
+}

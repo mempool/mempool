@@ -41,6 +41,7 @@ export class BisqAddressComponent implements OnInit, OnDestroy {
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           this.seoService.setTitle($localize`:@@bisq-address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
+          this.seoService.setDescription($localize`:@@meta.description.bisq.address:See current balance, pending transactions, and history of confirmed transactions for BSQ address ${this.addressString}:INTERPOLATION:.`);
 
           return this.bisqApiService.getAddress$(this.addressString)
             .pipe(
