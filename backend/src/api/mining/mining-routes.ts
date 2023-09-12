@@ -12,6 +12,7 @@ import PricesRepository from '../../repositories/PricesRepository';
 class MiningRoutes {
   public initRoutes(app: Application) {
     app
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools', this.$listPools)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/:interval', this.$getPools)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/hashrate', this.$getPoolHistoricalHashrate)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/blocks', this.$getPoolBlocks)
@@ -41,6 +42,10 @@ class MiningRoutes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
+      if (['testnet', 'signet', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Prices are not available on testnets.');
+        return;
+      }
       if (req.query.timestamp) {
         res.status(200).send(await PricesRepository.$getNearestHistoricalPrice(
           parseInt(<string>req.query.timestamp ?? 0, 10)
@@ -85,6 +90,29 @@ class MiningRoutes {
       } else {
         res.status(500).send(e instanceof Error ? e.message : e);
       }
+    }
+  }
+
+  private async $listPools(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+
+      const pools = await mining.$listPools();
+      if (!pools) {
+        res.status(500).end();
+        return;
+      }
+
+      res.header('X-total-count', pools.length.toString());
+      if (pools.length === 0) {
+        res.status(204).send();
+      } else {
+        res.json(pools);
+      }
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
 

@@ -50,7 +50,8 @@
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
     "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet",
-    "RETRY_UNIX_SOCKET_AFTER": 30000
+    "RETRY_UNIX_SOCKET_AFTER": 30000,
+    "FALLBACK": []
   },
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",

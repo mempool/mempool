@@ -52,7 +52,12 @@ describe('Mempool Backend Config', () => {
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });
 
-      expect(config.ESPLORA).toStrictEqual({ REST_API_URL: 'http://127.0.0.1:3000', UNIX_SOCKET_PATH: null, RETRY_UNIX_SOCKET_AFTER: 30000 });
+      expect(config.ESPLORA).toStrictEqual({
+        REST_API_URL: 'http://127.0.0.1:3000',
+        UNIX_SOCKET_PATH: null,
+        RETRY_UNIX_SOCKET_AFTER: 30000,
+        FALLBACK: [],
+       });
 
       expect(config.CORE_RPC).toStrictEqual({
         HOST: '127.0.0.1',
@@ -181,41 +186,50 @@ describe('Mempool Backend Config', () => {
         for (const [key, value] of Object.entries(jsonObj)) {
           // We have a few cases where we can't follow the pattern
           if (root === 'MEMPOOL' && key === 'HTTP_PORT') {
-            console.log('skipping check for MEMPOOL_HTTP_PORT');
+            if (process.env.CI) {
+              console.log('skipping check for MEMPOOL_HTTP_PORT');
+            }
             continue;
           }
-          switch (typeof value) {
-            case 'object': {
-              if (Array.isArray(value)) {
-                continue;
-              } else {
-                parseJson(value, key);
-              }
-              break;
-            }
-            default: {
+
+          if (root) {
               //The flattened string, i.e, __MEMPOOL_ENABLED__
               const replaceStr = `${root ? '__' + root + '_' : '__'}${key}__`;
 
               //The string used as the environment variable, i.e, MEMPOOL_ENABLED
               const envVarStr = `${root ? root : ''}_${key}`;
 
+              let defaultEntry;
               //The string used as the default value, to be checked as a regex, i.e, __MEMPOOL_ENABLED__=${MEMPOOL_ENABLED:=(.*)}
-              const defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
-
-              console.log(`looking for ${defaultEntry} in the start.sh script`);
-              const re = new RegExp(defaultEntry);
-              expect(startSh).toMatch(re);
+              if (Array.isArray(value)) {
+                defaultEntry = `${replaceStr}=\${${envVarStr}:=[]}`;
+                if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                //Regex matching does not work with the array values
+                expect(startSh).toContain(defaultEntry);
+              } else {
+                 defaultEntry = replaceStr + '=' + '\\${' + envVarStr + ':=(.*)' + '}';
+                 if (process.env.CI) {
+                  console.log(`looking for ${defaultEntry} in the start.sh script`);
+                }
+                const re = new RegExp(defaultEntry);
+                expect(startSh).toMatch(re);
+              }
 
               //The string that actually replaces the values in the config file
               const sedStr = 'sed -i "s!' + replaceStr + '!${' + replaceStr + '}!g" mempool-config.json';
-              console.log(`looking for ${sedStr} in the start.sh script`);
+              if (process.env.CI) {
+                console.log(`looking for ${sedStr} in the start.sh script`);
+              }
               expect(startSh).toContain(sedStr);
-              break;
             }
+          else {
+            parseJson(value, key);
           }
         }
       }
+
       parseJson(fixture);
     });
   });

@@ -22,7 +22,7 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "npm run tsc && npm run create-resources",
+    "build": "npm run rust-build && npm run tsc && npm run create-resources",
     "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
     "package": "./npm_package.sh",
     "package-rm-build-deps": "./npm_package_rm_build_deps.sh",
@@ -31,9 +31,11 @@
     "reindex-updated-pools": "npm run start-production --update-pools",
     "reindex-all-blocks": "npm run start-production --update-pools --reindex-blocks",
     "test": "./node_modules/.bin/jest --coverage",
+    "test:ci": "CI=true ./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
+    "rust-build": "cd rust-gbt && npm run build-release"
   },
   "dependencies": {
     "@babel/core": "^7.21.3",

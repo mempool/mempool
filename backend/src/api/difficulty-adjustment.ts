@@ -32,13 +32,13 @@ export interface DifficultyAdjustment {
 export function calcBitsDifference(oldBits: number, newBits: number): number {
   // Must be
   // - integer
-  // - highest exponent is 0x1f, so max value (as integer) is 0x1f0000ff
+  // - highest exponent is 0x20, so max value (as integer) is 0x207fffff
   // - min value is 1 (exponent = 0)
   // - highest bit of the number-part is +- sign, it must not be 1
   const verifyBits = (bits: number): void => {
     if (
       Math.floor(bits) !== bits ||
-      bits > 0x1f0000ff ||
+      bits > 0x207fffff ||
       bits < 1 ||
       (bits & 0x00800000) !== 0 ||
       (bits & 0x007fffff) === 0
