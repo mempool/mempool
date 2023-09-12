@@ -75,9 +75,9 @@ class FailoverRouter {
 
     const results = await Promise.allSettled(this.hosts.map(async (host) => {
       if (host.socket) {
-        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: 2000 });
+        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: 5000 });
       } else {
-        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: 2000 });
+        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: 5000 });
       }
     }));
     const maxHeight = results.reduce((max, result) => Math.max(max, result.status === 'fulfilled' ? result.value?.data || 0 : 0), 0);
