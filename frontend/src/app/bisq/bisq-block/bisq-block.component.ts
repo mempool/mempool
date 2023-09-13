@@ -88,6 +88,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.blockHeight = block.height;
         this.seoService.setTitle($localize`:@@bisq-block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.hash}:BLOCK_HASH:`);
+        this.seoService.setDescription($localize`:@@meta.description.bisq.block:See all BSQ transactions in Bitcoin block ${block.height}:BLOCK_HEIGHT: (block hash ${block.hash}:BLOCK_HASH:).`);
         this.block = block;
       });
   }

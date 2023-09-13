@@ -5,6 +5,7 @@ import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import logger from '../logger';
 import config from '../config';
+import pLimit from '../utils/p-limit';
 
 class TransactionUtils {
   constructor() { }
@@ -74,8 +75,12 @@ class TransactionUtils {
 
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
-      const results = await Promise.allSettled(txids.map(txid => this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, true)));
-      return (results.filter(r => r.status === 'fulfilled') as PromiseFulfilledResult<MempoolTransactionExtended>[]).map(r => r.value);
+      const limiter = pLimit(8); // Run 8 requests at a time
+      const results = await Promise.allSettled(txids.map(
+        txid => limiter(() => this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore))
+      ));
+      return results.filter(reply => reply.status === 'fulfilled')
+        .map(r => (r as PromiseFulfilledResult<MempoolTransactionExtended>).value);
     } else {
       const transactions = await bitcoinApi.$getMempoolTransactions(txids);
       return transactions.map(transaction => {

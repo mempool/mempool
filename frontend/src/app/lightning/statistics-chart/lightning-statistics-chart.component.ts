@@ -64,6 +64,7 @@ export class LightningStatisticsChartComponent implements OnInit {
       this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.stats-chart:See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });

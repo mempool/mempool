@@ -70,9 +70,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     this.canvas.nativeElement.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.canvas.nativeElement.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     this.gl = this.canvas.nativeElement.getContext('webgl');
-    this.initCanvas();
 
-    this.resizeCanvas();
+    if (this.gl) {
+      this.initCanvas();
+      this.resizeCanvas();
+    }
   }
 
   ngOnChanges(changes): void {
@@ -195,10 +197,16 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     cancelAnimationFrame(this.animationFrameRequest);
     this.animationFrameRequest = null;
     this.running = false;
+    this.gl = null;
   }
 
   handleContextRestored(event): void {
-    this.initCanvas();
+    if (this.canvas?.nativeElement) {
+      this.gl = this.canvas.nativeElement.getContext('webgl');
+      if (this.gl) {
+        this.initCanvas();
+      }
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -224,6 +232,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   compileShader(src, type): WebGLShader {
+    if (!this.gl) {
+      return;
+    }
     const shader = this.gl.createShader(type);
 
     this.gl.shaderSource(shader, src);
@@ -237,6 +248,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   buildShaderProgram(shaderInfo): WebGLProgram {
+    if (!this.gl) {
+      return;
+    }
     const program = this.gl.createProgram();
 
     shaderInfo.forEach((desc) => {
@@ -273,7 +287,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       now = performance.now();
     }
     // skip re-render if there's no change to the scene
-    if (this.scene) {
+    if (this.scene && this.gl) {
       /* SET UP SHADER UNIFORMS */
       // screen dimensions
       this.gl.uniform2f(this.gl.getUniformLocation(this.shaderProgram, 'screenSize'), this.displayWidth, this.displayHeight);

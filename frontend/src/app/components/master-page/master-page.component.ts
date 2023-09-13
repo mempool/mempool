@@ -1,9 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Env, StateService } from '../../services/state.service';
 import { Observable, merge, of } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
+import { MenuComponent } from '../menu/menu.component';
+import { StorageService } from '../../services/storage.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-master-page',
@@ -25,12 +29,21 @@ export class MasterPageComponent implements OnInit {
   networkPaths: { [network: string]: string };
   networkPaths$: Observable<Record<string, string>>;
   footerVisible = true;
+  user: any = undefined;
+  servicesEnabled = false;
+  menuOpen = false;
+
+  @ViewChild(MenuComponent)
+  public menuComponent!: MenuComponent;
 
   constructor(
     public stateService: StateService,
     private languageService: LanguageService,
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
+    private storageService: StorageService,
+    private apiService: ApiService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -51,17 +64,47 @@ export class MasterPageComponent implements OnInit {
         this.footerVisible = this.footerVisibleOverride;
       }
     });
+    
+    this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
+    this.refreshAuth();
+
+    const isServicesPage = this.router.url.includes('/services/');
+    this.menuOpen = isServicesPage && !this.isSmallScreen();
   }
 
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
   }
 
+  isSmallScreen() {
+    return window.innerWidth <= 767.98;
+  }
+
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = this.isSmallScreen();
   }
 
   brandClick(e): void {
     this.stateService.resetScroll$.next(true);
+  }
+
+  onLoggedOut(): void {
+    this.refreshAuth();
+  }
+
+  refreshAuth(): void {
+    this.user = this.storageService.getAuth()?.user ?? null;
+  }
+
+  hamburgerClick(event): void {
+    if (this.menuComponent) {
+      this.menuComponent.hamburgerClick();
+      this.menuOpen = this.menuComponent.navOpen;
+      event.stopPropagation();
+    }
+  }
+
+  menuToggled(isOpen: boolean): void {
+    this.menuOpen = isOpen;
   }
 }

@@ -49,6 +49,7 @@ export class NodePreviewComponent implements OnInit {
         }),
         map((node) => {
           this.seoService.setTitle(`Node: ${node.alias}`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.node:Overview for the Lightning network node named ${node.alias}. See channels, capacity, location, fee stats, and more.`);
 
           const socketsObject = [];
           const socketTypesMap = {};
