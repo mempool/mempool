@@ -14,6 +14,12 @@
   }
 }
 
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .scrollable {
   overflow-x: hidden;
   overflow-y: auto;

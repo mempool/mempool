@@ -3,7 +3,7 @@
 
     <nav class="scrollable menu-click">
       <span *ngIf="userAuth" class="menu-click">
-        <strong class="menu-click">@ {{ userAuth.user.username }}</strong>
+        <strong class="menu-click text-nowrap ellipsis">@ {{ userAuth.user.username }}</strong>
       </span>
       <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
         <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
