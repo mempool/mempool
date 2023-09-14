@@ -137,8 +137,12 @@ class BitcoinApi implements AbstractBitcoinApi {
     throw new Error('Method getScriptHashTransactions not supported by the Bitcoin RPC API.');
   }
 
-  $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
-    return this.bitcoindClient.getRawMemPool();
+  async $getRawMempool(): Promise<{ txids: IEsploraApi.Transaction['txid'][], local: boolean}> {
+    const txids = await this.bitcoindClient.getRawMemPool();
+    return {
+      txids,
+      local: true,
+    };
   }
 
   $getAddressPrefix(prefix: string): string[] {

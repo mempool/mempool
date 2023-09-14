@@ -4,6 +4,7 @@ import http from 'http';
 import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
+import mempool from '../mempool';
 
 interface FailoverHost {
   host: string,
@@ -168,7 +169,7 @@ class FailoverRouter {
     }
   }
 
-  private async $query<T>(method: 'get'| 'post', path, data: any, responseType = 'json', host = this.activeHost, retry: boolean = true): Promise<T> {
+  private async $query<T>(method: 'get'| 'post', path, data: any, responseType = 'json', host = this.activeHost, retry: boolean = true, withSource = false): Promise<T | { data: T, host: FailoverHost }> {
     let axiosConfig;
     let url;
     if (host.socket) {
@@ -181,8 +182,17 @@ class FailoverRouter {
     return (method === 'post'
         ? this.requestConnection.post<T>(url, data, axiosConfig)
         : this.requestConnection.get<T>(url, axiosConfig)
-    ).then((response) => { host.failures = Math.max(0, host.failures - 1); return response.data; })
-      .catch((e) => {
+    ).then((response) => {
+      host.failures = Math.max(0, host.failures - 1);
+      if (withSource) {
+        return {
+          data: response.data,
+          host,
+        };
+      } else {
+        return response.data;
+      }
+    }).catch((e) => {
         let fallbackHost = this.fallbackHost;
         if (e?.response?.status !== 404) {
           logger.warn(`esplora request failed ${e?.response?.status || 500} ${host.host}${path}`);
@@ -190,7 +200,7 @@ class FailoverRouter {
         }
         if (retry && e?.code === 'ECONNREFUSED' && this.multihost) {
           // Retry immediately
-          return this.$query(method, path, data, responseType, fallbackHost, false);
+          return this.$query(method, path, data, responseType, fallbackHost, false, withSource);
         } else {
           throw e;
         }
@@ -198,19 +208,27 @@ class FailoverRouter {
   }
 
   public async $get<T>(path, responseType = 'json'): Promise<T> {
-    return this.$query<T>('get', path, null, responseType);
+    return this.$query<T>('get', path, null, responseType, this.activeHost, true) as Promise<T>;
   }
 
   public async $post<T>(path, data: any, responseType = 'json'): Promise<T> {
-    return this.$query<T>('post', path, data, responseType);
+    return this.$query<T>('post', path, data, responseType) as Promise<T>;
+  }
+
+  public async $getWithSource<T>(path, responseType = 'json'): Promise<{ data: T, host: FailoverHost }> {
+    return this.$query<T>('get', path, null, responseType, this.activeHost, true, true) as Promise<{ data: T, host: FailoverHost }>;
   }
 }
 
 class ElectrsApi implements AbstractBitcoinApi {
   private failoverRouter = new FailoverRouter();
 
-  $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
-    return this.failoverRouter.$get<IEsploraApi.Transaction['txid'][]>('/mempool/txids');
+  async $getRawMempool(): Promise<{ txids: IEsploraApi.Transaction['txid'][], local: boolean}> {
+    const result = await this.failoverRouter.$getWithSource<IEsploraApi.Transaction['txid'][]>('/mempool/txids', 'json');
+    return {
+      txids: result.data,
+      local: result.host === this.failoverRouter.preferredHost,
+    };
   }
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {

@@ -191,10 +191,14 @@ class Server {
           logger.debug(msg);
         }
       }
-      const newMempool = await bitcoinApi.$getRawMempool();
+
+      const { txids: newMempool, local: fromLocalNode } = await bitcoinApi.$getRawMempool();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
       if (numHandledBlocks === 0) {
+        if (!fromLocalNode) {
+          memPool.logFailover();
+        }
         await memPool.$updateMempool(newMempool, pollRate);
       }
       indexer.$run();

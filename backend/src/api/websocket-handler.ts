@@ -71,9 +71,8 @@ class WebsocketHandler {
   private updateSocketData(): void {
     const _blocks = blocks.getBlocks().slice(-config.MEMPOOL.INITIAL_BLOCKS_AMOUNT);
     const da = difficultyAdjustment.getDifficultyAdjustment();
-    this.updateSocketDataFields({
+    const socketData = {
       'mempoolInfo': memPool.getMempoolInfo(),
-      'vBytesPerSecond': memPool.getStatisticsIsPaused() ? null : memPool.getVBytesPerSecond(),
       'blocks': _blocks,
       'conversions': priceUpdater.getLatestPrices(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),
@@ -82,7 +81,11 @@ class WebsocketHandler {
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
       'fees': feeApi.getRecommendedFee(),
-    });
+    };
+    if (!memPool.getStatisticsIsPaused()) {
+      socketData['vBytesPerSecond'] = memPool.getVBytesPerSecond();
+    }
+    this.updateSocketDataFields(socketData);
   }
 
   public getSerializedInitData(): string {
@@ -414,7 +417,7 @@ class WebsocketHandler {
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
     const mempoolInfo = memPool.getMempoolInfo();
-    const vBytesPerSecond = memPool.getVBytesPerSecond();
+    const vBytesPerSecond = memPool.getStatisticsIsPaused() ? null : memPool.getVBytesPerSecond();
     const rbfTransactions = Common.findRbfTransactions(newTransactions, deletedTransactions);
     const da = difficultyAdjustment.getDifficultyAdjustment();
     memPool.handleRbfTransactions(rbfTransactions);
@@ -440,13 +443,15 @@ class WebsocketHandler {
     // update init data
     const socketDataFields = {
       'mempoolInfo': mempoolInfo,
-      'vBytesPerSecond': vBytesPerSecond,
       'mempool-blocks': mBlocks,
       'transactions': latestTransactions,
       'loadingIndicators': loadingIndicators.getLoadingIndicators(),
       'da': da?.previousTime ? da : undefined,
       'fees': recommendedFees,
     };
+    if (vBytesPerSecond != null) {
+      socketDataFields['vBytesPerSecond'] = vBytesPerSecond;
+    }
     if (rbfSummary) {
       socketDataFields['rbfSummary'] = rbfSummary;
     }
@@ -496,7 +501,9 @@ class WebsocketHandler {
 
       if (client['want-stats']) {
         response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
-        response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', vBytesPerSecond);
+        if (vBytesPerSecond != null) {
+          response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', vBytesPerSecond);
+        }
         response['transactions'] = getCachedResponse('transactions', latestTransactions);
         if (da?.previousTime) {
           response['da'] = getCachedResponse('da', da);
@@ -784,7 +791,9 @@ class WebsocketHandler {
 
       if (client['want-stats']) {
         response['mempoolInfo'] = getCachedResponse('mempoolInfo', mempoolInfo);
-        response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', memPool.getVBytesPerSecond());
+        if (!memPool.getStatisticsIsPaused()) {
+          response['vBytesPerSecond'] = getCachedResponse('vBytesPerSecond', memPool.getVBytesPerSecond());
+        }
         response['fees'] = getCachedResponse('fees', fees);
 
         if (da?.previousTime) {

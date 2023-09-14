@@ -171,6 +171,11 @@ class Mempool {
     return this.statisticsPaused;
   }
 
+  public logFailover(): void {
+    this.failoverTimes.push(Date.now());
+    this.statisticsPaused = true;
+  }
+
   public getTxPerSecond(): number {
     return this.txPerSecond;
   }
