@@ -44,6 +44,8 @@ interface IConfig {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
     RETRY_UNIX_SOCKET_AFTER: number;
+    REQUEST_TIMEOUT: number;
+    FALLBACK_TIMEOUT: number;
     FALLBACK: string[];
   };
   LIGHTNING: {
@@ -189,6 +191,8 @@ const defaults: IConfig = {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
     'RETRY_UNIX_SOCKET_AFTER': 30000,
+    'REQUEST_TIMEOUT': 10000,
+    'FALLBACK_TIMEOUT': 5000,
     'FALLBACK': [],
   },
   'ELECTRUM': {
