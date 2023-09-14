@@ -17,6 +17,8 @@ interface FailoverHost {
 }
 
 class FailoverRouter {
+  isFailedOver: boolean = false;
+  preferredHost: FailoverHost;
   activeHost: FailoverHost;
   fallbackHost: FailoverHost;
   hosts: FailoverHost[];
@@ -46,6 +48,7 @@ class FailoverRouter {
       socket: !!config.ESPLORA.UNIX_SOCKET_PATH,
       preferred: true,
     };
+    this.preferredHost = this.activeHost;
     this.fallbackHost = this.activeHost;
     this.hosts.unshift(this.activeHost);
     this.multihost = this.hosts.length > 1;
@@ -151,6 +154,7 @@ class FailoverRouter {
     this.sortHosts();
     this.activeHost = this.hosts[0];
     logger.warn(`Switching esplora host to ${this.activeHost.host}`);
+    this.isFailedOver = this.activeHost !== this.preferredHost;
   }
 
   private addFailure(host: FailoverHost): FailoverHost {
@@ -301,6 +305,10 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   public startHealthChecks(): void {
     this.failoverRouter.startHealthChecks();
+  }
+
+  public isFailedOver(): boolean {
+    return this.failoverRouter.isFailedOver;
   }
 }
 

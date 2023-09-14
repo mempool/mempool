@@ -73,7 +73,7 @@ class WebsocketHandler {
     const da = difficultyAdjustment.getDifficultyAdjustment();
     this.updateSocketDataFields({
       'mempoolInfo': memPool.getMempoolInfo(),
-      'vBytesPerSecond': memPool.getVBytesPerSecond(),
+      'vBytesPerSecond': memPool.getStatisticsIsPaused() ? null : memPool.getVBytesPerSecond(),
       'blocks': _blocks,
       'conversions': priceUpdater.getLatestPrices(),
       'mempool-blocks': mempoolBlocks.getMempoolBlocks(),

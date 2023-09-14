@@ -29,9 +29,10 @@ class Statistics {
   }
 
   private async runStatistics(): Promise<void> {
-    if (!memPool.isInSync()) {
+    if (!memPool.isInSync() || memPool.getStatisticsIsPaused()) {
       return;
     }
+
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();

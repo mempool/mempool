@@ -356,6 +356,9 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   public startHealthChecks(): void {};
+  public isFailedOver(): boolean {
+    return false;
+  }
 }
 
 export default BitcoinApi;

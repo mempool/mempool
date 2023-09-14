@@ -26,6 +26,9 @@ class Mempool {
 
   private accelerations: { [txId: string]: Acceleration } = {};
 
+  private failoverTimes: number[] = [];
+  private statisticsPaused: boolean = false;
+
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
 
@@ -164,6 +167,10 @@ class Mempool {
     return this.mempoolInfo;
   }
 
+  public getStatisticsIsPaused(): boolean {
+    return this.statisticsPaused;
+  }
+
   public getTxPerSecond(): number {
     return this.txPerSecond;
   }
@@ -242,6 +249,10 @@ class Mempool {
         logger.debug(`fetched ${txs.length} transactions`);
         this.updateTimerProgress(timer, 'fetched new transactions');
 
+        if (bitcoinApi.isFailedOver()) {
+          this.failoverTimes.push(Date.now());
+        }
+
         for (const transaction of txs) {
           this.mempoolCache[transaction.txid] = transaction;
           if (this.inSync) {
@@ -257,6 +268,10 @@ class Mempool {
           if (config.REDIS.ENABLED) {
             await redisCache.$addTransaction(transaction);
           }
+        }
+
+        if (bitcoinApi.isFailedOver()) {
+          this.failoverTimes.push(Date.now());
         }
 
         if (txs.length < slice.length) {
@@ -491,6 +506,10 @@ class Mempool {
 
   private updateTxPerSecond() {
     const nowMinusTimeSpan = new Date().getTime() - (1000 * config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD);
+
+    this.failoverTimes = this.failoverTimes.filter((unixTime) => unixTime > nowMinusTimeSpan);
+    this.statisticsPaused = this.failoverTimes.length > 0;
+
     this.txPerSecondArray = this.txPerSecondArray.filter((unixTime) => unixTime > nowMinusTimeSpan);
     this.txPerSecond = this.txPerSecondArray.length / config.STATISTICS.TX_PER_SECOND_SAMPLE_PERIOD || 0;
 
