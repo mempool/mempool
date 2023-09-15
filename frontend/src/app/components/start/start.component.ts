@@ -57,10 +57,15 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   menuSliding: boolean = false;
   menuTimeout: number;
 
+  hasMenu = false;
+
   constructor(
     private stateService: StateService,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
+    if (this.stateService.network === '') {
+      this.hasMenu = true;
+    }
   }
 
   ngDoCheck(): void {
