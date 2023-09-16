@@ -116,10 +116,7 @@ class TransactionUtils {
   public extendMempoolTransaction(transaction: IEsploraApi.Transaction): MempoolTransactionExtended {
     const vsize = Math.ceil(transaction.weight / 4);
     const fractionalVsize = (transaction.weight / 4);
-    let sigops = transaction.sigops;
-    if (sigops == null) {
-      sigops = !Common.isLiquid() ? this.countSigops(transaction) : 0;
-    }
+    let sigops = Common.isLiquid() ? 0 : (transaction.sigops != null ? transaction.sigops : this.countSigops(transaction));
     // https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L295-L298
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
     const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
