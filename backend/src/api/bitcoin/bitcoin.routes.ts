@@ -24,7 +24,7 @@ class BitcoinRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', this.getTransactionTimes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', this.$getBatchedOutspends)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'txs/outspends', this.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.$getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
@@ -175,19 +175,14 @@ class BitcoinRoutes {
   }
 
   private async $getBatchedOutspends(req: Request, res: Response) {
-    if (!Array.isArray(req.query.txId)) {
-      res.status(500).send('Not an array');
+    if (!req.query.hasOwnProperty('txids') || typeof req.query['txids'] !== 'string') {
+      res.status(500).send('Property txids is missing');
       return;
     }
-    if (req.query.txId.length > 50) {
+    const txIds: string[] = req.query.txids.split(',');
+    if (txIds.length > 50) {
       res.status(400).send('Too many txids requested');
       return;
-    }
-    const txIds: string[] = [];
-    for (const _txId in req.query.txId) {
-      if (typeof req.query.txId[_txId] === 'string') {
-        txIds.push(req.query.txId[_txId].toString());
-      }
     }
 
     try {

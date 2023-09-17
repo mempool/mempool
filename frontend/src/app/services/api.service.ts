@@ -98,10 +98,8 @@ export class ApiService {
 
   getOutspendsBatched$(txIds: string[]): Observable<Outspend[][]> {
     let params = new HttpParams();
-    txIds.forEach((txId: string) => {
-      params = params.append('txId[]', txId);
-    });
-    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
+    params = params.append('txids', txIds.join(','));
+    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/txs/outspends', { params });
   }
 
   getAboutPageProfiles$(): Observable<any[]> {
