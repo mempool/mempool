@@ -136,7 +136,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   generateCountArray(mempoolStats: OptimizedMempoolStats[]) {
-    return mempoolStats.map(stats => [stats.added * 1000, stats.count]);
+    return mempoolStats.filter(stats => stats.count > 0).map(stats => [stats.added * 1000, stats.count]);
   }
 
   mountFeeChart() {
