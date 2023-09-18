@@ -220,6 +220,7 @@ class StatisticsApi {
   private getQueryForDays(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       vsize_1,
       vsize_2,
