@@ -26,6 +26,7 @@ export interface Transaction {
   _outspends?: Outspend[];
   _channels?: TransactionChannels;
   price?: Price;
+  sigops?: number;
 }
 
 export interface TransactionChannels {
