@@ -231,27 +231,21 @@ function downloadPromoVideo$() {
 
 }
 
-
-
-let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
-let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
-
 if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
-  assetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.json';
-  assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.minimal.json';
+  const assetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.json';
+  const assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.minimal.json';
+  const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
+  const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
+
+  console.log('Downloading assets');
+  download(PATH + 'assets.json', assetsJsonUrl);
+  console.log('Downloading assets minimal');
+  download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
+  console.log('Downloading testnet assets');
+  download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
+  console.log('Downloading testnet assets minimal');
+  download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
 }
-
-const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
-const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
-
-console.log('Downloading assets');
-download(PATH + 'assets.json', assetsJsonUrl);
-console.log('Downloading assets minimal');
-download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
-console.log('Downloading testnet assets');
-download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
-console.log('Downloading testnet assets minimal');
-download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
 
 downloadMiningPoolLogos$()
   .then(() => downloadPromoVideoSubtiles$())
