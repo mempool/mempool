@@ -24,7 +24,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   chainTipSubscription: Subscription;
-  chainTip: number = -1;
+  chainTip: number = 100;
   tipIsSet: boolean = false;
   lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
@@ -42,7 +42,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   blocksPerPage: number = 1;
   pageWidth: number;
   firstPageWidth: number;
-  minScrollWidth: number;
+  minScrollWidth: number = 40 + (155 * (8 + (2 * Math.ceil(window.innerWidth / 155))));
   currentScrollWidth: number = null;
   pageIndex: number = 0;
   pages: any[] = [];
@@ -51,7 +51,7 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
-  mempoolOffset: number | null = null;
+  mempoolOffset: number = null;
   mempoolWidth: number = 0;
   scrollLeft: number = null;
 
@@ -67,12 +67,13 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
     this.blockCounterSubscription = this.stateService.blocks$.subscribe((blocks) => {
       this.blockCount = blocks.length;
       this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
+      this.minScrollWidth = 40 + (8 * this.blockWidth) + (this.pageWidth * 2);
       if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
         this.onResize();
       }
@@ -181,7 +182,9 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   onMempoolOffsetChange(offset): void {
-    this.pendingOffset = offset;
+    if (offset !== this.mempoolOffset) {
+      this.pendingOffset = offset;
+    }
   }
 
   applyScrollLeft(): void {
@@ -198,11 +201,11 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
       this.blockchainContainer.nativeElement.scrollLeft = this.scrollLeft;
     }
-    this.cd.markForCheck();
+    this.cd.detectChanges();
   }
 
   applyPendingMarkArrow(): void {
-    if (this.pendingMark != null) {
+    if (this.pendingMark != null && this.pendingMark <= this.chainTip) {
       if (this.pendingMark < 0) {
         this.scrollToBlock(this.chainTip - this.pendingMark);
       } else {
@@ -239,13 +242,14 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.blocksPerPage = Math.ceil(this.chainWidth / this.blockWidth);
     this.pageWidth = this.blocksPerPage * this.blockWidth;
-    this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
+    this.minScrollWidth = 40 + (8 * this.blockWidth) + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
       this.scrollToBlock(firstVisibleBlock, offset);
     } else {
       this.updatePages();
     }
+    this.cd.markForCheck();
   }
 
   onMouseDown(event: MouseEvent) {
