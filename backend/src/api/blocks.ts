@@ -776,9 +776,7 @@ class Blocks {
             this.updateTimerProgress(timer, `saved prices for ${this.currentBlockHeight}`);
           } else {
             logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
-            setTimeout(() => {
-              indexer.runSingleTask('blocksPrices');
-            }, 10000);
+            indexer.scheduleSingleTask('blocksPrices', 10000);
           }
 
           // Save blocks summary for visualization if it's enabled
