@@ -25,6 +25,12 @@
   "ESPLORA": {
     "UNIX_SOCKET_PATH": "/elements/socket/esplora-liquid-testnet",
     "FALLBACK": [
+      "http://node201.va1.mempool.space:3004",
+      "http://node202.va1.mempool.space:3004",
+      "http://node203.va1.mempool.space:3004",
+      "http://node204.va1.mempool.space:3004",
+      "http://node205.va1.mempool.space:3004",
+      "http://node206.va1.mempool.space:3004",
       "http://node201.fmt.mempool.space:3004",
       "http://node202.fmt.mempool.space:3004",
       "http://node203.fmt.mempool.space:3004",

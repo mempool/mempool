@@ -114,7 +114,7 @@ export class NodesMap implements OnInit, OnChanges {
           node[3], // Alias
           node[2], // Public key
           node[5], // Channels
-          node[6].en, // Country
+          node[6]?.en, // Country
           node[7], // ISO Code
         ]);
       }

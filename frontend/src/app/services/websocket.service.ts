@@ -358,6 +358,12 @@ export class WebsocketService {
       });
     }
 
+    if (response['address-removed-transactions']) {
+      response['address-removed-transactions'].forEach((addressTransaction: Transaction) => {
+        this.stateService.mempoolRemovedTransactions$.next(addressTransaction);
+      });
+    }
+
     if (response['block-transactions']) {
       response['block-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.blockTransactions$.next(addressTransaction);
