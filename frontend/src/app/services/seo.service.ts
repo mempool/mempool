@@ -12,6 +12,8 @@ export class SeoService {
   baseTitle = 'mempool';
   baseDescription = 'Explore the full Bitcoin ecosystem with The Mempool Open Project™.';
 
+  canonicalLink: HTMLElement = document.getElementById('canonical');
+
   constructor(
     private titleService: Title,
     private metaService: Meta,
@@ -63,6 +65,16 @@ export class SeoService {
     this.metaService.updateTag({ name: 'description', content: this.getDescription()});
     this.metaService.updateTag({ name: 'twitter:description', content: this.getDescription()});
     this.metaService.updateTag({ property: 'og:description', content: this.getDescription()});
+  }
+
+  updateCanonical(path) {
+    let domain = 'mempool.space';
+    if (this.stateService.env.BASE_MODULE === 'liquid') {
+      domain = 'liquid.network';
+    } else if (this.stateService.env.BASE_MODULE === 'bisq') {
+      domain = 'bisq.markets';
+    }
+    this.canonicalLink.setAttribute('href', 'https://' + domain + path);
   }
 
   getTitle(): string {
