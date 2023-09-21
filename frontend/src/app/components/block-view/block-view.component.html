@@ -1,0 +1,13 @@
+<div class="block-wrapper">
+  <div class="block-container">
+    <app-block-overview-graph
+      #blockGraph
+      [isLoading]="false"
+      [resolution]="resolution"
+      [blockLimit]="stateService.blockVSize"
+      [orientation]="'top'"
+      [flip]="false"
+      [disableSpinner]="true"
+    ></app-block-overview-graph>
+  </div>
+</div>
