@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
-import { of, Subscription, asyncScheduler } from 'rxjs';
+import { switchMap, tap, catchError, shareReplay, filter } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
-import { OpenGraphService } from '../../services/opengraph.service';
 import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { BlockOverviewGraphComponent } from '../block-overview-graph/block-overview-graph.component';
+import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 
-function bestFitResolution(min, max, n) {
+function bestFitResolution(min, max, n): number {
   const target = (min + max) / 2;
   let bestScore = Infinity;
   let best = null;
@@ -50,14 +50,14 @@ export class BlockViewComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private electrsApiService: ElectrsApiService,
     public stateService: StateService,
     private seoService: SeoService,
-    private openGraphService: OpenGraphService,
     private apiService: ApiService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.network = this.stateService.network;
 
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
@@ -150,19 +150,23 @@ export class BlockViewComponent implements OnInit, OnDestroy {
       .subscribe((network) => this.network = network);
   }
 
+  onTxClick(event: { tx: TransactionStripped, keyModifier: boolean }): void {
+    const url = new RelativeUrlPipe(this.stateService).transform(`/tx/${event.tx.txid}`);
+    if (!event.keyModifier) {
+      this.router.navigate([url]);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (this.autofit) {
       this.resolution = bestFitResolution(64, 96, Math.min(window.innerWidth, window.innerHeight));
-      console.log('resized, new resolution ', this.resolution, window.innerWidth, window.innerHeight);
-      // if (this.blockGraph && this.strippedTransactions) {
-      //   this.blockGraph.destroy();
-      //   this.blockGraph.setup(this.strippedTransactions);
-      // }
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.overviewSubscription) {
       this.overviewSubscription.unsubscribe();
     }
