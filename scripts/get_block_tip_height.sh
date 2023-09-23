@@ -9,7 +9,8 @@ do
     NODE_HEIGHT=$(curl -sk https://node$NODE.$LOCATION.mempool.space/api/v1/blocks/tip/height)
     echo $(echo node$NODE.$LOCATION.mempool.space) - $NODE_HEIGHT
     if [ "$NODE_HEIGHT" -ne "$BASE_HEIGHT" ]; then
-      echo $(echo node$NODE.$LOCATION.mempool.space) is not in sync
+      COUNT=$((BASE_HEIGHT-NODE_HEIGHT))
+      echo $(echo node$NODE.$LOCATION.mempool.space) is not in sync. delta: $COUNT
       IN_SYNC=false
     fi
   done
