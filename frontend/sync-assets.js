@@ -1,6 +1,7 @@
 var https = require('https');
 var fs = require('fs');
 var crypto = require('crypto');
+var path = require('node:path');
 
 const CONFIG_FILE_NAME = 'mempool-frontend-config.json';
 let configContent = {};
@@ -8,6 +9,13 @@ let configContent = {};
 var PATH;
 if (process.argv[2]) {
   PATH = process.argv[2];
+  PATH += PATH.endsWith("/") ? "" : "/"
+  PATH = path.normalize(PATH);
+  console.log(`[sync-assets] using PATH ${PATH}`);
+  if (!fs.existsSync(PATH)){
+    console.log(`${PATH} does not exist, creating`);
+    fs.mkdirSync(PATH, { recursive: true });
+  }
 }
 
 if (!PATH) {
@@ -79,7 +87,7 @@ function downloadMiningPoolLogos$() {
           }
           let downloadedCount = 0;
           for (const poolLogo of poolLogos) {
-            const filePath = `${PATH}/mining-pools/${poolLogo.name}`;
+            const filePath = PATH + `mining-pools/${poolLogo.name}`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (localHash !== poolLogo.sha) {
@@ -89,6 +97,10 @@ function downloadMiningPoolLogos$() {
               }
             } else {
               console.log(`${poolLogo.name} is missing, downloading...`);
+              const miningPoolsDir = PATH + `mining-pools/`;
+              if (!fs.existsSync(miningPoolsDir)){
+                fs.mkdirSync(miningPoolsDir, { recursive: true });
+              }
               download(filePath, poolLogo.download_url);
               downloadedCount++;
             }
@@ -140,7 +152,7 @@ function downloadPromoVideoSubtiles$() {
           }
           let downloadedCount = 0;
           for (const language of videoLanguages) {
-            const filePath = `${PATH}/promo-video/${language.name}`;
+            const filePath = PATH + `promo-video/${language.name}`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (localHash !== language.sha) {
@@ -150,6 +162,11 @@ function downloadPromoVideoSubtiles$() {
               }
             } else {
               console.log(`${language.name} is missing, downloading`);
+              const promoVideosDir = PATH + `promo-video/`;
+              if (!fs.existsSync(promoVideosDir)){
+                fs.mkdirSync(promoVideosDir, { recursive: true });
+              }
+
               download(filePath, language.download_url);
               downloadedCount++;
             }
@@ -202,7 +219,7 @@ function downloadPromoVideo$() {
             if (item.name !== 'promo.mp4') {
               continue;
             }
-            const filePath = `${PATH}/promo-video/mempool-promo.mp4`;
+            const filePath = PATH + `promo-video/mempool-promo.mp4`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (localHash !== item.sha) {
@@ -246,10 +263,13 @@ const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstre
 
 console.log('Downloading assets');
 download(PATH + 'assets.json', assetsJsonUrl);
+
 console.log('Downloading assets minimal');
 download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
+
 console.log('Downloading testnet assets');
 download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
+
 console.log('Downloading testnet assets minimal');
 download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
 
