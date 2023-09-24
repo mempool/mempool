@@ -51,7 +51,7 @@
     "redis": "^4.6.6",
     "socks-proxy-agent": "~7.0.0",
     "typescript": "~4.9.3",
-    "ws": "~8.13.0"
+    "ws": "~8.14.2"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.18.6",
