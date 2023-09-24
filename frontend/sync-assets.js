@@ -281,29 +281,28 @@ function downloadPromoVideo$() {
 }
 
 
-
-let assetsJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.json';
-let assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/mempool/asset_registry_db/master/index.minimal.json';
-
 if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
-  assetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.json';
-  assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.minimal.json';
+  const assetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.json';
+  const assetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_db/master/index.minimal.json';
+  const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
+  const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
+
+  console.log(`${LOG_TAG} Downloading assets`);
+  download(PATH + 'assets.json', assetsJsonUrl);
+
+  console.log(`${LOG_TAG} Downloading assets minimal`);
+  download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
+
+  console.log(`${LOG_TAG} Downloading testnet assets`);
+  download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
+
+  console.log(`${LOG_TAG} Downloading testnet assets minimal`);
+  download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
+} else {
+  if (verbose) {
+    console.log(`${LOG_TAG} BASE_MODULE is not set to Liquid (${configContent.BASE_MODULE}), skipping downloading assets`);
+  }
 }
-
-const testnetAssetsJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.json';
-const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
-
-console.log(`${LOG_TAG} Downloading assets`);
-download(PATH + 'assets.json', assetsJsonUrl);
-
-console.log(`${LOG_TAG} Downloading assets minimal`);
-download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
-
-console.log(`${LOG_TAG} Downloading testnet assets`);
-download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
-
-console.log(`${LOG_TAG} Downloading testnet assets minimal`);
-download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
 
 (() => {
   if (verbose) {
