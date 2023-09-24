@@ -26,15 +26,7 @@
   position: absolute;
   left: 0;
   top: 75px;
-  --divider-offset: 50vw;
-  --mempool-offset: 0px;
-  transform: translateX(calc(var(--divider-offset) + var(--mempool-offset)));
-}
-
-.blockchain-wrapper.time-ltr {
-  .position-container {
-    transform: translateX(calc(100vw - var(--divider-offset) - var(--mempool-offset)));
-  }
+  transform: translateX(1280px);
 }
 
 .black-background {

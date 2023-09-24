@@ -41,7 +41,7 @@
     "@babel/core": "^7.21.3",
     "@mempool/electrum-client": "1.1.9",
     "@types/node": "^18.15.3",
-    "axios": "~1.4.0",
+    "axios": "~1.5.0",
     "bitcoinjs-lib": "~6.1.3",
     "crypto-js": "~4.1.1",
     "express": "~4.18.2",
