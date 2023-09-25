@@ -60,11 +60,16 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   menuSliding: boolean = false;
   menuTimeout: number;
 
+  hasMenu = false;
+
   constructor(
     private stateService: StateService,
     private cd: ChangeDetectorRef,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
+    if (this.stateService.network === '') {
+      this.hasMenu = true;
+    }
   }
 
   ngOnInit() {
