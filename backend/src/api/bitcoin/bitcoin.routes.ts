@@ -136,8 +136,6 @@ class BitcoinRoutes {
       // Bitcoin Core
       const bitcoinCoreBlockHeight = await bitcoinCoreApi.$getBlockHeightTip();
       const bitcoinCoreIndexes = await bitcoinClient.getIndexInfo();
-      // Esplora
-      const esploraBlockHeight = await bitcoinApi.$getBlockHeightTip();
       // Mempool
       const mempoolBlockHeight = blocks.getCurrentBlockHeight();
       const indexedBlockCount = await BlocksRepository.$getIndexedBlockCount();
@@ -147,9 +145,6 @@ class BitcoinRoutes {
       const response = {
         core: {
           height: bitcoinCoreBlockHeight,
-        },
-        esplora: {
-          height: esploraBlockHeight
         },
         mempool: {
           height: mempoolBlockHeight,
@@ -163,7 +158,14 @@ class BitcoinRoutes {
 
       // Bitcoin Core indexes
       for (const indexName in bitcoinCoreIndexes) {
-        response.core[indexName] = bitcoinCoreIndexes[indexName];
+        response.core[indexName.replace(/ /g,'_')] = bitcoinCoreIndexes[indexName];
+      }
+
+      if (config.MEMPOOL.BACKEND === 'esplora') {
+        const esploraBlockHeight = await bitcoinApi.$getBlockHeightTip();
+        response['esplora'] = {
+          height: esploraBlockHeight
+        };
       }
 
       res.json(response);
