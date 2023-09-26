@@ -71,7 +71,7 @@ const newConfig = `(function (window) {
     window.__env.${obj.key} = ${typeof obj.value === 'string' ? `'${obj.value}'` : obj.value};`, '')}
     window.__env.GIT_COMMIT_HASH = '${gitCommitHash}';
     window.__env.PACKAGE_JSON_VERSION = '${packetJsonVersion}';
-  }(this));`;
+  }(global || this));`;
 
 const newConfigTemplate = `(function (window) {
   window.__env = window.__env || {};${settings.reduce((str, obj) => `${str}
