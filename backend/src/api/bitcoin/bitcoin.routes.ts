@@ -6,7 +6,7 @@ import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
 import feeApi from '../fee-api';
 import mempoolBlocks from '../mempool-blocks';
-import bitcoinApi from './bitcoin-api-factory';
+import bitcoinApi, { bitcoinCoreApi } from './bitcoin-api-factory';
 import { Common } from '../common';
 import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
@@ -19,6 +19,7 @@ import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
+import BlocksRepository from '../../repositories/BlocksRepository';
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -126,8 +127,53 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
+
+      app.get(config.MEMPOOL.API_URL_PREFIX + 'health', this.generateHealthReport)
   }
 
+  private async generateHealthReport(req: Request, res: Response) {
+    try {
+      // Bitcoin Core
+      const bitcoinCoreBlockHeight = await bitcoinCoreApi.$getBlockHeightTip();
+      const bitcoinCoreIndexes = await bitcoinClient.getIndexInfo();
+      // Esplora
+      const esploraBlockHeight = await bitcoinApi.$getBlockHeightTip();
+      // Mempool
+      const mempoolBlockHeight = blocks.getCurrentBlockHeight();
+      const indexedBlockCount = await BlocksRepository.$getIndexedBlockCount();
+      const indexedBlockWithCpfpCount = await BlocksRepository.$getIndexedCpfpBlockCount();
+      const indexedBlockWithCoinStatsCount = await BlocksRepository.$getIndexedCoinStatsBlockCount();
+
+      const response = {
+        core: {
+          height: bitcoinCoreBlockHeight,
+        },
+        esplora: {
+          height: esploraBlockHeight
+        },
+        mempool: {
+          height: mempoolBlockHeight,
+          indexing: {
+            indexedBlockCount: indexedBlockCount,
+            indexedBlockCountWithCPFP: indexedBlockWithCpfpCount,
+            indexedBlockCountWithCoinStats: indexedBlockWithCoinStatsCount,
+          }
+        }
+      };
+
+      // Bitcoin Core indexes
+      for (const indexName in bitcoinCoreIndexes) {
+        response.core[indexName] = bitcoinCoreIndexes[indexName];
+      }
+
+      res.json(response);
+
+    } catch (e: any) {
+      logger.err(`Unable to generate health report. Exception: ${JSON.stringify(e)}`);
+      logger.err(e.stack);
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
 
   private getInitData(req: Request, res: Response) {
     try {
