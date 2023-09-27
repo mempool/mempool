@@ -8,7 +8,9 @@ WORKDIR /build
 COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential rsync
+RUN cp mempool-frontend-config.sample.json mempool-frontend-config.json
 RUN npm install --omit=dev --omit=optional
+
 RUN npm run build
 
 FROM nginx:1.17.8-alpine
@@ -28,7 +30,9 @@ RUN chown -R 1000:1000 /patch && chmod -R 755 /patch && \
         chown -R 1000:1000 /var/cache/nginx && \
         chown -R 1000:1000 /var/log/nginx && \
         chown -R 1000:1000 /etc/nginx/nginx.conf && \
-        chown -R 1000:1000 /etc/nginx/conf.d
+        chown -R 1000:1000 /etc/nginx/conf.d && \
+        chown -R 1000:1000 /var/www/mempool
+
 RUN touch /var/run/nginx.pid && \
         chown -R 1000:1000 /var/run/nginx.pid
 

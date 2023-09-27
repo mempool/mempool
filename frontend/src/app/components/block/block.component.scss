@@ -1,3 +1,26 @@
+.title-block {
+  flex-wrap: wrap;
+  align-items: baseline;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+  h1 {
+    margin: 0rem;
+    margin-right: 15px;
+    line-height: 1;
+  }
+
+  .alert-mempool {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .container-button {
+    align-self: center;
+    margin-right: 1em;
+  }
+}
+
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
@@ -34,7 +57,33 @@
         text-align: left;
       }
     }
+    .info-link {
+      color: rgba(255, 255, 255, 0.4);
+      margin-left: 5px;
+    }
+
+    .difference {
+      margin-left: 0.5em;
+  
+      &.positive {
+        color: rgb(66, 183, 71);
+      }
+      &.negative {
+        color: rgb(183, 66, 66);
+      }
+    }
   }
+}
+
+.block-subtitle.actual a {
+  position: absolute;
+  top: -3px;
+}
+
+.block-subtitle.actual fa-icon {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 18px;
+  margin-left: 8px;
 }
 
 h1 {
@@ -75,12 +124,17 @@ h1 {
 	}
 }
 
-.btn-details {
+.toggle-btns {
   position: relative;
+  z-index: 2;
   top: 7px;
   @media (min-width: 550px) {
     top: 0px;
   }
+}
+
+.btn-audit {
+  margin-right: .5em;
 }
 
 .block-tx-title {
@@ -170,4 +224,77 @@ h1 {
   @media (min-width: 768px) {
     margin: auto;
   }
+}
+
+.menu-button {
+  @media (min-width: 768px) {
+    max-width: 150px;
+  }
+}
+
+.block-subtitle {
+  text-align: center;
+}
+
+.nav-tabs {
+  border-color: white;
+  border-width: 1px;
+  margin-bottom: 1em;
+}
+
+.nav-tabs .nav-link {
+  background: inherit;
+  border-width: 1px;
+  border-bottom: none;
+  border-color: transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+
+  &.active {
+    background: #24273e;
+  }
+
+  &.active, &:hover {
+    border-color: white;
+  }
+}
+
+.block-graph-wrapper {
+  position: relative;
+}
+
+.info-bubble-link {
+  position: absolute;
+  display: block;
+  top: 2em;
+  left: 50%;
+  margin: auto;
+  text-align: center;
+  padding: 0.5em 1em;
+  font-size: 80%;
+  transform: translateX(-50%);
+
+  .ng-fa-icon {
+    margin-right: 1em;
+  }
+}
+
+.beta {
+  font-size: 10px;
+  margin: 5p;
+  padding: 5p;
+  position: absolute;
+  top: 11px;
+  margin-left: 10px;
+}
+
+.audit-details-table {
+  margin-top: 1.25rem;
+  @media (max-width: 767.98px) {
+    margin-top: 0.75rem;
+  }
+}
+
+.graph-col {
+  flex-grow: 1.11;
 }

@@ -1,0 +1,31 @@
+.alert-danger {
+  color: #fff;
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+  padding: 0.5rem 1.25rem;
+  margin: 0px 10px 0px 10px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.message-container {
+  display: flex;
+  margin-left: auto;
+}
+
+.close {
+  display: flex;
+  color: #fff;
+  align-items: center;
+}
+
+button {
+  display: flex;
+  margin-left: auto;
+}
+
+span {
+  position: relative;
+  top: -2px;
+}

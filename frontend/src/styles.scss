@@ -45,8 +45,8 @@ $dropdown-link-hover-bg: #11131f;
 $dropdown-link-active-color: #fff;
 $dropdown-link-active-bg: #11131f;
 
-@import "~bootstrap/scss/bootstrap";
-@import '~tlite/tlite.css';
+@import "bootstrap/scss/bootstrap";
+@import 'tlite/tlite.css';
 
 html, body {
   height: 100%;
@@ -60,11 +60,12 @@ body {
 
 .container {
   position: relative;
-  padding-bottom: 60px;
 }
-.container-xl {
-  padding-bottom: 60px;
+
+main {
+  margin-top: 24px;
 }
+
 .full-height {
   @media (max-width: 767.98px) {
     min-height: 100vh;
@@ -115,10 +116,38 @@ body {
 }
 
 .form-control {
-  color: #495057;
+  color: #fff;
+  background-color: #2d3348;
+  border: 1px solid rgba(17, 19, 31, 0.2);
 }
+
 .form-control:focus {
-  color: #000;
+  color: #fff;
+  background-color: #2d3348;
+}
+
+.btn-purple {
+  background-color: #653b9c;
+  border-color: #653b9c;
+}
+
+.btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
+  color: #fff;
+  background-color: #4d2d77;
+  border-color: #472a6e;
+}
+
+.btn-purple:focus, .btn-purple.focus {
+  color: #fff;
+  background-color: #533180;
+  border-color: #4d2d77;
+  box-shadow: 0 0 0 0.2rem rgb(124 88 171 / 50%);
+}
+
+.btn-purple:hover {
+  color: #fff;
+  background-color: #533180;
+  border-color: #4d2d77;
 }
 
 .form-control.form-control-secondary {
@@ -192,7 +221,7 @@ body {
 }
 
 .block-size, .blocks-container {
-  span {
+  .symbol {
     font-size: 16px;
     color: #fff !important;
   }
@@ -258,6 +287,10 @@ body {
 
 .close:hover {
   color: #fff;
+}
+
+.white-color {
+  color: white;
 }
 
 .green-color {
@@ -467,7 +500,7 @@ html:lang(ru) .card-title {
 }
 
 .fee-distribution-chart {
-  height: 250px;
+  height: 265px;
 }
 
 .fees-wrapper-tooltip-chart {
@@ -718,7 +751,37 @@ th {
   font-family: monospace;
 }
 
+.full-container .card-header .formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 991px) {
+    position: relative;
+    top: -100px;
+  }
+  @media (min-width: 830px) and (max-width: 991px) {
+    position: relative;
+    top: 0px;
+  }
+  @media (min-width: 830px) {
+    flex-direction: row;
+    float: right;
+    margin-top: 0px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.direction-ltr {
+  direction: ltr;
+}
+
 .rtl-layout {
+  text-align: start;
 
   .navbar-brand {
     margin-right: 0px;
@@ -854,19 +917,25 @@ th {
     }
   }
 
-  .container-graph {
+  .chart {
+    direction: ltr;
+  }
+
+  .formRadioGroup {
+    @media (min-width: 830px) {
+      float: left;
+    }
+  }
+
+  .container-graph, .full-container, .toggle-holder {
     @extend .container-graph;
     .formRadioGroup {
       @extend .formRadioGroup;
       direction: ltr;
     }
-  }
 
-  .full-container {
-    @extend .full-container;
-    .formRadioGroup {
-      @extend .formRadioGroup;
-      direction: ltr;
+    .card-header, h1, h2, h3 {
+      direction: rtl;
     }
   }
 
@@ -923,6 +992,10 @@ th {
     @media (min-width: 768px) {
       margin-right: 10px;
     }
+  }
+
+  .btn-audit {
+    margin-left: .5em;
   }
 }
 
@@ -1072,4 +1145,29 @@ th {
 
 #divider {
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='104%25' height='100%25' fill='none' stroke='white' stroke-width='4' stroke-dasharray='10%2c17' stroke-dashoffset='18' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
+.visually-hidden {
+  display: none;
+}
+
+app-master-page, app-liquid-master-page, app-bisq-master-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 60px;
+  @media (min-width: 992px) {
+    padding-bottom: 0px;
+  }
+}
+
+app-global-footer {
+  margin-top: auto;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 0.5;
+  border-radius: 0.2rem;
 }

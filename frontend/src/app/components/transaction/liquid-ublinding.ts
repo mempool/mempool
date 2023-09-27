@@ -126,9 +126,13 @@ export class LiquidUnblinding {
   }
 
   async checkUnblindedTx(tx: Transaction) {
-    const windowLocationHash = window.location.hash.substring('#blinded='.length);
-    if (windowLocationHash.length > 0) {
-      const blinders = this.parseBlinders(windowLocationHash);
+    if (!window.location.hash?.length) {
+      return tx;
+    }
+    const fragmentParams = new URLSearchParams(window.location.hash.slice(1) || '');
+    const blinderStr = fragmentParams.get('blinded');
+    if (blinderStr && blinderStr.length) {
+      const blinders = this.parseBlinders(blinderStr);
       if (blinders) {
         this.commitments = await this.makeCommitmentMap(blinders);
         return this.tryUnblindTx(tx);

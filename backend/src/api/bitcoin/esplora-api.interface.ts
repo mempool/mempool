@@ -88,10 +88,19 @@ export namespace IEsploraApi {
     size: number;
     weight: number;
     previousblockhash: string;
+    mediantime: number;
+    stale: boolean;
   }
 
   export interface Address {
     address: string;
+    chain_stats: ChainStats;
+    mempool_stats: MempoolStats;
+    electrum?: boolean;
+  }
+
+  export interface ScriptHash {
+    scripthash: string;
     chain_stats: ChainStats;
     mempool_stats: MempoolStats;
     electrum?: boolean;

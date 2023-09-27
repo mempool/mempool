@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { isMobile } from '../../shared/common.utils';
@@ -23,7 +23,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
   itemsPerPage = 10;
   page = 1;
   channelsPage$ = new BehaviorSubject<number>(1);
-  channelStatusForm: FormGroup;
+  channelStatusForm: UntypedFormGroup;
   defaultStatus = 'open';
   status = 'open';
   publicKeySize = 25;
@@ -31,7 +31,7 @@ export class ChannelsListComponent implements OnInit, OnChanges {
 
   constructor(
     private lightningApiService: LightningApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
   ) { 
     this.channelStatusForm = this.formBuilder.group({
       status: [this.defaultStatus],

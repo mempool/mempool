@@ -1,6 +1,6 @@
 import { Component, OnInit, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { of, merge} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -30,7 +30,10 @@ export class StatisticsComponent implements OnInit {
   spinnerLoading = false;
   feeLevels = feeLevels;
   chartColors = chartColors;
+  filterSize = 100000;
   filterFeeIndex = 1;
+  showCount = true;
+  maxFeeIndex: number;
   dropDownOpen = false;
 
   mempoolStats: OptimizedMempoolStats[] = [];
@@ -39,15 +42,16 @@ export class StatisticsComponent implements OnInit {
   mempoolUnconfirmedTransactionsData: any;
   mempoolTransactionsWeightPerSecondData: any;
 
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
   graphWindowPreference: string;
   inverted: boolean;
   feeLevelDropdownData = [];
   timespan = '';
+  titleCount = $localize`Count`;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private websocketService: WebsocketService,
     private apiService: ApiService,
@@ -60,6 +64,7 @@ export class StatisticsComponent implements OnInit {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
 
@@ -70,8 +75,10 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        } else {
+          this.radioGroupForm.controls.dateSpan.setValue('2h', { emitEvent: false });
         }
       });
 
@@ -109,7 +116,15 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '2y') {
           return this.apiService.list2YStatistics$();
         }
-        return this.apiService.list3YStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '3y') {
+          return this.apiService.list3YStatistics$();
+        }
+        if (this.radioGroupForm.controls.dateSpan.value === '4y') {
+          return this.apiService.list4YStatistics$();
+        }
+        if (this.radioGroupForm.controls.dateSpan.value === 'all') {
+          return this.apiService.listAllTimeStatistics$();
+        }
       })
     )
     .subscribe((mempoolStats: any) => {
@@ -131,6 +146,16 @@ export class StatisticsComponent implements OnInit {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
+    let maxTier = 0;
+    for (let index = 37; index > -1; index--) {
+      mempoolStats.forEach((stats) => {
+        if (stats.vsizes[index] >= this.filterSize) {
+          maxTier = Math.max(maxTier, index);
+        }
+      });
+    }
+    this.maxFeeIndex = maxTier;
+
     this.capExtremeVbytesValues();
 
     this.mempoolTransactionsWeightPerSecondData = {
@@ -149,27 +174,42 @@ export class StatisticsComponent implements OnInit {
   }
 
   setFeeLevelDropdownData() {
-    let _feeLevels = feeLevels
+    let _feeLevels = feeLevels;
     let _chartColors = chartColors;
     if (!this.inverted) {
       _feeLevels = [...feeLevels].reverse();
       _chartColors = [...chartColors].reverse();
     }
     _feeLevels.forEach((fee, i) => {
+      let range;
+      const nextIndex = this.inverted ? i + 1 : i - 1;
+      if (this.stateService.isLiquid()) {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${(_feeLevels[i] / 10).toFixed(1)}+`;
+        } else {
+          range = `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[nextIndex] / 10).toFixed(1)}`;
+        }
+      } else {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${_feeLevels[i]}+`;
+        } else {
+          range = `${_feeLevels[i]} - ${_feeLevels[nextIndex]}`;
+        }
+      }
       if (this.inverted) {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i + 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i + 1]}`,
+          range,
           color: _chartColors[i],
         });
       } else {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i - 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i - 1]}`,
-          color: _chartColors[i - 1],
+          range,
+          color: _chartColors[i],
         });
       }
-    })
+    });
   }
 
   /**
@@ -181,7 +221,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     let capRatio = 10;
-    if (['1m', '3m',  '6m', '1y', '2y', '3y'].includes(this.graphWindowPreference)) {
+    if (['1m', '3m',  '6m', '1y', '2y', '3y', '4y'].includes(this.graphWindowPreference)) {
       capRatio = 4;
     }
 

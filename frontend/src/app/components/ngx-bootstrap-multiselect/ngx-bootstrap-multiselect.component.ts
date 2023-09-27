@@ -17,8 +17,8 @@ import {
 import {
   AbstractControl,
   ControlValueAccessor,
-  FormBuilder,
-  FormControl,
+  UntypedFormBuilder,
+  UntypedFormControl,
   NG_VALUE_ACCESSOR,
   Validator,
 } from '@angular/forms';
@@ -52,7 +52,7 @@ export class NgxDropdownMultiselectComponent implements OnInit,
   private localIsVisible = false;
   private workerDocClicked = false;
 
-  filterControl: FormControl = this.fb.control('');
+  filterControl: UntypedFormControl = this.fb.control('');
 
   @Input() options: Array<IMultiSelectOption>;
   @Input() settings: IMultiSelectSettings;
@@ -151,7 +151,7 @@ export class NgxDropdownMultiselectComponent implements OnInit,
   }
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private searchFilter: MultiSelectSearchFilter,
     differs: IterableDiffers,
     private cdRef: ChangeDetectorRef

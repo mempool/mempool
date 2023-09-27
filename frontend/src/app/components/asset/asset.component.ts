@@ -9,7 +9,7 @@ import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { of, merge, Subscription, combineLatest } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
 import { moveDec } from '../../bitcoin.utils';
 
@@ -86,6 +86,7 @@ export class AssetComponent implements OnInit, OnDestroy {
                   catchError((err) => {
                     this.isLoadingAsset = false;
                     this.error = err;
+                    this.seoService.logSoft404();
                     console.log(err);
                     return of(null);
                   })
@@ -153,6 +154,7 @@ export class AssetComponent implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         this.error = error;
+        this.seoService.logSoft404();
         this.isLoadingAsset = false;
       });
 

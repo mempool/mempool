@@ -8,12 +8,13 @@ class BitfinexApi implements PriceFeed {
   public url: string = 'https://api.bitfinex.com/v1/pubticker/BTC';
   public urlHist: string = 'https://api-pub.bitfinex.com/v2/candles/trade:{GRANULARITY}:tBTC{CURRENCY}/hist';
 
-  constructor() {
-  }
-
   public async $fetchPrice(currency): Promise<number> {
     const response = await query(this.url + currency);
-    return response ? parseInt(response['last_price'], 10) : -1;
+    if (response && response['last_price']) {
+      return parseInt(response['last_price'], 10);
+    } else {
+      return -1;
+    }
   }
 
   public async $fetchRecentPrice(currencies: string[], type: 'hour' | 'day'): Promise<PriceHistory> {

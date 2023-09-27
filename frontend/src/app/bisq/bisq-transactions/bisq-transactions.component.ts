@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { BisqApiService } from '../bisq-api.service';
 import { SeoService } from '../../services/seo.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts } from '../../components/ngx-bootstrap-multiselect/types'
 import { WebsocketService } from '../../services/websocket.service';
@@ -23,7 +23,7 @@ export class BisqTransactionsComponent implements OnInit, OnDestroy {
   fiveItemsPxSize = 250;
   isLoading = true;
   loadingItems: number[];
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
   types: string[] = [];
   radioGroupSubscription: Subscription;
 
@@ -70,7 +70,7 @@ export class BisqTransactionsComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private bisqApiService: BisqApiService,
     private seoService: SeoService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef,
@@ -79,6 +79,7 @@ export class BisqTransactionsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.websocketService.want(['blocks']);
     this.seoService.setTitle($localize`:@@add4cd82e3e38a3110fe67b3c7df56e9602644ee:Transactions`);
+    this.seoService.setDescription($localize`:@@meta.description.bisq.transactions:See recent BSQ transactions: amount, txid, associated Bitcoin block, transaction type, and more.`);
 
     this.radioGroupForm = this.formBuilder.group({
       txTypes: [this.txTypesDefaultChecked],

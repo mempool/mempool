@@ -6,6 +6,7 @@ import DB from '../../../database';
 import logger from '../../../logger';
 import { ResultSetHeader } from 'mysql2';
 import * as IPCheck from '../../../utils/ipcheck.js';
+import { Reader } from 'mmdb-lib';
 
 export async function $lookupNodeLocation(): Promise<void> {
   let loggerTimer = new Date().getTime() / 1000;
@@ -13,12 +14,15 @@ export async function $lookupNodeLocation(): Promise<void> {
   let nodesUpdated = 0;
   let geoNamesInserted = 0;
 
-  logger.info(`Running node location updater using Maxmind`);
+  logger.debug(`Running node location updater using Maxmind`, logger.tags.ln);
   try {
     const nodes = await nodesApi.$getAllNodes();
     const lookupCity = await maxmind.open<CityResponse>(config.MAXMIND.GEOLITE2_CITY);
     const lookupAsn = await maxmind.open<AsnResponse>(config.MAXMIND.GEOLITE2_ASN);
-    const lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
+    let lookupIsp: Reader<IspResponse> | null = null;
+    try {
+      lookupIsp = await maxmind.open<IspResponse>(config.MAXMIND.GEOIP2_ISP);
+    } catch (e) { }
 
     for (const node of nodes) {
       const sockets: string[] = node.sockets.split(',');
@@ -29,7 +33,10 @@ export async function $lookupNodeLocation(): Promise<void> {
         if (hasClearnet && ip !== '127.0.1.1' && ip !== '127.0.0.1') {
           const city = lookupCity.get(ip);
           const asn = lookupAsn.get(ip);
-          const isp = lookupIsp.get(ip);
+          let isp: IspResponse | null = null;
+          if (lookupIsp) {
+            isp = lookupIsp.get(ip);
+          }
 
           let asOverwrite: any | undefined;
           if (asn && (IPCheck.match(ip, '170.75.160.0/20') || IPCheck.match(ip, '172.81.176.0/21'))) {
@@ -145,8 +152,8 @@ export async function $lookupNodeLocation(): Promise<void> {
 
           ++progress;
           const elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-          if (elapsedSeconds > 10) {
-            logger.info(`Updating node location data ${progress}/${nodes.length}`);
+          if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
+            logger.debug(`Updating node location data ${progress}/${nodes.length}`);
             loggerTimer = new Date().getTime() / 1000;
           }
         }
@@ -154,9 +161,7 @@ export async function $lookupNodeLocation(): Promise<void> {
     }
 
     if (nodesUpdated > 0) {
-      logger.info(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`);
-    } else {
-      logger.debug(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`);
+      logger.debug(`${nodesUpdated} nodes maxmind data updated, ${geoNamesInserted} geo names inserted`, logger.tags.ln);
     }
   } catch (e) {
     logger.err('$lookupNodeLocation() error: ' + (e instanceof Error ? e.message : e));

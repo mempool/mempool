@@ -12,7 +12,7 @@ ELEMENTS_RPC_USER=$(grep '^rpcuser' /elements/elements.conf | cut -d '=' -f2)
 ELEMENTS_RPC_PASS=$(grep '^rpcpassword' /elements/elements.conf | cut -d '=' -f2)
 
 # get mysql credentials
-MYSQL_CRED_FILE=${HOME}/mempool/mysql_credentials
+MYSQL_CRED_FILE=${HOME}/.mysql_credentials
 if [ -f "${MYSQL_CRED_FILE}" ];then
     . ${MYSQL_CRED_FILE}
 fi
@@ -38,7 +38,7 @@ update_repo()
     cd "$HOME/${site}" || exit 1
 
     git fetch origin || exit 1
-    for remote in origin hunicus mononaut;do
+    for remote in origin;do
         git remote add "${remote}" "https://github.com/${remote}/mempool" >/dev/null 2>&1
         git fetch "${remote}" || exit 1
     done
@@ -98,15 +98,15 @@ build_backend()
         -e "s!__MEMPOOL_TESTNET_PASS__!${MEMPOOL_TESTNET_PASS}!" \
         -e "s!__MEMPOOL_SIGNET_USER__!${MEMPOOL_SIGNET_USER}!" \
         -e "s!__MEMPOOL_SIGNET_PASS__!${MEMPOOL_SIGNET_PASS}!" \
-        -e "s!__LN_MEMPOOL_MAINNET_USER__!${LN_MEMPOOL_MAINNET_USER}!" \
-        -e "s!__LN_MEMPOOL_MAINNET_PASS__!${LN_MEMPOOL_MAINNET_PASS}!" \
-        -e "s!__LN_MEMPOOL_TESTNET_USER__!${LN_MEMPOOL_TESTNET_USER}!" \
-        -e "s!__LN_MEMPOOL_TESTNET_PASS__!${LN_MEMPOOL_TESTNET_PASS}!" \
-        -e "s!__LN_MEMPOOL_SIGNET_USER__!${LN_MEMPOOL_SIGNET_USER}!" \
-        -e "s!__LN_MEMPOOL_SIGNET_PASS__!${LN_MEMPOOL_SIGNET_PASS}!" \
+        -e "s!__MEMPOOL_MAINNET_LIGHTNING_USER__!${MEMPOOL_MAINNET_LIGHTNING_USER}!" \
+        -e "s!__MEMPOOL_MAINNET_LIGHTNING_PASS__!${MEMPOOL_MAINNET_LIGHTNING_PASS}!" \
+        -e "s!__MEMPOOL_TESTNET_LIGHTNING_USER__!${MEMPOOL_TESTNET_LIGHTNING_USER}!" \
+        -e "s!__MEMPOOL_TESTNET_LIGHTNING_PASS__!${MEMPOOL_TESTNET_LIGHTNING_PASS}!" \
+        -e "s!__MEMPOOL_SIGNET_LIGHTNING_USER__!${MEMPOOL_SIGNET_LIGHTNING_USER}!" \
+        -e "s!__MEMPOOL_SIGNET_LIGHTNING_PASS__!${MEMPOOL_SIGNET_LIGHTNING_PASS}!" \
         -e "s!__MEMPOOL_LIQUID_USER__!${MEMPOOL_LIQUID_USER}!" \
         -e "s!__MEMPOOL_LIQUID_PASS__!${MEMPOOL_LIQUID_PASS}!" \
-        -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${LIQUIDTESTNET_USER}!" \
+        -e "s!__MEMPOOL_LIQUIDTESTNET_USER__!${MEMPOOL_LIQUIDTESTNET_USER}!" \
         -e "s!__MEMPOOL_LIQUIDTESTNET_PASS__!${MEMPOOL_LIQUIDTESTNET_PASS}!" \
         -e "s!__MEMPOOL_BISQ_USER__!${MEMPOOL_BISQ_USER}!" \
         -e "s!__MEMPOOL_BISQ_PASS__!${MEMPOOL_BISQ_PASS}!" \

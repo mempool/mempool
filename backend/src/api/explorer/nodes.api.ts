@@ -3,6 +3,7 @@ import DB from '../../database';
 import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
+import { bin2hex } from '../../utils/format';
 
 class NodesApi {
   public async $getWorldNodes(): Promise<any> {
@@ -14,8 +15,8 @@ class NodesApi {
         nodes.longitude, nodes.latitude,
         geo_names_country.names as country, geo_names_iso.names as isoCode
         FROM nodes
-        LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
-        LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+        JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         WHERE status = 1 AND nodes.as_number IS NOT NULL
         ORDER BY capacity
       `;
@@ -56,7 +57,8 @@ class NodesApi {
           UNIX_TIMESTAMP(updated_at) AS updated_at, color, sockets as sockets,
           as_number, city_id, country_id, subdivision_id, longitude, latitude,
           geo_names_iso.names as iso_code, geo_names_as.names as as_organization, geo_names_city.names as city,
-          geo_names_country.names as country, geo_names_subdivision.names as subdivision
+          geo_names_country.names as country, geo_names_subdivision.names as subdivision,
+          features
         FROM nodes
         LEFT JOIN geo_names geo_names_as on geo_names_as.id = as_number
         LEFT JOIN geo_names geo_names_city on geo_names_city.id = city_id
@@ -75,6 +77,23 @@ class NodesApi {
       node.subdivision = JSON.parse(node.subdivision);
       node.city = JSON.parse(node.city);
       node.country = JSON.parse(node.country);
+
+      // Features      
+      node.features = JSON.parse(node.features);
+      node.featuresBits = null;
+      if (node.features) {
+        let maxBit = 0;
+        for (const feature of node.features) {
+          maxBit = Math.max(maxBit, feature.bit);
+        }
+        maxBit = Math.ceil(maxBit / 4) * 4 - 1;
+        
+        node.featuresBits = new Array(maxBit + 1).fill(0);
+        for (const feature of node.features) {
+          node.featuresBits[feature.bit] = 1;
+        }
+        node.featuresBits = bin2hex(node.featuresBits.reverse().join(''));
+      }
 
       // Active channels and capacity
       const activeChannelsStats: any = await this.$getActiveChannelsStats(public_key);
@@ -103,6 +122,18 @@ class NodesApi {
       node.closed_channel_count = 0;
       if (rows.length > 0) {
         node.closed_channel_count = rows[0].closed_channel_count;
+      }
+
+      // Custom records
+      query = `
+        SELECT type, payload
+        FROM nodes_records
+        WHERE public_key = ?
+      `;
+      [rows] = await DB.query(query, [public_key]);
+      node.custom_records = {};
+      for (const record of rows) {
+        node.custom_records[record.type] = Buffer.from(record.payload, 'binary').toString('hex');
       }
 
       return node;
@@ -216,7 +247,7 @@ class NodesApi {
             nodes.capacity
           FROM nodes
           ORDER BY capacity DESC
-          LIMIT 100
+          LIMIT 6
         `;
 
         [rows] = await DB.query(query);
@@ -257,14 +288,26 @@ class NodesApi {
       let query: string;
       if (full === false) {
         query = `
-          SELECT nodes.public_key as publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
-            nodes.channels
+          SELECT
+            nodes.public_key as publicKey,
+            IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
+            nodes.channels,
+            geo_names_city.names as city, geo_names_country.names as country,
+            geo_names_iso.names as iso_code, geo_names_subdivision.names as subdivision
           FROM nodes
+          LEFT JOIN geo_names geo_names_country ON geo_names_country.id = nodes.country_id AND geo_names_country.type = 'country'
+          LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
+          LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+          LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
           ORDER BY channels DESC
-          LIMIT 100;
+          LIMIT 6;
         `;
 
         [rows] = await DB.query(query);
+        for (let i = 0; i < rows.length; ++i) {
+          rows[i].country = JSON.parse(rows[i].country);
+          rows[i].city = JSON.parse(rows[i].city);
+        }
       } else {
         query = `
           SELECT nodes.public_key AS publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
@@ -349,8 +392,14 @@ class NodesApi {
 
   public async $searchNodeByPublicKeyOrAlias(search: string) {
     try {
-      const publicKeySearch = search.replace('%', '') + '%';
-      const aliasSearch = search.replace(/[-_.]/g, ' ').replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((search) => '+' + search + '*').join(' ');
+      const publicKeySearch = search.replace(/[^a-zA-Z0-9]/g, '') + '%';
+      const aliasSearch = search
+        .replace(/[-_.]/g, ' ') // Replace all -_. characters with empty space. Eg: "ln.nicehash" becomes "ln nicehash".  
+        .replace(/[^a-zA-Z0-9 ]/g, '') // Remove all special characters and keep just A to Z, 0 to 9.
+        .split(' ')
+        .filter(key => key.length)
+        .map((search) => '+' + search + '*').join(' ');
+      // %keyword% is wildcard search and can't be indexed so it's slower as the node database grow. keyword% can be indexed but then you can't search for "Nicehash" and get result for ln.nicehash.com. So we use fulltext index for words "ln, nicehash, com" and nicehash* will find it instantly.
       const query = `SELECT public_key, alias, capacity, channels, status FROM nodes WHERE public_key LIKE ? OR MATCH alias_search AGAINST (? IN BOOLEAN MODE) ORDER BY capacity DESC LIMIT 10`;
       const [rows]: any = await DB.query(query, [publicKeySearch, aliasSearch]);
       return rows;
@@ -387,24 +436,24 @@ class NodesApi {
 
         if (!ispList[isp1]) {
           ispList[isp1] = {
-            id: channel.isp1ID.toString(),
+            ids: [channel.isp1ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp1].id.indexOf(channel.isp1ID) === -1) {
-          ispList[isp1].id += ',' + channel.isp1ID.toString();
+        } else if (ispList[isp1].ids.includes(channel.isp1ID) === false) {
+          ispList[isp1].ids.push(channel.isp1ID);
         }
 
         if (!ispList[isp2]) {
           ispList[isp2] = {
-            id: channel.isp2ID.toString(),
+            ids: [channel.isp2ID],
             capacity: 0,
             channels: 0,
             nodes: {},
           };
-        } else if (ispList[isp2].id.indexOf(channel.isp2ID) === -1) {
-          ispList[isp2].id += ',' + channel.isp2ID.toString();
+        } else if (ispList[isp2].ids.includes(channel.isp2ID) === false) {
+          ispList[isp2].ids.push(channel.isp2ID);
         }
         
         ispList[isp1].capacity += channel.capacity;
@@ -414,11 +463,11 @@ class NodesApi {
         ispList[isp2].channels += 1;
         ispList[isp2].nodes[channel.node2PublicKey] = true;
       }
-
+      
       const ispRanking: any[] = [];
       for (const isp of Object.keys(ispList)) {
         ispRanking.push([
-          ispList[isp].id,
+          ispList[isp].ids.sort((a, b) => a - b).join(','),
           isp,
           ispList[isp].capacity,
           ispList[isp].channels,
@@ -512,7 +561,41 @@ class NodesApi {
 
   public async $getNodesPerISP(ISPId: string) {
     try {
-      const query = `
+      let query = `
+        SELECT channels.node1_public_key AS node1PublicKey, isp1.id as isp1ID,
+          channels.node2_public_key AS node2PublicKey, isp2.id as isp2ID
+        FROM channels
+        JOIN nodes node1 ON node1.public_key = channels.node1_public_key
+        JOIN nodes node2 ON node2.public_key = channels.node2_public_key
+        JOIN geo_names isp1 ON isp1.id = node1.as_number
+        JOIN geo_names isp2 ON isp2.id = node2.as_number
+        WHERE channels.status = 1 AND (node1.as_number IN (?) OR node2.as_number IN (?))
+        ORDER BY short_id DESC
+      `;
+
+      const IPSIds = ISPId.split(',');
+      const [rows]: any = await DB.query(query, [IPSIds, IPSIds]);
+      if (!rows || rows.length === 0) {
+        return [];
+      }
+
+      const nodes = {};
+
+      const intISPIds: number[] = [];
+      for (const ispId of IPSIds) {
+        intISPIds.push(parseInt(ispId, 10));
+      }
+
+      for (const channel of rows) {
+        if (intISPIds.includes(channel.isp1ID)) {
+          nodes[channel.node1PublicKey] = true;
+        }
+        if (intISPIds.includes(channel.isp2ID)) {
+          nodes[channel.node2PublicKey] = true;
+        }
+      }
+
+      query = `
         SELECT nodes.public_key, CAST(COALESCE(nodes.capacity, 0) as INT) as capacity, CAST(COALESCE(nodes.channels, 0) as INT) as channels,
           nodes.alias, UNIX_TIMESTAMP(nodes.first_seen) as first_seen, UNIX_TIMESTAMP(nodes.updated_at) as updated_at,
           geo_names_city.names as city, geo_names_country.names as country,
@@ -523,17 +606,18 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
-        WHERE nodes.as_number IN (?)
+        WHERE nodes.public_key IN (?)
         ORDER BY capacity DESC
       `;
 
-      const [rows]: any = await DB.query(query, [ISPId.split(',')]);
-      for (let i = 0; i < rows.length; ++i) {
-        rows[i].country = JSON.parse(rows[i].country);
-        rows[i].city = JSON.parse(rows[i].city);
-        rows[i].subdivision = JSON.parse(rows[i].subdivision);
+      const [rows2]: any = await DB.query(query, [Object.keys(nodes)]);
+      for (let i = 0; i < rows2.length; ++i) {
+        rows2[i].country = JSON.parse(rows2[i].country);
+        rows2[i].city = JSON.parse(rows2[i].city);
+        rows2[i].subdivision = JSON.parse(rows2[i].subdivision);
       }
-      return rows;
+      return rows2;
+
     } catch (e) {
       logger.err(`Cannot get nodes for ISP id ${ISPId}. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
@@ -577,6 +661,11 @@ class NodesApi {
    */
   public async $saveNode(node: ILightningApi.Node): Promise<void> {
     try {
+      // https://github.com/mempool/mempool/issues/3006
+      if ((node.last_update ?? 0) < 1514736061) { // January 1st 2018
+        node.last_update = null;
+      }
+  
       const sockets = (node.addresses?.map(a => a.addr).join(',')) ?? '';
       const query = `INSERT INTO nodes(
           public_key,
@@ -586,10 +675,19 @@ class NodesApi {
           alias_search,
           color,
           sockets,
-          status
+          status,
+          features
         )
-        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1)
-        ON DUPLICATE KEY UPDATE updated_at = FROM_UNIXTIME(?), alias = ?, alias_search = ?, color = ?, sockets = ?, status = 1`;
+        VALUES (?, NOW(), FROM_UNIXTIME(?), ?, ?, ?, ?, 1, ?)
+        ON DUPLICATE KEY UPDATE
+          updated_at = FROM_UNIXTIME(?),
+          alias = ?,
+          alias_search = ?,
+          color = ?,
+          sockets = ?,
+          status = 1,
+          features = ?
+      `;
 
       await DB.query(query, [
         node.pub_key,
@@ -598,11 +696,13 @@ class NodesApi {
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
         node.last_update,
         node.alias,
         this.aliasToSearchText(node.alias),
         node.color,
         sockets,
+        JSON.stringify(node.features),
       ]);
     } catch (e) {
       logger.err('$saveNode() error: ' + (e instanceof Error ? e.message : e));
@@ -638,9 +738,7 @@ class NodesApi {
         )
       `);
       if (result[0].changedRows ?? 0 > 0) {
-        logger.info(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
-      } else {
-        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`);
+        logger.debug(`Marked ${result[0].changedRows} nodes as inactive because they are not in the graph`, logger.tags.ln);
       }
     } catch (e) {
       logger.err('$setNodesInactive() error: ' + (e instanceof Error ? e.message : e));

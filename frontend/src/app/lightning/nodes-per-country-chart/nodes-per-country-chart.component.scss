@@ -32,24 +32,15 @@
   }
 }
 
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
-}
-
 .rank {
-  width: 20%;
+  width: 8%;
   @media (max-width: 576px) {
     display: none
   }
 }
 
 .name {
-  width: 20%;
+  width: 36%;
   @media (max-width: 576px) {
     width: 80%;
     max-width: 150px;
@@ -59,21 +50,21 @@
 }
 
 .share {
-  width: 20%;
+  width: 15%;
   @media (max-width: 576px) {
     display: none
   }
 }
 
 .nodes {
-  width: 20%;
+  width: 15%;
   @media (max-width: 576px) {
     width: 10%;
   }
 }
 
 .capacity {
-  width: 20%;
+  width: 26%;
   @media (max-width: 576px) {
     width: 10%;
     max-width: 100px;
@@ -90,4 +81,9 @@ a:hover .link {
 
 .flag {
   font-size: 20px;
+}
+
+.text-truncate .link {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -21,7 +21,7 @@ export namespace ILightningApi {
   export interface Channel {
     channel_id: string;
     chan_point: string;
-    last_update: number;
+    last_update: number | null;
     node1_pub: string;
     node2_pub: string;
     capacity: string;
@@ -36,11 +36,11 @@ export namespace ILightningApi {
     fee_rate_milli_msat: string;
     disabled: boolean;
     max_htlc_msat: string;
-    last_update: number;
+    last_update: number | null;
   }
 
   export interface Node {
-    last_update: number;
+    last_update: number | null;
     pub_key: string;
     alias: string;
     addresses: {
@@ -49,6 +49,7 @@ export namespace ILightningApi {
     }[];
     color: string;
     features: { [key: number]: Feature };
+    custom_records?: { [type: number]: string };
   }
 
   export interface Info {
@@ -78,8 +79,15 @@ export namespace ILightningApi {
   }
 
   export interface Feature {
+    bit: number;
     name: string;
     is_required: boolean;
     is_known: boolean;
+  }
+
+  export interface ForensicOutput {
+    node?: 1 | 2;
+    type: number;
+    value: number;
   }
 }

@@ -1,25 +1,32 @@
 <div class="container-xl" *ngIf="(channel$ | async) as channel; else skeletonLoader">
-  <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
-  <div class="title-container">
-    <h1 class="mb-0">{{ channel.short_id }}</h1>
-    <span class="tx-link">
-      <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
-      <app-clipboard [text]="channel.id"></app-clipboard>
-    </span>
-  </div>
-  <div class="badges mb-2">
-    <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
-    <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
-    <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2" i18n="status.closed">Closed</span>
-    <app-closing-type *ngIf="channel.closing_reason" [type]="channel.closing_reason"></app-closing-type>
-  </div>
+
+  <ng-container *ngIf="!error">
+    <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.channel">Lightning channel</h5>
+    <div class="title-container">
+      <h1 class="mb-0">{{ channel.short_id }}</h1>
+      <span class="tx-link">
+        <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.id }}</a>
+        <app-clipboard [text]="channel.id"></app-clipboard>
+      </span>
+    </div>
+    <div class="badges mb-2">
+      <span class="badge rounded-pill badge-secondary" *ngIf="channel.status === 0" i18n="status.inactive">Inactive</span>
+      <span class="badge rounded-pill badge-success" *ngIf="channel.status === 1" i18n="status.active">Active</span>
+      <span class="badge rounded-pill badge-danger" *ngIf="channel.status === 2" i18n="status.closed">Closed</span>
+      <app-closing-type *ngIf="channel.closing_reason" [type]="channel.closing_reason"></app-closing-type>
+    </div>
+  </ng-container>
 
   <div class="clearfix"></div>
+
+  <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
+    <span class="text-center">No channel found for ID "{{ channel.short_id }}"</span>
+  </div>
 
   <app-nodes-channels-map *ngIf="!error && (channelGeo$ | async) as channelGeo" [style]="'channelpage'"
     [channel]="channelGeo"></app-nodes-channels-map>
 
-  <div class="box">
+  <div class="box" *ngIf="!error">
 
       <div class="row">
         <div class="col-md">
@@ -48,6 +55,15 @@
                 <td i18n="lightning.capacity">Capacity</td>
                 <td><app-sats [satoshis]="channel.capacity"></app-sats><app-fiat [value]="channel.capacity" digitsInfo="1.0-0"></app-fiat></td>
               </tr>
+              <tr *ngIf="channel.closed_by">
+                <td i18n="lightning.closed_by">Closed by</td>
+                <td>
+                  <a [routerLink]="['/lightning/node' | relativeUrl, channel.closed_by]" >
+                    <ng-container *ngIf="channel.closed_by === channel.node_left.public_key">{{ channel.node_left.alias }}</ng-container>
+                    <ng-container *ngIf="channel.closed_by === channel.node_right.public_key">{{ channel.node_right.alias }}</ng-container>
+                  </a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -56,7 +72,7 @@
 
   <br>
 
-  <div class="row row-cols-1 row-cols-md-2">
+  <div class="row row-cols-1 row-cols-md-2" *ngIf="!error">
     <div class="col">
       <app-channel-box [channel]="channel.node_left"></app-channel-box>
     </div>
@@ -64,6 +80,8 @@
       <app-channel-box [channel]="channel.node_right"></app-channel-box>
     </div>
   </div>
+
+  <app-channel-close-box *ngIf="showCloseBoxes(channel)" [channel]="channel" [left]="channel.node_left" [right]="channel.node_right"></app-channel-close-box>
 
   <br>
 
@@ -92,14 +110,6 @@
 </div>
 
 <br>
-
-<ng-template [ngIf]="error">
-  <div class="text-center">
-    <span i18n="error.general-loading-data">Error loading data.</span>
-    <br><br>
-    <i>{{ error.status }}: {{ error.error }}</i>
-  </div>
-</ng-template>
 
 <ng-template #skeletonLoader>
   <div class="container-xl">

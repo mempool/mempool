@@ -3,7 +3,7 @@ import { EChartsOption, graphic, LineSeriesOption} from 'echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
@@ -32,7 +32,7 @@ export class NodesNetworksChartComponent implements OnInit {
   @Input() widget = false;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -51,7 +51,7 @@ export class NodesNetworksChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private lightningApiService: LightningApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
     private amountShortenerPipe: AmountShortenerPipe,
@@ -65,6 +65,7 @@ export class NodesNetworksChartComponent implements OnInit {
       this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-network:See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -118,7 +119,7 @@ export class NodesNetworksChartComponent implements OnInit {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`Indexing in progess`,
+        text: $localize`Indexing in progress`,
         left: 'center',
         top: 'center',
       };
@@ -130,7 +131,7 @@ export class NodesNetworksChartComponent implements OnInit {
         },
         text: $localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`,
         left: 'center',
-        top: 11,
+        top: 0,
         zlevel: 10,
       };
     }
@@ -161,28 +162,7 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Reachable on Clearnet Only`,
-        showSymbol: false,
-        symbol: 'none',
-        data: data.clearnet_nodes,
-        type: 'line',
-        lineStyle: {
-          width: 2,
-        },
-        areaStyle: {
-          opacity: 0.5,
-        },
-        stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
-          { offset: 0, color: '#FFB300' },
-          { offset: 1, color: '#FFB300AA' },
-        ]),
-        smooth: false,
-      },
-      {
-        zlevel: 1,
-        yAxisIndex: 0,
-        name: $localize`Reachable on Clearnet and Darknet`,
+        name: $localize`Clearnet and Darknet`,
         showSymbol: false,
         symbol: 'none',
         data: data.clearnet_tor_nodes,
@@ -203,7 +183,28 @@ export class NodesNetworksChartComponent implements OnInit {
       {
         zlevel: 1,
         yAxisIndex: 0,
-        name: $localize`Reachable on Darknet Only`,
+        name: $localize`Clearnet Only (IPv4, IPv6)`,
+        showSymbol: false,
+        symbol: 'none',
+        data: data.clearnet_nodes,
+        type: 'line',
+        lineStyle: {
+          width: 2,
+        },
+        areaStyle: {
+          opacity: 0.5,
+        },
+        stack: 'Total',
+        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+          { offset: 0, color: '#FFB300' },
+          { offset: 1, color: '#FFB300AA' },
+        ]),
+        smooth: false,
+      },
+      {
+        zlevel: 1,
+        yAxisIndex: 0,
+        name: $localize`Darknet Only (Tor, I2P, cjdns)`,
         showSymbol: false,
         symbol: 'none',
         data: data.tor_nodes,
@@ -227,8 +228,8 @@ export class NodesNetworksChartComponent implements OnInit {
       title: title,
       animation: false,
       grid: {
-        height: this.widget ? 100 : undefined,
-        top: this.widget ? 10 : 40,
+        height: this.widget ? 90 : undefined,
+        top: this.widget ? 20 : 40,
         bottom: this.widget ? 0 : 70,
         right: (isMobile() && this.widget) ? 35 : this.right,
         left: (isMobile() && this.widget) ? 40 :this.left,
@@ -284,7 +285,7 @@ export class NodesNetworksChartComponent implements OnInit {
         padding: 10,
         data: [
           {
-            name: $localize`Reachable on Darknet Only`,
+            name: $localize`Darknet Only (Tor, I2P, cjdns)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -292,7 +293,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Reachable on Clearnet and Darknet`,
+            name: $localize`Clearnet Only (IPv4, IPv6)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -300,7 +301,7 @@ export class NodesNetworksChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: $localize`Reachable on Clearnet Only`,
+            name: $localize`Clearnet and Darknet`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -317,9 +318,9 @@ export class NodesNetworksChartComponent implements OnInit {
           },
         ],
         selected: this.widget ? undefined : JSON.parse(this.storageService.getValue('nodes_networks_legend'))  ?? {
-          '$localize`Reachable on Darknet Only`': true,
-          '$localize`Reachable on Clearnet Only`': true,
-          '$localize`Reachable on Clearnet and Darknet`': true,
+          '$localize`Darknet Only (Tor, I2P, cjdns)`': true,
+          '$localize`Clearnet Only (IPv4, IPv6)`': true,
+          '$localize`Clearnet and Darknet`': true,
           '$localize`:@@e5d8bb389c702588877f039d72178f219453a72d:Unknown`': true,
         }
       },
@@ -375,7 +376,7 @@ export class NodesNetworksChartComponent implements OnInit {
         // We create dummy duplicated series so when we use the data zoom, the y axis
         // both scales properly
         const invisibleSerie = {...serie};
-        invisibleSerie.name = 'ignored' + Math.random().toString(); 
+        invisibleSerie.name = 'ignored' + Math.random().toString();
         invisibleSerie.stack = 'ignored';
         invisibleSerie.yAxisIndex = 1;
         invisibleSerie.lineStyle = {
@@ -413,7 +414,7 @@ export class NodesNetworksChartComponent implements OnInit {
       }],
     };
 
-    if (isMobile()) {
+    if (isMobile() && this.chartOptions.legend) {
       // @ts-ignore
       this.chartOptions.legend.left = 50;
     }
@@ -442,7 +443,7 @@ export class NodesNetworksChartComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-sizes-weights-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `lightning-nodes-per-network-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';

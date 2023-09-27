@@ -1,14 +1,23 @@
+import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, TransactionExtended, AuditTransaction, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor } from '../mempool.interfaces';
-import { Common } from './common';
+import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag } from '../mempool.interfaces';
+import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
-import { PairingHeap } from '../utils/pairing-heap';
+import { Worker } from 'worker_threads';
+import path from 'path';
+import mempool from './mempool';
+
+const MAX_UINT32 = Math.pow(2, 32) - 1;
 
 class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
+  private txSelectionWorker: Worker | null = null;
+  private rustInitialized: boolean = false;
+  private rustGbtGenerator: GbtGenerator = new GbtGenerator();
 
-  constructor() {}
+  private nextUid: number = 1;
+  private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -31,13 +40,11 @@ class MempoolBlocks {
     return this.mempoolBlockDeltas;
   }
 
-  public updateMempoolBlocks(memPool: { [txid: string]: TransactionExtended }): void {
+  public updateMempoolBlocks(memPool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false): MempoolBlockWithTransactions[] {
     const latestMempool = memPool;
-    const memPoolArray: TransactionExtended[] = [];
+    const memPoolArray: MempoolTransactionExtended[] = [];
     for (const i in latestMempool) {
-      if (latestMempool.hasOwnProperty(i)) {
-        memPoolArray.push(latestMempool[i]);
-      }
+      memPoolArray.push(latestMempool[i]);
     }
     const start = new Date().getTime();
 
@@ -47,17 +54,24 @@ class MempoolBlocks {
       tx.ancestors = [];
       tx.cpfpChecked = false;
       if (!tx.effectiveFeePerVsize) {
-        tx.effectiveFeePerVsize = tx.feePerVsize;
+        tx.effectiveFeePerVsize = tx.adjustedFeePerVsize;
       }
     });
 
     // First sort
-    memPoolArray.sort((a, b) => b.feePerVsize - a.feePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.adjustedFeePerVsize === b.adjustedFeePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.adjustedFeePerVsize - a.adjustedFeePerVsize;
+      }
+    });
 
     // Loop through and traverse all ancestors and sum up all the sizes + fees
     // Pass down size + fee to all unconfirmed children
     let sizes = 0;
-    memPoolArray.forEach((tx, i) => {
+    memPoolArray.forEach((tx) => {
       sizes += tx.weight;
       if (sizes > 4000000 * 8) {
         return;
@@ -66,46 +80,98 @@ class MempoolBlocks {
     });
 
     // Final sort, by effective fee
-    memPoolArray.sort((a, b) => b.effectiveFeePerVsize - a.effectiveFeePerVsize);
+    memPoolArray.sort((a, b) => {
+      if (a.effectiveFeePerVsize === b.effectiveFeePerVsize) {
+        // tie-break by lexicographic txid order for stability
+        return a.txid < b.txid ? -1 : 1;
+      } else {
+        return b.effectiveFeePerVsize - a.effectiveFeePerVsize;
+      }
+    });
 
     const end = new Date().getTime();
     const time = end - start;
     logger.debug('Mempool blocks calculated in ' + time / 1000 + ' seconds');
 
-    const { blocks, deltas } = this.calculateMempoolBlocks(memPoolArray, this.mempoolBlocks);
+    const blocks = this.calculateMempoolBlocks(memPoolArray);
 
-    this.mempoolBlocks = blocks;
-    this.mempoolBlockDeltas = deltas;
+    if (saveResults) {
+      const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, blocks);
+      this.mempoolBlocks = blocks;
+      this.mempoolBlockDeltas = deltas;
+    }
+
+    return blocks;
   }
 
-  private calculateMempoolBlocks(transactionsSorted: TransactionExtended[], prevBlocks: MempoolBlockWithTransactions[]):
-    { blocks: MempoolBlockWithTransactions[], deltas: MempoolBlockDelta[] } {
+  private calculateMempoolBlocks(transactionsSorted: MempoolTransactionExtended[]): MempoolBlockWithTransactions[] {
     const mempoolBlocks: MempoolBlockWithTransactions[] = [];
-    const mempoolBlockDeltas: MempoolBlockDelta[] = [];
-    let blockWeight = 0;
+    let feeStatsCalculator: OnlineFeeStatsCalculator = new OnlineFeeStatsCalculator(config.MEMPOOL.BLOCK_WEIGHT_UNITS);
+    let onlineStats = false;
     let blockSize = 0;
-    let transactions: TransactionExtended[] = [];
-    transactionsSorted.forEach((tx) => {
+    let blockWeight = 0;
+    let blockVsize = 0;
+    let blockFees = 0;
+    const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
+    let transactionIds: string[] = [];
+    let transactions: MempoolTransactionExtended[] = [];
+    transactionsSorted.forEach((tx, index) => {
       if (blockWeight + tx.weight <= config.MEMPOOL.BLOCK_WEIGHT_UNITS
         || mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
         blockWeight += tx.weight;
+        blockVsize += tx.vsize;
         blockSize += tx.size;
-        transactions.push(tx);
+        blockFees += tx.fee;
+        if (blockVsize <= sizeLimit) {
+          transactions.push(tx);
+        }
+        transactionIds.push(tx.txid);
+        if (onlineStats) {
+          feeStatsCalculator.processNext(tx);
+        }
       } else {
-        mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+        mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees));
+        blockVsize = 0;
+        tx.position = {
+          block: mempoolBlocks.length,
+          vsize: blockVsize + (tx.vsize / 2),
+        };
+
+        if (mempoolBlocks.length === config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT - 1) {
+          const stackWeight = transactionsSorted.slice(index).reduce((total, tx) => total + (tx.weight || 0), 0);
+          if (stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
+            onlineStats = true;
+            feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
+            feeStatsCalculator.processNext(tx);
+          }
+        }
+
+        blockVsize += tx.vsize;
         blockWeight = tx.weight;
         blockSize = tx.size;
+        blockFees = tx.fee;
+        transactionIds = [tx.txid];
         transactions = [tx];
       }
     });
     if (transactions.length) {
-      mempoolBlocks.push(this.dataToMempoolBlocks(transactions, blockSize, blockWeight, mempoolBlocks.length));
+      const feeStats = onlineStats ? feeStatsCalculator.getRawFeeStats() : undefined;
+      mempoolBlocks.push(this.dataToMempoolBlocks(transactionIds, transactions, blockSize, blockWeight, blockFees, feeStats));
     }
 
-    // Calculate change from previous block states
+    return mempoolBlocks;
+  }
+
+  private calculateMempoolDeltas(prevBlocks: MempoolBlockWithTransactions[], mempoolBlocks: MempoolBlockWithTransactions[]): MempoolBlockDelta[] {
+    const mempoolBlockDeltas: MempoolBlockDelta[] = [];
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
       let added: TransactionStripped[] = [];
       let removed: string[] = [];
+      const changed: { txid: string, rate: number | undefined, acc: boolean | undefined }[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
         added = mempoolBlocks[i].transactions;
       } else if (!mempoolBlocks[i] && prevBlocks[i]) {
@@ -114,7 +180,7 @@ class MempoolBlocks {
         const prevIds = {};
         const newIds = {};
         prevBlocks[i].transactions.forEach(tx => {
-          prevIds[tx.txid] = true;
+          prevIds[tx.txid] = tx;
         });
         mempoolBlocks[i].transactions.forEach(tx => {
           newIds[tx.txid] = true;
@@ -127,315 +193,490 @@ class MempoolBlocks {
         mempoolBlocks[i].transactions.forEach(tx => {
           if (!prevIds[tx.txid]) {
             added.push(tx);
+          } else if (tx.rate !== prevIds[tx.txid].rate || tx.acc !== prevIds[tx.txid].acc) {
+            changed.push({ txid: tx.txid, rate: tx.rate, acc: tx.acc });
           }
         });
       }
       mempoolBlockDeltas.push({
         added,
-        removed
+        removed,
+        changed,
+      });
+    }
+    return mempoolBlockDeltas;
+  }
+
+  public async $makeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    const start = Date.now();
+
+    // reset mempool short ids
+    if (saveResults) {
+      this.resetUids();
+    }
+    // set missing short ids
+    for (const tx of Object.values(newMempool)) {
+      this.setUid(tx, !saveResults);
+    }
+
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+
+    // prepare a stripped down version of the mempool with only the minimum necessary data
+    // to reduce the overhead of passing this data to the worker thread
+    const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
+    Object.values(newMempool).forEach(entry => {
+      if (entry.uid !== null && entry.uid !== undefined) {
+        const stripped = {
+          uid: entry.uid,
+          fee: entry.fee + (useAccelerations && (!accelerationPool || accelerations[entry.txid]?.pools?.includes(accelerationPool)) ? (accelerations[entry.txid]?.feeDelta || 0) : 0),
+          weight: (entry.adjustedVsize * 4),
+          sigops: entry.sigops,
+          feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
+          effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
+          inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[],
+        };
+        strippedMempool.set(entry.uid, stripped);
+      }
+    });
+
+    // (re)initialize tx selection worker thread
+    if (!this.txSelectionWorker) {
+      this.txSelectionWorker = new Worker(path.resolve(__dirname, './tx-selection-worker.js'));
+      // if the thread throws an unexpected error, or exits for any other reason,
+      // reset worker state so that it will be re-initialized on the next run
+      this.txSelectionWorker.once('error', () => {
+        this.txSelectionWorker = null;
+      });
+      this.txSelectionWorker.once('exit', () => {
+        this.txSelectionWorker = null;
       });
     }
 
-    return {
-      blocks: mempoolBlocks,
-      deltas: mempoolBlockDeltas
-    };
+    // run the block construction algorithm in a separate thread, and wait for a result
+    let threadErrorListener;
+    try {
+      const workerResultPromise = new Promise<{ blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]> }>((resolve, reject) => {
+        threadErrorListener = reject;
+        this.txSelectionWorker?.once('message', (result): void => {
+          resolve(result);
+        });
+        this.txSelectionWorker?.once('error', reject);
+      });
+      this.txSelectionWorker.postMessage({ type: 'set', mempool: strippedMempool });
+      const { blocks, rates, clusters } = this.convertResultTxids(await workerResultPromise);
+
+      // clean up thread error listener
+      this.txSelectionWorker?.removeListener('error', threadErrorListener);
+
+      const processed = this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), accelerations, accelerationPool, saveResults);
+
+      logger.debug(`makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+
+      return processed;
+    } catch (e) {
+      logger.err('makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+    }
+    return this.mempoolBlocks;
   }
 
-  /*
-  * Build projected mempool blocks using an approximation of the transaction selection algorithm from Bitcoin Core
-  * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
-  *
-  * blockLimit: number of blocks to build in total.
-  * weightLimit: maximum weight of transactions to consider using the selection algorithm.
-  *              if weightLimit is significantly lower than the mempool size, results may start to diverge from getBlockTemplate 
-  * condenseRest: whether to ignore excess transactions or append them to the final block.
-  */
-  public makeBlockTemplates(mempool: { [txid: string]: TransactionExtended }, blockLimit: number, weightLimit: number | null = null, condenseRest = false): MempoolBlockWithTransactions[] {
-    const start = Date.now();
-    const auditPool: { [txid: string]: AuditTransaction } = {};
-    const mempoolArray: AuditTransaction[] = [];
-    const restOfArray: TransactionExtended[] = [];
-    
-    let weight = 0;
-    const maxWeight = weightLimit ? Math.max(4_000_000 * blockLimit, weightLimit) : Infinity;
-    // grab the top feerate txs up to maxWeight
-    Object.values(mempool).sort((a, b) => b.feePerVsize - a.feePerVsize).forEach(tx => {
-      weight += tx.weight;
-      if (weight >= maxWeight) {
-        restOfArray.push(tx);
-        return;
-      }
-      // initializing everything up front helps V8 optimize property access later
-      auditPool[tx.txid] = {
-        txid: tx.txid,
-        fee: tx.fee,
-        size: tx.size,
-        weight: tx.weight,
-        feePerVsize: tx.feePerVsize,
-        vin: tx.vin,
-        relativesSet: false,
-        ancestorMap: new Map<string, AuditTransaction>(),
-        children: new Set<AuditTransaction>(),
-        ancestorFee: 0,
-        ancestorWeight: 0,
-        score: 0,
-        used: false,
-        modified: false,
-        modifiedNode: null,
-      }
-      mempoolArray.push(auditPool[tx.txid]);
-    })
+  public async $updateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
+    if (!this.txSelectionWorker) {
+      // need to reset the worker
+      await this.$makeBlockTemplates(newMempool, saveResults, useAccelerations);
+      return;
+    }
 
-    // Build relatives graph & calculate ancestor scores
-    for (const tx of mempoolArray) {
-      if (!tx.relativesSet) {
-        this.setRelatives(tx, auditPool);
+    const start = Date.now();
+
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const addedAndChanged: MempoolTransactionExtended[] = useAccelerations ? accelerationDelta.map(txid => newMempool[txid]).filter(tx => tx != null).concat(added) : added;
+
+    for (const tx of addedAndChanged) {
+      this.setUid(tx, true);
+    }
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => uid != null) as number[];
+
+    // prepare a stripped down version of the mempool with only the minimum necessary data
+    // to reduce the overhead of passing this data to the worker thread
+    const addedStripped: CompactThreadTransaction[] = addedAndChanged.filter(entry => entry.uid != null).map(entry => {
+      return {
+        uid: entry.uid || 0,
+        fee: entry.fee + (useAccelerations ? (accelerations[entry.txid]?.feeDelta || 0) : 0),
+        weight: (entry.adjustedVsize * 4),
+        sigops: entry.sigops,
+        feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
+        effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
+        inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[],
+      };
+    });
+
+    // run the block construction algorithm in a separate thread, and wait for a result
+    let threadErrorListener;
+    try {
+      const workerResultPromise = new Promise<{ blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]> }>((resolve, reject) => {
+        threadErrorListener = reject;
+        this.txSelectionWorker?.once('message', (result): void => {
+          resolve(result);
+        });
+        this.txSelectionWorker?.once('error', reject);
+      });
+      this.txSelectionWorker.postMessage({ type: 'update', added: addedStripped, removed: removedUids });
+      const { blocks, rates, clusters } = this.convertResultTxids(await workerResultPromise);
+
+      this.removeUids(removedUids);
+
+      // clean up thread error listener
+      this.txSelectionWorker?.removeListener('error', threadErrorListener);
+
+      this.processBlockTemplates(newMempool, blocks, null, Object.entries(rates), Object.values(clusters), accelerations, null, saveResults);
+      logger.debug(`updateBlockTemplates completed in ${(Date.now() - start) / 1000} seconds`);
+    } catch (e) {
+      logger.err('updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  private resetRustGbt(): void {
+    this.rustInitialized = false;
+    this.rustGbtGenerator = new GbtGenerator();
+  }
+
+  public async $rustMakeBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, saveResults: boolean = false, useAccelerations: boolean = false, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    const start = Date.now();
+
+    // reset mempool short ids
+    if (saveResults) {
+      this.resetUids();
+    }
+    // set missing short ids
+    for (const tx of Object.values(newMempool)) {
+      this.setUid(tx, !saveResults);
+    }
+    // set short ids for transaction inputs
+    for (const tx of Object.values(newMempool)) {
+      tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
+    }
+
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
+    const convertedAccelerations = acceleratedList.map(acc => {
+      return {
+        uid: this.getUid(newMempool[acc.txid]),
+        delta: acc.feeDelta,
+      };
+    });
+
+    // run the block construction algorithm in a separate thread, and wait for a result
+    const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
+    try {
+      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
+        await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
+      );
+      if (saveResults) {
+        this.rustInitialized = true;
+      }
+      const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, saveResults);
+      logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+      return processed;
+    } catch (e) {
+      logger.err('RUST makeBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+      if (saveResults) {
+        this.resetRustGbt();
+      }
+    }
+    return this.mempoolBlocks;
+  }
+
+  public async $oneOffRustBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    return this.$rustMakeBlockTemplates(newMempool, false, useAccelerations, accelerationPool);
+  }
+
+  public async $rustUpdateBlockTemplates(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
+    // GBT optimization requires that uids never get too sparse
+    // as a sanity check, we should also explicitly prevent uint32 uid overflow
+    if (this.nextUid + added.length >= Math.min(Math.max(262144, 2 * mempoolSize), MAX_UINT32)) {
+      this.resetRustGbt();
+    }
+
+    if (!this.rustInitialized) {
+      // need to reset the worker
+      return this.$rustMakeBlockTemplates(newMempool, true, useAccelerations, accelerationPool);
+    }
+
+    const start = Date.now();
+    // set missing short ids
+    for (const tx of added) {
+      this.setUid(tx, true);
+    }
+    // set short ids for transaction inputs
+    for (const tx of added) {
+      tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
+    }
+    const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
+
+    const accelerations = useAccelerations ? mempool.getAccelerations() : {};
+    const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
+    const convertedAccelerations = acceleratedList.map(acc => {
+      return {
+        uid: this.getUid(newMempool[acc.txid]),
+        delta: acc.feeDelta,
+      };
+    });
+
+    // run the block construction algorithm in a separate thread, and wait for a result
+    try {
+      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
+        await this.rustGbtGenerator.update(
+          added as RustThreadTransaction[],
+          removedUids,
+          convertedAccelerations as RustThreadAcceleration[],
+          this.nextUid,
+        ),
+      );
+      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
+      if (mempoolSize !== resultMempoolSize) {
+        throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
+      } else {
+        const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
+        this.removeUids(removedUids);
+        logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
+        return processed;
+      }
+    } catch (e) {
+      logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
+      this.resetRustGbt();
+      return this.mempoolBlocks;
+    }
+  }
+
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+    for (const [txid, rate] of rates) {
+      if (txid in mempool) {
+        mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
+        mempool[txid].effectiveFeePerVsize = rate;
+        mempool[txid].cpfpChecked = false;
       }
     }
 
-    // Sort by descending ancestor score
-    mempoolArray.sort((a, b) => (b.score || 0) - (a.score || 0));
-
-    // Build blocks by greedily choosing the highest feerate package
-    // (i.e. the package rooted in the transaction with the best ancestor score)
-    const blocks: MempoolBlockWithTransactions[] = [];
-    let blockWeight = 4000;
-    let blockSize = 0;
-    let transactions: AuditTransaction[] = [];
-    const modified: PairingHeap<AuditTransaction> = new PairingHeap((a, b): boolean => (a.score || 0) > (b.score || 0));
-    let overflow: AuditTransaction[] = [];
-    let failures = 0;
-    let top = 0;
-    while ((top < mempoolArray.length || !modified.isEmpty()) && (condenseRest || blocks.length < blockLimit)) {
-      // skip invalid transactions
-      while (top < mempoolArray.length && (mempoolArray[top].used || mempoolArray[top].modified)) {
-        top++;
-      }
-
-      // Select best next package
-      let nextTx;
-      const nextPoolTx = mempoolArray[top];
-      const nextModifiedTx = modified.peek();
-      if (nextPoolTx && (!nextModifiedTx || (nextPoolTx.score || 0) > (nextModifiedTx.score || 0))) {
-        nextTx = nextPoolTx;
-        top++;
+    const lastBlockIndex = blocks.length - 1;
+    let hasBlockStack = blocks.length >= 8;
+    let stackWeight;
+    let feeStatsCalculator: OnlineFeeStatsCalculator | void;
+    if (hasBlockStack) {
+      if (blockWeights && blockWeights[7] !== null) {
+        stackWeight = blockWeights[7];
       } else {
-        modified.pop();
-        if (nextModifiedTx) {
-          nextTx = nextModifiedTx;
-          nextTx.modifiedNode = undefined;
-        }
+        stackWeight = blocks[lastBlockIndex].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
       }
+      hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
+      feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
+    }
 
-      if (nextTx && !nextTx?.used) {
-        // Check if the package fits into this block
-        if (blockWeight + nextTx.ancestorWeight < config.MEMPOOL.BLOCK_WEIGHT_UNITS) {
-          blockWeight += nextTx.ancestorWeight;
-          const ancestors: AuditTransaction[] = Array.from(nextTx.ancestorMap.values());
-          // sort ancestors by dependency graph (equivalent to sorting by ascending ancestor count)
-          const sortedTxSet = [...ancestors.sort((a, b) => { return (a.ancestorMap.size || 0) - (b.ancestorMap.size || 0); }), nextTx];
-          const effectiveFeeRate = nextTx.ancestorFee / (nextTx.ancestorWeight / 4);
-          sortedTxSet.forEach((ancestor, i, arr) => {
-            const mempoolTx = mempool[ancestor.txid];
-            if (ancestor && !ancestor?.used) {
-              ancestor.used = true;
-              // update original copy of this tx with effective fee rate & relatives data
-              mempoolTx.effectiveFeePerVsize = effectiveFeeRate;
-              mempoolTx.ancestors = (Array.from(ancestor.ancestorMap?.values()) as AuditTransaction[]).map((a) => {
-                return {
-                  txid: a.txid,
-                  fee: a.fee,
-                  weight: a.weight,
-                }
-              })
-              if (i < arr.length - 1) {
-                mempoolTx.bestDescendant = {
-                  txid: arr[arr.length - 1].txid,
-                  fee: arr[arr.length - 1].fee,
-                  weight: arr[arr.length - 1].weight,
-                };
+    for (const cluster of clusters) {
+      for (const memberTxid of cluster) {
+        const mempoolTx = mempool[memberTxid];
+        if (mempoolTx) {
+          const ancestors: Ancestor[] = [];
+          const descendants: Ancestor[] = [];
+          let matched = false;
+          cluster.forEach(txid => {
+            if (txid === memberTxid) {
+              matched = true;
+            } else {
+              const relative = {
+                txid: txid,
+                fee: mempool[txid].fee,
+                weight: (mempool[txid].adjustedVsize * 4),
+              };
+              if (matched) {
+                descendants.push(relative);
+                mempoolTx.lastBoosted = Math.max(mempoolTx.lastBoosted || 0, mempool[txid].firstSeen || 0);
+              } else {
+                ancestors.push(relative);
               }
-              transactions.push(ancestor);
-              blockSize += ancestor.size;
             }
           });
-
-          // remove these as valid package ancestors for any descendants remaining in the mempool
-          if (sortedTxSet.length) {
-            sortedTxSet.forEach(tx => {
-              this.updateDescendants(tx, auditPool, modified);
-            });
+          if (mempoolTx.ancestors?.length !== ancestors.length || mempoolTx.descendants?.length !== descendants.length) {
+            mempoolTx.cpfpDirty = true;
           }
-
-          failures = 0;
-        } else {
-          // hold this package in an overflow list while we check for smaller options
-          overflow.push(nextTx);
-          failures++;
+          Object.assign(mempoolTx, {ancestors, descendants, bestDescendant: null, cpfpChecked: true});
         }
       }
+    }
 
-      // this block is full
-      const exceededPackageTries = failures > 1000 && blockWeight > (config.MEMPOOL.BLOCK_WEIGHT_UNITS - 4000);
-      if (exceededPackageTries && (!condenseRest || blocks.length < blockLimit - 1)) {
-        // construct this block
-        if (transactions.length) {
-          blocks.push(this.dataToMempoolBlocks(transactions.map(t => mempool[t.txid]), blockSize, blockWeight, blocks.length));
-        }
-        // reset for the next block
-        transactions = [];
-        blockSize = 0;
-        blockWeight = 4000;
+    const isAccelerated : { [txid: string]: boolean } = {};
 
-        // 'overflow' packages didn't fit in this block, but are valid candidates for the next
-        for (const overflowTx of overflow.reverse()) {
-          if (overflowTx.modified) {
-            overflowTx.modifiedNode = modified.add(overflowTx);
+    const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
+    // update this thread's mempool with the results
+    let mempoolTx: MempoolTransactionExtended;
+    const mempoolBlocks: MempoolBlockWithTransactions[] = blocks.map((block, blockIndex) => {
+      let totalSize = 0;
+      let totalVsize = 0;
+      let totalWeight = 0;
+      let totalFees = 0;
+      const transactions: MempoolTransactionExtended[] = [];
+      for (const txid of block) {
+        if (txid) {
+          mempoolTx = mempool[txid];
+          // save position in projected blocks
+          mempoolTx.position = {
+            block: blockIndex,
+            vsize: totalVsize + (mempoolTx.vsize / 2),
+          };
+          if (!mempoolTx.cpfpChecked) {
+            if (mempoolTx.ancestors?.length) {
+              mempoolTx.ancestors = [];
+            }
+            if (mempoolTx.descendants?.length) {
+              mempoolTx.descendants = [];
+            }
+            mempoolTx.bestDescendant = null;
+            mempoolTx.cpfpChecked = true;
+          }
+
+          const acceleration = accelerations[txid];
+          if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {
+            if (!mempoolTx.acceleration) {
+              mempoolTx.cpfpDirty = true;
+            }
+            mempoolTx.acceleration = true;
+            for (const ancestor of mempoolTx.ancestors || []) {
+              if (!mempool[ancestor.txid].acceleration) {
+                mempool[ancestor.txid].cpfpDirty = true;
+              }
+              mempool[ancestor.txid].acceleration = true;
+              isAccelerated[ancestor.txid] = true;
+            }
           } else {
-            top--;
-            mempoolArray[top] = overflowTx;
+            if (mempoolTx.acceleration) {
+              mempoolTx.cpfpDirty = true;
+            }
+            delete mempoolTx.acceleration;
+          }
+
+          // online calculation of stack-of-blocks fee stats
+          if (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) {
+            feeStatsCalculator.processNext(mempoolTx);
+          }
+
+          totalSize += mempoolTx.size;
+          totalVsize += mempoolTx.vsize;
+          totalWeight += mempoolTx.weight;
+          totalFees += mempoolTx.fee;
+
+          if (totalVsize <= sizeLimit) {
+            transactions.push(mempoolTx);
           }
         }
-        overflow = [];
       }
-    }
-    if (condenseRest) {
-      // pack any leftover transactions into the last block
-      for (const tx of overflow) {
-        if (!tx || tx?.used) {
-          continue;
-        }
-        blockWeight += tx.weight;
-        blockSize += tx.size;
-        transactions.push(tx);
-        tx.used = true;
-      }
-      const blockTransactions = transactions.map(t => mempool[t.txid])
-      restOfArray.forEach(tx => {
-        blockWeight += tx.weight;
-        blockSize += tx.size;
-        blockTransactions.push(tx);
-      });
-      if (blockTransactions.length) {
-        blocks.push(this.dataToMempoolBlocks(blockTransactions, blockSize, blockWeight, blocks.length));
-      }
-      transactions = [];
-    } else if (transactions.length) {
-      blocks.push(this.dataToMempoolBlocks(transactions.map(t => mempool[t.txid]), blockSize, blockWeight, blocks.length));
-    }
-
-    const end = Date.now();
-    const time = end - start;
-    logger.debug('Mempool templates calculated in ' + time / 1000 + ' seconds');
-
-    return blocks;
-  }
-
-  // traverse in-mempool ancestors
-  // recursion unavoidable, but should be limited to depth < 25 by mempool policy
-  public setRelatives(
-    tx: AuditTransaction,
-    mempool: { [txid: string]: AuditTransaction },
-  ): void {
-    for (const parent of tx.vin) {
-      const parentTx = mempool[parent.txid];
-      if (parentTx && !tx.ancestorMap!.has(parent.txid)) {
-        tx.ancestorMap.set(parent.txid, parentTx);
-        parentTx.children.add(tx);
-        // visit each node only once
-        if (!parentTx.relativesSet) {
-          this.setRelatives(parentTx, mempool);
-        }
-        parentTx.ancestorMap.forEach((ancestor) => {
-          tx.ancestorMap.set(ancestor.txid, ancestor);
-        });
-      }
-    };
-    tx.ancestorFee = tx.fee || 0;
-    tx.ancestorWeight = tx.weight || 0;
-    tx.ancestorMap.forEach((ancestor) => {
-      tx.ancestorFee += ancestor.fee;
-      tx.ancestorWeight += ancestor.weight;
+      return this.dataToMempoolBlocks(
+        block,
+        transactions,
+        totalSize,
+        totalWeight,
+        totalFees,
+        (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) ? feeStatsCalculator.getRawFeeStats() : undefined,
+      );
     });
-    tx.score = tx.ancestorFee / (tx.ancestorWeight || 1);
-    tx.relativesSet = true;
+
+    if (saveResults) {
+      const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
+      this.mempoolBlocks = mempoolBlocks;
+      this.mempoolBlockDeltas = deltas;
+    }
+
+    return mempoolBlocks;
   }
 
-  // iterate over remaining descendants, removing the root as a valid ancestor & updating the ancestor score
-  // avoids recursion to limit call stack depth
-  private updateDescendants(
-    rootTx: AuditTransaction,
-    mempool: { [txid: string]: AuditTransaction },
-    modified: PairingHeap<AuditTransaction>,
-  ): void {
-    const descendantSet: Set<AuditTransaction> = new Set();
-    // stack of nodes left to visit
-    const descendants: AuditTransaction[] = [];
-    let descendantTx;
-    let ancestorIndex;
-    let tmpScore;
-    rootTx.children.forEach(childTx => {
-      if (!descendantSet.has(childTx)) {
-        descendants.push(childTx);
-        descendantSet.add(childTx);
-      }
-    });
-    while (descendants.length) {
-      descendantTx = descendants.pop();
-      if (descendantTx && descendantTx.ancestorMap && descendantTx.ancestorMap.has(rootTx.txid)) {
-        // remove tx as ancestor
-        descendantTx.ancestorMap.delete(rootTx.txid);
-        descendantTx.ancestorFee -= rootTx.fee;
-        descendantTx.ancestorWeight -= rootTx.weight;
-        tmpScore = descendantTx.score;
-        descendantTx.score = descendantTx.ancestorFee / descendantTx.ancestorWeight;
-
-        if (!descendantTx.modifiedNode) {
-          descendantTx.modified = true;
-          descendantTx.modifiedNode = modified.add(descendantTx);
-        } else {
-          // rebalance modified heap if score has changed
-          if (descendantTx.score < tmpScore) {
-            modified.decreasePriority(descendantTx.modifiedNode);
-          } else if (descendantTx.score > tmpScore) {
-            modified.increasePriority(descendantTx.modifiedNode);
-          }
-        }
-
-        // add this node's children to the stack
-        descendantTx.children.forEach(childTx => {
-          // visit each node only once
-          if (!descendantSet.has(childTx)) {
-            descendants.push(childTx);
-            descendantSet.add(childTx);
-          }
-        });
-      }
-    }
-  }
-
-  private dataToMempoolBlocks(transactions: TransactionExtended[],
-    blockSize: number, blockWeight: number, blocksIndex: number): MempoolBlockWithTransactions {
-    let rangeLength = 4;
-    if (blocksIndex === 0) {
-      rangeLength = 8;
-    }
-    if (transactions.length > 4000) {
-      rangeLength = 6;
-    } else if (transactions.length > 10000) {
-      rangeLength = 8;
+  private dataToMempoolBlocks(transactionIds: string[], transactions: MempoolTransactionExtended[], totalSize: number, totalWeight: number, totalFees: number, feeStats?: EffectiveFeeStats ): MempoolBlockWithTransactions {
+    if (!feeStats) {
+      feeStats = Common.calcEffectiveFeeStatistics(transactions.filter(tx => !tx.acceleration));
     }
     return {
-      blockSize: blockSize,
-      blockVSize: blockWeight / 4,
-      nTx: transactions.length,
-      totalFees: transactions.reduce((acc, cur) => acc + cur.fee, 0),
-      medianFee: Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
-      feeRange: Common.getFeesInRange(transactions, rangeLength),
-      transactionIds: transactions.map((tx) => tx.txid),
+      blockSize: totalSize,
+      blockVSize: (totalWeight / 4), // fractional vsize to avoid rounding errors
+      nTx: transactionIds.length,
+      totalFees: totalFees,
+      medianFee: feeStats.medianFee, // Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
+      feeRange: feeStats.feeRange, //Common.getFeesInRange(transactions, rangeLength),
+      transactionIds: transactionIds,
       transactions: transactions.map((tx) => Common.stripTransaction(tx)),
     };
+  }
+
+  private resetUids(): void {
+    this.uidMap.clear();
+    this.nextUid = 1;
+  }
+
+  private setUid(tx: MempoolTransactionExtended, skipSet = false): number {
+    if (tx.uid === null || tx.uid === undefined || !skipSet) {
+      const uid = this.nextUid;
+      this.nextUid++;
+      this.uidMap.set(uid, tx.txid);
+      tx.uid = uid;
+      return uid;
+    } else {
+      return tx.uid;
+    }
+  }
+
+  private getUid(tx: MempoolTransactionExtended): number | void {
+    if (tx?.uid !== null && tx?.uid !== undefined && this.uidMap.has(tx.uid)) {
+      return tx.uid;
+    }
+  }
+
+  private removeUids(uids: number[]): void {
+    for (const uid of uids) {
+      this.uidMap.delete(uid);
+    }
+  }
+
+  private convertResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]>})
+    : { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
+    const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
+      return this.uidMap.get(uid) || '';
+    }));
+    const convertedRates = {};
+    for (const rateUid of rates.keys()) {
+      const rateTxid = this.uidMap.get(rateUid);
+      if (rateTxid) {
+        convertedRates[rateTxid] = rates.get(rateUid);
+      }
+    }
+    const convertedClusters = {};
+    for (const rootUid of clusters.keys()) {
+      const rootTxid = this.uidMap.get(rootUid);
+      if (rootTxid) {
+        const members = clusters.get(rootUid)?.map(uid => {
+          return this.uidMap.get(uid);
+        });
+        convertedClusters[rootTxid] = members;
+      }
+    }
+    return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
+  }
+
+  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters }: GbtResult)
+    : { blocks: string[][], blockWeights: number[], rates: [string, number][], clusters: string[][] } {
+    const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
+      const txid = this.uidMap.get(uid);
+      if (txid !== undefined) {
+        return txid;
+      } else {
+        throw new Error('GBT returned a block containing a transaction with unknown uid');
+      }
+    }));
+    const convertedRates: [string, number][] = [];
+    for (const [rateUid, rate] of rates) {
+      const rateTxid = this.uidMap.get(rateUid) as string;
+      convertedRates.push([rateTxid, rate]);
+    }
+    const convertedClusters: string[][] = [];
+    for (const cluster of clusters) {
+      convertedClusters.push(cluster.map(uid => this.uidMap.get(uid)) as string[]);
+    }
+    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters };
   }
 }
 

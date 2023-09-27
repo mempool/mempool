@@ -8,6 +8,11 @@
 	flex-wrap: wrap;
 }
 
+.node-id {
+  width: 0;
+  flex-grow: 1;
+}
+
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
@@ -71,4 +76,52 @@ app-fiat {
   h1 > .skeleton-loader {
     height: 28px !important;
   };
+}
+
+.details {
+
+  .detail-section {
+    margin-bottom: 1.5rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .tlv-type {
+    font-size: 12px;
+    color: #ffffff66;
+  }
+
+  .tlv-payload {
+    font-size: 12px;
+    width: 100%;
+    word-break: break-all;
+    white-space: normal;
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  .compact-lease {
+    word-break: break-all;
+    white-space: normal;
+    font-family: "Courier New", Courier, monospace;
+  }
+}
+
+.separator {
+  margin: 0 0.25em;
+  color: slategrey;
+}
+
+.claim-btn {
+  max-height: 32px;
+  @media (min-width: 850px) {
+    display: none;
+  }
+}
+
+.claim-btn-mobile {
+  max-height: 32px;
+  @media (max-width: 850px) {
+    display: none;
+  }
 }

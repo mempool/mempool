@@ -10,6 +10,7 @@
   padding: 0px 15px;
   width: 100%;
   height: calc(100% - 140px);
+  padding-bottom: 20px;
   @media (max-width: 992px) {
     height: calc(100% - 190px);
   };
@@ -31,40 +32,6 @@
   @media (max-width: 485px) {
     max-height: 200px;
   }
-}
-
-.formRadioGroup {
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  @media (min-width: 991px) {
-    position: relative;
-    top: -100px;
-  }
-  @media (min-width: 830px) and (max-width: 991px) {
-    position: relative;
-    top: 0px;
-  }
-  @media (min-width: 830px) {
-    flex-direction: row;
-    float: right;
-    margin-top: 0px;
-  }
-  .btn-sm {
-    font-size: 9px;
-    @media (min-width: 830px) {
-      font-size: 14px;
-    }
-  }
-}
-
-.bottom-padding {
-  @media (max-width: 992px) {
-    padding-bottom: 65px
-  };
-  @media (max-width: 576px) {
-    padding-bottom: 65px
-  };
 }
 
 @media (max-width: 767.98px) {
@@ -138,4 +105,20 @@
   display: block;
   max-width: 80px;
   margin: 15px auto 3px;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+td {
+  .difference {
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
 }

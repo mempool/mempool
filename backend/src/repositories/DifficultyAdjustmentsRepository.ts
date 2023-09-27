@@ -1,5 +1,4 @@
 import { Common } from '../api/common';
-import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import { IndexedDifficultyAdjustment } from '../mempool.interfaces';
@@ -21,9 +20,9 @@ class DifficultyAdjustmentsRepository {
       await DB.query(query, params);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
-        logger.debug(`Cannot save difficulty adjustment at block ${adjustment.height}, already indexed, ignoring`);
+        logger.debug(`Cannot save difficulty adjustment at block ${adjustment.height}, already indexed, ignoring`, logger.tags.mining);
       } else {
-        logger.err(`Cannot save difficulty adjustment at block ${adjustment.height}. Reason: ${e instanceof Error ? e.message : e}`);
+        logger.err(`Cannot save difficulty adjustment at block ${adjustment.height}. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
         throw e;
       }
     }
@@ -55,7 +54,7 @@ class DifficultyAdjustmentsRepository {
       const [rows] = await DB.query(query);
       return rows as IndexedDifficultyAdjustment[];
     } catch (e) {
-      logger.err(`Cannot get difficulty adjustments from the database. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get difficulty adjustments from the database. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -84,7 +83,7 @@ class DifficultyAdjustmentsRepository {
       const [rows] = await DB.query(query);
       return rows as IndexedDifficultyAdjustment[];
     } catch (e) {
-      logger.err(`Cannot get difficulty adjustments from the database. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get difficulty adjustments from the database. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
@@ -94,27 +93,27 @@ class DifficultyAdjustmentsRepository {
       const [rows]: any[] = await DB.query(`SELECT height FROM difficulty_adjustments`);
       return rows.map(block => block.height);
     } catch (e: any) {
-      logger.err(`Cannot get difficulty adjustment block heights. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot get difficulty adjustment block heights. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
       throw e;
     }
   }
 
   public async $deleteAdjustementsFromHeight(height: number): Promise<void> {
     try {
-      logger.info(`Delete newer difficulty adjustments from height ${height} from the database`);
+      logger.info(`Delete newer difficulty adjustments from height ${height} from the database`, logger.tags.mining);
       await DB.query(`DELETE FROM difficulty_adjustments WHERE height >= ?`, [height]);
     } catch (e: any) {
-      logger.err(`Cannot delete difficulty adjustments from the database. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot delete difficulty adjustments from the database. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
       throw e;
     }
   }
 
   public async $deleteLastAdjustment(): Promise<void> {
     try {
-      logger.info(`Delete last difficulty adjustment from the database`);
+      logger.info(`Delete last difficulty adjustment from the database`, logger.tags.mining);
       await DB.query(`DELETE FROM difficulty_adjustments ORDER BY time LIMIT 1`);
     } catch (e: any) {
-      logger.err(`Cannot delete last difficulty adjustment from the database. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.err(`Cannot delete last difficulty adjustment from the database. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
       throw e;
     }
   }

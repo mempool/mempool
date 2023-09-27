@@ -1,7 +1,9 @@
 [main]
 host = https://www.transifex.com
 
-[mempool.frontend-src-locale-messages-xlf--master]
+[o:mempool:p:mempool:r:frontend-src-locale-messages-xlf--master]
 file_filter = frontend/src/locale/messages.<lang>.xlf
+source_file = frontend/src/locale/messages.en-US.xlf
 source_lang = en-US
-type = XLIFF
+type        = XLIFF
+

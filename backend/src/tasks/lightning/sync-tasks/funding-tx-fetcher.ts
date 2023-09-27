@@ -21,10 +21,10 @@ class FundingTxFetcher {
       try {
         this.fundingTxCache = JSON.parse(await fsPromises.readFile(CACHE_FILE_NAME, 'utf-8'));
       } catch (e) {
-        logger.err(`Unable to parse channels funding txs disk cache. Starting from scratch`);
+        logger.err(`Unable to parse channels funding txs disk cache. Starting from scratch`, logger.tags.ln);
         this.fundingTxCache = {};
       }
-      logger.debug(`Imported ${Object.keys(this.fundingTxCache).length} funding tx amount from the disk cache`);
+      logger.debug(`Imported ${Object.keys(this.fundingTxCache).length} funding tx amount from the disk cache`, logger.tags.ln);
     }
   }
 
@@ -44,33 +44,34 @@ class FundingTxFetcher {
       ++channelProcessed;
 
       let elapsedSeconds = Math.round((new Date().getTime() / 1000) - loggerTimer);
-      if (elapsedSeconds > 10) {
+      if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
         elapsedSeconds = Math.round((new Date().getTime() / 1000) - globalTimer);
         logger.info(`Indexing channels funding tx ${channelProcessed + 1} of ${channelIds.length} ` +
           `(${Math.floor(channelProcessed / channelIds.length * 10000) / 100}%) | ` +
-          `elapsed: ${elapsedSeconds} seconds`
+          `elapsed: ${elapsedSeconds} seconds`,
+          logger.tags.ln
         );
         loggerTimer = new Date().getTime() / 1000;
       }
 
       elapsedSeconds = Math.round((new Date().getTime() / 1000) - cacheTimer);
       if (elapsedSeconds > 60) {
-        logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`);
+        logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`, logger.tags.ln);
         fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
         cacheTimer = new Date().getTime() / 1000;
       }
     }
 
     if (this.channelNewlyProcessed > 0) {
-      logger.info(`Indexed ${this.channelNewlyProcessed} additional channels funding tx`);
-      logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`);
+      logger.info(`Indexed ${this.channelNewlyProcessed} additional channels funding tx`, logger.tags.ln);
+      logger.debug(`Saving ${Object.keys(this.fundingTxCache).length} funding txs cache into disk`, logger.tags.ln);
       fsPromises.writeFile(CACHE_FILE_NAME, JSON.stringify(this.fundingTxCache));
     }
 
     this.running = false;
   }
   
-  public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number}> {
+  public async $fetchChannelOpenTx(channelId: string): Promise<{timestamp: number, txid: string, value: number} | null> {
     channelId = Common.channelIntegerIdToShortId(channelId);
 
     if (this.fundingTxCache[channelId]) {
@@ -100,6 +101,11 @@ class FundingTxFetcher {
     const txid = block.tx[txIdx];
     const rawTx = await bitcoinClient.getRawTransaction(txid);
     const tx = await bitcoinClient.decodeRawTransaction(rawTx);
+
+    if (!tx || !tx.vout || tx.vout.length < parseInt(outputIdx, 10) + 1 || tx.vout[outputIdx].value === undefined) {
+      logger.err(`Cannot find blockchain funding tx for channel id ${channelId}. Possible reasons are: bitcoin backend timeout or the channel shortId is not valid`);
+      return null;
+    }
 
     this.fundingTxCache[channelId] = {
       timestamp: block.time,

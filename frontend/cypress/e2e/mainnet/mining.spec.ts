@@ -1,4 +1,4 @@
-const baseModule = Cypress.env("BASE_MODULE");
+const baseModule = Cypress.env('BASE_MODULE');
 
 describe('Mainnet - Mining Features', () => {
   beforeEach(() => {

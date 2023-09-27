@@ -44,7 +44,7 @@ export class NodesPerCountryChartComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@9d3ad4c6623870d96b65fb7a708fed6ce7c20044:Lightning Nodes Per Country`);
-
+    this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-country-overview:See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.`);
     this.nodesPerCountryObservable$ = this.apiService.getNodesPerCountry$()
       .pipe(
         map(data => {
@@ -99,8 +99,9 @@ export class NodesPerCountryChartComponent implements OnInit {
           },
           borderColor: '#000',
           formatter: () => {
+            const nodeCount = country.count.toString();
             return `<b style="color: white">${country.name.en} (${country.share}%)</b><br>` +
-              $localize`${country.count.toString()} nodes` + `<br>` +
+              $localize`${nodeCount} nodes` + `<br>` +
               $localize`${this.amountShortenerPipe.transform(country.capacity / 100000000, 2)} BTC capacity`
             ;
           }
@@ -115,7 +116,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         color: 'grey',
       },
       value: totalShareOther,
-      name: 'Other' + (this.isMobile() ? `` : ` (${totalShareOther.toFixed(2)}%)`),
+      name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
         color: '#b1b1b1',
@@ -131,8 +132,9 @@ export class NodesPerCountryChartComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: () => {
-          return `<b style="color: white">${'Other'} (${totalShareOther.toFixed(2)}%)</b><br>` +
-            totalNodeOther.toString() + ` nodes`;
+          const nodeCount = totalNodeOther.toString();
+          return `<b style="color: white">` + $localize`Other (${totalShareOther.toFixed(2) + '%'})` + `</b><br>` +
+            $localize`${nodeCount} nodes`;
         },
       },
       data: 9999 as any

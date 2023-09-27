@@ -20,6 +20,11 @@ export class GeolocationComponent implements OnChanges {
   formattedLocation: string = '';
 
   ngOnChanges(): void {
+    if (!this.data) {
+      this.formattedLocation = '-';
+      return;
+    }
+
     const city = this.data.city ? this.data.city : '';
     const subdivisionLikeCity = this.data.city === this.data.subdivision;
     let subdivision = this.data.subdivision;

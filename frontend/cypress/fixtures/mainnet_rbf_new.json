@@ -1,0 +1,31 @@
+{
+  "replacements": {
+    "tx": {
+      "txid": "f22735aaa8eb84bcae3e7705f78609c6f5f0cd7dfc34ae03094e61f2dab0cc64",
+      "fee": 13843,
+      "vsize": 109.25,
+      "value": 253003805,
+      "rate": 36.04666732302845,
+      "rbf": true
+    },
+    "time": 1683865345,
+    "fullRbf": false,
+    "replaces": [
+      {
+        "tx": {
+          "txid": "21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f",
+          "fee": 8794,
+          "vsize": 109.25,
+          "value": 253008854,
+          "rate": 35.05247612484001,
+          "rbf": true
+        },
+        "time": 1683864993,
+        "interval": 352,
+        "fullRbf": false,
+        "replaces": []
+      }
+    ]
+  },
+  "replaces": null
+}

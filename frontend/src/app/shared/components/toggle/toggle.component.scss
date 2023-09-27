@@ -22,8 +22,6 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
 }
 
 .slider:before {
@@ -34,6 +32,9 @@
   left: 2px;
   bottom: 2px;
   background-color: white;
+}
+
+.slider.animate, .slider.animate:before {
   -webkit-transition: .4s;
   transition: .4s;
 }

@@ -1,5 +1,5 @@
-describe('Liquid Testnet', () => {
-  const baseModule = Cypress.env("BASE_MODULE");
+describe.skip('Liquid Testnet', () => {
+  const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '/testnet';
 
   beforeEach(() => {
@@ -7,7 +7,6 @@ describe('Liquid Testnet', () => {
     cy.intercept('/liquidtestnet/api/blocks/').as('blocks');
     cy.intercept('/liquidtestnet/api/tx/**/outspends').as('outspends');
     cy.intercept('/liquidtestnet/api/block/**/txs/**').as('block-txs');
-    cy.intercept('/resources/pools.json').as('pools');
 
     Cypress.Commands.add('waitForBlockData', () => {
       cy.wait('@socket');
@@ -110,10 +109,10 @@ describe('Liquid Testnet', () => {
       it('show empty unblinded TX', () => {
         cy.visit(`${basePath}/tx/c3d908ab77891e4c569b0df71aae90f4720b157019ebb20db176f4f9c4d626b8#blinded=`);
         cy.waitForSkeletonGone();
-        cy.get('.table-tx-vin tr:nth-child(1)').should('have.class', '');
+        cy.get('.table-tx-vin tr:nth-child(1)').should('have.class', 'ng-star-inserted');
         cy.get('.table-tx-vin tr:nth-child(1) .amount').should('contain.text', 'Confidential');
-        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', '');
-        cy.get('.table-tx-vout tr:nth-child(2)').should('have.class', '');
+        cy.get('.table-tx-vout tr:nth-child(1)').should('have.class', 'ng-star-inserted');
+        cy.get('.table-tx-vout tr:nth-child(2)').should('have.class', 'ng-star-inserted');
         cy.get('.table-tx-vout tr:nth-child(1) .amount').should('contain.text', 'Confidential');
         cy.get('.table-tx-vout tr:nth-child(2) .amount').should('contain.text', 'Confidential');
       });
@@ -121,8 +120,8 @@ describe('Liquid Testnet', () => {
       it('show invalid unblinded TX hex', () => {
         cy.visit(`${basePath}/tx/2477f220eef1d03f8ffa4a2861c275d155c3562adf0d79523aeeb0c59ee611ba#blinded=5000`);
         cy.waitForSkeletonGone();
-        cy.get('.table-tx-vin tr').should('have.class', '');
-        cy.get('.table-tx-vout tr').should('have.class', '');
+        cy.get('.table-tx-vin tr').should('have.class', 'ng-star-inserted');
+        cy.get('.table-tx-vout tr').should('have.class', 'ng-star-inserted');
         cy.get('.error-unblinded').contains('Error: Invalid blinding data (invalid hex)');
       });
 

@@ -48,6 +48,7 @@ export class NodesMap implements OnInit, OnChanges {
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@af8560ca50882114be16c951650f83bca73161a7:Lightning Nodes World Map`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.node-channel-map:See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
 
     if (!this.inputNodes$) {
@@ -113,7 +114,7 @@ export class NodesMap implements OnInit, OnChanges {
           node[3], // Alias
           node[2], // Public key
           node[5], // Channels
-          node[6].en, // Country
+          node[6]?.en, // Country
           node[7], // ISO Code
         ]);
       }
@@ -207,8 +208,8 @@ export class NodesMap implements OnInit, OnChanges {
 
               return `
                 <b style="color: white">${alias}</b><br>
-                ${liquidity}<br>
-                ${data[5]} channels<br>
+                ${liquidity}<br>` +
+                $localize`:@@205c1b86ac1cc419c4d0cca51fdde418c4ffdc20:${data[5]}:INTERPOLATION: channels` + `<br>
                 ${getFlagEmoji(data[7])} ${data[6]}
               `;
             }

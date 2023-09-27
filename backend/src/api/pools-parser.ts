@@ -1,251 +1,179 @@
 import DB from '../database';
 import logger from '../logger';
 import config from '../config';
-import BlocksRepository from '../repositories/BlocksRepository';
-
-interface Pool {
-  name: string;
-  link: string;
-  regexes: string[];
-  addresses: string[];
-  slug: string;
-}
+import PoolsRepository from '../repositories/PoolsRepository';
+import { PoolTag } from '../mempool.interfaces';
+import diskCache from './disk-cache';
+import mining from './mining/mining';
 
 class PoolsParser {
   miningPools: any[] = [];
   unknownPool: any = {
-    'name': "Unknown",
-    'link': "https://learnmeabitcoin.com/technical/coinbase-transaction",
-    'regexes': "[]",
-    'addresses': "[]",
+    'id': 0,
+    'name': 'Unknown',
+    'link': 'https://learnmeabitcoin.com/technical/coinbase-transaction',
+    'regexes': '[]',
+    'addresses': '[]',
     'slug': 'unknown'
   };
-  slugWarnFlag = false;
+  private uniqueLogs: string[] = [];
+
+  private uniqueLog(loggerFunction: any, msg: string): void {
+    if (this.uniqueLogs.includes(msg)) {
+      return;
+    }
+    this.uniqueLogs.push(msg);
+    loggerFunction(msg);
+  }
+
+  public setMiningPools(pools): void {
+    for (const pool of pools) {
+      pool.regexes = pool.tags;
+      pool.slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+      delete(pool.tags);
+    }
+    this.miningPools = pools;
+  }
 
   /**
-   * Parse the pools.json file, consolidate the data and dump it into the database
+   * Populate our db with updated mining pool definition
+   * @param pools 
    */
-  public async migratePoolsJson(poolsJson: object) {
-    if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK) === false) {
-      return;
-    }
+  public async migratePoolsJson(): Promise<void> {
+    // We also need to wipe the backend cache to make sure we don't serve blocks with
+    // the wrong mining pool (usually happen with unknown blocks)
+    diskCache.setIgnoreBlocksCache();
 
-    // First we save every entries without paying attention to pool duplication
-    const poolsDuplicated: Pool[] = [];
+    await this.$insertUnknownPool();
 
-    const coinbaseTags = Object.entries(poolsJson['coinbase_tags']);
-    for (let i = 0; i < coinbaseTags.length; ++i) {
-      poolsDuplicated.push({
-        'name': (<Pool>coinbaseTags[i][1]).name,
-        'link': (<Pool>coinbaseTags[i][1]).link,
-        'regexes': [coinbaseTags[i][0]],
-        'addresses': [],
-        'slug': ''
-      });
-    }
-    const addressesTags = Object.entries(poolsJson['payout_addresses']);
-    for (let i = 0; i < addressesTags.length; ++i) {
-      poolsDuplicated.push({
-        'name': (<Pool>addressesTags[i][1]).name,
-        'link': (<Pool>addressesTags[i][1]).link,
-        'regexes': [],
-        'addresses': [addressesTags[i][0]],
-        'slug': ''
-      });
-    }
-
-    // Then, we find unique mining pool names
-    const poolNames: string[] = [];
-    for (let i = 0; i < poolsDuplicated.length; ++i) {
-      if (poolNames.indexOf(poolsDuplicated[i].name) === -1) {
-        poolNames.push(poolsDuplicated[i].name);
+    for (const pool of this.miningPools) {
+      if (!pool.id) {
+        logger.info(`Mining pool ${pool.name} has no unique 'id' defined. Skipping.`);
+        continue;
       }
-    }
-    logger.debug(`Found ${poolNames.length} unique mining pools`);
 
-    // Get existing pools from the db
-    let existingPools;
-    try {
-      if (config.DATABASE.ENABLED === true) {
-        [existingPools] = await DB.query({ sql: 'SELECT * FROM pools;', timeout: 120000 });
+      const poolDB = await PoolsRepository.$getPoolByUniqueId(pool.id, false);
+      if (!poolDB) {
+        // New mining pool
+        const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+        logger.debug(`Inserting new mining pool ${pool.name}`);
+        await PoolsRepository.$insertNewMiningPool(pool, slug);
+        await this.$deleteUnknownBlocks();
       } else {
-        existingPools = [];
-      }
-    } catch (e) {
-      logger.err('Cannot get existing pools from the database, skipping pools.json import');
-      return;
-    }
-
-    this.miningPools = [];
-
-    // Finally, we generate the final consolidated pools data
-    const finalPoolDataAdd: Pool[] = [];
-    const finalPoolDataUpdate: Pool[] = [];
-    for (let i = 0; i < poolNames.length; ++i) {
-      let allAddresses: string[] = [];
-      let allRegexes: string[] = [];
-      const match = poolsDuplicated.filter((pool: Pool) => pool.name === poolNames[i]);
-
-      for (let y = 0; y < match.length; ++y) {
-        allAddresses = allAddresses.concat(match[y].addresses);
-        allRegexes = allRegexes.concat(match[y].regexes);
-      }
-
-      const finalPoolName = poolNames[i].replace(`'`, `''`); // To support single quote in names when doing db queries
-
-      let slug: string | undefined;
-      try {
-        slug = poolsJson['slugs'][poolNames[i]];
-      } catch (e) {
-        if (this.slugWarnFlag === false) {
-          logger.warn(`pools.json does not seem to contain the 'slugs' object`);
-          this.slugWarnFlag = true;
+        if (poolDB.name !== pool.name) {
+          // Pool has been renamed
+          const newSlug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+          logger.warn(`Renaming ${poolDB.name} mining pool to ${pool.name}. Slug has been updated. Maybe you want to make a redirection from 'https://mempool.space/mining/pool/${poolDB.slug}' to 'https://mempool.space/mining/pool/${newSlug}`);
+          await PoolsRepository.$renameMiningPool(poolDB.id, newSlug, pool.name);
+        }
+        if (poolDB.link !== pool.link) {
+          // Pool link has changed
+          logger.debug(`Updating link for ${pool.name} mining pool`);
+          await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link);
+        }
+        if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
+          JSON.stringify(pool.regexes) !== poolDB.regexes) {
+          // Pool addresses changed or coinbase tags changed
+          logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool.`);
+          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes);
+          await this.$deleteBlocksForPool(poolDB);
         }
       }
-
-      if (slug === undefined) {
-        // Only keep alphanumerical
-        slug = poolNames[i].replace(/[^a-z0-9]/gi, '').toLowerCase();
-        logger.warn(`No slug found for '${poolNames[i]}', generating it => '${slug}'`);
-      }
-
-      const poolObj = {
-        'name': finalPoolName,
-        'link': match[0].link,
-        'regexes': allRegexes,
-        'addresses': allAddresses,
-        'slug': slug
-      };
-
-      const existingPool = existingPools.find((pool) => pool.name === poolNames[i]);
-      if (existingPool !== undefined) {
-        // Check if any data was actually updated
-        const equals = (a, b) =>
-          a.length === b.length &&
-          a.every((v, i) => v === b[i]);
-        if (!equals(JSON.parse(existingPool.addresses), poolObj.addresses) || !equals(JSON.parse(existingPool.regexes), poolObj.regexes)) {
-          finalPoolDataUpdate.push(poolObj);
-        }
-      } else {
-        logger.debug(`Add '${finalPoolName}' mining pool`);
-        finalPoolDataAdd.push(poolObj);
-      }
-
-      this.miningPools.push({
-        'name': finalPoolName,
-        'link': match[0].link,
-        'regexes': JSON.stringify(allRegexes),
-        'addresses': JSON.stringify(allAddresses),
-        'slug': slug
-      });
-    }
-
-    if (config.DATABASE.ENABLED === false) { // Don't run db operations
-      logger.info('Mining pools.json import completed (no database)');
-      return;
-    }
-
-    if (finalPoolDataAdd.length > 0 || finalPoolDataUpdate.length > 0) {    
-      logger.debug(`Update pools table now`);
-
-      // Add new mining pools into the database
-      let queryAdd: string = 'INSERT INTO pools(name, link, regexes, addresses, slug) VALUES ';
-      for (let i = 0; i < finalPoolDataAdd.length; ++i) {
-        queryAdd += `('${finalPoolDataAdd[i].name}', '${finalPoolDataAdd[i].link}',
-        '${JSON.stringify(finalPoolDataAdd[i].regexes)}', '${JSON.stringify(finalPoolDataAdd[i].addresses)}',
-        ${JSON.stringify(finalPoolDataAdd[i].slug)}),`;
-      }
-      queryAdd = queryAdd.slice(0, -1) + ';';
-
-      // Updated existing mining pools in the database
-      const updateQueries: string[] = [];
-      for (let i = 0; i < finalPoolDataUpdate.length; ++i) {
-        updateQueries.push(`
-          UPDATE pools
-          SET name='${finalPoolDataUpdate[i].name}', link='${finalPoolDataUpdate[i].link}',
-          regexes='${JSON.stringify(finalPoolDataUpdate[i].regexes)}', addresses='${JSON.stringify(finalPoolDataUpdate[i].addresses)}',
-          slug='${finalPoolDataUpdate[i].slug}'
-          WHERE name='${finalPoolDataUpdate[i].name}'
-        ;`);
-      }
-
-      try {
-        await this.$deleteBlocskToReindex(finalPoolDataUpdate);
-
-        if (finalPoolDataAdd.length > 0) {
-          await DB.query({ sql: queryAdd, timeout: 120000 });
-        }
-        for (const query of updateQueries) {
-          await DB.query({ sql: query, timeout: 120000 });
-        }
-        await this.insertUnknownPool();
-        logger.info('Mining pools.json import completed');
-      } catch (e) {
-        logger.err(`Cannot import pools in the database`);
-        throw e;
-      }
-    }
-
-    try {
-      await this.insertUnknownPool();
-    } catch (e) {
-      logger.err(`Cannot insert unknown pool in the database`);
-      throw e;
     }
   }
 
   /**
    * Manually add the 'unknown pool'
    */
-  private async insertUnknownPool() {
+  public async $insertUnknownPool(): Promise<void> {
+    if (!config.DATABASE.ENABLED) {
+      return;
+    }
+
     try {
       const [rows]: any[] = await DB.query({ sql: 'SELECT name from pools where name="Unknown"', timeout: 120000 });
       if (rows.length === 0) {
         await DB.query({
-          sql: `INSERT INTO pools(name, link, regexes, addresses, slug)
-          VALUES("Unknown", "https://learnmeabitcoin.com/technical/coinbase-transaction", "[]", "[]", "unknown");
+          sql: `INSERT INTO pools(name, link, regexes, addresses, slug, unique_id)
+          VALUES("${this.unknownPool.name}", "${this.unknownPool.link}", "[]", "[]", "${this.unknownPool.slug}", 0);
         `});
       } else {
         await DB.query(`UPDATE pools
-          SET name='Unknown', link='https://learnmeabitcoin.com/technical/coinbase-transaction',
+          SET name='${this.unknownPool.name}', link='${this.unknownPool.link}',
           regexes='[]', addresses='[]',
-          slug='unknown'
-          WHERE name='Unknown'
+          slug='${this.unknownPool.slug}',
+          unique_id=0
+          WHERE slug='${this.unknownPool.slug}'
         `);
       }
     } catch (e) {
-      logger.err('Unable to insert "Unknown" mining pool');
+      logger.err(`Unable to insert or update "Unknown" mining pool. Reason: ${e instanceof Error ? e.message : e}`);
     }
   }
 
   /**
-   * Delete blocks which needs to be reindexed
+   * Delete indexed blocks for an updated mining pool
+   * 
+   * @param pool 
    */
-   private async $deleteBlocskToReindex(finalPoolDataUpdate: any[]) {
-    if (config.MEMPOOL.AUTOMATIC_BLOCK_REINDEXING === false) {
-      return;
+  private async $deleteBlocksForPool(pool: PoolTag): Promise<void> {
+    // Get oldest blocks mined by the pool and assume pools-v2.json updates only concern most recent years
+    // Ignore early days of Bitcoin as there were no mining pool yet
+    const [oldestPoolBlock]: any[] = await DB.query(`
+      SELECT height
+      FROM blocks
+      WHERE pool_id = ?
+      ORDER BY height
+      LIMIT 1`,
+      [pool.id]
+    );
+
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
     }
 
-    const blockCount = await BlocksRepository.$blockCount(null, null);
-    if (blockCount === 0) {
-      return;
-    }
-
-    for (const updatedPool of finalPoolDataUpdate) {
-      const [pool]: any[] = await DB.query(`SELECT id, name from pools where slug = "${updatedPool.slug}"`);
-      if (pool.length > 0) {
-        logger.notice(`Deleting blocks from ${pool[0].name} mining pool for future re-indexing`);
-        await DB.query(`DELETE FROM blocks WHERE pool_id = ${pool[0].id}`);
-      }
-    }
-
-    // Ignore early days of Bitcoin as there were not mining pool yet
-    logger.notice('Deleting blocks with unknown mining pool from height 130635 for future re-indexing');
+    const oldestBlockHeight = oldestPoolBlock.length ?? 0 > 0 ? oldestPoolBlock[0].height : firstKnownBlockPool;
     const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
-    await DB.query(`DELETE FROM blocks WHERE pool_id = ${unknownPool[0].id} AND height > 130635`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${oldestBlockHeight} for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ? AND height >= ${oldestBlockHeight}`,
+      [unknownPool[0].id]
+    );
+    logger.notice(`Deleting blocks from ${pool.name} mining pool for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ?`,
+      [pool.id]
+    );
 
-    logger.notice('Truncating hashrates for future re-indexing');
-    await DB.query(`DELETE FROM hashrates`);
+    // Re-index hashrates and difficulty adjustments later
+    mining.reindexHashrateRequested = true;
+    mining.reindexDifficultyAdjustmentRequested = true;
+  }
+
+  private async $deleteUnknownBlocks(): Promise<void> {
+    let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
+    if (config.MEMPOOL.NETWORK === 'testnet') {
+      firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
+    } else if (config.MEMPOOL.NETWORK === 'signet') {
+      firstKnownBlockPool = 0;
+    }
+
+    const [unknownPool] = await DB.query(`SELECT id from pools where slug = "unknown"`);
+    this.uniqueLog(logger.notice, `Deleting blocks with unknown mining pool from height ${firstKnownBlockPool} for re-indexing`);
+    await DB.query(`
+      DELETE FROM blocks
+      WHERE pool_id = ? AND height >= ${firstKnownBlockPool}`,
+      [unknownPool[0].id]
+    );
+
+    // Re-index hashrates and difficulty adjustments later
+    mining.reindexHashrateRequested = true;
+    mining.reindexDifficultyAdjustmentRequested = true;
   }
 }
 

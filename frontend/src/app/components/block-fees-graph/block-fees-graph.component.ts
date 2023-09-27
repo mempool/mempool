@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { formatNumber } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { download, formatterXAxis } from '../../shared/graphs.utils';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -31,7 +32,7 @@ export class BlockFeesGraphComponent implements OnInit {
   @Input() left: number | string = 75;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -44,22 +45,27 @@ export class BlockFeesGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
+  currency: string;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
+    private fiatCurrencyPipe: FiatCurrencyPipe,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.currency = 'USD';
   }
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Block Fees`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees:See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -76,6 +82,7 @@ export class BlockFeesGraphComponent implements OnInit {
       .pipe(
         startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
+          this.isLoading = true;
           this.storageService.setValue('miningWindowPreference', timespan);
           this.timespan = timespan;
           this.isLoading = true;
@@ -84,7 +91,7 @@ export class BlockFeesGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockFees: response.body.map(val => [val.timestamp * 1000, val.avgFees / 100000000, val.avgHeight]),
-                  blockFeesUSD: response.body.filter(val => val.USD > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val.USD, val.avgHeight]),
+                  blockFeesFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val.avgFees / 100000000 * val[this.currency], val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -157,7 +164,7 @@ export class BlockFeesGraphComponent implements OnInit {
             if (tick.seriesIndex === 0) {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatCurrency(tick.data[1], this.locale, getCurrencySymbol('USD', 'narrow'), 'USD', '1.0-0')}<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
             }
           }
 
@@ -184,9 +191,9 @@ export class BlockFeesGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Fees USD',
+            name: 'Fees ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {  
+            textStyle: {
               color: 'white',
             },
             icon: 'roundRect',
@@ -216,7 +223,7 @@ export class BlockFeesGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val);
+              return this.fiatShortenerPipe.transform(val, null, this.currency);
             }.bind(this)
           },
           splitLine: {
@@ -243,8 +250,8 @@ export class BlockFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
-          name: 'Fees USD',
-          data: data.blockFeesUSD,
+          name: 'Fees ' + this.currency,
+          data: data.blockFeesFiat,
           type: 'line',
           smooth: 0.25,
           symbol: 'none',

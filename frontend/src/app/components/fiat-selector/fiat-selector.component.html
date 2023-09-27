@@ -1,0 +1,5 @@
+<div [formGroup]="fiatForm" class="text-small text-center">
+    <select formControlName="fiat" class="custom-select custom-select-sm form-control-secondary form-control mx-auto" style="width: 85px;" (change)="changeFiat()">
+        <option *ngFor="let currency of currencies" [value]="currency[1].code">{{ currency[1].code }}</option>
+    </select>
+</div>

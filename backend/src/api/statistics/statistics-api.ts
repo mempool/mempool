@@ -171,6 +171,7 @@ class StatisticsApi {
   private getQueryForDaysAvg(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(vsize_1) as DOUBLE) as vsize_1,
       CAST(avg(vsize_2) as DOUBLE) as vsize_2,
@@ -211,7 +212,7 @@ class StatisticsApi {
       CAST(avg(vsize_1800) as DOUBLE) as vsize_1800,
       CAST(avg(vsize_2000) as DOUBLE) as vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'all' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -219,6 +220,7 @@ class StatisticsApi {
   private getQueryForDays(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       vsize_1,
       vsize_2,
@@ -259,7 +261,7 @@ class StatisticsApi {
       vsize_1800,
       vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'all' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -375,10 +377,33 @@ class StatisticsApi {
     }
   }
 
+  public async $list4Y(): Promise<OptimizedStatistic[]> {
+    try {
+      const query = this.getQueryForDays(43200, '4 YEAR'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
+    } catch (e) {
+      logger.err('$list4Y() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  public async $listAll(): Promise<OptimizedStatistic[]> {
+    try {
+      const query = this.getQueryForDays(43200, 'all'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
+    } catch (e) {
+      logger.err('$listAll() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
       return {
         added: s.added,
+        count: s.unconfirmed_transactions,
         vbytes_per_second: s.vbytes_per_second,
         mempool_byte_weight: s.mempool_byte_weight,
         total_fee: s.total_fee,

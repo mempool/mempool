@@ -1,7 +1,8 @@
-import express from "express";
+import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
+import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
 import cluster from 'cluster';
 import DB from './database';
 import config from './config';
@@ -10,7 +11,6 @@ import memPool from './api/mempool';
 import diskCache from './api/disk-cache';
 import statistics from './api/statistics/statistics';
 import websocketHandler from './api/websocket-handler';
-import fiatConversion from './api/fiat-conversion';
 import bisq from './api/bisq/bisq';
 import bisqMarkets from './api/bisq/markets';
 import logger from './logger';
@@ -30,17 +30,31 @@ import generalLightningRoutes from './api/explorer/general.routes';
 import lightningStatsUpdater from './tasks/lightning/stats-updater.service';
 import networkSyncService from './tasks/lightning/network-sync.service';
 import statisticsRoutes from './api/statistics/statistics.routes';
+import pricesRoutes from './api/prices/prices.routes';
 import miningRoutes from './api/mining/mining-routes';
 import bisqRoutes from './api/bisq/bisq.routes';
 import liquidRoutes from './api/liquid/liquid.routes';
 import bitcoinRoutes from './api/bitcoin/bitcoin.routes';
-import fundingTxFetcher from "./tasks/lightning/sync-tasks/funding-tx-fetcher";
+import fundingTxFetcher from './tasks/lightning/sync-tasks/funding-tx-fetcher';
+import forensicsService from './tasks/lightning/forensics.service';
+import priceUpdater from './tasks/price-updater';
+import chainTips from './api/chain-tips';
+import { AxiosError } from 'axios';
+import v8 from 'v8';
+import { formatBytes, getBytesUnit } from './utils/format';
+import redisCache from './api/redis-cache';
 
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
   private app: Application;
-  private currentBackendRetryInterval = 5;
+  private currentBackendRetryInterval = 1;
+  private backendRetryCount = 0;
+
+  private maxHeapSize: number = 0;
+  private heapLogInterval: number = 60;
+  private warnedHeapCritical: boolean = false;
+  private lastHeapLogTime: number | null = null;
 
   constructor() {
     this.app = express();
@@ -74,8 +88,24 @@ class Server {
     }
   }
 
-  async startServer(worker = false) {
+  async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
+
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      bitcoinApi.startHealthChecks();
+    }
+
+    if (config.DATABASE.ENABLED) {
+      await DB.checkDbConnection();
+      try {
+        if (process.env.npm_config_reindex_blocks === 'true') { // Re-index requests
+          await databaseMigration.$blocksReindexingTruncate();
+        }
+        await databaseMigration.$initializeOrMigrateDatabase();
+      } catch (e) {
+        throw new Error(e instanceof Error ? e.message : 'Error');
+      }
+    }
 
     this.app
       .use((req: Request, res: Response, next: NextFunction) => {
@@ -83,32 +113,25 @@ class Server {
         next();
       })
       .use(express.urlencoded({ extended: true }))
-      .use(express.text())
+      .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
+
+    if (config.DATABASE.ENABLED) {
+      await priceUpdater.$initializeLatestPriceWithDb();
+    }
 
     this.server = http.createServer(this.app);
     this.wss = new WebSocket.Server({ server: this.server });
 
     this.setUpWebsocketHandling();
 
+    await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     await syncAssets.syncAssets$();
-    diskCache.loadMempoolCache();
-
-    if (config.DATABASE.ENABLED) {
-      await DB.checkDbConnection();
-      try {
-        if (process.env.npm_config_reindex !== undefined) { // Re-index requests
-          const tables = process.env.npm_config_reindex.split(',');
-          logger.warn(`Indexed data for "${process.env.npm_config_reindex}" tables will be erased in 5 seconds (using '--reindex')`);
-          await Common.sleep$(5000);
-          await databaseMigration.$truncateIndexedData(tables);
-        }
-        await databaseMigration.$initializeOrMigrateDatabase();
-        if (Common.indexingEnabled()) {
-          await indexer.$resetHashratesIndexingState();
-        }
-      } catch (e) {
-        throw new Error(e instanceof Error ? e.message : 'Error');
+    if (config.MEMPOOL.ENABLED) {
+      if (config.MEMPOOL.CACHE_ENABLED) {
+        await diskCache.$loadMempoolCache();
+      } else if (config.REDIS.ENABLED) {
+        await redisCache.$loadCache();
       }
     }
 
@@ -124,14 +147,20 @@ class Server {
       }
     }
 
-    fiatConversion.startService();
+    priceUpdater.$run();
+    await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
-    this.runMainUpdateLoop();
+
+    if (config.MEMPOOL.ENABLED) {
+      this.runMainUpdateLoop();
+    }
+
+    setInterval(() => { this.healthCheck(); }, 2500);
 
     if (config.BISQ.ENABLED) {
       bisq.startBisqService();
-      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitProperties('bsq-price', price));
+      bisq.setPriceCallbackFunction((price) => websocketHandler.setExtraInitData('bsq-price', price));
       blocks.setNewBlockCallback(bisq.handleNewBitcoinBlock.bind(bisq));
       bisqMarkets.startBisqService();
     }
@@ -149,7 +178,8 @@ class Server {
     });
   }
 
-  async runMainUpdateLoop() {
+  async runMainUpdateLoop(): Promise<void> {
+    const start = Date.now();
     try {
       try {
         await memPool.$updateMemPoolInfo();
@@ -161,41 +191,58 @@ class Server {
           logger.debug(msg);
         }
       }
-      await poolsUpdater.updatePoolsJson();
-      await blocks.$updateBlocks();
-      await memPool.$updateMempool();
+      const newMempool = await bitcoinApi.$getRawMempool();
+      const numHandledBlocks = await blocks.$updateBlocks();
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
+      if (numHandledBlocks === 0) {
+        await memPool.$updateMempool(newMempool, pollRate);
+      }
       indexer.$run();
+      priceUpdater.$run();
 
-      setTimeout(this.runMainUpdateLoop.bind(this), config.MEMPOOL.POLL_RATE_MS);
-      this.currentBackendRetryInterval = 5;
-    } catch (e) {
-      const loggerMsg = `runMainLoop error: ${(e instanceof Error ? e.message : e)}. Retrying in ${this.currentBackendRetryInterval} sec.`;
-      if (this.currentBackendRetryInterval > 5) {
+      // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
+      const elapsed = Date.now() - start;
+      const remainingTime = Math.max(0, pollRate - elapsed);
+      setTimeout(this.runMainUpdateLoop.bind(this), numHandledBlocks > 0 ? 0 : remainingTime);
+      this.backendRetryCount = 0;
+    } catch (e: any) {
+      this.backendRetryCount++;
+      let loggerMsg = `Exception in runMainUpdateLoop() (count: ${this.backendRetryCount}). Retrying in ${this.currentBackendRetryInterval} sec.`;
+      loggerMsg += ` Reason: ${(e instanceof Error ? e.message : e)}.`;
+      if (e?.stack) {
+        loggerMsg += ` Stack trace: ${e.stack}`;
+      }
+      // When we get a first Exception, only `logger.debug` it and retry after 5 seconds
+      // From the second Exception, `logger.warn` the Exception and increase the retry delay
+      if (this.backendRetryCount >= 5) {
         logger.warn(loggerMsg);
         mempool.setOutOfSync();
       } else {
         logger.debug(loggerMsg);
       }
-      logger.debug(JSON.stringify(e));
+      if (e instanceof AxiosError) {
+        logger.debug(`AxiosError: ${e?.message}`);
+      }
       setTimeout(this.runMainUpdateLoop.bind(this), 1000 * this.currentBackendRetryInterval);
-      this.currentBackendRetryInterval *= 2;
-      this.currentBackendRetryInterval = Math.min(this.currentBackendRetryInterval, 60);
+    } finally {
+      diskCache.unlock();
     }
   }
 
-  async $runLightningBackend() {
+  async $runLightningBackend(): Promise<void> {
     try {
       await fundingTxFetcher.$init();
       await networkSyncService.$startService();
       await lightningStatsUpdater.$startService();
+      await forensicsService.$startService();
     } catch(e) {
-      logger.err(`Nodejs lightning backend crashed. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
+      logger.err(`Exception in $runLightningBackend. Restarting in 1 minute. Reason: ${(e instanceof Error ? e.message : e)}`);
       await Common.sleep$(1000 * 60);
       this.$runLightningBackend();
     };
-}
+  }
 
-  setUpWebsocketHandling() {
+  setUpWebsocketHandling(): void {
     if (this.wss) {
       websocketHandler.setWebsocketServer(this.wss);
     }
@@ -209,19 +256,22 @@ class Server {
       });
     }
     websocketHandler.setupConnectionHandling();
-    statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
-    blocks.setNewBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
-    memPool.setMempoolChangedCallback(websocketHandler.handleMempoolChange.bind(websocketHandler));
-    fiatConversion.setProgressChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    if (config.MEMPOOL.ENABLED) {
+      statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
+      memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
+      blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
+    }
+    priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
-
-  setUpHttpApiRoutes() {
+  
+  setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
+    pricesRoutes.initRoutes(this.app);
+    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
     }
-    if (Common.indexingEnabled()) {
+    if (Common.indexingEnabled() && config.MEMPOOL.ENABLED) {
       miningRoutes.initRoutes(this.app);
     }
     if (config.BISQ.ENABLED) {
@@ -236,6 +286,26 @@ class Server {
       channelsRoutes.initRoutes(this.app);
     }
   }
+
+  healthCheck(): void {
+    const now = Date.now();
+    const stats = v8.getHeapStatistics();
+    this.maxHeapSize = Math.max(stats.used_heap_size, this.maxHeapSize);
+    const warnThreshold = 0.8 * stats.heap_size_limit;
+
+    const byteUnits = getBytesUnit(Math.max(this.maxHeapSize, stats.heap_size_limit));
+
+    if (!this.warnedHeapCritical && this.maxHeapSize > warnThreshold) {
+      this.warnedHeapCritical = true;
+      logger.warn(`Used ${(this.maxHeapSize / stats.heap_size_limit * 100).toFixed(2)}% of heap limit (${formatBytes(this.maxHeapSize, byteUnits, true)} / ${formatBytes(stats.heap_size_limit, byteUnits)})!`);
+    }
+    if (this.lastHeapLogTime === null || (now - this.lastHeapLogTime) > (this.heapLogInterval * 1000)) {
+      logger.debug(`Memory usage: ${formatBytes(this.maxHeapSize, byteUnits)} / ${formatBytes(stats.heap_size_limit, byteUnits)}`);
+      this.warnedHeapCritical = false;
+      this.maxHeapSize = 0;
+      this.lastHeapLogTime = now;
+    }
+  }
 }
 
-const server = new Server();
+((): Server => new Server())();

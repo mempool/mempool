@@ -101,8 +101,15 @@ export class NodeFeeChartComponent implements OnInit {
   }
 
   prepareChartOptions(outgoingData, incomingData): void {
+    let sum = outgoingData.reduce((accumulator, object) => {
+      return accumulator + object.count;
+    }, 0);
+    sum += incomingData.reduce((accumulator, object) => {
+      return accumulator + object.count;
+    }, 0);
+
     let title: object;
-    if (outgoingData.length === 0) {
+    if (sum === 0) {
       title = {
         textStyle: {
           color: 'grey',
@@ -115,7 +122,7 @@ export class NodeFeeChartComponent implements OnInit {
     }
 
     this.chartOptions = {
-      title: outgoingData.length === 0 ? title : undefined,
+      title: sum === 0 ? title : undefined,
       animation: false,
       grid: {
         top: 30,
@@ -151,7 +158,7 @@ export class NodeFeeChartComponent implements OnInit {
           `;
         }
       },
-      xAxis: outgoingData.length === 0 ? undefined : {
+      xAxis: sum === 0 ? undefined : {
         type: 'category',
         axisLine: { onZero: true },
         axisLabel: {
@@ -163,11 +170,11 @@ export class NodeFeeChartComponent implements OnInit {
         },
         data: outgoingData.map(bucket => bucket.label)
       },
-      legend: outgoingData.length === 0 ? undefined : {
+      legend: sum === 0 ? undefined : {
         padding: 10,
         data: [
           {
-            name: 'Outgoing Fees',
+            name: $localize`Outgoing Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -175,7 +182,7 @@ export class NodeFeeChartComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Incoming Fees',
+            name: $localize`Incoming Fees`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -184,7 +191,7 @@ export class NodeFeeChartComponent implements OnInit {
           },
         ],
       },
-      yAxis: outgoingData.length === 0 ? undefined : [
+      yAxis: sum === 0 ? undefined : [
         {
           type: 'value',
           axisLabel: {
@@ -202,10 +209,10 @@ export class NodeFeeChartComponent implements OnInit {
           },
         },
       ],
-      series: outgoingData.length === 0 ? undefined : [
+      series: sum === 0 ? undefined : [
         {
           zlevel: 0,
-          name: 'Outgoing Fees',
+          name: $localize`Outgoing Fees`,
           data: outgoingData.map(bucket => ({
             value: bucket.capacity,
             label: bucket.label,
@@ -219,7 +226,7 @@ export class NodeFeeChartComponent implements OnInit {
         },
         {
           zlevel: 0,
-          name: 'Incoming Fees',
+          name: $localize`Incoming Fees`,
           data: incomingData.map(bucket => ({
             value: -bucket.capacity,
             label: bucket.label,
@@ -245,21 +252,5 @@ export class NodeFeeChartComponent implements OnInit {
 
   isMobile() {
     return (window.innerWidth <= 767.98);
-  }
-
-  onSaveChart() {
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 40;
-    this.chartOptions.backgroundColor = '#11131f';
-    this.chartInstance.setOption(this.chartOptions);
-    download(this.chartInstance.getDataURL({
-      pixelRatio: 2,
-    }), `node-fee-chart.svg`);
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
   }
 }

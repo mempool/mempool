@@ -10,4 +10,65 @@ cp /etc/nginx/nginx.conf /patch/nginx.conf
 sed -i "s/__MEMPOOL_FRONTEND_HTTP_PORT__/${__MEMPOOL_FRONTEND_HTTP_PORT__}/g" /patch/nginx.conf
 cat /patch/nginx.conf > /etc/nginx/nginx.conf
 
+if [ "${LIGHTNING_DETECTED_PORT}" != "" ];then
+  export LIGHTNING=true
+fi
+
+# Runtime overrides - read env vars defined in docker compose
+
+__TESTNET_ENABLED__=${TESTNET_ENABLED:=false}
+__SIGNET_ENABLED__=${SIGNET_ENABLED:=false}
+__LIQUID_ENABLED__=${LIQUID_ENABLED:=false}
+__LIQUID_TESTNET_ENABLED__=${LIQUID_TESTNET_ENABLED:=false}
+__BISQ_ENABLED__=${BISQ_ENABLED:=false}
+__BISQ_SEPARATE_BACKEND__=${BISQ_SEPARATE_BACKEND:=false}
+__ITEMS_PER_PAGE__=${ITEMS_PER_PAGE:=10}
+__KEEP_BLOCKS_AMOUNT__=${KEEP_BLOCKS_AMOUNT:=8}
+__NGINX_PROTOCOL__=${NGINX_PROTOCOL:=http}
+__NGINX_HOSTNAME__=${NGINX_HOSTNAME:=localhost}
+__NGINX_PORT__=${NGINX_PORT:=8999}
+__BLOCK_WEIGHT_UNITS__=${BLOCK_WEIGHT_UNITS:=4000000}
+__MEMPOOL_BLOCKS_AMOUNT__=${MEMPOOL_BLOCKS_AMOUNT:=8}
+__BASE_MODULE__=${BASE_MODULE:=mempool}
+__MEMPOOL_WEBSITE_URL__=${MEMPOOL_WEBSITE_URL:=https://mempool.space}
+__LIQUID_WEBSITE_URL__=${LIQUID_WEBSITE_URL:=https://liquid.network}
+__BISQ_WEBSITE_URL__=${BISQ_WEBSITE_URL:=https://bisq.markets}
+__MINING_DASHBOARD__=${MINING_DASHBOARD:=true}
+__LIGHTNING__=${LIGHTNING:=false}
+__AUDIT__=${AUDIT:=false}
+__MAINNET_BLOCK_AUDIT_START_HEIGHT__=${MAINNET_BLOCK_AUDIT_START_HEIGHT:=0}
+__TESTNET_BLOCK_AUDIT_START_HEIGHT__=${TESTNET_BLOCK_AUDIT_START_HEIGHT:=0}
+__SIGNET_BLOCK_AUDIT_START_HEIGHT__=${SIGNET_BLOCK_AUDIT_START_HEIGHT:=0}
+__HISTORICAL_PRICE__=${HISTORICAL_PRICE:=true}
+
+# Export as environment variables to be used by envsubst
+export __TESTNET_ENABLED__
+export __SIGNET_ENABLED__
+export __LIQUID_ENABLED__
+export __LIQUID_TESTNET_ENABLED__
+export __BISQ_ENABLED__
+export __BISQ_SEPARATE_BACKEND__
+export __ITEMS_PER_PAGE__
+export __KEEP_BLOCKS_AMOUNT__
+export __NGINX_PROTOCOL__
+export __NGINX_HOSTNAME__
+export __NGINX_PORT__
+export __BLOCK_WEIGHT_UNITS__
+export __MEMPOOL_BLOCKS_AMOUNT__
+export __BASE_MODULE__
+export __MEMPOOL_WEBSITE_URL__
+export __LIQUID_WEBSITE_URL__
+export __BISQ_WEBSITE_URL__
+export __MINING_DASHBOARD__
+export __LIGHTNING__
+export __AUDIT__
+export __MAINNET_BLOCK_AUDIT_START_HEIGHT__
+export __TESTNET_BLOCK_AUDIT_START_HEIGHT__
+export __SIGNET_BLOCK_AUDIT_START_HEIGHT__
+export __HISTORICAL_PRICE__
+
+folder=$(find /var/www/mempool -name "config.js" | xargs dirname)
+echo ${folder}
+envsubst < ${folder}/config.template.js > ${folder}/config.js
+
 exec "$@"

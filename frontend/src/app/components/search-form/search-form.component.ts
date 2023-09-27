@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { EventType, NavigationStart, Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
@@ -22,9 +22,19 @@ export class SearchFormComponent implements OnInit {
   isSearching = false;
   isTypeaheading$ = new BehaviorSubject<boolean>(false);
   typeAhead$: Observable<any>;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
+  dropdownHidden = false;
 
-  regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[A-z]{2,5}1[a-zA-HJ-NP-Z0-9]{39,59})$/;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event) {
+    if (this.elementRef.nativeElement.contains(event.target)) {
+      this.dropdownHidden = false;
+    } else {
+      this.dropdownHidden = true;
+    }
+  }
+
+  regexAddress = /^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[A-z]{2,5}1[a-zA-HJ-NP-Z0-9]{39,59}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/;
   regexBlockhash = /^[0]{8}[a-fA-F0-9]{56}$/;
   regexTransaction = /^([a-fA-F0-9]{64})(:\d+)?$/;
   regexBlockheight = /^[0-9]{1,9}$/;
@@ -37,18 +47,36 @@ export class SearchFormComponent implements OnInit {
     this.handleKeyDown($event);
   }
 
+  @ViewChild('searchInput') searchInput: ElementRef;
+
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private assetsService: AssetsService,
     private stateService: StateService,
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private relativeUrlPipe: RelativeUrlPipe,
-  ) { }
+    private elementRef: ElementRef
+  ) {
+  }
 
   ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    
+    this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
+      if (this.searchInput && e.type === EventType.NavigationStart) {
+        this.searchInput.nativeElement.blur();
+      }
+    });
+
+    this.stateService.searchFocus$.subscribe(() => {
+      if (!this.searchInput) { // Try again a bit later once the view is properly initialized
+        setTimeout(() => this.searchInput.nativeElement.focus(), 100);
+      } else if (this.searchInput) {
+        this.searchInput.nativeElement.focus();
+      }
+    });
 
     this.searchForm = this.formBuilder.group({
       searchText: ['', Validators.required],
@@ -68,6 +96,9 @@ export class SearchFormComponent implements OnInit {
           return text.substr(1);
         }
         return text.trim();
+      }),
+      tap((text) => {
+        this.stateService.searchText$.next(text);
       }),
       distinctUntilChanged(),
     );
@@ -96,7 +127,13 @@ export class SearchFormComponent implements OnInit {
           }))),
         );
       }),
-      tap((result: any[]) => {
+      map((result: any[]) => {
+        if (this.network === 'bisq') {
+          result[0] = result[0].map((address: string) => 'B' + address);
+        }
+        return result;
+      }),
+      tap(() => {
         this.isTypeaheading$.next(false);
       })
     );
@@ -115,7 +152,7 @@ export class SearchFormComponent implements OnInit {
       ]
       ).pipe(
         map((latestData) => {
-          const searchText = latestData[0];
+          let searchText = latestData[0];
           if (!searchText.length) {
             return {
               searchText: '',
@@ -133,14 +170,14 @@ export class SearchFormComponent implements OnInit {
           const addressPrefixSearchResults = result[0];
           const lightningResults = result[1];
 
-          if (this.network === 'bisq') {
-            return searchText.map((address: string) => 'B' + address);
-          }
-
           const matchesBlockHeight = this.regexBlockheight.test(searchText);
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
-          const matchesAddress = this.regexAddress.test(searchText);
+          const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
+
+          if (matchesAddress && this.network === 'bisq') {
+            searchText = 'B' + searchText;
+          }
 
           return {
             searchText: searchText,
@@ -181,7 +218,7 @@ export class SearchFormComponent implements OnInit {
     const searchText = result || this.searchForm.value.searchText.trim();
     if (searchText) {
       this.isSearching = true;
-      if (this.regexAddress.test(searchText)) {
+      if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
       } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
         this.navigate('/block/', searchText);

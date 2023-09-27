@@ -4,6 +4,7 @@ const configFromFile = require(
 
 interface IConfig {
   MEMPOOL: {
+    ENABLED: boolean;
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
@@ -11,6 +12,7 @@ interface IConfig {
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
+    CACHE_ENABLED: boolean;
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
     BLOCK_WEIGHT_UNITS: number;
@@ -18,7 +20,6 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     INDEXING_BLOCKS_AMOUNT: number;
     BLOCKS_SUMMARIES_INDEXING: boolean;
-    PRICE_FEED_UPDATE_INTERVAL: number;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
@@ -28,9 +29,22 @@ interface IConfig {
     AUTOMATIC_BLOCK_REINDEXING: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
+    AUDIT: boolean;
+    ADVANCED_GBT_AUDIT: boolean;
+    ADVANCED_GBT_MEMPOOL: boolean;
+    RUST_GBT: boolean;
+    CPFP_INDEXING: boolean;
+    MAX_BLOCKS_BULK_QUERY: number;
+    DISK_CACHE_BLOCK_INTERVAL: number;
+    MAX_PUSH_TX_SIZE_WEIGHT: number;
+    ALLOW_UNREACHABLE: boolean;
+    PRICE_UPDATES_PER_HOUR: number;
   };
   ESPLORA: {
     REST_API_URL: string;
+    UNIX_SOCKET_PATH: string | void | null;
+    RETRY_UNIX_SOCKET_AFTER: number;
+    FALLBACK: string[];
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -39,11 +53,14 @@ interface IConfig {
     STATS_REFRESH_INTERVAL: number;
     GRAPH_REFRESH_INTERVAL: number;
     LOGGER_UPDATE_INTERVAL: number;
+    FORENSICS_INTERVAL: number;
+    FORENSICS_RATE_LIMIT: number;
   };
   LND: {
     TLS_CERT_PATH: string;
     MACAROON_PATH: string;
     REST_API_URL: string;
+    TIMEOUT: number;
   };
   CLIGHTNING: {
     SOCKET: string;
@@ -58,12 +75,14 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SECOND_CORE_RPC: {
     HOST: string;
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -73,6 +92,7 @@ interface IConfig {
     DATABASE: string;
     USERNAME: string;
     PASSWORD: string;
+    TIMEOUT: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -97,10 +117,6 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
-  PRICE_DATA_SERVER: {
-    TOR_URL: string;
-    CLEARNET_URL: string;
-  };
   EXTERNAL_DATA_SERVER: {
     MEMPOOL_API: string;
     MEMPOOL_ONION: string;
@@ -115,10 +131,25 @@ interface IConfig {
     GEOLITE2_ASN: string;
     GEOIP2_ISP: string;
   },
+  REPLICATION: {
+    ENABLED: boolean;
+    AUDIT: boolean;
+    AUDIT_START_HEIGHT: number;
+    SERVERS: string[];
+  },
+  MEMPOOL_SERVICES: {
+    API: string;
+    ACCELERATIONS: boolean;
+  },
+  REDIS: {
+    ENABLED: boolean;
+    UNIX_SOCKET_PATH: string;
+  },
 }
 
 const defaults: IConfig = {
   'MEMPOOL': {
+    'ENABLED': true,
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,
@@ -126,6 +157,7 @@ const defaults: IConfig = {
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
+    'CACHE_ENABLED': true,
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
     'BLOCK_WEIGHT_UNITS': 4000000,
@@ -133,7 +165,6 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'BLOCKS_SUMMARIES_INDEXING': false,
-    'PRICE_FEED_UPDATE_INTERVAL': 600,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 1,
@@ -141,11 +172,24 @@ const defaults: IConfig = {
     'USER_AGENT': 'mempool',
     'STDOUT_LOG_MIN_PRIORITY': 'debug',
     'AUTOMATIC_BLOCK_REINDEXING': false,
-    'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json',
+    'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
+    'AUDIT': false,
+    'ADVANCED_GBT_AUDIT': false,
+    'ADVANCED_GBT_MEMPOOL': false,
+    'RUST_GBT': false,
+    'CPFP_INDEXING': false,
+    'MAX_BLOCKS_BULK_QUERY': 0,
+    'DISK_CACHE_BLOCK_INTERVAL': 6,
+    'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
+    'ALLOW_UNREACHABLE': true,
+    'PRICE_UPDATES_PER_HOUR': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
+    'UNIX_SOCKET_PATH': null,
+    'RETRY_UNIX_SOCKET_AFTER': 30000,
+    'FALLBACK': [],
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
@@ -156,13 +200,15 @@ const defaults: IConfig = {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
     'PORT': 8332,
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 60000,
   },
   'DATABASE': {
     'ENABLED': true,
@@ -171,7 +217,8 @@ const defaults: IConfig = {
     'PORT': 3306,
     'DATABASE': 'mempool',
     'USERNAME': 'mempool',
-    'PASSWORD': 'mempool'
+    'PASSWORD': 'mempool',
+    'TIMEOUT': 180000,
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -195,11 +242,14 @@ const defaults: IConfig = {
     'STATS_REFRESH_INTERVAL': 600,
     'GRAPH_REFRESH_INTERVAL': 600,
     'LOGGER_UPDATE_INTERVAL': 30,
+    'FORENSICS_INTERVAL': 43200,
+    'FORENSICS_RATE_LIMIT': 20,
   },
   'LND': {
     'TLS_CERT_PATH': '',
     'MACAROON_PATH': '',
     'REST_API_URL': 'https://localhost:8080',
+    'TIMEOUT': 10000,
   },
   'CLIGHTNING': {
     'SOCKET': '',
@@ -212,10 +262,6 @@ const defaults: IConfig = {
     'USERNAME': '',
     'PASSWORD': ''
   },
-  'PRICE_DATA_SERVER': {
-    'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
-  },
   'EXTERNAL_DATA_SERVER': {
     'MEMPOOL_API': 'https://mempool.space/api/v1',
     'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
@@ -224,11 +270,25 @@ const defaults: IConfig = {
     'BISQ_URL': 'https://bisq.markets/api',
     'BISQ_ONION': 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api'
   },
-  "MAXMIND": {
+  'MAXMIND': {
     'ENABLED': false,
-    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
-    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
-    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+    'GEOLITE2_CITY': '/usr/local/share/GeoIP/GeoLite2-City.mmdb',
+    'GEOLITE2_ASN': '/usr/local/share/GeoIP/GeoLite2-ASN.mmdb',
+    'GEOIP2_ISP': '/usr/local/share/GeoIP/GeoIP2-ISP.mmdb'
+  },
+  'REPLICATION': {
+    'ENABLED': false,
+    'AUDIT': false,
+    'AUDIT_START_HEIGHT': 774000,
+    'SERVERS': [],
+  },
+  'MEMPOOL_SERVICES': {
+    'API': '',
+    'ACCELERATIONS': false,
+  },
+  'REDIS': {
+    'ENABLED': false,
+    'UNIX_SOCKET_PATH': '',
   },
 };
 
@@ -246,9 +306,11 @@ class Config implements IConfig {
   LND: IConfig['LND'];
   CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
-  PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
+  REPLICATION: IConfig['REPLICATION'];
+  MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
+  REDIS: IConfig['REDIS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -265,9 +327,11 @@ class Config implements IConfig {
     this.LND = configs.LND;
     this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
-    this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
+    this.REPLICATION = configs.REPLICATION;
+    this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
+    this.REDIS = configs.REDIS;
   }
 
   merge = (...objects: object[]): IConfig => {

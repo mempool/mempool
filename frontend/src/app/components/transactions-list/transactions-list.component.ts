@@ -1,13 +1,15 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
-import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription } from 'rxjs';
+import { CacheService } from '../../services/cache.service';
+import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.interface';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap } from 'rxjs/operators';
+import { filter, map, tap, switchMap, shareReplay } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
+import { PriceService } from '../../services/price.service';
 
 @Component({
   selector: 'app-transactions-list',
@@ -18,8 +20,10 @@ import { ApiService } from '../../services/api.service';
 export class TransactionsListComponent implements OnInit, OnChanges {
   network = '';
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
+  showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
+  @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
   @Input() errorUnblinded = false;
@@ -43,14 +47,16 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   constructor(
     public stateService: StateService,
+    private cacheService: CacheService,
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
+    private priceService: PriceService,
   ) { }
 
   ngOnInit(): void {
-    this.latestBlock$ = this.stateService.blocks$.pipe(map(([block]) => block));
+    this.latestBlock$ = this.stateService.blocks$.pipe(map((blocks) => blocks[0]));
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     if (this.network === 'liquid' || this.network === 'liquidtestnet') {
@@ -62,8 +68,21 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
-          switchMap((txIds) => this.apiService.getOutspendsBatched$(txIds)),
-          tap((outspends: Outspend[][]) => {
+          switchMap((txIds) => {
+            if (!this.cached) {
+              // break list into batches of 50 (maximum supported by esplora)
+              const batches = [];
+              for (let i = 0; i < txIds.length; i += 50) {
+                batches.push(txIds.slice(i, i + 50));
+              }
+              return forkJoin(batches.map(batch => this.apiService.getOutspendsBatched$(batch)));
+            } else {
+              return of([]);
+            }
+          }),
+          tap((batchedOutspends: Outspend[][][]) => {
+            // flatten batched results back into a single array
+            const outspends = batchedOutspends.flat(1);
             if (!this.transactions) {
               return;
             }
@@ -90,6 +109,9 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
             tap((channels) => {
+              if (!this.transactions) {
+                return;
+              }
               const transactions = this.transactions.filter((tx) => !tx._channels);
               channels.forEach((channel, i) => {
                 transactions[i]._channels = channel;
@@ -119,7 +141,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       }
 
       this.transactionsLength = this.transactions.length;
-
+      this.cacheService.setTxCache(this.transactions);
 
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
@@ -141,9 +163,13 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
           tx['addressValue'] = addressIn - addressOut;
         }
+
+        this.priceService.getBlockPrice$(tx.status.block_time).pipe(
+          tap((price) => tx['price'] = price)
+        ).subscribe();
       });
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
-      if (txIds.length) {
+      if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
       }
       if (this.stateService.env.LIGHTNING) {
@@ -156,14 +182,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   onScroll(): void {
-    const scrollHeight = document.body.scrollHeight;
-    const scrollTop = document.documentElement.scrollTop;
-    if (scrollHeight > 0){
-      const percentageScrolled = scrollTop * 100 / scrollHeight;
-      if (percentageScrolled > 70){
-        this.loadMore.emit();
-      }
-    }
+    this.loadMore.emit();
   }
 
   haveBlindedOutputValues(tx: Transaction): boolean {
@@ -208,14 +227,50 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   }
 
   loadMoreInputs(tx: Transaction): void {
-    tx['@vinLimit'] = false;
+    if (!tx['@vinLoaded']) {
+      this.electrsApiService.getTransaction$(tx.txid)
+        .subscribe((newTx) => {
+          tx['@vinLoaded'] = true;
+          tx.vin = newTx.vin;
+          tx.fee = newTx.fee;
+          this.ref.markForCheck();
+        });
+    }
+  }
 
-    this.electrsApiService.getTransaction$(tx.txid)
-      .subscribe((newTx) => {
-        tx.vin = newTx.vin;
-        tx.fee = newTx.fee;
-        this.ref.markForCheck();
-      });
+  showMoreInputs(tx: Transaction): void {
+    this.loadMoreInputs(tx);
+    tx['@vinLimit'] = this.getVinLimit(tx, true);
+  }
+
+  showMoreOutputs(tx: Transaction): void {
+    tx['@voutLimit'] = this.getVoutLimit(tx, true);
+  }
+
+  getVinLimit(tx: Transaction, next = false): number {
+    let limit;
+    if ((tx['@vinLimit'] || 0) > this.inputRowLimit) {
+      limit = Math.min(tx['@vinLimit'] + (next ? this.showMoreIncrement : 0), tx.vin.length);
+    } else {
+      limit = Math.min((next ? this.showMoreIncrement : this.inputRowLimit), tx.vin.length);
+    }
+    if (tx.vin.length - limit <= 5) {
+      limit = tx.vin.length;
+    }
+    return limit;
+  }
+
+  getVoutLimit(tx: Transaction, next = false): number {
+    let limit;
+    if ((tx['@voutLimit'] || 0) > this.outputRowLimit) {
+      limit = Math.min(tx['@voutLimit'] + (next ? this.showMoreIncrement : 0), tx.vout.length);
+    } else {
+      limit = Math.min((next ? this.showMoreIncrement : this.outputRowLimit), tx.vout.length);
+    }
+    if (tx.vout.length - limit <= 5) {
+      limit = tx.vout.length;
+    }
+    return limit;
   }
 
   ngOnDestroy(): void {

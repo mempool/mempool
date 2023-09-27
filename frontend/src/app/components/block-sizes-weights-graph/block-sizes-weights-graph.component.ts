@@ -5,7 +5,7 @@ import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
@@ -30,7 +30,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
   @Input() left: number | string = 75;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -49,7 +49,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
@@ -60,6 +60,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     let firstRun = true;
 
     this.seoService.setTitle($localize`:@@56fa1cd221491b6478998679cba2dc8d55ba330d:Block Sizes and Weights`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-sizes:See Bitcoin block sizes (MB) and block weights (weight units) visualized over time.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -90,6 +91,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
                 this.prepareChartOptions({
                   sizes: data.sizes.map(val => [val.timestamp * 1000, val.avgSize / 1000000, val.avgHeight]),
                   weights: data.weights.map(val => [val.timestamp * 1000, val.avgWeight / 1000000, val.avgHeight]),
+                  sizePerWeight: data.weights.map((val, i) => [val.timestamp * 1000, data.sizes[i].avgSize / (val.avgWeight / 4), val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -124,6 +126,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
       color: [
         '#FDD835',
         '#D81B60',
+        '#039BE5',
       ],
       grid: {
         top: 30,
@@ -153,6 +156,8 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MB`;
             } else if (tick.seriesIndex === 1) { // Weight
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} MWU`;
+            } else if (tick.seriesIndex === 2) { // Size per weight
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.2-2')} B/vB`;
             }
             tooltip += `<br>`;
           }
@@ -192,10 +197,19 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
             },
             icon: 'roundRect',
           },
+          {
+            name: $localize`Size per weight`,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: {
+              color: 'white',
+            },
+            icon: 'roundRect',
+          },
         ],
         selected: JSON.parse(this.storageService.getValue('sizes_weights_legend'))  ?? {
           'Size': true,
           'Weight': true,
+          'Size per weight': true,
         }
       },
       yAxis: data.sizes.length === 0 ? undefined : [
@@ -258,6 +272,18 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
           showSymbol: false,
           symbol: 'none',
           data: data.weights,
+          type: 'line',
+          lineStyle: {
+            width: 2,
+          }
+        },
+        {
+          zlevel: 1,
+          yAxisIndex: 0,
+          name: $localize`Size per weight`,
+          showSymbol: false,
+          symbol: 'none',
+          data: data.sizePerWeight,
           type: 'line',
           lineStyle: {
             width: 2,

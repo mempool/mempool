@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, NgZone, OnInit } from '@angular/core';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
-import { Observable, switchMap, tap, zip } from 'rxjs';
+import { delay, Observable, switchMap, tap, zip } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -26,7 +26,7 @@ export class NodesChannelsMap implements OnInit {
   @Input() disableSpinner = false;
   @Output() readyEvent = new EventEmitter();
 
-  channelsObservable: Observable<any>; 
+  channelsObservable: Observable<any>;
 
   center: number[] | undefined;
   zoom: number | undefined;
@@ -41,7 +41,7 @@ export class NodesChannelsMap implements OnInit {
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'canvas',
-  }; 
+  };
 
   constructor(
     private seoService: SeoService,
@@ -64,23 +64,25 @@ export class NodesChannelsMap implements OnInit {
       this.zoom = 1.4;
       this.center = [0, 10];
     }
-    
+
     if (this.style === 'graph') {
       this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.node-map:See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
 
     if (['nodepage', 'channelpage'].includes(this.style)) {
       this.nodeSize = 8;
     }
-    
+
     this.channelsObservable = this.activatedRoute.paramMap
      .pipe(
+       delay(100),
        switchMap((params: ParamMap) => {
         this.isLoading = true;
         if (this.style === 'channelpage' && this.channel.length === 0 || !this.hasLocation) {
           this.isLoading = false;
         }
-            
+
         return zip(
           this.assetsService.getWorldMapJson$,
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
@@ -139,7 +141,7 @@ export class NodesChannelsMap implements OnInit {
             // on top of each other
             let random = Math.random() * 2 * Math.PI;
             let random2 = Math.random() * 0.01;
-            
+
             if (!nodesPubkeys[node1UniqueId]) {
               nodes.push([
                 channel[node1GpsLat] + random2 * Math.cos(random),
@@ -166,7 +168,7 @@ export class NodesChannelsMap implements OnInit {
             }
 
             const channelLoc = [];
-            channelLoc.push(nodesPubkeys[node1UniqueId].slice(0, 2));            
+            channelLoc.push(nodesPubkeys[node1UniqueId].slice(0, 2));
             channelLoc.push(nodesPubkeys[node2UniqueId].slice(0, 2));
             channelsLoc.push(channelLoc);
           }
@@ -203,24 +205,33 @@ export class NodesChannelsMap implements OnInit {
 
   prepareChartOptions(nodes, channels) {
     let title: object;
-    if (channels.length === 0 && !this.placeholder) {
-      this.chartOptions = null;
-      return;
-    }
-
-    // empty map fallback
-    if (channels.length === 0 && this.placeholder) {
-      title = {
-        textStyle: {
-          color: 'white',
-          fontSize: 18
-        },
-        text: $localize`No geolocation data available`,
-        left: 'center',
-        top: 'center'
-      };
-      this.zoom = 1.5;
-      this.center = [0, 20];
+    if (channels.length === 0) {
+      if (!this.placeholder) {
+        this.isLoading = false;
+        title = {
+          textStyle: {
+            color: 'white',
+            fontSize: 18
+          },
+          text: $localize`No data to display yet. Try again later.`,
+          left: 'center',
+          top: 'center'
+        };
+        this.zoom = 1.5;
+        this.center = [0, 20];
+      } else { // used for Node and Channel preview components
+        title = {
+          textStyle: {
+            color: 'white',
+            fontSize: 18
+          },
+          text: $localize`No geolocation data available`,
+          left: 'center',
+          top: 'center'
+        };
+        this.zoom = 1.5;
+        this.center = [0, 20];
+      }
     }
 
     this.chartOptions = {
@@ -228,6 +239,7 @@ export class NodesChannelsMap implements OnInit {
       title: title ?? undefined,
       tooltip: {},
       geo: {
+        top: 75,
         animation: false,
         silent: true,
         center: this.center,
@@ -315,7 +327,7 @@ export class NodesChannelsMap implements OnInit {
     this.chartInstance.on('finished', () => {
       this.isLoading = false;
     });
-    
+
     if (this.style === 'widget') {
       this.chartInstance.getZr().on('click', (e) => {
         this.zone.run(() => {
@@ -324,7 +336,7 @@ export class NodesChannelsMap implements OnInit {
         });
       });
     }
-      
+
     this.chartInstance.on('click', (e) => {
       if (e.data) {
         this.zone.run(() => {

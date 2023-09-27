@@ -1,6 +1,6 @@
-import { emitMempoolInfo, dropWebSocket } from "../../support/websocket";
+import { emitMempoolInfo, dropWebSocket } from '../../support/websocket';
 
-const baseModule = Cypress.env("BASE_MODULE");
+const baseModule = Cypress.env('BASE_MODULE');
 
 
 //Credit: https://github.com/bahmutov/cypress-examples/blob/6cedb17f83a3bb03ded13cf1d6a3f0656ca2cdf5/docs/recipes/overlapping-elements.md
@@ -41,7 +41,6 @@ describe('Mainnet', () => {
     // cy.intercept('/api/v1/block/*/summary').as('block-summary');
     // cy.intercept('/api/v1/outspends/*').as('outspends');
     // cy.intercept('/api/tx/*/outspends').as('tx-outspends');
-    // cy.intercept('/resources/pools.json').as('pools');
 
     // Search Auto Complete
     cy.intercept('/api/address-prefix/1wiz').as('search-1wiz');
@@ -65,7 +64,7 @@ describe('Mainnet', () => {
     it('loads the status screen', () => {
       cy.visit('/status');
       cy.get('#mempool-block-0').should('be.visible');
-      cy.get('[id^="bitcoin-block-"]').should('have.length', 8);
+      cy.get('[id^="bitcoin-block-"]').should('have.length', 22);
       cy.get('.footer').should('be.visible');
       cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
         expect(text).to.match(/Incoming transactions.* vB\/s/);
@@ -128,7 +127,7 @@ describe('Mainnet', () => {
 
         cy.get('.search-box-container > .form-control').type('S').then(() => {
           cy.wait('@search-1wizS');
-          cy.get('app-search-results button.dropdown-item').should('have.length', 5);
+          cy.get('app-search-results button.dropdown-item').should('have.length', 6);
         });
 
         cy.get('.search-box-container > .form-control').type('A').then(() => {
@@ -220,11 +219,11 @@ describe('Mainnet', () => {
     describe('blocks navigation', () => {
 
       describe('keyboard events', () => {
-        it('loads first blockchain blocks visible and keypress arrow right', () => {
+        it('loads first blockchain block visible and keypress arrow right', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.waitForPageIdle();
@@ -234,11 +233,11 @@ describe('Mainnet', () => {
           });
         });
 
-        it('loads first blockchain blocks visible and keypress arrow left', () => {
+        it('loads first blockchain block visible and keypress arrow left', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -247,11 +246,11 @@ describe('Mainnet', () => {
           });
         });
 
-        it('loads last blockchain blocks and keypress arrow right', () => {
+        it.skip('loads last blockchain block and keypress arrow right', () => { //Skip for now as "last" doesn't really work with infinite scrolling
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-4 > a').click().then(() => {
+          cy.get('bitcoin-block-offset-0-index-7').click().then(() => {
             cy.waitForPageIdle();
 
             // block 6
@@ -310,7 +309,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('.blockchain-blocks-0 > a').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -340,14 +339,14 @@ describe('Mainnet', () => {
       cy.visit('/');
       cy.waitForSkeletonGone();
 
-      cy.changeNetwork("testnet");
-      cy.changeNetwork("signet");
-      cy.changeNetwork("mainnet");
+      cy.changeNetwork('testnet');
+      cy.changeNetwork('signet');
+      cy.changeNetwork('mainnet');
     });
 
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
-      cy.visit("/");
+      cy.visit('/');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
@@ -505,9 +504,17 @@ describe('Mainnet', () => {
 
     describe('RBF transactions', () => {
       it('shows RBF transactions properly (mobile)', () => {
+        cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
+          fixture: 'mainnet_tx_cached.json'
+        }).as('cached_tx');
+
+        cy.intercept('/api/v1/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5/rbf', {
+          fixture: 'mainnet_rbf_new.json'
+        }).as('rbf');
+
         cy.viewport('iphone-xr');
         cy.mockMempoolSocket();
-        cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
 
         cy.waitForSkeletonGone();
 
@@ -525,22 +532,30 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-mempool').should('be.visible');
-        cy.get('.alert-mempool').invoke('css', 'width').then((alertWidth) => {
+        cy.get('.alert').should('be.visible');
+        cy.get('.alert').invoke('css', 'width').then((alertWidth) => {
           cy.get('.container-xl > :nth-child(3)').invoke('css', 'width').should('equal', alertWidth);
         });
 
-        cy.get('.btn-success').then(getRectangle).then((rectA) => {
-          cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
+          cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
         });
       });
 
       it('shows RBF transactions properly (desktop)', () => {
+        cy.intercept('/api/v1/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f/cached', {
+          fixture: 'mainnet_tx_cached.json'
+        }).as('cached_tx');
+
+        cy.intercept('/api/v1/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5/rbf', {
+          fixture: 'mainnet_rbf_new.json'
+        }).as('rbf');
+
         cy.viewport('macbook-16');
         cy.mockMempoolSocket();
-        cy.visit('/tx/f81a08699b62b2070ad8fe0f2a076f8bea0386a2fdcd8124caee42cbc564a0d5');
+        cy.visit('/tx/21518a98d1aa9df524865d2f88c578499f524eb1d0c4d3e70312ab863508692f');
 
         cy.waitForSkeletonGone();
 
@@ -558,17 +573,17 @@ describe('Mainnet', () => {
           }
         });
 
-        cy.get('.alert-mempool').should('be.visible');
+        cy.get('.alert').should('be.visible');
 
-        const alertLocator = '.alert-mempool';
+        const alertLocator = '.alert';
         const tableLocator = '.container-xl > :nth-child(3)';
 
         cy.get(tableLocator).invoke('css', 'width').then((firstWidth) => {
           cy.get(alertLocator).invoke('css', 'width').should('equal', firstWidth);
         });
 
-        cy.get('.btn-success').then(getRectangle).then((rectA) => {
-          cy.get('.alert-mempool').then(getRectangle).then((rectB) => {
+        cy.get('.btn-warning').then(getRectangle).then((rectA) => {
+          cy.get('.alert').then(getRectangle).then((rectB) => {
             expect(areOverlapping(rectA, rectB), 'Confirmations box and RBF alert are overlapping').to.be.false;
           });
         });

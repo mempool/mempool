@@ -2,8 +2,15 @@
   text-align: left;
   padding-top: 1rem;
   scroll-behavior: smooth;
+  margin-bottom: 20px;
 }
 
 #footer {
   clear: both;
+}
+
+@media (max-width: 992px) {
+  .hide-on-mobile {
+    display: none;
+  }
 }

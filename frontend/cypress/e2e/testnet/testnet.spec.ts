@@ -1,6 +1,6 @@
-import { confirmAddress, emitMempoolInfo, sendWsMock, showNewTx, startTrackingAddress } from "../../support/websocket";
+import { emitMempoolInfo } from '../../support/websocket';
 
-const baseModule = Cypress.env("BASE_MODULE");
+const baseModule = Cypress.env('BASE_MODULE');
 
 describe('Testnet', () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('Testnet', () => {
 
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
-      cy.visit("/testnet");
+      cy.visit('/testnet');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');

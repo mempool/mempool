@@ -1,0 +1,43 @@
+<div class="box">
+  <div class="starting-balance" *ngIf="showStartingBalance">
+    <h5 i18n="lightning.starting-balance|Channel starting balance">Starting balance</h5>
+    <div class="nodes">
+      <h5 class="alias">{{ left.alias }}</h5>
+      <h5 class="alias">{{ right.alias }}</h5>
+    </div>
+    <div class="balances">
+      <div class="balance left">
+        <span class="value" *ngIf="minStartingBalance !== maxStartingBalance">{{ minStartingBalance | number : '1.0-0' }} - {{ maxStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+        <span class="value" *ngIf="minStartingBalance === maxStartingBalance">{{ minStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+      </div>
+      <div class="balance right">
+        <span class="value" *ngIf="minStartingBalance !== maxStartingBalance">{{ channel.capacity - maxStartingBalance | number : '1.0-0' }} - {{ channel.capacity - minStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+        <span class="value" *ngIf="minStartingBalance === maxStartingBalance">{{ channel.capacity - maxStartingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+      </div>
+    </div>
+    <div class="balance-bar">
+      <div class="bar left" [class.hide-value]="hideStartingLeft" [style]="startingBalanceStyle.left"></div>
+      <div class="bar center" [style]="startingBalanceStyle.center"></div>
+      <div class="bar right"  [class.hide-value]="hideStartingRight" [style]="startingBalanceStyle.right"></div>
+    </div>
+  </div>
+  <br>
+  <div class="closing-balance" *ngIf="showClosingBalance">
+    <h5 i18n="lightning.closing-balance|Channel closing balance">Closing balance</h5>
+    <div class="balances">
+      <div class="balance left">
+        <span class="value" *ngIf="minClosingBalance !== maxClosingBalance">{{ minClosingBalance | number : '1.0-0' }} - {{ maxClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+        <span class="value" *ngIf="minClosingBalance === maxClosingBalance">{{ minClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+      </div>
+      <div class="balance right">
+        <span class="value" *ngIf="minClosingBalance !== maxClosingBalance">{{ channel.capacity - maxClosingBalance | number : '1.0-0' }} - {{ channel.capacity - minClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+        <span class="value" *ngIf="minClosingBalance === maxClosingBalance">{{ channel.capacity - maxClosingBalance | number : '1.0-0' }}<app-sats [valueOverride]=" "></app-sats></span>
+      </div>
+    </div>
+    <div class="balance-bar">
+      <div class="bar left" [class.hide-value]="hideClosingLeft" [style]="closingBalanceStyle.left"></div>
+      <div class="bar center" [style]="closingBalanceStyle.center"></div>
+      <div class="bar right" [class.hide-value]="hideClosingRight" [style]="closingBalanceStyle.right"></div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 describe('Bisq', () => {
-  const baseModule = Cypress.env("BASE_MODULE");
+  const baseModule = Cypress.env('BASE_MODULE');
   const basePath = '';
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('Bisq', () => {
       cy.waitForSkeletonGone();
     });
 
-    describe("transactions", () => {
+    describe('transactions', () => {
       it('loads the transactions screen', () => {
         cy.visit(`${basePath}`);
         cy.waitForSkeletonGone();
@@ -30,9 +30,9 @@ describe('Bisq', () => {
       });
 
       const filters = [
-        "Asset listing fee", "Blind vote", "Compensation request",
-        "Genesis", "Irregular", "Lockup", "Pay trade fee", "Proof of burn",
-        "Proposal", "Reimbursement request", "Transfer BSQ", "Unlock", "Vote reveal"
+        'Asset listing fee', 'Blind vote', 'Compensation request',
+        'Genesis', 'Irregular', 'Lockup', 'Pay trade fee', 'Proof of burn',
+        'Proposal', 'Reimbursement request', 'Transfer BSQ', 'Unlock', 'Vote reveal'
       ];
       filters.forEach((filter) => {
         it.only(`filters the transaction screen by ${filter}`, () => {
@@ -49,7 +49,7 @@ describe('Bisq', () => {
         });
       });
 
-      it("filters using multiple criteria", () => {
+      it('filters using multiple criteria', () => {
         const filters = ['Proposal', 'Lockup', 'Unlock'];
         cy.visit(`${basePath}/transactions`);
         cy.waitForSkeletonGone();

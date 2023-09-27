@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
-import { formatCurrency, formatNumber, getCurrencySymbol } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
+import { formatNumber } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { download, formatterXAxis } from '../../shared/graphs.utils';
 import { MiningService } from '../../services/mining.service';
 import { StorageService } from '../../services/storage.service';
 import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '../../shared/pipes/fiat-shortener.pipe';
+import { FiatCurrencyPipe } from '../../shared/pipes/fiat-currency.pipe';
 
 @Component({
   selector: 'app-block-rewards-graph',
@@ -31,7 +32,7 @@ export class BlockRewardsGraphComponent implements OnInit {
   @Input() left: number | string = 75;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -44,20 +45,25 @@ export class BlockRewardsGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
+  currency: string;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private miningService: MiningService,
     private storageService: StorageService,
     private route: ActivatedRoute,
     private fiatShortenerPipe: FiatShortenerPipe,
+    private fiatCurrencyPipe: FiatCurrencyPipe,
   ) {
+    this.currency = 'USD';
   }
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-rewards:See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -65,7 +71,7 @@ export class BlockRewardsGraphComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+        if (['1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -82,7 +88,7 @@ export class BlockRewardsGraphComponent implements OnInit {
               tap((response) => {
                 this.prepareChartOptions({
                   blockRewards: response.body.map(val => [val.timestamp * 1000, val.avgRewards / 100000000, val.avgHeight]),
-                  blockRewardsUSD: response.body.filter(val => val.USD > 0).map(val => [val.timestamp * 1000, val.avgRewards / 100000000 * val.USD, val.avgHeight]),
+                  blockRewardsFiat: response.body.filter(val => val[this.currency] > 0).map(val => [val.timestamp * 1000, val.avgRewards / 100000000 * val[this.currency], val.avgHeight]),
                 });
                 this.isLoading = false;
               }),
@@ -157,7 +163,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             if (tick.seriesIndex === 0) {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
             } else if (tick.seriesIndex === 1) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatCurrency(tick.data[1], this.locale, getCurrencySymbol('USD', 'narrow'), 'USD', '1.0-0')}<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency)}<br>`;
             }
           }
 
@@ -184,9 +190,9 @@ export class BlockRewardsGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Rewards USD',
+            name: 'Rewards ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {  
+            textStyle: {
               color: 'white',
             },
             icon: 'roundRect',
@@ -228,7 +234,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val);
+              return this.fiatShortenerPipe.transform(val, null, this.currency);
             }.bind(this)
           },
           splitLine: {
@@ -251,8 +257,8 @@ export class BlockRewardsGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
-          name: 'Rewards USD',
-          data: data.blockRewardsUSD,
+          name: 'Rewards ' + this.currency,
+          data: data.blockRewardsFiat,
           type: 'line',
           smooth: 0.25,
           symbol: 'none',

@@ -1,6 +1,6 @@
-import { emitMempoolInfo } from "../../support/websocket";
+import { emitMempoolInfo } from '../../support/websocket';
 
-const baseModule = Cypress.env("BASE_MODULE");
+const baseModule = Cypress.env('BASE_MODULE');
 
 describe('Signet', () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('Signet', () => {
 
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
-      cy.visit("/signet");
+      cy.visit('/signet');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
@@ -35,7 +35,7 @@ describe('Signet', () => {
 
       emitMempoolInfo({
         'params': {
-          "network": "signet"
+          'network': 'signet'
         }
       });
 

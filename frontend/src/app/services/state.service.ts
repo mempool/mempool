@@ -1,17 +1,21 @@
 import { Inject, Injectable, PLATFORM_ID, LOCALE_ID } from '@angular/core';
-import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable } from 'rxjs';
+import { ReplaySubject, BehaviorSubject, Subject, fromEvent, Observable, merge } from 'rxjs';
 import { Transaction } from '../interfaces/electrs.interface';
-import { IBackendInfo, MempoolBlock, MempoolBlockWithTransactions, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, TransactionStripped } from '../interfaces/websocket.interface';
-import { BlockExtended, DifficultyAdjustment, OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { IBackendInfo, MempoolBlock, MempoolBlockDelta, MempoolInfo, Recommendedfees, ReplacedTransaction, ReplacementInfo, TransactionStripped } from '../interfaces/websocket.interface';
+import { BlockExtended, CpfpInfo, DifficultyAdjustment, MempoolPosition, OptimizedMempoolStats, RbfTree } from '../interfaces/node-api.interface';
 import { Router, NavigationStart } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { map, shareReplay } from 'rxjs/operators';
+import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
+import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
+import { ApiService } from './api.service';
 
-interface MarkBlockState {
+export interface MarkBlockState {
   blockHeight?: number;
+  txid?: string;
   mempoolBlockIndex?: number;
   txFeePerVSize?: number;
+  mempoolPosition?: MempoolPosition;
 }
 
 export interface ILoadingIndicators { [name: string]: number; }
@@ -39,6 +43,14 @@ export interface Env {
   BISQ_WEBSITE_URL: string;
   MINING_DASHBOARD: boolean;
   LIGHTNING: boolean;
+  AUDIT: boolean;
+  MAINNET_BLOCK_AUDIT_START_HEIGHT: number;
+  TESTNET_BLOCK_AUDIT_START_HEIGHT: number;
+  SIGNET_BLOCK_AUDIT_START_HEIGHT: number;
+  HISTORICAL_PRICE: boolean;
+  ACCELERATOR: boolean;
+  GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
+  PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
 }
 
 const defaultEnv: Env = {
@@ -64,6 +76,12 @@ const defaultEnv: Env = {
   'BISQ_WEBSITE_URL': 'https://bisq.markets',
   'MINING_DASHBOARD': true,
   'LIGHTNING': false,
+  'AUDIT': false,
+  'MAINNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'TESTNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'SIGNET_BLOCK_AUDIT_START_HEIGHT': 0,
+  'HISTORICAL_PRICE': true,
+  'ACCELERATOR': false,
 };
 
 @Injectable({
@@ -76,10 +94,12 @@ export class StateService {
   blockVSize: number;
   env: Env;
   latestBlockHeight = -1;
+  blocks: BlockExtended[] = [];
 
   networkChanged$ = new ReplaySubject<string>(1);
   lightningChanged$ = new ReplaySubject<boolean>(1);
-  blocks$: ReplaySubject<[BlockExtended, boolean]>;
+  blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
+  blocks$: Observable<BlockExtended[]>;
   transactions$ = new ReplaySubject<TransactionStripped>(6);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
@@ -87,17 +107,27 @@ export class StateService {
   mempoolBlocks$ = new ReplaySubject<MempoolBlock[]>(1);
   mempoolBlockTransactions$ = new Subject<TransactionStripped[]>();
   mempoolBlockDelta$ = new Subject<MempoolBlockDelta>();
+  liveMempoolBlockTransactions$: Observable<{ [txid: string]: TransactionStripped}>;
+  txConfirmed$ = new Subject<[string, BlockExtended]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
+  txRbfInfo$ = new Subject<RbfTree>();
+  rbfLatest$ = new Subject<RbfTree[]>();
+  rbfLatestSummary$ = new Subject<ReplacementInfo[]>();
   utxoSpent$ = new Subject<object>();
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();
+  mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
+  mempoolRemovedTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
+  isLoadingMempool$ = new BehaviorSubject<boolean>(true);
   vbytesPerSecond$ = new ReplaySubject<number>(1);
   previousRetarget$ = new ReplaySubject<number>(1);
   backendInfo$ = new ReplaySubject<IBackendInfo>(1);
+  servicesBackendInfo$ = new ReplaySubject<IBackendInfo>(1);
   loadingIndicators$ = new ReplaySubject<ILoadingIndicators>(1);
   recommendedFees$ = new ReplaySubject<Recommendedfees>(1);
+  chainTip$ = new ReplaySubject<number>(-1);
 
   live2Chart$ = new Subject<OptimizedMempoolStats>();
 
@@ -105,12 +135,20 @@ export class StateService {
   connectionState$ = new BehaviorSubject<0 | 1 | 2>(2);
   isTabHidden$: Observable<boolean>;
 
-  markBlock$ = new ReplaySubject<MarkBlockState>();
+  markBlock$ = new BehaviorSubject<MarkBlockState>({});
   keyNavigation$ = new Subject<KeyboardEvent>();
+  searchText$ = new BehaviorSubject<string>('');
 
   blockScrolling$: Subject<boolean> = new Subject<boolean>();
+  resetScroll$: Subject<boolean> = new Subject<boolean>();
   timeLtr: BehaviorSubject<boolean>;
   hideFlow: BehaviorSubject<boolean>;
+  hideAudit: BehaviorSubject<boolean>;
+  fiatCurrency$: BehaviorSubject<string>;
+  rateUnits$: BehaviorSubject<string>;
+
+  searchFocus$: Subject<boolean> = new Subject<boolean>();
+  menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
@@ -144,14 +182,43 @@ export class StateService {
       }
     });
 
-    this.blocks$ = new ReplaySubject<[BlockExtended, boolean]>(this.env.KEEP_BLOCKS_AMOUNT);
+    this.liveMempoolBlockTransactions$ = merge(
+      this.mempoolBlockTransactions$.pipe(map(transactions => { return { transactions }; })),
+      this.mempoolBlockDelta$.pipe(map(delta => { return { delta }; })),
+    ).pipe(scan((transactions: { [txid: string]: TransactionStripped }, change: any): { [txid: string]: TransactionStripped } => {
+      if (change.transactions) {
+        const txMap = {}
+        change.transactions.forEach(tx => {
+          txMap[tx.txid] = tx;
+        })
+        return txMap;
+      } else {
+        change.delta.changed.forEach(tx => {
+          transactions[tx.txid].rate = tx.rate;
+        })
+        change.delta.removed.forEach(txid => {
+          delete transactions[txid];
+        });
+        change.delta.added.forEach(tx => {
+          transactions[tx.txid] = tx;
+        });
+        return transactions;
+      }
+    }, {}));
 
     if (this.env.BASE_MODULE === 'bisq') {
       this.network = this.env.BASE_MODULE;
       this.networkChanged$.next(this.env.BASE_MODULE);
     }
 
+    this.networkChanged$.subscribe((network) => {
+      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.blocksSubject$.next([]);
+    });
+
     this.blockVSize = this.env.BLOCK_WEIGHT_UNITS / 4;
+
+    this.blocks$ = this.blocksSubject$.pipe(filter(blocks => blocks != null && blocks.length > 0));
 
     const savedTimePreference = this.storageService.getValue('time-preference-ltr');
     const rtlLanguage = (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he'));
@@ -170,6 +237,18 @@ export class StateService {
         this.storageService.removeItem('flow-preference');
       }
     });
+
+    const savedAuditPreference = this.storageService.getValue('audit-preference');
+    this.hideAudit = new BehaviorSubject<boolean>(savedAuditPreference === 'hide');
+    this.hideAudit.subscribe((hide) => {
+      this.storageService.setValue('audit-preference', hide ? 'hide' : 'show');
+    });
+    
+    const fiatPreference = this.storageService.getValue('fiat-preference');
+    this.fiatCurrency$ = new BehaviorSubject<string>(fiatPreference || 'USD');
+
+    const rateUnitPreference = this.storageService.getValue('rate-unit-preference');
+    this.rateUnits$ = new BehaviorSubject<string>(rateUnitPreference || 'vb');
   }
 
   setNetworkBasedonUrl(url: string) {
@@ -264,5 +343,38 @@ export class StateService {
 
   isLiquid() {
     return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
+
+  isAnyTestnet(): boolean {
+    return ['testnet', 'signet', 'liquidtestnet'].includes(this.network);
+  }
+
+  resetChainTip() {
+    this.latestBlockHeight = -1;
+    this.chainTip$.next(-1);
+  }
+
+  updateChainTip(height) {
+    if (height > this.latestBlockHeight) {
+      this.latestBlockHeight = height;
+      this.chainTip$.next(height);
+    }
+  }
+
+  resetBlocks(blocks: BlockExtended[]): void {
+    this.blocks = blocks.reverse();
+    this.blocksSubject$.next(blocks);
+  }
+
+  addBlock(block: BlockExtended): void {
+    this.blocks.unshift(block);
+    this.blocks = this.blocks.slice(0, this.env.KEEP_BLOCKS_AMOUNT);
+    this.blocksSubject$.next(this.blocks);
+  }
+
+  focusSearchInputDesktop() {
+    if (!hasTouchScreen()) {
+      this.searchFocus$.next(true);
+    }    
   }
 }

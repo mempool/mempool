@@ -19,21 +19,31 @@
   }
 }
 .tx-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  width: 0;
+  max-width: 100%;
+  margin-right: 0px;
   margin-bottom: 0px;
   margin-top: 8px;
-  display: inline-block;
-  width: 100%;
-  flex-shrink: 0;
   @media (min-width: 651px) {
-    display: flex;
-    width: auto;
     flex-grow: 1;
     margin-bottom: 0px;
+    margin-right: 1em;
     top: 1px;
     position: relative;
   }
   @media (max-width: 650px) {
+    width: 100%;
     order: 3;
+  }
+
+  .txid {
+    width: 200px;
+    min-width: 200px;
+    flex-grow: 1;
   }
 }
 
@@ -86,7 +96,7 @@
   position: relative;
   width: 100%;
   background: #181b2d;
-  padding: 10px;
+  padding: 10px 0;
   padding-bottom: 0;
 }
 
@@ -120,7 +130,7 @@
 }
 
 .table {
-  	tr td {
+  tr td {
 		padding: 0.75rem 0.5rem;
 		@media (min-width: 576px) {
 			padding: 0.75rem 0.75rem;
@@ -128,7 +138,7 @@
 		&:last-child {
 			text-align: right;
 			@media (min-width: 850px) {
-			text-align: left;
+        text-align: left;
 			}
 		}
 		.btn {
@@ -187,5 +197,73 @@
       margin-bottom: 8px;
       margin-left: 8px;
     }
+  }
+}
+
+.cpfp-details {
+  .txids {
+    width: 60%;
+  }
+
+  @media (max-width: 500px) {
+    .txids {
+      width: 40%;
+    }
+  }
+}
+
+.tx-list {
+  .alert-link {
+    display: block;
+  }
+}
+
+.link.accelerator {
+  cursor: pointer;
+}
+
+.eta {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  @media (min-width: 850px) {
+    justify-content: left !important;    
+  }
+}
+
+.accelerate {
+  display: flex !important;
+  align-self: auto;
+  margin-top: 3px;
+  margin-left: auto;
+  background-color: #653b9c;
+  @media (max-width: 849px) {
+    margin-left: 5px;
+  }
+}
+
+.etaDeepMempool {
+  display: flex !important;
+  justify-content: end;
+  flex-wrap: wrap;
+  align-content: center;
+  @media (max-width: 995px) {
+    justify-content: left !important;
+  }
+  @media (max-width: 849px) {
+    justify-content: right !important;
+  }
+}
+
+.accelerateDeepMempool {
+  align-self: auto;
+  margin-top: 3px;
+  margin-left: auto;
+  background-color: #653b9c;
+  @media (max-width: 995px) {
+    margin-left: 0px;
+  }
+  @media (max-width: 849px) {
+    margin-left: 5px;
   }
 }

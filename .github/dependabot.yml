@@ -1,20 +1,68 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/backend"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: npm
-  directory: "/frontend"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: docker
-  directory: "/docker/backend"
-  schedule:
-    interval: weekly
-- package-ecosystem: "github-actions"
-  directory: "/"
-  schedule:
-      interval: "weekly"
+  - package-ecosystem: npm
+    versioning-strategy: increase
+    directory: "/backend"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
+    allow:
+      - dependency-type: "production"
+
+  - package-ecosystem: npm
+    directory: "/frontend"
+    versioning-strategy: increase
+    groups:
+      frontend-angular-dependencies:
+        patterns:
+          - "@angular*"
+          - "@ng-*"
+          - "ngx-*"
+      frontend-jest-dependencies:
+        patterns:
+          - "@types/jest"
+          - "jest"
+      frontend-eslint-dependencies:
+        patterns:
+          - "@typescript-eslint*"
+          - "eslint"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
+    allow:
+      - dependency-type: "production"
+
+  - package-ecosystem: docker
+    directory: "/docker/backend"
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
+
+  - package-ecosystem: docker
+    directory: "/docker/frontend"
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]

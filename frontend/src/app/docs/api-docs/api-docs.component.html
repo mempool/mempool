@@ -9,12 +9,20 @@
 
       <div class="doc-content">
 
+        <div id="disclaimer">
+          <table *ngIf="!mobileViewport"><tr><td><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images></td><td><p i18n="faq.big-disclaimer"><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, wallet issues, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></td></tr></table>
+          <div *ngIf="mobileViewport"><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images><p i18n="faq.big-disclaimer"><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, wallet issues, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></div>
+
+        </div>
+
         <div class="doc-item-container" *ngFor="let item of faq">
-          <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
-          <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
-            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
-            <div class="endpoint-content">
-              <ng-container *ngTemplateOutlet="dict[item.fragment]" class="endpoint"></ng-container>
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance ) || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('auditOnly') && item.options.auditOnly && auditEnabled )">
+            <h3 *ngIf="item.type === 'category'">{{ item.title }}</h3>
+            <div *ngIf="item.type !== 'category'" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}"><table><tr><td>{{ item.title }}</td><td><span>{{ item.category }}</span></td></tr></table></a>
+              <div class="endpoint-content">
+                <ng-container *ngTemplateOutlet="dict[item.fragment]" class="endpoint"></ng-container>
+              </div>
             </div>
           </div>
         </div>
@@ -32,7 +40,7 @@
       <div class="doc-content">
 
         <p class="doc-welcome-note">Below is a reference for the {{ network.val === '' ? 'Bitcoin' : network.val.charAt(0).toUpperCase() + network.val.slice(1) }} <ng-container i18n="api-docs.title">REST API service</ng-container>.</p>
-        <p class="doc-welcome-note api-note" *ngIf="officialMempoolInstance">Note that we enforce rate limits. If you exceed these limits, you will get a polite error encouraging you to run your own Mempool instance. If you repeatedly exceed the limits, you may be banned from accessing the service altogether.</p>
+        <p class="doc-welcome-note api-note" *ngIf="officialMempoolInstance">Note that we enforce rate limits. If you exceed these limits, you will get an HTTP 429 error. If you repeatedly exceed the limits, you may be banned from accessing the service altogether. Consider an <a href="/enterprise">enterprise sponsorship</a> if you need higher API limits.</p>
 
         <div class="doc-item-container" *ngFor="let item of restDocs">
           <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
@@ -163,14 +171,6 @@
   <p>There are feerate estimates on the top of <a [routerLink]="['/' | relativeUrl]">the main dashboard</a> you can use as a guide. See <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="looking-up-fee-estimates">this FAQ</a> for more on picking the right feerate.</p>
 </ng-template>
 
-<ng-template type="what-is-full-mempool">
-  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>The default maximum size of a Bitcoin node's mempool is 300MB, so when there are 300MB of transactions in the mempool, we say it's "full".</p>
-</ng-template>
-
-<ng-template type="why-empty-blocks">
-  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
-</ng-template>
-
 <ng-template type="why-is-transaction-stuck-in-mempool">
   <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>
 </ng-template>
@@ -203,6 +203,74 @@
   See the <a [routerLink]="['/graphs' | relativeUrl]">graphs page</a> for aggregate trends over time: mempool size over time and incoming transaction velocity over time.
 </ng-template>
 
+<ng-template type="what-is-full-mempool">
+  <p>When a Bitcoin transaction is made, it is stored in a Bitcoin node's mempool before it is confirmed into a block. When the rate of incoming transactions exceeds the rate transactions are confirmed, the mempool grows in size.</p><p>By default, Bitcoin Core allocates 300MB of memory for its mempool, so when a node's mempool grows big enough to use all 300MB of allocated memory, we say it's "full".</p><p>Once a node's mempool is using all of its allocated memory, it will start rejecting new transactions below a certain feerate threshold—so when this is the case, be extra sure to set a feerate that (at a minimum) exceeds that threshold. The current threshold feerate (and memory usage) are displayed right on Mempool's front page.</p>
+</ng-template>
+
+<ng-template type="how-big-is-mempool-used-by-mempool-space">
+  <p>mempool.space uses multiple Bitcoin nodes to obtain data: some with the default 300MB mempool memory limit (call these Small Nodes) and others with a much larger mempool memory limit (call these Big Nodes).</p>
+  <p>Many nodes on the Bitcoin network are configured to run with the default 300MB mempool memory setting. When all 300MB of memory are used up, such nodes will reject transactions below a certain threshold feerate. Running Small Nodes allows mempool.space to tell you what this threshold feerate is—this is the "Purging" feerate that shows on the front page when mempools are full, which you can use to be reasonably sure that your transaction will be widely propagated.</p>
+    <p>Big Node mempools are so big that they don't need to reject (or purge) transactions. Such nodes allow for mempool.space to provide you with information on any pending transaction it has received—no matter how congested the mempool is, and no matter how low-feerate or low-priority the transaction is.</p>
+</ng-template>
+
+<ng-template type="what-is-memory-usage">
+  <p>Memory usage on the front page refers to the real-time amount of system memory used by a Bitcoin node's mempool. This memory usage number is always higher than the total size of all pending transactions in the mempool due to indexes, pointers, and other overhead used by Bitcoin Core for storage and processing.</p>
+  <p>mempool.space shows the memory usage of a Bitcoin node that has a very high mempool memory limit. As a result, when mempools fill up, you may notice memory usage on mempool.space go beyond 300MB. This is not a mistake—this memory usage figure is high because it's for a Bitcoin node that isn't rejecting (or evicting) transactions. Consider it to be another data point to give you an idea of how congested the mempool is relative to the default memory limit of 300MB.</p>
+  <p>A Bitcoin node running the default 300MB mempool memory limit, like most Raspberry Pi nodes, will never go past 300MB of memory usage.</p>
+</ng-template>
+
+<ng-template type="why-empty-blocks">
+  <p>When a new block is found, mining pools send miners a block template with no transactions so they can start searching for the next block as soon as possible. They send a block template full of transactions right afterward, but a full block template is a bigger data transfer and takes slightly longer to reach miners.</p><p>In this intervening time, which is usually no more than 1-2 seconds, miners sometimes get lucky and find a new block using the empty block template.</p>
+</ng-template>
+
+<ng-template type="why-block-timestamps-dont-always-increase">
+  <p>Block validation rules do not strictly require that a block's timestamp be more recent than the timestamp of the block preceding it. Without a central authority, it's impossible to know what the exact correct time is. Instead, the Bitcoin protocol requires that a block's timestamp meet certain requirements. One of those requirements is that a block's timestamp cannot be older than the median timestamp of the 12 blocks that came before it. See more details <a href="https://en.bitcoin.it/wiki/Block_timestamp" target="_blank">here</a>.</p><p>As a result, timestamps are only accurate to within an hour or so, which sometimes results in blocks with timestamps that appear out of order.</p>
+</ng-template>
+
+<ng-template type="why-dont-fee-ranges-match">
+  <p>Mempool aims to show you the <i>effective feerate</i> range for blocks—how much would you actually need to pay to get a transaction included in a block.</p>
+  <p>A transaction's effective feerate is not always the same as the feerate explicitly set for it. For example, if you see a 1 s/vb transaction in a block with a displayed feerate range of 5 s/vb to 72 s/vb, chances are that 1 s/vb transaction had a high-feerate child transaction that boosted its effective feerate to 5 s/vb or higher (this is how CPFP fee-bumping works). In such a case, it would be misleading to use 1 s/vb as the lower bound of the block's feerate range since it actually required more than 1 s/vb to confirm that transaction in that block.</p>
+  <p>You can find a transaction's feerate on its transaction details page. If the transaction has any CPFP relationships, the page will also show the transaction's effective feerate along with links to descendent and/or ancestor transactions.</p>
+</ng-template>
+
+<ng-template type="how-do-block-audits-work">
+  <p>A block audit visually compares Mempool's expected block to the actual block for a particular block height.</p>
+  <p>How is the expected block determined? Mempool monitors its view of the mempool and runs a re-implementation of Bitcoin Core's transaction selection algorithm to determine the transactions it expects to see in upcoming blocks (<a href="https://github.com/mempool/mempool/blob/master/backend/src/api/mempool-blocks.ts" target="_blank">source code here</a>). Since there is a continual flow of new transactions, this algorithm runs every 2 seconds, and as a result, you will see the transactions <a href="/mempool-block/0">projected to be in upcoming blocks</a> change in near real-time.</p>
+  <p>At the moment a new block is mined, Mempool saves a snapshot of its projected block template for the next block. We call this snapshot the <b>expected block</b> for the block height in question, and it serves as the basis for the block audit.</p>
+  <p>When details for an expected block and actual block are available, we can compare them. <b>The purpose of block audits is to deduce when miners intentionally include or exclude transactions from blocks they mine.</b> Since this information cannot be precisely known, Mempool uses a handful of heuristics to accomplish this.</p>
+  <p>Block audits highlight transactions in different colors to convey these heuristics:</p>
+  <ul class="no-bull block-audit">
+    <li><span class="block-audit-highlight-color added">■</span><code>Added</code><p>A transaction is highlighted blue if it is not present in the expected block, present in the actual block, and also either:</p>
+    <ul>
+      <li>far out of the expected feerate range, meaning the miner may have intentionally prioritized the transaction</li>
+      <li>not in the mempool at all, meaning the miner may have accepted the transaction out-of-band</li>
+    </ul>
+    <p>Added transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color recent">■</span><code>Recently broadcasted</code><p>A transaction is highlighted dark pink if it is present in the expected block, not present in the actual block, and was first seen by Mempool's Bitcoin node within 3 minutes of the block being mined.</p><p>Due to network latency and other factors, it can take time for a miner's Bitcoin nodes to receive a transaction, so we do not assume a miner has intentionally excluded such a transaction from a block.</p><p>Recently-broadcasted transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color marginal">■</span><code>Marginal fee</code>
+    <p>A transaction is darkened if it is in the low end of the expected feerate range and missing in either the expected block or the actual block.</p><p>Such a transaction may have been displaced by an added transaction, or it may have been displaced by another transaction from the mempool that was also at the low end of the expected feerate range for the block. In either case, the deviation is not considered notable.</p>
+    <p>Marginal fee transactions do not negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+    <li><span class="block-audit-highlight-color removed">■</span><code>Removed</code><p>A transaction is highlighted bright pink if it is present in the expected block, not present in the actual block, and qualifies as neither recently-broadcasted nor marginal-fee. In other words, it has been in the mempool long enough to be widely propagated and has a feerate that is well within the range expected for the block. There is a chance such a transaction may have been intentionally excluded from the block.<p>Removed transactions do negatively affect <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">block health</a>.</p></li>
+  </ul>
+  <p>See how results of the block audit are used to devise the block health score <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-block-health">below</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
+</ng-template>
+
+<ng-template type="what-is-block-health">
+  <p>Block health is a measure of how many transactions appear to be intentionally excluded from a block—a block without any transactions that appear intentionally excluded will have 100% health, while a block with 1 or more transactions that appear intentionally excluded will have sub-100% health.</p>
+  <p>How is it calculated? Let <span class='math'>s<sub>expected</sub></span> be the set of all transactions in Mempool's expected block and let <span class='math'>s<sub>actual</sub></span> be the set of all transactions in the actual block. Then let <span class='math'>n</span> be the number of all transactions in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span>.</p>
+  <p>Furthermore, let <span class='math'>r</span> be the number of transactions Mempool deduces were <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">intentionally excluded</a> from <span class='math'>s<sub>actual</sub></span>.</p>
+  <p>Block health is calculated as <span class='math'>n / ( n + r</span> ).</p>
+  <p>The number of transactions appearing in both <span class='math'>s<sub>expected</sub></span> and <span class='math'>s<sub>actual</sub></span> is used (instead of a block's full transaction count) in order to minimize chances that block health is inadvertently impacted by transactions that were most likely not intentionally excluded:</p>
+  <ul>
+    <li>recently-broadcast transactions, since the miner may simply not have received them</li>
+    <li>certain low-feerate transactions, since the miner may have opted to replace them with more profitable out-of-band transactions</li>
+  </ul>
+  <p>As a result, block health is <i>not</i> intended to be a measure of how closely an expected block resembles an actual block. The actual block can be vastly different from the expected block, but if no transactions appear to be intentionally excluded, it will have a high health rating (<a [routerLink]="['/block/0000000000000000000515e202c8ae73c8155fc472422d7593af87aa74f2cf3d']">extreme example</a>).</p>
+  <p>See more context in our FAQ on <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">block audits</a>.</p>
+    <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
+</ng-template>
+
 <ng-template type="who-runs-this-website">
   The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a [routerLink]="['/about']">About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community.
 </ng-template>
@@ -211,8 +279,9 @@
   We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, RoninDojo, and Start9's Embassy.
 </ng-template>
 
-<ng-template type="host-my-own-instance-linux-server">
-  You can manually install Mempool on your own Linux server, but this requires advanced sysadmin skills since you will be manually configuring everything. We do not provide support for manual deployments.
+<ng-template type="host-my-own-instance-server">
+  <p>You can manually install Mempool on your own server, but this requires advanced sysadmin skills since you will be manually configuring everything. You could also use our <a href="https://github.com/mempool/mempool/tree/master/docker" target="_blank">Docker images</a>.</p><p>In any case, we only provide support for manual deployments to <a href="/enterprise">enterprise sponsors</a>.</p>
+  <p>For casual users, we strongly suggest installing Mempool using one of the <a href="https://github.com/mempool/mempool#one-click-installation" target="_blank">1-click install methods</a>.</p>
 </ng-template>
 
 <ng-template type="install-mempool-with-docker">

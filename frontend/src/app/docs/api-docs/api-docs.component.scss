@@ -21,6 +21,12 @@ code {
   font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
+.math {
+  font-family: monospace;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
 tr {
   white-space: inherit;
 }
@@ -34,6 +40,48 @@ li.nav-item {
   @media (min-width: 676px){
     width: auto;
   }
+}
+
+ul.no-bull {
+  list-style: none;
+}
+
+ul.no-bull.block-audit li code {
+  text-transform: uppercase;
+}
+
+ul.no-bull.block-audit li span {
+  margin-right: 10px;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.added {
+  color: #0099ff;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.removed {
+  color: #f344df;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.recent {
+  color: #8a3480;
+}
+
+ul.no-bull.block-audit li span.block-audit-highlight-color.marginal {
+  color: #414127;
+}
+
+ul.no-bull.block-audit li p {
+  margin-left: 25px;
+  margin-top: 5px;
+}
+
+ul.no-bull.block-audit li ul {
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
+ul.no-bull.block-audit code{
+  background-color: inherit;
 }
 
 .doc-welcome-note {
@@ -107,7 +155,7 @@ li.nav-item {
 #doc-nav-desktop.fixed {
   float: unset;
   position: fixed;
-  top: 20px;
+  top: 80px;
   overflow-y: auto;
   height: calc(100vh - 50px);
   scrollbar-color: #2d3348 #11131f;
@@ -172,6 +220,7 @@ h3 {
   border-radius: 0.25rem;
   font-family: monospace;
   float: right;
+  white-space: nowrap;
 }
 
 .endpoint-container .section-header table {
@@ -219,6 +268,20 @@ h3 {
   display: none;
 }
 
+#disclaimer {
+  background-color: #1d1f31;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.disclaimer-warning {
+  margin-right: 50px;
+}
+
+#disclaimer p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 992px) {
 
   h3 {
@@ -227,6 +290,12 @@ h3 {
 
   .hide-on-mobile {
     display: none;
+  }
+
+  .disclaimer-warning {
+    display: block;
+    margin: 2px auto 16px;
+    text-align: center;
   }
 
   .doc-content {
@@ -266,6 +335,10 @@ h3 {
 
   .doc-welcome-note {
     font-size: 0.85rem;
+  }
+
+  #disclaimer table {
+    display: none;
   }
 }
 

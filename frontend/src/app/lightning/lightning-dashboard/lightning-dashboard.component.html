@@ -55,13 +55,13 @@
     </div>
 
     <!-- Top nodes per capacity -->
-    <div class="col">
-      <div class="card" style="height: 409px">
+    <div class="col" style="max-height: 410px">
+      <div class="card">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/liquidity' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="lightning.liquidity-ranking">Liquidity Ranking</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-top-nodes-per-capacity [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-capacity>
         </div>
@@ -69,13 +69,13 @@
     </div>
 
     <!-- Top nodes per channels -->
-    <div class="col">
-      <div class="card" style="height: 409px">
+    <div class="col" style="max-height: 410px">
+      <div class="card">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/lightning/nodes/rankings/connectivity' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="lightning.connectivity-ranking">Connectivity Ranking</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-top-nodes-per-channels [nodes$]="nodesRanking$" [widget]="true"></app-top-nodes-per-channels>
         </div>
@@ -83,11 +83,5 @@
     </div>
 
   </div>
+
 </div>
-
-
-<div class="text-small text-center mt-1" *ngIf="officialMempoolSpace">
-  <a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]">Connect to our nodes</a>
-</div>
-
-<br>

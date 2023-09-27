@@ -4,6 +4,9 @@
   @media (min-width: 465px) {
     font-size: 20px;
   }
+  @media (min-width: 992px) {
+    height: 40px;
+  }
 }
 
 .main-title {
@@ -18,19 +21,21 @@
 }
 
 .full-container {
+  display: flex;
+  flex-direction: column;
   padding: 0px 15px;
   width: 100%;
-  min-height: 500px;
-  height: calc(100% - 150px);
-  @media (max-width: 992px) {
-    height: 100%;
-    padding-bottom: 100px;
-  };
+  height: calc(100vh - 225px);
+  min-height: 400px;
+  @media (min-width: 992px) {
+    height: calc(100vh - 150px);
+  }
 }
 
 .chart {
+  display: flex;
+  flex: 1;
   width: 100%;
-  height: 100%;
   padding-bottom: 20px;
   padding-right: 10px;
   @media (max-width: 992px) {
@@ -49,31 +54,6 @@
   max-height: 293px;
 }
 
-.formRadioGroup {
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  @media (min-width: 991px) {
-    position: relative;
-    top: -100px;
-  }
-  @media (min-width: 830px) and (max-width: 991px) {
-    position: relative;
-    top: 0px;
-  }
-  @media (min-width: 830px) {
-    flex-direction: row;
-    float: right;
-    margin-top: 0px;
-  }
-  .btn-sm {
-    font-size: 9px;
-    @media (min-width: 830px) {
-      font-size: 14px;
-    }
-  }
-}
-
 .loadingGraphs {
   position: absolute;
   top: 50%;
@@ -82,4 +62,9 @@
 }
 .loadingGraphs.widget {
   top: 75%;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }

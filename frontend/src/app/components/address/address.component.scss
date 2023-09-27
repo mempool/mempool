@@ -81,6 +81,7 @@ h1 {
     top: 11px;
 	}
   @media (min-width: 768px) {
+    max-width: calc(100% - 180px);
     top: 17px;
   }
 }
@@ -89,5 +90,22 @@ h1 {
   h2 {
     line-height: 1;
     margin-bottom: 10px;
+  }
+}
+
+.liquid-address {
+  .address-table {
+    table-layout: fixed;
+
+    tr td:first-child {
+      width: 170px;
+    }
+    tr td:last-child {
+      width: 80%;
+    }
+  }
+
+  .qrcode-col {
+    flex-grow: 0.5;
   }
 }

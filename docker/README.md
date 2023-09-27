@@ -17,7 +17,7 @@ _Note: address lookups require an Electrum Server and will not work with this co
 
 The default Docker configuration assumes you have the following configuration in your `bitcoin.conf` file:
 
-```
+```ini
 txindex=1
 server=1
 rpcuser=mempool
@@ -26,7 +26,7 @@ rpcpassword=mempool
 
 If you want to use different credentials, specify them in the `docker-compose.yml` file:
 
-```
+```yaml
   api:
     environment:
       MEMPOOL_BACKEND: "none"
@@ -34,6 +34,7 @@ If you want to use different credentials, specify them in the `docker-compose.ym
       CORE_RPC_PORT: "8332"
       CORE_RPC_USERNAME: "customuser"
       CORE_RPC_PASSWORD: "custompassword"
+      CORE_RPC_TIMEOUT: "60000"
 ```
 
 The IP address in the example above refers to Docker's default gateway IP address so that the container can hit the `bitcoind` instance running on the host machine. If your setup is different, update it accordingly.
@@ -54,7 +55,7 @@ First, configure `bitcoind` as specified above, and make sure your Electrum Serv
 
 Then, set the following variables in `docker-compose.yml` so Mempool can connect to your Electrum Server:
 
-```
+```yaml
   api:
     environment:
       MEMPOOL_BACKEND: "electrum"
@@ -85,10 +86,11 @@ Below we list all settings from `mempool-config.json` and the corresponding over
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "MEMPOOL": {
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
+    "ENABLED": true,
     "HTTP_PORT": 8999,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
@@ -99,17 +101,25 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "BLOCK_WEIGHT_UNITS": 4000000,
     "INITIAL_BLOCKS_AMOUNT": 8,
     "MEMPOOL_BLOCKS_AMOUNT": 8,
-    "PRICE_FEED_UPDATE_INTERVAL": 600,
+    "BLOCKS_SUMMARIES_INDEXING": false,
     "USE_SECOND_NODE_FOR_MINFEE": false,
-    "EXTERNAL_ASSETS": ["https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json"],
+    "EXTERNAL_ASSETS": [],
     "STDOUT_LOG_MIN_PRIORITY": "info",
-    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools.json",
-    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master"
+    "INDEXING_BLOCKS_AMOUNT": false,
+    "AUTOMATIC_BLOCK_REINDEXING": false,
+    "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
+    "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
+    "ADVANCED_GBT_AUDIT": false,
+    "ADVANCED_GBT_MEMPOOL": false,
+    "CPFP_INDEXING": false,
+    "MAX_BLOCKS_BULK_QUERY": 0,
+    "DISK_CACHE_BLOCK_INTERVAL": 6,
+    "PRICE_UPDATES_PER_HOUR": 1
   },
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       MEMPOOL_NETWORK: ""
@@ -124,42 +134,56 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_BLOCK_WEIGHT_UNITS: ""
       MEMPOOL_INITIAL_BLOCKS_AMOUNT: ""
       MEMPOOL_MEMPOOL_BLOCKS_AMOUNT: ""
-      MEMPOOL_PRICE_FEED_UPDATE_INTERVAL: ""
+      MEMPOOL_BLOCKS_SUMMARIES_INDEXING: ""
       MEMPOOL_USE_SECOND_NODE_FOR_MINFEE: ""
       MEMPOOL_EXTERNAL_ASSETS: ""
       MEMPOOL_STDOUT_LOG_MIN_PRIORITY: ""
+      MEMPOOL_INDEXING_BLOCKS_AMOUNT: ""
+      MEMPOOL_AUTOMATIC_BLOCK_REINDEXING: ""
       MEMPOOL_POOLS_JSON_URL: ""
       MEMPOOL_POOLS_JSON_TREE_URL: ""
+      MEMPOOL_ADVANCED_GBT_AUDIT: ""
+      MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
+      MEMPOOL_CPFP_INDEXING: ""
+      MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
+      MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
       ...
 ```
+
+`ADVANCED_GBT_AUDIT` AND `ADVANCED_GBT_MEMPOOL` enable a more accurate (but slower) block prediction algorithm for the block audit feature and the projected mempool-blocks respectively.
+
+`CPFP_INDEXING` enables indexing CPFP (Child Pays For Parent) information for the last `INDEXING_BLOCKS_AMOUNT` blocks.
 
 <br/>
 
 `mempool-config.json`:
-```
-"CORE_RPC": {
+```json
+  "CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       CORE_RPC_HOST: ""
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
+      CORE_RPC_TIMEOUT: 60000
       ...
 ```
 
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "ELECTRUM": {
     "HOST": "127.0.0.1",
     "PORT": 50002,
@@ -168,7 +192,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       ELECTRUM_HOST: ""
@@ -180,47 +204,53 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "ESPLORA": {
-    "REST_API_URL": "http://127.0.0.1:3000"
+    "REST_API_URL": "http://127.0.0.1:3000",
+    "UNIX_SOCKET_PATH": "/tmp/esplora-socket",
+    "RETRY_UNIX_SOCKET_AFTER": 30000
   },
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       ESPLORA_REST_API_URL: ""
+      ESPLORA_UNIX_SOCKET_PATH: ""
+      ESPLORA_RETRY_UNIX_SOCKET_AFTER: ""
       ...
 ```
 
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SECOND_CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
-    "PASSWORD": "mempool"
+    "PASSWORD": "mempool",
+    "TIMEOUT": 60000
   },
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SECOND_CORE_RPC_HOST: ""
       SECOND_CORE_RPC_PORT: ""
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_TIMEOUT: ""
       ...
 ```
 
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "DATABASE": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
@@ -232,7 +262,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       DATABASE_ENABLED: ""
@@ -241,13 +271,14 @@ Corresponding `docker-compose.yml` overrides:
       DATABASE_DATABASE: ""
       DATABASE_USERNAME: ""
       DATABASE_PASSWORD: ""
+      DATABASE_TIMEOUT: ""
       ...
 ```
 
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SYSLOG": {
     "ENABLED": true,
     "HOST": "127.0.0.1",
@@ -258,7 +289,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SYSLOG_ENABLED: ""
@@ -272,7 +303,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "STATISTICS": {
     "ENABLED": true,
     "TX_PER_SECOND_SAMPLE_PERIOD": 150
@@ -280,7 +311,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       STATISTICS_ENABLED: ""
@@ -291,7 +322,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "BISQ": {
     "ENABLED": false,
     "DATA_PATH": "/bisq/statsnode-data/btc_mainnet/db"
@@ -299,7 +330,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       BISQ_ENABLED: ""
@@ -310,7 +341,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "SOCKS5PROXY": {
     "ENABLED": false,
     "HOST": "127.0.0.1",
@@ -321,7 +352,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       SOCKS5PROXY_ENABLED: ""
@@ -335,26 +366,7 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
-  "PRICE_DATA_SERVER": {
-    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
-    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
-  }
-```
-
-Corresponding `docker-compose.yml` overrides:
-```
-  api:
-    environment:
-      PRICE_DATA_SERVER_TOR_URL: ""
-      PRICE_DATA_SERVER_CLEARNET_URL: ""
-      ...
-```
-
-<br/>
-
-`mempool-config.json`:
-```
+```json
   "LIGHTNING": {
     "ENABLED": false
     "BACKEND": "lnd"
@@ -366,7 +378,7 @@ Corresponding `docker-compose.yml` overrides:
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       LIGHTNING_ENABLED: false
@@ -381,37 +393,62 @@ Corresponding `docker-compose.yml` overrides:
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "LND": {
     "TLS_CERT_PATH": ""
     "MACAROON_PATH": ""
     "REST_API_URL": "https://localhost:8080"
+    "TIMEOUT": 10000
   }
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       LND_TLS_CERT_PATH: ""
       LND_MACAROON_PATH: ""
       LND_REST_API_URL: "https://localhost:8080"
+      LND_TIMEOUT: 10000
       ...
 ```
 
 <br/>
 
 `mempool-config.json`:
-```
+```json
   "CLIGHTNING": {
     "SOCKET": ""
   }
 ```
 
 Corresponding `docker-compose.yml` overrides:
-```
+```yaml
   api:
     environment:
       CLIGHTNING_SOCKET: ""
+      ...
+```
+
+<br/>
+
+`mempool-config.json`:
+```json
+  "MAXMIND": {
+    "ENABLED": true,
+    "GEOLITE2_CITY": "/usr/local/share/GeoIP/GeoLite2-City.mmdb",
+    "GEOLITE2_ASN": "/usr/local/share/GeoIP/GeoLite2-ASN.mmdb",
+    "GEOIP2_ISP": "/usr/local/share/GeoIP/GeoIP2-ISP.mmdb"
+  }
+```
+
+Corresponding `docker-compose.yml` overrides:
+```yaml
+  api:
+    environment:
+      MAXMIND_ENABLED: true,
+      MAXMIND_GEOLITE2_CITY: "/backend/GeoIP/GeoLite2-City.mmdb",
+      MAXMIND_GEOLITE2_ASN": "/backend/GeoIP/GeoLite2-ASN.mmdb",
+      MAXMIND_GEOIP2_ISP": "/backend/GeoIP/GeoIP2-ISP.mmdb"
       ...
 ```

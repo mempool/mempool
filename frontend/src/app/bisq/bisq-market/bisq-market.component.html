@@ -10,27 +10,27 @@
       </div>
   
       <form [formGroup]="radioGroupForm" class="mb-3 radio-form">
-        <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" formControlName="interval">
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'half_hour'" (click)="setFragment('half_hour')"> 30M
+        <div class="btn-group btn-group-toggle" name="radioBasic">
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'half_hour'">
+            <input type="radio" [value]="'half_hour'" (click)="setFragment('half_hour')" formControlName="interval"> 30M
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'hour'" (click)="setFragment('hour')"> 1H
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'hour'">
+            <input type="radio" [value]="'hour'" (click)="setFragment('hour')" formControlName="interval"> 1H
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'half_day'" (click)="setFragment('half_day')"> 12H
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'half_day'">
+            <input type="radio" [value]="'half_day'" (click)="setFragment('half_day')" formControlName="interval"> 12H
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'day'" (click)="setFragment('day')"> 1D
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'day'">
+            <input type="radio" [value]="'day'" (click)="setFragment('day')" formControlName="interval"> 1D
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'week'" (click)="setFragment('week')"> 1W
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'week'">
+            <input type="radio" [value]="'week'" (click)="setFragment('week')" formControlName="interval"> 1W
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'month'" (click)="setFragment('month')"> 1M
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'month'">
+            <input type="radio" [value]="'month'" (click)="setFragment('month')" formControlName="interval"> 1M
           </label>
-          <label ngbButtonLabel class="btn-primary btn-sm">
-            <input ngbButton type="radio" [value]="'year'" (click)="setFragment('year')"> 1Y
+          <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('interval').value === 'year'">
+            <input type="radio" [value]="'year'" (click)="setFragment('year')" formControlName="interval"> 1Y
           </label>
         </div>
       </form>

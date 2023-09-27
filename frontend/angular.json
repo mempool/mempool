@@ -38,6 +38,10 @@
             "translation": "src/locale/messages.de.xlf",
             "baseHref": "/de/"
           },
+          "da": {
+            "translation": "src/locale/messages.da.xlf",
+            "baseHref": "/da/"
+          },
           "es": {
             "translation": "src/locale/messages.es.xlf",
             "baseHref": "/es/"
@@ -137,6 +141,14 @@
           "hi": {
             "translation": "src/locale/messages.hi.xlf",
             "baseHref": "/hi/"
+          },
+          "ne": {
+            "translation": "src/locale/messages.ne.xlf",
+            "baseHref": "/ne/"
+          },
+          "lt": {
+            "translation": "src/locale/messages.lt.xlf",
+            "baseHref": "/lt/"
           }
         }
       },
@@ -152,14 +164,13 @@
             "assets": [
               "src/favicon.ico",
               "src/resources",
-              "src/robots.txt"
+              "src/robots.txt",
+              "src/config.js",
+              "src/config.template.js"
             ],
             "styles": [
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-svg-core/styles.css"
-            ],
-            "scripts": [
-              "generated-config.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -269,57 +280,6 @@
             }
           }
         },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "outputPath": "dist/mempool/server",
-            "main": "server.ts",
-            "tsConfig": "tsconfig.server.json",
-            "sourceMap": true,
-            "optimization": false
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "sourceMap": false,
-              "localize": true,
-              "optimization": true
-            }
-          },
-          "defaultConfiguration": ""
-        },
-        "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
-          "options": {
-            "browserTarget": "mempool:build",
-            "serverTarget": "mempool:server"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "mempool:build:production",
-              "serverTarget": "mempool:server:production"
-            }
-          }
-        },
-        "prerender": {
-          "builder": "@nguniversal/builders:prerender",
-          "options": {
-            "browserTarget": "mempool:build:production",
-            "serverTarget": "mempool:server:production",
-            "routes": [
-              "/"
-            ]
-          },
-          "configurations": {
-            "production": {}
-          }
-        },
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
@@ -340,6 +300,5 @@
         }
       }
     }
-  },
-  "defaultProject": "mempool"
+  }
 }

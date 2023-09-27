@@ -5,6 +5,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class Decimal2HexPipe implements PipeTransform {
   transform(decimal: number): string {
-    return `0x` + decimal.toString(16);
+    return `0x` + ( decimal.toString(16) ).padStart(8, '0');
   }
 }

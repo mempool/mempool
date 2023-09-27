@@ -1,9 +1,9 @@
 <div class="widget-toggler">
   <a href="" (click)="switchMode('avg')" class="toggler-option"
-    [ngClass]="{'inactive': mode === 'avg'}"><small>avg</small></a>
+    [ngClass]="{'inactive': mode === 'avg'}"><small i18n="statistics.average-small">avg</small></a>
   <span style="color: #ffffff66; font-size: 8px"> | </span>
   <a href="" (click)="switchMode('med')" class="toggler-option"
-    [ngClass]="{'inactive': mode === 'med'}"><small>med</small></a>
+    [ngClass]="{'inactive': mode === 'med'}"><small i18n="statistics.median-small">med</small></a>
 </div>
 
 <div class="fee-estimation-wrapper" *ngIf="statistics$ | async as statistics; else loadingReward">
@@ -17,7 +17,7 @@
           <span i18n="shared.sats">sats</span>
         </div>
         <span class="fiat" *ngIf="statistics.previous">
-          <app-change [current]="statistics.latest?.avg_capacity" [previous]="statistics.previous?.avg_capacity"></app-change>
+          <app-fiat [value]="statistics.latest?.avg_capacity" digitsInfo="1.0-0" ></app-fiat>
         </span>
       </div>
     </div>
@@ -63,7 +63,7 @@
           <span i18n="shared.sats">sats</span>
         </div>
         <span class="fiat" *ngIf="statistics.previous">
-          <app-change [current]="statistics.latest?.med_capacity" [previous]="statistics.previous?.med_capacity"></app-change>
+          <app-fiat [value]="statistics.latest?.med_capacity" digitsInfo="1.0-0" ></app-fiat>
         </span>
       </div>
     </div>

@@ -76,7 +76,7 @@ PROXY_CONFIG = [
 
 if (configContent && configContent.BASE_MODULE == "liquid") {
     PROXY_CONFIG.push({
-        context: ['/resources/pools.json',
+        context: [
             '/resources/assets.json', '/resources/assets.minimal.json',
             '/resources/assets-testnet.json', '/resources/assets-testnet.minimal.json'],
         target: "https://liquid.network",
@@ -85,7 +85,7 @@ if (configContent && configContent.BASE_MODULE == "liquid") {
     });
 } else {
     PROXY_CONFIG.push({
-        context: ['/resources/pools.json', '/resources/assets.json', '/resources/assets.minimal.json', '/resources/worldmap.json'],
+        context: ['/resources/assets.json', '/resources/assets.minimal.json', '/resources/worldmap.json'],
         target: "https://mempool.space",
         secure: false,
         changeOrigin: true,

@@ -61,6 +61,7 @@ export class PoolPreviewComponent implements OnInit {
               }),
               catchError(() => {
                 this.isLoading = false;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('pool-hash-' + this.slug);
                 return of([slug]);
               })
@@ -70,6 +71,7 @@ export class PoolPreviewComponent implements OnInit {
           return this.apiService.getPoolStats$(slug).pipe(
             catchError(() => {
               this.isLoading = false;
+              this.seoService.logSoft404();
               this.openGraphService.fail('pool-stats-' + this.slug);
               return of(null);
             })
@@ -81,20 +83,16 @@ export class PoolPreviewComponent implements OnInit {
           }
 
           this.seoService.setTitle(poolStats.pool.name);
+          this.seoService.setDescription($localize`:@@meta.description.mining.pool:See mining pool stats for ${poolStats.pool.name}\: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.`);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
           }
           poolStats.pool.regexes = regexes.slice(0, -3);
-          poolStats.pool.addresses = poolStats.pool.addresses;
-
-          if (poolStats.reportedHashrate) {
-            poolStats.luck = poolStats.estimatedHashrate / poolStats.reportedHashrate * 100;
-          }
 
           this.openGraphService.waitOver('pool-stats-' + this.slug);
 
-          const logoSrc = `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+          const logoSrc = `/resources/mining-pools/` + poolStats.pool.slug + '.svg';
           if (logoSrc === this.lastImgSrc) {
             this.openGraphService.waitOver('pool-img-' + this.slug);
           }

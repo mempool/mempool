@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
-import { Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { merge, Observable, of } from 'rxjs';
+import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { formatNumber } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { selectPowerOfTen } from '../../bitcoin.utils';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '../../services/state.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -34,7 +35,7 @@ export class HashrateChartComponent implements OnInit {
   @Input() left: number | string = 75;
 
   miningWindowPreference: string;
-  radioGroupForm: FormGroup;
+  radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -54,7 +55,7 @@ export class HashrateChartComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
@@ -71,6 +72,7 @@ export class HashrateChartComponent implements OnInit {
       this.miningWindowPreference = '1y';
     } else {
       this.seoService.setTitle($localize`:@@3510fc6daa1d975f331e3a717bdf1a34efa06dff:Hashrate & Difficulty`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.hashrate:See hashrate and difficulty for the Bitcoin${seoDescriptionNetwork(this.network)} network visualized over time.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -84,77 +86,101 @@ export class HashrateChartComponent implements OnInit {
         }
       });
 
-    this.hashrateObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
-      .pipe(
-        startWith(this.radioGroupForm.controls.dateSpan.value),
-        switchMap((timespan) => {
-          if (!this.widget && !firstRun) {
-            this.storageService.setValue('miningWindowPreference', timespan);
+    this.hashrateObservable$ = merge(
+      this.radioGroupForm.get('dateSpan').valueChanges
+        .pipe(
+          startWith(this.radioGroupForm.controls.dateSpan.value),
+          switchMap((timespan) => {
+            if (!this.widget && !firstRun) {
+              this.storageService.setValue('miningWindowPreference', timespan);
+            }
+            this.timespan = timespan;
+            firstRun = false;
+            this.miningWindowPreference = timespan;
+            this.isLoading = true;
+            return this.apiService.getHistoricalHashrate$(this.timespan);
+          })
+        ),
+        this.stateService.chainTip$
+          .pipe(
+            switchMap(() => {
+              return this.apiService.getHistoricalHashrate$(this.timespan);
+            })
+          )
+      ).pipe(
+        tap((response: any) => {
+          const data = response.body;
+
+          // always include the latest difficulty
+          if (data.difficulty.length && data.difficulty[data.difficulty.length - 1].difficulty !== data.currentDifficulty) {
+            data.difficulty.push({
+              timestamp: Date.now() / 1000,
+              difficulty: data.currentDifficulty
+            });
           }
-          this.timespan = timespan;
-          firstRun = false;
-          this.miningWindowPreference = timespan;
-          this.isLoading = true;
-          return this.apiService.getHistoricalHashrate$(timespan)
-            .pipe(
-              tap((response) => {
-                const data = response.body;
 
-                // We generate duplicated data point so the tooltip works nicely
-                const diffFixed = [];
-                let diffIndex = 1;
-                let hashIndex = 0;
-                while (hashIndex < data.hashrates.length) {
-                  if (diffIndex >= data.difficulty.length) {
-                    while (hashIndex < data.hashrates.length) {
-                      diffFixed.push({
-                        timestamp: data.hashrates[hashIndex].timestamp,
-                        difficulty: data.difficulty.length > 0 ?  data.difficulty[data.difficulty.length - 1].difficulty : null
-                      });
-                      ++hashIndex;
-                    }
-                    break;
-                  }
-
-                  while (hashIndex < data.hashrates.length && diffIndex < data.difficulty.length &&
-                    data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].time
-                  ) {
-                    diffFixed.push({
-                      timestamp: data.hashrates[hashIndex].timestamp,
-                      difficulty: data.difficulty[diffIndex - 1].difficulty
-                    });
-                    ++hashIndex;
-                  }
-                  ++diffIndex;
-                }
-
-                let maResolution = 15;
-                const hashrateMa = [];
-                for (let i = maResolution - 1; i < data.hashrates.length; ++i) {
-                  let avg = 0;
-                  for (let y = maResolution - 1; y >= 0; --y) {
-                    avg += data.hashrates[i - y].avgHashrate;
-                  }
-                  avg /= maResolution;
-                  hashrateMa.push([data.hashrates[i].timestamp * 1000, avg]);
-                }
-
-                this.prepareChartOptions({
-                  hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
-                  difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty]),
-                  hashrateMa: hashrateMa,
+          // We generate duplicated data point so the tooltip works nicely
+          const diffFixed = [];
+          let diffIndex = 1;
+          let hashIndex = 0;
+          while (hashIndex < data.hashrates.length) {
+            if (diffIndex >= data.difficulty.length) {
+              while (hashIndex < data.hashrates.length) {
+                diffFixed.push({
+                  timestamp: data.hashrates[hashIndex].timestamp,
+                  difficulty: data.difficulty.length > 0 ?  data.difficulty[data.difficulty.length - 1].difficulty : null
                 });
-                this.isLoading = false;
-              }),
-              map((response) => {
-                const data = response.body;
-                return {
-                  blockCount: parseInt(response.headers.get('x-total-count'), 10),
-                  currentDifficulty: data.currentDifficulty,
-                  currentHashrate: data.currentHashrate,
-                };
-              }),
-            );
+                ++hashIndex;
+              }
+              diffIndex++;
+              break;
+            }
+
+            while (hashIndex < data.hashrates.length && diffIndex < data.difficulty.length &&
+              data.hashrates[hashIndex].timestamp <= data.difficulty[diffIndex].time
+            ) {
+              diffFixed.push({
+                timestamp: data.hashrates[hashIndex].timestamp,
+                difficulty: data.difficulty[diffIndex - 1].difficulty
+              });
+              ++hashIndex;
+            }
+            ++diffIndex;
+          }
+
+          while (diffIndex <= data.difficulty.length) {
+            diffFixed.push({
+              timestamp: data.difficulty[diffIndex - 1].time,
+              difficulty: data.difficulty[diffIndex - 1].difficulty
+            });
+            diffIndex++;
+          }
+
+          let maResolution = 15;
+          const hashrateMa = [];
+          for (let i = maResolution - 1; i < data.hashrates.length; ++i) {
+            let avg = 0;
+            for (let y = maResolution - 1; y >= 0; --y) {
+              avg += data.hashrates[i - y].avgHashrate;
+            }
+            avg /= maResolution;
+            hashrateMa.push([data.hashrates[i].timestamp * 1000, avg]);
+          }
+
+          this.prepareChartOptions({
+            hashrates: data.hashrates.map(val => [val.timestamp * 1000, val.avgHashrate]),
+            difficulty: diffFixed.map(val => [val.timestamp * 1000, val.difficulty]),
+            hashrateMa: hashrateMa,
+          });
+          this.isLoading = false;
+        }),
+        map((response) => {
+          const data = response.body;
+          return {
+            blockCount: parseInt(response.headers.get('x-total-count'), 10),
+            currentDifficulty: data.currentDifficulty,
+            currentHashrate: data.currentHashrate,
+          };
         }),
         share()
       );
@@ -232,7 +258,7 @@ export class HashrateChartComponent implements OnInit {
               let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
               if (difficulty === null) {
-                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;  
+                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
                 if (this.isMobile()) {
                   difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);

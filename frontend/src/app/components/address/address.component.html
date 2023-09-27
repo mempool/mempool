@@ -1,12 +1,10 @@
-<div class="container-xl">
+<div class="container-xl" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
   <div class="title-address">
     <h1 i18n="shared.address">Address</h1>
     <div class="tx-link">
-      <a [routerLink]="['/address/' | relativeUrl, addressString]" >
-        <span class="d-inline d-lg-none">{{ addressString | shortenString : 18 }}</span>
-        <span class="d-none d-lg-inline">{{ addressString }}</span>
-      </a>
-      <app-clipboard [text]="addressString"></app-clipboard>
+      <app-truncate [text]="addressString" [lastChars]="8" [link]="['/address/' | relativeUrl, addressString]">
+        <app-clipboard [text]="addressString"></app-clipboard>
+      </app-truncate>
     </div>
   </div>
 
@@ -17,14 +15,15 @@
 
       <div class="row">
         <div class="col-md">
-          <table class="table table-borderless table-striped">
+          <table class="table table-borderless table-striped address-table">
             <tbody>
               <tr *ngIf="addressInfo && addressInfo.unconfidential">
                 <td i18n="address.unconfidential">Unconfidential</td>
-                <td><a [routerLink]="['/address/' | relativeUrl, addressInfo.unconfidential]">
-                  <span class="d-inline d-lg-none">{{ addressInfo.unconfidential | shortenString : 14 }}</span>
-                  <span class="d-none d-lg-inline">{{ addressInfo.unconfidential }}</span>
-                </a> <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard></td>
+                <td>
+                  <app-truncate [text]="addressInfo.unconfidential" [lastChars]="8" [link]="['/address/' | relativeUrl, addressInfo.unconfidential]">
+                    <app-clipboard [text]="addressInfo.unconfidential"></app-clipboard>
+                  </app-truncate>
+                </td>
               </tr>
               <ng-template [ngIf]="!address.electrum">
                 <tr>

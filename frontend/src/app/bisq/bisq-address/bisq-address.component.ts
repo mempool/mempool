@@ -41,12 +41,14 @@ export class BisqAddressComponent implements OnInit, OnDestroy {
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           this.seoService.setTitle($localize`:@@bisq-address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
+          this.seoService.setDescription($localize`:@@meta.description.bisq.address:See current balance, pending transactions, and history of confirmed transactions for BSQ address ${this.addressString}:INTERPOLATION:.`);
 
           return this.bisqApiService.getAddress$(this.addressString)
             .pipe(
               catchError((err) => {
                 this.isLoadingAddress = false;
                 this.error = err;
+                this.seoService.logSoft404();
                 console.log(err);
                 return of(null);
               })
@@ -62,6 +64,7 @@ export class BisqAddressComponent implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         this.error = error;
+        this.seoService.logSoft404();
         this.isLoadingAddress = false;
       });
   }

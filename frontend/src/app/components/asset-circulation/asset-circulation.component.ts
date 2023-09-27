@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { moveDec } from '../../bitcoin.utils';
 import { AssetsService } from '../../services/assets.service';
 import { ElectrsApiService } from '../../services/electrs-api.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-asset-circulation',
