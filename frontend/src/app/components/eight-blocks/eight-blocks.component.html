@@ -1,5 +1,5 @@
 <div class="blocks" [class.wrap]="wrapBlocks">
-  <ng-container *ngFor="let i of [0,1,2,3,4,5,6,7]">
+  <ng-container *ngFor="let i of blockIndices">
     <div class="block-wrapper" [style]="wrapperStyle">
       <div class="block-container" [style]="containerStyle">
         <app-block-overview-graph

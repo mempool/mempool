@@ -56,6 +56,8 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription;
   graphChangeSubscription: Subscription;
 
+  numBlocks: number = 8;
+  blockIndices: number[] = [...Array(8).keys()];
   autofit: boolean = false;
   padding: number = 0;
   wrapBlocks: boolean = false;
@@ -96,12 +98,9 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     this.websocketService.want(['blocks']);
     this.network = this.stateService.network;
 
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe((blocks) => {
-        this.handleNewBlock(blocks);
-      });
-
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
+      this.numBlocks = Number.isInteger(Number(params.numBlocks)) ? Number(params.numBlocks) : 8;
+      this.blockIndices = [...Array(this.numBlocks).keys()];
       this.autofit = params.autofit === 'true';
       this.padding = Number.isInteger(Number(params.padding)) ? Number(params.padding) : 0;
       this.blockWidth = Number.isInteger(Number(params.blockWidth)) ? Number(params.blockWidth) : 1080;
@@ -124,11 +123,18 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
       };
 
       if (params.test === 'true') {
-        this.blocksSubscription.unsubscribe();
+        if (this.blocksSubscription) {
+          this.blocksSubscription.unsubscribe();
+        }
         this.blocksSubscription = (new Subject<BlockExtended[]>()).subscribe((blocks) => {
-          this.handleNewBlock(blocks);
+          this.handleNewBlock(blocks.slice(0, this.numBlocks));
         });
         this.shiftTestBlocks();
+      } else if (!this.blocksSubscription) {
+        this.blocksSubscription = this.stateService.blocks$
+          .subscribe((blocks) => {
+            this.handleNewBlock(blocks.slice(0, this.numBlocks));
+          });
       }
     });
 
@@ -146,7 +152,9 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
-    this.blocksSubscription?.unsubscribe();
+    if (this.blocksSubscription) {
+      this.blocksSubscription?.unsubscribe();
+    }
     this.cacheBlocksSubscription?.unsubscribe();
     this.networkChangedSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
@@ -155,7 +163,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   shiftTestBlocks(): void {
     const sub = this.apiService.getBlocks$(this.testHeight).subscribe(result => {
       sub.unsubscribe();
-      this.handleNewBlock(result);
+      this.handleNewBlock(result.slice(0, this.numBlocks));
       this.testHeight++;
       clearTimeout(this.testShiftTimeout);
       this.testShiftTimeout = window.setTimeout(() => { this.shiftTestBlocks(); }, 10000);
