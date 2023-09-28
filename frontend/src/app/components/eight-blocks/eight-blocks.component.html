@@ -1,0 +1,27 @@
+<div class="blocks" [class.wrap]="wrapBlocks">
+  <ng-container *ngFor="let i of [0,1,2,3,4,5,6,7]">
+    <div class="block-wrapper" [style]="wrapperStyle">
+      <div class="block-container" [style]="containerStyle">
+        <app-block-overview-graph
+          #blockGraph
+          [isLoading]="false"
+          [resolution]="resolution"
+          [blockLimit]="stateService.blockVSize"
+          [orientation]="'top'"
+          [flip]="false"
+          [animationDuration]="animationDuration"
+          [animationOffset]="animationOffset"
+          [disableSpinner]="true"
+          (txClickEvent)="onTxClick($event)"
+        ></app-block-overview-graph>
+        <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
+          <h1>{{ blockInfo[i].height }}</h1>
+          <p class="hash">{{ blockInfo[i].hash }}</p>
+          <h2>{{ blockInfo[i].time }}</h2>
+          <h2>{{ blockInfo[i].count }}</h2>
+          <h2>{{ blockInfo[i].size }}</h2>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

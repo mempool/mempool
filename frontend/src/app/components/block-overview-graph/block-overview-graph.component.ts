@@ -20,6 +20,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() blockLimit: number;
   @Input() orientation = 'left';
   @Input() flip = true;
+  @Input() animationDuration: number = 1000;
+  @Input() animationOffset: number | null = null;
   @Input() disableSpinner = false;
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
@@ -141,9 +143,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true): void {
+  replace(transactions: TransactionStripped[], direction: string, sort: boolean = true, startTime?: number): void {
     if (this.scene) {
-      this.scene.replace(transactions || [], direction, sort);
+      this.scene.replace(transactions || [], direction, sort, startTime);
       this.start();
       this.updateSearchHighlight();
     }
@@ -226,7 +228,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
-        highlighting: this.auditHighlighting });
+        highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset });
       this.start();
     }
   }
