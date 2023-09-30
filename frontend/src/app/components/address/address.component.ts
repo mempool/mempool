@@ -9,6 +9,7 @@ import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { AddressInformation } from '../../interfaces/node-api.interface';
 
 @Component({
@@ -76,6 +77,7 @@ export class AddressComponent implements OnInit, OnDestroy {
             this.addressString = this.addressString.toLowerCase();
           }
           this.seoService.setTitle($localize`:@@address.component.browser-title:Address: ${this.addressString}:INTERPOLATION:`);
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.address:See mempool transactions, confirmed transactions, balance, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} address ${this.addressString}:INTERPOLATION:.`);
 
           return merge(
             of(true),
@@ -172,6 +174,11 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.addTransaction(tx);
       });
 
+    this.stateService.mempoolRemovedTransactions$
+      .subscribe(tx => {
+        this.removeTransaction(tx);
+      });
+
     this.stateService.blockTransactions$
       .subscribe((transaction) => {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
@@ -214,6 +221,30 @@ export class AddressComponent implements OnInit, OnDestroy {
     transaction.vout.forEach((vout) => {
       if (vout?.scriptpubkey_address === this.address.address) {
         this.received += vout.value;
+      }
+    });
+
+    return true;
+  }
+
+  removeTransaction(transaction: Transaction): boolean {
+    const index = this.transactions.findIndex(((tx) => tx.txid === transaction.txid));
+    if (index === -1) {
+      return false;
+    }
+
+    this.transactions.splice(index, 1);
+    this.transactions = this.transactions.slice();
+    this.txCount--;
+
+    transaction.vin.forEach((vin) => {
+      if (vin?.prevout?.scriptpubkey_address === this.address.address) {
+        this.sent -= vin.prevout.value;
+      }
+    });
+    transaction.vout.forEach((vout) => {
+      if (vout?.scriptpubkey_address === this.address.address) {
+        this.received -= vout.value;
       }
     });
 

@@ -16,6 +16,20 @@ updates:
   - package-ecosystem: npm
     directory: "/frontend"
     versioning-strategy: increase
+    groups:
+      frontend-angular-dependencies:
+        patterns:
+          - "@angular*"
+          - "@ng-*"
+          - "ngx-*"
+      frontend-jest-dependencies:
+        patterns:
+          - "@types/jest"
+          - "jest"
+      frontend-eslint-dependencies:
+        patterns:
+          - "@typescript-eslint*"
+          - "eslint"
     schedule:
       interval: daily
     open-pull-requests-limit: 10

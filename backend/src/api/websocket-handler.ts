@@ -486,6 +486,7 @@ class WebsocketHandler {
 
     // pre-compute address transactions
     const addressCache = this.makeAddressCache(newTransactions);
+    const removedAddressCache = this.makeAddressCache(deletedTransactions);
 
     this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -526,11 +527,15 @@ class WebsocketHandler {
       }
 
       if (client['track-address']) {
-        const foundTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
+        const newTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
+        const removedTransactions = Array.from(removedAddressCache[client['track-address']]?.values() || []);
         // txs may be missing prevouts in non-esplora backends
         // so fetch the full transactions now
-        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
 
+        if (removedTransactions.length) {
+          response['address-removed-transactions'] = JSON.stringify(removedTransactions);
+        }
         if (fullTransactions.length) {
           response['address-transactions'] = JSON.stringify(fullTransactions);
         }
@@ -586,13 +591,25 @@ class WebsocketHandler {
 
         const mempoolTx = newMempool[trackTxid];
         if (mempoolTx && mempoolTx.position) {
-          response['txPosition'] = JSON.stringify({
+          const positionData = {
             txid: trackTxid,
             position: {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
             }
-          });
+          };
+          if (mempoolTx.cpfpDirty) {
+            positionData['cpfp'] = {
+              ancestors: mempoolTx.ancestors,
+              bestDescendant: mempoolTx.bestDescendant || null,
+              descendants: mempoolTx.descendants || null,
+              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+              sigops: mempoolTx.sigops,
+              adjustedVsize: mempoolTx.adjustedVsize,
+              acceleration: mempoolTx.acceleration
+            };
+          }
+          response['txPosition'] = JSON.stringify(positionData);
         }
       }
 

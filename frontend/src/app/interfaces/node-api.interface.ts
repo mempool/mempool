@@ -2,6 +2,7 @@ import { Block, Transaction } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
+  count: number;
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
@@ -27,7 +28,7 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
   sigops?: number;
   adjustedVsize?: number;
-  acceleration?: number;
+  acceleration?: boolean;
 }
 
 export interface RbfInfo {

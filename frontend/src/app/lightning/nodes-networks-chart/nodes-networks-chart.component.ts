@@ -65,6 +65,7 @@ export class NodesNetworksChartComponent implements OnInit {
       this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-network:See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -375,7 +376,7 @@ export class NodesNetworksChartComponent implements OnInit {
         // We create dummy duplicated series so when we use the data zoom, the y axis
         // both scales properly
         const invisibleSerie = {...serie};
-        invisibleSerie.name = 'ignored' + Math.random().toString(); 
+        invisibleSerie.name = 'ignored' + Math.random().toString();
         invisibleSerie.stack = 'ignored';
         invisibleSerie.yAxisIndex = 1;
         invisibleSerie.lineStyle = {

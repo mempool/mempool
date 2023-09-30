@@ -35,6 +35,7 @@ export class ChannelComponent implements OnInit {
             .pipe(
               tap((value) => {
                 this.seoService.setTitle($localize`Channel: ${value.short_id}`);
+                this.seoService.setDescription($localize`:@@meta.description.lightning.channel:Overview for Lightning channel ${value.short_id}. See channel capacity, the Lightning nodes involved, related on-chain transactions, and more.`);
               }),
               catchError((err) => {
                 this.error = err;
