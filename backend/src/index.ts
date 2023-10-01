@@ -315,7 +315,9 @@ class Server {
   }
 
   onExit(exitEvent): void {
-    DB.releasePidLock();
+    if (config.DATABASE.ENABLED) {
+      DB.releasePidLock();
+    }
     process.exit(0);
   }
 }
