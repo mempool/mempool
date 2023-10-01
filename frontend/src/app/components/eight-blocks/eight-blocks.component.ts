@@ -26,6 +26,10 @@ function bestFitResolution(min, max, n): number {
   return best;
 }
 
+interface BlockInfo extends BlockExtended {
+  timeString: string;
+}
+
 @Component({
   selector: 'app-eight-blocks',
   templateUrl: './eight-blocks.component.html',
@@ -70,7 +74,7 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
   testShiftTimeout: number;
 
   showInfo: boolean = true;
-  blockInfo: { [key: string]: string}[] = [];
+  blockInfo: BlockInfo[] = [];
 
   wrapperStyle = {
     '--block-width': '1080px',
@@ -213,11 +217,8 @@ export class EightBlocksComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.blockInfo = blocks.map(block => {
         return {
-          height: `${block.height}`,
-          hash: block.id,
-          time: (new Date(block.timestamp * 1000)).toLocaleTimeString(),
-          count: `${block.tx_count} txs`,
-          size: `${this.bytesPipe.transform(block.size, 2, 'B', 'MB', true)}`,
+          ...block,
+          timeString: (new Date(block.timestamp * 1000)).toLocaleTimeString(),
         };
       });
       this.showInfo = true;

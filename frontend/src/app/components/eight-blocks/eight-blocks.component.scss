@@ -21,30 +21,37 @@
 
     .info {
       position: absolute;
-      left: 10%;
-      top: 10%;
-      right: 10%;
-      bottom: 10%;
-      height: 80%;
-      width: 80%;
-      overflow: hidden;
-      font-size: calc(var(--block-width) * 0.04);
+      left: 5%;
+      top: 5%;
+      right: 5%;
+      bottom: 5%;
+      height: 90%;
+      width: 90%;
+      font-size: calc(var(--block-width) * 0.03);
+      text-shadow: 0 0 calc(var(--block-width) * 0.05) black;
 
       h1 {
-        font-size: 4em;
-        margin-bottom: 0.1em;
+        font-size: 3em;
+        line-height: 1;
+        margin-bottom: calc(var(--block-width) * 0.03);
       }
       h2 {
-        font-size: 2.5em;
-        margin-bottom: 0.1em;
+        font-size: 1.5em;
+        line-height: 1;
+        margin-bottom: calc(var(--block-width) * 0.03);
       }
 
       .hash {
         font-family: monospace;
         word-wrap: break-word;
-        font-size: 1em;
-        margin-bottom: 0.1em;
+        font-size: 1.2em;
+        line-height: 1;
+        margin-bottom: calc(var(--block-width) * 0.03);
       }
     }
+  }
+
+  .block-container {
+    overflow: hidden;
   }
 }

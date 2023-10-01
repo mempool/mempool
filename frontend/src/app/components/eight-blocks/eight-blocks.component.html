@@ -16,10 +16,12 @@
         ></app-block-overview-graph>
         <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
           <h1>{{ blockInfo[i].height }}</h1>
-          <p class="hash">{{ blockInfo[i].hash }}</p>
-          <h2>{{ blockInfo[i].time }}</h2>
-          <h2>{{ blockInfo[i].count }}</h2>
-          <h2>{{ blockInfo[i].size }}</h2>
+          <p class="hash">{{ blockInfo[i].id.slice(0, 32) }}<br>{{ blockInfo[i].id.slice(32) }}</p>
+          <h2>{{ blockInfo[i].timeString }}</h2>
+          <h2>{{ blockInfo[i].tx_count }} transactions</h2>
+          <h2>{{ blockInfo[i].extras.medianFee | feeRounding }} sat/vB</h2>
+          <h2>{{ blockInfo[i].size | bytes: 2 : 'B' : 'MB' : true }}</h2>
+          <h2>Mined by {{ blockInfo[i].extras.pool.name || 'Unknown' }}</h2>
         </div>
       </div>
     </div>
