@@ -140,9 +140,18 @@ class BitcoinRoutes {
         height: -1,
         indexing: {
           enabled: Common.indexingEnabled(),
-          indexedBlockCount: -1,
-          indexedBlockCountWithCPFP: -1,
-          indexedBlockCountWithCoinStats: -1,
+          blocks: {
+            count: -1,
+            progress: -1,
+            withCpfp: {
+              count: -1,
+              progress: -1,
+            },
+            withCoinStats: {
+              count: -1,
+              progress: -1,
+            }
+          },
         }
       },
     };
@@ -167,9 +176,14 @@ class BitcoinRoutes {
       // Mempool
       response.mempool.height = blocks.getCurrentBlockHeight();
       if (Common.indexingEnabled()) {
-        response.mempool.indexing.indexedBlockCount = await BlocksRepository.$getIndexedBlockCount();
-        response.mempool.indexing.indexedBlockCountWithCPFP = await BlocksRepository.$getIndexedCpfpBlockCount();
-        response.mempool.indexing.indexedBlockCountWithCoinStats = await BlocksRepository.$getIndexedCoinStatsBlockCount();
+        const indexingBlockAmount = (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 ? response.core.height : config.MEMPOOL.INDEXING_BLOCKS_AMOUNT);
+        const computeProgress = (count: number): number => Math.min(1.0, Math.round(count / indexingBlockAmount * 100) / 100);
+        response.mempool.indexing.blocks.count = await BlocksRepository.$getIndexedBlockCount();
+        response.mempool.indexing.blocks.progress = computeProgress(response.mempool.indexing.blocks.count);
+        response.mempool.indexing.blocks.withCpfp.count = await BlocksRepository.$getIndexedCpfpBlockCount();
+        response.mempool.indexing.blocks.withCpfp.progress = computeProgress(response.mempool.indexing.blocks.withCpfp.count);
+        response.mempool.indexing.blocks.withCoinStats.count = await BlocksRepository.$getIndexedCoinStatsBlockCount();
+        response.mempool.indexing.blocks.withCoinStats.progress = computeProgress(response.mempool.indexing.blocks.withCoinStats.count);
       }
 
       // Esplora
