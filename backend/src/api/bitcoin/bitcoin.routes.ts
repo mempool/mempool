@@ -128,44 +128,62 @@ class BitcoinRoutes {
           ;
       }
 
-      app.get(config.MEMPOOL.API_URL_PREFIX + 'health', this.generateHealthReport)
+      app.get(config.MEMPOOL.API_URL_PREFIX + 'health', this.generateHealthReport);
   }
 
-  private async generateHealthReport(req: Request, res: Response) {
+  private async generateHealthReport(req: Request, res: Response): Promise<void> {
+    let response = {
+      core: {
+        height: -1
+      },
+      mempool: {
+        height: -1,
+        indexing: {
+          enabled: Common.indexingEnabled(),
+          indexedBlockCount: -1,
+          indexedBlockCountWithCPFP: -1,
+          indexedBlockCountWithCoinStats: -1,
+        }
+      },
+    };
+    
     try {
       // Bitcoin Core
-      const bitcoinCoreBlockHeight = await bitcoinCoreApi.$getBlockHeightTip();
-      const bitcoinCoreIndexes = await bitcoinClient.getIndexInfo();
-      // Mempool
-      const mempoolBlockHeight = blocks.getCurrentBlockHeight();
-      const indexedBlockCount = await BlocksRepository.$getIndexedBlockCount();
-      const indexedBlockWithCpfpCount = await BlocksRepository.$getIndexedCpfpBlockCount();
-      const indexedBlockWithCoinStatsCount = await BlocksRepository.$getIndexedCoinStatsBlockCount();
-
-      const response = {
-        core: {
-          height: bitcoinCoreBlockHeight,
-        },
-        mempool: {
-          height: mempoolBlockHeight,
-          indexing: {
-            indexedBlockCount: indexedBlockCount,
-            indexedBlockCountWithCPFP: indexedBlockWithCpfpCount,
-            indexedBlockCountWithCoinStats: indexedBlockWithCoinStatsCount,
-          }
+      let bitcoinCoreIndexes: number | string;
+      try {
+        bitcoinCoreIndexes = await bitcoinClient.getIndexInfo();
+        for (const indexName in bitcoinCoreIndexes as any) {
+          response.core[indexName.replace(/ /g,'_')] = bitcoinCoreIndexes[indexName];
         }
-      };
-
-      // Bitcoin Core indexes
-      for (const indexName in bitcoinCoreIndexes) {
-        response.core[indexName.replace(/ /g,'_')] = bitcoinCoreIndexes[indexName];
+      } catch (e: any) {
+        response.core['error'] = e.message;
+      }
+      try {
+        response.core.height = await bitcoinCoreApi.$getBlockHeightTip();
+      } catch (e: any) {
+        response.core['error'] = e.message;
       }
 
+      // Mempool
+      response.mempool.height = blocks.getCurrentBlockHeight();
+      if (Common.indexingEnabled()) {
+        response.mempool.indexing.indexedBlockCount = await BlocksRepository.$getIndexedBlockCount();
+        response.mempool.indexing.indexedBlockCountWithCPFP = await BlocksRepository.$getIndexedCpfpBlockCount();
+        response.mempool.indexing.indexedBlockCountWithCoinStats = await BlocksRepository.$getIndexedCoinStatsBlockCount();
+      }
+
+      // Esplora
       if (config.MEMPOOL.BACKEND === 'esplora') {
-        const esploraBlockHeight = await bitcoinApi.$getBlockHeightTip();
-        response['esplora'] = {
-          height: esploraBlockHeight
-        };
+        try {
+          response['esplora'] = {
+            height: await bitcoinApi.$getBlockHeightTip()
+          };
+        } catch (e: any) {
+          response['esplora'] = {
+            height: -1,
+            error: e.message
+          };
+        }
       }
 
       res.json(response);
