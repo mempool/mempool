@@ -9,11 +9,20 @@
   margin-left: -250px;
   box-shadow: 5px 0px 30px 0px #000;
   padding-bottom: 20px;
+  @media (max-width: 613px) {
+    top: 105px;
+  }
+}
+
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .scrollable {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .sidenav.open {
