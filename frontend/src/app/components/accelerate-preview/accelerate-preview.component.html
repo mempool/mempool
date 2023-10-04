@@ -228,7 +228,7 @@
               </ng-container>
   
               <!-- USER BALANCE -->
-              <ng-container *ngIf="estimate.userBalance < maxCost">
+              <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item">
                     Available balance
@@ -241,6 +241,17 @@
                     <span class="fiat">
                       <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <!-- LOGIN CTA -->
+              <ng-container *ngIf="!isLoggedIn()">
+                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                  <td class="item"></td>
+                  <td class="amt"></td>
+                  <td class="units d-flex">
+                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1">Login</a>
                   </td>
                 </tr>
               </ng-container>

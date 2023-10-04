@@ -83,7 +83,7 @@
 
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
-      <div class="title mt-3" id="acceleratePreviewAnchor">
+      <div class="title mt-3">
         <h2>Accelerate</h2>
       </div>
       <div class="box">
@@ -138,7 +138,7 @@
                     </ng-template>
                   </td>
                 </tr>
-                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" id="acceleratePreviewAnchor">
                   <td class="td-width" i18n="transaction.features|Transaction Features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
