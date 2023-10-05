@@ -124,6 +124,22 @@ export function parseMultisigScript(script: string): void | { m: number, n: numb
   if (!script) {
     return;
   }
+
+  if (/^(?:OP_PUSHBYTES_\d+ \w+ OP_CHECKSIGVERIFY )+OP_PUSHBYTES_\d+ \w+ OP_CHECKSIG$/.test(script)) {
+    const n = script.match(/OP_CHECKSIG/g).length;
+    return { m: n, n };
+  }
+
+  const checkSigAddMatch = script.match(/^OP_PUSHBYTES_32 \w{64} OP_CHECKSIG (?:OP_PUSHBYTES_32 \w{64} OP_CHECKSIGADD )+(?:OP_PUSHNUM_(\d+)|OP_PUSHBYTES_[1-4] (\w+)) (?:OP_NUMEQUAL|OP_GREATERTHANOREQUAL)$/);
+  if (checkSigAddMatch) {
+    const n = script.match(/OP_CHECKSIG/g).length;
+    const m = checkSigAddMatch[1]
+      ? parseInt(checkSigAddMatch[1], 10)
+      // convert from little-endian to big-endian
+      : parseInt(checkSigAddMatch[2].match(/.{2}/g).reverse().join(''), 16);
+    return { m, n };
+  }
+
   const ops = script.split(' ');
   if (ops.length < 3 || ops.pop() !== 'OP_CHECKMULTISIG') {
     return;
