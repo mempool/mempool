@@ -1660,15 +1660,15 @@ case $OS in
         crontab_bitcoin=()
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Mainnet Cronjob"
-            crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/electrs-start-mainnet\n"
+            crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/start mainnet\n"
         fi
         if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Testnet Cronjob"
-            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/electrs-start-testnet\n"
+            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/start testnet\n"
         fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Signet Cronjob"
-            crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/electrs-start-signet\n"
+            crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/start signet\n"
         fi
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "${crontab_bitcoin}" | crontab -u "${BITCOIN_USER}" -
