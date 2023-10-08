@@ -6,7 +6,7 @@
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  width: calc(100% + 120px);
+  width: 100%;
 
   transform: translateX(0px);
   transition: transform 0;
@@ -19,6 +19,10 @@
   &.menu-closing {
     transform: translateX(0px);
     transition: transform 0.25s;
+  }
+
+  &.with-menu {
+    width: calc(100% + 120px);
   }
 }
 
