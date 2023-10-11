@@ -1171,3 +1171,10 @@ app-global-footer {
   line-height: 0.5;
   border-radius: 0.2rem;
 }
+
+@font-face {
+  font-family: "Inter";
+  src: url("/resources/Inter-Bold.ttf");
+  font-weight: 700;
+  font-style: normal;
+}
