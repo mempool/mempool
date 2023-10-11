@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const configPath = process.env.UNFURLER_CONFIG || '../config.json';
+const configPath = process.env.UNFURLER_CONFIG || './config.json';
 const absolutePath = path.resolve(configPath);
 let config;
 
