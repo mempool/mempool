@@ -88,7 +88,7 @@ export class NodesMap implements OnInit, OnChanges {
             node.public_key,
             node.alias,
             node.capacity,
-            node.channels,
+            node.active_channel_count,
             node.country,
             node.iso_code,
           ]);
