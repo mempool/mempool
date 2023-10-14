@@ -35,6 +35,7 @@ export class TopNodesPerChannels implements OnInit {
 
     if (this.widget === false) {
       this.seoService.setTitle($localize`:@@c50bf442cf99f6fc5f8b687c460f33234b879869:Connectivity Ranking`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.ranking.channels:See Lightning nodes with the most channels open along with high-level stats like total node capacity, node age, and more.`);
 
       this.topNodesPerChannels$ = this.apiService.getTopNodesByChannels$().pipe(
         map((ranking) => {

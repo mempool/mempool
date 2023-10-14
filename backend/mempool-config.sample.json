@@ -68,7 +68,8 @@
     "DATABASE": "mempool",
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 180000
+    "TIMEOUT": 180000,
+    "PID_DIR": ""
   },
   "SYSLOG": {
     "ENABLED": true,

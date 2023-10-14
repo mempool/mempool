@@ -12,6 +12,7 @@ import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '../../services/state.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-hashrate-chart',
@@ -71,6 +72,7 @@ export class HashrateChartComponent implements OnInit {
       this.miningWindowPreference = '1y';
     } else {
       this.seoService.setTitle($localize`:@@3510fc6daa1d975f331e3a717bdf1a34efa06dff:Hashrate & Difficulty`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.hashrate:See hashrate and difficulty for the Bitcoin${seoDescriptionNetwork(this.network)} network visualized over time.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -256,7 +258,7 @@ export class HashrateChartComponent implements OnInit {
               let difficultyPowerOfTen = hashratePowerOfTen;
               let difficulty = tick.data[1];
               if (difficulty === null) {
-                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;  
+                difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
                 if (this.isMobile()) {
                   difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);

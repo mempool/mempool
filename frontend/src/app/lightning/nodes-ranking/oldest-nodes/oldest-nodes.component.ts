@@ -25,6 +25,7 @@ export class OldestNodes implements OnInit {
   ngOnInit(): void {
     if (!this.widget) {
       this.seoService.setTitle($localize`Oldest lightning nodes`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.ranking.oldest:See the oldest nodes on the Lightning network along with their capacity, number of channels, location, etc.`);
     }
 
     for (let i = 1; i <= (this.widget ? 10 : 100); ++i) {

@@ -174,6 +174,7 @@ class StatisticsApi {
   private getQueryForDaysAvg(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(min_fee) as DOUBLE) as min_fee,
       CAST(avg(vsize_1) as DOUBLE) as vsize_1,
@@ -223,6 +224,7 @@ class StatisticsApi {
   private getQueryForDays(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(min_fee) as DOUBLE) as min_fee,
       vsize_1,
@@ -406,6 +408,7 @@ class StatisticsApi {
     return statistic.map((s) => {
       return {
         added: s.added,
+        count: s.unconfirmed_transactions,
         vbytes_per_second: s.vbytes_per_second,
         mempool_byte_weight: s.mempool_byte_weight,
         total_fee: s.total_fee,
