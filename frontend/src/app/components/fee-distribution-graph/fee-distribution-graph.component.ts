@@ -135,7 +135,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
           formatter: (value: number): string => {
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
-            const newVal = Math.round(unitValue / selectedPowerOfTen.divider);
+            const scaledValue = unitValue / selectedPowerOfTen.divider;
+            const newVal = scaledValue >= 100 ? Math.round(scaledValue) : scaledValue.toPrecision(3);
             return `${newVal}${selectedPowerOfTen.unit}`;
           },
         },
@@ -155,7 +156,8 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
             const value = label.data[1];
             const unitValue = this.weightMode ? value / 4 : value;
             const selectedPowerOfTen = selectPowerOfTen(unitValue);
-            const newVal = Math.round(unitValue / selectedPowerOfTen.divider);
+            const scaledValue = unitValue / selectedPowerOfTen.divider;
+            const newVal = scaledValue >= 100 ? Math.round(scaledValue) : scaledValue.toPrecision(3);
             return `${newVal}${selectedPowerOfTen.unit}`;
           }
         },
