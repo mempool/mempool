@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-fee-distribution-graph',
   templateUrl: './fee-distribution-graph.component.html',
+  styleUrls: ['./fee-distribution-graph.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestroy {
