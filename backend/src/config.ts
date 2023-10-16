@@ -65,6 +65,11 @@ interface IConfig {
   CLIGHTNING: {
     SOCKET: string;
   };
+  LIGHTNING_NODE: {
+    PUBKEY: string;
+    IP: string;
+    PORT: number;
+  };
   ELECTRUM: {
     HOST: string;
     PORT: number;
@@ -256,6 +261,11 @@ const defaults: IConfig = {
   'CLIGHTNING': {
     'SOCKET': '',
   },
+  'LIGHTNING_NODE': {
+    'PUBKEY': '',
+	'IP': '',
+	'PORT': 0,
+  },
   'SOCKS5PROXY': {
     'ENABLED': false,
     'USE_ONION': true,
@@ -307,6 +317,7 @@ class Config implements IConfig {
   LIGHTNING: IConfig['LIGHTNING'];
   LND: IConfig['LND'];
   CLIGHTNING: IConfig['CLIGHTNING'];
+  LIGHTNING_NODE: IConfig['LIGHTNING_NODE'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
@@ -328,6 +339,7 @@ class Config implements IConfig {
     this.LIGHTNING = configs.LIGHTNING;
     this.LND = configs.LND;
     this.CLIGHTNING = configs.CLIGHTNING;
+    this.LIGHTNING_NODE = configs.LIGHTNING_NODE;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
