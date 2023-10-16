@@ -53,6 +53,9 @@ class RbfCache {
   private expiring: Map<string, number> = new Map();
   private cacheQueue: CacheEvent[] = [];
 
+  private evictionCount = 0;
+  private staleCount = 0;
+
   constructor() {
     setInterval(this.cleanup.bind(this), 1000 * 60 * 10);
   }
@@ -245,6 +248,7 @@ class RbfCache {
 
   // flag a transaction as removed from the mempool
   public evict(txid: string, fast: boolean = false): void {
+    this.evictionCount++;
     if (this.txs.has(txid) && (fast || !this.expiring.has(txid))) {
       const expiryTime = fast ? Date.now() + (1000 * 60 * 10) : Date.now() + (1000 * 86400); // 24 hours
       this.addExpiration(txid, expiryTime);
@@ -272,18 +276,23 @@ class RbfCache {
         this.remove(txid);
       }
     }
-    logger.debug(`rbf cache contains ${this.txs.size} txs, ${this.rbfTrees.size} trees, ${this.expiring.size} due to expire`);
+    logger.debug(`rbf cache contains ${this.txs.size} txs, ${this.rbfTrees.size} trees, ${this.expiring.size} due to expire (${this.evictionCount} newly expired)`);
+    this.evictionCount = 0;
   }
 
   // remove a transaction & all previous versions from the cache
   private remove(txid): void {
     // don't remove a transaction if a newer version remains in the mempool
     if (!this.replacedBy.has(txid)) {
+      const root = this.treeMap.get(txid);
       const replaces = this.replaces.get(txid);
       this.replaces.delete(txid);
       this.treeMap.delete(txid);
       this.removeTx(txid);
       this.removeExpiration(txid);
+      if (root === txid) {
+        this.removeTree(txid);
+      }
       for (const tx of (replaces || [])) {
         // recursively remove prior versions from the cache
         this.replacedBy.delete(tx);
@@ -360,8 +369,9 @@ class RbfCache {
 
   public async load({ txs, trees, expiring }): Promise<void> {
     txs.forEach(txEntry => {
-      this.txs.set(txEntry.key, txEntry.value);
+      this.txs.set(txEntry.value.txid, txEntry.value);
     });
+    this.staleCount = 0;
     for (const deflatedTree of trees) {
       await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
     }
@@ -370,6 +380,8 @@ class RbfCache {
         this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
       }
     });
+    logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
+    this.staleCount = 0;
     this.cleanup();
   }
 
@@ -398,6 +410,13 @@ class RbfCache {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 
+    // if the root tx is unknown, remove this tree and return early
+    if (root === txid && !txs.has(txid)) {
+      this.staleCount++;
+      this.removeTree(deflated.key);
+      return;
+    }
+
     // check if any transactions in this tree have already been confirmed
     mined = mined || treeInfo.mined;
     let exists = mined;
@@ -413,7 +432,7 @@ class RbfCache {
           this.evict(txid, true);
         }
       } catch (e) {
-        // most transactions do not exist
+        // most transactions only exist in our cache
       }
     }
 
