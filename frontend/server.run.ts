@@ -1,8 +1,6 @@
 import 'zone.js/dist/zone-node';
 import './src/resources/config.js';
 
-console.log(global);
-
 import * as domino from 'domino';
 import * as express from 'express';
 import * as fs from 'fs';
@@ -23,7 +21,6 @@ win.matchMedia = () => {
     matches: true
   };
 };
-
 // @ts-ignore
 win.setTimeout = (fn) => { fn(); };
 win.document.body.scrollTo = (() => {});

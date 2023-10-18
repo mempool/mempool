@@ -58,55 +58,11 @@ export function app(locale: string): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // only handle URLs that actually exist
-  //server.get(locale, getLocalizedSSR(indexHtml));
-  server.get('/', getLocalizedSSR(indexHtml));
-  server.get('/tx/*', getLocalizedSSR(indexHtml));
-  server.get('/block/*', getLocalizedSSR(indexHtml));
-  server.get('/mempool-block/*', getLocalizedSSR(indexHtml));
-  server.get('/address/*', getLocalizedSSR(indexHtml));
-  server.get('/blocks', getLocalizedSSR(indexHtml));
-  server.get('/graphs', getLocalizedSSR(indexHtml));
-  server.get('/liquid', getLocalizedSSR(indexHtml));
-  server.get('/liquid/tx/*', getLocalizedSSR(indexHtml));
-  server.get('/liquid/block/*', getLocalizedSSR(indexHtml));
-  server.get('/liquid/mempool-block/*', getLocalizedSSR(indexHtml));
-  server.get('/liquid/address/*', getLocalizedSSR(indexHtml));
-  server.get('/liquid/asset/*', getLocalizedSSR(indexHtml));
-  server.get('/liquid/blocks', getLocalizedSSR(indexHtml));
-  server.get('/liquid/graphs', getLocalizedSSR(indexHtml));
-  server.get('/liquid/assets', getLocalizedSSR(indexHtml));
-  server.get('/liquid/api', getLocalizedSSR(indexHtml));
-  server.get('/liquid/tv', getLocalizedSSR(indexHtml));
-  server.get('/liquid/status', getLocalizedSSR(indexHtml));
-  server.get('/liquid/about', getLocalizedSSR(indexHtml));
-  server.get('/testnet', getLocalizedSSR(indexHtml));
-  server.get('/testnet/tx/*', getLocalizedSSR(indexHtml));
-  server.get('/testnet/block/*', getLocalizedSSR(indexHtml));
-  server.get('/testnet/mempool-block/*', getLocalizedSSR(indexHtml));
-  server.get('/testnet/address/*', getLocalizedSSR(indexHtml));
-  server.get('/testnet/blocks', getLocalizedSSR(indexHtml));
-  server.get('/testnet/graphs', getLocalizedSSR(indexHtml));
-  server.get('/testnet/api', getLocalizedSSR(indexHtml));
-  server.get('/testnet/tv', getLocalizedSSR(indexHtml));
-  server.get('/testnet/status', getLocalizedSSR(indexHtml));
-  server.get('/testnet/about', getLocalizedSSR(indexHtml));
-  server.get('/bisq', getLocalizedSSR(indexHtml));
-  server.get('/bisq/tx/*', getLocalizedSSR(indexHtml));
-  server.get('/bisq/blocks', getLocalizedSSR(indexHtml));
-  server.get('/bisq/block/*', getLocalizedSSR(indexHtml));
-  server.get('/bisq/address/*', getLocalizedSSR(indexHtml));
-  server.get('/bisq/stats', getLocalizedSSR(indexHtml));
-  server.get('/bisq/about', getLocalizedSSR(indexHtml));
-  server.get('/bisq/api', getLocalizedSSR(indexHtml));
-  server.get('/about', getLocalizedSSR(indexHtml));
-  server.get('/api', getLocalizedSSR(indexHtml));
-  server.get('/tv', getLocalizedSSR(indexHtml));
-  server.get('/status', getLocalizedSSR(indexHtml));
-  server.get('/terms-of-service', getLocalizedSSR(indexHtml));
 
-  // fallback to static file handler so we send HTTP 404 to nginx
-  server.get('/**', express.static(distFolder, { maxAge: '1y' }));
+  // static file handler so we send HTTP 404 to nginx
+  server.get('/**.(css|js|json|ico|webmanifest|png|jpg|jpeg|svg|mp4)*', express.static(distFolder, { maxAge: '1y', fallthrough: false }));
+  // handle page routes
+  server.get('/**', getLocalizedSSR(indexHtml));
 
   return server;
 }
