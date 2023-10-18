@@ -22,9 +22,10 @@ const win = domino.createWindow(template);
 win.__env = global.__env;
 
 // @ts-ignore
-win.matchMedia = () => {
+win.matchMedia = (media) => {
   return {
-    matches: true
+    media,
+    matches: true,
   };
 };
 
