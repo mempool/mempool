@@ -13,6 +13,8 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
+import { ResizeObserver } from './shims';
+
 const template = fs.readFileSync(path.join(process.cwd(), 'dist/mempool/browser/en-US/', 'index.html')).toString();
 const win = domino.createWindow(template);
 
@@ -29,11 +31,13 @@ win.matchMedia = () => {
 // @ts-ignore
 win.setTimeout = (fn) => { fn(); };
 win.document.body.scrollTo = (() => {});
+win['ResizeObserver'] = ResizeObserver;
 // @ts-ignore
 global['window'] = win;
 global['document'] = win.document;
 // @ts-ignore
 global['history'] = { state: { } };
+global['navigator'] = win.navigator;
 
 global['localStorage'] = {
   getItem: () => '',
