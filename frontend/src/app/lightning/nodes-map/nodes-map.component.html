@@ -7,8 +7,10 @@
     <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
   </div>
 
-  <div *ngIf="observable$ | async" class="chart" [class]="widget ? 'widget' : ''" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
-  </div>
+  <ng-container *ngIf="observable$ | async">
+    <div class="chart" [class]="widget ? 'widget' : ''" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+    </div>
+  </ng-container>
 
 </div>

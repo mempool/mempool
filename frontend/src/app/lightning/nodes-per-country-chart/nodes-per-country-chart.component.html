@@ -12,7 +12,7 @@
 
   <div class="container pb-lg-0">
     <div class="pb-lg-5">
-      <div class="chart w-100" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      <div class="chart w-100" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
         (chartInit)="onChartInit($event)">
       </div>
     </div>

@@ -1,7 +1,7 @@
 <div class="map-wrapper" [class]="style" *ngIf="style !== 'graph'">
   <ng-container *ngIf="channelsObservable | async">
     <div *ngIf="chartOptions" [class]="'full-container ' + style + (fitContainer ? ' fit-container' : '')">
-      <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      <div class="chart" [class]="style" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
         (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
       </div>
       <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>

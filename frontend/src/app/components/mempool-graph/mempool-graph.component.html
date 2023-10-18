@@ -1,4 +1,4 @@
-<div echarts class="echarts" (chartInit)="onChartReady($event)" (chartRendered)="rendered()" [initOpts]="mempoolVsizeFeesInitOptions" [options]="mempoolVsizeFeesOptions"></div>
+<div *browserOnly echarts class="echarts" (chartInit)="onChartReady($event)" (chartRendered)="rendered()" [initOpts]="mempoolVsizeFeesInitOptions" [options]="mempoolVsizeFeesOptions"></div>
 <div class="text-center loadingGraphs" *ngIf="isLoading">
   <div class="spinner-border text-light"></div>
 </div>

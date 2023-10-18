@@ -168,7 +168,7 @@
   </ng-template>
 
   <!-- Hashrate chart -->
-  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
+  <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"></div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
