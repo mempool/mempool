@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -17,6 +17,7 @@ import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
 import { ServicesApiServices } from '../../services/services-api.service';
+import { isPlatformServer } from '@angular/common';
 
 @Component({
   selector: 'app-block',
@@ -108,8 +109,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     private priceService: PriceService,
     private cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.webGlEnabled = detectWebGL();
+    this.webGlEnabled = isPlatformServer(this.platformId) || detectWebGL();
   }
 
   ngOnInit() {
