@@ -27,7 +27,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() data: any[];
   @Input() filterSize = 100000;
   @Input() limitFilterFee = 1;
-  @Input() hideCount: boolean = false;
+  @Input() hideCount: boolean = true;
   @Input() height: number | string = 200;
   @Input() top: number | string = 20;
   @Input() right: number | string = 10;
@@ -53,7 +53,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   chartInstance: any = undefined;
   weightMode: boolean = false;
   isWidget: boolean = false;
-  showCount: boolean = true;
+  showCount: boolean = false;
 
   constructor(
     private vbytesPipe: VbytesPipe,
