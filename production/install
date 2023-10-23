@@ -332,7 +332,7 @@ BITCOIN_REPO_URL=https://github.com/bitcoin/bitcoin
 BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
-BITCOIN_LATEST_RELEASE=v25.0
+BITCOIN_LATEST_RELEASE=v25.1
 echo -n '.'
 
 BISQ_REPO_URL=https://github.com/bisq-network/bisq
