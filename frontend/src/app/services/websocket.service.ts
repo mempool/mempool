@@ -3,7 +3,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '../interfaces/websocket.interface';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
@@ -224,6 +224,7 @@ export class WebsocketService {
   }
 
   startTrackRbfSummary() {
+    this.initRbfSummary();
     this.websocketSubject.next({ 'track-rbf-summary': true });
     this.isTrackingRbfSummary = true;
   }
@@ -444,6 +445,32 @@ export class WebsocketService {
 
     if (reinitBlocks) {
       this.websocketSubject.next({'refresh-blocks': true});
+    }
+  }
+
+  async initRbfSummary(): Promise<void> {
+    if (!this.stateService.isBrowser) {
+      const rbfList = await firstValueFrom(this.apiService.getRbfList$(false));
+      if (rbfList) {
+        const rbfSummary = rbfList.slice(0, 6).map(rbfTree => {
+          let oldFee = 0;
+          let oldVsize = 0;
+          for (const replaced of rbfTree.replaces) {
+            oldFee += replaced.tx.fee;
+            oldVsize += replaced.tx.vsize;
+          }
+          return {
+            txid: rbfTree.tx.txid,
+            mined: !!rbfTree.tx.mined,
+            fullRbf: !!rbfTree.tx.fullRbf,
+            oldFee,
+            oldVsize,
+            newFee: rbfTree.tx.fee,
+            newVsize: rbfTree.tx.vsize,
+          };
+        });
+        this.stateService.rbfLatestSummary$.next(rbfSummary);
+      }
     }
   }
 }
