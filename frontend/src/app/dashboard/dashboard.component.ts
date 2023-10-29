@@ -8,7 +8,6 @@ import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
 import { ActiveFilter, FilterMode, toFlags } from '../shared/filters.utils';
-import { TransferState } from '@angular/core';
 
 interface MempoolBlocksData {
   blocks: number;

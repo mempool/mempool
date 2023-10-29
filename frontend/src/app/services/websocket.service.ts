@@ -57,7 +57,7 @@ export class WebsocketService {
       this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
 
-      const theInitData = this.transferState.get<any>(initData, null);
+      const { response: theInitData } = this.transferState.get<any>(initData, null) || {};
       if (theInitData) {
         this.stateService.isLoadingWebSocket$.next(false);
         this.handleResponse(theInitData.body);
