@@ -59,6 +59,9 @@ export class WebsocketService {
 
       const { response: theInitData } = this.transferState.get<any>(initData, null) || {};
       if (theInitData) {
+        if (theInitData.body.blocks) {
+          theInitData.body.blocks = theInitData.body.blocks.reverse();
+        }
         this.stateService.isLoadingWebSocket$.next(false);
         this.handleResponse(theInitData.body);
         this.startSubscription(false, true);
