@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
@@ -109,6 +109,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private priceService: PriceService,
     private cacheService: CacheService,
     private servicesApiService: ServicesApiServices,
+    private cd: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.webGlEnabled = isPlatformServer(this.platformId) || detectWebGL();
@@ -320,6 +321,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       }
       this.transactions = transactions;
       this.isLoadingTransactions = false;
+      this.cd.markForCheck();
     },
     (error) => {
       this.error = error;
@@ -473,6 +475,7 @@ export class BlockComponent implements OnInit, OnDestroy {
 
       this.isLoadingOverview = false;
       this.setupBlockGraphs();
+      this.cd.markForCheck();
     });
 
     this.oobSubscription = block$.pipe(

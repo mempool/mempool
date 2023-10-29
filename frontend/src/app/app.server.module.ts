@@ -6,7 +6,6 @@ import { ZONE_SERVICE } from './injection-tokens';
 import { AppModule } from './app.module';
 import { AppComponent } from './components/app/app.component';
 import { HttpCacheInterceptor } from './services/http-cache.interceptor';
-import { StateService } from './services/state.service';
 import { ZoneService } from './services/zone.service';
 
 
