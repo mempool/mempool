@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, tap, timer } from 'rxjs';
-import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 
 @Component({
@@ -33,17 +32,20 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.timeSubscription = timer(0, 250).pipe(
-      tap(() => {
-        this.updateTime();
-      })
-    ).subscribe();
-    this.blocksSubscription = this.stateService.blocks$
-      .subscribe((blocks) => {
-        this.blockTimes = blocks.map(block => [block.height, new Date(block.timestamp * 1000)]);
-        this.blockTimes = this.blockTimes.sort((a, b) => a[1].getTime() - b[1].getTime());
-        this.updateSegments();
-      });
+    if (this.stateService.isBrowser) {
+      this.timeSubscription = timer(0, 250).pipe(
+        tap(() => {
+          console.log('face tick');
+          this.updateTime();
+        })
+      ).subscribe();
+      this.blocksSubscription = this.stateService.blocks$
+        .subscribe((blocks) => {
+          this.blockTimes = blocks.map(block => [block.height, new Date(block.timestamp * 1000)]);
+          this.blockTimes = this.blockTimes.sort((a, b) => a[1].getTime() - b[1].getTime());
+          this.updateSegments();
+        });
+    }
   }
 
   ngOnChanges(): void {
@@ -54,7 +56,9 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.timeSubscription.unsubscribe();
+    if (this.timeSubscription) {
+      this.timeSubscription.unsubscribe();
+    }
   }
 
   updateTime(): void {
