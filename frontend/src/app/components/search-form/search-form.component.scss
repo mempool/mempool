@@ -26,6 +26,13 @@ form {
   @media (min-width: 992px) {
     width: 100%;
   }
+
+  &.hamburgerOpen {
+    @media (max-width: 613px) {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+  }
 }
 
 .btn-block {
