@@ -41,7 +41,7 @@ export class PoolRankingComponent implements OnInit {
   miningStatsObservable$: Observable<MiningStats>;
 
   constructor(
-    private stateService: StateService,
+    public stateService: StateService,
     private storageService: StorageService,
     private formBuilder: UntypedFormBuilder,
     private miningService: MiningService,

@@ -45,7 +45,7 @@ export class NodesChannelsMap implements OnInit {
   constructor(
     private seoService: SeoService,
     private apiService: ApiService,
-    private stateService: StateService,
+    public stateService: StateService,
     private assetsService: AssetsService,
     private router: Router,
     private zone: NgZone,

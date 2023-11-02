@@ -59,7 +59,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     private vbytesPipe: VbytesPipe,
     private wubytesPipe: WuBytesPipe,
     private amountShortenerPipe: AmountShortenerPipe,
-    private stateService: StateService,
+    public stateService: StateService,
     private storageService: StorageService,
     @Inject(LOCALE_ID) private locale: string,
   ) { }

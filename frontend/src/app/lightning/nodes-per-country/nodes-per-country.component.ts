@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, Observable, share, tap } from 'rxjs';
 import { ApiService } from '../../services/api.service';
@@ -27,6 +27,7 @@ export class NodesPerCountry implements OnInit {
   constructor(
     private apiService: ApiService,
     private seoService: SeoService,
+    private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
   ) {
     for (let i = 0; i < this.pageSize; ++i) {
@@ -94,7 +95,10 @@ export class NodesPerCountry implements OnInit {
             ispCount: Object.keys(isps).length
           };
         }),
-        tap(() => this.isLoading = false),
+        tap(() => {
+          this.isLoading = false
+          this.cd.markForCheck();
+        }),
         share()
       );
 

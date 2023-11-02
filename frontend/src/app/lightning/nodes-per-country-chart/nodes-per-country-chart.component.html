@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="text-center loadingGraphs" *ngIf="isLoading">
+    <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
       <div class="spinner-border text-light"></div>
     </div>
 

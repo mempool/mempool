@@ -60,7 +60,7 @@ export class HashrateChartComponent implements OnInit {
     private storageService: StorageService,
     private miningService: MiningService,
     private route: ActivatedRoute,
-    private stateService: StateService
+    public stateService: StateService
   ) {
   }
 

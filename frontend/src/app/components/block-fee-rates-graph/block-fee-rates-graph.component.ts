@@ -55,7 +55,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
-    private stateService: StateService,
+    public stateService: StateService,
     private router: Router,
     private zone: NgZone,
     private route: ActivatedRoute,

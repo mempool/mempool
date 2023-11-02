@@ -1,6 +1,7 @@
 import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges, OnInit } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from 'echarts';
+import { StateService } from '../../services/state.service';
 
 @Component({
   selector: 'app-lbtc-pegs-graph',
@@ -32,6 +33,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   };
 
   constructor(
+    public stateService: StateService,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
