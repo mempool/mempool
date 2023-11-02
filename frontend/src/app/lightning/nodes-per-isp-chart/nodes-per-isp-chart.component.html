@@ -43,10 +43,6 @@
       (chartInit)="onChartInit($event)">
     </div>
 
-    <div class="text-center loadingGraphs" *ngIf="isLoading">
-      <div class="spinner-border text-light"></div>
-    </div>
-
     <div class="d-flex justify-content-md-end toggle" *ngIf="!widget">
       <app-toggle [textLeft]="'Sort by nodes'" [textRight]="'capacity'" [checked]="true" (toggleStatusChanged)="onGroupToggleStatusChanged($event)"></app-toggle>
     </div>
@@ -73,6 +69,9 @@
         </tr>
       </tbody>
     </table>
+  </div>
+  <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
+    <div class="spinner-border text-light"></div>
   </div>
 </div>
 
