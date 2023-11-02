@@ -3938,7 +3938,7 @@
       </trans-unit>
       <trans-unit id="c16d236667af327bd474b149cb909d1cd06fa50c" datatype="html">
         <source>Avg Health</source>
-        <target>Santé moyenne</target>
+        <target>Santé moy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -4776,7 +4776,7 @@
       </trans-unit>
       <trans-unit id="4e738ef3d2b4878f17f43002204f7b31aabb8e87" datatype="html">
         <source>ETA</source>
-        <target>HAP</target>
+        <target>ETA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">109,110</context>
