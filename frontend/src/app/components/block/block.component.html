@@ -109,7 +109,7 @@
         <div class="col-sm chart-container" *ngIf="webGlEnabled && !showAudit">
           <app-block-overview-graph
             #blockGraphActual
-            [isLoading]="isLoadingOverview"
+            [isLoading]="!stateService.isBrowser || isLoadingOverview"
             [resolution]="86"
             [blockLimit]="stateService.blockVSize"
             [orientation]="'top'"
@@ -229,7 +229,7 @@
       <div class="col-sm audit-col" [class.mobile]="isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
+          <app-block-overview-graph #blockGraphProjected [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
             [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
@@ -244,7 +244,7 @@
       <div class="col-sm audit-col" *ngIf="!isMobile">
         <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
-          <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
+          <app-block-overview-graph #blockGraphActual [isLoading]="!stateService.isBrowser || isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
             (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
             [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
