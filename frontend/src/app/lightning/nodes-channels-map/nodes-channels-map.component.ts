@@ -6,8 +6,7 @@ import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
-import { EChartsOption, registerMap } from 'echarts';
-import 'echarts-gl';
+import { EChartsOption, echarts } from '../../graphs/echarts';
 import { isMobile } from '../../shared/common.utils';
 
 @Component({
@@ -88,7 +87,7 @@ export class NodesChannelsMap implements OnInit {
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
           [params.get('public_key') ?? undefined]
         ).pipe(tap((data) => {
-          registerMap('world', data[0]);
+          echarts.registerMap('world', data[0]);
 
           const channelsLoc = [];
           const nodes = [];

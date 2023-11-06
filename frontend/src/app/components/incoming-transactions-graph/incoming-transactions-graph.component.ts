@@ -1,5 +1,5 @@
 import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
