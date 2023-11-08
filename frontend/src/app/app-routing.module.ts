@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
-import { BlockComponent } from './components/block/block.component';
 import { BlockViewComponent } from './components/block-view/block-view.component';
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
@@ -100,16 +99,8 @@ let routes: Routes = [
           {
             path: 'block',
             component: StartComponent,
-            data: { networkSpecific: true },
-              children: [
-              {
-                path: ':id',
-                component: BlockComponent,
-                data: {
-                  ogImage: true
-                }
-              },
-            ],
+            data: { preload: true, networkSpecific: true },
+            loadChildren: () => import('./components/block/block.module').then(m => m.BlockModule),
           },
           {
             path: 'docs',
@@ -209,17 +200,9 @@ let routes: Routes = [
           },
           {
             path: 'block',
-            data: { networkSpecific: true },
             component: StartComponent,
-            children: [
-              {
-                path: ':id',
-                component: BlockComponent,
-                data: {
-                  ogImage: true
-                }
-              },
-            ],
+            data: { preload: true, networkSpecific: true },
+            loadChildren: () => import('./components/block/block.module').then(m => m.BlockModule),
           },
           {
             path: 'docs',
@@ -319,17 +302,9 @@ let routes: Routes = [
       },
       {
         path: 'block',
-        data: { networkSpecific: true },
         component: StartComponent,
-        children: [
-          {
-            path: ':id',
-            component: BlockComponent,
-            data: {
-              ogImage: true
-            }
-          },
-        ],
+        data: { preload: true, networkSpecific: true },
+        loadChildren: () => import('./components/block/block.module').then(m => m.BlockModule),
       },
       {
         path: 'docs',
@@ -466,17 +441,9 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: 'block',
-              data: { networkSpecific: true },
               component: StartComponent,
-              children: [
-                {
-                  path: ':id',
-                  component: BlockComponent,
-                  data: {
-                    ogImage: true
-                  }
-                },
-              ],
+              data: { preload: true, networkSpecific: true },
+              loadChildren: () => import('./components/block/block.module').then(m => m.BlockModule),
             },
             {
               path: 'assets',
@@ -584,17 +551,9 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'block',
-          data: { networkSpecific: true },
           component: StartComponent,
-          children: [
-            {
-              path: ':id',
-              component: BlockComponent,
-              data: {
-                ogImage: true
-              }
-            },
-          ],
+          data: { preload: true, networkSpecific: true },
+          loadChildren: () => import('./components/block/block.module').then(m => m.BlockModule),
         },
         {
           path: 'assets',

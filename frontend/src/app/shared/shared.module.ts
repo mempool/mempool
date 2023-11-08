@@ -47,7 +47,6 @@ import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 import { StartComponent } from '../components/start/start.component';
 import { TransactionComponent } from '../components/transaction/transaction.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
-import { BlockComponent } from '../components/block/block.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { AddressComponent } from '../components/address/address.component';
@@ -149,7 +148,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     LiquidMasterPageComponent,
     StartComponent,
     TransactionComponent,
-    BlockComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
@@ -276,7 +274,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AmountComponent,
     StartComponent,
     TransactionComponent,
-    BlockComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
