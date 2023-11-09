@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
