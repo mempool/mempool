@@ -4,6 +4,8 @@ import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
 import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockComponent } from './components/block/block.component';
+import { BlockViewComponent } from './components/block-view/block-view.component';
+import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
@@ -372,6 +374,14 @@ let routes: Routes = [
   {
     path: 'clock/:mode/:index',
     component: ClockComponent,
+  },
+  {
+    path: 'view/block/:id',
+    component: BlockViewComponent,
+  },
+  {
+    path: 'view/mempool-block/:index',
+    component: MempoolBlockViewComponent,
   },
   {
     path: 'status',
