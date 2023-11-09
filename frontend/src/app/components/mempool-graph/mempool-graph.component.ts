@@ -6,7 +6,7 @@ import { formatNumber } from '@angular/common';
 import { OptimizedMempoolStats } from '../../interfaces/node-api.interface';
 import { StateService } from '../../services/state.service';
 import { StorageService } from '../../services/storage.service';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { feeLevels, chartColors } from '../../app.constants';
 import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
 
