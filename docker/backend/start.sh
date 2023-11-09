@@ -71,6 +71,7 @@ __DATABASE_DATABASE__=${DATABASE_DATABASE:=mempool}
 __DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 __DATABASE_TIMEOUT__=${DATABASE_TIMEOUT:=180000}
+__DATABASE_PID_DIR__=${DATABASE_PID_DIR:=""}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -209,6 +210,7 @@ sed -i "s!__DATABASE_DATABASE__!${__DATABASE_DATABASE__}!g" mempool-config.json
 sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
 sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__DATABASE_PID_DIR__!${__DATABASE_PID_DIR__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json

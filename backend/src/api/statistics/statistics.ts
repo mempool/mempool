@@ -89,6 +89,9 @@ class Statistics {
       }
     });
 
+    // get minFee and convert to sats/vb
+    const minFee = memPool.getMempoolInfo().mempoolminfee * 100000;
+
     try {
       const insertId = await statisticsApi.$create({
         added: 'NOW()',
@@ -98,6 +101,7 @@ class Statistics {
         mempool_byte_weight: totalWeight,
         total_fee: totalFee,
         fee_data: '',
+        min_fee: minFee,
         vsize_1: weightVsizeFees['1'] || 0,
         vsize_2: weightVsizeFees['2'] || 0,
         vsize_3: weightVsizeFees['3'] || 0,

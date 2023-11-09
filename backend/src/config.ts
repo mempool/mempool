@@ -93,6 +93,7 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    PID_DIR: string;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -219,6 +220,7 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 180000,
+    'PID_DIR': '',
   },
   'SYSLOG': {
     'ENABLED': true,
