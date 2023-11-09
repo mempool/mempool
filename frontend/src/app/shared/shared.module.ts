@@ -59,11 +59,8 @@ import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
 import { DifficultyMiningComponent } from '../components/difficulty-mining/difficulty-mining.component';
-import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
-import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
-import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -158,9 +155,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TermsOfServiceComponent,
-    PrivacyPolicyComponent,
-    TrademarkPolicyComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -281,9 +275,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TermsOfServiceComponent,
-    PrivacyPolicyComponent,
-    TrademarkPolicyComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,

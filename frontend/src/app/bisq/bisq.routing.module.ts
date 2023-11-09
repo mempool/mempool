@@ -9,7 +9,6 @@ import { BisqStatsComponent } from './bisq-stats/bisq-stats.component';
 import { BisqDashboardComponent } from './bisq-dashboard/bisq-dashboard.component';
 import { BisqMarketComponent } from './bisq-market/bisq-market.component';
 import { BisqMainDashboardComponent } from './bisq-main-dashboard/bisq-main-dashboard.component';
-import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 
 const routes: Routes = [
@@ -75,7 +74,7 @@ const routes: Routes = [
     },
     {
       path: 'terms-of-service',
-      component: TermsOfServiceComponent
+      loadChildren: () => import('../components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
     },
     {
       path: '**',

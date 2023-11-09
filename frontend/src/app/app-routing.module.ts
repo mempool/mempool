@@ -8,9 +8,6 @@ import { ClockComponent } from './components/clock/clock.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
-import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
-import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
-import { TrademarkPolicyComponent } from './components/trademark-policy/trademark-policy.component';
 import { BisqMasterPageComponent } from './components/bisq-master-page/bisq-master-page.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
@@ -64,15 +61,15 @@ let routes: Routes = [
           },
           {
             path: 'terms-of-service',
-            component: TermsOfServiceComponent
+            loadChildren: () => import('./components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
           },
           {
             path: 'privacy-policy',
-            component: PrivacyPolicyComponent
+            loadChildren: () => import('./components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
           },
           {
             path: 'trademark-policy',
-            component: TrademarkPolicyComponent
+            loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
           },
           {
             path: 'address/:id',
@@ -161,15 +158,15 @@ let routes: Routes = [
           },
           {
             path: 'terms-of-service',
-            component: TermsOfServiceComponent
+            loadChildren: () => import('./components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
           },
           {
             path: 'privacy-policy',
-            component: PrivacyPolicyComponent
+            loadChildren: () => import('./components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
           },
           {
             path: 'trademark-policy',
-            component: TrademarkPolicyComponent
+            loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
           },
           {
             path: 'address/:id',
@@ -258,15 +255,15 @@ let routes: Routes = [
       },
       {
         path: 'terms-of-service',
-        component: TermsOfServiceComponent
+        loadChildren: () => import('./components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
       },
       {
         path: 'privacy-policy',
-        component: PrivacyPolicyComponent
+        loadChildren: () => import('./components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
       },
       {
         path: 'trademark-policy',
-        component: TrademarkPolicyComponent
+        loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
       },
       {
         path: 'address/:id',
@@ -392,15 +389,15 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: 'terms-of-service',
-              component: TermsOfServiceComponent
+              loadChildren: () => import('./components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
             },
             {
               path: 'privacy-policy',
-              component: PrivacyPolicyComponent
+              loadChildren: () => import('./components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
             },
             {
               path: 'trademark-policy',
-              component: TrademarkPolicyComponent
+              loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
             },
             {
               path: 'address/:id',
@@ -497,15 +494,15 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'terms-of-service',
-          component: TermsOfServiceComponent
+          loadChildren: () => import('./components/terms-of-service/terms-of-service.module').then(m => m.TermsOfServiceModule),
         },
         {
           path: 'privacy-policy',
-          component: PrivacyPolicyComponent
+          loadChildren: () => import('./components/privacy-policy/privacy-policy.module').then(m => m.PrivacyPolicyModule),
         },
         {
           path: 'trademark-policy',
-          component: TrademarkPolicyComponent
+          loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
         },
         {
           path: 'address/:id',
