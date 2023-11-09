@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic, LineSeriesOption} from 'echarts';
+import { echarts, EChartsOption, LineSeriesOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
@@ -152,7 +152,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#D81B60' },
           { offset: 1, color: '#D81B60AA' },
         ]),
@@ -174,7 +174,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#be7d4c' },
           { offset: 1, color: '#be7d4cAA' },
         ]),
@@ -195,7 +195,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#FFB300' },
           { offset: 1, color: '#FFB300AA' },
         ]),
@@ -216,7 +216,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#7D4698' },
           { offset: 1, color: '#7D4698AA' },
         ]),

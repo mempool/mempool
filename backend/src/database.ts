@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 import logger from './logger';
@@ -98,6 +100,33 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
     } catch (e) {
       logger.err('Could not connect to database: ' + (e instanceof Error ? e.message : e));
       process.exit(1);
+    }
+  }
+
+  public getPidLock(): boolean {
+    const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
+    if (fs.existsSync(filePath)) {
+      const pid = fs.readFileSync(filePath).toString();
+      if (pid !== `${process.pid}`) {
+        const msg = `Already running on PID ${pid} (or pid file '${filePath}' is stale)`;
+        logger.err(msg);
+        throw new Error(msg);
+      } else {
+        return true;
+      }
+    } else {
+      fs.writeFileSync(filePath, `${process.pid}`);
+      return true;
+    }
+  }
+
+  public releasePidLock(): void {
+    const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
+    if (fs.existsSync(filePath)) {
+      const pid = fs.readFileSync(filePath).toString();
+      if (pid === `${process.pid}`) {
+        fs.unlinkSync(filePath);
+      }
     }
   }
 
