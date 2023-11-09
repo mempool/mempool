@@ -45,7 +45,6 @@ import { AmountComponent } from '../components/amount/amount.component';
 import { RouterModule } from '@angular/router';
 import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 import { StartComponent } from '../components/start/start.component';
-import { TransactionComponent } from '../components/transaction/transaction.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
@@ -64,8 +63,6 @@ import { DifficultyMiningComponent } from '../components/difficulty-mining/diffi
 import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
-import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
-import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
 import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
 import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
@@ -147,7 +144,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BisqMasterPageComponent,
     LiquidMasterPageComponent,
     StartComponent,
-    TransactionComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
@@ -164,8 +160,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TxBowtieGraphComponent,
-    TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,
@@ -273,7 +267,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockchainBlocksComponent,
     AmountComponent,
     StartComponent,
-    TransactionComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
     TransactionsListComponent,
@@ -290,8 +283,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TxBowtieGraphComponent,
-    TxBowtieGraphTooltipComponent,
     TermsOfServiceComponent,
     PrivacyPolicyComponent,
     TrademarkPolicyComponent,

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppPreloadingStrategy } from './app.preloading-strategy'
 import { StartComponent } from './components/start/start.component';
-import { TransactionComponent } from './components/transaction/transaction.component';
 import { BlockViewComponent } from './components/block-view/block-view.component';
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
@@ -88,13 +87,8 @@ let routes: Routes = [
           {
             path: 'tx',
             component: StartComponent,
-            data: { networkSpecific: true },
-            children: [
-              {
-                path: ':id',
-                component: TransactionComponent
-              },
-            ],
+            data: { preload: true, networkSpecific: true },
+            loadChildren: () => import('./components/transaction/transaction.module').then(m => m.TransactionModule),
           },
           {
             path: 'block',
@@ -189,14 +183,9 @@ let routes: Routes = [
           },
           {
             path: 'tx',
-            data: { networkSpecific: true },
             component: StartComponent,
-            children: [
-              {
-                path: ':id',
-                component: TransactionComponent
-              },
-            ],
+            data: { preload: true, networkSpecific: true },
+            loadChildren: () => import('./components/transaction/transaction.module').then(m => m.TransactionModule),
           },
           {
             path: 'block',
@@ -291,14 +280,9 @@ let routes: Routes = [
       },
       {
         path: 'tx',
-        data: { networkSpecific: true },
         component: StartComponent,
-        children: [
-          {
-            path: ':id',
-            component: TransactionComponent
-          },
-        ],
+        data: { preload: true, networkSpecific: true },
+        loadChildren: () => import('./components/transaction/transaction.module').then(m => m.TransactionModule),
       },
       {
         path: 'block',
@@ -430,14 +414,9 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: 'tx',
-              data: { networkSpecific: true },
               component: StartComponent,
-              children: [
-                {
-                  path: ':id',
-                  component: TransactionComponent
-                },
-              ],
+              data: { preload: true, networkSpecific: true },
+              loadChildren: () => import('./components/transaction/transaction.module').then(m => m.TransactionModule),
             },
             {
               path: 'block',
@@ -540,14 +519,9 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'tx',
-          data: { networkSpecific: true },
           component: StartComponent,
-          children: [
-            {
-              path: ':id',
-              component: TransactionComponent
-            },
-          ],
+          data: { preload: true, networkSpecific: true },
+          loadChildren: () => import('./components/transaction/transaction.module').then(m => m.TransactionModule),
         },
         {
           path: 'block',
