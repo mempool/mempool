@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AboutComponent } from '../components/about/about.component';
 import { BisqTransactionsComponent } from './bisq-transactions/bisq-transactions.component';
 import { BisqTransactionComponent } from './bisq-transaction/bisq-transaction.component';
 import { BisqBlockComponent } from './bisq-block/bisq-block.component';
@@ -64,7 +63,7 @@ const routes: Routes = [
     },
     {
       path: 'about',
-      component: AboutComponent,
+      loadChildren: () => import('../components/about/about.module').then(m => m.AboutModule),
     },
     {
       path: 'docs',

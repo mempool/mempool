@@ -11,7 +11,6 @@ import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
 import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
-import { AboutComponent } from '../components/about/about.component';
 import { VbytesPipe } from './pipes/bytes-pipe/vbytes.pipe';
 import { ShortenStringPipe } from './pipes/shorten-string-pipe/shorten-string.pipe';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
@@ -137,7 +136,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     MempoolBlocksComponent,
     BlockchainBlocksComponent,
     AmountComponent,
-    AboutComponent,
     MasterPageComponent,
     MenuComponent,
     PreviewTitleComponent,

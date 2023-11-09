@@ -7,7 +7,6 @@ import { MempoolBlockViewComponent } from './components/mempool-block-view/mempo
 import { ClockComponent } from './components/clock/clock.component';
 import { AddressComponent } from './components/address/address.component';
 import { MasterPageComponent } from './components/master-page/master-page.component';
-import { AboutComponent } from './components/about/about.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
@@ -53,7 +52,7 @@ let routes: Routes = [
           },
           {
             path: 'about',
-            component: AboutComponent,
+            loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
           },
           {
             path: 'blocks',
@@ -150,7 +149,7 @@ let routes: Routes = [
           },
           {
             path: 'about',
-            component: AboutComponent,
+            loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
           },
           {
             path: 'blocks',
@@ -243,7 +242,7 @@ let routes: Routes = [
       },
       {
         path: 'about',
-        component: AboutComponent,
+        loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
       },
       {
         path: 'blocks',
@@ -385,7 +384,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
             },
             {
               path: 'about',
-              component: AboutComponent,
+              loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
             },
             {
               path: 'blocks',
@@ -490,7 +489,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'about',
-          component: AboutComponent,
+          loadChildren: () => import('./components/about/about.module').then(m => m.AboutModule),
         },
         {
           path: 'blocks',
