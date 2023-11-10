@@ -91,7 +91,8 @@ const routes: Routes = [
       },
       {
         path: 'docs',
-        loadChildren: () => import('../docs/docs.module').then(m => m.DocsModule)
+        loadChildren: () => import('../docs/docs.module').then(m => m.DocsModule),
+        data: { preload: true },
       },
       {
         path: 'api',

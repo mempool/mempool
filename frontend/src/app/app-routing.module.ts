@@ -33,6 +33,7 @@ let routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
       },
       {
         path: '**',
@@ -52,6 +53,7 @@ let routes: Routes = [
         path: '',
         pathMatch: 'full',
         loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
       },
       {
         path: '',
@@ -66,6 +68,7 @@ let routes: Routes = [
       {
         path: '',
         loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
       },
       {
         path: '**',
@@ -77,6 +80,7 @@ let routes: Routes = [
     path: '',
     pathMatch: 'full',
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+    data: { preload: true },
   },
   {
     path: '',
@@ -128,6 +132,7 @@ let routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+    data: { preload: true },
   },
   {
     path: '**',
@@ -151,10 +156,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           path: '',
           pathMatch: 'full',
           loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+          data: { preload: true },
         },
         {
           path: '',
-          loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule)
+          loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
+          data: { preload: true },
         },
         {
           path: 'status',
@@ -164,6 +171,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: '',
           loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+          data: { preload: true },
         },
         {
           path: '**',
@@ -175,10 +183,12 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       path: '',
       pathMatch: 'full',
       loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+      data: { preload: true },
     },
     {
       path: '',
-      loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule)
+      loadChildren: () => import ('./liquid/liquid-master-page.module').then(m => m.LiquidMasterPageModule),
+      data: { preload: true },
     },
     {
       path: 'preview',
@@ -201,6 +211,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     {
       path: '',
       loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
+      data: { preload: true },
     },
     {
       path: '**',

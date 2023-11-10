@@ -31,7 +31,8 @@ const routes: Routes = [
       },
       {
         path: 'lightning',
-        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule)
+        loadChildren: () => import('./lightning/lightning-previews.module').then(m => m.LightningPreviewsModule),
+        data: { preload: true },
       },
     ],
   }
