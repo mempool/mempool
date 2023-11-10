@@ -1,19 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppPreloadingStrategy } from './app.preloading-strategy'
-import { StartComponent } from './components/start/start.component';
 import { BlockViewComponent } from './components/block-view/block-view.component';
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
-import { AddressComponent } from './components/address/address.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
-import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
-import { BlocksList } from './components/blocks-list/blocks-list.component';
-import { AssetGroupComponent } from './components/assets/asset-group/asset-group.component';
-import { AssetsFeaturedComponent } from './components/assets/assets-featured/assets-featured.component';
-import { AssetsComponent } from './components/assets/assets.component';
-import { AssetComponent } from './components/asset/asset.component';
-import { AssetsNavComponent } from './components/assets/assets-nav/assets-nav.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -26,7 +17,7 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule),
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -41,7 +32,7 @@ let routes: Routes = [
       },
       {
         path: '',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
       },
       {
         path: '**',
@@ -60,7 +51,7 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
       },
       {
         path: '',
@@ -74,7 +65,7 @@ let routes: Routes = [
       },
       {
         path: '',
-        loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
       },
       {
         path: '**',
@@ -85,7 +76,7 @@ let routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
   },
   {
     path: '',
@@ -136,7 +127,7 @@ let routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
   },
   {
     path: '**',
@@ -159,7 +150,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         {
           path: '',
           pathMatch: 'full',
-          loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+          loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
         },
         {
           path: '',
@@ -172,7 +163,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: '',
-          loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+          loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
         },
         {
           path: '**',
@@ -183,7 +174,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     {
       path: '',
       pathMatch: 'full',
-      loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+      loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
     },
     {
       path: '',
@@ -209,7 +200,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     },
     {
       path: '',
-      loadChildren: () => import('./graphs/graphs.module').then(m => m.GraphsModule)
+      loadChildren: () => import('./liquid/liquid-graphs.module').then(m => m.LiquidGraphsModule),
     },
     {
       path: '**',

@@ -16,6 +16,7 @@ const browserWindowEnv = browserWindow.__env || {};
 
 const routes: Routes = [
   {
+    path: '',
     component: MasterPageComponent,
     children: [
       {
