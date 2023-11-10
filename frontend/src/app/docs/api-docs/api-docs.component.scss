@@ -259,13 +259,46 @@ h3 {
 }
 
 .blockchain-wrapper {
-  position: relative;
+  display: block;
+  height: 100%;
   width: 100%;
-  overflow: auto;
-  scrollbar-width: none;
+  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+
+  .position-container {
+    position: absolute;
+    left: 50%;
+    bottom: 150px;
+  }
+
+  #divider {
+    width: 2px;
+    height: 175px;
+    left: 0;
+    top: -40px;
+    position: absolute;
+  }
+
+  &.time-ltr {
+    .blocks-wrapper {
+      transform: scaleX(-1);
+    }
+  }
 }
-.blockchain-wrapper::-webkit-scrollbar {
-  display: none;
+
+:host-context(.ltr-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: ltr;
+  }
+}
+
+:host-context(.rtl-layout) {
+  .blockchain-wrapper.time-ltr .blocks-wrapper,
+  .blockchain-wrapper .blocks-wrapper {
+    direction: rtl;
+  }
 }
 
 #disclaimer {
