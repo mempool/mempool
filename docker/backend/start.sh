@@ -71,6 +71,7 @@ __DATABASE_DATABASE__=${DATABASE_DATABASE:=mempool}
 __DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 __DATABASE_TIMEOUT__=${DATABASE_TIMEOUT:=180000}
+__DATABASE_PID_DIR__=${DATABASE_PID_DIR:=""}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -139,7 +140,7 @@ __MEMPOOL_SERVICES_API__=${MEMPOOL_SERVICES_API:=""}
 __MEMPOOL_SERVICES_ACCELERATIONS__=${MEMPOOL_SERVICES_ACCELERATIONS:=false}
 
 # REDIS
-__REDIS_ENABLED__=${REDIS_ENABLED:=true}
+__REDIS_ENABLED__=${REDIS_ENABLED:=false}
 __REDIS_UNIX_SOCKET_PATH__=${REDIS_UNIX_SOCKET_PATH:=true}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
@@ -209,6 +210,7 @@ sed -i "s!__DATABASE_DATABASE__!${__DATABASE_DATABASE__}!g" mempool-config.json
 sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
 sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__DATABASE_PID_DIR__!${__DATABASE_PID_DIR__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
