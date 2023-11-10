@@ -91,11 +91,18 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
+    // Register cleanup listeners for exit events
+    ['exit', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'unhandledRejection'].forEach(event => {
+      process.on(event, () => { this.onExit(event); });
+    });
+
     if (config.MEMPOOL.BACKEND === 'esplora') {
       bitcoinApi.startHealthChecks();
     }
 
     if (config.DATABASE.ENABLED) {
+      DB.getPidLock();
+
       await DB.checkDbConnection();
       try {
         if (process.env.npm_config_reindex_blocks === 'true') { // Re-index requests
@@ -306,6 +313,15 @@ class Server {
       this.lastHeapLogTime = now;
     }
   }
+
+  onExit(exitEvent): void {
+    if (config.DATABASE.ENABLED) {
+      DB.releasePidLock();
+    }
+    process.exit(0);
+  }
 }
+
+
 
 ((): Server => new Server())();

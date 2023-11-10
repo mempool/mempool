@@ -117,6 +117,7 @@ export class StateService {
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();
   mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
+  mempoolRemovedTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);

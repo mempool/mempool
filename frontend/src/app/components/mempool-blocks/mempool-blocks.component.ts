@@ -97,6 +97,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.chainTip = this.stateService.latestBlockHeight;
 
+    const width = this.containerOffset + (this.stateService.env.MEMPOOL_BLOCKS_AMOUNT) * this.blockOffset;
+    this.mempoolWidth = width;
+    this.widthChange.emit(this.mempoolWidth);
+
     if (['', 'testnet', 'signet'].includes(this.stateService.network)) {
       this.enabledMiningInfoIfNeeded(this.location.path());
       this.location.onUrlChange((url) => this.enabledMiningInfoIfNeeded(url));
@@ -161,11 +165,11 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           return this.mempoolBlocks;
         }),
         tap(() => {
-          this.cd.markForCheck();
           const width = this.containerOffset + this.mempoolBlocks.length * this.blockOffset;
           if (this.mempoolWidth !== width) {
             this.mempoolWidth = width;
             this.widthChange.emit(this.mempoolWidth);
+            this.cd.markForCheck();
           }
         })
       );
@@ -215,11 +219,13 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         if (isNewBlock && (block?.extras?.similarity == null || block?.extras?.similarity > 0.5) && !this.tabHidden) {
           this.blockIndex++;
         }
+        this.cd.markForCheck();
       });
 
     this.chainTipSubscription = this.stateService.chainTip$.subscribe((height) => {
       if (this.chainTip === -1) {
         this.chainTip = height;
+        this.cd.markForCheck();
       }
     });
 
@@ -257,6 +263,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.blockPadding = 0.24 * this.blockWidth;
       this.containerOffset = 0.32 * this.blockWidth;
       this.blockOffset = this.blockWidth + this.blockPadding;
+      this.cd.markForCheck();
     }
   }
 
@@ -275,6 +282,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   onResize(): void {
     this.animateEntry = false;
     this.reduceEmptyBlocksToFitScreen(this.mempoolEmptyBlocks);
+    this.cd.markForCheck();
   }
 
   trackByFn(index: number, block: MempoolBlock) {

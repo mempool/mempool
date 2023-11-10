@@ -37,6 +37,12 @@
   "ESPLORA": {
     "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-mainnet",
     "FALLBACK": [
+      "http://node201.va1.mempool.space:3000",
+      "http://node202.va1.mempool.space:3000",
+      "http://node203.va1.mempool.space:3000",
+      "http://node204.va1.mempool.space:3000",
+      "http://node205.va1.mempool.space:3000",
+      "http://node206.va1.mempool.space:3000",
       "http://node201.fmt.mempool.space:3000",
       "http://node202.fmt.mempool.space:3000",
       "http://node203.fmt.mempool.space:3000",
@@ -74,6 +80,12 @@
     "AUDIT": true,
     "AUDIT_START_HEIGHT": 774000,
     "SERVERS": [
+      "node201.va1.mempool.space",
+      "node202.va1.mempool.space",
+      "node203.va1.mempool.space",
+      "node204.va1.mempool.space",
+      "node205.va1.mempool.space",
+      "node206.va1.mempool.space",
       "node201.fmt.mempool.space",
       "node202.fmt.mempool.space",
       "node203.fmt.mempool.space",

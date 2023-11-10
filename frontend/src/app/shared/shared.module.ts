@@ -97,6 +97,8 @@ import { AcceleratePreviewComponent } from '../components/accelerate-preview/acc
 import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/accelerate-fee-graph.component';
 import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
 
+import { BlockViewComponent } from '../components/block-view/block-view.component';
+import { MempoolBlockViewComponent } from '../components/mempool-block-view/mempool-block-view.component';
 import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
@@ -134,6 +136,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatCurrencyPipe,
     ColoredPriceDirective,
     BlockchainComponent,
+    BlockViewComponent,
+    MempoolBlockViewComponent,
     MempoolBlocksComponent,
     BlockchainBlocksComponent,
     AmountComponent,
@@ -196,6 +200,8 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerateFeeGraphComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
+    BlockViewComponent,
+    MempoolBlockViewComponent,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
