@@ -86,6 +86,7 @@ describe('Mempool Backend Config', () => {
         USERNAME: 'mempool',
         PASSWORD: 'mempool',
         TIMEOUT: 180000,
+        PID_DIR: ''
       });
 
       expect(config.SYSLOG).toStrictEqual({

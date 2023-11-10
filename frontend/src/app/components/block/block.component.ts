@@ -166,7 +166,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
-        this.stateService.markBlock$.next({});
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -176,6 +175,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         let isBlockHeight = false;
         if (/^[0-9]+$/.test(blockHash)) {
           isBlockHeight = true;
+          this.stateService.markBlock$.next({ blockHeight: parseInt(blockHash, 10)});
         } else {
           this.blockHash = blockHash;
         }
@@ -202,6 +202,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
                   );
+                  this.seoService.updateCanonical(this.location.path());
                   return this.apiService.getBlock$(hash).pipe(
                     catchError((err) => {
                       this.error = err;
