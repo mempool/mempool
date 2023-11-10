@@ -4,6 +4,7 @@ import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 import logger from './logger';
 import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } from 'mysql2/typings/mysql';
+import { execSync } from 'child_process';
 
  class DB {
   constructor() {
@@ -105,18 +106,34 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
 
   public getPidLock(): boolean {
     const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
+    this.enforcePidLock(filePath);
+    fs.writeFileSync(filePath, `${process.pid}`);
+    return true;
+  }
+
+  private enforcePidLock(filePath: string): void {
     if (fs.existsSync(filePath)) {
-      const pid = fs.readFileSync(filePath).toString();
-      if (pid !== `${process.pid}`) {
-        const msg = `Already running on PID ${pid} (or pid file '${filePath}' is stale)`;
+      const pid = parseInt(fs.readFileSync(filePath, 'utf-8'));
+      if (pid === process.pid) {
+        logger.warn('PID file already exists for this process');
+        return;
+      }
+
+      let cmd;
+      try {
+        cmd = execSync(`ps -p ${pid} -o args=`);
+      } catch (e) {
+        logger.warn(`Stale PID file at ${filePath}, but no process running on that PID ${pid}`);
+        return;
+      }
+
+      if (cmd && cmd.toString()?.includes('node')) {
+        const msg = `Another mempool nodejs process is already running on PID ${pid}`;
         logger.err(msg);
         throw new Error(msg);
       } else {
-        return true;
+        logger.warn(`Stale PID file at ${filePath}, but the PID ${pid} does not belong to a running mempool instance`);
       }
-    } else {
-      fs.writeFileSync(filePath, `${process.pid}`);
-      return true;
     }
   }
 
@@ -124,6 +141,7 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
     const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
     if (fs.existsSync(filePath)) {
       const pid = fs.readFileSync(filePath).toString();
+      // only release our own pid file
       if (pid === `${process.pid}`) {
         fs.unlinkSync(filePath);
       }
