@@ -53,7 +53,7 @@ class RbfCache {
   private expiring: Map<string, number> = new Map();
   private cacheQueue: CacheEvent[] = [];
 
-  constructor() {
+  public init(): void {
     setInterval(this.cleanup.bind(this), 1000 * 60 * 10);
   }
 

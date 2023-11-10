@@ -23,24 +23,21 @@ class RedisCache {
   private cacheQueue: MempoolTransactionExtended[] = [];
   private txFlushLimit: number = 10000;
 
-  constructor() {
-    if (config.REDIS.ENABLED) {
-      const redisConfig = {
-        socket: {
-          path: config.REDIS.UNIX_SOCKET_PATH
-        },
-        database: NetworkDB[config.MEMPOOL.NETWORK],
-      };
-      this.client = createClient(redisConfig);
-      this.client.on('error', (e) => {
-        logger.err(`Error in Redis client: ${e instanceof Error ? e.message : e}`);
-      });
-      this.$ensureConnected();
-    }
-  }
-
   private async $ensureConnected(): Promise<void> {
     if (!this.connected && config.REDIS.ENABLED) {
+      if (!this.client) {
+        const redisConfig = {
+          socket: {
+            path: config.REDIS.UNIX_SOCKET_PATH
+          },
+          database: NetworkDB[config.MEMPOOL.NETWORK],
+        };
+        this.client = createClient(redisConfig);
+        this.client.on('error', (e) => {
+          logger.err(`Error in Redis client: ${e instanceof Error ? e.message : e}`);
+        });
+      }
+
       return this.client.connect().then(async () => {
         this.connected = true;
         logger.info(`Redis client connected`);
