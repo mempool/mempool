@@ -88,7 +88,14 @@ footer .row.link-tree {
 
 footer .row.social-links {
   text-align: center;
-  margin: 24px 0;
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  margin: 0 auto; 
+
+  @media (max-width: 450px){
+    width: 250px;
+  }
 }
 
 footer .row.social-links a {
@@ -97,6 +104,7 @@ footer .row.social-links a {
 
 footer .row.social-links svg {
   width: 20px;
+  margin: 10px 0 10px 0;
 }
 
 footer .row.version {
@@ -189,10 +197,6 @@ footer .sponsor {
     margin-top: 15px;
   }
 
-  footer .row.social-links {
-    margin: 48px 0 24px 0;
-  }
-
   footer .selector:not(:last-child) {
     margin-right: 10px;
   }
@@ -234,10 +238,6 @@ footer .sponsor {
   footer .services.site-options {
     float: none;
     margin-top: 15px;
-  }
-
-  footer .services.row.social-links {
-    margin: 48px 0 24px 0;
   }
 
   footer .services.selector:not(:last-child) {

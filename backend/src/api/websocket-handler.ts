@@ -486,6 +486,7 @@ class WebsocketHandler {
 
     // pre-compute address transactions
     const addressCache = this.makeAddressCache(newTransactions);
+    const removedAddressCache = this.makeAddressCache(deletedTransactions);
 
     this.wss.clients.forEach(async (client) => {
       if (client.readyState !== WebSocket.OPEN) {
@@ -526,11 +527,15 @@ class WebsocketHandler {
       }
 
       if (client['track-address']) {
-        const foundTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
+        const newTransactions = Array.from(addressCache[client['track-address']]?.values() || []);
+        const removedTransactions = Array.from(removedAddressCache[client['track-address']]?.values() || []);
         // txs may be missing prevouts in non-esplora backends
         // so fetch the full transactions now
-        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(foundTransactions) : foundTransactions;
+        const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
 
+        if (removedTransactions.length) {
+          response['address-removed-transactions'] = JSON.stringify(removedTransactions);
+        }
         if (fullTransactions.length) {
           response['address-transactions'] = JSON.stringify(fullTransactions);
         }

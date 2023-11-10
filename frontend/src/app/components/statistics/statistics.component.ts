@@ -32,6 +32,7 @@ export class StatisticsComponent implements OnInit {
   chartColors = chartColors;
   filterSize = 100000;
   filterFeeIndex = 1;
+  showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
 
@@ -46,6 +47,7 @@ export class StatisticsComponent implements OnInit {
   inverted: boolean;
   feeLevelDropdownData = [];
   timespan = '';
+  titleCount = $localize`Count`;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,

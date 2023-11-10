@@ -1,7 +1,7 @@
 import { formatNumber } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { ECharts, EChartsOption, TreemapSeriesOption } from 'echarts';
+import { EChartsOption, TreemapSeriesOption } from '../../graphs/echarts';
 import { Observable, share, switchMap, tap } from 'rxjs';
 import { lerpColor } from '../../shared/graphs.utils';
 import { AmountShortenerPipe } from '../../shared/pipes/amount-shortener.pipe';
@@ -18,7 +18,7 @@ import { StateService } from '../../services/state.service';
 export class NodeChannels implements OnChanges {
   @Input() publicKey: string;
 
-  chartInstance: ECharts;
+  chartInstance: any;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
@@ -129,7 +129,7 @@ export class NodeChannels implements OnChanges {
     };    
   }
 
-  onChartInit(ec: ECharts): void {
+  onChartInit(ec: any): void {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {

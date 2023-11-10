@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, HostListener, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 
@@ -27,8 +27,11 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   loadingTip: boolean = true;
   connected: boolean = true;
 
-  dividerOffset: number = 0;
-  mempoolOffset: number = 0;
+  dividerOffset: number | null = null;
+  mempoolOffset: number | null = null;
+  positionStyle = {
+    transform: "translateX(1280px)",
+  };
 
   constructor(
     public stateService: StateService,
@@ -40,6 +43,7 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     this.network = this.stateService.network;
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
+      this.updateStyle();
     });
     this.connectionStateSubscription = this.stateService.connectionState$.subscribe(state => {
       this.connected = (state === 2);
@@ -63,27 +67,45 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
     const prevOffset = this.mempoolOffset;
     this.mempoolOffset = 0;
     this.mempoolOffsetChange.emit(0);
+    this.updateStyle();
     setTimeout(() => {
       this.ltrTransitionEnabled = true;
       this.flipping = true;
       this.stateService.timeLtr.next(!this.timeLtr);
+      this.cd.markForCheck();
       setTimeout(() => {
         this.ltrTransitionEnabled = false;
         this.flipping = false;
         this.mempoolOffset = prevOffset;
-        this.mempoolOffsetChange.emit(this.mempoolOffset);
+        this.mempoolOffsetChange.emit((this.mempoolOffset || 0));
+        this.updateStyle();
+        this.cd.markForCheck();
       },  1000);
     }, 0);
-    this.cd.markForCheck();
   }
 
   onMempoolWidthChange(width): void {
     if (this.flipping) {
       return;
     }
-    this.mempoolOffset = Math.max(0, width - this.dividerOffset);
-    this.cd.markForCheck();
+    this.mempoolOffset = Math.max(0, width - (this.dividerOffset || 0));
+    this.updateStyle();
     this.mempoolOffsetChange.emit(this.mempoolOffset);
+  }
+
+  updateStyle(): void {
+    if (this.dividerOffset == null || this.mempoolOffset == null) {
+      return;
+    }
+    const oldTransform = this.positionStyle.transform;
+    this.positionStyle = this.timeLtr ? {
+      transform: `translateX(calc(100vw - ${this.dividerOffset + this.mempoolOffset}px)`,
+    } : {
+      transform: `translateX(${this.dividerOffset + this.mempoolOffset}px)`,
+    };
+    if (oldTransform !== this.positionStyle.transform) {
+      this.cd.detectChanges();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -107,6 +129,6 @@ export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
         this.dividerOffset = width * 0.95;
       }
     }
-    this.cd.markForCheck();
+    this.updateStyle();
   }
 }

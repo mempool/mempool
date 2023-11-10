@@ -478,7 +478,7 @@ class BitcoinRoutes {
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10 && nextHash; i++) {
+      for (let i = 0; i < 15 && nextHash; i++) {
         const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
         if (localBlock) {
           returnBlocks.push(localBlock);
