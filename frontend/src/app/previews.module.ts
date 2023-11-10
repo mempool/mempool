@@ -9,6 +9,7 @@ import { BlockPreviewComponent } from './components/block/block-preview.componen
 import { AddressPreviewComponent } from './components/address/address-preview.component';
 import { PoolPreviewComponent } from './components/pool/pool-preview.component';
 import { MasterPagePreviewComponent } from './components/master-page-preview/master-page-preview.component';
+import { TxBowtieModule } from './components/tx-bowtie-graph/tx-bowtie.module';
 @NgModule({
   declarations: [
     TransactionPreviewComponent,
@@ -23,6 +24,7 @@ import { MasterPagePreviewComponent } from './components/master-page-preview/mas
     RouterModule,
     PreviewsRoutingModule,
     GraphsModule,
+    TxBowtieModule,
   ],
 })
 export class PreviewsModule { }
