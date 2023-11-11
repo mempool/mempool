@@ -53,7 +53,6 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
-    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -76,7 +75,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => { return this.apiService.cachedRequest(this.apiService.getOutspendsBatched$, 5000, batch); }));
+              return forkJoin(batches.map(batch => { return this.apiService.cachedRequest(this.apiService.getOutspendsBatched$, 250, batch); }));
             } else {
               return of([]);
             }
@@ -91,7 +90,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             outspends.forEach((outspend, i) => {
               transactions[i]._outspends = outspend;
             });
-            this.cd.markForCheck();
+            this.ref.markForCheck();
           }),
         ),
       this.stateService.utxoSpent$
