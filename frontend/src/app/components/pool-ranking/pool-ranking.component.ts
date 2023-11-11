@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { merge, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';

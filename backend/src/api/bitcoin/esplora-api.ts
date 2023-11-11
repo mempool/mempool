@@ -75,9 +75,9 @@ class FailoverRouter {
 
     const results = await Promise.allSettled(this.hosts.map(async (host) => {
       if (host.socket) {
-        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: 5000 });
+        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       } else {
-        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: 5000 });
+        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       }
     }));
     const maxHeight = results.reduce((max, result) => Math.max(max, result.status === 'fulfilled' ? result.value?.data || 0 : 0), 0);
@@ -168,10 +168,10 @@ class FailoverRouter {
     let axiosConfig;
     let url;
     if (host.socket) {
-      axiosConfig = { socketPath: host.host, timeout: 10000, responseType };
+      axiosConfig = { socketPath: host.host, timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = path;
     } else {
-      axiosConfig = { timeout: 10000, responseType };
+      axiosConfig = { timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = host.host + path;
     }
     return (method === 'post'

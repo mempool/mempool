@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { Observable, Subscription, combineLatest } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
