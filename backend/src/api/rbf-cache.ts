@@ -368,21 +368,25 @@ class RbfCache {
   }
 
   public async load({ txs, trees, expiring }): Promise<void> {
-    txs.forEach(txEntry => {
-      this.txs.set(txEntry.value.txid, txEntry.value);
-    });
-    this.staleCount = 0;
-    for (const deflatedTree of trees) {
-      await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
-    }
-    expiring.forEach(expiringEntry => {
-      if (this.txs.has(expiringEntry.key)) {
-        this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
+    try {
+      txs.forEach(txEntry => {
+        this.txs.set(txEntry.value.txid, txEntry.value);
+      });
+      this.staleCount = 0;
+      for (const deflatedTree of trees) {
+        await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
       }
-    });
-    logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
-    this.staleCount = 0;
-    this.cleanup();
+      expiring.forEach(expiringEntry => {
+        if (this.txs.has(expiringEntry.key)) {
+          this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
+        }
+      });
+      logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
+      this.staleCount = 0;
+      this.cleanup();
+    } catch (e) {
+      logger.err('failed to restore RBF cache: ' + (e instanceof Error ? e.message : e));
+    }
   }
 
   exportTree(tree: RbfTree, deflated: any = null) {
