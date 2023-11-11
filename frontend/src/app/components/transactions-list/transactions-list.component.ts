@@ -6,7 +6,7 @@ import { Outspend, Transaction, Vin, Vout } from '../../interfaces/electrs.inter
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { environment } from '../../../environments/environment';
 import { AssetsService } from '../../services/assets.service';
-import { filter, map, tap, switchMap, shareReplay } from 'rxjs/operators';
+import { filter, map, tap, switchMap, shareReplay, catchError } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { PriceService } from '../../services/price.service';
@@ -53,6 +53,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
     private assetsService: AssetsService,
     private ref: ChangeDetectorRef,
     private priceService: PriceService,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -75,7 +76,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => this.apiService.getOutspendsBatched$(batch)));
+              return forkJoin(batches.map(batch => { return this.apiService.cachedRequest(this.apiService.getOutspendsBatched$, 5000, batch); }));
             } else {
               return of([]);
             }
@@ -90,6 +91,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
             outspends.forEach((outspend, i) => {
               transactions[i]._outspends = outspend;
             });
+            this.cd.markForCheck();
           }),
         ),
       this.stateService.utxoSpent$
@@ -108,6 +110,10 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           .pipe(
             filter(() => this.stateService.env.LIGHTNING),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            catchError((error) => {
+              // handle 404
+              return of([]);
+            }),
             tap((channels) => {
               if (!this.transactions) {
                 return;
