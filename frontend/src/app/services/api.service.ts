@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
   PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
 import { Outspend, Transaction } from '../interfaces/electrs.interface';
@@ -19,6 +19,8 @@ const SERVICES_API_PREFIX = `/api/v1/services`;
 export class ApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+
+  private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
 
   constructor(
     private httpClient: HttpClient,
@@ -42,6 +44,46 @@ export class ApiService {
         this.stateService.servicesBackendInfo$.next(version);
       })
     }
+  }
+
+  private generateCacheKey(functionName: string, params: any[]): string {
+    return functionName + JSON.stringify(params);
+  }
+
+  // delete expired cache entries
+  private cleanExpiredCache(): void {
+    this.requestCache.forEach((value, key) => {
+      if (value.expiry < Date.now()) {
+        this.requestCache.delete(key);
+      }
+    });
+  }
+
+  cachedRequest<T, F extends (...args: any[]) => Observable<T>>(
+    apiFunction: F,
+    expireAfter: number, // in ms
+    ...params: Parameters<F>
+  ): Observable<T> {
+    this.cleanExpiredCache();
+
+    const cacheKey = this.generateCacheKey(apiFunction.name, params);
+    if (!this.requestCache.has(cacheKey)) {
+      const subject = new BehaviorSubject<T | null>(null);
+      this.requestCache.set(cacheKey, { subject, expiry: Date.now() + expireAfter });
+
+      apiFunction.bind(this)(...params).pipe(
+        tap(data => {
+          subject.next(data as T);
+        }),
+        catchError((error) => {
+          subject.error(error);
+          return of(null);
+        }),
+        shareReplay(1),
+      ).subscribe();
+    }
+
+    return this.requestCache.get(cacheKey).subject.asObservable().pipe(filter(val => val !== null), take(1));
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
