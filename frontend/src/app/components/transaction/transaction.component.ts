@@ -422,6 +422,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
       this.replaced = true;
+      this.stateService.markBlock$.next({});
+
       if (rbfTransaction && !this.tx) {
         this.fetchCachedTx$.next(this.txId);
       }
