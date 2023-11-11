@@ -1,3 +1,26 @@
+.title-block {
+  flex-wrap: wrap;
+  align-items: baseline;
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+  h1 {
+    margin: 0rem;
+    margin-right: 15px;
+    line-height: 1;
+  }
+
+  .alert-mempool {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .container-button {
+    align-self: center;
+    margin-right: 1em;
+  }
+}
+
 .qr-wrapper {
   background-color: #FFF;
   padding: 10px;
@@ -216,6 +239,7 @@ h1 {
 .nav-tabs {
   border-color: white;
   border-width: 1px;
+  margin-bottom: 1em;
 }
 
 .nav-tabs .nav-link {
@@ -269,4 +293,8 @@ h1 {
   @media (max-width: 767.98px) {
     margin-top: 0.75rem;
   }
+}
+
+.graph-col {
+  flex-grow: 1.11;
 }

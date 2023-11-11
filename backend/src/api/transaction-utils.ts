@@ -3,6 +3,9 @@ import { IEsploraApi } from './bitcoin/esplora-api.interface';
 import { Common } from './common';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
+import logger from '../logger';
+import config from '../config';
+import pLimit from '../utils/p-limit';
 
 class TransactionUtils {
   constructor() { }
@@ -22,6 +25,23 @@ class TransactionUtils {
     };
   }
 
+  // Wrapper for $getTransactionExtended with an automatic retry direct to Core if the first API request fails.
+  // Propagates any error from the retry request.
+  public async $getTransactionExtendedRetry(txid: string, addPrevouts = false, lazyPrevouts = false, forceCore = false, addMempoolData = false): Promise<TransactionExtended> {
+    try {
+      const result = await this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, addMempoolData);
+      if (result) {
+        return result;
+      } else {
+        logger.err(`Cannot fetch tx ${txid}. Reason: backend returned null data`);
+      }
+    } catch (e) {
+      logger.err(`Cannot fetch tx ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    // retry direct from Core if first request failed
+    return this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, true, addMempoolData);
+  }
+
   /**
    * @param txId
    * @param addPrevouts
@@ -31,10 +51,17 @@ class TransactionUtils {
   public async $getTransactionExtended(txId: string, addPrevouts = false, lazyPrevouts = false, forceCore = false, addMempoolData = false): Promise<TransactionExtended> {
     let transaction: IEsploraApi.Transaction;
     if (forceCore === true) {
-      transaction  = await bitcoinCoreApi.$getRawTransaction(txId, true);
+      transaction  = await bitcoinCoreApi.$getRawTransaction(txId, false, addPrevouts, lazyPrevouts);
     } else {
       transaction  = await bitcoinApi.$getRawTransaction(txId, false, addPrevouts, lazyPrevouts);
     }
+
+    if (Common.isLiquid()) {
+      if (!isFinite(Number(transaction.fee))) {
+        transaction.fee = Object.values(transaction.fee || {}).reduce((total, output) => total + output, 0);
+      }
+    }
+
     if (addMempoolData || !transaction?.status?.confirmed) {
       return this.extendMempoolTransaction(transaction);
     } else {
@@ -46,14 +73,35 @@ class TransactionUtils {
     return (await this.$getTransactionExtended(txId, addPrevouts, lazyPrevouts, forceCore, true)) as MempoolTransactionExtended;
   }
 
-  private extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
+  public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
+    if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
+      const limiter = pLimit(8); // Run 8 requests at a time
+      const results = await Promise.allSettled(txids.map(
+        txid => limiter(() => this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore))
+      ));
+      return results.filter(reply => reply.status === 'fulfilled')
+        .map(r => (r as PromiseFulfilledResult<MempoolTransactionExtended>).value);
+    } else {
+      const transactions = await bitcoinApi.$getMempoolTransactions(txids);
+      return transactions.map(transaction => {
+        if (Common.isLiquid()) {
+          if (!isFinite(Number(transaction.fee))) {
+            transaction.fee = Object.values(transaction.fee || {}).reduce((total, output) => total + output, 0);
+          }
+        }
+
+        return this.extendMempoolTransaction(transaction);
+      });
+    }
+  }
+
+  public extendTransaction(transaction: IEsploraApi.Transaction): TransactionExtended {
     // @ts-ignore
     if (transaction.vsize) {
       // @ts-ignore
       return transaction;
     }
-    const feePerVbytes = Math.max(Common.isLiquid() ? 0.1 : 1,
-      (transaction.fee || 0) / (transaction.weight / 4));
+    const feePerVbytes = (transaction.fee || 0) / (transaction.weight / 4);
     const transactionExtended: TransactionExtended = Object.assign({
       vsize: Math.round(transaction.weight / 4),
       feePerVsize: feePerVbytes,
@@ -68,14 +116,13 @@ class TransactionUtils {
   public extendMempoolTransaction(transaction: IEsploraApi.Transaction): MempoolTransactionExtended {
     const vsize = Math.ceil(transaction.weight / 4);
     const fractionalVsize = (transaction.weight / 4);
-    const sigops = this.countSigops(transaction);
+    const sigops = !Common.isLiquid() ? this.countSigops(transaction) : 0;
     // https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L295-L298
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
-    const feePerVbytes = Math.max(Common.isLiquid() ? 0.1 : 1,
-      (transaction.fee || 0) / fractionalVsize);
-    const adjustedFeePerVsize = Math.max(Common.isLiquid() ? 0.1 : 1,
-      (transaction.fee || 0) / adjustedVsize);
+    const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
+    const adjustedFeePerVsize = (transaction.fee || 0) / adjustedVsize;
     const transactionExtended: MempoolTransactionExtended = Object.assign(transaction, {
+      order: this.txidToOrdering(transaction.txid),
       vsize: Math.round(transaction.weight / 4),
       adjustedVsize,
       sigops,
@@ -153,6 +200,133 @@ class TransactionUtils {
     }
 
     return sigops;
+  }
+
+  // returns the most significant 4 bytes of the txid as an integer
+  public txidToOrdering(txid: string): number {
+    return parseInt(
+      txid.substr(62, 2) +
+        txid.substr(60, 2) +
+        txid.substr(58, 2) +
+        txid.substr(56, 2),
+      16
+    );
+  }
+
+  public addInnerScriptsToVin(vin: IEsploraApi.Vin): void {
+    if (!vin.prevout) {
+      return;
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'p2sh') {
+      const redeemScript = vin.scriptsig_asm.split(' ').reverse()[0];
+      vin.inner_redeemscript_asm = this.convertScriptSigAsm(redeemScript);
+      if (vin.witness && vin.witness.length > 2) {
+        const witnessScript = vin.witness[vin.witness.length - 1];
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v0_p2wsh' && vin.witness) {
+      const witnessScript = vin.witness[vin.witness.length - 1];
+      vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+    }
+
+    if (vin.prevout.scriptpubkey_type === 'v1_p2tr' && vin.witness) {
+      const witnessScript = this.witnessToP2TRScript(vin.witness);
+      if (witnessScript !== null) {
+        vin.inner_witnessscript_asm = this.convertScriptSigAsm(witnessScript);
+      }
+    }
+  }
+
+  public convertScriptSigAsm(hex: string): string {
+    const buf = Buffer.from(hex, 'hex');
+
+    const b: string[] = [];
+
+    let i = 0;
+    while (i < buf.length) {
+      const op = buf[i];
+      if (op >= 0x01 && op <= 0x4e) {
+        i++;
+        let push: number;
+        if (op === 0x4c) {
+          push = buf.readUInt8(i);
+          b.push('OP_PUSHDATA1');
+          i += 1;
+        } else if (op === 0x4d) {
+          push = buf.readUInt16LE(i);
+          b.push('OP_PUSHDATA2');
+          i += 2;
+        } else if (op === 0x4e) {
+          push = buf.readUInt32LE(i);
+          b.push('OP_PUSHDATA4');
+          i += 4;
+        } else {
+          push = op;
+          b.push('OP_PUSHBYTES_' + push);
+        }
+
+        const data = buf.slice(i, i + push);
+        if (data.length !== push) {
+          break;
+        }
+
+        b.push(data.toString('hex'));
+        i += data.length;
+      } else {
+        if (op === 0x00) {
+          b.push('OP_0');
+        } else if (op === 0x4f) {
+          b.push('OP_PUSHNUM_NEG1');
+        } else if (op === 0xb1) {
+          b.push('OP_CLTV');
+        } else if (op === 0xb2) {
+          b.push('OP_CSV');
+        } else if (op === 0xba) {
+          b.push('OP_CHECKSIGADD');
+        } else {
+          const opcode = bitcoinjs.script.toASM([ op ]);
+          if (opcode && op < 0xfd) {
+            if (/^OP_(\d+)$/.test(opcode)) {
+              b.push(opcode.replace(/^OP_(\d+)$/, 'OP_PUSHNUM_$1'));
+            } else {
+              b.push(opcode);
+            }
+          } else {
+            b.push('OP_RETURN_' + op);
+          }
+        }
+        i += 1;
+      }
+    }
+
+    return b.join(' ');
+  }
+
+  /**
+   * This function must only be called when we know the witness we are parsing
+   * is a taproot witness.
+   * @param witness An array of hex strings that represents the witness stack of
+   *                the input.
+   * @returns null if the witness is not a script spend, and the hex string of
+   *          the script item if it is a script spend.
+   */
+  public witnessToP2TRScript(witness: string[]): string | null {
+    if (witness.length < 2) return null;
+    // Note: see BIP341 for parsing details of witness stack
+
+    // If there are at least two witness elements, and the first byte of the
+    // last element is 0x50, this last element is called annex a and
+    // is removed from the witness stack.
+    const hasAnnex = witness[witness.length - 1].substring(0, 2) === '50';
+    // If there are at least two witness elements left, script path spending is used.
+    // Call the second-to-last stack element s, the script.
+    // (Note: this phrasing from BIP341 assumes we've *removed* the annex from the stack)
+    if (hasAnnex && witness.length < 3) return null;
+    const positionOfScript = hasAnnex ? witness.length - 3 : witness.length - 2;
+    return witness[positionOfScript];
   }
 }
 

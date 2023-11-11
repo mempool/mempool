@@ -6,6 +6,8 @@ import { WebsocketService } from '../../services/websocket.service';
 import { RbfTree } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
+import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-rbf-list',
@@ -17,7 +19,6 @@ export class RbfList implements OnInit, OnDestroy {
   rbfTrees$: Observable<RbfTree[]>;
   nextRbfSubject = new BehaviorSubject(null);
   urlFragmentSubscription: Subscription;
-  fullRbfEnabled: boolean;
   fullRbf: boolean;
   isLoading = true;
 
@@ -27,9 +28,8 @@ export class RbfList implements OnInit, OnDestroy {
     private apiService: ApiService,
     public stateService: StateService,
     private websocketService: WebsocketService,
-  ) {
-    this.fullRbfEnabled = stateService.env.FULL_RBF_ENABLED;
-  }
+    private seoService: SeoService,
+  ) { }
 
   ngOnInit(): void {
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
@@ -54,26 +54,10 @@ export class RbfList implements OnInit, OnDestroy {
         this.isLoading = false;
       })
     );
-  }
 
-  toggleFullRbf(event) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      fragment: this.fullRbf ? null : 'fullrbf'
-    });
+    this.seoService.setTitle($localize`:@@meta.title.rbf-list:RBF Replacements`);
+    this.seoService.setDescription($localize`:@@meta.description.rbf-list:See the most recent RBF replacements on the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network, updated in real-time.`);
   }
-
-  isFullRbf(tree: RbfTree): boolean {
-    return tree.fullRbf;
-  }
-
-  isMined(tree: RbfTree): boolean {
-    return tree.mined;
-  }
-
-  // pageChange(page: number) {
-  //   this.fromTreeSubject.next(this.lastTreeId);
-  // }
 
   ngOnDestroy(): void {
     this.websocketService.stopTrackRbf();

@@ -1,9 +1,11 @@
-import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import { EChartsOption } from '../../graphs/echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
 import { formatNumber } from '@angular/common';
+import { StateService } from '../../services/state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -18,7 +20,7 @@ import { formatNumber } from '@angular/common';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
+export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
   @Input() theme: string;
   @Input() height: number | string = '200';
@@ -35,14 +37,25 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
   };
   windowPreference: string;
   chartInstance: any = undefined;
+  MA: number[][] = [];
+  weightMode: boolean = false;
+  rateUnitSub: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     private storageService: StorageService,
+    private stateService: StateService,
   ) { }
 
   ngOnInit() {
     this.isLoading = true;
+
+    this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
+      this.weightMode = rateUnits === 'wu';
+      if (this.data) {
+        this.mountChart();
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -50,6 +63,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
       return;
     }
     this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
+    this.MA = this.calculateMA(this.data.series[0]);
     this.mountChart();
   }
 
@@ -60,7 +74,101 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     this.isLoading = false;
   }
 
+  /// calculate the moving average of maData
+  calculateMA(maData): number[][] {
+    //update const variables that are not changed
+    const ma: number[][] = [];
+    let sum = 0;
+    let i = 0;
+    const len = maData.length;
+
+    //Adjust window length based on the length of the data
+    //5% appeared as a good amount from tests
+    //TODO: make this a text box in the UI
+    const maWindowLen = Math.ceil(len * 0.05);
+
+    //calculate the center of the moving average window
+    const center = Math.floor(maWindowLen / 2);
+
+    //calculate the centered moving average
+    for (i = center; i < len - center; i++) {
+      sum = 0;
+      //build out ma as we loop through the data
+      ma[i] = [];
+      ma[i].push(maData[i][0]);
+      for (let j = i - center; j <= i + center; j++) {
+        sum += maData[j][1];
+      }
+
+      ma[i].push(sum / maWindowLen);
+    }
+
+    //return the moving average array
+    return ma;
+  }
+
   mountChart(): void {
+    //create an array for the echart series
+    //similar to how it is done in mempool-graph.component.ts
+    const seriesGraph = [];
+    seriesGraph.push({
+      zlevel: 0,
+      name: 'data',
+      data: this.data.series[0],
+      type: 'line',
+      smooth: false,
+      showSymbol: false,
+      symbol: 'none',
+      lineStyle: {
+        width: 3,
+      },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: {
+          color: '#fff',
+          opacity: 1,
+          width: 2,
+        },
+        data: [{
+          yAxis: 1667,
+          label: {
+            show: false,
+            color: '#ffffff',
+          }
+        }],
+      }
+    },
+    {
+      zlevel: 0,
+      name: 'MA',
+      data: this.MA,
+      type: 'line',
+      smooth: false,
+      showSymbol: false,
+      symbol: 'none',
+      lineStyle: {
+        width: 1,
+        color: "white",
+      },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: {
+          color: '#fff',
+          opacity: 1,
+          width: 2,
+        },
+        data: [{
+          yAxis: 1667,
+          label: {
+            show: false,
+            color: '#ffffff',
+          }
+        }],
+      }
+    });
+
     this.mempoolStatsChartOption = {
       grid: {
         height: this.height,
@@ -110,16 +218,20 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
           params.map((item: any, index: number) => {
-            if (index < 26) {
-              itemFormatted += `<div class="item">
-                <div class="indicator-container">${colorSpan(item.color)}</div>
-                <div class="grow"></div>
-                <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
-              </div>`;
+
+            //Do no include MA in tooltip legend!
+            if (item.seriesName !== 'MA') {
+              if (index < 26) {
+                itemFormatted += `<div class="item">
+                  <div class="indicator-container">${colorSpan(item.color)}</div>
+                  <div class="grow"></div>
+                  <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
+                </div>`;
+              }
             }
           });
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
@@ -147,6 +259,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
         type: 'value',
         axisLabel: {
           fontSize: 11,
+          formatter: (value) => {
+            return this.weightMode ? value * 4 : value;
+          }
         },
         splitLine: {
           lineStyle: {
@@ -156,35 +271,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
           }
         }
       },
-      series: [
-        {
-          zlevel: 0,
-          data: this.data.series[0],
-          type: 'line',
-          smooth: false,
-          showSymbol: false,
-          symbol: 'none',
-          lineStyle: {
-            width: 3,
-          },
-          markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: {
-              color: '#fff',
-              opacity: 1,
-              width: 2,
-            },
-            data: [{
-              yAxis: 1667,
-              label: {
-                show: false,
-                color: '#ffffff',
-              }
-            }],
-          }
-        },
-      ],
+      series: seriesGraph,
       visualMap: {
         show: false,
         top: 50,
@@ -249,5 +336,9 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges {
     this.mempoolStatsChartOption.grid.height = prevHeight;
     this.mempoolStatsChartOption.backgroundColor = 'none';
     this.chartInstance.setOption(this.mempoolStatsChartOption);
+  }
+
+  ngOnDestroy(): void {
+    this.rateUnitSub.unsubscribe();
   }
 }

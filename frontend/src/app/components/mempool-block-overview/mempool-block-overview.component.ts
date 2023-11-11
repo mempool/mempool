@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
-  @Input() pixelAlign: boolean = false;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
@@ -95,7 +94,6 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   updateBlock(delta: MempoolBlockDelta): void {
     const blockMined = (this.stateService.latestBlockHeight > this.lastBlockHeight);
-
     if (this.blockIndex !== this.index) {
       const direction = (this.blockIndex == null || this.index < this.blockIndex) ? this.poolDirection : this.chainDirection;
       this.blockGraph.replace(delta.added, direction);

@@ -113,7 +113,8 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
     "MAX_BLOCKS_BULK_QUERY": 0,
-    "DISK_CACHE_BLOCK_INTERVAL": 6
+    "DISK_CACHE_BLOCK_INTERVAL": 6,
+    "PRICE_UPDATES_PER_HOUR": 1
   },
 ```
 
@@ -144,8 +145,9 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""
-      MAX_BLOCKS_BULK_QUERY: ""
-      DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
+      MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
+      MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
       ...
 ```
 
@@ -366,25 +368,6 @@ Corresponding `docker-compose.yml` overrides:
       SOCKS5PROXY_PORT: ""
       SOCKS5PROXY_USERNAME: ""
       SOCKS5PROXY_PASSWORD: ""
-      ...
-```
-
-<br/>
-
-`mempool-config.json`:
-```json
-  "PRICE_DATA_SERVER": {
-    "TOR_URL": "http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices",
-    "CLEARNET_URL": "https://price.bisq.wiz.biz/getAllMarketPrices"
-  }
-```
-
-Corresponding `docker-compose.yml` overrides:
-```yaml
-  api:
-    environment:
-      PRICE_DATA_SERVER_TOR_URL: ""
-      PRICE_DATA_SERVER_CLEARNET_URL: ""
       ...
 ```
 

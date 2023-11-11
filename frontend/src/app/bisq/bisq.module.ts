@@ -27,9 +27,11 @@ import { AutofocusDirective } from '../components/ngx-bootstrap-multiselect/auto
 import { MultiSelectSearchFilter } from '../components/ngx-bootstrap-multiselect/search-filter.pipe';
 import { OffClickDirective } from '../components/ngx-bootstrap-multiselect/off-click.directive';
 import { NgxDropdownMultiselectComponent } from '../components/ngx-bootstrap-multiselect/ngx-bootstrap-multiselect.component';
+import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
 
 @NgModule({
   declarations: [
+    BisqMasterPageComponent,
     BisqTransactionsComponent,
     BisqTransactionComponent,
     BisqBlockComponent,

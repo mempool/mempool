@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, QueryList, AfterViewInit, ViewChildren } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
-import { Observable, merge, of, Subject } from 'rxjs';
+import { Observable, merge, of, Subject, Subscription } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from "@angular/router";
 import { faqData, restApiDocsData, wsApiDocsData } from './api-docs-data';
@@ -30,6 +30,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   officialMempoolInstance: boolean;
   auditEnabled: boolean;
   mobileViewport: boolean = false;
+  timeLtrSubscription: Subscription;
+  timeLtr: boolean = this.stateService.timeLtr.value;
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -43,7 +45,7 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (this.faqTemplates) {
       this.faqTemplates.forEach((x) => this.dict[x.type] = x.template);
     }
-    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
     this.mobileViewport = window.innerWidth <= 992;
   }
 
@@ -104,16 +106,21 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
           this.electrsPort = 51302; break;
       }
     });
+
+    this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
+      this.timeLtr = !!ltr;
+    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
     window.removeEventListener('scroll', this.onDocScroll);
+    this.timeLtrSubscription.unsubscribe();
   }
 
   onDocScroll() {
-    this.desktopDocsNavPosition = ( window.pageYOffset > 182 ) ? "fixed" : "relative";
+    this.desktopDocsNavPosition = ( window.pageYOffset > 115 ) ? "fixed" : "relative";
   }
 
   anchorLinkClick( event: any ) {

@@ -1,3 +1,4 @@
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
@@ -12,6 +13,7 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import transactionUtils from '../api/transaction-utils';
 
 interface DatabaseBlock {
   id: string;
@@ -401,7 +403,7 @@ class BlocksRepository {
   /**
    * Get average block health for all blocks for a single pool
    */
-  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number> {
+  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number | null> {
     const params: any[] = [];
     const query = `
       SELECT AVG(blocks_audits.match_rate) AS avg_match_rate
@@ -413,8 +415,8 @@ class BlocksRepository {
 
     try {
       const [rows] = await DB.query(query, params);
-      if (!rows[0] || !rows[0].avg_match_rate) {
-        return 0;
+      if (!rows[0] || rows[0].avg_match_rate == null) {
+        return null;
       }
       return Math.round(rows[0].avg_match_rate * 100) / 100;
     } catch (e) {
@@ -539,7 +541,7 @@ class BlocksRepository {
    */
   public async $getBlocksDifficulty(): Promise<object[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty FROM blocks`);
+      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty, bits FROM blocks`);
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks difficulty list from the db. Reason: ' + (e instanceof Error ? e.message : e));
@@ -848,7 +850,7 @@ class BlocksRepository {
    */
   public async $getOldestConsecutiveBlock(): Promise<any> {
     try {
-      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty FROM blocks ORDER BY height DESC`);
+      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, bits FROM blocks ORDER BY height DESC`);
       for (let i = 0; i < rows.length - 1; ++i) {
         if (rows[i].height - rows[i + 1].height > 1) {
           return rows[i];
@@ -1036,8 +1038,17 @@ class BlocksRepository {
     {
       extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       if (extras.feePercentiles === null) {
-        const block = await bitcoinClient.getBlock(dbBlk.id, 2);
-        const summary = blocks.summarizeBlock(block);
+
+        let summary;
+        if (config.MEMPOOL.BACKEND === 'esplora') {
+          const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id)).map(tx => transactionUtils.extendTransaction(tx));
+          summary = blocks.summarizeBlockTransactions(dbBlk.id, txs);
+        } else {
+          // Call Core RPC
+          const block = await bitcoinClient.getBlock(dbBlk.id, 2);
+          summary = blocks.summarizeBlock(block);
+        }
+
         await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }

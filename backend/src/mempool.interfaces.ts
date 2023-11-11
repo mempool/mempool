@@ -19,6 +19,8 @@ export interface PoolInfo {
   blockCount: number;
   slug: string;
   avgMatchRate: number | null;
+  avgFeeDelta: number | null;
+  poolUniqueId: number;
 }
 
 export interface PoolStats extends PoolInfo {
@@ -33,7 +35,9 @@ export interface BlockAudit {
   missingTxs: string[],
   freshTxs: string[],
   sigopTxs: string[],
+  fullrbfTxs: string[],
   addedTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
   expectedFees?: number,
   expectedWeight?: number,
@@ -89,13 +93,18 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     block: number,
     vsize: number,
   };
+  acceleration?: boolean;
   uid?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
+  order: number;
   sigops: number;
   adjustedVsize: number;
   adjustedFeePerVsize: number;
+  inputs?: number[];
+  lastBoosted?: number;
+  cpfpDirty?: boolean;
 }
 
 export interface AuditTransaction {
@@ -125,9 +134,9 @@ export interface CompactThreadTransaction {
   weight: number;
   sigops: number;
   feePerVsize: number;
-  effectiveFeePerVsize?: number;
+  effectiveFeePerVsize: number;
   inputs: number[];
-  cpfpRoot?: string;
+  cpfpRoot?: number;
   cpfpChecked?: boolean;
   dirty?: boolean;
 }
@@ -177,6 +186,7 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: boolean;
   rate?: number; // effective fee rate
 }
 
@@ -224,11 +234,21 @@ export interface BlockExtension {
  */
 export interface BlockExtended extends IEsploraApi.Block {
   extras: BlockExtension;
+  canonical?: string;
 }
 
 export interface BlockSummary {
   id: string;
   transactions: TransactionStripped[];
+}
+
+export interface AuditSummary extends BlockAudit {
+  timestamp?: number,
+  size?: number,
+  weight?: number,
+  tx_count?: number,
+  transactions: TransactionStripped[];
+  template?: TransactionStripped[];
 }
 
 export interface BlockPrice {
@@ -280,6 +300,7 @@ export interface Statistic {
   total_fee: number;
   mempool_byte_weight: number;
   fee_data: string;
+  min_fee: number;
 
   vsize_1: number;
   vsize_2: number;
@@ -326,6 +347,7 @@ export interface OptimizedStatistic {
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
+  min_fee: number;
   vsizes: number[];
 }
 

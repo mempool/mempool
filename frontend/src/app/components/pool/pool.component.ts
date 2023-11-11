@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { EChartsOption, graphic } from 'echarts';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
+import { echarts, EChartsOption } from '../../graphs/echarts';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
+import { catchError, distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
@@ -62,16 +62,28 @@ export class PoolComponent implements OnInit {
                 this.prepareChartOptions(data.map(val => [val.timestamp * 1000, val.avgHashrate]));
                 return [slug];
               }),
+              catchError(() => {
+                this.isLoading = false;
+                this.seoService.logSoft404();
+                return of([slug]);
+              })
             );
         }),
         switchMap((slug) => {
-          return this.apiService.getPoolStats$(slug);
+          return this.apiService.getPoolStats$(slug).pipe(
+            catchError(() => {
+              this.isLoading = false;
+              this.seoService.logSoft404();
+              return of(null);
+            })
+          );
         }),
         tap(() => {
-          this.loadMoreSubject.next(this.blocks[this.blocks.length - 1]?.height);
+          this.loadMoreSubject.next(this.blocks[0]?.height);
         }),
         map((poolStats) => {
           this.seoService.setTitle(poolStats.pool.name);
+          this.seoService.setDescription($localize`:@@meta.description.mining.pool:See mining pool stats for ${poolStats.pool.name}\: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.`);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
@@ -79,7 +91,7 @@ export class PoolComponent implements OnInit {
           poolStats.pool.regexes = regexes.slice(0, -3);
 
           return Object.assign({
-            logo: `/resources/mining-pools/` + poolStats.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg'
+            logo: `/resources/mining-pools/` + poolStats.pool.slug + '.svg'
           }, poolStats);
         })
       );
@@ -119,7 +131,7 @@ export class PoolComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },

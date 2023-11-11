@@ -31,7 +31,7 @@ class MemoryCache {
   }
 
   private cleanup() {
-    this.cache = this.cache.filter((cache) => cache.expires < (new Date()));
+    this.cache = this.cache.filter((cache) => cache.expires > (new Date()));
   }
 }
 

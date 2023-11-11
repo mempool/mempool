@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StateService } from '../services/state.service';
-import { INodesRanking, IOldestNodes, ITopNodesPerCapacity, ITopNodesPerChannels } from '../interfaces/node-api.interface';
+import { IChannel, INodesRanking, IOldestNodes, ITopNodesPerCapacity, ITopNodesPerChannels } from '../interfaces/node-api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class LightningApiService {
     return this.httpClient.get<any>(this.apiBasePath + '/api/v1/lightning/nodes/' + publicKey);
   }
 
-  getNodGroupNodes$(name: string): Observable<any[]> {
+  getNodeGroup$(name: string): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBasePath + '/api/v1/lightning/nodes/group/' + name);
   }
 
@@ -81,6 +81,12 @@ export class LightningApiService {
   getTopNodesByChannels$(): Observable<ITopNodesPerChannels[]> {
     return this.httpClient.get<ITopNodesPerChannels[]>(
       this.apiBasePath + '/api/v1/lightning/nodes/rankings/connectivity'
+    );
+  }
+
+  getPenaltyClosedChannels$(): Observable<IChannel[]> {
+    return this.httpClient.get<IChannel[]>(
+      this.apiBasePath + '/api/v1/lightning/penalties'
     );
   }
 

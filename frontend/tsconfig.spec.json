@@ -4,8 +4,10 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine",
-      "node"
-    ]
+      "node",
+      "cypress",
+      "cypress-wait-until"
+]
   },
   "files": [
     "src/test.ts",

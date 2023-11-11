@@ -2,6 +2,7 @@ import { Block, Transaction } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
+  count: number;
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
@@ -27,6 +28,7 @@ export interface CpfpInfo {
   effectiveFeePerVsize?: number;
   sigops?: number;
   adjustedVsize?: number;
+  acceleration?: boolean;
 }
 
 export interface RbfInfo {
@@ -39,6 +41,7 @@ export interface RbfTree extends RbfInfo {
   mined?: boolean;
   fullRbf: boolean;
   replaces: RbfTree[];
+  replacedBy?: RbfTransaction;
 }
 
 export interface DifficultyAdjustment {
@@ -91,6 +94,7 @@ export interface SinglePoolStats {
   logo: string;
   slug: string;
   avgMatchRate: number;
+  avgFeeDelta: number;
 }
 export interface PoolsStats {
   blockCount: number;
@@ -108,6 +112,8 @@ export interface PoolInfo {
   regexes: string; // JSON array
   addresses: string; // JSON array
   emptyBlocks: number;
+  slug: string;
+  poolUniqueId: number;
 }
 export interface PoolStat {
   pool: PoolInfo;
@@ -153,6 +159,10 @@ export interface BlockExtended extends Block {
 export interface BlockAudit extends BlockExtended {
   missingTxs: string[],
   addedTxs: string[],
+  freshTxs: string[],
+  sigopTxs: string[],
+  fullrbfTxs: string[],
+  acceleratedTxs: string[],
   matchRate: number,
   expectedFees: number,
   expectedWeight: number,
@@ -168,16 +178,21 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  rate?: number; // effective fee rate
+  acc?: boolean;
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
+  context?: 'projected' | 'actual';
 }
 
-interface RbfTransaction extends TransactionStripped {
+export interface RbfTransaction extends TransactionStripped {
   rbf?: boolean;
   mined?: boolean,
+  fullRbf?: boolean,
 }
 export interface MempoolPosition {
   block: number,
   vsize: number,
+  accelerated?: boolean
 }
 
 export interface RewardStats {
@@ -262,6 +277,7 @@ export interface IChannel {
   closing_transaction_id: string;
   closing_reason: string;
   updated_at: string;
+  closing_date?: string;
   created: string;
   status: number;
   node_left: INode,

@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 import logger from './logger';
@@ -30,7 +32,7 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
   }
 
   public async query<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
-    OkPacket[] | ResultSetHeader>(query, params?): Promise<[T, FieldPacket[]]>
+    OkPacket[] | ResultSetHeader>(query, params?, connection?: PoolConnection): Promise<[T, FieldPacket[]]>
   {
     this.checkDBFlag();
     let hardTimeout;
@@ -45,7 +47,9 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
           reject(new Error(`DB query failed to return, reject or time out within ${hardTimeout / 1000}s - ${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}`));
         }, hardTimeout);
 
-        this.getPool().then(pool => {
+        // Use a specific connection if provided, otherwise delegate to the pool
+        const connectionPromise = connection ? Promise.resolve(connection) : this.getPool();
+        connectionPromise.then((pool: PoolConnection | Pool) => {
           return pool.query(query, params) as Promise<[T, FieldPacket[]]>;
         }).then(result => {
           resolve(result);
@@ -61,6 +65,33 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
     }
   }
 
+  public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
+    OkPacket[] | ResultSetHeader>(queries: { query, params }[]): Promise<[T, FieldPacket[]][]>
+  {
+    const pool = await this.getPool();
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      const results: [T, FieldPacket[]][]  = [];
+      for (const query of queries) {
+        const result = await this.query(query.query, query.params, connection) as [T, FieldPacket[]];
+        results.push(result);
+      }
+
+      await connection.commit();
+
+      return results;
+    } catch (e) {
+      logger.err('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
+      connection.rollback();
+      connection.release();
+      throw e;
+    } finally {
+      connection.release();
+    }
+  }
+
   public async checkDbConnection() {
     this.checkDBFlag();
     try {
@@ -69,6 +100,33 @@ import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } fr
     } catch (e) {
       logger.err('Could not connect to database: ' + (e instanceof Error ? e.message : e));
       process.exit(1);
+    }
+  }
+
+  public getPidLock(): boolean {
+    const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
+    if (fs.existsSync(filePath)) {
+      const pid = fs.readFileSync(filePath).toString();
+      if (pid !== `${process.pid}`) {
+        const msg = `Already running on PID ${pid} (or pid file '${filePath}' is stale)`;
+        logger.err(msg);
+        throw new Error(msg);
+      } else {
+        return true;
+      }
+    } else {
+      fs.writeFileSync(filePath, `${process.pid}`);
+      return true;
+    }
+  }
+
+  public releasePidLock(): void {
+    const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
+    if (fs.existsSync(filePath)) {
+      const pid = fs.readFileSync(filePath).toString();
+      if (pid === `${process.pid}`) {
+        fs.unlinkSync(filePath);
+      }
     }
   }
 

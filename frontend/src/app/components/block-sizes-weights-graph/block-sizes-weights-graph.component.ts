@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption} from 'echarts';
+import { EChartsOption} from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -60,6 +60,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     let firstRun = true;
 
     this.seoService.setTitle($localize`:@@56fa1cd221491b6478998679cba2dc8d55ba330d:Block Sizes and Weights`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-sizes:See Bitcoin block sizes (MB) and block weights (weight units) visualized over time.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);

@@ -18,6 +18,7 @@ export interface WebsocketResponse {
   txReplaced?: ReplacedTransaction;
   rbfInfo?: RbfTree;
   rbfLatest?: RbfTree[];
+  rbfLatestSummary?: ReplacementInfo[];
   utxoSpent?: object;
   transactions?: TransactionStripped[];
   loadingIndicators?: ILoadingIndicators;
@@ -29,12 +30,24 @@ export interface WebsocketResponse {
   'track-asset'?: string;
   'track-mempool-block'?: number;
   'track-rbf'?: string;
+  'track-rbf-summary'?: boolean;
   'watch-mempool'?: boolean;
   'track-bisq-market'?: string;
+  'refresh-blocks'?: boolean;
 }
 
 export interface ReplacedTransaction extends Transaction {
   txid: string;
+}
+
+export interface ReplacementInfo {
+  mined: boolean;
+  fullRbf: boolean;
+  txid: string;
+  oldFee: number;
+  oldVsize: number;
+  newFee: number;
+  newVsize: number;
 }
 export interface MempoolBlock {
   blink?: boolean;
@@ -57,7 +70,7 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 export interface MempoolBlockDelta {
   added: TransactionStripped[],
   removed: string[],
-  changed?: { txid: string, rate: number | undefined }[];
+  changed?: { txid: string, rate: number | undefined, acc: boolean | undefined }[];
 }
 
 export interface MempoolInfo {
@@ -75,13 +88,14 @@ export interface TransactionStripped {
   fee: number;
   vsize: number;
   value: number;
+  acc?: boolean; // is accelerated?
   rate?: number; // effective fee rate
-  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'added' | 'censored' | 'selected';
+  status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
 
 export interface IBackendInfo {
-  hostname: string;
+  hostname?: string;
   gitCommit: string;
   version: string;
 }

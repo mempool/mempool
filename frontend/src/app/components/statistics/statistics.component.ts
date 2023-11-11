@@ -32,6 +32,7 @@ export class StatisticsComponent implements OnInit {
   chartColors = chartColors;
   filterSize = 100000;
   filterFeeIndex = 1;
+  showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
 
@@ -46,6 +47,7 @@ export class StatisticsComponent implements OnInit {
   inverted: boolean;
   feeLevelDropdownData = [];
   timespan = '';
+  titleCount = $localize`Count`;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -62,6 +64,7 @@ export class StatisticsComponent implements OnInit {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
 
@@ -72,8 +75,10 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        } else {
+          this.radioGroupForm.controls.dateSpan.setValue('2h', { emitEvent: false });
         }
       });
 
@@ -114,7 +119,12 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '3y') {
           return this.apiService.list3YStatistics$();
         }
-        return this.apiService.list4YStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '4y') {
+          return this.apiService.list4YStatistics$();
+        }
+        if (this.radioGroupForm.controls.dateSpan.value === 'all') {
+          return this.apiService.listAllTimeStatistics$();
+        }
       })
     )
     .subscribe((mempoolStats: any) => {

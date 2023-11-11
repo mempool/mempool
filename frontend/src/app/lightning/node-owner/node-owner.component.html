@@ -1,0 +1,17 @@
+<div *ngIf="stateService.env.OFFICIAL_MEMPOOL_SPACE === true">
+
+  <div *ngIf="{ value: (nodeOwner$ | async) } as nodeOwner">
+
+    <div *ngIf="nodeOwner.value && nodeOwner.value.sns_id">
+      <a target="_blank" [href]="'https://twitter.com/' + nodeOwner.value.username">
+        <img class="profile-photo" [src]="'data:' + nodeOwner.value.image_mime + ';base64,' + nodeOwner.value.image">
+      </a>
+    </div>
+
+    <div *ngIf="nodeOwner.value === false">
+      <a [href]="'/login/lnnode?type=signup&pubkey=' + publicKey + '&alias=' + alias" class="btn btn-primary btn-sm">Claim</a>
+    <div>
+
+  </div>
+
+</div>
