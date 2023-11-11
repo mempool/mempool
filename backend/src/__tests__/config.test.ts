@@ -66,7 +66,9 @@ describe('Mempool Backend Config', () => {
         PORT: 8332,
         USERNAME: 'mempool',
         PASSWORD: 'mempool',
-        TIMEOUT: 60000
+        TIMEOUT: 60000,
+        COOKIE: false,
+        COOKIE_PATH: '/bitcoin/.cookie'
       });
 
       expect(config.SECOND_CORE_RPC).toStrictEqual({
@@ -74,7 +76,9 @@ describe('Mempool Backend Config', () => {
         PORT: 8332,
         USERNAME: 'mempool',
         PASSWORD: 'mempool',
-        TIMEOUT: 60000
+        TIMEOUT: 60000,
+        COOKIE: false,
+        COOKIE_PATH: '/bitcoin/.cookie'
       });
 
       expect(config.DATABASE).toStrictEqual({

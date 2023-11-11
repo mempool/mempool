@@ -164,7 +164,9 @@ Corresponding `docker-compose.yml` overrides:
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -177,6 +179,8 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
       CORE_RPC_TIMEOUT: 60000
+      CORE_RPC_COOKIE: false
+      CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
@@ -231,7 +235,9 @@ Corresponding `docker-compose.yml` overrides:
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": ""
   },
 ```
 
@@ -244,6 +250,8 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
       SECOND_CORE_RPC_TIMEOUT: ""
+      SECOND_CORE_RPC_COOKIE: false
+      SECOND_CORE_RPC_COOKIE_PATH: ""
       ...
 ```
 
