@@ -32,4 +32,5 @@ export interface BitcoinRpcCredentials {
   user: string;
   pass: string;
   timeout: number;
+  cookie?: string;
 }

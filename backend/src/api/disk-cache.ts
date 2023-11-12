@@ -252,7 +252,11 @@ class DiskCache {
       }
 
       if (rbfData?.rbf) {
-        rbfCache.load(rbfData.rbf);
+        rbfCache.load({
+          txs: rbfData.rbf.txs.map(([txid, entry]) => ({ value: entry })),
+          trees: rbfData.rbf.trees,
+          expiring: rbfData.rbf.expiring.map(([txid, value]) => ({ key: txid, value })),
+        });
       }
     } catch (e) {
       logger.warn('Failed to parse rbf cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));

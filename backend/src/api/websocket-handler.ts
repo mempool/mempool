@@ -577,7 +577,7 @@ class WebsocketHandler {
           response['utxoSpent'] = JSON.stringify(outspends);
         }
 
-        const rbfReplacedBy = rbfCache.getReplacedBy(client['track-tx']);
+        const rbfReplacedBy = rbfChanges.map[client['track-tx']] ? rbfCache.getReplacedBy(client['track-tx']) : false;
         if (rbfReplacedBy) {
           response['rbfTransaction'] = JSON.stringify({
             txid: rbfReplacedBy,
