@@ -181,7 +181,8 @@ class FailoverRouter {
       .catch((e) => {
         let fallbackHost = this.fallbackHost;
         if (e?.response?.status !== 404) {
-          logger.warn(`esplora request failed ${e?.response?.status || 500} ${host.host}${path}`);
+          logger.warn(`esplora request failed ${e?.response?.status} ${host.host}${path}`);
+          logger.warn(e instanceof Error ? e.message : e);
           fallbackHost = this.addFailure(host);
         }
         if (retry && e?.code === 'ECONNREFUSED' && this.multihost) {
