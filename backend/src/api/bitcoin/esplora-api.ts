@@ -298,7 +298,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   async $getBatchedOutspends(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
-    return this.failoverRouter.$get<IEsploraApi.Outspend[][]>('/txs/outspends', 'json', { txids: txids.join(',') });
+    throw new Error('Method not implemented.');
   }
 
   public startHealthChecks(): void {
