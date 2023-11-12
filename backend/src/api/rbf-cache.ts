@@ -2,6 +2,7 @@ import config from "../config";
 import logger from "../logger";
 import { MempoolTransactionExtended, TransactionStripped } from "../mempool.interfaces";
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
+import { IEsploraApi } from "./bitcoin/esplora-api.interface";
 import { Common } from "./common";
 import redisCache from "./redis-cache";
 
@@ -381,9 +382,11 @@ class RbfCache {
           this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
         }
       });
-      logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.staleCount = 0;
+      await this.checkTrees();
+      logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.cleanup();
+
     } catch (e) {
       logger.err('failed to restore RBF cache: ' + (e instanceof Error ? e.message : e));
     }
@@ -421,31 +424,6 @@ class RbfCache {
       return;
     }
 
-    // check if any transactions in this tree have already been confirmed
-    mined = mined || treeInfo.mined;
-    let exists = mined;
-    if (!mined) {
-      try {
-        const apiTx = await bitcoinApi.$getRawTransaction(txid);
-        if (apiTx) {
-          exists = true;
-        }
-        if (apiTx?.status?.confirmed) {
-          mined = true;
-          treeInfo.txMined = true;
-          this.evict(txid, true);
-        }
-      } catch (e) {
-        // most transactions only exist in our cache
-      }
-    }
-
-    // if the root tx is not in the mempool or the blockchain
-    // evict this tree as soon as possible
-    if (root === txid && !exists) {
-      this.evict(txid, true);
-    }
-
     // recursively reconstruct child trees
     for (const childId of treeInfo.replaces) {
       const replaced = await this.importTree(root, childId, deflated, txs, mined);
@@ -479,6 +457,59 @@ class RbfCache {
       this.addTree(root, tree);
     }
     return tree;
+  }
+
+  private async checkTrees(): Promise<void> {
+    const found: { [txid: string]: boolean } = {};
+    const txids = Array.from(this.txs.values()).map(tx => tx.txid).filter(txid => {
+      return !this.expiring.has(txid) && !this.getRbfTree(txid)?.mined;
+    });
+
+    const processTxs = (txs: IEsploraApi.Transaction[]): void => {
+      for (const tx of txs) {
+        found[tx.txid] = true;
+        if (tx.status?.confirmed) {
+          const tree = this.getRbfTree(tx.txid);
+          if (tree) {
+            this.setTreeMined(tree, tx.txid);
+            tree.mined = true;
+            this.evict(tx.txid, false);
+          }
+        }
+      }
+    };
+
+    if (config.MEMPOOL.BACKEND === 'esplora') {
+      const sliceLength = 250;
+      for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
+        const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
+        try {
+          const txs = await bitcoinApi.$getRawTransactions(slice);
+          logger.debug(`fetched ${slice.length} cached rbf transactions`);
+          processTxs(txs);
+          logger.debug(`processed ${slice.length} cached rbf transactions`);
+        } catch (err) {
+          logger.err(`failed to fetch or process ${slice.length} cached rbf transactions`);
+        }
+      }
+    } else {
+      const txs: IEsploraApi.Transaction[] = [];
+      for (const txid of txids) {
+        try {
+          const tx = await bitcoinApi.$getRawTransaction(txid, true, false);
+          txs.push(tx);
+        } catch (err) {
+          // some 404s are expected, so continue quietly
+        }
+      }
+      processTxs(txs);
+    }
+
+    for (const txid of txids) {
+      if (!found[txid]) {
+        this.evict(txid, false);
+      }
+    }
   }
 
   public getLatestRbfSummary(): ReplacementInfo[] {
