@@ -382,10 +382,11 @@ class RbfCache {
           this.expiring.set(expiringEntry.key, new Date(expiringEntry.value).getTime());
         }
       });
-      logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.staleCount = 0;
       await this.checkTrees();
+      logger.debug(`loaded ${txs.length} txs, ${trees.length} trees into rbf cache, ${expiring.length} due to expire, ${this.staleCount} were stale`);
       this.cleanup();
+
     } catch (e) {
       logger.err('failed to restore RBF cache: ' + (e instanceof Error ? e.message : e));
     }
@@ -421,31 +422,6 @@ class RbfCache {
       this.staleCount++;
       this.removeTree(deflated.key);
       return;
-    }
-
-    // check if any transactions in this tree have already been confirmed
-    mined = mined || treeInfo.mined;
-    let exists = mined;
-    if (!mined) {
-      try {
-        const apiTx = await bitcoinApi.$getRawTransaction(txid);
-        if (apiTx) {
-          exists = true;
-        }
-        if (apiTx?.status?.confirmed) {
-          mined = true;
-          treeInfo.txMined = true;
-          this.evict(txid, true);
-        }
-      } catch (e) {
-        // most transactions only exist in our cache
-      }
-    }
-
-    // if the root tx is not in the mempool or the blockchain
-    // evict this tree as soon as possible
-    if (root === txid && !exists) {
-      this.evict(txid, true);
     }
 
     // recursively reconstruct child trees
@@ -505,13 +481,10 @@ class RbfCache {
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
       const sliceLength = 10000;
-      let count = 0;
       for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
         const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
         try {
           const txs = await bitcoinApi.$getRawTransactions(slice);
-          count += txs.length;
-          logger.info(`Fetched ${count} of ${txids.length} unknown-status RBF transactions from esplora`);
           processTxs(txs);
         } catch (err) {
           logger.err('failed to fetch some cached rbf transactions');
