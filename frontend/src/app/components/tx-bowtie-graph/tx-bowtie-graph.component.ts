@@ -124,7 +124,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txid) => {
             if (!this.cached) {
-              return this.electrsApiService.getOutspendsBatched$([txid]);
+              return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, [txid]);
             } else {
               return of(null);
             }
