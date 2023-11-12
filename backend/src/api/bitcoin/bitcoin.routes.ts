@@ -638,8 +638,8 @@ class BitcoinRoutes {
 
   private async getMempoolTxIds(req: Request, res: Response) {
     try {
-      const rawMempool = await bitcoinApi.$getRawMempool();
-      res.send(rawMempool);
+      const { txids } = await bitcoinApi.$getRawMempool();
+      res.send(txids);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
