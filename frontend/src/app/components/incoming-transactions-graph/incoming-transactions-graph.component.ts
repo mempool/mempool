@@ -63,7 +63,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       return;
     }
     this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
-    this.MA = this.calculateMA(this.data.series[0]);
+    const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
+    this.MA = this.calculateMA(this.data.series[0], windowSize);
     this.mountChart();
   }
 
@@ -74,33 +75,22 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     this.isLoading = false;
   }
 
-  /// calculate the moving average of maData
-  calculateMA(maData): number[][] {
+  /// calculate the moving average of the provided data based on windowSize
+  calculateMA(data: number[][], windowSize: number = 100): number[][] {
     //update const variables that are not changed
     const ma: number[][] = [];
     let sum = 0;
     let i = 0;
-    const len = maData.length;
-
-    //Adjust window length based on the length of the data
-    //5% appeared as a good amount from tests
-    //TODO: make this a text box in the UI
-    const maWindowLen = Math.ceil(len * 0.05);
-
-    //calculate the center of the moving average window
-    const center = Math.floor(maWindowLen / 2);
 
     //calculate the centered moving average
-    for (i = center; i < len - center; i++) {
-      sum = 0;
-      //build out ma as we loop through the data
-      ma[i] = [];
-      ma[i].push(maData[i][0]);
-      for (let j = i - center; j <= i + center; j++) {
-        sum += maData[j][1];
+    for (i = 0; i < data.length; i++) {
+      sum += data[i][1];
+      if (i >= windowSize) {
+        sum -= data[i - windowSize][1];
+        const midpoint = i - Math.floor(windowSize / 2);
+        const avg = sum / windowSize;
+        ma.push([data[midpoint][0], avg]);
       }
-
-      ma[i].push(sum / maWindowLen);
     }
 
     //return the moving average array
@@ -138,36 +128,22 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           }
         }],
       }
-    },
-    {
-      zlevel: 0,
-      name: 'MA',
-      data: this.MA,
-      type: 'line',
-      smooth: false,
-      showSymbol: false,
-      symbol: 'none',
-      lineStyle: {
-        width: 1,
-        color: "white",
-      },
-      markLine: {
-        silent: true,
+    });
+    if (this.template !== 'widget') {
+      seriesGraph.push({
+        zlevel: 0,
+        name: 'MA',
+        data: this.MA,
+        type: 'line',
+        smooth: false,
+        showSymbol: false,
         symbol: 'none',
         lineStyle: {
-          color: '#fff',
-          opacity: 1,
           width: 2,
-        },
-        data: [{
-          yAxis: 1667,
-          label: {
-            show: false,
-            color: '#ffffff',
-          }
-        }],
-      }
-    });
+          color: "white",
+        }
+      });
+    }
 
     this.mempoolStatsChartOption = {
       grid: {
