@@ -174,6 +174,9 @@ class FailoverRouter {
       axiosConfig = { timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = host.host + path;
     }
+    if (data?.params) {
+      axiosConfig.params = data.params;
+    }
     return (method === 'post'
         ? this.requestConnection.post<T>(url, data, axiosConfig)
         : this.requestConnection.get<T>(url, axiosConfig)
@@ -194,8 +197,8 @@ class FailoverRouter {
       });
   }
 
-  public async $get<T>(path, responseType = 'json'): Promise<T> {
-    return this.$query<T>('get', path, null, responseType);
+  public async $get<T>(path, responseType = 'json', params: any = null): Promise<T> {
+    return this.$query<T>('get', path, params ? { params } : null, responseType);
   }
 
   public async $post<T>(path, data: any, responseType = 'json'): Promise<T> {
@@ -295,13 +298,16 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<IEsploraApi.Outspend[]>('/tx/' + txId + '/outspends');
   }
 
-  async $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
-    const outspends: IEsploraApi.Outspend[][] = [];
-    for (const tx of txId) {
-      const outspend = await this.$getOutspends(tx);
-      outspends.push(outspend);
-    }
-    return outspends;
+  async $getBatchedOutspends(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async $getBatchedOutspendsInternal(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
+    return this.failoverRouter.$post<IEsploraApi.Outspend[][]>('/internal/txs/outspends/by-txid', txids, 'json');
+  }
+
+  async $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]> {
+    return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
   public startHealthChecks(): void {

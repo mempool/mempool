@@ -24,6 +24,8 @@ export interface AbstractBitcoinApi {
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend>;
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
   $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+  $getBatchedOutspendsInternal(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+  $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]>;
 
   startHealthChecks(): void;
 }
