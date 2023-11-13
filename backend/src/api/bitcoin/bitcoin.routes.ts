@@ -251,7 +251,7 @@ class BitcoinRoutes {
 
   private async getTransaction(req: Request, res: Response) {
     try {
-      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true, false, false, true);
       res.json(transaction);
     } catch (e) {
       let statusCode = 500;
