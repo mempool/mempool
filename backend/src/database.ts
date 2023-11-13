@@ -140,9 +140,9 @@ import { execSync } from 'child_process';
   public releasePidLock(): void {
     const filePath = path.join(config.DATABASE.PID_DIR || __dirname, `/mempool-${config.DATABASE.DATABASE}.pid`);
     if (fs.existsSync(filePath)) {
-      const pid = fs.readFileSync(filePath).toString();
+      const pid = parseInt(fs.readFileSync(filePath, 'utf-8'));
       // only release our own pid file
-      if (pid === `${process.pid}`) {
+      if (pid === process.pid) {
         fs.unlinkSync(filePath);
       }
     }
