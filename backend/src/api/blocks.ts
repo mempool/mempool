@@ -761,8 +761,13 @@ class Blocks {
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
 
         if (!fastForwarded) {
-          const lastestPriceId = await PricesRepository.$getLatestPriceId();
-          this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          let lastestPriceId;
+          try {
+            lastestPriceId = await PricesRepository.$getLatestPriceId();
+            this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          } catch (e) {
+            logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
+          }
           if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
             await blocksRepository.$saveBlockPrices([{
               height: blockExtended.height,

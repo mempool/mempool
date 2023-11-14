@@ -76,7 +76,12 @@ class Indexer {
 
     if (task === 'blocksPrices' && !this.tasksRunning.includes(task) && !['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       this.tasksRunning.push(task);
-      const lastestPriceId = await PricesRepository.$getLatestPriceId();
+      let lastestPriceId;
+      try {
+        lastestPriceId = await PricesRepository.$getLatestPriceId();
+      } catch (e) {
+        logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
+      }
       if (priceUpdater.historyInserted === false || lastestPriceId === null) {
         logger.debug(`Blocks prices indexer is waiting for the price updater to complete`, logger.tags.mining);
         setTimeout(() => {

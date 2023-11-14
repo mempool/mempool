@@ -55,14 +55,20 @@ import { execSync } from 'child_process';
         }).then(result => {
           resolve(result);
         }).catch(error => {
+          logger.debug(`database query "${query.slice(0, 100)}" failed!`);
           reject(error);
         }).finally(() => {
           clearTimeout(timer);
         });
       });
     } else {
-      const pool = await this.getPool();
-      return pool.query(query, params);
+      try {
+        const pool = await this.getPool();
+        return pool.query(query, params);
+      } catch (e) {
+        logger.debug(`database query "${query.slice(0, 100)}" failed!`);
+        throw e;
+      }
     }
   }
 
