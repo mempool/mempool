@@ -62,6 +62,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfReplaces: string[];
   rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
+  sigops: number | null;
+  adjustedVsize: number | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
@@ -343,6 +345,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (tx.fee === undefined) {
             this.tx.fee = 0;
           }
+          if (this.tx.sigops != null) {
+            this.sigops = this.tx.sigops;
+            this.adjustedVsize = Math.max(this.tx.weight / 4, this.sigops * 5);
+          }
           this.tx.feePerVsize = tx.fee / (tx.weight / 4);
           this.isLoadingTx = false;
           this.error = undefined;
@@ -422,6 +428,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.rbfTransaction = rbfTransaction;
       this.replaced = true;
+      this.stateService.markBlock$.next({});
+
       if (rbfTransaction && !this.tx) {
         this.fetchCachedTx$.next(this.txId);
       }
@@ -541,6 +549,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.cpfpInfo = cpfpInfo;
+    if (this.cpfpInfo.adjustedVsize && this.cpfpInfo.sigops != null) {
+      this.sigops = this.cpfpInfo.sigops;
+      this.adjustedVsize = this.cpfpInfo.adjustedVsize;
+    }
     this.hasEffectiveFeeRate = hasRelatives || (this.tx.effectiveFeePerVsize && (Math.abs(this.tx.effectiveFeePerVsize - this.tx.feePerVsize) > 0.01));
   }
 
@@ -567,6 +579,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.replaced = false;
     this.transactionTime = -1;
     this.cpfpInfo = null;
+    this.adjustedVsize = null;
+    this.sigops = null;
     this.hasEffectiveFeeRate = false;
     this.rbfInfo = null;
     this.rbfReplaces = [];

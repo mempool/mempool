@@ -40,7 +40,9 @@
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
@@ -51,6 +53,8 @@
     "REST_API_URL": "http://127.0.0.1:3000",
     "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet",
     "RETRY_UNIX_SOCKET_AFTER": 30000,
+    "REQUEST_TIMEOUT": 10000,
+    "FALLBACK_TIMEOUT": 5000,
     "FALLBACK": []
   },
   "SECOND_CORE_RPC": {
@@ -58,7 +62,9 @@
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "DATABASE": {
     "ENABLED": true,

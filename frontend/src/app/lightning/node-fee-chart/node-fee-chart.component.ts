@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { switchMap } from 'rxjs/operators';
 import { download } from '../../shared/graphs.utils';
 import { LightningApiService } from '../lightning-api.service';

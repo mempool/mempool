@@ -6,6 +6,7 @@ export namespace IEsploraApi {
     size: number;
     weight: number;
     fee: number;
+    sigops?: number;
     vin: Vin[];
     vout: Vout[];
     status: Status;
