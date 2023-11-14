@@ -8,8 +8,9 @@ import logger from '../../logger';
 interface FailoverHost {
   host: string,
   rtts: number[],
-  rtt: number
+  rtt: number,
   failures: number,
+  latestHeight?: number,
   socket?: boolean,
   outOfSync?: boolean,
   unreachable?: boolean,
@@ -92,6 +93,7 @@ class FailoverRouter {
         host.rtts.unshift(rtt);
         host.rtts.slice(0, 5);
         host.rtt = host.rtts.reduce((acc, l) => acc + l, 0) / host.rtts.length;
+        host.latestHeight = height;
         if (height == null || isNaN(height) || (maxHeight - height > 2)) {
           host.outOfSync = true;
         } else {
@@ -105,21 +107,26 @@ class FailoverRouter {
 
     this.sortHosts();
 
-    logger.debug(`Tomahawk ranking: ${this.hosts.map(host => '\navg rtt ' + Math.round(host.rtt).toString().padStart(5, ' ') + ' | reachable? ' + (!host.unreachable || false).toString().padStart(5, ' ') + ' | in sync? ' + (!host.outOfSync || false).toString().padStart(5, ' ') + ` | ${host.host}`).join('')}`);
+    logger.debug(`Tomahawk ranking:\n${this.hosts.map((host, index) => this.formatRanking(index, host, this.activeHost, maxHeight)).join('\n')}`);
 
     // switch if the current host is out of sync or significantly slower than the next best alternative
     if (this.activeHost.outOfSync || this.activeHost.unreachable || (this.activeHost !== this.hosts[0] && this.hosts[0].preferred) || (!this.activeHost.preferred && this.activeHost.rtt > (this.hosts[0].rtt * 2) + 50)) {
       if (this.activeHost.unreachable) {
-        logger.warn(`Unable to reach ${this.activeHost.host}, failing over to next best alternative`);
+        logger.warn(`🚨🚨🚨 Unable to reach ${this.activeHost.host}, failing over to next best alternative 🚨🚨🚨`);
       } else if (this.activeHost.outOfSync) {
-        logger.warn(`${this.activeHost.host} has fallen behind, failing over to next best alternative`);
+        logger.warn(`🚨🚨🚨 ${this.activeHost.host} has fallen behind, failing over to next best alternative 🚨🚨🚨`);
       } else {
-        logger.debug(`${this.activeHost.host} is no longer the best esplora host`);
+        logger.debug(`🛠️ ${this.activeHost.host} is no longer the best esplora host 🛠️`);
       }
       this.electHost();
     }
 
     this.pollTimer = setTimeout(() => { this.pollHosts(); }, this.pollInterval);
+  }
+
+  private formatRanking(index: number, host: FailoverHost, active: FailoverHost, maxHeight: number): string {
+    const heightStatus = host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅');
+    return `${host === active ? '⭐️' : '  '} ${host.rtt < Infinity ? Math.round(host.rtt).toString().padStart(5, ' ') + 'ms' : '    -  '} ${host.unreachable ? '🔥' : '✅'} | block: ${host.latestHeight || '??????'} ${heightStatus} | ${host.host} ${host === active ? '⭐️' : '  '}`;
   }
 
   // sort hosts by connection quality, and update default fallback
@@ -156,7 +163,7 @@ class FailoverRouter {
   private addFailure(host: FailoverHost): FailoverHost {
     host.failures++;
     if (host.failures > 5 && this.multihost) {
-      logger.warn(`Too many esplora failures on ${this.activeHost.host}, falling back to next best alternative`);
+      logger.warn(`🚨🚨🚨 Too many esplora failures on ${this.activeHost.host}, falling back to next best alternative 🚨🚨🚨`);
       this.electHost();
       return this.activeHost;
     } else {
