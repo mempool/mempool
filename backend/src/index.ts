@@ -206,7 +206,7 @@ class Server {
       }
       const newMempool = await bitcoinApi.$getRawMempool();
       const numHandledBlocks = await blocks.$updateBlocks();
-      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, pollRate);
       }
