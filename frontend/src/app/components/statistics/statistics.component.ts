@@ -32,7 +32,7 @@ export class StatisticsComponent implements OnInit {
   chartColors = chartColors;
   filterSize = 100000;
   filterFeeIndex = 1;
-  showCount = true;
+  showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
 

@@ -57,7 +57,7 @@ export class GroupPreviewComponent implements OnInit {
             return of(null);
           }
 
-          return this.lightningApiService.getNodGroupNodes$(this.groupId);
+          return this.lightningApiService.getNodeGroup$(this.groupId);
         }),
         map((nodes) => {
           for (const node of nodes) {

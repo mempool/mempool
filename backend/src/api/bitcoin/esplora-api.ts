@@ -75,9 +75,9 @@ class FailoverRouter {
 
     const results = await Promise.allSettled(this.hosts.map(async (host) => {
       if (host.socket) {
-        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: 5000 });
+        return this.pollConnection.get<number>('/blocks/tip/height', { socketPath: host.host, timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       } else {
-        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: 5000 });
+        return this.pollConnection.get<number>(host.host + '/blocks/tip/height', { timeout: config.ESPLORA.FALLBACK_TIMEOUT });
       }
     }));
     const maxHeight = results.reduce((max, result) => Math.max(max, result.status === 'fulfilled' ? result.value?.data || 0 : 0), 0);
@@ -168,11 +168,14 @@ class FailoverRouter {
     let axiosConfig;
     let url;
     if (host.socket) {
-      axiosConfig = { socketPath: host.host, timeout: 10000, responseType };
+      axiosConfig = { socketPath: host.host, timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = path;
     } else {
-      axiosConfig = { timeout: 10000, responseType };
+      axiosConfig = { timeout: config.ESPLORA.REQUEST_TIMEOUT, responseType };
       url = host.host + path;
+    }
+    if (data?.params) {
+      axiosConfig.params = data.params;
     }
     return (method === 'post'
         ? this.requestConnection.post<T>(url, data, axiosConfig)
@@ -181,7 +184,8 @@ class FailoverRouter {
       .catch((e) => {
         let fallbackHost = this.fallbackHost;
         if (e?.response?.status !== 404) {
-          logger.warn(`esplora request failed ${e?.response?.status || 500} ${host.host}${path}`);
+          logger.warn(`esplora request failed ${e?.response?.status} ${host.host}${path}`);
+          logger.warn(e instanceof Error ? e.message : e);
           fallbackHost = this.addFailure(host);
         }
         if (retry && e?.code === 'ECONNREFUSED' && this.multihost) {
@@ -193,8 +197,8 @@ class FailoverRouter {
       });
   }
 
-  public async $get<T>(path, responseType = 'json'): Promise<T> {
-    return this.$query<T>('get', path, null, responseType);
+  public async $get<T>(path, responseType = 'json', params: any = null): Promise<T> {
+    return this.$query<T>('get', path, params ? { params } : null, responseType);
   }
 
   public async $post<T>(path, data: any, responseType = 'json'): Promise<T> {
@@ -213,12 +217,16 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<IEsploraApi.Transaction>('/tx/' + txId);
   }
 
+  async $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
+    return this.failoverRouter.$post<IEsploraApi.Transaction[]>('/internal/txs', txids, 'json');
+  }
+
   async $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
-    return this.failoverRouter.$post<IEsploraApi.Transaction[]>('/mempool/txs', txids, 'json');
+    return this.failoverRouter.$post<IEsploraApi.Transaction[]>('/internal/mempool/txs', txids, 'json');
   }
 
   async $getAllMempoolTransactions(lastSeenTxid?: string): Promise<IEsploraApi.Transaction[]> {
-    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/mempool/txs' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/mempool/txs' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
   }
 
   $getTransactionHex(txId: string): Promise<string> {
@@ -238,7 +246,7 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getTxsForBlock(hash: string): Promise<IEsploraApi.Transaction[]> {
-    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/block/' + hash + '/txs');
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/internal/block/' + hash + '/txs');
   }
 
   $getBlockHash(height: number): Promise<string> {
@@ -290,13 +298,16 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<IEsploraApi.Outspend[]>('/tx/' + txId + '/outspends');
   }
 
-  async $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
-    const outspends: IEsploraApi.Outspend[][] = [];
-    for (const tx of txId) {
-      const outspend = await this.$getOutspends(tx);
-      outspends.push(outspend);
-    }
-    return outspends;
+  async $getBatchedOutspends(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async $getBatchedOutspendsInternal(txids: string[]): Promise<IEsploraApi.Outspend[][]> {
+    return this.failoverRouter.$post<IEsploraApi.Outspend[][]>('/internal/txs/outspends/by-txid', txids, 'json');
+  }
+
+  async $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]> {
+    return this.failoverRouter.$post<IEsploraApi.Outspend[]>('/internal/txs/outspends/by-outpoint', outpoints.map(out => `${out.txid}:${out.vout}`), 'json');
   }
 
   public startHealthChecks(): void {

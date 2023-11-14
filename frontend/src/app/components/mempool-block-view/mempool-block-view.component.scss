@@ -1,0 +1,22 @@
+.block-wrapper {
+  width: 100vw;
+  height: 100vh;
+  background: #181b2d;
+}
+
+.block-container {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 100vw;
+  max-width: 100vh;
+  height: 100vh;
+  padding: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  * {
+    flex-grow: 1;
+  }
+}

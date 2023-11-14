@@ -23,6 +23,7 @@ Mempool can be conveniently installed on the following full-node distros:
 - [RoninDojo](https://code.samourai.io/ronindojo/RoninDojo)
 - [myNode](https://github.com/mynodebtc/mynode)
 - [Start9](https://github.com/Start9Labs/embassy-os)
+- [nix-bitcoin](https://github.com/fort-nix/nix-bitcoin/blob/a1eacce6768ca4894f365af8f79be5bbd594e1c3/examples/configuration.nix#L129)
 
 **We highly recommend you deploy your own Mempool instance this way.** No matter which option you pick, you'll be able to get your own fully-sovereign instance of Mempool up quickly without needing to fiddle with any settings.
 
