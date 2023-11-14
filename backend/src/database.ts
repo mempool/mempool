@@ -72,6 +72,15 @@ import { execSync } from 'child_process';
     }
   }
 
+  private async $rollbackAtomic(connection: PoolConnection): Promise<void> {
+    try {
+      await connection.rollback();
+      await connection.release();
+    } catch (e) {
+      logger.warn('Failed to rollback incomplete db transaction: ' + (e instanceof Error ? e.message : e));
+    }
+  }
+
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(queries: { query, params }[]): Promise<[T, FieldPacket[]][]>
   {
@@ -90,9 +99,8 @@ import { execSync } from 'child_process';
 
       return results;
     } catch (e) {
-      logger.err('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
-      connection.rollback();
-      connection.release();
+      logger.warn('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
+      this.$rollbackAtomic(connection);
       throw e;
     } finally {
       connection.release();
