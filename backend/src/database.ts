@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
+import { LogLevel } from './logger';
 import logger from './logger';
 import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } from 'mysql2/typings/mysql';
 import { execSync } from 'child_process';
@@ -33,7 +34,7 @@ import { execSync } from 'child_process';
   }
 
   public async query<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
-    OkPacket[] | ResultSetHeader>(query, params?, connection?: PoolConnection): Promise<[T, FieldPacket[]]>
+    OkPacket[] | ResultSetHeader>(query, params?, errorLogLevel: LogLevel | 'silent' = 'debug', connection?: PoolConnection): Promise<[T, FieldPacket[]]>
   {
     this.checkDBFlag();
     let hardTimeout;
@@ -55,7 +56,9 @@ import { execSync } from 'child_process';
         }).then(result => {
           resolve(result);
         }).catch(error => {
-          logger.debug(`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+          if (errorLogLevel !== 'silent') {
+            logger[errorLogLevel](`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+          }
           reject(error);
         }).finally(() => {
           clearTimeout(timer);
@@ -66,7 +69,9 @@ import { execSync } from 'child_process';
         const pool = await this.getPool();
         return pool.query(query, params);
       } catch (e) {
-        logger.debug(`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+        if (errorLogLevel !== 'silent') {
+          logger[errorLogLevel](`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+        }
         throw e;
       }
     }
@@ -82,7 +87,7 @@ import { execSync } from 'child_process';
   }
 
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
-    OkPacket[] | ResultSetHeader>(queries: { query, params }[]): Promise<[T, FieldPacket[]][]>
+    OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
     const pool = await this.getPool();
     const connection = await pool.getConnection();
@@ -91,7 +96,7 @@ import { execSync } from 'child_process';
 
       const results: [T, FieldPacket[]][]  = [];
       for (const query of queries) {
-        const result = await this.query(query.query, query.params, connection) as [T, FieldPacket[]];
+        const result = await this.query(query.query, query.params, errorLogLevel, connection) as [T, FieldPacket[]];
         results.push(result);
       }
 
