@@ -35,7 +35,7 @@ export class StatisticsComponent implements OnInit {
   showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
-
+  outlierCappingEnabled = false;
   mempoolStats: OptimizedMempoolStats[] = [];
 
   mempoolVsizeFeesData: any;
@@ -156,12 +156,14 @@ export class StatisticsComponent implements OnInit {
     }
     this.maxFeeIndex = maxTier;
 
-    this.capExtremeVbytesValues();
-
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
       series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
     };
+
+    if (this.outlierCappingEnabled) {
+      this.capExtremeVbytesValues();
+    }
   }
 
   saveGraphPreference() {
@@ -211,24 +213,25 @@ export class StatisticsComponent implements OnInit {
       }
     });
   }
-
+  
   /**
    * All value higher that "median * capRatio" are capped
    */
+  onOutlierToggleChange(e) {
+    this.outlierCappingEnabled = e.target.checked;
+    this.handleNewMempoolData(this.mempoolStats);
+  }
   capExtremeVbytesValues() {
     if (this.stateService.network.length !== 0) {
       return; // Only cap on Bitcoin mainnet
     }
 
-    let capRatio = 10;
-    if (['1m', '3m',  '6m', '1y', '2y', '3y', '4y'].includes(this.graphWindowPreference)) {
-      capRatio = 4;
-    }
+    let capRatio = 4;
 
     // Find median value
     const vBytes: number[] = [];
-    for (const stat of this.mempoolStats) {
-      vBytes.push(stat.vbytes_per_second);
+    for (const stat of this.mempoolTransactionsWeightPerSecondData.series[0]) {
+      vBytes.push(stat[1]);
     }
     const sorted = vBytes.slice().sort((a, b) => a - b);
     const middle = Math.floor(sorted.length / 2);
@@ -238,8 +241,8 @@ export class StatisticsComponent implements OnInit {
     }
 
     // Cap
-    for (const stat of this.mempoolStats) {
-      stat.vbytes_per_second = Math.min(median * capRatio, stat.vbytes_per_second);
+    for (const stat of this.mempoolTransactionsWeightPerSecondData.series[0]) {
+      stat[1] = Math.min(median * capRatio, stat[1]);
     }
   }
 
