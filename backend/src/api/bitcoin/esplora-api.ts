@@ -101,6 +101,7 @@ class FailoverRouter {
         }
         host.unreachable = false;
       } else {
+        host.outOfSync = true;
         host.unreachable = true;
       }
     }
