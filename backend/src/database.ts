@@ -55,14 +55,29 @@ import { execSync } from 'child_process';
         }).then(result => {
           resolve(result);
         }).catch(error => {
+          logger.debug(`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
           reject(error);
         }).finally(() => {
           clearTimeout(timer);
         });
       });
     } else {
-      const pool = await this.getPool();
-      return pool.query(query, params);
+      try {
+        const pool = await this.getPool();
+        return pool.query(query, params);
+      } catch (e) {
+        logger.debug(`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+        throw e;
+      }
+    }
+  }
+
+  private async $rollbackAtomic(connection: PoolConnection): Promise<void> {
+    try {
+      await connection.rollback();
+      await connection.release();
+    } catch (e) {
+      logger.warn('Failed to rollback incomplete db transaction: ' + (e instanceof Error ? e.message : e));
     }
   }
 
@@ -84,9 +99,8 @@ import { execSync } from 'child_process';
 
       return results;
     } catch (e) {
-      logger.err('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
-      connection.rollback();
-      connection.release();
+      logger.warn('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
+      this.$rollbackAtomic(connection);
       throw e;
     } finally {
       connection.release();
