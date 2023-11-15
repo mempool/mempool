@@ -5,7 +5,7 @@ export interface AbstractBitcoinApi {
   $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean, lazyPrevouts?: boolean): Promise<IEsploraApi.Transaction>;
   $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;
   $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;
-  $getAllMempoolTransactions(lastTxid: string);
+  $getAllMempoolTransactions(lastTxid?: string, max_txs?: number);
   $getTransactionHex(txId: string): Promise<string>;
   $getBlockHeightTip(): Promise<number>;
   $getBlockHashTip(): Promise<string>;

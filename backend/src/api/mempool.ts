@@ -126,7 +126,7 @@ class Mempool {
     loadingIndicators.setProgress('mempool', count / expectedCount * 100);
     while (!done) {
       try {
-        const result = await bitcoinApi.$getAllMempoolTransactions(last_txid);
+        const result = await bitcoinApi.$getAllMempoolTransactions(last_txid, config.ESPLORA.BATCH_QUERY_BASE_SIZE);
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
