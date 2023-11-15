@@ -290,7 +290,7 @@ class NetworkSyncService {
 
       const allChannels = await channelsApi.$getChannelsByStatus([0, 1]);
 
-      const sliceLength = 5000;
+      const sliceLength = Math.floor(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 2);
       // process batches of 5000 channels
       for (let i = 0; i < Math.ceil(allChannels.length / sliceLength); i++) {
         const channels = allChannels.slice(i * sliceLength, (i + 1) * sliceLength);
