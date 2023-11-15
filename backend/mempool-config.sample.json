@@ -52,6 +52,7 @@
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
     "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet",
+    "BATCH_QUERY_BASE_SIZE": 1000,
     "RETRY_UNIX_SOCKET_AFTER": 30000,
     "REQUEST_TIMEOUT": 10000,
     "FALLBACK_TIMEOUT": 5000,
@@ -131,6 +132,11 @@
     "LIQUID_ONION": "http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1",
     "BISQ_URL": "https://bisq.markets/api",
     "BISQ_ONION": "http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api"
+  },
+  "REDIS": {
+    "ENABLED": false,
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
   },
   "REPLICATION": {
     "ENABLED": false,

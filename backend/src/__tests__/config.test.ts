@@ -55,6 +55,7 @@ describe('Mempool Backend Config', () => {
       expect(config.ESPLORA).toStrictEqual({
         REST_API_URL: 'http://127.0.0.1:3000',
         UNIX_SOCKET_PATH: null,
+        BATCH_QUERY_BASE_SIZE: 1000,
         RETRY_UNIX_SOCKET_AFTER: 30000,
         REQUEST_TIMEOUT: 10000,
         FALLBACK_TIMEOUT: 5000,
@@ -144,7 +145,8 @@ describe('Mempool Backend Config', () => {
 
       expect(config.REDIS).toStrictEqual({
         ENABLED: false,
-        UNIX_SOCKET_PATH: ''
+        UNIX_SOCKET_PATH: '',
+        BATCH_QUERY_BASE_SIZE: 5000,
       });
     });
   });
