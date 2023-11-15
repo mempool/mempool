@@ -117,7 +117,7 @@
               </button>
             </div>
             <div class="form-check">
-              <input style="margin-top: 9px" class="form-check-input" type="checkbox" value="" id="hide-outliers" (change)="onOutlierToggleChange($event)">
+              <input style="margin-top: 9px" class="form-check-input" type="checkbox" [checked]="outlierCappingEnabled" id="hide-outliers" (change)="onOutlierToggleChange($event)">
               <label class="form-check-label" for="hide-outliers">
                 <small i18n="statistics.cap-outliers">Cap outliers</small>
               </label>

@@ -67,6 +67,7 @@ export class StatisticsComponent implements OnInit {
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
+    this.outlierCappingEnabled = this.storageService.getValue('cap-outliers') === 'true';
 
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
@@ -212,6 +213,7 @@ export class StatisticsComponent implements OnInit {
   
   onOutlierToggleChange(e): void {
     this.outlierCappingEnabled = e.target.checked;
+    this.storageService.setValue('cap-outliers', e.target.checked);
   }
 
   onSaveChart(name) {

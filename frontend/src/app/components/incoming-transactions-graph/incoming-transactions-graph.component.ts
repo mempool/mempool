@@ -255,7 +255,15 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         }
       ],
       yAxis: {
-        max: this.outlierCappingEnabled ? Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) : undefined,
+        max: (value) => {
+          if (!this.outlierCappingEnabled) {
+            return undefined;
+          }
+          if (value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
+            return undefined;
+          }
+          return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
+        },
         type: 'value',
         axisLabel: {
           fontSize: 11,
