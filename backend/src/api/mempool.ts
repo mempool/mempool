@@ -126,7 +126,7 @@ class Mempool {
     loadingIndicators.setProgress('mempool', count / expectedCount * 100);
     while (!done) {
       try {
-        const result = await bitcoinApi.$getAllMempoolTransactions(last_txid);
+        const result = await bitcoinApi.$getAllMempoolTransactions(last_txid, config.ESPLORA.BATCH_QUERY_BASE_SIZE);
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
@@ -235,7 +235,7 @@ class Mempool {
 
     if (!loaded) {
       const remainingTxids = transactions.filter(txid => !this.mempoolCache[txid]);
-      const sliceLength = 10000;
+      const sliceLength = config.ESPLORA.BATCH_QUERY_BASE_SIZE;
       for (let i = 0; i < Math.ceil(remainingTxids.length / sliceLength); i++) {
         const slice = remainingTxids.slice(i * sliceLength, (i + 1) * sliceLength);
         const txs = await transactionUtils.$getMempoolTransactionsExtended(slice, false, false, false);

@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
+import { LogLevel } from './logger';
 import logger from './logger';
 import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } from 'mysql2/typings/mysql';
 import { execSync } from 'child_process';
@@ -33,7 +34,7 @@ import { execSync } from 'child_process';
   }
 
   public async query<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
-    OkPacket[] | ResultSetHeader>(query, params?, connection?: PoolConnection): Promise<[T, FieldPacket[]]>
+    OkPacket[] | ResultSetHeader>(query, params?, errorLogLevel: LogLevel | 'silent' = 'debug', connection?: PoolConnection): Promise<[T, FieldPacket[]]>
   {
     this.checkDBFlag();
     let hardTimeout;
@@ -55,19 +56,38 @@ import { execSync } from 'child_process';
         }).then(result => {
           resolve(result);
         }).catch(error => {
+          if (errorLogLevel !== 'silent') {
+            logger[errorLogLevel](`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+          }
           reject(error);
         }).finally(() => {
           clearTimeout(timer);
         });
       });
     } else {
-      const pool = await this.getPool();
-      return pool.query(query, params);
+      try {
+        const pool = await this.getPool();
+        return pool.query(query, params);
+      } catch (e) {
+        if (errorLogLevel !== 'silent') {
+          logger[errorLogLevel](`database query "${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}" failed!`);
+        }
+        throw e;
+      }
+    }
+  }
+
+  private async $rollbackAtomic(connection: PoolConnection): Promise<void> {
+    try {
+      await connection.rollback();
+      await connection.release();
+    } catch (e) {
+      logger.warn('Failed to rollback incomplete db transaction: ' + (e instanceof Error ? e.message : e));
     }
   }
 
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
-    OkPacket[] | ResultSetHeader>(queries: { query, params }[]): Promise<[T, FieldPacket[]][]>
+    OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
     const pool = await this.getPool();
     const connection = await pool.getConnection();
@@ -76,7 +96,7 @@ import { execSync } from 'child_process';
 
       const results: [T, FieldPacket[]][]  = [];
       for (const query of queries) {
-        const result = await this.query(query.query, query.params, connection) as [T, FieldPacket[]];
+        const result = await this.query(query.query, query.params, errorLogLevel, connection) as [T, FieldPacket[]];
         results.push(result);
       }
 
@@ -84,9 +104,8 @@ import { execSync } from 'child_process';
 
       return results;
     } catch (e) {
-      logger.err('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
-      connection.rollback();
-      connection.release();
+      logger.warn('Could not complete db transaction, rolling back: ' + (e instanceof Error ? e.message : e));
+      this.$rollbackAtomic(connection);
       throw e;
     } finally {
       connection.release();

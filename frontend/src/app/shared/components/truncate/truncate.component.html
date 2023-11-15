@@ -1,4 +1,5 @@
 <span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
+  <div class="hidden">{{ text }}</div>
     <ng-container *ngIf="link">
       <a [routerLink]="link" class="truncate-link">
         <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
@@ -11,6 +12,7 @@
 </span>
 
 <ng-template #ltrTruncated>
+
   <span class="first">{{text.slice(0,-lastChars)}}</span><span class="last-four">{{text.slice(-lastChars)}}</span>
 </ng-template>
 

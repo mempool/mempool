@@ -44,9 +44,13 @@ export enum FeatureBits {
 	KeysendOptional = 55,
 	ScriptEnforcedLeaseRequired = 2022,
 	ScriptEnforcedLeaseOptional = 2023,
+	SimpleTaprootChannelsRequiredFinal = 80,
+	SimpleTaprootChannelsOptionalFinal = 81,
+	SimpleTaprootChannelsRequiredStaging = 180,
+	SimpleTaprootChannelsOptionalStaging = 181,
 	MaxBolt11Feature = 5114,
 };
-  
+
 export const FeaturesMap = new Map<FeatureBits, string>([
 	[FeatureBits.DataLossProtectRequired, 'data-loss-protect'],
 	[FeatureBits.DataLossProtectOptional, 'data-loss-protect'],
@@ -85,6 +89,10 @@ export const FeaturesMap = new Map<FeatureBits, string>([
 	[FeatureBits.ZeroConfOptional, 'zero-conf'],
 	[FeatureBits.ShutdownAnySegwitRequired, 'shutdown-any-segwit'],
 	[FeatureBits.ShutdownAnySegwitOptional, 'shutdown-any-segwit'],
+	[FeatureBits.SimpleTaprootChannelsRequiredFinal, 'taproot-channels'],
+	[FeatureBits.SimpleTaprootChannelsOptionalFinal, 'taproot-channels'],
+	[FeatureBits.SimpleTaprootChannelsRequiredStaging, 'taproot-channels-staging'],
+	[FeatureBits.SimpleTaprootChannelsOptionalStaging, 'taproot-channels-staging'],
 ]);
 
 /**
