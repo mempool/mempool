@@ -256,13 +256,11 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       ],
       yAxis: {
         max: (value) => {
-          if (!this.outlierCappingEnabled) {
+          if (!this.outlierCappingEnabled || value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
             return undefined;
+          } else {
+            return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
           }
-          if (value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
-            return undefined;
-          }
-          return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
         },
         type: 'value',
         axisLabel: {
