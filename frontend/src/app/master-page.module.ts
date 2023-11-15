@@ -109,12 +109,9 @@ export class MasterPageRoutingModule { }
   ],
   declarations: [
     MasterPageComponent,
+  ],
+  exports: [
+    MasterPageComponent,
   ]
 })
 export class MasterPageModule { }
-
-
-
-
-
-
