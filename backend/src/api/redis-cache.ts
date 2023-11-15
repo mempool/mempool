@@ -219,7 +219,7 @@ class RedisCache {
     await memPool.$setMempool(loadedMempool);
     await rbfCache.load({
       txs: rbfTxs,
-      trees: rbfTrees.map(loadedTree => loadedTree.value),
+      trees: rbfTrees.map(loadedTree => { loadedTree.value.key = loadedTree.key; return loadedTree.value; }),
       expiring: rbfExpirations,
     });
   }

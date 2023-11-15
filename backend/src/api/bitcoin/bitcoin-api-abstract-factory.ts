@@ -3,6 +3,7 @@ import { IEsploraApi } from './esplora-api.interface';
 export interface AbstractBitcoinApi {
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]>;
   $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean, lazyPrevouts?: boolean): Promise<IEsploraApi.Transaction>;
+  $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;
   $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;
   $getAllMempoolTransactions(lastTxid: string);
   $getTransactionHex(txId: string): Promise<string>;
@@ -23,6 +24,8 @@ export interface AbstractBitcoinApi {
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend>;
   $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
   $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+  $getBatchedOutspendsInternal(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+  $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]>;
 
   startHealthChecks(): void;
 }
@@ -32,4 +35,5 @@ export interface BitcoinRpcCredentials {
   user: string;
   pass: string;
   timeout: number;
+  cookie?: string;
 }

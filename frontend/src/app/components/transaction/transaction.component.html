@@ -6,7 +6,7 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-dismissible alert-purple" role="alert">
+    <div *ngIf="tx && acceleratorAvailable && accelerateCtaType === 'alert' && !tx.status.confirmed && !tx.acceleration" class="alert alert-dismissible alert-purple" role="alert">
       <div>
         <a class="btn btn-sm blink-bg" (click)="onAccelerateClicked()">Accelerate</a>
         <span class="align-middle">this transaction using Mempool Accelerator &trade;</span>
@@ -295,9 +295,9 @@
                 <td i18n="transaction.vsize|Transaction Virtual Size">Virtual size</td>
                 <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
               </tr>
-              <tr *ngIf="cpfpInfo && cpfpInfo.adjustedVsize && cpfpInfo.adjustedVsize > (tx.weight / 4)">
+              <tr *ngIf="adjustedVsize != null">
                 <td i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize</td>
-                <td [innerHTML]="'&lrm;' + (cpfpInfo.adjustedVsize | vbytes: 2)"></td>
+                <td [innerHTML]="'&lrm;' + (adjustedVsize | vbytes: 2)"></td>
               </tr>
               <tr>
                 <td i18n="block.weight">Weight</td>
@@ -317,9 +317,9 @@
                 <td i18n="transaction.locktime">Locktime</td>
                 <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
               </tr>
-              <tr *ngIf="cpfpInfo && cpfpInfo.adjustedVsize && cpfpInfo.adjustedVsize > (tx.weight / 4)">
+              <tr *ngIf="sigops != null">
                 <td i18n="transaction.sigops|Transaction Sigops">Sigops</td>
-                <td [innerHTML]="'&lrm;' + (cpfpInfo.sigops | number)"></td>
+                <td [innerHTML]="'&lrm;' + (sigops | number)"></td>
               </tr>
               <tr>
                 <td i18n="transaction.hex">Transaction hex</td>

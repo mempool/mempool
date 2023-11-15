@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
@@ -132,7 +132,7 @@ export class LightningStatisticsChartComponent implements OnInit {
       animation: false,
       color: [
         '#FFB300',
-        new graphic.LinearGradient(0, 0.75, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#D81B60' },
           { offset: 1, color: '#D81B60AA' },
         ]),

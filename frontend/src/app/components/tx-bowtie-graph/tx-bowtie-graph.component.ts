@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { AssetsService } from '../../services/assets.service';
 import { environment } from '../../../environments/environment';
+import { ElectrsApiService } from '../../services/electrs-api.service';
 
 interface SvgLine {
   path: string;
@@ -100,7 +101,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
     private router: Router,
     private relativeUrlPipe: RelativeUrlPipe,
     private stateService: StateService,
-    private apiService: ApiService,
+    private electrsApiService: ElectrsApiService,
     private assetsService: AssetsService,
     @Inject(LOCALE_ID) private locale: string,
   ) {
@@ -123,7 +124,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         .pipe(
           switchMap((txid) => {
             if (!this.cached) {
-              return this.apiService.getOutspendsBatched$([txid]);
+              return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, [txid]);
             } else {
               return of(null);
             }
