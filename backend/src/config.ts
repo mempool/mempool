@@ -43,6 +43,7 @@ interface IConfig {
   ESPLORA: {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
+    BATCH_QUERY_BASE_SIZE: number;
     RETRY_UNIX_SOCKET_AFTER: number;
     REQUEST_TIMEOUT: number;
     FALLBACK_TIMEOUT: number;
@@ -151,6 +152,7 @@ interface IConfig {
   REDIS: {
     ENABLED: boolean;
     UNIX_SOCKET_PATH: string;
+    BATCH_QUERY_BASE_SIZE: number;
   },
 }
 
@@ -195,6 +197,7 @@ const defaults: IConfig = {
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
+    'BATCH_QUERY_BASE_SIZE': 1000,
     'RETRY_UNIX_SOCKET_AFTER': 30000,
     'REQUEST_TIMEOUT': 10000,
     'FALLBACK_TIMEOUT': 5000,
@@ -303,6 +306,7 @@ const defaults: IConfig = {
   'REDIS': {
     'ENABLED': false,
     'UNIX_SOCKET_PATH': '',
+    'BATCH_QUERY_BASE_SIZE': 5000,
   },
 };
 

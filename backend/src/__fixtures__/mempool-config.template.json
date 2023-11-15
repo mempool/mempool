@@ -53,6 +53,7 @@
   "ESPLORA": {
     "REST_API_URL": "__ESPLORA_REST_API_URL__",
     "UNIX_SOCKET_PATH": "__ESPLORA_UNIX_SOCKET_PATH__",
+    "BATCH_QUERY_BASE_SIZE": 1000,
     "RETRY_UNIX_SOCKET_AFTER": 888,
     "REQUEST_TIMEOUT": 10000,
     "FALLBACK_TIMEOUT": 5000,
@@ -140,6 +141,7 @@
   },
   "REDIS": {
     "ENABLED": false,
-    "UNIX_SOCKET_PATH": "/tmp/redis.sock"
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
   }
 }

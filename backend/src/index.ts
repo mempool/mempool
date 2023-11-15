@@ -92,8 +92,14 @@ class Server {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
     // Register cleanup listeners for exit events
-    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'unhandledRejection'].forEach(event => {
+    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach(event => {
       process.on(event, () => { this.onExit(event); });
+    });
+    process.on('uncaughtException', (error) => {
+      this.onUnhandledException('uncaughtException', error);
+    });
+    process.on('unhandledRejection', (reason, promise) => {
+      this.onUnhandledException('unhandledRejection', reason);
     });
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
@@ -200,7 +206,7 @@ class Server {
       }
       const newMempool = await bitcoinApi.$getRawMempool();
       const numHandledBlocks = await blocks.$updateBlocks();
-      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, pollRate);
       }
@@ -314,14 +320,18 @@ class Server {
     }
   }
 
-  onExit(exitEvent): void {
+  onExit(exitEvent, code = 0): void {
+    logger.debug(`onExit for signal: ${exitEvent}`);
     if (config.DATABASE.ENABLED) {
       DB.releasePidLock();
     }
-    process.exit(0);
+    process.exit(code);
+  }
+
+  onUnhandledException(type, error): void {
+    console.error(`${type}:`, error);
+    this.onExit(type, 1);
   }
 }
-
-
 
 ((): Server => new Server())();

@@ -761,8 +761,13 @@ class Blocks {
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
 
         if (!fastForwarded) {
-          const lastestPriceId = await PricesRepository.$getLatestPriceId();
-          this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          let lastestPriceId;
+          try {
+            lastestPriceId = await PricesRepository.$getLatestPriceId();
+            this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          } catch (e) {
+            logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
+          }
           if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
             await blocksRepository.$saveBlockPrices([{
               height: blockExtended.height,
@@ -771,9 +776,7 @@ class Blocks {
             this.updateTimerProgress(timer, `saved prices for ${this.currentBlockHeight}`);
           } else {
             logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
-            setTimeout(() => {
-              indexer.runSingleTask('blocksPrices');
-            }, 10000);
+            indexer.scheduleSingleTask('blocksPrices', 10000);
           }
 
           // Save blocks summary for visualization if it's enabled
