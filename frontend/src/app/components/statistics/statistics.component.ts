@@ -160,10 +160,6 @@ export class StatisticsComponent implements OnInit {
       labels: labels,
       series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
     };
-
-    if (this.outlierCappingEnabled) {
-      this.capExtremeVbytesValues();
-    }
   }
 
   saveGraphPreference() {
@@ -214,36 +210,8 @@ export class StatisticsComponent implements OnInit {
     });
   }
   
-  /**
-   * All value higher that "median * capRatio" are capped
-   */
-  onOutlierToggleChange(e) {
+  onOutlierToggleChange(e): void {
     this.outlierCappingEnabled = e.target.checked;
-    this.handleNewMempoolData(this.mempoolStats);
-  }
-  capExtremeVbytesValues() {
-    if (this.stateService.network.length !== 0) {
-      return; // Only cap on Bitcoin mainnet
-    }
-
-    let capRatio = 4;
-
-    // Find median value
-    const vBytes: number[] = [];
-    for (const stat of this.mempoolTransactionsWeightPerSecondData.series[0]) {
-      vBytes.push(stat[1]);
-    }
-    const sorted = vBytes.slice().sort((a, b) => a - b);
-    const middle = Math.floor(sorted.length / 2);
-    let median = sorted[middle];
-    if (sorted.length % 2 === 0) {
-      median = (sorted[middle - 1] + sorted[middle]) / 2;
-    }
-
-    // Cap
-    for (const stat of this.mempoolTransactionsWeightPerSecondData.series[0]) {
-      stat[1] = Math.min(median * capRatio, stat[1]);
-    }
   }
 
   onSaveChart(name) {

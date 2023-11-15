@@ -128,7 +128,7 @@
         <div class="card-body">
           <div class="incoming-transactions-graph">
             <app-incoming-transactions-graph #incominggraph [height]="500" [left]="65" [template]="'advanced'"
-              [data]="mempoolTransactionsWeightPerSecondData"></app-incoming-transactions-graph>
+              [data]="mempoolTransactionsWeightPerSecondData" [outlierCappingEnabled]="outlierCappingEnabled"></app-incoming-transactions-graph>
           </div>
         </div>
       </div>
