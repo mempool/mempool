@@ -480,7 +480,7 @@ class RbfCache {
     };
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
-      const sliceLength = Math.floor(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 40);
+      const sliceLength = Math.ceil(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 40);
       for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
         const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
         try {

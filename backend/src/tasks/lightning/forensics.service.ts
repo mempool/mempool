@@ -79,7 +79,7 @@ class ForensicsService {
       }
 
       let progress = 0;
-      const sliceLength = Math.floor(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 10);
+      const sliceLength = Math.ceil(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 10);
       // process batches of 1000 channels
       for (let i = 0; i < Math.ceil(allChannels.length / sliceLength); i++) {
         const channels = allChannels.slice(i * sliceLength, (i + 1) * sliceLength);
