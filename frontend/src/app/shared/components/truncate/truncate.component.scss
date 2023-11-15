@@ -32,4 +32,12 @@
 .hidden { 
   color: transparent;
   position: absolute;
+  max-width: 300px;
+  overflow: hidden;
+}
+
+@media (max-width: 567px) {
+  .hidden {
+    max-width: 150px;
+  }
 }
