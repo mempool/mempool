@@ -13,7 +13,7 @@ RUN npm install --omit=dev --omit=optional
 
 RUN npm run build
 
-FROM nginx:1.17.8-alpine
+FROM nginx:1.25.3-alpine
 
 WORKDIR /patch
 
