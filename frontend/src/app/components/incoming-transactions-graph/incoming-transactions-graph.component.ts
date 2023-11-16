@@ -7,6 +7,8 @@ import { formatNumber } from '@angular/common';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 
+const OUTLIERS_MEDIAN_MULTIPLIER = 4;
+
 @Component({
   selector: 'app-incoming-transactions-graph',
   templateUrl: './incoming-transactions-graph.component.html',
@@ -29,6 +31,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   @Input() left: number | string = '0';
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() windowPreferenceOverride: string;
+  @Input() outlierCappingEnabled: boolean = false;
 
   isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
@@ -40,6 +43,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   MA: number[][] = [];
   weightMode: boolean = false;
   rateUnitSub: Subscription;
+  medianVbytesPerSecond: number | undefined;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -65,14 +69,33 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
     const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
     this.MA = this.calculateMA(this.data.series[0], windowSize);
+    if (this.outlierCappingEnabled === true) {
+      this.computeMedianVbytesPerSecond(this.data.series[0]);
+    }
     this.mountChart();
   }
 
   rendered() {
     if (!this.data) {
-      return;
+      return; 
     }
     this.isLoading = false;
+  }
+
+  /**
+   * Calculate the median value of the vbytes per second chart to hide outliers
+   */
+  computeMedianVbytesPerSecond(data: number[][]): void {
+    const vBytes: number[] = [];
+    for (const value of data) {
+      vBytes.push(value[1]);
+    }
+    const sorted = vBytes.slice().sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    this.medianVbytesPerSecond = sorted[middle];
+    if (sorted.length % 2 === 0) {
+      this.medianVbytesPerSecond = (sorted[middle - 1] + sorted[middle]) / 2;
+    }
   }
 
   /// calculate the moving average of the provided data based on windowSize
@@ -232,6 +255,13 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         }
       ],
       yAxis: {
+        max: (value) => {
+          if (!this.outlierCappingEnabled || value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
+            return undefined;
+          } else {
+            return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
+          }
+        },
         type: 'value',
         axisLabel: {
           fontSize: 11,
