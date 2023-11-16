@@ -223,3 +223,12 @@
     }
   }
 }
+
+.vbytes-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  @media (max-width: 767px) {
+    display: block;
+  }
+}
