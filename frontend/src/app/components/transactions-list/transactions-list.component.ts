@@ -156,17 +156,45 @@ export class TransactionsListComponent implements OnInit, OnChanges {
         }
 
         if (this.address) {
-          const addressIn = tx.vout
-            .filter((v: Vout) => v.scriptpubkey_address === this.address)
-            .map((v: Vout) => v.value || 0)
-            .reduce((a: number, b: number) => a + b, 0);
+          const isP2PKUncompressed = this.address.length === 130;
+          const isP2PKCompressed = this.address.length === 66;
+          if (isP2PKCompressed) {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey === '21' + this.address + 'ac')
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
 
-          const addressOut = tx.vin
-            .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
-            .map((v: Vin) => v.prevout.value || 0)
-            .reduce((a: number, b: number) => a + b, 0);
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '21' + this.address + 'ac')
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
 
-          tx['addressValue'] = addressIn - addressOut;
+            tx['addressValue'] = addressIn - addressOut;
+          } else if (isP2PKUncompressed) {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey === '41' + this.address + 'ac')
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey === '41' + this.address + 'ac')
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            tx['addressValue'] = addressIn - addressOut;
+          } else {
+            const addressIn = tx.vout
+              .filter((v: Vout) => v.scriptpubkey_address === this.address)
+              .map((v: Vout) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            const addressOut = tx.vin
+              .filter((v: Vin) => v.prevout && v.prevout.scriptpubkey_address === this.address)
+              .map((v: Vin) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+
+            tx['addressValue'] = addressIn - addressOut;
+          }
         }
 
         this.priceService.getBlockPrice$(tx.status.block_time).pipe(
