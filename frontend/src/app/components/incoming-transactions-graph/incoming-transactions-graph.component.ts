@@ -209,7 +209,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.template === 'widget') ? '125px' : '135px'};
+        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.template === 'widget') ? '125px' : '215px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,

@@ -230,7 +230,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 100;
           return positions;
         },
-        extraCssText: `width: ${(this.template === 'advanced') ? '275px' : '200px'};
+        extraCssText: `width: ${(this.template === 'advanced') ? '310px' : '200px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
