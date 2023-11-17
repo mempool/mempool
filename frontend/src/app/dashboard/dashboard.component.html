@@ -237,7 +237,7 @@
       <div class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loadingbig">
         <div class="progress">
           <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
-          <div class="progress-text">&lrm;<span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
+          <div class="progress-text">&lrm;<span [innerHTML]="mempoolInfoData.value.memPoolInfo.usage | bytes : 2 : 'B' : null : 3"></span> / <span [innerHTML]="mempoolInfoData.value.memPoolInfo.maxmempool | bytes"></span></div>
         </div>
       </div>
     </div>
