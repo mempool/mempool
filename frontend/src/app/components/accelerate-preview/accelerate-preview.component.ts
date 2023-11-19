@@ -189,7 +189,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
         this.estimateSubscription.unsubscribe();
       },
       error: (response) => {
-        this.error = response.error;
+        if (response.status === 403 && response.error === 'not_available') {
+          this.error = 'waitlisted';
+        } else {
+          this.error = response.error;
+        }
         this.scrollToPreviewWithTimeout('mempoolError', 'center');
       }
     });
