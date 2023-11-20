@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
@@ -62,7 +63,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   constructor(
     private apiService: ApiService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router,
   ) { }
 
   ngOnDestroy(): void {
@@ -73,7 +75,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
-      this.scrollToPreview('acceleratePreviewAnchor', 'center');
+      this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
   }
 
@@ -126,7 +128,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           this.maxCost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
           if (!this.error) {
-            this.scrollToPreview('acceleratePreviewAnchor', 'center');
+            this.scrollToPreview('acceleratePreviewAnchor', 'start');
           }
         }
       }),
@@ -187,7 +189,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
         this.estimateSubscription.unsubscribe();
       },
       error: (response) => {
-        this.error = response.error;
+        if (response.status === 403 && response.error === 'not_available') {
+          this.error = 'waitlisted';
+        } else {
+          this.error = response.error;
+        }
         this.scrollToPreviewWithTimeout('mempoolError', 'center');
       }
     });

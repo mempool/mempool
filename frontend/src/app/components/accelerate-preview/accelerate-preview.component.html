@@ -1,7 +1,7 @@
 <div class="row" *ngIf="showSuccess">
   <div class="col" id="successAlert">
     <div class="alert alert-success">
-      Transaction has now been submitted to mining pools for acceleration. You can track the progress <a class="alert-link" routerLink="/services/accelerator/history">here</a>.
+      Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
     </div>
   </div>
 </div>
@@ -75,7 +75,7 @@
                 <ng-container *ngFor="let option of maxRateOptions">
                   <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
                     <span class="fee">{{ option.fee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
-                    <span class="rate">~ <app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
+                    <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
                   </button>
                 </ng-container>
               </div>
@@ -88,12 +88,12 @@
       <div class="row mb-3">
         <div class="col">
           <div class="table-toggle btn-group btn-group-toggle">
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
+            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
               <span>Estimated cost</span>
-            </div>
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
+            </button>
+            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
               <span>Maximum cost</span>
-            </div>
+            </button>
           </div>
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
@@ -228,7 +228,7 @@
               </ng-container>
   
               <!-- USER BALANCE -->
-              <ng-container *ngIf="estimate.userBalance < maxCost">
+              <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item">
                     Available balance
@@ -241,6 +241,17 @@
                     <span class="fiat">
                       <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <!-- LOGIN CTA -->
+              <ng-container *ngIf="!isLoggedIn()">
+                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                  <td class="item"></td>
+                  <td class="amt"></td>
+                  <td class="units d-flex">
+                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1">Login</a>
                   </td>
                 </tr>
               </ng-container>

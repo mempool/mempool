@@ -5,7 +5,7 @@
   <!-- Hamburger -->
   <ng-container *ngIf="servicesEnabled">
     <div *ngIf="user" class="profile_image_container" [class]="{'anon': !user.imageMd5}" (click)="hamburgerClick($event)">
-      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/image/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
+      <img *ngIf="user.imageMd5" [src]="'/api/v1/services/account/images/' + user.username + '?md5=' + user.imageMd5" class="profile_image">
       <app-svg-images style="color: lightgrey; fill: lightgray" *ngIf="!user.imageMd5" name="anon"></app-svg-images>
     </div>
     <div *ngIf="false && user === null" class="profile_image_container" (click)="hamburgerClick($event)">
@@ -18,7 +18,7 @@
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
   <ng-template [ngIf]="subdomain">
     <div class="subdomain_container">
-      <img [src]="'/api/v1/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
+      <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
     </div>
   </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
@@ -71,13 +71,14 @@
         <a class="nav-link" [routerLink]="['/about']" (click)="collapse()"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="About"></fa-icon></a>
       </li>
     </ul>
-    <app-search-form class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
+    <app-search-form [hamburgerOpen]="user != null" class="search-form-container" location="top" (searchTriggered)="collapse()"></app-search-form>
   </div>
 </nav>
 </header>
 
 <div class="d-flex" style="overflow: clip">
   <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
+  <div *ngIf="!servicesEnabled" class="sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
 
   <div class="flex-grow-1 d-flex flex-column">
     <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
