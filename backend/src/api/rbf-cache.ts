@@ -480,14 +480,15 @@ class RbfCache {
     };
 
     if (config.MEMPOOL.BACKEND === 'esplora') {
+      let processedCount = 0;
       const sliceLength = Math.ceil(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 40);
       for (let i = 0; i < Math.ceil(txids.length / sliceLength); i++) {
         const slice = txids.slice(i * sliceLength, (i + 1) * sliceLength);
+        processedCount += slice.length;
         try {
           const txs = await bitcoinApi.$getRawTransactions(slice);
-          logger.debug(`fetched ${slice.length} cached rbf transactions`);
           processTxs(txs);
-          logger.debug(`processed ${slice.length} cached rbf transactions`);
+          logger.debug(`fetched and processed ${processedCount} of ${txids.length} cached rbf transactions (${(processedCount / txids.length * 100).toFixed(2)}%)`);
         } catch (err) {
           logger.err(`failed to fetch or process ${slice.length} cached rbf transactions`);
         }
