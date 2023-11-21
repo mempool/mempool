@@ -33,11 +33,18 @@
   </video>
 
   <ng-container *ngIf="officialMempoolSpace">
-    <h3 class="mt-5">Sponsor the project</h3>
-    <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
-      <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Community</a>
-      <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Enterprise</a>
+  <div id="become-sponsor-container">
+    <div class="become-sponsor enterprise">
+      <p>If you're a business looking to integrate the Mempool explorer or API into your app—check out Mempool Enterprise®.</p>
+        <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Explore Mempool Enterprise®</a>
     </div>
+    <div class="become-sponsor community">
+      <p>For exclusive swag, your avatar on the mempool.space About page, and more—sign up to be a Community Sponsor.</p>
+        <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Become a Community Sponsor</a>
+      <!--<div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px;">
+      </div>-->
+    </div>
+  </div>
   </ng-container>
 
   <div class="enterprise-sponsor" id="enterprise-sponsors">
