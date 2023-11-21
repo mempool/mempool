@@ -230,7 +230,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           positions[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 100;
           return positions;
         },
-        extraCssText: `width: ${(this.template === 'advanced') ? '275px' : '200px'};
+        extraCssText: `width: ${(this.template === 'advanced') ? '300px' : '200px'};
                       background: transparent;
                       border: none;
                       box-shadow: none;`,
@@ -254,7 +254,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
-          let totalParcial = 0;
+          let sum = 0;
           let progressPercentageText = '';
           let countItem;
           let items = this.inverted ? [...params].reverse() : params;
@@ -262,7 +262,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             countItem = items.pop();
           }
           items.map((item: any, index: number) => {
-            totalParcial += item.value[1];
+            sum += item.value[1];
             const progressPercentage = (item.value[1] / totalValue) * 100;
             const progressPercentageSum = (totalValueArray[index] / totalValue) * 100;
             let activeItemClass = '';
@@ -279,7 +279,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                   <span class="symbol">%</span>
                 </span>
                 <span class="total-parcial-vbytes">
-                  ${this.vbytesPipe.transform(totalParcial, 2, 'vB', 'MvB', false)}
+                  ${this.vbytesPipe.transform(sum, 2, 'vB', 'MvB', false)}
                 </span>
                 <div class="total-percentage-bar">
                   <span class="total-percentage-bar-background">
@@ -303,12 +303,12 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(item.value[1], 2, 'vB', 'MvB', false)}
+                  ${(item.value[1] / 1_000_000).toFixed(2)} <span class="symbol">MvB</span>
                 </span>
               </td>
               <td class="total-progress-sum">
                 <span>
-                  ${this.vbytesPipe.transform(totalValueArray[index], 2, 'vB', 'MvB', false)}
+                  ${(totalValueArray[index] / 1_000_000).toFixed(2)} <span class="symbol">MvB</span>
                 </span>
               </td>
               <td class="total-progress-sum-bar">
