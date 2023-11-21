@@ -57,11 +57,30 @@
       <h2 class="text-left">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
         <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transaction</ng-template>
-        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ txCount | number }} transactions</ng-template>
+        <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">
+          {{ ((transactionsStatusForm.get('status').value === 'all' ? transactions?.length : filteredTransactions?.length) | number) || '?' }} of {{ txCount | number }} transactions 
+        </ng-template>
       </h2>
     </div>
+    <div class="formRadioGroup">
+      <form *ngIf="transactions?.length > 1 && (network !== 'liquid' && network !== 'liquidtestnet')" [formGroup]="transactionsStatusForm">
+        <div class="btn-group btn-group-toggle" name="radioBasic">
+          <label class="btn btn-primary btn-sm" [class.active]="transactionsStatusForm.get('status').value === 'all'" style="margin-right: 5px;">
+            <input type="radio" [value]="'all'" fragment="all" formControlName="status"><span i18n="all">All</span>
+          </label>
+        </div>
+        <div class="btn-group btn-group-toggle" name="radioBasic">
+          <label class="btn btn-success btn-sm" [class.active]="transactionsStatusForm.get('status').value === 'credit'">
+            <input type="radio" [value]="'credit'" fragment="credit" formControlName="status"><span i18n="credit">Credit</span>
+          </label>
+          <label class="btn btn-danger btn-sm" [class.active]="transactionsStatusForm.get('status').value === 'debit'">
+            <input type="radio" [value]="'debit'" fragment="debit" formControlName="status"><span i18n="debit">Debit</span>
+          </label>
+        </div>
+      </form>
+    </div>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [address]="address.address" (loadMore)="loadMore()"></app-transactions-list>
+    <app-transactions-list [transactions]="transactionsStatusForm.get('status').value === 'all'  ? transactions : filteredTransactions" [showConfirmations]="true" [address]="address.address" (loadMore)="loadMore()"></app-transactions-list>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">
@@ -90,6 +109,24 @@
       <ng-template [ngIf]="retryLoadMore">
         <br>
         <button type="button" class="btn btn-outline-info btn-sm" (click)="loadMore()"><fa-icon [icon]="['fas', 'redo-alt']" [fixedWidth]="true"></fa-icon></button>
+      </ng-template>
+
+      <ng-template [ngIf]="transactionsStatusForm.get('status').value !== 'all' && keepDigging">
+        <br>
+        <ng-container>
+          <i>No {{transactionsStatusForm.get('status').value}} transactions found in the last {{ (filteredOutTxCount | number) || '?' }} transactions loaded ({{ (this.transactions?.length | number) || '?' }} of {{ txCount | number }} loaded so far)</i>
+          <br>
+          <i></i>
+        </ng-container>
+        <br>
+        <button type="button" class="btn btn-primary btn-sm" (click)="loadMore()">Load more</button>
+      </ng-template>
+
+      <ng-template [ngIf]="transactionsStatusForm.get('status').value !== 'all' && this.transactions?.length > 50 && this.loadedConfirmedTxCount >= this.totalConfirmedTxCount">
+        <br>
+        <ng-container>
+          <i>All {{ (filteredTransactions?.length | number) || '?' }} {{transactionsStatusForm.get('status').value}} transactions {{ transactionsStatusForm.get('status').value === 'debit' ? 'from' : 'to' }} this address have been loaded</i>
+        </ng-container>
       </ng-template>
     </div>
 

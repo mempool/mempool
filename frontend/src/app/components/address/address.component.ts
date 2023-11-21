@@ -11,6 +11,7 @@ import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { AddressInformation } from '../../interfaces/node-api.interface';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-address',
@@ -24,8 +25,12 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressString: string;
   isLoadingAddress = true;
   transactions: Transaction[];
+  filteredTransactions: Transaction[];
+  transactionsStatusForm: UntypedFormGroup;
   isLoadingTransactions = true;
   retryLoadMore = false;
+  keepDigging = false;
+  filteredOutTxCount = 0;
   error: any;
   mainSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
@@ -49,7 +54,12 @@ export class AddressComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private apiService: ApiService,
     private seoService: SeoService,
-  ) { }
+    private formBuilder: UntypedFormBuilder,
+  ) {
+    this.transactionsStatusForm = this.formBuilder.group({
+      status: 'all',
+    });
+  }
 
   ngOnInit() {
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
@@ -70,6 +80,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.filteredTransactions = null;
           this.addressInfo = null;
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
@@ -194,6 +205,18 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.totalConfirmedTxCount++;
         this.loadedConfirmedTxCount++;
       });
+
+      this.transactionsStatusForm.get('status').valueChanges.subscribe(() => {
+        // Only display the 50 most recent transactions to avoid lag on switch
+        if (this.transactions.length > 50) {
+          this.transactions = this.transactions.slice(0, 50);
+          this.lastTransactionTxId = this.transactions[49].txid;
+          this.loadedConfirmedTxCount = this.transactions.filter((tx) => tx.status.confirmed).length;
+          this.keepDigging = false;
+          this.filteredOutTxCount = 0;
+        }
+        this.filteredTransactions = this.filterTransactions(this.transactions);
+      });
   }
 
   addTransaction(transaction: Transaction, playSound: boolean = true): boolean {
@@ -213,17 +236,29 @@ export class AddressComponent implements OnInit, OnDestroy {
       }
     }
 
+    let sentSats = 0;
     transaction.vin.forEach((vin) => {
       if (vin?.prevout?.scriptpubkey_address === this.address.address) {
         this.sent += vin.prevout.value;
+        sentSats += vin.prevout.value;
       }
     });
+    let receivedSats = 0;
     transaction.vout.forEach((vout) => {
       if (vout?.scriptpubkey_address === this.address.address) {
         this.received += vout.value;
+        receivedSats += vout.value;
       }
     });
+    transaction['addressValue'] = receivedSats - sentSats;
 
+    if (this.transactionsStatusForm.get('status').value !== 'all' && !this.filteredTransactions.some((t) => t.txid === transaction.txid)) {
+      if ((this.transactionsStatusForm.get('status').value === 'credit' && receivedSats - sentSats >= 0) ||
+          (this.transactionsStatusForm.get('status').value === 'debit' && receivedSats - sentSats < 0)) {
+        this.filteredTransactions.unshift(transaction);
+        this.filteredTransactions = this.filteredTransactions.slice();
+      }
+    }
     return true;
   }
 
@@ -248,20 +283,54 @@ export class AddressComponent implements OnInit, OnDestroy {
       }
     });
 
+    if (this.transactionsStatusForm.get('status').value !== 'all' && this.filteredTransactions.findIndex(((tx) => tx.txid === transaction.txid)) !== -1) {
+      this.filteredTransactions.splice(index, 1);
+      this.filteredTransactions = this.filteredTransactions.slice();
+    }
+
     return true;
   }
 
   loadMore() {
     if (this.isLoadingTransactions || !this.totalConfirmedTxCount || this.loadedConfirmedTxCount >= this.totalConfirmedTxCount) {
+      this.keepDigging = false;
       return;
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
+    this.keepDigging ? this.keepDigging = false : this.filteredOutTxCount = 0;
     this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         this.lastTransactionTxId = transactions[transactions.length - 1].txid;
         this.loadedConfirmedTxCount += transactions.length;
         this.transactions = this.transactions.concat(transactions);
+        if (this.transactionsStatusForm.get('status').value !== 'all') {
+          // Compute 'addressValue' field for every loaded transaction and apply filter
+          for (const tx of transactions) {
+            tx['addressValue'] = 0;   
+            const addressIn = tx.vout
+              .filter((v: any) => v.scriptpubkey_address === this.address.address)
+              .map((v: any) => v.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+            const addressOut = tx.vin
+              .filter((v: any) => v.prevout && v.prevout.scriptpubkey_address === this.address.address)
+              .map((v: any) => v.prevout.value || 0)
+              .reduce((a: number, b: number) => a + b, 0);
+            tx['addressValue'] = addressIn - addressOut;
+          }
+          const newFilteredTransactions = this.filterTransactions(transactions, false);
+          if (newFilteredTransactions.length) {
+            this.filteredTransactions = this.filteredTransactions.concat(newFilteredTransactions);
+            this.filteredOutTxCount = 0;
+          } else {
+            // In the case that all 50 loaded transactions are filtered out, we inform the user they need to keep digging
+            // This avoids the backend to get spammed with requests
+            if (this.loadedConfirmedTxCount < this.totalConfirmedTxCount) {
+              this.keepDigging = true;
+              this.filteredOutTxCount += transactions.length;  
+            }
+          }
+        }
         this.isLoadingTransactions = false;
       },
       (error) => {
@@ -279,6 +348,19 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
     this.totalConfirmedTxCount = this.address.chain_stats.tx_count;
+  }
+
+  filterTransactions(txs: Transaction[], checkForStatus: boolean = true): Transaction[] {
+    if (checkForStatus && this.transactionsStatusForm.get('status').value === 'all') {
+      return [];
+    }
+    return txs.filter((tx) => {
+      if (this.transactionsStatusForm.get('status').value === 'credit') {
+        return tx['addressValue'] >= 0;
+      } else {
+        return tx['addressValue'] < 0;
+      }
+    });
   }
 
   ngOnDestroy() {

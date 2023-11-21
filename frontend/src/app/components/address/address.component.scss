@@ -21,6 +21,17 @@
   }
 }
 
+.formRadioGroup {
+  position: relative;
+    form {
+    @media (min-width: 500px) {
+      position: absolute;
+      right: 0;
+      top: -40px;
+    }
+  }
+}
+
 .table {
   tr td {
     &:last-child {
