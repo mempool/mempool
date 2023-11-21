@@ -131,6 +131,9 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.updateChainStats();
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
+          this.transactionsStatusForm.get('status').setValue('all');
+          this.filteredTransactions = [];
+          this.keepDigging = false;
           return address.is_pubkey
               ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address);
@@ -208,7 +211,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
       this.transactionsStatusForm.get('status').valueChanges.subscribe(() => {
         // Only display the 50 most recent transactions to avoid lag on switch
-        if (this.transactions.length > 50) {
+        if (this.transactions?.length > 50) {
           this.transactions = this.transactions.slice(0, 50);
           this.lastTransactionTxId = this.transactions[49].txid;
           this.loadedConfirmedTxCount = this.transactions.filter((tx) => tx.status.confirmed).length;
