@@ -9,7 +9,7 @@ class Audit {
   auditBlock(transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended }, useAccelerations: boolean = false)
    : { censored: string[], added: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { censored: [], added: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 0, similarity: 1 };
+      return { censored: [], added: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
