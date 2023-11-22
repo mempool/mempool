@@ -1,5 +1,5 @@
 <span class="truncate" [style.max-width]="maxWidth ? maxWidth + 'px' : null" [style.justify-content]="textAlign" [class.inline]="inline">
-  <div class="hidden">{{ text }}</div>
+  <div class="hidden-content">{{ text }}</div>
     <ng-container *ngIf="link">
       <a [routerLink]="link" class="truncate-link">
         <ng-container *ngIf="rtl; then rtlTruncated; else ltrTruncated;"></ng-container>
