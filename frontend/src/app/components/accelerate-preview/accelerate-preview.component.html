@@ -74,7 +74,7 @@
               <div class="d-flex mb-0">
                 <ng-container *ngFor="let option of maxRateOptions">
                   <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
-                    <span class="fee">{{ option.fee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
+                    <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
                     <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
                   </button>
                 </ng-container>
@@ -87,18 +87,10 @@
       <h5>Acceleration summary</h5>
       <div class="row mb-3">
         <div class="col">
-          <div class="table-toggle btn-group btn-group-toggle">
-            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
-              <span>Estimated cost</span>
-            </button>
-            <button class="btn btn-primary btn-sm tab" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
-              <span>Maximum cost</span>
-            </button>
-          </div>
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
               <!-- ESTIMATED FEE -->
-              <ng-container *ngIf="showTable === 'estimated'">
+              <ng-container>
                 <tr class="group-first">
                   <td class="item">
                     Next block market rate
@@ -121,32 +113,6 @@
                   </td>
                 </tr>
               </ng-container>
-              <!-- USER MAX BID -->
-              <ng-container *ngIf="showTable === 'maximum'">
-                <tr class="group-first">
-                  <td class="item">
-                    Your maximum
-                  </td>
-                  <td class="amt" style="width: 45%; font-size: 20px">
-                    ~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}
-                  </td>
-                  <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                </tr>
-                <tr class="info">
-                  <td class="info">
-                    <i><small>The maximum extra transaction fee you could pay</small></i>
-                  </td>
-                  <td class="amt">
-                    <span>
-                      {{ userBid | number }}
-                    </span>
-                  </td>
-                  <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="userBid"></app-fiat></span>
-                  </td>
-                </tr>
-              </ng-container>
   
               <!-- MEMPOOL BASE FEE -->
               <tr>
@@ -166,7 +132,7 @@
                   <span class="fiat"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                 </td>
               </tr>
-              <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
+              <tr class="info group-last">
                 <td class="info">
                   <i><small>Transaction vsize fee</small></i>
                 </td>
@@ -180,8 +146,8 @@
               </tr>
 
               <!-- NEXT BLOCK ESTIMATE -->
-              <ng-container *ngIf="showTable === 'estimated'">
-                <tr class="group-first">
+              <ng-container>
+                <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
                   <td class="item">
                     <b style="background-color: #5E35B1" class="p-1 pl-0">Estimated acceleration cost</b>
                   </td>
@@ -195,7 +161,7 @@
                     <span class="fiat"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                   </td>
                 </tr>
-                <tr class="info group-last">
+                <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
                   <td class="info">
                     <i><small>If your tx is accelerated to </small><small>{{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
                   </td>
@@ -203,7 +169,7 @@
               </ng-container>
   
               <!-- MAX COST -->
-              <ng-container *ngIf="showTable === 'maximum'">
+              <ng-container>
                 <tr class="group-first">
                   <td class="item">
                     <b style="background-color: #105fb0;" class="p-1 pl-0">Maximum acceleration cost</b>
