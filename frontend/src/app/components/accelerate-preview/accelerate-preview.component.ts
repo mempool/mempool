@@ -56,7 +56,6 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   maxCost = 0;
   userBid = 0;
   selectFeeRateIndex = 1;
-  showTable: 'estimated' | 'maximum' = 'maximum';
   isMobile: boolean = window.innerWidth <= 767.98;
 
   maxRateOptions: RateOption[] = [];
