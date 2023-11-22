@@ -92,7 +92,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfEnabled: boolean;
   taprootEnabled: boolean;
   hasEffectiveFeeRate: boolean;
-  accelerateCtaType: 'alert' | 'button' = 'alert';
+  accelerateCtaType: 'alert' | 'button' = 'button';
   acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
   scrollIntoAccelPreview = false;
@@ -126,7 +126,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
 
-    this.accelerateCtaType = (this.storageService.getValue('accel-cta-type') as 'alert' | 'button') ?? 'alert';
+    this.accelerateCtaType = (this.storageService.getValue('accel-cta-type') as 'alert' | 'button') ?? 'button';
 
     this.setFlowEnabled();
     this.flowPrefSubscription = this.stateService.hideFlow.subscribe((hide) => {
@@ -633,10 +633,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   // simulate normal anchor fragment behavior
   applyFragment(): void {
     const anchor = Array.from(this.fragmentParams.entries()).find(([frag, value]) => value === '');
-    if (anchor) {
-      const anchorElement = document.getElementById(anchor[0]);
-      if (anchorElement) {
-        anchorElement.scrollIntoView();
+    if (anchor?.length) {
+      if (anchor[0] === 'accelerate') {
+        setTimeout(this.onAccelerateClicked.bind(this), 100);
+      } else {
+        const anchorElement = document.getElementById(anchor[0]);
+        if (anchorElement) {
+          anchorElement.scrollIntoView();
+        }
       }
     }
   }

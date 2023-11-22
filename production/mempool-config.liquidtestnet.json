@@ -23,7 +23,7 @@
     "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
-    "UNIX_SOCKET_PATH": "/elements/socket/esplora-liquid-testnet",
+    "UNIX_SOCKET_PATH": "/elements/socket/esplora-elements-liquidtestnet",
     "FALLBACK": [
       "http://node201.va1.mempool.space:3004",
       "http://node202.va1.mempool.space:3004",

@@ -17,7 +17,7 @@ export class BytesPipe implements PipeTransform {
         'TB': {max: Number.MAX_SAFE_INTEGER, prev: 'GB'}
     };
 
-    transform(input: any, decimal: number = 0, from: ByteUnit = 'B', to?: ByteUnit, sigfigs?: number): any {
+    transform(input: any, decimal: number = 0, from: ByteUnit = 'B', to?: ByteUnit, plaintext = false, sigfigs?: number): any {
 
         if (!(isNumberFinite(input) &&
                 isNumberFinite(decimal) &&
@@ -42,7 +42,7 @@ export class BytesPipe implements PipeTransform {
 
             const result = numberFormat(BytesPipe.calculateResult(format, bytes));
 
-            return BytesPipe.formatResult(result, to);
+            return BytesPipe.formatResult(result, to, plaintext);
         }
 
         for (const key in BytesPipe.formats) {
@@ -51,13 +51,17 @@ export class BytesPipe implements PipeTransform {
 
                 const result = numberFormat(BytesPipe.calculateResult(format, bytes));
 
-                return BytesPipe.formatResult(result, key);
+                return BytesPipe.formatResult(result, key, plaintext);
             }
         }
     }
 
-    static formatResult(result: string, unit: string): string {
-        return `${result} <span class="symbol">${unit}</span>`;
+    static formatResult(result: string, unit: string, plaintext): string {
+        if (plaintext) {
+            return `${result} ${unit}`;
+        } else {
+            return `${result} <span class="symbol">${unit}</span>`;
+        }
     }
 
     static calculateResult(format: { max: number, prev?: ByteUnit }, bytes: number) {

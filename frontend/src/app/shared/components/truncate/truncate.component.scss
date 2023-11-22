@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: row;
   align-items: baseline;
+  position: relative;
 
   .truncate-link {
     display: flex;
@@ -27,17 +28,17 @@
   &.inline {
     display: inline-flex;
   }
-}
 
-.hidden { 
-  color: transparent;
-  position: absolute;
-  max-width: 300px;
-  overflow: hidden;
+  .hidden-content {
+    color: transparent;
+    position: absolute;
+    max-width: 300px;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 567px) {
-  .hidden {
-    max-width: 150px;
+  .hidden-content {
+    max-width: 150px !important;
   }
 }

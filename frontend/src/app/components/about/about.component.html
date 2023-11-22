@@ -32,11 +32,22 @@
     <track label="Português" kind="captions" srclang="pt" src="/resources/promo-video/pt.vtt" [attr.default]="showSubtitles('pt') ? '' : null">
   </video>
 
-  <ng-container *ngIf="false && officialMempoolSpace">
-    <h3 class="mt-5">Sponsor the project</h3>
-    <div class="d-flex justify-content-center" style="max-width: 90%; margin: 35px auto 75px auto; column-gap: 15px">
-      <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Community</a>
-      <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Enterprise</a>
+  <ng-container *ngIf="officialMempoolSpace">
+    <div id="become-sponsor-container">
+      <div class="become-sponsor community">
+        <p style="font-weight: 700; font-size: 18px;">If you're an individual...</p>
+        <a href="/sponsor" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Become a Community Sponsor</a>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Exclusive swag</p>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Your avatar on the About page</p>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> And more coming soon :)</p>
+      </div>
+      <div class="become-sponsor enterprise">
+        <p style="font-weight: 700; font-size: 18px;">If you're a business...</p>
+        <a href="/enterprise" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Become an Enterprise Sponsor</a>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Increased API limits</p>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Co-branded instance</p>
+        <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> 99% service-level agreement</p>
+      </div>
     </div>
   </ng-container>
 
@@ -193,7 +204,7 @@
           <ng-container>
             <ng-template ngFor let-sponsor [ngForOf]="profiles.whales">
               <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-                <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+                <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '?md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
               </a>
             </ng-template>
           </ng-container>
@@ -205,7 +216,7 @@
         <div class="wrapper">
           <ng-template ngFor let-sponsor [ngForOf]="profiles.chads">
             <a [href]="'https://twitter.com/' + sponsor.username" target="_blank" rel="sponsored" [title]="sponsor.username">
-              <img class="image" [src]="'data:' + sponsor.image_mime + ';base64,' + sponsor.image" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
+              <img class="image" [src]="'/api/v1/services/account/images/' + sponsor.username + '?md5=' + sponsor.imageMd5" onError="this.src = '/resources/profile/unknown.svg'; this.className = 'image unknown'"/>
             </a>
           </ng-template>
         </div>

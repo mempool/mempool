@@ -6,12 +6,15 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
-    <div *ngIf="acceleratorAvailable && accelerateCtaType === 'alert' && !tx?.status?.confirmed && !tx?.acceleration" class="alert alert-mempool alert-dismissible" role="alert">
-      <span><a class="link accelerator" (click)="onAccelerateClicked()">Accelerate</a> this transaction using Mempool Accelerator &trade;</span>
+    <!-- <div *ngIf="tx && acceleratorAvailable && accelerateCtaType === 'alert' && !tx.status.confirmed && !tx.acceleration" class="alert alert-dismissible alert-purple" role="alert">
+      <div>
+        <a class="btn btn-sm blink-bg" (click)="onAccelerateClicked()">Accelerate</a>
+        <span class="align-middle">this transaction using Mempool Accelerator &trade;</span>
+      </div>
       <button type="button" class="close" aria-label="Close" (click)="dismissAccelAlert()">
         <span aria-hidden="true">&times;</span>
       </button>
-    </div>
+    </div> -->
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
@@ -80,13 +83,12 @@
 
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
-      <div class="title mt-3" id="acceleratePreviewAnchor">
+      <div class="title mt-3">
         <h2>Accelerate</h2>
       </div>
       <div class="box">
         <app-accelerate-preview [tx]="tx" [scrollEvent]="scrollIntoAccelPreview"></app-accelerate-preview>
       </div>
-
     </ng-container>
 
     <ng-template #unconfirmedTemplate>
@@ -118,7 +120,7 @@
                       <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
                         <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
                           <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                          <a *ngIf="acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                          <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                         </span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
@@ -128,14 +130,14 @@
                         <ng-template #timeEstimateDefault>
                           <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
                             <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-                            <a *ngIf="acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                            <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                           </span>
                         </ng-template>
                       </ng-template>
                     </ng-template>
                   </td>
                 </tr>
-                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
+                <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'" id="acceleratePreviewAnchor">
                   <td class="td-width" i18n="transaction.features|Transaction Features">Features</td>
                   <td>
                     <app-tx-features [tx]="tx"></app-tx-features>
