@@ -87,6 +87,7 @@ import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/ac
 import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
+import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
 import { MempoolBlockViewComponent } from '../components/mempool-block-view/mempool-block-view.component';
 import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
@@ -126,6 +127,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ColoredPriceDirective,
     BlockchainComponent,
     BlockViewComponent,
+    EightBlocksComponent,
     MempoolBlockViewComponent,
     MempoolBlocksComponent,
     BlockchainBlocksComponent,
@@ -179,6 +181,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     CalculatorComponent,
     BitcoinsatoshisPipe,
     BlockViewComponent,
+    EightBlocksComponent,
     MempoolBlockViewComponent,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
@@ -202,6 +205,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FontAwesomeModule,
   ],
   providers: [
+    BytesPipe,
     VbytesPipe,
     WuBytesPipe,
     RelativeUrlPipe,
