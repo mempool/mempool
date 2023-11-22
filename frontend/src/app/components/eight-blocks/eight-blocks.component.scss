@@ -5,9 +5,9 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: start;
-  align-items: start;
-  align-content: start;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
 
   &.wrap {
     flex-wrap: wrap;
@@ -31,7 +31,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-family:'Inter';
       font-weight: 700;
       font-size: calc(var(--block-width) * 0.03);
       text-shadow: 0 0 calc(var(--block-width) * 0.05) black;
