@@ -5,7 +5,7 @@
   height: calc(100vh - 65px);
   position: sticky;
   top: 65px;
-  transition: 0.25s;
+  transition: width 0.25s, left 0.25s, margin 0.25s;
   margin-left: -250px;
   box-shadow: 5px 0px 30px 0px #000;
   padding-bottom: 20px;

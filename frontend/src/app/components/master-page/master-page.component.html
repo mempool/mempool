@@ -76,7 +76,7 @@
 </nav>
 </header>
 
-<div class="d-flex" style="overflow: clip">
+<div class="d-flex">
   <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
   <div *ngIf="!servicesEnabled" class="sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
 
