@@ -126,7 +126,7 @@ let routes: Routes = [
     component: MempoolBlockViewComponent,
   },
   {
-    path: 'eight-blocks',
+    path: 'view/blocks',
     component: EightBlocksComponent,
   },
   {
