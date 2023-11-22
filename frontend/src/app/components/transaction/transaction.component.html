@@ -120,7 +120,7 @@
                       <ng-template [ngIf]="this.mempoolPosition.block >= 7" [ngIfElse]="belowBlockLimit">
                         <span [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'etaDeepMempool d-flex justify-content-end align-items-center' : ''">
                           <span i18n="transaction.eta.in-several-hours|Transaction ETA in several hours or more">In several hours (or more)</span>
-                          <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                          <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerateDeepMempool btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                         </span>
                       </ng-template>
                       <ng-template #belowBlockLimit>
@@ -130,7 +130,7 @@
                         <ng-template #timeEstimateDefault>
                           <span class="eta justify-content-end" [class]="(acceleratorAvailable && accelerateCtaType === 'button') ? 'd-flex align-items-center' : ''">
                             <app-time kind="until" *ngIf="(da$ | async) as da;" [time]="da.timeAvg * (this.mempoolPosition.block + 1) + now + da.timeOffset" [fastRender]="false" [fixedRender]="true"></app-time>
-                            <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                            <a *ngIf="!tx.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !tx?.acceleration" [href]="'/services/accelerator/accelerate?txid=' + tx.txid" class="btn btn-sm accelerate btn-small-height" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
                           </span>
                         </ng-template>
                       </ng-template>
