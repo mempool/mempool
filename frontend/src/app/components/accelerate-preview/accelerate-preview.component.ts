@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
@@ -63,7 +62,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   constructor(
     private apiService: ApiService,
     private storageService: StorageService,
-    private router: Router,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnDestroy(): void {
@@ -163,13 +162,14 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   scrollToPreview(id: string, position: ScrollLogicalPosition) {
     const acceleratePreviewAnchor = document.getElementById(id);
     if (acceleratePreviewAnchor) {
+      this.cd.markForCheck();
       acceleratePreviewAnchor.scrollIntoView({
         behavior: 'smooth',
         inline: position,
         block: position,
       });
     }
-}
+  }
 
   /**
    * Send acceleration request
