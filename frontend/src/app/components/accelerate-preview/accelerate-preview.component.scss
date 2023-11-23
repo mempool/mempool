@@ -8,9 +8,6 @@
     align-items: center;
     justify-content: center;
 
-    .fee {
-      font-size: 1.2em;
-    }
     .rate {
       font-size: 0.9em;
       .symbol {
@@ -64,8 +61,6 @@
 
 .table-accelerator {
   tr {
-    text-wrap: wrap;
-
     td {
       padding-top: 0;
       padding-bottom: 0;
@@ -89,6 +84,7 @@
     }
     &.info {
       color: #6c757d;
+      white-space: initial;
     }
     &.amt {
       text-align: right;
@@ -97,6 +93,9 @@
     &.units {
       padding-left: 0.2em;
       white-space: nowrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 }
@@ -106,4 +105,8 @@
   flex-direction: row;
   align-items: stretch;
   margin-top: 1em;
+}
+
+.item {
+  white-space: initial;
 }
