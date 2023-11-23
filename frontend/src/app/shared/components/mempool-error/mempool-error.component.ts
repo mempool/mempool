@@ -33,6 +33,7 @@ export function isMempoolError(error: string) {
 })
 export class MempoolErrorComponent implements OnInit {
   @Input() error: string;
+  @Input() alertClass = 'alert-danger';
   errorContent: SafeHtml;
 
   constructor(private sanitizer: DomSanitizer) { }
