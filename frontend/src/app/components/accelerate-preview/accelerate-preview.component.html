@@ -37,7 +37,7 @@
                 <td class="item">
                   Virtual size
                 </td>
-                <td class="units" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
+                <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
               </tr>
               <tr class="info">
                 <td class="info" colspan=3>
@@ -48,7 +48,7 @@
                 <td class="item">
                   In-band fees
                 </td>
-                <td class="units">
+                <td style="text-align: end;">
                   {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats|sats">sats</span>
                 </td>
               </tr>
