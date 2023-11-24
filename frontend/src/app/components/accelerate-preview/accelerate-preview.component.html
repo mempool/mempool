@@ -1,14 +1,16 @@
+<span id="successAlert" class="m-0 p-0 d-block" style="height: 1px;"></span>
 <div class="row" *ngIf="showSuccess">
-  <div class="col" id="successAlert">
+  <div class="col">
     <div class="alert alert-success">
       Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
     </div>
   </div>
 </div>
 
+<span id="mempoolError" class="m-0 p-0 d-block" style="height: 1px;"></span>
 <div class="row" *ngIf="error">
-  <div class="col" id="mempoolError">
-    <app-mempool-error [error]="error"></app-mempool-error>
+  <div class="col">
+    <app-mempool-error [error]="error" [alertClass]="error === 'waitlisted' ? 'alert-mempool' : 'alert-danger'"></app-mempool-error>
   </div>
 </div>
 
@@ -37,10 +39,10 @@
                 <td class="item">
                   Virtual size
                 </td>
-                <td class="units" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
+                <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
               </tr>
               <tr class="info">
-                <td class="info">
+                <td class="info" colspan=3>
                   <i><small>Size in vbytes of this transaction<span *ngIf="hasAncestors"> and its unconfirmed ancestors</span></small></i>
                 </td>
               </tr>
@@ -48,12 +50,12 @@
                 <td class="item">
                   In-band fees
                 </td>
-                <td class="units">
+                <td style="text-align: end;">
                   {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats|sats">sats</span>
                 </td>
               </tr>
               <tr class="info group-last">
-                <td class="info">
+                <td class="info" colspan=3>
                   <i><small>Fees already paid by this transaction<span *ngIf="hasAncestors"> and its unconfirmed ancestors</span></small></i>
                 </td>
               </tr>
@@ -95,7 +97,7 @@
                   <td class="item">
                     Next block market rate
                   </td>
-                  <td class="amt" style="font-size: 20px">
+                  <td class="amt" style="font-size: 16px">
                     {{ estimate.targetFeeRate | number : '1.0-0' }}
                   </td>
                   <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -109,7 +111,7 @@
                   </td>
                   <td class="units">
                     <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
+                    <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
                   </td>
                 </tr>
               </ng-container>
@@ -129,7 +131,7 @@
                 </td>
                 <td class="units">
                   <span class="symbol" i18n="shared.sats|sats">sats</span>
-                  <span class="fiat"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
+                  <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                 </td>
               </tr>
               <tr class="info group-last">
@@ -141,7 +143,7 @@
                 </td>
                 <td class="units">
                   <span class="symbol" i18n="shared.sats|sats">sats</span>
-                  <span class="fiat"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
+                  <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
                 </td>
               </tr>
 
@@ -158,11 +160,11 @@
                   </td>
                   <td class="units">
                     <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                    <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                   </td>
                 </tr>
                 <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
-                  <td class="info">
+                  <td class="info" colspan=3>
                     <i><small>If your tx is accelerated to </small><small>{{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
                   </td>
                 </tr>
@@ -181,13 +183,13 @@
                   </td>
                   <td class="units">
                     <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat">
+                    <span class="fiat ml-1">
                       <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
                   </td>
                 </tr>
                 <tr class="info group-last">
-                  <td class="info">
+                  <td class="info" colspan=3>
                     <i><small>If your tx is accelerated to </small><small>~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
                   </td>
                 </tr>
@@ -204,7 +206,7 @@
                   </td>
                   <td class="units">
                     <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat">
+                    <span class="fiat ml-1">
                       <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
                   </td>

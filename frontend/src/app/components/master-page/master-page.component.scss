@@ -244,10 +244,9 @@ main {
 .sidenav {
   z-index: 1;
   background-color: transparent;
-  width: 225px;
+  width: 0px;
   height: calc(100vh - 65px);
   position: sticky;
   top: 65px;
-  margin-left: -225px;
   padding-bottom: 20px;
 }
