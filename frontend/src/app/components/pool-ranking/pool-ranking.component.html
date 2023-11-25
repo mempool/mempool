@@ -6,7 +6,7 @@
     <div class="pool-distribution" *ngIf="(miningStatsObservable$ | async) as miningStats; else loadingReward">
       <div class="item">
         <h5 class="card-title d-inline-block" i18n="mining.miners-luck" i18n-ngbTooltip="mining.miners-luck-1w"
-        ngbTooltip="Pools luck (1 week)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools luck</h5>
+        ngbTooltip="Pools luck (1 week)" placement="bottom" #minersluck [disableTooltip]="!isEllipsisActive(minersluck)">Pools Luck</h5>
         <p class="card-text" i18n-ngbTooltip="mining.pools-luck-desc"
         ngbTooltip="The overall luck of all mining pools over the past week. A luck bigger than 100% means the average block time for the current epoch is less than 10 minutes." placement="bottom">
           {{ miningStats['minersLuck'] }}%
@@ -14,14 +14,14 @@
       </div>
       <div class="item">
         <h5 class="card-title d-inline-block" i18n="mining.miners-count" i18n-ngbTooltip="mining.miners-count-1w"
-        ngbTooltip="Pools count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools count</h5>
+        ngbTooltip="Pools count (1w)" placement="bottom" #poolscount [disableTooltip]="!isEllipsisActive(poolscount)">Pools Count</h5>
         <p class="card-text" i18n-ngbTooltip="mining.pools-count-desc"
         ngbTooltip="How many unique pools found at least one block over the past week." placement="bottom">
           {{ miningStats.pools.length }}
         </p>
       </div>
       <div class="item">
-        <h5 class="card-title d-inline-block" i18n="master-page.blocks" i18n-ngbTooltip="master-page.blocks"
+        <h5 class="card-title d-inline-block" i18n="shared.blocks-1w" i18n-ngbTooltip="master-page.blocks"
         ngbTooltip="Blocks (1w)" placement="bottom" #blockscount [disableTooltip]="!isEllipsisActive(blockscount)">Blocks (1w)</h5>
         <p class="card-text" i18n-ngbTooltip="mining.blocks-count-desc"
         ngbTooltip="The number of blocks found over the past week." placement="bottom">
@@ -95,7 +95,7 @@
           <th *ngIf="auditAvailable" class="health text-right widget" i18n="latest-blocks.avg_health"
             i18n-ngbTooltip="latest-blocks.avg_health" ngbTooltip="Avg Health" placement="bottom" #health [disableTooltip]="!isEllipsisActive(health)">Avg Health</th>
           <th *ngIf="auditAvailable" class="d-none d-sm-table-cell" i18n="mining.fees-per-block">Avg Block Fees</th>
-          <th class="d-none d-lg-table-cell" i18n="mining.empty-blocks">Empty blocks</th>
+          <th class="d-none d-lg-table-cell" i18n="mining.empty-blocks">Empty Blocks</th>
         </tr>
       </thead>
       <tbody [attr.data-cy]="'pools-table'" *ngIf="(miningStatsObservable$ | async) as miningStats">
@@ -153,19 +153,19 @@
 <ng-template #loadingReward>
   <div class="pool-distribution">
     <div class="item">
-      <h5 class="card-title" i18n="mining.miners-luck">Pools Luck (1w)</h5>
+      <h5 class="card-title" i18n="mining.miners-luck">Pools Luck</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="master-page.blocks">Blocks (1w)</h5>
+      <h5 class="card-title" i18n="mining.miners-count" >Pools Count</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="mining.miners-count">Pools Count (1w)</h5>
+      <h5 class="card-title" i18n="shared.blocks-1w">Blocks (1w)</h5>
       <p class="card-text">
         <span class="skeleton-loader skeleton-loader-big"></span>
       </p>
