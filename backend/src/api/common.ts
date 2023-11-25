@@ -184,7 +184,7 @@ export class Common {
         };
       });
 
-    // Add high (high fee) decendant weight and fees
+    // Add high (high fee) descendant weight and fees
     if (tx.bestDescendant) {
       totalWeight += tx.bestDescendant.weight;
       totalFees += tx.bestDescendant.fee;

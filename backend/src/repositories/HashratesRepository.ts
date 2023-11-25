@@ -93,7 +93,7 @@ class HashratesRepository {
       const [rows]: any[] = await DB.query(query);
       return rows.map(row => row.timestamp);
     } catch (e) {
-      logger.err('Cannot retreive indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+      logger.err('Cannot retrieve indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }

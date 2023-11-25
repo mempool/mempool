@@ -271,7 +271,7 @@ describe('Mainnet', () => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
 
-            // block 9 - not visible at the blochchain blocks visible block
+            // block 9 - not visible at the blockchain blocks visible block
             cy.document().right();
             cy.wait(5000);
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
