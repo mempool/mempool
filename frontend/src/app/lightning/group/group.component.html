@@ -14,7 +14,7 @@
         <table class="table table-borderless table-striped">
           <tbody>
             <tr>
-              <td>Description</td>
+              <td i18n>Description</td>
               <td><div class="description-text">These are the Lightning nodes operated by The Mempool Open Source Project that provide data for the mempool.space website. Connect to us!
                 </div>
               </td>
@@ -70,7 +70,7 @@
     <table class="table table-borderless">
       <thead>
         <th class="alias text-left" i18n="lightning.alias">Alias</th>
-        <th class="text-left">Connect</th>
+        <th class="text-left" i18n="lightning.connect-to-node|Connect">Connect</th>
         <th class="city text-right d-none d-md-table-cell" i18n="lightning.location">Location</th>
       </thead>
       <tbody *ngIf="nodes$ | async as response; else skeleton">

@@ -62,12 +62,13 @@ export class DocsComponent implements OnInit {
       } else {
         this.seoService.setDescription($localize`:@@meta.description.docs.websocket-bitcoin:Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.`);
       }
+    /*
     } else {
       this.activeTab = 3;
-      this.seoService.setTitle($localize`:@@meta.title.docs.websocket:Electrum RPC`);
+      this.seoService.setTitle($localize`:@@meta.title.docs.electrum:Electrum RPC`);
       this.seoService.setDescription($localize`:@@meta.description.docs.electrumrpc:Documentation for our Electrum RPC interface: get instant, convenient, and reliable access to an Esplora instance.`);
+    */
     }
-
   }
 
   ngOnDestroy(): void {
