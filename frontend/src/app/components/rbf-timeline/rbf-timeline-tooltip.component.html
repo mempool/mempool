@@ -30,7 +30,7 @@
         <td [innerHTML]="'&lrm;' + (rbfInfo.tx.vsize * 4 | vbytes: 2)"></td>
       </tr>
       <tr>
-        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+        <td class="td-width" i18n="status">Status</td>
         <td>
           <span *ngIf="rbfInfo.tx.fullRbf" class="badge badge-info" i18n="rbfInfo-features.tag.full-rbf|Full RBF">Full RBF</span>
           <span *ngIf="rbfInfo.tx.rbf; else rbfDisabled" class="badge badge-success" i18n="rbfInfo-features.tag.rbf|RBF">RBF</span>

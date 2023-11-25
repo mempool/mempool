@@ -543,6 +543,10 @@
           <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
@@ -655,6 +659,10 @@
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="b666c0101ab9ef128a75fdf05a43184a57de0cff" datatype="html">
         <source>Volume (7d)</source>
@@ -700,7 +708,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.markets" datatype="html">
-        <source>Explore the full Bitcoin ecosystem with The Mempool Open Project™. See Bisq market prices, trading activity, and more.</source>
+        <source>Explore the full Bitcoin ecosystem with The Mempool Open Source Project™. See Bisq market prices, trading activity, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -2470,6 +2478,10 @@
           <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
@@ -3091,7 +3103,7 @@
         </context-group>
         <note priority="1" from="description">dashboard.txs</note>
       </trans-unit>
-      <trans-unit id="meta.title.blocks-list" datatype="html">
+      <trans-unit id="m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
         <source>Blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
@@ -3131,65 +3143,48 @@
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="c1a2053754e3632bfa5ed0a8b5f8f5a993d9b862" datatype="html">
-        <source>fiat price</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">clock.fiat-price</note>
-      </trans-unit>
-      <trans-unit id="ac930a014eca5c6261824c43888fb4162687039f" datatype="html">
-        <source>priority rate</source>
+      <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
+        <source>High Priority</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <note priority="1" from="description">priority fee rate</note>
-        <note priority="1" from="meaning">clock.priority-rate</note>
-      </trans-unit>
-      <trans-unit id="449ebe00d2d78db4891d8ce4836ce1abd3b90a98" datatype="html">
-        <source>block size</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">10</context>
         </context-group>
-        <note priority="1" from="description">clock.block-size</note>
-      </trans-unit>
-      <trans-unit id="46fb7c9aeee694a104674c692a432b4a0411bd77" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;label&quot;&gt;transaction&lt;/span&gt;&lt;/ng-template&gt;
-        &lt;ng-template #transactionsPlur"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;label&quot;&gt;"/>transaction<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">47</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count.singular</note>
+        <note priority="1" from="description">fees-box.high-priority</note>
       </trans-unit>
-      <trans-unit id="17656d8a87079c27be95ac4eb0e24984178c17e5" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;label&quot;&gt;transactions&lt;/span&gt;&lt;/ng-template&gt;
-      &lt;/p&gt;
-    &lt;/div&gt;
-    &lt;ng-conta"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;label&quot;&gt;"/>transactions<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+      <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
+        <source>Memory Usage</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">60,61</context>
+          <context context-type="linenumber">65</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count.plural</note>
-      </trans-unit>
-      <trans-unit id="328cf23ee20a77dbb24afcb5fe56e4c5d5c56580" datatype="html">
-        <source>memory usage</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">236</context>
         </context-group>
         <note priority="1" from="description">Memory usage</note>
         <note priority="1" from="meaning">dashboard.memory-usage</note>
       </trans-unit>
-      <trans-unit id="9de66bf0ef8dd5fabd3c81ccf089c241a8333ce1" datatype="html">
-        <source>unconfirmed</source>
+      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
+        <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">230</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -3484,18 +3479,6 @@
         </context-group>
         <note priority="1" from="description">Transaction feerate tooltip (high priority)</note>
       </trans-unit>
-      <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
-        <source>High Priority</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">47</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.high-priority</note>
-      </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>
         <context-group purpose="location">
@@ -3537,19 +3520,6 @@
         </context-group>
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.weight-units-per-second</note>
-      </trans-unit>
-      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">230</context>
-        </context-group>
-        <note priority="1" from="description">Unconfirmed count</note>
-        <note priority="1" from="meaning">dashboard.unconfirmed</note>
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
@@ -4255,8 +4225,8 @@
         </context-group>
         <note priority="1" from="description">mining.hashrate</note>
       </trans-unit>
-      <trans-unit id="72a917b41e60e5b8d5eb0f63648e6bfa2d4802cd" datatype="html">
-        <source>Blocks 24h</source>
+      <trans-unit id="3dc78651b2810cbb6e830fe7e57499d8cf6a8e4d" datatype="html">
+        <source>Blocks (24h)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">146</context>
@@ -4384,6 +4354,10 @@
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
         <note priority="1" from="description">page.rbf-replacements</note>
       </trans-unit>
       <trans-unit id="8a9b3afe9486474f0d7767605fe99af99c8ea430" datatype="html">
@@ -4398,20 +4372,13 @@
         </context-group>
         <note priority="1" from="description">transaction.full-rbf</note>
       </trans-unit>
-      <trans-unit id="d669085bb6e73779113e37e297e7a15e864e39df" datatype="html">
-        <source>there are no replacements in the mempool yet!</source>
+      <trans-unit id="c88914ee712e3ab5ad5f88de8a6ed12050919ccb" datatype="html">
+        <source>There are no replacements in the mempool yet!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">rbf.no-replacements-yet</note>
-      </trans-unit>
-      <trans-unit id="meta.title.rbf-list" datatype="html">
-        <source>RBF Replacements</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
-          <context context-type="linenumber">58</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="meta.description.rbf-list" datatype="html">
         <source>See the most recent RBF replacements on the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
@@ -4457,18 +4424,17 @@
         <note priority="1" from="description">Transaction first seen</note>
         <note priority="1" from="meaning">transaction.first-seen</note>
       </trans-unit>
-      <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
+      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
         <source>Status</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">40</context>
         </context-group>
-        <note priority="1" from="description">Transaction Status</note>
-        <note priority="1" from="meaning">transaction.status</note>
+        <note priority="1" from="description">status</note>
       </trans-unit>
       <trans-unit id="bcfa763af07f14dd2693f89a361abd4dd2b50f26" datatype="html">
         <source>Full RBF</source>
@@ -4662,13 +4628,17 @@
         </context-group>
         <note priority="1" from="description">statistics.memory-by-vBytes</note>
       </trans-unit>
-      <trans-unit id="29eb02d97585f4774f67ad19134453006b455b11" datatype="html">
-        <source>Clock view</source>
+      <trans-unit id="d0e134a0886ae71207e912575d226525062b62f1" datatype="html">
+        <source>Clock (Mempool)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <note priority="1" from="description">master-page.clockview</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <note priority="1" from="description">footer.clock-mempool</note>
       </trans-unit>
       <trans-unit id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e" datatype="html">
         <source>TV view</source>
@@ -5491,6 +5461,15 @@
         </context-group>
         <note priority="1" from="description">dashboard.new-transaction-fee</note>
       </trans-unit>
+      <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
+        <source>Status</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+        <note priority="1" from="description">Transaction Status</note>
+        <note priority="1" from="meaning">transaction.status</note>
+      </trans-unit>
       <trans-unit id="6c657ff25c8e7953c2ac10600fe06cb6c150c0fe" datatype="html">
         <source>RBF</source>
         <context-group purpose="location">
@@ -5532,15 +5511,6 @@
         </context-group>
         <note priority="1" from="description">Purgin below fee</note>
         <note priority="1" from="meaning">dashboard.purging</note>
-      </trans-unit>
-      <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
-        <source>Memory Usage</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">236</context>
-        </context-group>
-        <note priority="1" from="description">Memory usage</note>
-        <note priority="1" from="meaning">dashboard.memory-usage</note>
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
@@ -6185,14 +6155,6 @@
           <context context-type="linenumber">11</context>
         </context-group>
         <note priority="1" from="description">lightning.alias</note>
-      </trans-unit>
-      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
-        <source>Status</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">status</note>
       </trans-unit>
       <trans-unit id="0cd107458dce99721e72971d426a5a3106074331" datatype="html">
         <source>Channel ID</source>
@@ -7483,8 +7445,8 @@
         </context-group>
         <note priority="1" from="description">faq.why-isnt-my-transaction-confirming</note>
       </trans-unit>
-      <trans-unit id="7c68ef2d3d91cb3a67edf6213b75c22cbc31867b" datatype="html">
-        <source>More FAQs ›</source>
+      <trans-unit id="03f766a5a2abdbfbdcc2b6135691b9fb1f2ed530" datatype="html">
+        <source>More FAQs »</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">55</context>
@@ -7554,14 +7516,6 @@
           <context context-type="linenumber">69</context>
         </context-group>
         <note priority="1" from="description">footer.tools</note>
-      </trans-unit>
-      <trans-unit id="d0e134a0886ae71207e912575d226525062b62f1" datatype="html">
-        <source>Clock (Mempool)</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">70</context>
-        </context-group>
-        <note priority="1" from="description">footer.clock-mempool</note>
       </trans-unit>
       <trans-unit id="8c23995422ac012b80a2369a878b199c39271906" datatype="html">
         <source>Clock (Mined)</source>

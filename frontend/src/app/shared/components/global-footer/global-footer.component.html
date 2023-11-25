@@ -52,7 +52,7 @@
           <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-block-explorer" i18n="faq.what-is-a-block-exlorer">What is a block explorer?</a></p>
           <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool-explorer" i18n="faq.what-is-a-mempool-exlorer">What is a mempool explorer?</a></p>
           <p><a [routerLink]="['/docs/faq']" fragment="why-is-transaction-stuck-in-mempool" i18n="faq.why-isnt-my-transaction-confirming">Why isn't my transaction confirming?</a></p>
-          <p><a [routerLink]="['/docs/faq' | relativeUrl]" i18n="faq.more-faq">More FAQs ›</a></p>
+          <p><a [routerLink]="['/docs/faq' | relativeUrl]" i18n="faq.more-faq">More FAQs &raquo;</a></p>
         </div>
 
         <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
