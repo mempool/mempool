@@ -87,7 +87,7 @@
         <h2>Accelerate</h2>
       </div>
       <div class="box">
-        <app-accelerate-preview [tx]="tx" [scrollEvent]="scrollIntoAccelPreview"></app-accelerate-preview>
+        <app-accelerate-preview [tx]="tx" [scrollEvent]="scrollIntoAccelPreview" (dismiss)="showAccelerationSummary = false;"></app-accelerate-preview>
       </div>
     </ng-container>
 

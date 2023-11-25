@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
@@ -40,6 +40,7 @@ export const MAX_BID_RATIO = 4;
 export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges {
   @Input() tx: Transaction | undefined;
   @Input() scrollEvent: boolean;
+  @Output() dismiss = new EventEmitter();
 
   math = Math;
   error = '';
@@ -206,5 +207,9 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.isMobile = window.innerWidth <= 767.98;
+  }
+
+  onDismiss(): void {
+    this.dismiss.emit();
   }
 }
