@@ -4277,7 +4277,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
@@ -4364,7 +4364,11 @@
         <source>Full RBF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -4376,7 +4380,7 @@
         <source>There are no replacements in the mempool yet!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <note priority="1" from="description">rbf.no-replacements-yet</note>
       </trans-unit>
@@ -4436,27 +4440,35 @@
         </context-group>
         <note priority="1" from="description">status</note>
       </trans-unit>
-      <trans-unit id="bcfa763af07f14dd2693f89a361abd4dd2b50f26" datatype="html">
-        <source>Full RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <note priority="1" from="description">Full RBF</note>
-        <note priority="1" from="meaning">rbfInfo-features.tag.full-rbf</note>
-      </trans-unit>
       <trans-unit id="eb3b032a755fc367f7f6e957d0c7dc9d6db49464" datatype="html">
         <source>RBF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
+        <note priority="1" from="description">RBF</note>
+        <note priority="1" from="meaning">rbfInfo-features.tag.rbf</note>
+      </trans-unit>
+      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
+        <source>RBF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
         <note priority="1" from="description">RBF</note>
-        <note priority="1" from="meaning">rbfInfo-features.tag.rbf</note>
+        <note priority="1" from="meaning">tx-features.tag.rbf</note>
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
@@ -5374,19 +5386,6 @@
         </context-group>
         <note priority="1" from="description">RBF tooltip</note>
       </trans-unit>
-      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
-        <source>RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">29</context>
-        </context-group>
-        <note priority="1" from="description">RBF</note>
-        <note priority="1" from="meaning">tx-features.tag.rbf</note>
-      </trans-unit>
       <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
         <context-group purpose="location">
@@ -5469,14 +5468,6 @@
         </context-group>
         <note priority="1" from="description">Transaction Status</note>
         <note priority="1" from="meaning">transaction.status</note>
-      </trans-unit>
-      <trans-unit id="6c657ff25c8e7953c2ac10600fe06cb6c150c0fe" datatype="html">
-        <source>RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">102</context>
-        </context-group>
-        <note priority="1" from="description">transaction.rbf</note>
       </trans-unit>
       <trans-unit id="ff3cc795c751d530669fd34cf474882fb02ebdbd" datatype="html">
         <source>Recent blocks</source>
