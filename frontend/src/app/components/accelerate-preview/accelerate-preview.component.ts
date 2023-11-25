@@ -103,7 +103,11 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           this.hasAncestors = this.estimate.txSummary.ancestorCount > 1;
           
           // Make min extra fee at least 50% of the current tx fee
-          this.minExtraCost = nextRoundNumber(Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee));
+          const baseFees = (this.estimate.mempoolBaseFee + this.estimate.vsizeFee);
+          const bidBasis = Math.max(this.estimate.cost * 2, this.estimate.txSummary.effectiveFee);
+          const roundingAdjustment = (bidBasis >= baseFees) ? baseFees : 0;
+          const roundedBidBasis = nextRoundNumber(bidBasis + roundingAdjustment);
+          this.minExtraCost = roundedBidBasis - roundingAdjustment;
 
           this.maxRateOptions = [1, 2, 4].map((multiplier, index) => {
             return {
