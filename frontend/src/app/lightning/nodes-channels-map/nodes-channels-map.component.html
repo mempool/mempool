@@ -1,22 +1,28 @@
-<div class="map-wrapper" [class]="style">
+<div class="map-wrapper" [class]="style" *ngIf="style !== 'graph'">
   <ng-container *ngIf="channelsObservable | async">
     <div *ngIf="chartOptions" [class]="'full-container ' + style + (fitContainer ? ' fit-container' : '')">
-      <div *ngIf="style === 'graph'" class="card-header">
-        <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
-          <span i18n="lightning.nodes-channels-world-map">Lightning Nodes Channels World Map</span>
-        </div>
-        <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
-      </div>
-
       <div class="chart" [class]="style" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
         (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
       </div>
-
       <div *ngIf="!chartOptions && style === 'nodepage'" style="padding-top: 30px"></div>
     </div>
-
     <div class="text-center loading-spinner" [class]="style" *ngIf="isLoading && !disableSpinner">
       <div class="spinner-border text-light"></div>
     </div>
   </ng-container>
+</div>
+
+<div class="full-container-graph" *ngIf="style === 'graph'">
+
+  <div class="card-header">
+    <div class="d-flex d-md-block align-items-baseline" style="margin-bottom: -5px">
+      <span i18n="lightning.nodes-channels-world-map">Lightning Nodes Channels World Map</span>
+    </div>
+    <small style="color: #ffffff66" i18n="lightning.tor-nodes-excluded">(Tor nodes excluded)</small>
+  </div>
+
+  <div *ngIf="channelsObservable | async" class="chart-graph" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)" (chartFinished)="onChartFinished($event)">
+  </div>
+
 </div>
