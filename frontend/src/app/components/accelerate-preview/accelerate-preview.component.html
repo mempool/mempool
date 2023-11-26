@@ -51,7 +51,7 @@
                   In-band fees
                 </td>
                 <td style="text-align: end;">
-                  {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
                 </td>
               </tr>
               <tr class="info group-last">
@@ -76,7 +76,7 @@
               <div class="d-flex mb-0">
                 <ng-container *ngFor="let option of maxRateOptions">
                   <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
-                    <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
+                    <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
                     <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
                   </button>
                 </ng-container>
@@ -110,7 +110,7 @@
                     {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
                     <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
                   </td>
                 </tr>
@@ -130,7 +130,7 @@
                   +{{ estimate.mempoolBaseFee | number }}
                 </td>
                 <td class="units">
-                  <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="symbol" i18n="shared.sats">sats</span>
                   <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                 </td>
               </tr>
@@ -142,7 +142,7 @@
                   +{{ estimate.vsizeFee | number }}
                 </td>
                 <td class="units">
-                  <span class="symbol" i18n="shared.sats|sats">sats</span>
+                  <span class="symbol" i18n="shared.sats">sats</span>
                   <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
                 </td>
               </tr>
@@ -159,7 +159,7 @@
                     </span>
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
                     <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                   </td>
                 </tr>
@@ -182,7 +182,7 @@
                     </span>
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
                     <span class="fiat ml-1">
                       <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
@@ -205,7 +205,7 @@
                     {{ estimate.userBalance | number }}
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
                     <span class="fiat ml-1">
                       <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
