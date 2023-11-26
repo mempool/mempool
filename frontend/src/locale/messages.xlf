@@ -1072,6 +1072,10 @@
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">141</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
+          <context context-type="linenumber">122</context>
+        </context-group>
         <note priority="1" from="description">Transaction features</note>
         <note priority="1" from="meaning">transaction.features</note>
       </trans-unit>
@@ -6784,14 +6788,6 @@
           <context context-type="linenumber">102</context>
         </context-group>
         <note priority="1" from="description">tor</note>
-      </trans-unit>
-      <trans-unit id="6cdb1fea93d77c07950c0c76c6e0ad79ebbef084" datatype="html">
-        <source>Features</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">122</context>
-        </context-group>
-        <note priority="1" from="description">lightning.features</note>
       </trans-unit>
       <trans-unit id="a737eb6814b234b0fd00e81b645b95a396711f15" datatype="html">
         <source>Decoded</source>
