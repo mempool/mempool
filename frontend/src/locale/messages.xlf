@@ -3608,14 +3608,18 @@
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
       </trans-unit>
-      <trans-unit id="d9678e2a050d1a9a583d5a566cad704534aaba94" datatype="html">
+      <trans-unit id="93168b4de564d2c5d21d67cf2fb263f27b45e4c8" datatype="html">
         <source>WU/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <note priority="1" from="description">vB/s</note>
-        <note priority="1" from="meaning">shared.weight-units-per-second</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">268</context>
+        </context-group>
+        <note priority="1" from="description">WU/s</note>
+        <note priority="1" from="meaning">shared.weight-per-second</note>
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
@@ -5581,15 +5585,6 @@
           <context context-type="linenumber">259</context>
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
-      </trans-unit>
-      <trans-unit id="93168b4de564d2c5d21d67cf2fb263f27b45e4c8" datatype="html">
-        <source>WU/s</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">268</context>
-        </context-group>
-        <note priority="1" from="description">WU/s</note>
-        <note priority="1" from="meaning">shared.weight-per-second</note>
       </trans-unit>
       <trans-unit id="30ef953d2dc6ccaa55a272d5f38cccfdbb986b65" datatype="html">
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.</source>
