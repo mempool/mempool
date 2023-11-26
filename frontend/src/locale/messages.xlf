@@ -3982,6 +3982,10 @@
           <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
@@ -5535,14 +5539,6 @@
         </context-group>
         <note priority="1" from="description">Transaction Status</note>
         <note priority="1" from="meaning">transaction.status</note>
-      </trans-unit>
-      <trans-unit id="ff3cc795c751d530669fd34cf474882fb02ebdbd" datatype="html">
-        <source>Recent blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">113</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.recent-block</note>
       </trans-unit>
       <trans-unit id="aa6ce7e6e6fe5cd080713965451f25bca15a2a25" datatype="html">
         <source>Recent Transactions</source>
