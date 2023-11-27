@@ -1,4 +1,4 @@
-FROM node:20.8.0-buster-slim AS builder
+FROM node:20.10.0-buster-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
