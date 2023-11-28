@@ -47,8 +47,13 @@ export class AboutComponent implements OnInit {
     this.websocketService.want(['blocks']);
 
     this.profiles$ = this.apiService.getAboutPageProfiles$().pipe(
-      tap(() => {
-        this.goToAnchor()
+      tap((profiles: any) => {
+        const scrollToSponsors = this.route.snapshot.fragment === 'community-sponsors';
+        if (scrollToSponsors && !profiles?.whales?.length && !profiles?.chads?.length) {
+          return;
+        } else {
+          this.goToAnchor(scrollToSponsors)
+        }
       }),
       share(),
     )
@@ -83,11 +88,19 @@ export class AboutComponent implements OnInit {
     this.goToAnchor();
   }
 
-  goToAnchor() {
+  goToAnchor(scrollToSponsor = false) {
+    if (!scrollToSponsor) {
+      return;
+    }
     setTimeout(() => {
       if (this.route.snapshot.fragment) {
-        if (this.document.getElementById(this.route.snapshot.fragment)) {
-          this.document.getElementById(this.route.snapshot.fragment).scrollIntoView({behavior: 'smooth'});
+        const el = scrollToSponsor ? this.document.getElementById('community-sponsors-anchor') : this.document.getElementById(this.route.snapshot.fragment);
+        if (el) {
+          if (scrollToSponsor) {
+            el.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
+          } else {
+            el.scrollIntoView({behavior: 'smooth'});
+          }
         }
       }
     }, 1);
