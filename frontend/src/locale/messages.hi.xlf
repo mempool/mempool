@@ -2073,6 +2073,10 @@
           <context context-type="linenumber">463</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
