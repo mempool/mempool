@@ -519,7 +519,7 @@
           <div class="effective-fee-container">
             <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
             <ng-template [ngIf]="tx?.status?.confirmed">
-              <app-tx-fee-rating class="ml-2 mr-2" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
+              <app-tx-fee-rating class="ml-2 mr-2 effective-fee-rating" *ngIf="tx.fee || tx.effectiveFeePerVsize" [tx]="tx"></app-tx-fee-rating>
             </ng-template>
           </div>
           <button *ngIf="cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
