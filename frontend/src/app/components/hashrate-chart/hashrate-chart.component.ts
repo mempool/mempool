@@ -259,7 +259,7 @@ export class HashrateChartComponent implements OnInit {
                 difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
                 difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
+                difficulty = tick.data[1] / difficultyPowerOfTen.divider;
                 difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
               }
             } else if (tick.seriesIndex === 2) { // Hashrate MA
