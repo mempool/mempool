@@ -249,10 +249,8 @@ export class HashrateChartComponent implements OnInit {
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Hashrate
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
+              hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
               hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
             } else if (tick.seriesIndex === 1) { // Difficulty
               let difficultyPowerOfTen = hashratePowerOfTen;
@@ -260,18 +258,14 @@ export class HashrateChartComponent implements OnInit {
               if (difficulty === null) {
                 difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
-                if (this.isMobile()) {
-                  difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                  difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
-                }
+                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
+                difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
                 difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
               }
             } else if (tick.seriesIndex === 2) { // Hashrate MA
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
+              hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);  
               hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
             }
           }
