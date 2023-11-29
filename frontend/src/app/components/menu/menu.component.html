@@ -7,7 +7,7 @@
       </span>
       <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
         <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
-        <span class="menu-click" style="font-size: 20px;">Sign in</span>
+        <span class="menu-click" style="font-size: 20px;" i18n="shared.sign-in">Sign in</span>
       </a>
 
       <ng-container *ngIf="userMenuGroups$ | async as menuGroups">

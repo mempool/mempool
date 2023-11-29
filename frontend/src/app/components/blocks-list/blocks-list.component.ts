@@ -55,7 +55,9 @@ export class BlocksList implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.seoService.setTitle($localize`:@@meta.title.blocks-list:Blocks`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`:@@m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
+    }
     if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
       this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
     } else {

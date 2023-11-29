@@ -10,9 +10,9 @@
       <div class="doc-content">
 
         <div id="disclaimer">
-          <table *ngIf="!mobileViewport"><tr><td><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images></td><td><p i18n="faq.big-disclaimer"><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, wallet issues, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></td></tr></table>
-          <div *ngIf="mobileViewport"><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images><p i18n="faq.big-disclaimer"><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, wallet issues, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></div>
-
+          <table *ngIf="!mobileViewport"><tr><td><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images></td><td> <ng-container *ngTemplateOutlet="faqDisclaimer"></ng-container></td></tr></table>
+          <div *ngIf="mobileViewport"><app-svg-images name="warning" class="disclaimer-warning" viewBox="0 0 304 304" fill="#ffc107" width="50" height="50"></app-svg-images><ng-container *ngTemplateOutlet="faqDisclaimer"></ng-container></div>
+          <ng-template #faqDisclaimer i18n="faq.big-disclaimer"><p><b>mempool.space merely provides data about the Bitcoin network.</b> It cannot help you with retrieving funds, wallet issues, etc.</p><p>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).</p></ng-template>
         </div>
 
         <div class="doc-item-container" *ngFor="let item of faq">

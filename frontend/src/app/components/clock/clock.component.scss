@@ -63,6 +63,7 @@
     .label {
       font-size: calc(0.04 * var(--clock-width));
       line-height: calc(0.05 * var(--clock-width));
+      text-transform: lowercase;
     }
 
     &.top {
