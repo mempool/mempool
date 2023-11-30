@@ -76,7 +76,7 @@
       <div class="card" *ngIf="(network$ | async) !== 'liquid' && (network$ | async) !== 'liquidtestnet'; else latestBlocks">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/rbf' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="dashboard.latest-rbf-replacements">Latest replacements</h5>
+            <h5 class="card-title d-inline" i18n="dashboard.recent-rbf-replacements">Recent Replacements</h5>
             <span>&nbsp;</span>
             <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
@@ -99,7 +99,7 @@
                 <td class="table-cell-badges">
                   <span *ngIf="replacement.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
                   <span *ngIf="replacement.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-                  <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="transaction.rbf">RBF</span>
+                  <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
                 </td>
               </tr>
             </tbody>
@@ -110,7 +110,7 @@
         <div class="card">
           <div class="card-body">
             <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
-              <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
+              <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
               <span>&nbsp;</span>
               <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
             </a>
@@ -150,7 +150,7 @@
     <div class="col" style="max-height: 410px">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title" i18n="dashboard.latest-transactions">Latest transactions</h5>
+          <h5 class="card-title" i18n="dashboard.recent-transactions">Recent Transactions</h5>
           <table class="table latest-transactions">
             <thead>
               <th class="table-cell-txid" i18n="dashboard.latest-transactions.txid">TXID</th>
@@ -233,7 +233,7 @@
       </p>
     </div>
     <div class="item bar">
-      <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory usage</h5>
+      <h5 class="card-title" i18n="dashboard.memory-usage|Memory usage">Memory Usage</h5>
       <div class="card-text" *ngIf="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value; else loadingbig">
         <div class="progress">
           <div class="progress-bar {{ mempoolInfoData.value.mempoolSizeProgress }}" role="progressbar" [ngStyle]="{'width': (mempoolInfoData.value.memPoolInfo.usage / mempoolInfoData.value.memPoolInfo.maxmempool * 100) + '%' }">&nbsp;</div>
@@ -256,7 +256,7 @@
 </ng-template>
 
 <ng-template #txPerSecond let-mempoolInfoData>
-  <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming transactions</h5>
+  <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
   <ng-template [ngIf]="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value" [ngIfElse]="loadingTransactions">
     <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
       &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>

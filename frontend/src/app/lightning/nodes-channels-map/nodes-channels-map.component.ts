@@ -65,6 +65,7 @@ export class NodesChannelsMap implements OnInit {
     }
 
     if (this.style === 'graph') {
+      this.center = [0, 5];
       this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
       this.seoService.setDescription($localize`:@@meta.description.lightning.node-map:See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
@@ -238,7 +239,6 @@ export class NodesChannelsMap implements OnInit {
       title: title ?? undefined,
       tooltip: {},
       geo: {
-        top: 75,
         animation: false,
         silent: true,
         center: this.center,
