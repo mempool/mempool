@@ -97,7 +97,7 @@ export class EnterpriseService {
 
     // @ts-ignore
     if (window._paq && window['Matomo']) {
-      window['Matomo'].addTracker(this.statsUrl+'m.php', this.siteId.toString());
+      window['Matomo'].addTracker(statsUrl+'m.php', siteId.toString());
       const matomo = this.getMatomo();
       matomo.setDocumentTitle(this.seoService.getTitle());
       matomo.setCustomUrl(this.getCustomUrl());
@@ -115,11 +115,11 @@ export class EnterpriseService {
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       if (alreadyInitialized) {
-        _paq.push(['addTracker', this.statsUrl+'m.php', this.siteId.toString()]);
+        _paq.push(['addTracker', statsUrl+'m.php', siteId.toString()]);
       } else {
         (function() {
-          _paq.push(['setTrackerUrl', this.statsUrl+'m.php']);
-          _paq.push(['setSiteId', this.siteId.toString()]);
+          _paq.push(['setTrackerUrl', statsUrl+'m.php']);
+          _paq.push(['setSiteId', siteId.toString()]);
           const d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
           // @ts-ignore
           g.type='text/javascript'; g.async=true; g.src=statsUrl+'m.js'; s.parentNode.insertBefore(g,s);
