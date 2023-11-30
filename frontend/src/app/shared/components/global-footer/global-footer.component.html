@@ -38,45 +38,45 @@
     </div>
     <div class="row col-md-12 link-tree" [class]="{'services': isServicesPage}">
         <div class="links">
-          <p class="category">Explore</p>
-          <p><a [routerLink]="['/mining' | relativeUrl]">Mining Dashboard</a></p>
-          <p><a *ngIf="env.LIGHTNING" [routerLink]="['/lightning' | relativeUrl]">Lightning Dashboard</a></p>
-          <p><a [routerLink]="['/blocks' | relativeUrl]">Recent Blocks</a></p>
+          <p class="category" i18n="footer.explore">Explore</p>
+          <p><a [routerLink]="['/mining' | relativeUrl]" i18n="mining.mining-dashboard">Mining Dashboard</a></p>
+          <p><a *ngIf="env.LIGHTNING" [routerLink]="['/lightning' | relativeUrl]" i18n="master-page.lightning">Lightning Explorer</a></p>
+          <p><a [routerLink]="['/blocks' | relativeUrl]" i18n="dashboard.recent-blocks">Recent Blocks</a></p>
           <p><a [routerLink]="['/tx/push' | relativeUrl]" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</a></p>
           <p *ngIf="officialMempoolSpace"><a [routerLink]="['/lightning/group/the-mempool-open-source-project' | relativeUrl]" i18n="footer.connect-to-our-nodes">Connect to our Nodes</a></p>
-          <p><a [routerLink]="['/docs/api' | relativeUrl]">API Documentation</a></p>
+          <p><a [routerLink]="['/docs/api' | relativeUrl]" i18n="footer.api-documentation">API Documentation</a></p>
         </div>
         <div class="links">
-          <p class="category">Learn</p>
-          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool">What is a mempool?</a></p>
-          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-block-explorer">What is a block explorer?</a></p>
-          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool-explorer">What is a mempool explorer?</a></p>
-          <p><a [routerLink]="['/docs/faq']" fragment="why-is-transaction-stuck-in-mempool">Why isn't my transaction confirming?</a></p>
-          <p><a [routerLink]="['/docs/faq' | relativeUrl]">More FAQs ›</a></p>
+          <p class="category" i18n="footer.learn">Learn</p>
+          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool" i18n="faq.what-is-a-mempool">What is a mempool?</a></p>
+          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-block-explorer" i18n="faq.what-is-a-block-exlorer">What is a block explorer?</a></p>
+          <p><a [routerLink]="['/docs/faq']" fragment="what-is-a-mempool-explorer" i18n="faq.what-is-a-mempool-exlorer">What is a mempool explorer?</a></p>
+          <p><a [routerLink]="['/docs/faq']" fragment="why-is-transaction-stuck-in-mempool" i18n="faq.why-isnt-my-transaction-confirming">Why isn't my transaction confirming?</a></p>
+          <p><a [routerLink]="['/docs/faq' | relativeUrl]" i18n="faq.more-faq">More FAQs &raquo;</a></p>
         </div>
 
         <div class="links" *ngIf="officialMempoolSpace || env.TESTNET_ENABLED || env.SIGNET_ENABLED || env.LIQUID_ENABLED || env.LIQUID_TESTNET_ENABLED else toolBox" >
-          <p class="category">Networks</p>
-          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')">Mainnet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')">Testnet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')">Signet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquidtestnet')">Liquid Testnet Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquid')"><a [href]="networkLink('liquid')">Liquid Explorer</a></p>
-          <p *ngIf="(officialMempoolSpace && (currentNetwork !== 'bisq'))"><a [href]="networkLink('bisq')">Bisq Explorer</a></p>
+          <p class="category" i18n="footer.networks">Networks</p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== '') && (currentNetwork !== 'mainnet')"><a [href]="networkLink('mainnet')" i18n="footer.mainnet-explorer">Mainnet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'testnet') && env.TESTNET_ENABLED"><a [href]="networkLink('testnet')" i18n="footer.testnet-explorer">Testnet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || (env.BASE_MODULE === 'mempool')) && (currentNetwork !== 'signet') && env.SIGNET_ENABLED"><a [href]="networkLink('signet')" i18n="footer.signet-explorer">Signet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquidtestnet')"><a [href]="networkLink('liquidtestnet')" i18n="footer.liquid-testnet-explorer">Liquid Testnet Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace || env.LIQUID_ENABLED) && (currentNetwork !== 'liquid')"><a [href]="networkLink('liquid')" i18n="footer.liquid-explorer">Liquid Explorer</a></p>
+          <p *ngIf="(officialMempoolSpace && (currentNetwork !== 'bisq'))"><a [href]="networkLink('bisq')" i18n="footer.bisq-explorer">Bisq Explorer</a></p>
         </div>
         <ng-template #toolBox>
         <div class="links">
-          <p class="category">Tools</p>
-          <p><a [routerLink]="['/clock/mempool/0']">Clock (Mempool)</a></p>
-          <p><a [routerLink]="['/clock/mined/0']">Clock (Mined)</a></p>
-          <p><a [routerLink]="['/tools/calculator']">BTC/Fiat Converter</a></p>
+          <p class="category" i18n="footer.tools">Tools</p>
+          <p><a [routerLink]="['/clock/mempool/0']" i18n="footer.clock-mempool">Clock (Mempool)</a></p>
+          <p><a [routerLink]="['/clock/mined/0']" i18n="footer.clock-mined">Clock (Mined)</a></p>
+          <p><a [routerLink]="['/tools/calculator']" i18n="shared.calculator">Calculator</a></p>
         </div>
         </ng-template>
         <div class="links">
-          <p class="category">Legal</p>
+          <p class="category" i18n="footer.legal">Legal</p>
           <p><a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a></p>
           <p><a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a></p>
-          <p><a [routerLink]="['/trademark-policy']">Trademark Policy</a></p>
+          <p><a [routerLink]="['/trademark-policy']" i18n="shared.trademark-policy|Trademark Policy">Trademark Policy</a></p>
         </div>
     </div>
     <div class="row social-links">

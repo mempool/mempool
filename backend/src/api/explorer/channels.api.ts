@@ -80,7 +80,13 @@ class ChannelsApi {
 
   public async $searchChannelsById(search: string): Promise<any[]> {
     try {
-      const searchStripped = search.replace(/[^0-9x]/g, '') + '%';
+      // restrict search to valid id/short_id prefix formats
+      let searchStripped = search.match(/[0-9]+[0-9x]*/)?.[0] || '';
+      if (!searchStripped.length) {
+        return [];
+      }
+      // add wildcard to search by prefix
+      searchStripped += '%';
       const query = `SELECT id, short_id, capacity, status FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
       const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
       return rows;
