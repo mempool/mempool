@@ -543,6 +543,10 @@
           <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
@@ -655,6 +659,10 @@
           <context context-type="sourcefile">src/app/bisq/bisq-trades/bisq-trades.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="b666c0101ab9ef128a75fdf05a43184a57de0cff" datatype="html">
         <source>Volume (7d)</source>
@@ -700,7 +708,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.markets" datatype="html">
-        <source>Explore the full Bitcoin ecosystem with The Mempool Open Project™. See Bisq market prices, trading activity, and more.</source>
+        <source>Explore the full Bitcoin ecosystem with The Mempool Open Source Project™. See Bisq market prices, trading activity, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -1063,6 +1071,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">141</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
+          <context context-type="linenumber">122</context>
         </context-group>
         <note priority="1" from="description">Transaction features</note>
         <note priority="1" from="meaning">transaction.features</note>
@@ -1498,7 +1510,7 @@
         <note priority="1" from="description">sat</note>
         <note priority="1" from="meaning">shared.sat</note>
       </trans-unit>
-      <trans-unit id="0df32c0261b0de1a2601ba61b6f621db35d344a4" datatype="html">
+      <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
         <source>sats</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
@@ -1532,8 +1544,67 @@
           <context context-type="sourcefile">src/app/components/accelerate-preview/accelerate-preview.component.html</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <note priority="1" from="description">sats</note>
-        <note priority="1" from="meaning">shared.sats</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <note priority="1" from="description">shared.sats</note>
       </trans-unit>
       <trans-unit id="d2eb45d1cd8cd146b7cb0223ab97a4b03b614060" datatype="html">
         <source>sat/vB</source>
@@ -1871,6 +1942,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">463</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
@@ -2470,6 +2545,10 @@
           <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
@@ -2743,6 +2822,10 @@
           <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/node/node-preview.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
@@ -2856,6 +2939,35 @@
           <context context-type="linenumber">240</context>
         </context-group>
         <note priority="1" from="description">block.actual-block</note>
+      </trans-unit>
+      <trans-unit id="65d5167c4947e3ad81758d238a7ac7e893c261f0" datatype="html">
+        <source>Taproot</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">265</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <note priority="1" from="description">Taproot</note>
+        <note priority="1" from="meaning">tx-features.tag.taproot</note>
       </trans-unit>
       <trans-unit id="fd04710d1a54d46cd1b81a13fc98e3d561b92141" datatype="html">
         <source>Bits</source>
@@ -3091,7 +3203,7 @@
         </context-group>
         <note priority="1" from="description">dashboard.txs</note>
       </trans-unit>
-      <trans-unit id="meta.title.blocks-list" datatype="html">
+      <trans-unit id="m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
         <source>Blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
@@ -3131,65 +3243,48 @@
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="c1a2053754e3632bfa5ed0a8b5f8f5a993d9b862" datatype="html">
-        <source>fiat price</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <note priority="1" from="description">clock.fiat-price</note>
-      </trans-unit>
-      <trans-unit id="ac930a014eca5c6261824c43888fb4162687039f" datatype="html">
-        <source>priority rate</source>
+      <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
+        <source>High Priority</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <note priority="1" from="description">priority fee rate</note>
-        <note priority="1" from="meaning">clock.priority-rate</note>
-      </trans-unit>
-      <trans-unit id="449ebe00d2d78db4891d8ce4836ce1abd3b90a98" datatype="html">
-        <source>block size</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">10</context>
         </context-group>
-        <note priority="1" from="description">clock.block-size</note>
-      </trans-unit>
-      <trans-unit id="46fb7c9aeee694a104674c692a432b4a0411bd77" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;label&quot;&gt;transaction&lt;/span&gt;&lt;/ng-template&gt;
-        &lt;ng-template #transactionsPlur"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;label&quot;&gt;"/>transaction<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
+          <context context-type="linenumber">47</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count.singular</note>
+        <note priority="1" from="description">fees-box.high-priority</note>
       </trans-unit>
-      <trans-unit id="17656d8a87079c27be95ac4eb0e24984178c17e5" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;label&quot;&gt;transactions&lt;/span&gt;&lt;/ng-template&gt;
-      &lt;/p&gt;
-    &lt;/div&gt;
-    &lt;ng-conta"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;label&quot;&gt;"/>transactions<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+      <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
+        <source>Memory Usage</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">60,61</context>
+          <context context-type="linenumber">65</context>
         </context-group>
-        <note priority="1" from="description">shared.transaction-count.plural</note>
-      </trans-unit>
-      <trans-unit id="328cf23ee20a77dbb24afcb5fe56e4c5d5c56580" datatype="html">
-        <source>memory usage</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">236</context>
         </context-group>
         <note priority="1" from="description">Memory usage</note>
         <note priority="1" from="meaning">dashboard.memory-usage</note>
       </trans-unit>
-      <trans-unit id="9de66bf0ef8dd5fabd3c81ccf089c241a8333ce1" datatype="html">
-        <source>unconfirmed</source>
+      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
+        <source>Unconfirmed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">230</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -3484,18 +3579,6 @@
         </context-group>
         <note priority="1" from="description">Transaction feerate tooltip (high priority)</note>
       </trans-unit>
-      <trans-unit id="d1d0bb0a34b216be66137562a0b18eaaca546113" datatype="html">
-        <source>High Priority</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
-          <context context-type="linenumber">47</context>
-        </context-group>
-        <note priority="1" from="description">fees-box.high-priority</note>
-      </trans-unit>
       <trans-unit id="926c571b25cca7e2a294619f145960c0cd3848b6" datatype="html">
         <source>Incoming transactions</source>
         <context-group purpose="location">
@@ -3529,27 +3612,18 @@
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
       </trans-unit>
-      <trans-unit id="d9678e2a050d1a9a583d5a566cad704534aaba94" datatype="html">
+      <trans-unit id="93168b4de564d2c5d21d67cf2fb263f27b45e4c8" datatype="html">
         <source>WU/s</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <note priority="1" from="description">vB/s</note>
-        <note priority="1" from="meaning">shared.weight-units-per-second</note>
-      </trans-unit>
-      <trans-unit id="60cd6fa18f925b42065d8cfb1a791efdc228b4c3" datatype="html">
-        <source>Unconfirmed</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">230</context>
+          <context context-type="linenumber">268</context>
         </context-group>
-        <note priority="1" from="description">Unconfirmed count</note>
-        <note priority="1" from="meaning">dashboard.unconfirmed</note>
+        <note priority="1" from="description">WU/s</note>
+        <note priority="1" from="meaning">shared.weight-per-second</note>
       </trans-unit>
       <trans-unit id="6f7832e2e8db3c4b16c41681ba334a2ab9726cc3" datatype="html">
         <source>Mempool size</source>
@@ -3920,6 +3994,10 @@
           <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
@@ -4255,8 +4333,8 @@
         </context-group>
         <note priority="1" from="description">mining.hashrate</note>
       </trans-unit>
-      <trans-unit id="72a917b41e60e5b8d5eb0f63648e6bfa2d4802cd" datatype="html">
-        <source>Blocks 24h</source>
+      <trans-unit id="3dc78651b2810cbb6e830fe7e57499d8cf6a8e4d" datatype="html">
+        <source>Blocks (24h)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">146</context>
@@ -4307,7 +4385,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
@@ -4384,13 +4462,21 @@
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
         <note priority="1" from="description">page.rbf-replacements</note>
       </trans-unit>
       <trans-unit id="8a9b3afe9486474f0d7767605fe99af99c8ea430" datatype="html">
         <source>Full RBF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
@@ -4398,20 +4484,13 @@
         </context-group>
         <note priority="1" from="description">transaction.full-rbf</note>
       </trans-unit>
-      <trans-unit id="d669085bb6e73779113e37e297e7a15e864e39df" datatype="html">
-        <source>there are no replacements in the mempool yet!</source>
+      <trans-unit id="c88914ee712e3ab5ad5f88de8a6ed12050919ccb" datatype="html">
+        <source>There are no replacements in the mempool yet!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <note priority="1" from="description">rbf.no-replacements-yet</note>
-      </trans-unit>
-      <trans-unit id="meta.title.rbf-list" datatype="html">
-        <source>RBF Replacements</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
-          <context context-type="linenumber">58</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="meta.description.rbf-list" datatype="html">
         <source>See the most recent RBF replacements on the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
@@ -4467,17 +4546,12 @@
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">88</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
         <note priority="1" from="description">Transaction Status</note>
         <note priority="1" from="meaning">transaction.status</note>
-      </trans-unit>
-      <trans-unit id="bcfa763af07f14dd2693f89a361abd4dd2b50f26" datatype="html">
-        <source>Full RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <note priority="1" from="description">Full RBF</note>
-        <note priority="1" from="meaning">rbfInfo-features.tag.full-rbf</note>
       </trans-unit>
       <trans-unit id="eb3b032a755fc367f7f6e957d0c7dc9d6db49464" datatype="html">
         <source>RBF</source>
@@ -4485,12 +4559,29 @@
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
+        <note priority="1" from="description">RBF</note>
+        <note priority="1" from="meaning">rbfInfo-features.tag.rbf</note>
+      </trans-unit>
+      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
+        <source>RBF</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
         <note priority="1" from="description">RBF</note>
-        <note priority="1" from="meaning">rbfInfo-features.tag.rbf</note>
+        <note priority="1" from="meaning">tx-features.tag.rbf</note>
       </trans-unit>
       <trans-unit id="e48f3277d241b5e74b6e01a989a4ecb4495d3d25" datatype="html">
         <source>Miners Reward</source>
@@ -4662,13 +4753,17 @@
         </context-group>
         <note priority="1" from="description">statistics.memory-by-vBytes</note>
       </trans-unit>
-      <trans-unit id="29eb02d97585f4774f67ad19134453006b455b11" datatype="html">
-        <source>Clock view</source>
+      <trans-unit id="d0e134a0886ae71207e912575d226525062b62f1" datatype="html">
+        <source>Clock (Mempool)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <note priority="1" from="description">master-page.clockview</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <note priority="1" from="description">footer.clock-mempool</note>
       </trans-unit>
       <trans-unit id="46ce8155c9ab953edeec97e8950b5a21e67d7c4e" datatype="html">
         <source>TV view</source>
@@ -5339,31 +5434,6 @@
         </context-group>
         <note priority="1" from="description">Tooltip about fees saved with taproot</note>
       </trans-unit>
-      <trans-unit id="65d5167c4947e3ad81758d238a7ac7e893c261f0" datatype="html">
-        <source>Taproot</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">16</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <note priority="1" from="description">Taproot</note>
-        <note priority="1" from="meaning">tx-features.tag.taproot</note>
-      </trans-unit>
       <trans-unit id="47b821c7df420c96de0b22844a88c04d52628540" datatype="html">
         <source>This transaction uses Taproot and already saved at least <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedTaprootGains * 100 | number: &apos;1.0-0&apos; }}"/>% on fees, but could save an additional <x id="INTERPOLATION_1" equiv-text="{{ segwitGains.potentialTaprootGains * 100 | number: &apos;1.0-0&apos; }}"/>% by fully using Taproot</source>
         <context-group purpose="location">
@@ -5403,19 +5473,6 @@
           <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">RBF tooltip</note>
-      </trans-unit>
-      <trans-unit id="f0e7d6d900658ee5ce66d8fef3637caf13891c53" datatype="html">
-        <source>RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
-          <context context-type="linenumber">29</context>
-        </context-group>
-        <note priority="1" from="description">RBF</note>
-        <note priority="1" from="meaning">tx-features.tag.rbf</note>
       </trans-unit>
       <trans-unit id="85ce9e4f45873116b746899169cbc3445321d60c" datatype="html">
         <source>This transaction does NOT support Replace-By-Fee (RBF) and cannot be fee bumped using this method</source>
@@ -5491,22 +5548,6 @@
         </context-group>
         <note priority="1" from="description">dashboard.new-transaction-fee</note>
       </trans-unit>
-      <trans-unit id="6c657ff25c8e7953c2ac10600fe06cb6c150c0fe" datatype="html">
-        <source>RBF</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">102</context>
-        </context-group>
-        <note priority="1" from="description">transaction.rbf</note>
-      </trans-unit>
-      <trans-unit id="ff3cc795c751d530669fd34cf474882fb02ebdbd" datatype="html">
-        <source>Recent blocks</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">113</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.recent-block</note>
-      </trans-unit>
       <trans-unit id="aa6ce7e6e6fe5cd080713965451f25bca15a2a25" datatype="html">
         <source>Recent Transactions</source>
         <context-group purpose="location">
@@ -5533,15 +5574,6 @@
         <note priority="1" from="description">Purgin below fee</note>
         <note priority="1" from="meaning">dashboard.purging</note>
       </trans-unit>
-      <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
-        <source>Memory Usage</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">236</context>
-        </context-group>
-        <note priority="1" from="description">Memory usage</note>
-        <note priority="1" from="meaning">dashboard.memory-usage</note>
-      </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
         <source>L-BTC in circulation</source>
         <context-group purpose="location">
@@ -5558,24 +5590,11 @@
         </context-group>
         <note priority="1" from="description">dashboard.incoming-transactions</note>
       </trans-unit>
-      <trans-unit id="93168b4de564d2c5d21d67cf2fb263f27b45e4c8" datatype="html">
-        <source>WU/s</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">268</context>
-        </context-group>
-        <note priority="1" from="description">WU/s</note>
-        <note priority="1" from="meaning">shared.weight-per-second</note>
-      </trans-unit>
-      <trans-unit id="30ef953d2dc6ccaa55a272d5f38cccfdbb986b65" datatype="html">
-        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space merely provides data about the Bitcoin network.&lt;/b&gt; It cannot help"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.</source>
+      <trans-unit id="999bb1a0150c2815a6b4dd64a1850e763603e525" datatype="html">
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">13</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
         <note priority="1" from="description">faq.big-disclaimer</note>
       </trans-unit>
@@ -5719,6 +5738,20 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meta.title.docs.electrum" datatype="html">
+        <source>Electrum RPC</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="meta.description.docs.electrumrpc" datatype="html">
+        <source>Documentation for our Electrum RPC interface: get instant, convenient, and reliable access to an Esplora instance.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4ca458fe3274d1c79640b052d57cf3b900b650b6" datatype="html">
@@ -6186,14 +6219,6 @@
         </context-group>
         <note priority="1" from="description">lightning.alias</note>
       </trans-unit>
-      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
-        <source>Status</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">status</note>
-      </trans-unit>
       <trans-unit id="0cd107458dce99721e72971d426a5a3106074331" datatype="html">
         <source>Channel ID</source>
         <context-group purpose="location">
@@ -6205,62 +6230,6 @@
           <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">channels.id</note>
-      </trans-unit>
-      <trans-unit id="e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4" datatype="html">
-        <source>sats</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">63</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
-          <context context-type="linenumber">87</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/channels-statistics/channels-statistics.component.html</context>
-          <context context-type="linenumber">63</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/group/group-preview.component.html</context>
-          <context context-type="linenumber">34</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
-          <context context-type="linenumber">83</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.html</context>
-          <context context-type="linenumber">50</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.html</context>
-          <context context-type="linenumber">82</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
-          <context context-type="linenumber">23</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-        <note priority="1" from="description">shared.sats</note>
       </trans-unit>
       <trans-unit id="cfcc7201138b0ef9901e9604c35f550e91629295" datatype="html">
         <source>avg</source>
@@ -6814,14 +6783,6 @@
           <context context-type="linenumber">102</context>
         </context-group>
         <note priority="1" from="description">tor</note>
-      </trans-unit>
-      <trans-unit id="6cdb1fea93d77c07950c0c76c6e0ad79ebbef084" datatype="html">
-        <source>Features</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
-          <context context-type="linenumber">122</context>
-        </context-group>
-        <note priority="1" from="description">lightning.features</note>
       </trans-unit>
       <trans-unit id="a737eb6814b234b0fd00e81b645b95a396711f15" datatype="html">
         <source>Decoded</source>
@@ -7483,8 +7444,8 @@
         </context-group>
         <note priority="1" from="description">faq.why-isnt-my-transaction-confirming</note>
       </trans-unit>
-      <trans-unit id="7c68ef2d3d91cb3a67edf6213b75c22cbc31867b" datatype="html">
-        <source>More FAQs ›</source>
+      <trans-unit id="03f766a5a2abdbfbdcc2b6135691b9fb1f2ed530" datatype="html">
+        <source>More FAQs »</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">55</context>
@@ -7554,14 +7515,6 @@
           <context context-type="linenumber">69</context>
         </context-group>
         <note priority="1" from="description">footer.tools</note>
-      </trans-unit>
-      <trans-unit id="d0e134a0886ae71207e912575d226525062b62f1" datatype="html">
-        <source>Clock (Mempool)</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">70</context>
-        </context-group>
-        <note priority="1" from="description">footer.clock-mempool</note>
       </trans-unit>
       <trans-unit id="8c23995422ac012b80a2369a878b199c39271906" datatype="html">
         <source>Clock (Mined)</source>

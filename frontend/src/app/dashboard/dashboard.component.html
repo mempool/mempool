@@ -99,7 +99,7 @@
                 <td class="table-cell-badges">
                   <span *ngIf="replacement.mined" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
                   <span *ngIf="replacement.fullRbf" class="badge badge-info" i18n="transaction.full-rbf">Full RBF</span>
-                  <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="transaction.rbf">RBF</span>
+                  <span *ngIf="!replacement.fullRbf" class="badge badge-success" i18n="tx-features.tag.rbf|RBF">RBF</span>
                 </td>
               </tr>
             </tbody>
@@ -110,7 +110,7 @@
         <div class="card">
           <div class="card-body">
             <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
-              <h5 class="card-title d-inline" i18n="dashboard.recent-block">Recent blocks</h5>
+              <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
               <span>&nbsp;</span>
               <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
             </a>

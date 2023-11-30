@@ -2,12 +2,12 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 const MempoolErrors = {
+  'internal_server_error': `Something went wrong, please try again later`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
   'acceleration_outbid': `Your fee delta is too low.`,
   'cannot_accelerate_tx': `Cannot accelerate this transaction.`,
   'cannot_decode_raw_tx': `Cannot decode this raw transaction.`,
   'cannot_fetch_raw_tx': `Cannot find this transaction.`,
-  'database_error': `Something went wrong. Please try again later.`,
   'high_sigop_tx': `This transaction cannot be accelerated.`,
   'invalid_acceleration_request': `This acceleration request is not valid.`,
   'invalid_tx_dependencies': `This transaction dependencies are not valid.`,

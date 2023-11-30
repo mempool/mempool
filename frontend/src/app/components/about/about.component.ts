@@ -9,6 +9,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { map, share, tap } from 'rxjs/operators';
 import { ITranslators } from '../../interfaces/node-api.interface';
 import { DOCUMENT } from '@angular/common';
+import { EnterpriseService } from '../../services/enterprise.service';
 
 @Component({
   selector: 'app-about',
@@ -33,6 +34,7 @@ export class AboutComponent implements OnInit {
     private websocketService: WebsocketService,
     private seoService: SeoService,
     public stateService: StateService,
+    private enterpriseService: EnterpriseService,
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
@@ -107,5 +109,15 @@ export class AboutComponent implements OnInit {
 
   unmutePromoVideo(): void {
     this.promoVideo.nativeElement.muted = false;
+  }
+
+  onSponsorClick(e): boolean {
+    this.enterpriseService.goal(5);
+    return true;
+  }
+
+  onEnterpriseClick(e): boolean {
+    this.enterpriseService.goal(6);
+    return true;
   }
 }
