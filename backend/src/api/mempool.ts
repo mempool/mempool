@@ -18,7 +18,7 @@ class Mempool {
   private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
-                                                    maxmempool: 300000000, mempoolminfee: 0.00001000, minrelaytxfee: 0.00001000 };
+                                                    maxmempool: 300000000, mempoolminfee: Common.isLiquid() ? 0.00000100 : 0.00001000, minrelaytxfee: Common.isLiquid() ? 0.00000100 : 0.00001000 };
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
