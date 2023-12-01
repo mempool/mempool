@@ -110,13 +110,3 @@
 .item {
   white-space: initial;
 }
-
-.dismiss-preview {
-  position: absolute;
-  top: 0.4em;
-  right: 0.6em;
-}
-
-:host ::ng-deep .alert {
-  margin-right: 1.6em;
-}
