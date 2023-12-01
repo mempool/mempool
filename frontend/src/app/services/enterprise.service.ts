@@ -130,7 +130,7 @@ export class EnterpriseService {
 
   private getMatomo() {
     if (this.siteId != null) {
-      return window['Matomo']?.getTracker(this.statsUrl, this.siteId);
+      return window['Matomo']?.getTracker(this.statsUrl+'m.php', this.siteId);
     }
   }
 
