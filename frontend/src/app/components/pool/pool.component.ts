@@ -163,10 +163,8 @@ export class PoolComponent implements OnInit {
           let hashratePowerOfTen: any = selectPowerOfTen(1);
           let hashrate = ticks[0].data[1];
 
-          if (this.isMobile()) {
-            hashratePowerOfTen = selectPowerOfTen(ticks[0].data[1]);
-            hashrate = Math.round(ticks[0].data[1] / hashratePowerOfTen.divider);
-          }
+          hashratePowerOfTen = selectPowerOfTen(ticks[0].data[1]);
+          hashrate = Math.round(ticks[0].data[1] / hashratePowerOfTen.divider);
 
           return `
             <b style="color: white; margin-left: 18px">${ticks[0].axisValueLabel}</b><br>
