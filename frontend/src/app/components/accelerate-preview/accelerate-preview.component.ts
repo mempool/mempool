@@ -93,7 +93,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             this.estimateSubscription.unsubscribe();
           }
 
-          if (this.estimate.userBalance <= 0) {
+          if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
             if (this.isLoggedIn()) {
               this.error = `not_enough_balance`;
               this.scrollToPreviewWithTimeout('mempoolError', 'center');

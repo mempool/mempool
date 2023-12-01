@@ -27,6 +27,11 @@
 
   <ng-container *ngIf="estimate">
     <div [class]="{estimateDisabled: error}">
+
+      <div *ngIf="!estimate.hasAccess">
+        <div class="alert alert-mempool">You are currently on the wait list</div>
+      </div>
+
       <h5>Your transaction</h5>
       <div class="row">
         <div class="col">
@@ -230,7 +235,7 @@
   
       <div class="row mb-3" *ngIf="isLoggedIn()">
         <div class="col">
-          <div class="d-flex justify-content-end">
+          <div class="d-flex justify-content-end" *ngIf="estimate.hasAccess">
             <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()">Accelerate</button>
           </div>
         </div>
