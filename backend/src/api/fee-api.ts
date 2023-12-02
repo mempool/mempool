@@ -15,11 +15,12 @@ class FeeApi {
   constructor() { }
 
   defaultFee = Common.isLiquid() ? 0.1 : 1;
+  minimumIncrement = Common.isLiquid() ? 0.1 : 1;
 
   public getRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
     const mPool = mempool.getMempoolInfo();
-    const minimumFee = Math.ceil(mPool.mempoolminfee * 100000);
+    const minimumFee = this.roundUpToNearest(mPool.mempoolminfee * 100000, this.minimumIncrement);
     const defaultMinFee = Math.max(minimumFee, this.defaultFee);
 
     if (!pBlocks.length) {
@@ -58,7 +59,11 @@ class FeeApi {
       const multiplier = (pBlock.blockVSize - 500000) / 500000;
       return Math.max(Math.round(useFee * multiplier), this.defaultFee);
     }
-    return Math.ceil(useFee);
+    return this.roundUpToNearest(useFee, this.minimumIncrement);
+  }
+
+  private roundUpToNearest(value: number, nearest: number): number {
+    return Math.ceil(value / nearest) * nearest;
   }
 }
 
