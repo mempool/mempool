@@ -1,0 +1,19 @@
+<ng-template [ngIf]="confirmations">
+  <button type="button" class="btn btn-sm btn-success no-cursor {{buttonClass}}">
+    <ng-container *ngTemplateOutlet="confirmations == 1 ? confirmationSingular : confirmationPlural; context: {$implicit: confirmations}"></ng-container>
+    <ng-template #confirmationSingular let-i i18n="shared.confirmation-count.singular|Transaction singular confirmation count">{{ i }} confirmation</ng-template>
+    <ng-template #confirmationPlural let-i i18n="shared.confirmation-count.plural|Transaction plural confirmation count">{{ i }} confirmations</ng-template>
+  </button>
+</ng-template>
+<ng-template [ngIf]="!confirmations && height != null">
+  <button type="button" class="btn btn-sm btn-success no-cursor {{buttonClass}}" i18n="transaction.confirmed|Transaction confirmed state">Confirmed</button>
+</ng-template>
+<ng-template [ngIf]="!hideUnconfirmed && !confirmations && replaced">
+  <button type="button" class="btn btn-sm btn-warning no-cursor {{buttonClass}}" i18n="transaction.replaced|Transaction replaced state">Replaced</button>
+</ng-template>
+<ng-template [ngIf]="!hideUnconfirmed && !confirmations && !replaced && removed">
+  <button type="button" class="btn btn-sm btn-warning no-cursor {{buttonClass}}" i18n="transaction.audit.removed|Transaction removed state">Removed</button>
+</ng-template>
+<ng-template [ngIf]="!hideUnconfirmed && chainTip != null && !confirmations && !replaced && !removed">
+  <button type="button" class="btn btn-sm btn-danger no-cursor {{buttonClass}}" i18n="transaction.unconfirmed|Transaction unconfirmed state">Unconfirmed</button>
+</ng-template>

@@ -1,3 +1,5 @@
+<app-indexing-progress *ngIf="showLoadingIndicator"></app-indexing-progress>
+
 <ng-container *ngIf="specialEvent">
   <div class="pyro">
     <div class="before"></div>
@@ -8,15 +10,26 @@
 
 <div *ngIf="countdown > 0" class="warning-label">{{ eventName }} in {{ countdown | number }} block{{ countdown === 1 ? '' : 's' }}!</div>
 
-<div class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.time-rtl]="!timeLtr">
+<div class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.time-rtl]="!timeLtr" #blockchainWrapper>
   <div id="blockchain-container" [dir]="timeLtr ? 'rtl' : 'ltr'" #blockchainContainer
+    [class.menu-open]="menuOpen"
+    [class.menu-closing]="menuSliding && !menuOpen"
+    [class.with-menu]="hasMenu"
     (mousedown)="onMouseDown($event)"
     (pointerdown)="onPointerDown($event)"
     (touchmove)="onTouchMove($event)"
     (dragstart)="onDragStart($event)"
     (scroll)="onScroll($event)"
   >
-    <app-blockchain [pageIndex]="pageIndex" [pages]="pages" [blocksPerPage]="blocksPerPage" [minScrollWidth]="minScrollWidth"></app-blockchain>
+    <app-blockchain
+      [containerWidth]="chainWidth"
+      [pageIndex]="pageIndex"
+      [pages]="pages"
+      [blocksPerPage]="blocksPerPage"
+      [minScrollWidth]="minScrollWidth"
+      [scrollableMempool]="true"
+      (mempoolOffsetChange)="onMempoolOffsetChange($event)"
+    ></app-blockchain>
   </div>
   <div class="reset-scroll" [class.hidden]="pageIndex === 0" (click)="resetScroll()">
     <fa-icon [icon]="['fas', 'circle-left']" [fixedWidth]="true"></fa-icon>

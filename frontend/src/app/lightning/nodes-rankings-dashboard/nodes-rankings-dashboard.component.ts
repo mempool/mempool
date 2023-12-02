@@ -20,6 +20,7 @@ export class NodesRankingsDashboard implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`Top lightning nodes`);
+    this.seoService.setDescription($localize`:@@meta.description.lightning.rankings-dashboard:See the top Lightning network nodes ranked by liquidity, connectivity, and age.`);
     this.nodesRanking$ = this.lightningApiService.getNodesRanking$().pipe(share());
   }
 }

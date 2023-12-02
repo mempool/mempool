@@ -26,44 +26,7 @@
   position: absolute;
   left: 0;
   top: 75px;
-  transform: translateX(50vw);
-}
-
-.position-container.liquid, .position-container.liquidtestnet {
-  transform: translateX(420px);
-}
-
-@media (min-width: 768px) {
-  .blockchain-wrapper.time-ltr {
-    .position-container.liquid, .position-container.liquidtestnet {
-      transform: translateX(calc(100vw - 420px));
-    }
-  }
-}
-
-@media (max-width: 767.98px) {
-  .blockchain-wrapper {
-    .position-container {
-      transform: translateX(95vw);
-    }
-    .position-container.liquid, .position-container.liquidtestnet {
-      transform: translateX(50vw);
-    }
-    .position-container.loading {
-      transform: translateX(50vw);
-    }
-  }
-  .blockchain-wrapper.time-ltr {
-    .position-container {
-      transform: translateX(5vw);
-    }
-    .position-container.liquid, .position-container.liquidtestnet {
-      transform: translateX(50vw);
-    }
-    .position-container.loading {
-      transform: translateX(50vw);
-    }
-  }
+  transform: translateX(1280px);
 }
 
 .black-background {

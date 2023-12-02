@@ -1,6 +1,6 @@
 {
   "name": "mempool-unfurl",
-  "version": "0.1.0",
+  "version": "3.0.0-dev",
   "description": "Renderer for mempool open graph link preview images",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",
-    "build": "npm run tsc",
+    "build": "npm run tsc && cp -r src/resources dist/resources",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "unfurler": "node --max-old-space-size=4096 dist/index.js",
     "lint": "./node_modules/.bin/eslint . --ext .ts",

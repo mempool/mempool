@@ -42,9 +42,6 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-'use strict'
-
-import 'cypress-wait-until';
 import { PageIdleDetector } from './PageIdleDetector';
 import { mockWebSocket } from './websocket';
 

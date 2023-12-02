@@ -54,6 +54,10 @@ export function toDecimal(value: number, decimal: number): number {
   return Math.round(value * Math.pow(10, decimal)) / Math.pow(10, decimal);
 }
 
+export function toSigFigs(value: number, sigFigs: number): string {
+  return value >= Math.pow(10, sigFigs - 1) ? Math.round(value).toString() : value.toPrecision(sigFigs);
+}
+
 export function upperFirst(value: string): string {
   return value.slice(0, 1).toUpperCase() + value.slice(1);
 }
@@ -308,4 +312,29 @@ export function takeUntil(input: any[], predicate: CollectionPredicate) {
 export function takeWhile(input: any[], predicate: CollectionPredicate) {
   return takeUntil(input, (item: any, index: number | undefined, collection: any[] | undefined) =>
     !predicate(item, index, collection));
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
+export function hasTouchScreen(): boolean {
+  let hasTouchScreen = false;
+  if ('maxTouchPoints' in navigator) {
+    hasTouchScreen = navigator.maxTouchPoints > 0;
+  } else if ('msMaxTouchPoints' in navigator) {
+    // @ts-ignore
+    hasTouchScreen = navigator.msMaxTouchPoints > 0;
+  } else {
+    const mQ = matchMedia?.('(pointer:coarse)');
+    if (mQ?.media === '(pointer:coarse)') {
+      hasTouchScreen = !!mQ.matches;
+    } else if ('orientation' in window) {
+      hasTouchScreen = true; // deprecated, but good fallback
+    } else {
+      // @ts-ignore - Only as a last resort, fall back to user agent sniffing
+    const UA = navigator.userAgent;
+      hasTouchScreen =
+        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+        /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+    }
+  }
+  return hasTouchScreen;
 }

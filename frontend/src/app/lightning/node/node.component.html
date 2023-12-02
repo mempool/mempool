@@ -3,13 +3,17 @@
   <ng-container *ngIf="!error">
     <h5 class="mb-0" style="color: #ffffff66" i18n="lightning.node">Lightning node</h5>
     <div class="title-container mb-2">
-      <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
-      <span class="tx-link">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0 text-truncate">{{ node.alias }}</h1>
+        <!-- <app-node-owner [nodeOwner$]="nodeOwner$" [publicKey]="node.public_key" [alias]="node.alias" class="claim-btn"></app-node-owner> -->
+      </div>
+      <span class="tx-link justify-content-between align-items-center">
         <span class="node-id">
           <app-truncate [text]="node.public_key" [lastChars]="8" [link]="['/lightning/node' | relativeUrl, node.public_key]">
             <app-clipboard [text]="node.public_key"></app-clipboard>
           </app-truncate>
         </span>
+        <!-- <app-node-owner [nodeOwner$]="nodeOwner$" [publicKey]="node.public_key" [alias]="node.alias" class="claim-btn-mobile"></app-node-owner> -->
       </span>
     </div>
   </ng-container>
@@ -21,7 +25,6 @@
   </div>
 
   <div class="box" *ngIf="!error">
-
     <div class="row">
       <div class="col-md">
         <table class="table table-borderless table-striped table-fixed">
@@ -58,6 +61,9 @@
             <tr *ngIf="(avgChannelDistance$ | async) as avgDistance;">
               <td i18n="lightning.avg-distance" class="text-truncate">Avg channel distance</td>
               <td class="direction-ltr">{{ avgDistance | amountShortener: 1 }} <span class="symbol">km</span> <span class="separator">·</span>{{ kmToMiles(avgDistance) | amountShortener: 1 }} <span class="symbol">mi</span></td>
+            </tr>
+            <tr *ngIf="!node.geolocation" class="d-none d-md-table-row">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
             </tr>
           </tbody>
         </table>
@@ -100,11 +106,50 @@
                 </td>
               </ng-template>
             </tr>
+            <tr *ngIf="node.geolocation && node.featuresBits">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
+            </tr>
+            <tr *ngIf="!node.geolocation && node.featuresBits" class="d-table-row d-md-none">
+              <ng-container *ngTemplateOutlet="featurebits;context:{bits: node.featuresBits}"></ng-container>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
 
+  <ng-template #featurebits let-bits="bits">
+    <td i18n="transaction.features|Transaction features" class="text-truncate label">Features</td>
+    <td class="d-flex justify-content-between">
+      <span class="text-truncate w-90">{{ bits }}</span>
+      <button type="button" class="btn btn-outline-info btn-xs" (click)="toggleFeatures()" i18n="transaction.details|Transaction Details">Details</button>
+    </td>
+  </ng-template>
+
+  <div class="box mt-2" *ngIf="!error && showFeatures">
+    <div class="row">
+      <div class="col-md">
+        <div class="mb-3">
+          <h5>Raw bits</h5>
+          <span class="text-wrap w-100"><small>{{ node.featuresBits }}</small></span>
+        </div>
+        <h5 i18n="lightning.decoded|Decoded">Decoded</h5>
+        <table class="table table-borderless table-striped table-fixed">
+          <thead>
+            <th style="width: 13%">Bit</th>
+            <th i18n="lightning.as-name">Name</th>
+            <th style="width: 25%; text-align: right">Required</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let feature of node.features">
+              <td style="width: 13%">{{ feature.bit }}</td>
+              <td>{{ feature.name }}</td>
+              <td style="width: 25%; text-align: right">{{ feature.is_required }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div class="input-group mt-3" *ngIf="!error && node.socketsObject.length">
@@ -352,5 +397,3 @@
 
   </div>
 </ng-template>
-
-<br>

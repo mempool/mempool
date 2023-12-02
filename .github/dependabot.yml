@@ -1,24 +1,42 @@
 version: 2
 updates:
   - package-ecosystem: npm
+    versioning-strategy: increase
     directory: "/backend"
     schedule:
       interval: daily
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
     allow:
       - dependency-type: "production"
 
   - package-ecosystem: npm
     directory: "/frontend"
+    versioning-strategy: increase
+    groups:
+      frontend-angular-dependencies:
+        patterns:
+          - "@angular*"
+          - "@ng-*"
+          - "ngx-*"
+      frontend-jest-dependencies:
+        patterns:
+          - "@types/jest"
+          - "jest"
+      frontend-eslint-dependencies:
+        patterns:
+          - "@typescript-eslint*"
+          - "eslint"
     schedule:
       interval: daily
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
     allow:
       - dependency-type: "production"
 
@@ -28,7 +46,8 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
 
   - package-ecosystem: docker
     directory: "/docker/frontend"
@@ -36,7 +55,8 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -44,4 +64,5 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-patch"]

@@ -80,7 +80,13 @@ class ChannelsApi {
 
   public async $searchChannelsById(search: string): Promise<any[]> {
     try {
-      const searchStripped = search.replace('%', '') + '%';
+      // restrict search to valid id/short_id prefix formats
+      let searchStripped = search.match(/[0-9]+[0-9x]*/)?.[0] || '';
+      if (!searchStripped.length) {
+        return [];
+      }
+      // add wildcard to search by prefix
+      searchStripped += '%';
       const query = `SELECT id, short_id, capacity, status FROM channels WHERE id LIKE ? OR short_id LIKE ? LIMIT 10`;
       const [rows]: any = await DB.query(query, [searchStripped, searchStripped]);
       return rows;
@@ -113,6 +119,26 @@ class ChannelsApi {
       return rows;
     } catch (e) {
       logger.err('$getClosedChannelsWithoutReason error: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  public async $getPenaltyClosedChannels(): Promise<any[]> {
+    try {
+      const query = `
+        SELECT n1.alias AS alias_left,
+          n2.alias AS alias_right,
+          channels.*
+        FROM channels
+        LEFT JOIN nodes AS n1 ON n1.public_key = channels.node1_public_key
+        LEFT JOIN nodes AS n2 ON n2.public_key = channels.node2_public_key
+        WHERE channels.status = 2 AND channels.closing_reason = 3
+        ORDER BY closing_date DESC
+      `;
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err('$getPenaltyClosedChannels error: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

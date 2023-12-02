@@ -56,4 +56,12 @@ export class StorageService {
       console.log(e);
     }
   }
+
+  getAuth(): any | null {
+    try {
+      return JSON.parse(localStorage.getItem('auth'));
+    } catch(e) {
+      return null;
+    }
+  }
 }

@@ -5,6 +5,7 @@ import { switchMap, map, tap, filter } from 'rxjs/operators';
 import { MempoolBlock, TransactionStripped } from '../../interfaces/websocket.interface';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   network$: Observable<string>;
   mempoolBlockIndex: number;
   mempoolBlock$: Observable<MempoolBlock>;
+  mempoolBlockTransactions$: Observable<TransactionStripped[]>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
   previewTx: TransactionStripped | void;
   webGlEnabled: boolean;
@@ -53,6 +55,8 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
                 const ordinal = this.getOrdinal(mempoolBlocks[this.mempoolBlockIndex]);
                 this.ordinal$.next(ordinal);
                 this.seoService.setTitle(ordinal);
+                this.seoService.setDescription($localize`:@@meta.description.mempool-block:See stats for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.`);
+                mempoolBlocks[this.mempoolBlockIndex].isStack = mempoolBlocks[this.mempoolBlockIndex].blockVSize > this.stateService.blockVSize;
                 return mempoolBlocks[this.mempoolBlockIndex];
               })
             );
@@ -61,6 +65,8 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
         })
       );
+
+    this.mempoolBlockTransactions$ = this.stateService.liveMempoolBlockTransactions$.pipe(map(txMap => Object.values(txMap)));
 
     this.network$ = this.stateService.networkChanged$;
   }

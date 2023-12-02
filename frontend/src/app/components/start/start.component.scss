@@ -6,6 +6,24 @@
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  width: 100%;
+
+  transform: translateX(0px);
+  transition: transform 0;
+
+  &.menu-open {
+    transform: translateX(-112.5px);
+    transition: transform 0.25s;
+  }
+
+  &.menu-closing {
+    transform: translateX(0px);
+    transition: transform 0.25s;
+  }
+
+  &.with-menu {
+    width: calc(100% + 120px);
+  }
 }
 
 #blockchain-container::-webkit-scrollbar {

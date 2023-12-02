@@ -9,6 +9,7 @@ import { NodesPerISP } from './nodes-per-isp/nodes-per-isp.component';
 import { NodesRanking } from './nodes-ranking/nodes-ranking.component';
 import { NodesRankingsDashboard } from './nodes-rankings-dashboard/nodes-rankings-dashboard.component';
 import { GroupComponent } from './group/group.component';
+import { JusticeList } from './justice-list/justice-list.component';
 
 const routes: Routes = [
     {
@@ -65,6 +66,10 @@ const routes: Routes = [
           data: {
             type: 'oldest'
           },
+        },
+        {
+          path: 'penalties',
+          component: JusticeList,
         },
         {
           path: '**',

@@ -45,8 +45,8 @@ $dropdown-link-hover-bg: #11131f;
 $dropdown-link-active-color: #fff;
 $dropdown-link-active-bg: #11131f;
 
-@import "~bootstrap/scss/bootstrap";
-@import '~tlite/tlite.css';
+@import "bootstrap/scss/bootstrap";
+@import 'tlite/tlite.css';
 
 html, body {
   height: 100%;
@@ -60,11 +60,12 @@ body {
 
 .container {
   position: relative;
-  padding-bottom: 60px;
 }
-.container-xl {
-  padding-bottom: 60px;
+
+main {
+  margin-top: 24px;
 }
+
 .full-height {
   @media (max-width: 767.98px) {
     min-height: 100vh;
@@ -220,7 +221,7 @@ body {
 }
 
 .block-size, .blocks-container {
-  span {
+  .symbol {
     font-size: 16px;
     color: #fff !important;
   }
@@ -286,6 +287,10 @@ body {
 
 .close:hover {
   color: #fff;
+}
+
+.white-color {
+  color: white;
 }
 
 .green-color {
@@ -495,7 +500,7 @@ html:lang(ru) .card-title {
 }
 
 .fee-distribution-chart {
-  height: 250px;
+  height: 265px;
 }
 
 .fees-wrapper-tooltip-chart {
@@ -514,7 +519,7 @@ html:lang(ru) .card-title {
 .fees-wrapper-tooltip-chart-advanced,
 .tx-wrapper-tooltip-chart-advanced {
   background: rgba(#1d1f31, 0.98);
-  width: 275px;
+  width: 300px;
 
   thead {
     th {
@@ -988,6 +993,10 @@ th {
       margin-right: 10px;
     }
   }
+
+  .btn-audit {
+    margin-left: .5em;
+  }
 }
 
 .scriptmessage {
@@ -1140,4 +1149,25 @@ th {
 
 .visually-hidden {
   display: none;
+}
+
+app-master-page, app-liquid-master-page, app-bisq-master-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 60px;
+  @media (min-width: 992px) {
+    padding-bottom: 0px;
+  }
+}
+
+app-global-footer {
+  margin-top: auto;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 0.5;
+  border-radius: 0.2rem;
 }

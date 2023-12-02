@@ -1,10 +1,12 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input } from '@angular/core';
-import { BehaviorSubject, combineLatest, concat, Observable, timer, EMPTY, Subscription, of } from 'rxjs';
-import { catchError, delayWhen, map, retryWhen, scan, skip, switchMap, tap } from 'rxjs/operators';
+import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, timer, of } from 'rxjs';
+import { delayWhen, map, retryWhen, scan, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
+import { SeoService } from '../../services/seo.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
   selector: 'app-blocks-list',
@@ -12,19 +14,15 @@ import { WebsocketService } from '../../services/websocket.service';
   styleUrls: ['./blocks-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlocksList implements OnInit, OnDestroy {
+export class BlocksList implements OnInit {
   @Input() widget: boolean = false;
 
   blocks$: Observable<BlockExtended[]> = undefined;
-  auditScores: { [hash: string]: number | void } = {};
 
-  auditScoreSubscription: Subscription;
-  latestScoreSubscription: Subscription;
-
+  isMempoolModule = false;
   indexingAvailable = false;
   auditAvailable = false;
   isLoading = true;
-  loadingScores = true;
   fromBlockHeight = undefined;
   paginationMaxSize: number;
   page = 1;
@@ -39,7 +37,10 @@ export class BlocksList implements OnInit, OnDestroy {
     private apiService: ApiService,
     private websocketService: WebsocketService,
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
+    private seoService: SeoService,
   ) {
+    this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
   }
 
   ngOnInit(): void {
@@ -54,6 +55,16 @@ export class BlocksList implements OnInit, OnDestroy {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
+    if (!this.widget) {
+      this.seoService.setTitle($localize`:@@m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
+    }
+    if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
+      this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
+    } else {
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
+    }
+
+
     this.blocks$ = combineLatest([
       this.fromHeightSubject.pipe(
         switchMap((fromBlockHeight) => {
@@ -65,14 +76,13 @@ export class BlocksList implements OnInit, OnDestroy {
                   this.blocksCount = blocks[0].height + 1;
                 }
                 this.isLoading = false;
-                this.lastBlockHeight = Math.max(...blocks.map(o => o.height))
+                this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
               }),
               map(blocks => {
-                if (this.indexingAvailable) {
+                if (this.stateService.env.BASE_MODULE === 'mempool') {
                   for (const block of blocks) {
                     // @ts-ignore: Need to add an extra field for the template
-                    block.extras.pool.logo = `/resources/mining-pools/` +
-                      block.extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                    block.extras.pool.logo = `/resources/mining-pools/` + block.extras.pool.slug + '.svg';
                   }
                 }
                 if (this.widget) {
@@ -81,17 +91,17 @@ export class BlocksList implements OnInit, OnDestroy {
                 return blocks;
               }),
               retryWhen(errors => errors.pipe(delayWhen(() => timer(10000))))
-            )
+            );
         })
       ),
       this.stateService.blocks$
         .pipe(
-          switchMap((block) => {
-            if (block[0].height <= this.lastBlockHeight) {
-              return [null]; // Return an empty stream so the last pipe is not executed
+          switchMap((blocks) => {
+            if (blocks[0].height <= this.lastBlockHeight) {
+              return of([]); // Return an empty stream so the last pipe is not executed
             }
-            this.lastBlockHeight = block[0].height;
-            return [block];
+            this.lastBlockHeight = blocks[0].height;
+            return of(blocks);
           })
         )
     ])
@@ -103,77 +113,36 @@ export class BlocksList implements OnInit, OnDestroy {
           }
           if (blocks[1]) {
             this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
-            if (this.stateService.env.MINING_DASHBOARD) {
+            if (this.isMempoolModule) {
               // @ts-ignore: Need to add an extra field for the template
               blocks[1][0].extras.pool.logo = `/resources/mining-pools/` +
-                blocks[1][0].extras.pool.name.toLowerCase().replace(' ', '').replace('.', '') + '.svg';
+                blocks[1][0].extras.pool.slug + '.svg';
             }
             acc.unshift(blocks[1][0]);
             acc = acc.slice(0, this.widget ? 6 : 15);
           }
           return acc;
-        }, [])
-      );
-
-    if (this.indexingAvailable && this.auditAvailable) {
-      this.auditScoreSubscription = this.fromHeightSubject.pipe(
-        switchMap((fromBlockHeight) => {
-          this.loadingScores = true;
-          return this.apiService.getBlockAuditScores$(this.page === 1 ? undefined : fromBlockHeight)
-            .pipe(
-              catchError(() => {
-                return EMPTY;
-              })
-            );
-        })
-      ).subscribe((scores) => {
-        Object.values(scores).forEach(score => {
-          this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
-        });
-        this.loadingScores = false;
-      });
-
-      this.latestScoreSubscription = this.stateService.blocks$.pipe(
-        switchMap((block) => {
-          if (block[0]?.extras?.matchRate != null) {
-            return of({
-              hash: block[0].id,
-              matchRate: block[0]?.extras?.matchRate,
+        }, []),
+        switchMap((blocks) => {
+          if (this.isMempoolModule && this.auditAvailable) {
+            blocks.forEach(block => {
+              block.extras.feeDelta = block.extras.expectedFees ? (block.extras.totalFees - block.extras.expectedFees) / block.extras.expectedFees : 0;
             });
           }
-          else if (block[0]?.id && this.auditScores[block[0].id] === undefined) {
-            return this.apiService.getBlockAuditScore$(block[0].id)
-              .pipe(
-                catchError(() => {
-                  return EMPTY;
-                })
-              );
-          } else {
-            return EMPTY;
-          }
-        }),
-      ).subscribe((score) => {
-        if (score && score.hash) {
-          this.auditScores[score.hash] = score?.matchRate != null ? score.matchRate : null;
-        }
-      });
-    }
+          return of(blocks);
+        })
+      );
   }
 
-  ngOnDestroy(): void {
-    this.auditScoreSubscription?.unsubscribe();
-    this.latestScoreSubscription?.unsubscribe();
-  }
-
-  pageChange(page: number) {
+  pageChange(page: number): void {
     this.fromHeightSubject.next((this.blocksCount - 1) - (page - 1) * 15);
   }
 
-  trackByBlock(index: number, block: BlockExtended) {
+  trackByBlock(index: number, block: BlockExtended): number {
     return block.height;
   }
 
-  isEllipsisActive(e) {
+  isEllipsisActive(e): boolean {
     return (e.offsetWidth < e.scrollWidth);
   }
 }

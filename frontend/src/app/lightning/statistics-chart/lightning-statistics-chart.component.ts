@@ -1,5 +1,5 @@
 import { Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
@@ -64,6 +64,7 @@ export class LightningStatisticsChartComponent implements OnInit {
       this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`:@@ea8db27e6db64f8b940711948c001a1100e5fe9f:Lightning Network Capacity`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.stats-chart:See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -131,7 +132,7 @@ export class LightningStatisticsChartComponent implements OnInit {
       animation: false,
       color: [
         '#FFB300',
-        new graphic.LinearGradient(0, 0.75, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#D81B60' },
           { offset: 1, color: '#D81B60AA' },
         ]),
