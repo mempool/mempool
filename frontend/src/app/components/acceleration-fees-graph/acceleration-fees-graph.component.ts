@@ -72,7 +72,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
       this.hrStatsObservable$ = this.apiService.getAccelerationHistory$('24h').pipe(
         map((accelerations) => {
           return {
-            avgFeeDelta: accelerations.filter(acc => acc.status === 'mined' || acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
+            avgFeeDelta: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
           };
         })
       );
@@ -87,7 +87,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
         }),
         map(([accelerations, blockFeesResponse]) => {
           return {
-            avgFeeDelta: accelerations.filter(acc => acc.status === 'mined' || acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
+            avgFeeDelta: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
           };
         }),
       );
@@ -132,7 +132,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
     const blockAccelerations = {};
 
     for (const acceleration of accelerations) {
-      if (acceleration.status === 'mined' || acceleration.status === 'completed') {
+      if (acceleration.status === 'completed') {
         if (!blockAccelerations[acceleration.blockHeight]) {
           blockAccelerations[acceleration.blockHeight] = [];
         }

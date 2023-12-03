@@ -54,12 +54,16 @@ export class AcceleratorDashboardComponent implements OnInit {
       )
     ]).pipe(
       switchMap(([blocks, accelerations]) => {
+        const blockMap = {};
+        for (const block of blocks) {
+          blockMap[block.id] = block;
+        }
         const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (['mined', 'completed'].includes(acceleration.status) && !accelerationsByBlock[acceleration.blockHash]) {
-            accelerationsByBlock[acceleration.blockHash] = [];
-          }
-          if (['mined', 'completed'].includes(acceleration.status)) {
+          if (['mined', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
+            if (!accelerationsByBlock[acceleration.blockHash]) {
+              accelerationsByBlock[acceleration.blockHash] = [];
+            }
             accelerationsByBlock[acceleration.blockHash].push(acceleration);
           }
         }
