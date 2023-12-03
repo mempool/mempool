@@ -7,13 +7,12 @@
     <!-- 24h stats -->
     <div class="col">
       <div class="main-title">
-        <span [attr.data-cy]="'acceleration-stats'" i18n="accelerator.acceleration-stats">Acceleration stats</span>&nbsp;
-        <span style="font-size: xx-small" i18n="mining.144-blocks">(144 blocks)</span>
+        <span [attr.data-cy]="'pending-accelerations'" i18n="accelerator.pending-accelerations">Pending accelerations</span>
       </div>
       <div class="card-wrapper">
         <div class="card">
           <div class="card-body more-padding">
-            <app-acceleration-stats timespan="24h"></app-acceleration-stats>
+            <app-acceleration-stats timespan="now"></app-acceleration-stats>
           </div>
         </div>
       </div>
