@@ -105,5 +105,9 @@
       "node205.tk7.mempool.space",
       "node206.tk7.mempool.space"
     ]
+  },
+    "MEMPOOL_SERVICES": {
+    "API": "https://mempool.space/api/v1/services",
+    "ACCELERATIONS": true
   }
 }
