@@ -83,9 +83,13 @@
 
     <!-- Accelerator -->
     <ng-container *ngIf="!tx?.status?.confirmed && showAccelerationSummary">
-      <div class="title mt-3">
+      <br>
+      <div class="title float-left">
         <h2>Accelerate</h2>
       </div>
+      <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-right" (click)="showAccelerationSummary = false" i18n="hide-accelerator">Hide accelerator</button>
+      <div class="clearfix"></div>
+
       <div class="box">
         <app-accelerate-preview [tx]="tx" [scrollEvent]="scrollIntoAccelPreview"></app-accelerate-preview>
       </div>
