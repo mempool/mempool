@@ -2922,7 +2922,7 @@ export const restApiDocsData = [
     fragment: "get-blocks-bulk",
     title: "GET Blocks (Bulk)",
     description: {
-      default: "<p>Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 10 blocks. If <code>:maxHeight</code> is not specified, it defaults to the current tip.</p><p>To return data for more than 10 blocks, consider becoming an <a href='/enterprise'>enterprise sponsor</a>.</p>"
+      default: "<p>Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 10 blocks. If <code>:maxHeight</code> is not specified, it defaults to the current tip.</p><p>To return data for more than 10 blocks, consider becoming an <a href='https://mempool.space/enterprise'>enterprise sponsor</a>.</p>"
     },
     urlString: "/v1/blocks-bulk/:minHeight[/:maxHeight]",
     showConditions: bitcoinNetworks,

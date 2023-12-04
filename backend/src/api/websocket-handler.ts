@@ -94,9 +94,13 @@ class WebsocketHandler {
       throw new Error('WebSocket.Server is not set');
     }
 
-    this.wss.on('connection', (client: WebSocket) => {
+    this.wss.on('connection', (client: WebSocket, req) => {
       this.numConnected++;
-      client.on('error', logger.info);
+      client['remoteAddress'] = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+      client.on('error', (e) => {
+        logger.info(`websocket client error from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
+        client.close();
+      });
       client.on('close', () => {
         this.numDisconnected++;
       });
@@ -282,7 +286,8 @@ class WebsocketHandler {
             client.send(serializedResponse);
           }
         } catch (e) {
-          logger.debug('Error parsing websocket message: ' + (e instanceof Error ? e.message : e));
+          logger.debug(`Error parsing websocket message from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
+          client.close();
         }
       });
     });

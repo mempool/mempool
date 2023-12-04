@@ -152,6 +152,16 @@
 	@media (min-width: 768px){
 		display: inline-block;
 	}
+  @media (max-width: 425px){
+		display: flex;
+    flex-direction: column;
+	}
+}
+
+.effective-fee-rating {
+  @media (max-width: 767px){
+    margin-right: 0px !important;
+  }
 }
 
 .title {
@@ -169,7 +179,7 @@
 	}
 }
 
-.details-button, .flow-toggle {
+.details-button, .flow-toggle, .accelerator-toggle {
   margin-top: -5px;
   margin-left: 10px;
 	@media (min-width: 768px){
