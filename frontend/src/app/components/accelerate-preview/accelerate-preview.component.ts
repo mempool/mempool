@@ -56,6 +56,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   userBid = 0;
   selectFeeRateIndex = 1;
   isMobile: boolean = window.innerWidth <= 767.98;
+  user: any = undefined;
 
   maxRateOptions: RateOption[] = [];
 
@@ -78,6 +79,8 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnInit() {
+    this.user = this.storageService.getAuth()?.user ?? null;
+
     this.estimateSubscription = this.apiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
