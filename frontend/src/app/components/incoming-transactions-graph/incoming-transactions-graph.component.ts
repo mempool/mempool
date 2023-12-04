@@ -209,8 +209,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.template === 'widget') ? '125px' : '135px'};
-                      background: transparent;
+        extraCssText: `background: transparent;
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
@@ -233,7 +232,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
               }
             }
           });
-          return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
+          return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}" 
+                  style="width: ${(this.windowPreference === '2h' || this.template === 'widget') ? '125px' : '215px'}">${itemFormatted}</div>`;
         }
       },
       xAxis: [
