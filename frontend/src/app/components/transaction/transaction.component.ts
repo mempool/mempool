@@ -21,7 +21,7 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -49,6 +49,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchCpfpSubscription: Subscription;
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
+  fetchAccelerationSubscription: Subscription;
   txReplacedSubscription: Subscription;
   txRbfInfoSubscription: Subscription;
   mempoolPositionSubscription: Subscription;
@@ -62,12 +63,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   rbfReplaces: string[];
   rbfInfo: RbfTree;
   cpfpInfo: CpfpInfo | null;
+  accelerationInfo: Acceleration | null = null;
   sigops: number | null;
   adjustedVsize: number | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
+  fetchAcceleration$ = new Subject<string>();
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -238,6 +241,24 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
+      tap(() => {
+        this.accelerationInfo = null;
+      }),
+      switchMap((blockHash: string) => {
+        return this.apiService.getAccelerationHistory$({ blockHash });
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe((accelerationHistory) => {
+      for (const acceleration of accelerationHistory) {
+        if (acceleration.txid === this.txId) {
+          this.accelerationInfo = acceleration;
+        }
+      }
+    });
+
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
@@ -365,6 +386,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.getTransactionTime();
             }
           } else {
+            this.fetchAcceleration$.next(tx.status.block_hash);
             this.transactionTime = 0;
           }
 
@@ -417,6 +439,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
         this.audioService.playSound('magic');
+        this.fetchAcceleration$.next(block.id);
       }
     });
 
@@ -585,6 +608,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rbfInfo = null;
     this.rbfReplaces = [];
     this.showCpfpDetails = false;
+    this.accelerationInfo = null;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
     document.body.scrollTo(0, 0);
@@ -664,6 +688,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
     this.fetchCachedTxSubscription.unsubscribe();
+    this.fetchAccelerationSubscription.unsubscribe();
     this.txReplacedSubscription.unsubscribe();
     this.txRbfInfoSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
