@@ -302,3 +302,26 @@ export interface INode {
   funding_balance?: number;
   closing_balance?: number;
 }
+
+export interface Acceleration {
+  txid: string;
+  status: 'requested' | 'accelerating' | 'mined' | 'completed' | 'failed';
+  pools: number[];
+  feePaid: number;
+  added: number; // timestamp
+  lastUpdated: number; // timestamp
+  baseFee: number;
+  vsizeFee: number;
+  effectiveFee: number;
+  effectiveVsize: number;
+  feeDelta: number;
+  blockHash: string;
+  blockHeight: number;
+}
+
+export interface AccelerationHistoryParams {
+  timeframe?: string,
+  status?: string,
+  pool?: string,
+  blockHash?: string,
+}
