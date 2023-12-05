@@ -26,6 +26,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
+  @Input() filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -458,6 +459,14 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   setHighlightingEnabled(enabled: boolean): void {
     if (this.scene) {
       this.scene.setHighlighting(enabled);
+      this.start();
+    }
+  }
+
+  setFilterFlags(flags: bigint | null): void {
+    if (this.scene) {
+      console.log('setting filter flags to ', this.filterFlags.toString(2));
+      this.scene.setFilterFlags(flags);
       this.start();
     }
   }

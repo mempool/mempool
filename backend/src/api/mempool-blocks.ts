@@ -1,6 +1,6 @@
 import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -169,7 +169,7 @@ class MempoolBlocks {
   private calculateMempoolDeltas(prevBlocks: MempoolBlockWithTransactions[], mempoolBlocks: MempoolBlockWithTransactions[]): MempoolBlockDelta[] {
     const mempoolBlockDeltas: MempoolBlockDelta[] = [];
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
-      let added: TransactionStripped[] = [];
+      let added: TransactionClassified[] = [];
       let removed: string[] = [];
       const changed: { txid: string, rate: number | undefined, acc: boolean | undefined }[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
@@ -582,6 +582,7 @@ class MempoolBlocks {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
       this.mempoolBlocks = mempoolBlocks;
       this.mempoolBlockDeltas = deltas;
+
     }
 
     return mempoolBlocks;
@@ -599,7 +600,7 @@ class MempoolBlocks {
       medianFee: feeStats.medianFee, // Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
       feeRange: feeStats.feeRange, //Common.getFeesInRange(transactions, rangeLength),
       transactionIds: transactionIds,
-      transactions: transactions.map((tx) => Common.stripTransaction(tx)),
+      transactions: transactions.map((tx) => Common.classifyTransaction(tx)),
     };
   }
 

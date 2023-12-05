@@ -1,9 +1,11 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { Request } from 'express';
-import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
+import rbfCache from './rbf-cache';
+import transactionUtils from './transaction-utils';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -136,6 +138,109 @@ export class Common {
       }
     }
     return matches;
+  }
+
+  static setSighashFlags(flags: bigint, signature: string): bigint {
+    switch(signature.slice(-2)) {
+      case '01': return flags | TransactionFlags.sighash_all;
+      case '02': return flags | TransactionFlags.sighash_none;
+      case '03': return flags | TransactionFlags.sighash_single;
+      case '81': return flags | TransactionFlags.sighash_all | TransactionFlags.sighash_acp;
+      case '82': return flags | TransactionFlags.sighash_none | TransactionFlags.sighash_acp;
+      case '83': return flags | TransactionFlags.sighash_single | TransactionFlags.sighash_acp;
+      default: return flags | TransactionFlags.sighash_default; // taproot only
+    }
+  }
+
+  static getTransactionFlags(tx: TransactionExtended): number {
+    let flags = 0n;
+    if (tx.version === 1) {
+      flags |= TransactionFlags.v1;
+    } else if (tx.version === 2) {
+      flags |= TransactionFlags.v2;
+    }
+    const inValues = {};
+    const outValues = {};
+    let rbf = false;
+    for (const vin of tx.vin) {
+      if (vin.sequence < 0xfffffffe) {
+        rbf = true; 
+      }
+      switch (vin.prevout?.scriptpubkey_type) {
+        case 'p2pk': {
+          flags |= TransactionFlags.p2pk;
+          flags = this.setSighashFlags(flags, vin.scriptsig);
+        } break;
+        case 'multisig': flags |= TransactionFlags.p2ms; break;
+        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+        case 'p2sh': flags |= TransactionFlags.p2sh; break;
+        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+        case 'v1_p2tr': {
+          flags |= TransactionFlags.p2tr;
+          if (vin.witness.length > 2) {
+            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - 2]);
+            if (asm?.includes('OP_0 OP_IF')) {
+              flags |= TransactionFlags.inscription;
+            }
+          }
+        } break;
+      }
+      inValues[vin.prevout?.value || Math.random()] = (inValues[vin.prevout?.value || Math.random()] || 0) + 1;
+    }
+    if (rbf) {
+      flags |= TransactionFlags.rbf;
+    } else {
+      flags |= TransactionFlags.no_rbf;
+    }
+    for (const vout of tx.vout) {
+      switch (vout.scriptpubkey_type) {
+        case 'p2pk': flags |= TransactionFlags.p2pk; break;
+        case 'multisig': {
+          flags |= TransactionFlags.p2ms;
+          // TODO - detect fake multisig data embedding
+        } break;
+        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+        case 'p2sh': flags |= TransactionFlags.p2sh; break;
+        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+        case 'v1_p2tr': flags |= TransactionFlags.p2tr; break;
+        case 'op_return': flags |= TransactionFlags.op_return; break;
+      }
+      outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
+    }
+    if (tx.ancestors?.length) {
+      flags |= TransactionFlags.cpfp_child;
+    }
+    if (tx.descendants?.length) {
+      flags |= TransactionFlags.cpfp_parent;
+    }
+    if (rbfCache.getRbfTree(tx.txid)) {
+      flags |= TransactionFlags.replacement;
+    }
+    // fast but bad heuristic to detect possible coinjoins
+    // (at least 5 inputs and 5 outputs, less than half of which are unique amounts)
+    if (tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+      flags |= TransactionFlags.coinjoin;
+    }
+    // more than 5:1 input:output ratio
+    if (tx.vin.length / tx.vout.length >= 5) {
+      flags |= TransactionFlags.consolidation;
+    }
+    // less than 1:5 input:output ratio
+    if (tx.vin.length / tx.vout.length <= 0.2) {
+      flags |= TransactionFlags.batch_payout;
+    }
+
+    return Number(flags);
+  }
+
+  static classifyTransaction(tx: TransactionExtended): TransactionClassified {
+    const flags = this.getTransactionFlags(tx);
+    return {
+      ...this.stripTransaction(tx),
+      flags,
+    };
   }
 
   static stripTransaction(tx: TransactionExtended): TransactionStripped {

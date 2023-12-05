@@ -27,6 +27,7 @@ export default class BlockScene {
   configAnimationOffset: number | null;
   animationOffset: number;
   highlightingEnabled: boolean;
+  filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
   width: number;
   height: number;
   gridWidth: number;
@@ -277,6 +278,20 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.update(update));
   }
 
+  private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {
+    if (tx.dirty || this.dirty) {
+      const txColor = tx.getColor();
+      this.applyTxUpdate(tx, {
+        display: {
+          color: txColor
+        },
+        duration: animate ? (duration || this.animationDuration) : 1,
+        start: startTime,
+        delay: animate ? delay : 0,
+      });
+    }
+  }
+
   private updateTx(tx: TxView, startTime: number, delay: number, direction: string = 'left', animate: boolean = true): void {
     if (tx.dirty || this.dirty) {
       this.saveGridToScreenPosition(tx);
@@ -325,7 +340,7 @@ export default class BlockScene {
     } else {
       this.applyTxUpdate(tx, {
         display: {
-          position: tx.screenPosition
+          position: tx.screenPosition,
         },
         duration: animate ? this.animationDuration : 0,
         minDuration: animate ? (this.animationDuration / 2) : 0,

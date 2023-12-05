@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
@@ -21,6 +21,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
   mempoolBlockTransactions$: Observable<TransactionStripped[]>;
   ordinal$: BehaviorSubject<string> = new BehaviorSubject('');
   previewTx: TransactionStripped | void;
+  filterFlags: bigint | null = 0n;
   webGlEnabled: boolean;
 
   constructor(
@@ -28,11 +29,13 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
+    private cd: ChangeDetectorRef,
   ) {
     this.webGlEnabled = detectWebGL();
   }
 
   ngOnInit(): void {
+    window['setFlags'] = this.setFilterFlags.bind(this);
     this.websocketService.want(['blocks', 'mempool-blocks']);
 
     this.mempoolBlock$ = this.route.paramMap
@@ -88,6 +91,11 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
 
   setTxPreview(event: TransactionStripped | void): void {
     this.previewTx = event;
+  }
+
+  setFilterFlags(flags: bigint | null) {
+    this.filterFlags = flags;
+    this.cd.markForCheck();
   }
 }
 
