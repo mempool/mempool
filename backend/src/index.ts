@@ -43,6 +43,7 @@ import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
+import accelerationApi from './api/services/acceleration';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -205,10 +206,11 @@ class Server {
         }
       }
       const newMempool = await bitcoinApi.$getRawMempool();
+      const newAccelerations = await accelerationApi.$fetchAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool, pollRate);
+        await memPool.$updateMempool(newMempool, newAccelerations, pollRate);
       }
       indexer.$run();
       priceUpdater.$run();
