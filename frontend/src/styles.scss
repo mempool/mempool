@@ -996,6 +996,18 @@ th {
   .btn-audit {
     margin-left: .5em;
   }
+
+  .sidenav {
+    @extend .sidenav;
+    margin-left: 0px !important;
+    margin-right: -250px;
+
+    .open {
+      @extend .open;
+      margin-right: 0px;
+      right: 0px;
+    }
+  }
 }
 
 .scriptmessage {
