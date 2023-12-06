@@ -180,15 +180,37 @@
 </ng-template>
 
 <ng-template type="why-is-transaction-stuck-in-mempool">
-  <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool. Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">ways to accelerate the process</a>.</p><p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p><p style='font-weight:700'>This site only provides data about the Bitcoin network—it cannot help you get your transaction confirmed quicker.</p>
+  <p>If it's been a while and your transaction hasn't confirmed, your transaction is probably using a lower feerate relative to other transactions currently in the mempool.</p>
+  <p style='font-weight:700'> You can accelerate your transaction with <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-mempool-accelerator">Mempool Accelerator™</a></p>
+  <p>Depending on how you made your transaction, there may be <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">other ways</a> to increase the fee.</p>
+  <p>There's no need to panic—a Bitcoin transaction will always either confirm completely (or not at all) at some point. As long as you have your transaction's ID, you can always see where your funds are.</p>
 </ng-template>
 
 <ng-template type="how-to-get-transaction-confirmed-quickly">
-  <p>To get your transaction confirmed quicker, you will need to increase its effective feerate.</p><p>If your transaction was created with RBF enabled, your stuck transaction can simply be replaced with a new one that has a higher fee.</p><p>Otherwise, if you control any of the stuck transaction's outputs, you can use CPFP to increase your stuck transaction's effective feerate.</p><p>If you are not sure how to do RBF or CPFP, work with the tool you used to make the transaction (wallet software, exchange company, etc). This website only provides data about the Bitcoin network, so there is nothing it can do to help you get your transaction confirmed quicker.</p>
+  <p>There are 3 ways to increase the incentive for a miner to include your transaction</p>
+  <ol>
+    <li>
+      <p><b>Replace By Fee (RBF)</b></p>
+      <p>If you are the sender in a bitcoin transaction you can create a new transaction which spends the same inputs but with a higher fee.</p>
+      <p>Full RBF miners will mine blocks containing your replacement even if you don't flag RBF, but you may have issues propagating the transaction. </p>
+    </li>
+    <li>
+      <p><b>Child Pays for Parent (CPFP)</b></p>
+      <p>If you are the recipient of an unconfirmed transaction output you can spend it and increase the effective fee (the weighted average of both the original unconfirmed transaction and your CPFP transaction).</p>
+      <p>A miner can't confirm a CPFP transaction without also confirming the original, making it impossible for the miner to take the fee from your CPFP unless  your unconfirmed original transaction is included in the same (or a previous) block.</p>
+    </li>
+    <li>
+      <p><b>Out of Band</b></p>
+      <p>The <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="what-is-mempool-accelerator">Mempool Accelerator™</a> is a transaction acceleration marketplace which enables acceleration offers to be made to mining partners, where payment is made via an alternate method (not in the onchain transaction fee).</p>
+      <p>Unlike RBF and CPFP a new onchain transaction does not need to be signed for each fee increase and depending on the payment method used may not be required at all, but trust is required by one or more parties involved (miner or user). </p>
+    </li>
+  </ol>
 </ng-template>
 
 <ng-template type="how-prevent-stuck-transaction">
-  <p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a [routerLink]="['/' | relativeUrl]">front page</a>.</p><p>Also consider using RBF (if your wallet supports it) so that you can bump the feerate on your transaction if it does end up getting stuck.</p>
+  <p>You must use an adequate transaction fee commensurate with how quickly you need the transaction to be confirmed. See Mempool's fee estimates on the <a [routerLink]="['/' | relativeUrl]">front page</a>.</p>
+  <p>If you need your transaction to be confirmed quickly but don't want to overpay you can use the <a href="https://mempool.space/accelerator" target="_blank">Mempool Accelerator™ </a>.</p>
+  <p>You may be able to increase your transaction bid manually <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-get-transaction-confirmed-quickly">using RBF / CPFP</a>, if your wallet supports these features.</p>
 </ng-template>
 
 <ng-template type="looking-up-transactions">
@@ -298,4 +320,68 @@
 
 <ng-template type="address-lookup-issues">
   <p>If you're getting errors when doing address lookups, it's probably because of your Electrum server backend.</p><p>Mempool uses an Electrum server to do address lookups. There are several implementations of the Electrum server protocol, and Mempool can use any of them, but the implementation you use affects performance:</p><ol><li><a href="https://github.com/romanz/electrs" target="_blank">romanz/electrs</a>. This is a common choice for its low resource requirements, and most full-node distros use it. But while this implementation works great for basic queries, it will struggle with heavier ones (e.g. looking up addresses with many transactions)—especially when running on low-power hardware like a Raspberry Pi.</li><li><a href="https://github.com/cculianu/Fulcrum" target="_blank">Fulcrum</a>. Fulcrum requires more resources than romanz/electrs but it can still run on a Raspberry Pi, and it handles heavy queries much more efficiently. If you're having issues with romanz/electrs, Fulcrum is worth a try.</li><li><a href="https://github.com/Blockstream/electrs" target="_blank">blockstream/electrs</a>. If you have stronger hardware, consider running Blockstream's electrs implementation. It's the backend mempool.space uses, and is also what powers blockstream.info.</li></ol>
+</ng-template>
+
+<ng-template type="what-is-mempool-accelerator">
+  <p><a href="https://mempool.space/accelerator" target="_blank">Mempool Accelerator™ </a> is a bitcoin transaction prioritisation service offered by Mempool Space K.K. in collaboration bitcoin mining partners - Using the accelerator you can get your transaction confirmed quickly and easily.</p>
+</ng-template>
+
+<ng-template type="how-does-mempool-accelerator-work">
+  <p>When a user requests an acceleration the following actions are taken:</p>
+  <ol>
+    <li>A hold of an amount equal to the "Maximum Acceleration Bid" is placed on the users account balance.</li>
+    <li>The transaction is monitored to detect ejection from the accelerator mempool. If at any time the transaction is replaced or otherwise ejected from the accelerator mempool the transaction acceleration will be cancelled.</li>
+    <li>The acceleration request is sent to our mining partners, who apply a fee delta equal to the "Maximum Acceleration Bid" to the transaction.</li>
+    <li>The transaction is included in the next block produced by our mining partners.</li>
+    <li>Mempool Space K.K. calculates the acceleration fee retrospectively (taking into account regular and accelerated transactions) and debits the user balance appropriately. </li>
+    <li>Any user balance still on hold is released for future accelerations.</li>
+  </ol>  
+</ng-template>
+
+<ng-template type="join-accelerator-waitlist">
+  <p>If you <a href="https://mempool.space/signup" target="_blank">sign up for an account</a> you will automatically join the Mempool Accelerator™ waitlist.</p>
+  <p>You will get notified once you are granted access, although this will not happy until internal testing is completed and the service is rolled out. See <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">here</a> for more details.</p>
+</ng-template>
+
+<ng-template type="who-has-access-to-mempool-accelerator">
+  <p>Currently access to Mempool Accelerator™ is limited to internal testers.</p>
+  <p>Anyone can <a href="https://mempool.space/signup" target="_blank">sign up</a> to join the waitlist, though their account will not be authorized immediately.
+  <p>Users who have signed up for the waitlist will see a banner in their account accelerator overview tab stating "You are currently on the waitlist. You will get notified once you are granted access". No user action is required and access will be granted as soon as possible.</p>
+  <p>Once the service is ready access will be rolled out to Mempool Enterprise® Sponsors and those on the <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="join-accelerator-waitlist">waitlist</a> for Mempool Accelerator™. </p>
+</ng-template>
+
+<ng-template type="account-requirement">
+  <p>The blockspace market will change between the time when a user requests a transaction acceleration and the time that one of our mining partners finds a block. At the time of making an acceleration request it is not possible to know what bid will be sufficient to get into the next block mined by our mining partners, therefore it is not possible to know how much the user should pay.</p>
+  <p>For this reason, at launch is is necessary to <a href="https://mempool.space/signup" target="_blank">sign up for an account</a> to use the Mempool Accelerator™. Having an account makes it possible to place a hold on user balance while awaiting an acceleration, and retrospectively charge customers the appropriate market rate, leaving the remaining balance for subsequent transaction accelerations. This makes the service very convenient for high volume users who can make many accelerations with a single deposit into their Mempool account.</p>
+  <p>We know that some users would prefer to pay per acceleration without using an account, and we hope to develop this functionality in the future.</p>
+</ng-template>
+
+<ng-template type="mempool-accelerator-balance">
+  <p>Mempool Accelerator™ will initially use an accounts model in which <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">authorized users</a> can top-up their account balance by depositing bitcoin (on chain or lightning) or L-BTC, and draw down on their credit when making an acceleration. </p>
+  <p>After <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-to-request-an-acceleration">requesting an acceleration</a> a hold will be placed on the user account with a value equal to the maximum acceleration bid. Once the acceleration is completed the appropriate market price will be computed retrospectively and only this amount will be debited from the user balance, with the remaining held balance being released.</p> 
+  <p>If the transaction is not accelerated the user will not be charged, and the hold will be released. If the transaction is ejected from the Mempool Accelerator™ mempool we reserve the right to charge you. </p>
+</ng-template>
+
+<ng-template type="how-to-request-an-acceleration">
+  <p> A user of Mempool.Space can browse to an unconfirmed transaction and click the accelerate button in the ETA field. They will then be shown the Acceleration details, including a breakdown of the fees associated with the service.</p>
+  <p>Provided the user has an <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">authorized account</a> and a <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">sufficient balance</a> they can click the Accelerate button.</p>
+  <p> Optionally, prior to clicking the Accelerate button the user may adjust the maximum acceleration bid.</p>
+  <p>Once a transaction acceleration has been requested it cannot be cancelled (<a [routerLink]="['/docs/faq' | relativeUrl]" fragment="cancelling-an-acceleration">read more</a>).</p>
+</ng-template>
+
+<ng-template type="cancelling-an-acceleration">
+  <p> Once an acceleration is requested it cannot be cancelled by the user. To give the user control over how much they may pay for the acceleration the user can select the maximum acceleration bid when submitting their acceleration request. If the required fee for acceleration exceeds the maximum bid set by the user the acceleration will be cancelled automatically.</p>
+</ng-template>
+
+<ng-template type="mempool-accelerator-improves-transparency">
+  <p>Transaction prioritisation services have existed for much of bitcoin's history, and miners have always been able to choose which transactions are included in their blocks. By running this service with a commitment to transparency we hope to improve public access to blockspace market data, including out of band offers. This transparency is novel, current transaction prioritisation services are private and although transactions which were included as a result of out of band payments can be identified, the amount paid is not public data. Furthermore, these transactions can only be identified in retrospect, after a block has been mined wheres acceleration bids are shown public on Mempool Space when they are made.</p>
+  <p>Mempool Accelerator publishes data on all accelerated transactions for public access. This information is available both on the mempool.space accelerator website and via an API. By making this information public other entities within the bitcoin ecosystem can better understand current and historic blockspace market dynamics. </p>
+  <p>"Fee estimation" algorithms can only utilize data which they have access to, and historically "Fee Estimation" algorithms have been blind to transaction prioritisations where out of band payments are made to miners or mining pools.</p>
+  <p>By making this data public Mempool Accelerator™ will ensure that "Fee Estimation" algorithms can take into account more transaction bid data (both in band and out of band).</p>
+</ng-template>
+
+<ng-template type="will-mining-pools-underpay-miners">
+  <p>If mining pools do not distribute out of band income to miners the incentives of each group are misaligned - mining pools earn more and miners earn less for each accelerated transaction.</p>
+  <p> To help miners hold mining pools to account we developed the <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">Mempool Block Audit</a> feature which highlights transactions which were likely included due to out of band payments (those which were included in blocks but which were not expected when sorting by effective fee rate). </p>
+  <p> The Mempool Accelerator™ <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="mempool-accelerator-improves-transparency">improves transparency</a>, giving miners the data required to inform their decision as to which pool to mine with. For example the Mempool Accelerator fees paid to mining pools will be displayed on the block overview pages, making it easy for miners to determine whether this income is shared with miners.</p>
 </ng-template>
