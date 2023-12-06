@@ -516,28 +516,20 @@
           </ng-template>
         </td>
       </tr>
-      <tr *ngIf="!hasEffectiveFeeRate && accelerationInfo">
-        <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
-        <td>
-          <div class="effective-fee-container">
-            <app-fee-rate [fee]="accelerationInfo.effectiveFee + accelerationInfo.feePaid - accelerationInfo.baseFee - accelerationInfo.vsizeFee" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
-            &nbsp;
-            <span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
-          </div>
-        </td>
-      </tr>
-      <tr *ngIf="!accelerationInfo && cpfpInfo && hasEffectiveFeeRate">
+      <tr *ngIf="(cpfpInfo && hasEffectiveFeeRate) || accelerationInfo">
         <td *ngIf="tx.acceleration || accelerationInfo" i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
         <td *ngIf="!(tx.acceleration || accelerationInfo)" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
-            <app-fee-rate [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
-            <ng-template [ngIf]="tx?.status?.confirmed">
-              <app-tx-fee-rating class="ml-2 mr-2 effective-fee-rating" *ngIf="!accelerationInfo && (tx.fee || tx.effectiveFeePerVsize)" [tx]="tx"></app-tx-fee-rating>
-              <ng-template [ngIf]="accelerationInfo">
+            <app-fee-rate *ngIf="accelerationInfo" [fee]="accelerationInfo.actualFeeDelta" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
+            <app-fee-rate *ngIf="!accelerationInfo" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+
+            <ng-template [ngIf]="tx?.status?.confirmed || tx.acceleration || accelerationInfo">
+              <app-tx-fee-rating *ngIf="!(tx.acceleration || accelerationInfo) && (tx.fee || tx.effectiveFeePerVsize)" class="ml-2 mr-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
+              <ng-container *ngIf="accelerationInfo || tx.acceleration">
                 &nbsp;
                 <span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
-              </ng-template>
+              </ng-container>
             </ng-template>
           </div>
           <button *ngIf="cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>

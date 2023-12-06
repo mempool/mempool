@@ -317,6 +317,8 @@ export interface Acceleration {
   feeDelta: number;
   blockHash: string;
   blockHeight: number;
+
+  actualFeeDelta?: number;
 }
 
 export interface AccelerationHistoryParams {
