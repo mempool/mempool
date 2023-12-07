@@ -43,6 +43,10 @@
         <td class="td-width" i18n="transaction.weight|Transaction Weight">Weight</td>
         <td [innerHTML]="'&lrm;' + ((vsize * 4) | wuBytes: 2)"></td>
       </tr>
+      <tr *ngIf="!auditEnabled && (this.acceleration || (tx && tx.acc))">
+        <td></td>
+        <td><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></td>
+      </tr>
       <tr *ngIf="auditEnabled && tx && tx.status && tx.status.length">
         <td class="td-width" i18n="transaction.audit-status">Audit status</td>
         <ng-container [ngSwitch]="tx?.status">
