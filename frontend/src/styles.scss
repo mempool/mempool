@@ -1001,12 +1001,21 @@ th {
     @extend .sidenav;
     margin-left: 0px !important;
     margin-right: -250px;
+  }
 
-    .open {
-      @extend .open;
-      margin-right: 0px;
-      right: 0px;
-    }
+  .sidenav.open {
+    margin-right: 0px;
+  }
+
+  .profile_image_container {
+    @extend .profile_image_container;
+    margin-right: 0px !important;
+    margin-left: 15px;
+  }
+
+  #blockchain-container.with-menu {
+    width: calc(100% + 120px);
+    left: 120px;
   }
 }
 
