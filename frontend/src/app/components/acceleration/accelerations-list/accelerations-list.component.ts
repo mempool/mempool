@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { Observable, catchError, of, switchMap } from 'rxjs';
-import { Acceleration, BlockExtended } from '../../interfaces/node-api.interface';
-import { ApiService } from '../../services/api.service';
-import { StateService } from '../../services/state.service';
-import { WebsocketService } from '../../services/websocket.service';
+import { Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
+import { ApiService } from '../../../services/api.service';
+import { StateService } from '../../../services/state.service';
+import { WebsocketService } from '../../../services/websocket.service';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -13,8 +13,9 @@ import { WebsocketService } from '../../services/websocket.service';
 })
 export class AccelerationsListComponent implements OnInit {
   @Input() widget: boolean = false;
+  @Input() accelerations$: Observable<Acceleration[]>;
 
-  accelerations$: Observable<Acceleration[]> = undefined;
+  accelerationList$: Observable<Acceleration[]> = undefined;
 
   isLoading = true;
   paginationMaxSize: number;
@@ -39,7 +40,7 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.accelerations$ = this.apiService.getAccelerationHistory$().pipe(
+    this.accelerationList$ = (this.apiService.getAccelerationHistory$({ timeframe: '1m' }) || this.accelerations$).pipe(
       switchMap(accelerations => {
         if (this.widget) {
           return of(accelerations.slice(-6).reverse());
@@ -50,6 +51,9 @@ export class AccelerationsListComponent implements OnInit {
       catchError((err) => {
         this.isLoading = false;
         return of([]);
+      }),
+      tap(() => {
+        this.isLoading = false;
       })
     );
   }

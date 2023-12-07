@@ -120,6 +120,10 @@
     text-align: left;
     width: 30%;
 
+    @media (max-width: 875px) {
+      display: none;
+    }
+
     .pool-name {
       margin-left: 1em;
     }

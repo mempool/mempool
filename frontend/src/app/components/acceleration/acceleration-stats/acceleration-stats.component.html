@@ -8,26 +8,19 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.fee-delta">Fee delta</h5>
+      <h5 class="card-title" i18n="accelerator.out-of-band-fees">Out-of-band Fees</h5>
       <div class="card-text">
-        <div>{{ stats.totalFeeDelta / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
+        <div>{{ stats.totalFeesPaid / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
         <span class="fiat">
-          <app-fiat [value]="stats.totalFeeDelta"></app-fiat>
+          <app-fiat [value]="stats.totalFeesPaid"></app-fiat>
         </span>
       </div>
     </div>
-    <div class="item" *ngIf="timespan !== 'now'">
+    <div class="item">
       <h5 class="card-title" i18n="accelerator.success-rate">Success rate</h5>
       <div class="card-text">
         <div>{{ stats.successRate.toFixed(2) }} %</div>
-        <div class="symbol" i18n="accelerator.mined-next-block">mined in the next block</div>
-      </div>
-    </div>
-    <div class="item" *ngIf="timespan === 'now'">
-      <h5 class="card-title" i18n="accelerator.total-vsize">Total vsize</h5>
-      <div class="card-text">
-        <div [innerHTML]="'&lrm;' + (stats.totalVsize * 4 | vbytes: 2)"></div>
-        <div class="symbol">{{ (stats.totalVsize / 1_000_000).toFixed(2) }}% <span i18n="accelerator.percent-of-next-block"> of next block</span></div>
+        <div class="symbol" i18n="accelerator.mined-next-block">mined</div>
       </div>
     </div>
   </div>
@@ -43,21 +36,14 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="accelerator.fee-delta">Fee delta</h5>
+      <h5 class="card-title" i18n="accelerator.out-of-band-fees">Out-of-band Fees</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>
       </div>
     </div>
-    <div class="item" *ngIf="timespan !== 'now'">
+    <div class="item">
       <h5 class="card-title" i18n="accelerator.success-rate">Success rate</h5>
-      <div class="card-text">
-        <div class="skeleton-loader"></div>
-        <div class="skeleton-loader"></div>
-      </div>
-    </div>
-    <div class="item" *ngIf="timespan === 'now'">
-      <h5 class="card-title" i18n="accelerator.total-vsize">Total vsize</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

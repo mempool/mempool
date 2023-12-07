@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SeoService } from '../../services/seo.service';
-import { WebsocketService } from '../../services/websocket.service';
-import { Acceleration, BlockExtended } from '../../interfaces/node-api.interface';
-import { StateService } from '../../services/state.service';
-import { Observable, catchError, combineLatest, of, switchMap } from 'rxjs';
-import { ApiService } from '../../services/api.service';
+import { SeoService } from '../../../services/seo.service';
+import { WebsocketService } from '../../../services/websocket.service';
+import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
+import { StateService } from '../../../services/state.service';
+import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, of, share, switchMap, tap } from 'rxjs';
+import { ApiService } from '../../../services/api.service';
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,
@@ -18,7 +18,7 @@ interface AccelerationBlock extends BlockExtended {
 })
 export class AcceleratorDashboardComponent implements OnInit {
   blocks$: Observable<AccelerationBlock[]>;
-
+  accelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
 
   constructor(
@@ -33,7 +33,19 @@ export class AcceleratorDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
+    this.accelerations$ = this.stateService.chainTip$.pipe(
+      distinctUntilChanged(),
+      switchMap((chainTip) => {
+        return this.apiService.getAccelerationHistory$({ timeframe: '1w' });
+      }),
+      catchError((e) => {
+        return of([]);
+      }),
+      share(),
+    );
+
     this.blocks$ = combineLatest([
+      this.accelerations$,
       this.stateService.blocks$.pipe(
         switchMap((blocks) => {
           if (this.stateService.env.MINING_DASHBOARD === true) {
@@ -44,16 +56,13 @@ export class AcceleratorDashboardComponent implements OnInit {
             }
           }
           return of(blocks as AccelerationBlock[]);
-        })
-      ),
-      this.apiService.getAccelerationHistory$('24h').pipe(
-        catchError((err) => {
+        }),
+        tap(() => {
           this.loadingBlocks = false;
-          return of([]);
         })
       )
     ]).pipe(
-      switchMap(([blocks, accelerations]) => {
+      switchMap(([accelerations, blocks]) => {
         const blockMap = {};
         for (const block of blocks) {
           blockMap[block.id] = block;

@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, L
 import { EChartsOption, graphic } from 'echarts';
 import { Observable, combineLatest } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../services/api.service';
-import { SeoService } from '../../services/seo.service';
+import { ApiService } from '../../../services/api.service';
+import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis } from '../../shared/graphs.utils';
-import { StorageService } from '../../services/storage.service';
-import { MiningService } from '../../services/mining.service';
+import { download, formatterXAxis } from '../../../shared/graphs.utils';
+import { StorageService } from '../../../services/storage.service';
+import { MiningService } from '../../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
+import { Acceleration } from '../../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -29,6 +30,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
   @Input() widget: boolean = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
+  @Input() accelerations$: Observable<Acceleration[]>;
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
@@ -69,16 +71,16 @@ export class AccelerationFeesGraphComponent implements OnInit {
       this.isLoading = true;
       this.timespan = this.miningWindowPreference;
 
-      this.hrStatsObservable$ = this.apiService.getAccelerationHistory$('24h').pipe(
+      this.hrStatsObservable$ = (this.accelerations$ || this.apiService.getAccelerationHistory$({ timeframe: '24h' })).pipe(
         map((accelerations) => {
           return {
-            avgFeeDelta: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
+            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed' && acc.lastUpdated < (Date.now() - (24 * 60 * 60 * 1000))).reduce((total, acc) => total + acc.feePaid, 0) / accelerations.length
           };
         })
       );
 
       this.statsObservable$ = combineLatest([
-        this.apiService.getAccelerationHistory$(this.miningWindowPreference),
+        (this.accelerations$ || this.apiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
         this.apiService.getHistoricalBlockFees$(this.miningWindowPreference),
       ]).pipe(
         tap(([accelerations, blockFeesResponse]) => {
@@ -87,7 +89,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
         }),
         map(([accelerations, blockFeesResponse]) => {
           return {
-            avgFeeDelta: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feeDelta, 0) / accelerations.length
+            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feePaid, 0) / accelerations.length
           };
         }),
       );
@@ -107,7 +109,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
             this.isLoading = true;
             this.storageService.setValue('miningWindowPreference', timespan);
             this.timespan = timespan;
-            return this.apiService.getAccelerationHistory$();
+            return this.apiService.getAccelerationHistory$({});
           })
         ),
         this.radioGroupForm.get('dateSpan').valueChanges.pipe(
@@ -147,15 +149,18 @@ export class AccelerationFeesGraphComponent implements OnInit {
         last = val.avgHeight;
       }
       let totalFeeDelta = 0;
+      let totalFeePaid = 0;
       let totalCount = 0;
       while (last <= val.avgHeight) {
         totalFeeDelta += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feeDelta, 0);
+        totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feePaid, 0);
         totalCount += (blockAccelerations[last] || []).length;
         last++;
       }
       data.push({
         ...val,
         feeDelta: totalFeeDelta,
+        feePaid: totalFeePaid,
         accelerations: totalCount,
       });
     }
@@ -236,7 +241,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
             icon: 'roundRect',
           },
           {
-            name: 'Total fee delta',
+            name: 'Out-of-band fees paid',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -251,8 +256,8 @@ export class AccelerationFeesGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              if (val >= 1_000_000) {
-                return `${(val / 100_000_000).toPrecision(5)} BTC`;
+              if (val >= 100_000) {
+                return `${(val / 100_000_000).toFixed(3)} BTC`;
               } else {
                 return `${val} sats`;
               }
@@ -303,8 +308,8 @@ export class AccelerationFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 0,
-          name: 'Total fee delta',
-          data: data.map(block =>  [block.timestamp * 1000, block.feeDelta, block.avgHeight]),
+          name: 'Out-of-band fees paid',
+          data: data.map(block =>  [block.timestamp * 1000, block.feePaid, block.avgHeight]),
           type: 'line',
           smooth: 0.25,
           symbol: 'none',
