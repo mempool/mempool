@@ -13,6 +13,7 @@ import { WebsocketService } from '../../../services/websocket.service';
 })
 export class AccelerationsListComponent implements OnInit {
   @Input() widget: boolean = false;
+  @Input() pending: boolean = false;
   @Input() accelerations$: Observable<Acceleration[]>;
 
   accelerationList$: Observable<Acceleration[]> = undefined;
@@ -40,8 +41,14 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.accelerationList$ = (this.apiService.getAccelerationHistory$({ timeframe: '1m' }) || this.accelerations$).pipe(
+    const accelerationObservable$ = this.accelerations$ || (this.pending ? this.apiService.getAccelerations$() : this.apiService.getAccelerationHistory$({ timeframe: '1m' }));
+    this.accelerationList$ = accelerationObservable$.pipe(
       switchMap(accelerations => {
+        if (this.pending) {
+          for (const acceleration of accelerations) {
+            acceleration.status = acceleration.status || 'accelerating';
+          }
+        }
         if (this.widget) {
           return of(accelerations.slice(-6).reverse());
         } else {

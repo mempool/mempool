@@ -3,8 +3,15 @@ import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
-import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, of, share, switchMap, tap } from 'rxjs';
+import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
+import { Color } from '../../block-overview-graph/sprite-types';
+import { hexToColor } from '../../block-overview-graph/utils';
+import TxView from '../../block-overview-graph/tx-view';
+import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+
+const acceleratedColor: Color = hexToColor('8F5FF6');
+const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
 
 interface AccelerationBlock extends BlockExtended {
   accelerationCount: number,
@@ -19,6 +26,8 @@ interface AccelerationBlock extends BlockExtended {
 export class AcceleratorDashboardComponent implements OnInit {
   blocks$: Observable<AccelerationBlock[]>;
   accelerations$: Observable<Acceleration[]>;
+  pendingAccelerations$: Observable<Acceleration[]>;
+  minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
 
   constructor(
@@ -33,6 +42,17 @@ export class AcceleratorDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
+    this.pendingAccelerations$ = interval(30000).pipe(
+      startWith(true),
+      switchMap(() => {
+        return this.apiService.getAccelerations$();
+      }),
+      catchError((e) => {
+        return of([]);
+      }),
+      share(),
+    );
+
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap((chainTip) => {
@@ -42,6 +62,12 @@ export class AcceleratorDashboardComponent implements OnInit {
         return of([]);
       }),
       share(),
+    );
+
+    this.minedAccelerations$ = this.accelerations$.pipe(
+      map(accelerations => {
+        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status))
+      })
     );
 
     this.blocks$ = combineLatest([
@@ -82,5 +108,15 @@ export class AcceleratorDashboardComponent implements OnInit {
         }));
       })
     );
+  }
+
+  getAcceleratorColor(tx: TxView): Color {
+    if (tx.status === 'accelerated' || tx.acc) {
+      return acceleratedColor;
+    } else {
+      const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
+      const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
+      return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+    }
   }
 }

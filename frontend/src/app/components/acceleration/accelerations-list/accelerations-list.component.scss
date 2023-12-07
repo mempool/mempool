@@ -105,3 +105,13 @@ tr, td, th {
 	max-width: 50vw;
   text-align: left;
 }
+
+.no-data {
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  height: 280px;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}

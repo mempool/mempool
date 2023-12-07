@@ -1,12 +1,26 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
-import { Position, Square, ViewUpdateParams } from './sprite-types';
+import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
+import { feeLevels, mempoolFeeColors } from '../../app.constants';
+import { darken, desaturate, hexToColor } from './utils';
+
+const feeColors = mempoolFeeColors.map(hexToColor);
+const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
+const marginalFeeColors = feeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
+const auditColors = {
+  censored: hexToColor('f344df'),
+  missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
+  added: hexToColor('0099ff'),
+  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
+  accelerated: hexToColor('8F5FF6'),
+};
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
   vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
+  getColor: ((tx: TxView) => Color) = defaultColorFunction;
   orientation: string;
   flip: boolean;
   animationDuration: number = 1000;
@@ -26,11 +40,11 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting }:
+  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
       { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ) {
-    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting });
+    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
@@ -63,6 +77,14 @@ export default class BlockScene {
     }
   }
 
+  setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
+    this.getColor = colorFunction;
+    this.dirty = true;
+    if (this.initialised && this.scene) {
+      this.updateColors(performance.now(), 50);
+    }
+  }
+
   // Destroy the current layout and clean up graphics sprites without any exit animation
   destroy(): void {
     Object.values(this.txs).forEach(tx => tx.destroy());
@@ -86,7 +108,7 @@ export default class BlockScene {
       this.applyTxUpdate(txView, {
         display: {
           position: txView.screenPosition,
-          color: txView.getColor()
+          color: this.getColor(txView)
         },
         duration: 0
       });
@@ -217,9 +239,9 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
-  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting }:
+  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
       { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ): void {
     this.animationDuration = animationDuration || 1000;
     this.configAnimationOffset = animationOffset;
@@ -228,6 +250,7 @@ export default class BlockScene {
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
+    this.getColor = colorFunction || defaultColorFunction;
 
     this.scene = {
       count: 0,
@@ -261,9 +284,23 @@ export default class BlockScene {
     }
   }
 
+  private updateColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration: number = 500): void {
+    if (tx.dirty || this.dirty) {
+      const txColor = this.getColor(tx);
+      this.applyTxUpdate(tx, {
+        display: {
+          color: txColor,
+        },
+        start: startTime,
+        delay,
+        duration: animate ? duration : 0,
+      });
+    }
+  }
+
   private setTxOnScreen(tx: TxView, startTime: number, delay: number = 50, direction: string = 'left', animate: boolean = true): void {
     if (!tx.initialised) {
-      const txColor = tx.getColor();
+      const txColor = this.getColor(tx);
       this.applyTxUpdate(tx, {
         display: {
           position: {
@@ -317,6 +354,15 @@ export default class BlockScene {
     startTime = startTime || performance.now();
     for (const id of ids) {
       this.updateTx(this.txs[id], startTime, delay, direction, animate);
+    }
+    this.dirty = false;
+  }
+
+  private updateColors(startTime: number, delay: number = 50, animate: boolean = true, duration: number = 500): void {
+    const ids = this.getTxList();
+    startTime = startTime || performance.now();
+    for (const id of ids) {
+      this.updateColor(this.txs[id], startTime, delay, animate, duration);
     }
     this.dirty = false;
   }
@@ -857,4 +903,49 @@ class BlockLayout {
 
 function feeRateDescending(a: TxView, b: TxView) {
   return b.feerate - a.feerate;
+}
+
+function defaultColorFunction(tx: TxView): Color {
+  const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
+  const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
+  const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
+  // Normal mode
+  if (!tx.scene?.highlightingEnabled) {
+    if (tx.acc) {
+      return auditColors.accelerated;
+    } else {
+      return feeLevelColor;
+    }
+    return feeLevelColor;
+  }
+  // Block audit
+  switch(tx.status) {
+    case 'censored':
+      return auditColors.censored;
+    case 'missing':
+    case 'sigop':
+    case 'rbf':
+      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+    case 'fresh':
+    case 'freshcpfp':
+      return auditColors.missing;
+    case 'added':
+      return auditColors.added;
+    case 'selected':
+      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
+    case 'accelerated':
+      return auditColors.accelerated;
+    case 'found':
+      if (tx.context === 'projected') {
+        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
+      } else {
+        return feeLevelColor;
+      }
+    default:
+      if (tx.acc) {
+        return auditColors.accelerated;
+      } else {
+        return feeLevelColor;
+      }
+  }
 }
