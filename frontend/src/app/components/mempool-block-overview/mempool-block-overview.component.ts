@@ -8,6 +8,8 @@ import { switchMap, filter } from 'rxjs/operators';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Router } from '@angular/router';
+import { Color } from '../block-overview-graph/sprite-types';
+import TxView from '../block-overview-graph/tx-view';
 
 @Component({
   selector: 'app-mempool-block-overview',
@@ -16,6 +18,7 @@ import { Router } from '@angular/router';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
+  @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;

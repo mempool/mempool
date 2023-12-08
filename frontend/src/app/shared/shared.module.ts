@@ -73,6 +73,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { BtcComponent } from './components/btc/btc.component';
 import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
@@ -85,6 +86,9 @@ import { GlobalFooterComponent } from './components/global-footer/global-footer.
 import { AcceleratePreviewComponent } from '../components/accelerate-preview/accelerate-preview.component';
 import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/accelerate-fee-graph.component';
 import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
+import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
+import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
+import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
 import { BlockViewComponent } from '../components/block-view/block-view.component';
 import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
@@ -167,6 +171,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    BtcComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
@@ -190,6 +195,9 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     OnlyVsizeDirective,
     OnlyWeightDirective,
     MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
+    PendingStatsComponent,
   ],
   imports: [
     CommonModule,
@@ -287,6 +295,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    BtcComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
@@ -300,6 +309,9 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AcceleratePreviewComponent,
     AccelerateFeeGraphComponent,
     MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
+    PendingStatsComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,

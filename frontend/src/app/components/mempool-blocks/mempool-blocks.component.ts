@@ -90,7 +90,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   enabledMiningInfoIfNeeded(url) {
-    this.showMiningInfo = url.indexOf('/mining') !== -1;
+    this.showMiningInfo = url.includes('/mining') || url.includes('/acceleration');
     this.cd.markForCheck(); // Need to update the view asap
   }
 
