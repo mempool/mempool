@@ -10,12 +10,15 @@ import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-ch
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
+import { AcceleratorDashboardComponent } from '../components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
 import { PoolRankingComponent } from '../components/pool-ranking/pool-ranking.component';
 import { PoolComponent } from '../components/pool/pool.component';
 import { StartComponent } from '../components/start/start.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
+import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
 
 const routes: Routes = [
   {
@@ -36,6 +39,22 @@ const routes: Routes = [
             component: MiningDashboardComponent,
           },
         ]
+      },
+      {
+        path: 'acceleration',
+        data: { networks: ['bitcoin'] },
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            component: AcceleratorDashboardComponent,
+          }
+        ]
+      },
+      {
+        path: 'acceleration-list',
+        data: { networks: ['bitcoin'] },
+        component: AccelerationsListComponent,
       },
       {
         path: 'mempool-block/:id',
@@ -92,6 +111,11 @@ const routes: Routes = [
             path: 'mining/block-sizes-weights',
             data: { networks: ['bitcoin'] },
             component: BlockSizesWeightsGraphComponent,
+          },
+          {
+            path: 'acceleration/fees',
+            data: { networks: ['bitcoin'] },
+            component: AccelerationFeesGraphComponent,
           },
           {
             path: 'lightning',
