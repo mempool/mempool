@@ -323,7 +323,7 @@
 </ng-template>
 
 <ng-template type="what-is-mempool-accelerator">
-  <p><a href="https://mempool.space/accelerator" target="_blank">Mempool Accelerator™ </a> is a bitcoin transaction prioritisation service offered by Mempool Space K.K. in collaboration bitcoin mining partners - Using the accelerator you can get your transaction confirmed quickly and easily.</p>
+  <p><a href="https://mempool.space/accelerator" target="_blank">Mempool Accelerator™ </a> is a bitcoin transaction prioritisation service offered by mempool.space in collaboration bitcoin mining partners - Using the accelerator you can get your transaction confirmed quickly and easily.</p>
 </ng-template>
 
 <ng-template type="how-does-mempool-accelerator-work">
@@ -333,7 +333,7 @@
     <li>The transaction is monitored to detect ejection from the accelerator mempool. If at any time the transaction is replaced or otherwise ejected from the accelerator mempool the transaction acceleration will be cancelled.</li>
     <li>The acceleration request is sent to our mining partners, who apply a fee delta equal to the "Maximum Acceleration Bid" to the transaction.</li>
     <li>The transaction is included in the next block produced by our mining partners.</li>
-    <li>Mempool Space K.K. calculates the acceleration fee retrospectively (taking into account regular and accelerated transactions) and debits the user balance appropriately. </li>
+    <li>mempool.space calculates the acceleration fee retrospectively (taking into account regular and accelerated transactions) and debits the user balance appropriately. </li>
     <li>Any user balance still on hold is released for future accelerations.</li>
   </ol>  
 </ng-template>
@@ -363,7 +363,7 @@
 </ng-template>
 
 <ng-template type="how-to-request-an-acceleration">
-  <p> A user of Mempool.Space can browse to an unconfirmed transaction and click the accelerate button in the ETA field. They will then be shown the Acceleration details, including a breakdown of the fees associated with the service.</p>
+  <p> A user of mempool.space can browse to an unconfirmed transaction and click the accelerate button in the ETA field. They will then be shown the Acceleration details, including a breakdown of the fees associated with the service.</p>
   <p>Provided the user has an <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">authorized account</a> and a <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="who-has-access-to-mempool-accelerator">sufficient balance</a> they can click the Accelerate button.</p>
   <p> Optionally, prior to clicking the Accelerate button the user may adjust the maximum acceleration bid.</p>
   <p>Once a transaction acceleration has been requested it cannot be cancelled (<a [routerLink]="['/docs/faq' | relativeUrl]" fragment="cancelling-an-acceleration">read more</a>).</p>
@@ -375,7 +375,7 @@
 
 <ng-template type="mempool-accelerator-improves-transparency">
   <p>Transaction prioritisation services have existed for much of bitcoin's history, and miners have always been able to choose which transactions are included in their blocks. By running this service with a commitment to transparency we hope to improve public access to blockspace market data, including out of band offers. This transparency is novel, current transaction prioritisation services are private and although transactions which were included as a result of out of band payments can be identified, the amount paid is not public data. Furthermore, these transactions can only be identified in retrospect, after a block has been mined wheres acceleration bids are shown public on Mempool Space when they are made.</p>
-  <p>Mempool Accelerator publishes data on all accelerated transactions for public access. This information is available both on the mempool.space accelerator website and via an API. By making this information public other entities within the bitcoin ecosystem can better understand current and historic blockspace market dynamics. </p>
+  <p>Mempool Accelerator™ publishes data on all accelerated transactions for public access. This information is available both on the mempool.space accelerator website and via an API. By making this information public other entities within the bitcoin ecosystem can better understand current and historic blockspace market dynamics. </p>
   <p>"Fee estimation" algorithms can only utilize data which they have access to, and historically "Fee Estimation" algorithms have been blind to transaction prioritisations where out of band payments are made to miners or mining pools.</p>
   <p>By making this data public Mempool Accelerator™ will ensure that "Fee Estimation" algorithms can take into account more transaction bid data (both in band and out of band).</p>
 </ng-template>
@@ -383,5 +383,5 @@
 <ng-template type="will-mining-pools-underpay-miners">
   <p>If mining pools do not distribute out of band income to miners the incentives of each group are misaligned - mining pools earn more and miners earn less for each accelerated transaction.</p>
   <p> To help miners hold mining pools to account we developed the <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-block-audits-work">Mempool Block Audit</a> feature which highlights transactions which were likely included due to out of band payments (those which were included in blocks but which were not expected when sorting by effective fee rate). </p>
-  <p> The Mempool Accelerator™ <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="mempool-accelerator-improves-transparency">improves transparency</a>, giving miners the data required to inform their decision as to which pool to mine with. For example the Mempool Accelerator fees paid to mining pools will be displayed on the block overview pages, making it easy for miners to determine whether this income is shared with miners.</p>
+  <p> Mempool Accelerator™ <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="mempool-accelerator-improves-transparency">improves transparency</a>, giving miners the data required to inform their decision as to which pool to mine with. For example Mempool Accelerator fees paid to mining pools will be displayed on the block overview pages, making it easy for miners to determine whether this income is shared with miners.</p>
 </ng-template>

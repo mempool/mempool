@@ -8949,7 +8949,7 @@ export const faqData = [
     category: "advanced",
     showConditions: bitcoinNetworks,
     fragment: "what-is-memory-usage",
-    title: "What is Memory usage?",
+    title: "What is memory usage?",
   },
   {
     type: "endpoint",
