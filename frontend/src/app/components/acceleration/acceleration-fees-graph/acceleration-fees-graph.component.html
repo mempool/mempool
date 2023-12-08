@@ -28,19 +28,8 @@
   </div>
 
   <div *ngIf="widget">
-    <div class="acceleration-fees">
-      <div class="item" *ngIf="(hrStatsObservable$ | async) as stats; else loadingHrStats">
-        <h5 class="card-title" i18n="mining.avg-oob-fees-24h">Avg Out-of-band Fees (24h)</h5>
-        <p class="card-text">
-          <app-btc [satoshis]="stats.avgFeesPaid"></app-btc>
-        </p>
-      </div>
-      <div class="item" *ngIf="(statsObservable$ | async) as stats; else loadingStats">
-        <h5 class="card-title" i18n="mining.avg-oob-fees-1w">Avg Out-of-band Fees (1w)</h5>
-        <p class="card-text">
-          <app-btc [satoshis]="stats.avgFeesPaid"></app-btc>
-        </p>
-      </div>
+    <div class="item">
+      <h5 class="card-title" i18n="acceleration.block-fees">Out-of-band Fees Per Block</h5>
     </div>
   </div>
 
@@ -50,22 +39,4 @@
   <div class="text-center loadingGraphs" *ngIf="isLoading">
     <div class="spinner-border text-light"></div>
   </div>
-
 </div>
-
-<ng-template #loadingHrStats>
-  <div class="item">
-    <h5 class="card-title" i18n="mining.avg-oob-fees-24h">Avg Out-of-band Fees (24h)</h5>
-    <p class="card-text">
-      <span class="skeleton-loader skeleton-loader-big"></span>
-    </p>
-  </div>
-</ng-template>
-<ng-template #loadingStats>
-  <div class="item">
-    <h5 class="card-title" i18n="mining.avg-oob-fees-1w">Avg Out-of-band Fees (1w)</h5>
-    <p class="card-text">
-      <span class="skeleton-loader skeleton-loader-big"></span>
-    </p>
-  </div>
-</ng-template>

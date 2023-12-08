@@ -56,7 +56,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap((chainTip) => {
-        return this.apiService.getAccelerationHistory$({ timeframe: '1w' });
+        return this.apiService.getAccelerationHistory$({ timeframe: '1m' });
       }),
       catchError((e) => {
         return of([]);

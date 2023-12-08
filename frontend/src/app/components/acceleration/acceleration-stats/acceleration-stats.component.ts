@@ -12,7 +12,7 @@ import { Acceleration } from '../../../interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccelerationStatsComponent implements OnInit {
-  @Input() timespan: '24h' | '1w' = '24h';
+  @Input() timespan: '24h' | '1w' | '1m' = '24h';
   @Input() accelerations$: Observable<Acceleration[]>;
   public accelerationStats$: Observable<any>;
 

@@ -7,7 +7,7 @@
     <!-- pending stats -->
     <div class="col">
       <div class="main-title">
-        <span [attr.data-cy]="'pending-accelerations'" i18n="accelerator.pending-accelerations">Pending accelerations</span>
+        <span [attr.data-cy]="'pending-accelerations'" i18n="accelerator.pending-accelerations">Active accelerations</span>
       </div>
       <div class="card-wrapper">
         <div class="card">
@@ -18,16 +18,16 @@
       </div>
     </div>
 
-    <!-- 1w stats -->
+    <!-- 1m stats -->
     <div class="col">
       <div class="main-title">
         <span [attr.data-cy]="'acceleration-stats'" i18n="accelerator.acceleration-stats">Acceleration stats</span>&nbsp;
-        <span style="font-size: xx-small" i18n="mining.144-blocks">(1008 blocks)</span>
+        <span style="font-size: xx-small" i18n="mining.144-blocks">(1 month)</span>
       </div>
       <div class="card-wrapper">
         <div class="card">
           <div class="card-body more-padding">
-            <app-acceleration-stats timespan="1w" [accelerations$]="minedAccelerations$"></app-acceleration-stats>
+            <app-acceleration-stats timespan="1m" [accelerations$]="minedAccelerations$"></app-acceleration-stats>
           </div>
         </div>
       </div>
@@ -54,11 +54,23 @@
       </div>
     </div>
 
-    <!-- Pending List -->
+    <!-- Avg block fees graph -->
+    <!-- <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card">
+        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+          <app-block-fee-rates-graph [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-block-fee-rates-graph>
+          <div class="mt-1"><a [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" fragment="1m" i18n="dashboard.view-more">View more &raquo;</a></div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Recent Accelerations List -->
     <div class="col">
       <div class="card list-card">
         <div class="card-body">
-          <h5 class="card-title d-inline" i18n="dashboard.recent-accelerations">Pending Accelerations</h5>
+          <div class="title-link">
+            <h5 class="card-title d-inline" i18n="dashboard.recent-accelerations">Active Accelerations</h5>
+          </div>
           <app-accelerations-list [attr.data-cy]="'pending-accelerations'" [widget]=true [pending]="true" [accelerations$]="pendingAccelerations$"></app-accelerations-list>
         </div>
       </div>

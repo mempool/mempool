@@ -50,7 +50,7 @@ tr, td, th {
 }
 
 .txid {
-  width: 30%;
+  width: 25%;
   @media (max-width: 1100px) {
     padding-right: 10px;
   }
@@ -64,10 +64,18 @@ tr, td, th {
 }
 
 .fee {
-  width: 25%;
+  width: 35%;
 }
 
-.fee-delta {
+.block {
+  width: 20%;
+}
+
+.bid {
+  width: 30%;
+}
+
+.time {
   width: 25%;
 }
 

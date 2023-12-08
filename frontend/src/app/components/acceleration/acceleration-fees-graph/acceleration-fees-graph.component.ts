@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
 import { EChartsOption, graphic } from 'echarts';
-import { Observable, combineLatest } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subscription, combineLatest } from 'rxjs';
+import { map, max, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis } from '../../../shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../../shared/graphs.utils';
 import { StorageService } from '../../../services/storage.service';
 import { MiningService } from '../../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
@@ -26,7 +26,7 @@ import { Acceleration } from '../../../interfaces/node-api.interface';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccelerationFeesGraphComponent implements OnInit {
+export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
@@ -42,6 +42,7 @@ export class AccelerationFeesGraphComponent implements OnInit {
 
   hrStatsObservable$: Observable<any>;
   statsObservable$: Observable<any>;
+  statsSubscription: Subscription;
   isLoading = true;
   formatNumber = formatNumber;
   timespan = '';
@@ -66,18 +67,10 @@ export class AccelerationFeesGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Acceleration Fees`);
+    this.isLoading = true;
     if (this.widget) {
-      this.miningWindowPreference = '1w';
-      this.isLoading = true;
+      this.miningWindowPreference = '1m';
       this.timespan = this.miningWindowPreference;
-
-      this.hrStatsObservable$ = (this.accelerations$ || this.apiService.getAccelerationHistory$({ timeframe: '24h' })).pipe(
-        map((accelerations) => {
-          return {
-            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed' && acc.lastUpdated < (Date.now() - (24 * 60 * 60 * 1000))).reduce((total, acc) => total + acc.feePaid, 0) / accelerations.length
-          };
-        })
-      );
 
       this.statsObservable$ = combineLatest([
         (this.accelerations$ || this.apiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
@@ -85,7 +78,6 @@ export class AccelerationFeesGraphComponent implements OnInit {
       ]).pipe(
         tap(([accelerations, blockFeesResponse]) => {
           this.prepareChartOptions(accelerations, blockFeesResponse.body);
-          this.isLoading = false;
         }),
         map(([accelerations, blockFeesResponse]) => {
           return {
@@ -121,11 +113,13 @@ export class AccelerationFeesGraphComponent implements OnInit {
       ]).pipe(
         tap(([accelerations, blockFeesResponse]) => {
           this.prepareChartOptions(accelerations, blockFeesResponse.body);
-          this.isLoading = false;
-          this.cd.markForCheck();
         })
       );
     }
+    this.statsSubscription = this.statsObservable$.subscribe(() => {
+      this.isLoading = false;
+      this.cd.markForCheck();
+    });
   }
 
   prepareChartOptions(accelerations, blockFees) {
@@ -143,6 +137,8 @@ export class AccelerationFeesGraphComponent implements OnInit {
     }
 
     let last = null;
+    let minValue = Infinity;
+    let maxValue = 0;
     const data = [];
     for (const val of blockFees) {
       if (last == null) {
@@ -151,31 +147,29 @@ export class AccelerationFeesGraphComponent implements OnInit {
       let totalFeeDelta = 0;
       let totalFeePaid = 0;
       let totalCount = 0;
+      let blockCount = 0;
       while (last <= val.avgHeight) {
+        blockCount++;
         totalFeeDelta += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feeDelta, 0);
         totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feePaid, 0);
         totalCount += (blockAccelerations[last] || []).length;
         last++;
       }
+      minValue = Math.min(minValue, val.avgFees);
+      maxValue = Math.max(maxValue, val.avgFees);
       data.push({
         ...val,
         feeDelta: totalFeeDelta,
-        feePaid: totalFeePaid,
-        accelerations: totalCount,
+        avgFeePaid: (totalFeePaid / blockCount),
+        accelerations: totalCount / blockCount,
       });
     }
 
     this.chartOptions = {
       title: title,
       color: [
-        '#1E88E5',
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
-          { offset: 0, color: '#F4511E' },
-          { offset: 0.25, color: '#FB8C00' },
-          { offset: 0.5, color: '#FFB300' },
-          { offset: 0.75, color: '#FDD835' },
-          { offset: 1, color: '#7CB342' }
-        ]),
+        '#8F5FF6',
+        '#6b6b6b',
       ],
       animation: false,
       grid: {
@@ -205,11 +199,11 @@ export class AccelerationFeesGraphComponent implements OnInit {
           let tooltip = `<b style="color: white; margin-left: 2px">
             ${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
 
-          for (const tick of data) {
-            if (tick.seriesIndex === 1) {
+          for (const tick of data.reverse()) {
+            if (tick.data[1] >= 1_000_000) {
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100_000_000, this.locale, '1.0-3')} BTC<br>`;
+            } else {
               tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')} sats<br>`;
-            } else if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
             }
           }
 
@@ -224,24 +218,35 @@ export class AccelerationFeesGraphComponent implements OnInit {
       },
       xAxis: data.length === 0 ? undefined :
       {
-        type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        name: this.widget ? undefined : formatterXAxisLabel(this.locale, this.timespan),
+        nameLocation: 'middle',
+        nameTextStyle: {
+          padding: [10, 0, 0, 0],
+        },
+        type: 'category',
+        boundaryGap: false,
+        axisLine: { onZero: true },
         axisLabel: {
+          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          align: 'center',
+          fontSize: 11,
+          lineHeight: 12,
           hideOverlap: true,
-        }
+          padding: [0, 5],
+        },
       },
-      legend: (this.widget || data.length === 0) ? undefined : {
+      legend: {
         data: [
           {
-            name: 'Total accelerations',
+            name: 'In-band fees per block',
             inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {  
+            textStyle: {
               color: 'white',
             },
             icon: 'roundRect',
           },
           {
-            name: 'Out-of-band fees paid',
+            name: 'Out-of-band fees per block',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -249,6 +254,11 @@ export class AccelerationFeesGraphComponent implements OnInit {
             icon: 'roundRect',
           },
         ],
+        selected: {
+          'In-band fees per block': false,
+          'Out-of-band fees per block': true,
+        },
+        show: !this.widget,
       },
       yAxis: data.length === 0 ? undefined : [
         {
@@ -288,35 +298,23 @@ export class AccelerationFeesGraphComponent implements OnInit {
       series: data.length === 0 ? undefined : [
         {
           legendHoverLink: false,
-          zlevel: 0,
-          yAxisIndex: 1,
-          name: 'Total accelerations',
-          data: data.map(block =>  [block.timestamp * 1000, block.accelerations, block.avgHeight]),
-          type: 'line',
-          symbol: 'none',
-          areaStyle: {
-            color: '#1E88E5',
-            opacity: 0.5
-          },
-          lineStyle: {
-            width: 1,
-            opacity: 1,
-          },
-          step: 'middle',
+          zlevel: 1,
+          name: 'Out-of-band fees per block',
+          data: data.map(block =>  [block.timestamp * 1000, block.avgFeePaid, block.avgHeight]),
+          stack: 'Total',
+          type: 'bar',
+          barWidth: '100%',
+          large: true,
         },
         {
           legendHoverLink: false,
-          zlevel: 1,
-          yAxisIndex: 0,
-          name: 'Out-of-band fees paid',
-          data: data.map(block =>  [block.timestamp * 1000, block.feePaid, block.avgHeight]),
-          type: 'line',
-          smooth: 0.25,
-          symbol: 'none',
-          lineStyle: {
-            width: 2,
-            opacity: 1,
-          }
+          zlevel: 0,
+          name: 'In-band fees per block',
+          data: data.map(block =>  [block.timestamp * 1000, block.avgFees, block.avgHeight]),
+          stack: 'Total',
+          type: 'bar',
+          barWidth: '100%',
+          large: true,
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{
@@ -344,6 +342,17 @@ export class AccelerationFeesGraphComponent implements OnInit {
           }
         },
       }],
+      visualMap: {
+        type: 'continuous',
+        min: minValue,
+        max: maxValue,
+        dimension: 1,
+        seriesIndex: 1,
+        show: false,
+        inRange: {
+          color: ['#F4511E7f', '#FB8C007f', '#FFB3007f', '#FDD8357f', '#7CB3427f'].reverse() // Gradient color range
+        }
+      },
     };
   }
 
@@ -371,5 +380,11 @@ export class AccelerationFeesGraphComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  ngOnDestroy(): void {
+    if (this.statsSubscription) {
+      this.statsSubscription.unsubscribe();
+    }
   }
 }
