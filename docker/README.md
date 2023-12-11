@@ -109,8 +109,8 @@ Below we list all settings from `mempool-config.json` and the corresponding over
     "AUTOMATIC_BLOCK_REINDEXING": false,
     "POOLS_JSON_URL": "https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json",
     "POOLS_JSON_TREE_URL": "https://api.github.com/repos/mempool/mining-pools/git/trees/master",
-    "MINGING_POOLS_ADDRESSES_URL": "https://raw.githubusercontent.com/ncois/mining-pools/index-addresses/pools_addresses.csv",
-    "MINGING_POOLS_ADDRESSES_TREE_URL": "https://api.github.com/repos/ncois/mining-pools/git/trees/index-addresses",
+    "MINING_POOLS_ADDRESSES_URL": "https://raw.githubusercontent.com/ncois/mining-pools/index-addresses/pools_addresses.csv",
+    "MINING_POOLS_ADDRESSES_TREE_URL": "https://api.github.com/repos/ncois/mining-pools/git/trees/index-addresses",
     "ADVANCED_GBT_AUDIT": false,
     "ADVANCED_GBT_MEMPOOL": false,
     "CPFP_INDEXING": false,
@@ -144,8 +144,8 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_AUTOMATIC_BLOCK_REINDEXING: ""
       MEMPOOL_POOLS_JSON_URL: ""
       MEMPOOL_POOLS_JSON_TREE_URL: ""
-      MEMPOOL_MINGING_POOLS_ADDRESSES_URL: ""
-      MEMPOOL_MINGING_POOLS_ADDRESSES_TREE_URL: ""
+      MEMPOOL_MINING_POOLS_ADDRESSES_URL: ""
+      MEMPOOL_MINING_POOLS_ADDRESSES_TREE_URL: ""
       MEMPOOL_ADVANCED_GBT_AUDIT: ""
       MEMPOOL_ADVANCED_GBT_MEMPOOL: ""
       MEMPOOL_CPFP_INDEXING: ""

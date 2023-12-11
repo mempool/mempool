@@ -29,8 +29,8 @@ interface IConfig {
     AUTOMATIC_BLOCK_REINDEXING: boolean;
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
-    MINGING_POOLS_ADDRESSES_URL: string,
-    MINGING_POOLS_ADDRESSES_TREE_URL: string,
+    MINING_POOLS_ADDRESSES_URL: string,
+    MINING_POOLS_ADDRESSES_TREE_URL: string,
     AUDIT: boolean;
     ADVANCED_GBT_AUDIT: boolean;
     ADVANCED_GBT_MEMPOOL: boolean;
@@ -185,8 +185,8 @@ const defaults: IConfig = {
     'AUTOMATIC_BLOCK_REINDEXING': false,
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
-    'MINGING_POOLS_ADDRESSES_URL': 'https://raw.githubusercontent.com/ncois/mining-pools/index-addresses/pools_addresses.csv',
-    'MINGING_POOLS_ADDRESSES_TREE_URL': 'https://api.github.com/repos/ncois/mining-pools/git/trees/index-addresses',
+    'MINING_POOLS_ADDRESSES_URL': 'https://raw.githubusercontent.com/ncois/mining-pools/index-addresses/pools_addresses.csv',
+    'MINING_POOLS_ADDRESSES_TREE_URL': 'https://api.github.com/repos/ncois/mining-pools/git/trees/index-addresses',
     'AUDIT': false,
     'ADVANCED_GBT_AUDIT': false,
     'ADVANCED_GBT_MEMPOOL': false,

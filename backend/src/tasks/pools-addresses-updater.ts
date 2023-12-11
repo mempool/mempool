@@ -13,8 +13,8 @@ class PoolsAddressesUpdater {
   lastRun: number = 0;
   currentSha: string | null = null;
 
-  poolsAddressesUrl: string = config.MEMPOOL.MINGING_POOLS_ADDRESSES_URL;
-  poolsAddressesTreeUrl: string = config.MEMPOOL.MINGING_POOLS_ADDRESSES_TREE_URL;
+  poolsAddressesUrl: string = config.MEMPOOL.MINING_POOLS_ADDRESSES_URL;
+  poolsAddressesTreeUrl: string = config.MEMPOOL.MINING_POOLS_ADDRESSES_TREE_URL;
 
   public async updatePoolsAddressesCsv(): Promise<void> {
  
