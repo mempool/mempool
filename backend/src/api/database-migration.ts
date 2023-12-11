@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 66;
+  private static currentVersion = 67;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -558,6 +558,10 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `statistics` ADD min_fee FLOAT UNSIGNED DEFAULT NULL');
       await this.updateToSchemaVersion(66);
     }
+    if (databaseSchemaVersion < 67) {
+      await this.$executeQuery(this.getCreatePoolsAddressesTableQuery(), await this.$checkIfTableExists('pools_addresses'));
+      await this.updateToSchemaVersion(67);
+    }
   }
 
   /**
@@ -814,6 +818,15 @@ class DatabaseMigration {
       regexes text NOT NULL,
       PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`;
+  }
+
+  private getCreatePoolsAddressesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS pools_addresses (
+      address VARCHAR(140) NOT NULL,
+      pool_id SMALLINT NOT NULL,
+      pool_value BIGINT NOT NULL,
+      INDEX (pool_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
   private getCreateBlocksTableQuery(): string {

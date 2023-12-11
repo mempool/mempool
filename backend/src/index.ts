@@ -44,6 +44,7 @@ import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
+import poolsAddressesUpdater from './tasks/pools-addresses-updater';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -140,6 +141,7 @@ class Server {
     this.setUpWebsocketHandling();
 
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
+    await poolsAddressesUpdater.updatePoolsAddressesCsv();
     await syncAssets.syncAssets$();
     if (config.MEMPOOL.ENABLED) {
       if (config.MEMPOOL.CACHE_ENABLED) {
