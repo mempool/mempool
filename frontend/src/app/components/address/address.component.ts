@@ -7,6 +7,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { StateService } from '../../services/state.service';
 import { AudioService } from '../../services/audio.service';
 import { ApiService } from '../../services/api.service';
+import { CacheService } from '../../services/cache.service';
 import { of, merge, Subscription, Observable } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
@@ -30,6 +31,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   mainSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
+  poolData: any[];
 
   totalConfirmedTxCount = 0;
   loadedConfirmedTxCount = 0;
@@ -48,6 +50,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private cacheService: CacheService,
     private seoService: SeoService,
   ) { }
 
@@ -120,6 +123,16 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.updateChainStats();
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
+          this.poolData = this.cacheService.getCachedPoolsAddress(this.address.address);
+          if (this.poolData === undefined) {
+            this.cacheService.loadPoolsAddress(this.address.address).then(() => {
+              this.poolData = this.cacheService.getCachedPoolsAddress(this.address.address);
+              if (this.poolData && this.poolData.length > 1) {
+                // Sort by ascending number of sats mined with each pool
+                this.poolData.sort((a, b) => b.pool_value - a.pool_value);
+              }
+            });
+          }
           return address.is_pubkey
               ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address);

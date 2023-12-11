@@ -3,6 +3,7 @@ import config from "../../config";
 import logger from '../../logger';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import BlocksRepository from '../../repositories/BlocksRepository';
+import PoolsRepository from '../../repositories/PoolsRepository';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
@@ -13,6 +14,7 @@ class MiningRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools', this.$listPools)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools-addresses/:address', this.$getPoolsAssociatedWithAddress)      
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pools/:interval', this.$getPools)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/hashrate', this.$getPoolHistoricalHashrate)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/pool/:slug/blocks', this.$getPoolBlocks)
@@ -111,6 +113,20 @@ class MiningRoutes {
       } else {
         res.json(pools);
       }
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPoolsAssociatedWithAddress(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600).toUTCString());
+
+      const pools = await PoolsRepository.$getPoolsFromAddress(req.params.address);
+      res.status(200).json(pools);
+      
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

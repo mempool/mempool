@@ -23,7 +23,8 @@ export class CacheService {
   blockLoading: { [height: number]: boolean } = {};
   copiesInBlockQueue: { [height: number]: number } = {};
   blockPriorities: number[] = [];
-
+  poolsAddressCache: { [address: string]: any[] } = {};
+  
   constructor(
     private stateService: StateService,
     private apiService: ApiService,
@@ -130,5 +131,19 @@ export class CacheService {
 
   getCachedBlock(height) {
     return this.blockCache[height];
+  }
+
+  async loadPoolsAddress(address: string) {
+    if (!this.poolsAddressCache[address]) {
+      try {
+        this.poolsAddressCache[address] = await firstValueFrom(this.apiService.getPoolsAssociatedWithAddress$(address));
+      } catch (e) {
+        console.log("failed to load pools associated to address: ", e.message);
+      }
+    }
+  }
+
+  getCachedPoolsAddress(address: string) {
+    return this.poolsAddressCache[address];
   }
 }

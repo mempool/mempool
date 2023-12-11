@@ -15,6 +15,27 @@ class PoolsRepository {
   }
 
   /**
+   * Get the pool id(s) associated with an address
+   */
+  public async $getPoolsFromAddress(address: string): Promise<any[]> {
+    let [rows]: any[] = await DB.query('SELECT pool_id, pool_value FROM pools_addresses WHERE address = ?', [address]);
+
+    if (rows.length === 0) {
+      return [];
+    }
+
+    for (const pool of rows) {
+      const [rows]: any[] = await DB.query('SELECT name, slug FROM pools WHERE unique_id = ?', [pool.pool_id]);
+      if (rows.length > 0) {
+        pool.name = rows[0].name;
+        pool.slug = rows[0].slug;
+      }
+    }
+
+    return rows;
+  }
+
+  /**
    * Get unknown pool tagging info
    */
   public async $getUnknownPool(): Promise<PoolTag> {

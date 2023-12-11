@@ -201,6 +201,10 @@ export class ApiService {
     );
   }  
 
+  getPoolsAssociatedWithAddress$(address: string): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/mining/pools-addresses/' + address);
+  }
+
   getPoolStats$(slug: string): Observable<PoolStat> {
     return this.httpClient.get<PoolStat>(this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}`);
   }

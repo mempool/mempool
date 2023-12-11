@@ -39,6 +39,14 @@
                 <td i18n="address.balance">Balance</td>
                 <td *ngIf="address.chain_stats.funded_txo_sum !== undefined; else confidentialTd"><app-amount [satoshis]="received - sent" [noFiat]="true"></app-amount> <span class="fiat"><app-fiat [value]="received - sent"></app-fiat></span></td>
               </tr>
+              <tr *ngIf="poolData?.length > 0">
+                <td i18n="address.miner">Miner</td>
+                <td>
+                  <ng-container *ngFor="let pool of poolData">
+                    <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge mr-1" [class]="'badge-primary'">{{ pool.name }}</a>
+                  </ng-container>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
