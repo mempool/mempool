@@ -38,6 +38,8 @@ describe('Mempool Backend Config', () => {
         STDOUT_LOG_MIN_PRIORITY: 'debug',
         POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
         POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
+        MINGING_POOLS_ADDRESSES_TREE_URL: "https://api.github.com/repos/ncois/mining-pools/git/trees/index-addresses",
+        MINGING_POOLS_ADDRESSES_URL: "https://raw.githubusercontent.com/ncois/mining-pools/index-addresses/pools_addresses.csv",
         AUDIT: false,
         ADVANCED_GBT_AUDIT: false,
         ADVANCED_GBT_MEMPOOL: false,
