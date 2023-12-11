@@ -4,7 +4,7 @@ import { FastVertexArray } from './fast-vertex-array';
 import BlockScene from './block-scene';
 import TxSprite from './tx-sprite';
 import TxView from './tx-view';
-import { Position } from './sprite-types';
+import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
@@ -27,6 +27,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
   @Input() blockConversion: Price;
+  @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
   @Output() txHoverEvent = new EventEmitter<string>();
   @Output() readyEvent = new EventEmitter();
@@ -90,6 +91,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
     if (changes.auditHighlighting) {
       this.setHighlightingEnabled(this.auditHighlighting);
+    }
+    if (changes.overrideColor) {
+      this.scene.setColorFunction(this.overrideColors);
     }
   }
 
@@ -228,7 +232,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
-        highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset });
+        highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
+        colorFunction: this.overrideColors });
       this.start();
     }
   }
