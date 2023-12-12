@@ -78,7 +78,7 @@
 
 <div class="d-flex" style="overflow: clip">
   <app-menu *ngIf="servicesEnabled" [navOpen]="menuOpen" (loggedOut)="onLoggedOut()" (menuToggled)="menuToggled($event)"></app-menu>
-  <div *ngIf="!servicesEnabled" class="sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
+  <div *ngIf="!servicesEnabled" class="empty-sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
 
   <div class="flex-grow-1 d-flex flex-column">
     <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'signet'"></app-testnet-alert>
