@@ -3,7 +3,12 @@
 
     <nav class="scrollable menu-click">
       <span *ngIf="userAuth" class="menu-click">
-        <strong class="menu-click text-nowrap ellipsis">@ {{ userAuth.user.username }}</strong>
+        <u class="menu-click text-nowrap ellipsis">
+          <strong>
+            <span *ngIf="userAuth.user.username.includes('@'); else usernamenospace">{{ userAuth.user.username }}</span>
+            <ng-template #usernamenospace>@{{ userAuth.user.username }}</ng-template>
+          </strong>
+        </u>
       </span>
       <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
         <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
