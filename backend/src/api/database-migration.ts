@@ -825,7 +825,7 @@ class DatabaseMigration {
       address VARCHAR(140) NOT NULL,
       pool_id SMALLINT NOT NULL,
       pool_value BIGINT NOT NULL,
-      INDEX (pool_id)
+      INDEX (address)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
