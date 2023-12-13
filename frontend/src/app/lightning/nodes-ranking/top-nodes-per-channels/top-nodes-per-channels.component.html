@@ -27,9 +27,11 @@
           </td>
           <td class="text-right">
             {{ node.channels ? (node.channels | number) : '~' }}
+            <span class="capacity-ratio" *ngIf="totalChannels">&nbsp;({{ (node?.channels / totalChannels * 100) | number:'1.1-1' }}%)</span>
           </td>
           <td *ngIf="!widget" class="d-none d-md-table-cell capacity text-right">
             <app-amount [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+            <span class="capacity-ratio" *ngIf="totalCapacity">&nbsp;({{ (node.capacity / totalCapacity * 100) | number:'1.1-1' }}%)</span>
           </td>
           <td *ngIf="!widget" class="fiat d-none d-md-table-cell text-right">
             <app-fiat [value]="node.capacity"></app-fiat>

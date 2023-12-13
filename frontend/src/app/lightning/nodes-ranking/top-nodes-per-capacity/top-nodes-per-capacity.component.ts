@@ -14,11 +14,14 @@ import { LightningApiService } from '../../lightning-api.service';
 })
 export class TopNodesPerCapacity implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;
+  @Input() statistics$: Observable<any>;
   @Input() widget: boolean = false;
 
   topNodesPerCapacity$: Observable<ITopNodesPerCapacity[]>;
   skeletonRows: number[] = [];
   currency$: Observable<string>;
+  totalCapacity: number;
+  totalChannels: number;
 
   constructor(
     private apiService: LightningApiService,
@@ -59,6 +62,11 @@ export class TopNodesPerCapacity implements OnInit {
         })
       );
     }
+
+    this.statistics$?.subscribe((data) => {
+      this.totalCapacity = data.latest.total_capacity;
+      this.totalChannels = data.latest.channel_count;
+    });
   }
 
 }
