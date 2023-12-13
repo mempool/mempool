@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Output, HostListener, Input, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { FilterGroups, TransactionFilters } from '../../shared/filters.utils';
 
 
@@ -7,7 +7,8 @@ import { FilterGroups, TransactionFilters } from '../../shared/filters.utils';
   templateUrl: './block-filters.component.html',
   styleUrls: ['./block-filters.component.scss'],
 })
-export class BlockFiltersComponent {
+export class BlockFiltersComponent implements OnChanges {
+  @Input() cssWidth: number = 800;
   @Output() onFilterChanged: EventEmitter<bigint | null> = new EventEmitter();
 
   filters = TransactionFilters;
@@ -15,6 +16,16 @@ export class BlockFiltersComponent {
   activeFilters: string[] = [];
   filterFlags: { [key: string]: boolean } = {};
   menuOpen: boolean = false;
+
+  constructor(
+    private cd: ChangeDetectorRef,
+  ) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.cssWidth) {
+      this.cd.markForCheck();
+    }
+  }
 
   toggleFilter(key): void {
     const filter = this.filters[key];

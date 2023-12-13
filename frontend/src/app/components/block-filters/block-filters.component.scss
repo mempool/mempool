@@ -101,4 +101,28 @@
     pointer-events: all;
     background: #181b2d7f;
   }
+
+  &.small {
+    .filter-tag {
+      font-size: 0.8em;
+    }
+  }
+
+  &.vsmall {
+    .filter-menu {
+      margin-top: 0.25em;
+      h5 {
+        display: none;
+      }
+    }
+    .filter-tag {
+      font-size: 0.7em;
+    }
+  }
+
+  &.tiny {
+    .filter-tag {
+      font-size: 0.5em;
+    }
+  }
 }
