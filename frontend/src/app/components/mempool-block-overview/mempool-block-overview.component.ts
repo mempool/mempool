@@ -18,6 +18,7 @@ import TxView from '../block-overview-graph/tx-view';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
+  @Input() showFilters: boolean = false;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 

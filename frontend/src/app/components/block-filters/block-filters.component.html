@@ -1,0 +1,22 @@
+<div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.menu-open]="menuOpen">
+  <div class="filter-bar">
+    <button class="menu-toggle" (click)="menuOpen = !menuOpen">
+      <fa-icon [icon]="['fas', 'filter']"></fa-icon>
+    </button>
+    <div class="active-tags">
+      <ng-container *ngFor="let filter of activeFilters;">
+        <button class="btn filter-tag selected" (click)="toggleFilter(filter)">{{ filters[filter].label }}</button>
+      </ng-container>
+    </div>
+  </div>
+  <div class="filter-menu" *ngIf="menuOpen">
+    <ng-container *ngFor="let group of filterGroups;">
+      <h5>{{ group.label }}</h5>
+      <div class="filter-group">
+        <ng-container *ngFor="let filter of group.filters;">
+          <button class="btn filter-tag" [class.selected]="filterFlags[filter.key]" (click)="toggleFilter(filter.key)">{{ filter.label }}</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -8,6 +8,19 @@ import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
+import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+
+const unmatchedOpacity = 0.2;
+const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditFeeColors = defaultAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedMarginalFeeColors = defaultMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditColors = {
+  censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
+  missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
+  added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
+  selected: setOpacity(defaultAuditColors.selected, unmatchedOpacity),
+  accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
+};
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -26,7 +39,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
-  @Input() filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
+  @Input() showFilters: boolean = false;
+  @Input() filterFlags: bigint | null = null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -93,7 +107,18 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.auditHighlighting) {
       this.setHighlightingEnabled(this.auditHighlighting);
     }
-    if (changes.overrideColor) {
+    if (changes.overrideColor && this.scene) {
+      this.scene.setColorFunction(this.overrideColors);
+    }
+    if ((changes.filterFlags || changes.showFilters) && this.scene) {
+      this.setFilterFlags(this.filterFlags);
+    }
+  }
+
+  setFilterFlags(flags: bigint | null): void {
+    if (flags != null) {
+      this.scene.setColorFunction(this.getFilterColorFunction(flags));
+    } else {
       this.scene.setColorFunction(this.overrideColors);
     }
   }
@@ -375,6 +400,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   onPointerMove(event) {
     if (event.target === this.canvas.nativeElement) {
       this.setPreviewTx(event.offsetX, event.offsetY, false);
+    } else {
+      this.onPointerLeave(event);
     }
   }
 
@@ -463,14 +490,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  setFilterFlags(flags: bigint | null): void {
-    if (this.scene) {
-      console.log('setting filter flags to ', this.filterFlags.toString(2));
-      this.scene.setFilterFlags(flags);
-      this.start();
-    }
-  }
-
   onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
     const x = cssX * window.devicePixelRatio;
     const y = cssY * window.devicePixelRatio;
@@ -482,6 +501,22 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   onTxHover(hoverId: string) {
     this.txHoverEvent.emit(hoverId);
+  }
+
+  getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+    return (tx: TxView) => {
+      if ((tx.bigintFlags & flags) === flags) {
+        return defaultColorFunction(tx);
+      } else {
+        return defaultColorFunction(
+          tx,
+          unmatchedFeeColors,
+          unmatchedAuditFeeColors,
+          unmatchedMarginalFeeColors,
+          unmatchedAuditColors
+        );
+      }
+    };
   }
 }
 
