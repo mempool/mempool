@@ -140,6 +140,65 @@ export class Common {
     return matches;
   }
 
+  static setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint {
+    // no witness items
+    if (!witness?.length) {
+      return flags;
+    }
+    const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
+    if (witness?.length === (hasAnnex ? 2 : 1)) {
+      // keypath spend, signature is the only witness item
+      if (witness[0].length === 130) {
+        flags |= this.setSighashFlags(flags, witness[0]);
+      } else {
+        flags |= TransactionFlags.sighash_default;
+      }
+    } else {
+      // scriptpath spend, all items except for the script, control block and annex could be signatures
+      for (let i = 0; i < witness.length - (hasAnnex ? 3 : 2); i++) {
+        // handle probable signatures
+        if (witness[i].length === 130) {
+          flags |= this.setSighashFlags(flags, witness[i]);
+        } else if (witness[i].length === 128) {
+          flags |= TransactionFlags.sighash_default;
+        }
+      }
+    }
+    return flags;
+  }
+
+  static isDERSig(w: string): boolean {
+    // heuristic to detect probable DER signatures
+    return (w.length >= 18
+      && w.startsWith('30') // minimum DER signature length is 8 bytes + sighash flag (see https://mempool.space/testnet/tx/c6c232a36395fa338da458b86ff1327395a9afc28c5d2daa4273e410089fd433)
+      && ['01, 02, 03, 81, 82, 83'].includes(w.slice(-2)) // signature must end with a valid sighash flag
+      && (w.length === parseInt(w.slice(2, 4), 16) + 6) // second byte encodes the combined length of the R and S components
+    );
+  }
+
+  static setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
+    for (const w of witness) {
+      if (this.isDERSig(w)) {
+        flags |= this.setSighashFlags(flags, w);
+      }
+    }
+    return flags;
+  }
+
+  static setLegacySighashFlags(flags: bigint, scriptsig_asm: string): bigint {
+    for (const item of scriptsig_asm.split(' ')) {
+      // skip op_codes
+      if (item.startsWith('OP_')) {
+        continue;
+      }
+      // check pushed data
+      if (this.isDERSig(item)) {
+        flags |= this.setSighashFlags(flags, item);
+      }
+    }
+    return flags;
+  }
+
   static setSighashFlags(flags: bigint, signature: string): bigint {
     switch(signature.slice(-2)) {
       case '01': return flags | TransactionFlags.sighash_all;
@@ -159,18 +218,16 @@ export class Common {
     } else if (tx.version === 2) {
       flags |= TransactionFlags.v2;
     }
+    const reusedAddresses: { [address: string ]: number } = {};
     const inValues = {};
     const outValues = {};
     let rbf = false;
     for (const vin of tx.vin) {
       if (vin.sequence < 0xfffffffe) {
-        rbf = true; 
+        rbf = true;
       }
       switch (vin.prevout?.scriptpubkey_type) {
-        case 'p2pk': {
-          flags |= TransactionFlags.p2pk;
-          flags = this.setSighashFlags(flags, vin.scriptsig);
-        } break;
+        case 'p2pk': flags |= TransactionFlags.p2pk; break;
         case 'multisig': flags |= TransactionFlags.p2ms; break;
         case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
         case 'p2sh': flags |= TransactionFlags.p2sh; break;
@@ -185,6 +242,19 @@ export class Common {
             }
           }
         } break;
+      }
+
+      // sighash flags
+      if (vin.prevout?.scriptpubkey_type === 'v1_p2tr') {
+        flags |= this.setSchnorrSighashFlags(flags, vin.witness);
+      } else if (vin.witness) {
+        flags |= this.setSegwitSighashFlags(flags, vin.witness);
+      } else if (vin.scriptsig_asm) {
+        flags |= this.setLegacySighashFlags(flags, vin.scriptsig_asm);
+      }
+
+      if (vin.prevout?.scriptpubkey_address) {
+        reusedAddresses[vin.prevout?.scriptpubkey_address] = (reusedAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
       }
       inValues[vin.prevout?.value || Math.random()] = (inValues[vin.prevout?.value || Math.random()] || 0) + 1;
     }
@@ -207,6 +277,9 @@ export class Common {
         case 'v1_p2tr': flags |= TransactionFlags.p2tr; break;
         case 'op_return': flags |= TransactionFlags.op_return; break;
       }
+      if (vout.scriptpubkey_address) {
+        reusedAddresses[vout.scriptpubkey_address] = (reusedAddresses[vout.scriptpubkey_address] || 0) + 1;
+      }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
     }
     if (tx.ancestors?.length) {
@@ -219,8 +292,9 @@ export class Common {
       flags |= TransactionFlags.replacement;
     }
     // fast but bad heuristic to detect possible coinjoins
-    // (at least 5 inputs and 5 outputs, less than half of which are unique amounts)
-    if (tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+    // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
+    const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
+    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
       flags |= TransactionFlags.coinjoin;
     }
     // more than 5:1 input:output ratio
