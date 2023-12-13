@@ -43,13 +43,13 @@ export const TransactionFlags = {
 };
 
 export const TransactionFilters: { [key: string]: Filter } = {
-    // features
+    /* features */
     rbf: { key: 'rbf', label: 'RBF enabled', flag: TransactionFlags.rbf, toggle: 'rbf' },
     no_rbf: { key: 'no_rbf', label: 'RBF disabled', flag: TransactionFlags.no_rbf, toggle: 'rbf' },
     v1: { key: 'v1', label: 'Version 1', flag: TransactionFlags.v1, toggle: 'version' },
     v2: { key: 'v2', label: 'Version 2', flag: TransactionFlags.v2, toggle: 'version' },
-    multisig: { key: 'multisig', label: 'Multisig', flag: TransactionFlags.multisig },
-    // address types
+    // multisig: { key: 'multisig', label: 'Multisig', flag: TransactionFlags.multisig },
+    /* address types */
     p2pk: { key: 'p2pk', label: 'P2PK', flag: TransactionFlags.p2pk },
     p2ms: { key: 'p2ms', label: 'Bare multisig', flag: TransactionFlags.p2ms },
     p2pkh: { key: 'p2pkh', label: 'P2PKH', flag: TransactionFlags.p2pkh },
@@ -57,19 +57,19 @@ export const TransactionFilters: { [key: string]: Filter } = {
     p2wpkh: { key: 'p2wpkh', label: 'P2WPKH', flag: TransactionFlags.p2wpkh },
     p2wsh: { key: 'p2wsh', label: 'P2WSH', flag: TransactionFlags.p2wsh },
     p2tr: { key: 'p2tr', label: 'Taproot', flag: TransactionFlags.p2tr },
-    // behavior
+    /* behavior */
     cpfp_parent: { key: 'cpfp_parent', label: 'Paid for by child', flag: TransactionFlags.cpfp_parent },
     cpfp_child: { key: 'cpfp_child', label: 'Pays for parent', flag: TransactionFlags.cpfp_child },
     replacement: { key: 'replacement', label: 'Replacement', flag: TransactionFlags.replacement },
-    // data
+    /* data */
     op_return: { key: 'op_return', label: 'OP_RETURN', flag: TransactionFlags.op_return },
     // fake_multisig: { key: 'fake_multisig', label: 'Fake multisig', flag: TransactionFlags.fake_multisig },
     inscription: { key: 'inscription', label: 'Inscription', flag: TransactionFlags.inscription },
-    // heuristics
+    /* heuristics */
     coinjoin: { key: 'coinjoin', label: 'Coinjoin', flag: TransactionFlags.coinjoin },
     consolidation: { key: 'consolidation', label: 'Consolidation', flag: TransactionFlags.consolidation },
     batch_payout: { key: 'batch_payout', label: 'Batch payment', flag: TransactionFlags.batch_payout },
-    // sighash
+    /* sighash */
     sighash_all: { key: 'sighash_all', label: 'sighash_all', flag: TransactionFlags.sighash_all },
     sighash_none: { key: 'sighash_none', label: 'sighash_none', flag: TransactionFlags.sighash_none },
     sighash_single: { key: 'sighash_single', label: 'sighash_single', flag: TransactionFlags.sighash_single },

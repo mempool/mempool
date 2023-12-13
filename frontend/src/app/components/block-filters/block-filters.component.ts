@@ -1,5 +1,5 @@
-import { Component, OnChanges, EventEmitter, Output, SimpleChanges, HostListener } from '@angular/core';
-import { FilterGroups, TransactionFilters, Filter, TransactionFlags } from '../../shared/filters.utils';
+import { Component, EventEmitter, Output, HostListener } from '@angular/core';
+import { FilterGroups, TransactionFilters } from '../../shared/filters.utils';
 
 
 @Component({
@@ -7,7 +7,7 @@ import { FilterGroups, TransactionFilters, Filter, TransactionFlags } from '../.
   templateUrl: './block-filters.component.html',
   styleUrls: ['./block-filters.component.scss'],
 })
-export class BlockFiltersComponent implements OnChanges {
+export class BlockFiltersComponent {
   @Output() onFilterChanged: EventEmitter<bigint | null> = new EventEmitter();
 
   filters = TransactionFilters;
@@ -15,12 +15,6 @@ export class BlockFiltersComponent implements OnChanges {
   activeFilters: string[] = [];
   filterFlags: { [key: string]: boolean } = {};
   menuOpen: boolean = false;
-
-  constructor() {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    
-  }
 
   toggleFilter(key): void {
     const filter = this.filters[key];
