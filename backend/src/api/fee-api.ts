@@ -1,7 +1,9 @@
 import { MempoolBlock } from '../mempool.interfaces';
-import { Common } from './common';
+import config from '../config';
 import mempool from './mempool';
 import projectedBlocks from './mempool-blocks';
+
+const isLiquid = config.MEMPOOL.NETWORK === 'liquid' || config.MEMPOOL.NETWORK === 'liquidtestnet';
 
 interface RecommendedFees {
   fastestFee: number,
@@ -14,8 +16,8 @@ interface RecommendedFees {
 class FeeApi {
   constructor() { }
 
-  defaultFee = Common.isLiquid() ? 0.1 : 1;
-  minimumIncrement = Common.isLiquid() ? 0.1 : 1;
+  defaultFee = isLiquid ? 0.1 : 1;
+  minimumIncrement = isLiquid ? 0.1 : 1;
 
   public getRecommendedFee(): RecommendedFees {
     const pBlocks = projectedBlocks.getMempoolBlocks();
