@@ -29,7 +29,7 @@ export const TransactionFlags = {
   replacement:                               0b00000100_00000000_00000000n,
   // data
   op_return:                        0b00000001_00000000_00000000_00000000n,
-  fake_multisig:                    0b00000010_00000000_00000000_00000000n,
+  fake_pubkey:                      0b00000010_00000000_00000000_00000000n,
   inscription:                      0b00000100_00000000_00000000_00000000n,
   // heuristics
   coinjoin:                0b00000001_00000000_00000000_00000000_00000000n,
@@ -64,7 +64,7 @@ export const TransactionFilters: { [key: string]: Filter } = {
     replacement: { key: 'replacement', label: 'Replacement', flag: TransactionFlags.replacement, important: true },
     /* data */
     op_return: { key: 'op_return', label: 'OP_RETURN', flag: TransactionFlags.op_return, important: true },
-    // fake_multisig: { key: 'fake_multisig', label: 'Fake multisig', flag: TransactionFlags.fake_multisig },
+    fake_pubkey: { key: 'fake_pubkey', label: 'Fake pubkey', flag: TransactionFlags.fake_pubkey },
     inscription: { key: 'inscription', label: 'Inscription', flag: TransactionFlags.inscription, important: true },
     /* heuristics */
     coinjoin: { key: 'coinjoin', label: 'Coinjoin', flag: TransactionFlags.coinjoin, important: true },
@@ -82,7 +82,7 @@ export const FilterGroups: { label: string, filters: Filter[]}[] = [
   { label: 'Features', filters: ['rbf', 'no_rbf', 'v1', 'v2', 'multisig'] },
   { label: 'Address Types', filters: ['p2pk', 'p2ms', 'p2pkh', 'p2sh', 'p2wpkh', 'p2wsh', 'p2tr'] },
   { label: 'Behavior', filters: ['cpfp_parent', 'cpfp_child', 'replacement'] },
-  { label: 'Data', filters: ['op_return', 'fake_multisig', 'inscription'] },
+  { label: 'Data', filters: ['op_return', 'fake_pubkey', 'inscription'] },
   { label: 'Heuristics', filters: ['coinjoin', 'consolidation', 'batch_payout'] },
   { label: 'Sighash Flags', filters: ['sighash_all', 'sighash_none', 'sighash_single', 'sighash_default', 'sighash_acp'] },
 ].map(group => ({ label: group.label, filters: group.filters.map(filter => TransactionFilters[filter] || null).filter(f => f != null) }));

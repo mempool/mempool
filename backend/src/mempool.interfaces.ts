@@ -215,7 +215,7 @@ export const TransactionFlags = {
   replacement:                               0b00000100_00000000_00000000n,
   // data
   op_return:                        0b00000001_00000000_00000000_00000000n,
-  fake_multisig:                    0b00000010_00000000_00000000_00000000n,
+  fake_pubkey:                      0b00000010_00000000_00000000_00000000n,
   inscription:                      0b00000100_00000000_00000000_00000000n,
   // heuristics
   coinjoin:                0b00000001_00000000_00000000_00000000_00000000n,

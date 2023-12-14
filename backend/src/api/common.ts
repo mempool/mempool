@@ -6,6 +6,7 @@ import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
 import rbfCache from './rbf-cache';
 import transactionUtils from './transaction-utils';
+import { isPoint } from '../utils/secp256k1';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -211,6 +212,15 @@ export class Common {
     }
   }
 
+  static isBurnKey(pubkey: string): boolean {
+    return [
+      '022222222222222222222222222222222222222222222222222222222222222222',
+      '033333333333333333333333333333333333333333333333333333333333333333',
+      '020202020202020202020202020202020202020202020202020202020202020202',
+      '030303030303030303030303030303030303030303030303030303030303030303',
+    ].includes(pubkey);
+  }
+
   static getTransactionFlags(tx: TransactionExtended): number {
     let flags = 0n;
     if (tx.version === 1) {
@@ -249,8 +259,8 @@ export class Common {
         flags |= this.setSchnorrSighashFlags(flags, vin.witness);
       } else if (vin.witness) {
         flags |= this.setSegwitSighashFlags(flags, vin.witness);
-      } else if (vin.scriptsig_asm) {
-        flags |= this.setLegacySighashFlags(flags, vin.scriptsig_asm);
+      } else if (vin.scriptsig?.length) {
+        flags |= this.setLegacySighashFlags(flags, vin.scriptsig_asm || transactionUtils.convertScriptSigAsm(vin.scriptsig));
       }
 
       if (vin.prevout?.scriptpubkey_address) {
@@ -263,12 +273,23 @@ export class Common {
     } else {
       flags |= TransactionFlags.no_rbf;
     }
+    let hasFakePubkey = false;
     for (const vout of tx.vout) {
       switch (vout.scriptpubkey_type) {
-        case 'p2pk': flags |= TransactionFlags.p2pk; break;
+        case 'p2pk': {
+          flags |= TransactionFlags.p2pk;
+          // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
+          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey.slice(2, -2));
+        } break;
         case 'multisig': {
           flags |= TransactionFlags.p2ms;
-          // TODO - detect fake multisig data embedding
+          // detect fake pubkeys (i.e. not valid DER points on the secp256k1 curve)
+          const asm = vout.scriptpubkey_asm || transactionUtils.convertScriptSigAsm(vout.scriptpubkey);
+          for (const key of (asm?.split(' ') || [])) {
+            if (!hasFakePubkey && !key.startsWith('OP_')) {
+              hasFakePubkey = hasFakePubkey || this.isBurnKey(key) || !isPoint(key);
+            }
+          }
         } break;
         case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
         case 'p2sh': flags |= TransactionFlags.p2sh; break;
@@ -281,6 +302,9 @@ export class Common {
         reusedAddresses[vout.scriptpubkey_address] = (reusedAddresses[vout.scriptpubkey_address] || 0) + 1;
       }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
+    }
+    if (hasFakePubkey) {
+      flags |= TransactionFlags.fake_pubkey;
     }
     if (tx.ancestors?.length) {
       flags |= TransactionFlags.cpfp_child;
