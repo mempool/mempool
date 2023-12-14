@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LightningApiService } from '../lightning-api.service';
 import { share } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { INodesStatistics } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-nodes-ranking',
@@ -12,7 +13,7 @@ import { Observable } from 'rxjs';
 })
 export class NodesRanking implements OnInit {
   type: string;
-  statistics$: Observable<any>;
+  statistics$: Observable<INodesStatistics>;
 
   constructor(
     private route: ActivatedRoute,
