@@ -20,6 +20,7 @@ export interface IUser {
   fullName: string | null;
   countryCode: string | null;
   imageMd5: string;
+  ogRank: number | null;
 }
 
 // Todo - move to config.json
