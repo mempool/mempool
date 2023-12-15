@@ -5,6 +5,7 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
   faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { GogglesIconComponent } from './components/svg-icons/goggles.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -200,6 +201,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AccelerationsListComponent,
     AccelerationStatsComponent,
     PendingStatsComponent,
+    GogglesIconComponent,
   ],
   imports: [
     CommonModule,
@@ -322,7 +324,9 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockFaceComponent,
 
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
+
+    GogglesIconComponent,
   ]
 })
 export class SharedModule {
