@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
 import { Observable, catchError, of, switchMap, tap } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
-import { ApiService } from '../../../services/api.service';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
+import { ServicesApiServices } from '../../../services/services-api.service';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -26,7 +26,7 @@ export class AccelerationsListComponent implements OnInit {
   skeletonLines: number[] = [];
 
   constructor(
-    private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private websocketService: WebsocketService,
     public stateService: StateService,
     private cd: ChangeDetectorRef,
@@ -41,7 +41,7 @@ export class AccelerationsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    const accelerationObservable$ = this.accelerations$ || (this.pending ? this.apiService.getAccelerations$() : this.apiService.getAccelerationHistory$({ timeframe: '1m' }));
+    const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistory$({ timeframe: '1m' }));
     this.accelerationList$ = accelerationObservable$.pipe(
       switchMap(accelerations => {
         if (this.pending) {
