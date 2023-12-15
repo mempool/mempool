@@ -8912,6 +8912,13 @@ export const faqData = [
     title: "What is block health?",
   },
   {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "how-do-mempool-goggles-work",
+    title: "How do Mempool Goggles work?",
+  },
+  {
     type: "category",
     category: "self-hosting",
     fragment: "self-hosting",
