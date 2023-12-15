@@ -1,9 +1,9 @@
 import TxSprite from './tx-sprite';
 import { FastVertexArray } from './fast-vertex-array';
-import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { SpriteUpdateParams, Square, Color, ViewUpdateParams } from './sprite-types';
 import { hexToColor } from './utils';
 import BlockScene from './block-scene';
+import { TransactionStripped } from '../../interfaces/node-api.interface';
 
 const hoverTransitionTime = 300;
 const defaultHoverColor = hexToColor('1bd8f4');
@@ -29,6 +29,7 @@ export default class TxView implements TransactionStripped {
   feerate: number;
   acc?: boolean;
   rate?: number;
+  bigintFlags?: bigint | null = 0b00000100_00000000_00000000_00000000n;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
   scene?: BlockScene;
@@ -57,6 +58,7 @@ export default class TxView implements TransactionStripped {
     this.acc = tx.acc;
     this.rate = tx.rate;
     this.status = tx.status;
+    this.bigintFlags = tx.flags ? BigInt(tx.flags) : 0n;
     this.initialised = false;
     this.vertexArray = scene.vertexArray;
 

@@ -1,0 +1,29 @@
+<div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.menu-open]="menuOpen" [class.small]="cssWidth < 500" [class.vsmall]="cssWidth < 400" [class.tiny]="cssWidth < 200">
+  <div class="filter-bar">
+    <button class="menu-toggle" (click)="menuOpen = !menuOpen">
+      <fa-icon [icon]="['fas', 'filter']"></fa-icon>
+    </button>
+    <div class="active-tags">
+      <ng-container *ngFor="let filter of activeFilters;">
+        <button class="btn filter-tag selected" (click)="toggleFilter(filter)">{{ filters[filter].label }}</button>
+      </ng-container>
+    </div>
+  </div>
+  <div class="filter-menu" *ngIf="menuOpen && cssWidth > 280">
+    <ng-container *ngFor="let group of filterGroups;">
+      <h5>{{ group.label }}</h5>
+      <div class="filter-group">
+        <ng-container *ngFor="let filter of group.filters;">
+          <button class="btn filter-tag" [class.selected]="filterFlags[filter.key]" (click)="toggleFilter(filter.key)">{{ filter.label }}</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+  <div class="filter-menu" *ngIf="menuOpen && cssWidth <= 280">
+    <ng-container *ngFor="let group of filterGroups;">
+      <ng-container *ngFor="let filter of group.filters;">
+        <button *ngIf="filter.important" class="btn filter-tag" [class.selected]="filterFlags[filter.key]" (click)="toggleFilter(filter.key)">{{ filter.label }}</button>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
