@@ -34,6 +34,12 @@
     &::-webkit-scrollbar {
       display: none;
     }
+
+    .toggle-wrapper {
+      width: 100%;
+      text-align: center;
+      margin: 1.25em 0 0;
+    }
   }
 
   .intervals, .nodes {
