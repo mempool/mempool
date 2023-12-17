@@ -174,7 +174,7 @@ export class SearchFormComponent implements OnInit {
           const addressPrefixSearchResults = result[0];
           const lightningResults = result[1];
 
-          const matchesBlockHeight = this.regexBlockheight.test(searchText);
+          const matchesBlockHeight = this.regexBlockheight.test(searchText) && parseInt(searchText) <= this.stateService.latestBlockHeight;
           const matchesDateTime = this.regexDate.test(searchText) && new Date(searchText).toString() !== 'Invalid Date';
           const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText);
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
@@ -217,7 +217,7 @@ export class SearchFormComponent implements OnInit {
   selectedResult(result: any): void {
     if (typeof result === 'string') {
       this.search(result);
-    } else if (typeof result === 'number') {
+    } else if (typeof result === 'number' && result <= this.stateService.latestBlockHeight) {
       this.navigate('/block/', result.toString());
     } else if (result.alias) {
       this.navigate('/lightning/node/', result.public_key);
@@ -232,8 +232,10 @@ export class SearchFormComponent implements OnInit {
       this.isSearching = true;
       if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
-      } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
+      } else if (this.regexBlockhash.test(searchText)) {
         this.navigate('/block/', searchText);
+      } else if (this.regexBlockheight.test(searchText)) {
+        parseInt(searchText) <= this.stateService.latestBlockHeight ? this.navigate('/block/', searchText) : this.isSearching = false;
       } else if (this.regexTransaction.test(searchText)) {
         const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid' || this.network === 'liquidtestnet') {

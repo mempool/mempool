@@ -389,3 +389,44 @@ h3 {
     margin-bottom: 4rem;
   }
 }
+
+/* styles for nested definition lists */
+dl {
+  margin: 0;
+  padding: 0;
+}
+
+dt {
+  font-weight: bold;
+  color: #4a68b9;
+  padding: 5px 0;
+}
+
+dd {
+  padding: 2px 0;
+
+  & > dl {
+    padding-left: 1em;
+    border-left: 2px solid #4a68b9;
+    margin-left: 1em;
+    margin-top: 5px;
+  }
+
+  & > dl > dt {
+    display: inline;
+    font-weight: normal;
+    color: #e83e8c;
+    font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New;
+    text-transform: uppercase;
+
+    &:before {
+      content: "";
+      display: block;
+    }
+  }
+
+  & > dl > dd {
+    display: inline;
+    margin-left: 1em;
+  }
+}
