@@ -322,7 +322,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockFaceComponent,
 
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
   ]
 })
 export class SharedModule {
