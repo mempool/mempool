@@ -82,9 +82,9 @@ export class NodesNetworksChartComponent implements OnInit {
           firstRun = false;
           this.miningWindowPreference = timespan;
           this.isLoading = true;
-          return this.lightningApiService.listStatistics$(timespan)
+          return this.lightningApiService.cachedRequest(this.lightningApiService.listStatistics$, 250, timespan)
             .pipe(
-              tap((response) => {
+              tap((response:any) => {
                 const data = response.body;
                 const chartData = {
                   tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),

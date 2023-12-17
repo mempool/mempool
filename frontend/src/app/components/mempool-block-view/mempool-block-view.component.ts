@@ -27,6 +27,7 @@ export class MempoolBlockViewComponent implements OnInit, OnDestroy {
   autofit: boolean = false;
   resolution: number = 80;
   index: number = 0;
+  filterFlags: bigint | null = 0n;
 
   routeParamsSubscription: Subscription;
   queryParamsSubscription: Subscription;
@@ -38,6 +39,8 @@ export class MempoolBlockViewComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    window['setFlags'] = this.setFilterFlags.bind(this);
+
     this.websocketService.want(['blocks', 'mempool-blocks']);
 
     this.routeParamsSubscription = this.route.paramMap
@@ -81,5 +84,9 @@ export class MempoolBlockViewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
+  }
+
+  setFilterFlags(flags: bigint | null) {
+    this.filterFlags = flags;
   }
 }

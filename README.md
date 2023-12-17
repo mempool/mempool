@@ -12,7 +12,9 @@ It is an open-source project developed and operated for the benefit of the Bitco
 
 Mempool can be self-hosted on a wide variety of your own hardware, ranging from a simple one-click installation on a Raspberry Pi full-node distro all the way to a robust production instance on a powerful FreeBSD server. 
 
-**Most people should use a one-click install method.** Other install methods are meant for developers and others with experience managing servers. 
+Most people should use a <a href="#one-click-installation">one-click install method</a>.
+
+Other install methods are meant for developers and others with experience managing servers. If you want support for your own production instance of Mempool, or if you'd like to have your own instance of Mempool run by the mempool.space team on their own global ISP infrastructure—check out <a href="https://mempool.space/enterprise" target="_blank">Mempool Enterprise®</a>.
 
 <a id="one-click-installation"></a>
 ## One-Click Installation

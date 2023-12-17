@@ -90,6 +90,7 @@ export interface TransactionStripped {
   value: number;
   acc?: boolean; // is accelerated?
   rate?: number; // effective fee rate
+  flags?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }

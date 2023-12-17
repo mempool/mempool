@@ -97,6 +97,8 @@ class RbfCache {
       return;
     }
 
+    newTxExtended.replacement = true;
+
     const newTx = Common.stripTransaction(newTxExtended) as RbfTransaction;
     const newTime = newTxExtended.firstSeen || (Date.now() / 1000);
     newTx.rbf = newTxExtended.vin.some((v) => v.sequence < 0xfffffffe);
@@ -368,14 +370,14 @@ class RbfCache {
     };
   }
 
-  public async load({ txs, trees, expiring }): Promise<void> {
+  public async load({ txs, trees, expiring, mempool }): Promise<void> {
     try {
       txs.forEach(txEntry => {
         this.txs.set(txEntry.value.txid, txEntry.value);
       });
       this.staleCount = 0;
       for (const deflatedTree of trees) {
-        await this.importTree(deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
+        await this.importTree(mempool, deflatedTree.root, deflatedTree.root, deflatedTree, this.txs);
       }
       expiring.forEach(expiringEntry => {
         if (this.txs.has(expiringEntry.key)) {
@@ -413,7 +415,7 @@ class RbfCache {
     return deflated;
   }
 
-  async importTree(root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
+  async importTree(mempool, root, txid, deflated, txs: Map<string, MempoolTransactionExtended>, mined: boolean = false): Promise<RbfTree | void> {
     const treeInfo = deflated[txid];
     const replaces: RbfTree[] = [];
 
@@ -426,9 +428,12 @@ class RbfCache {
 
     // recursively reconstruct child trees
     for (const childId of treeInfo.replaces) {
-      const replaced = await this.importTree(root, childId, deflated, txs, mined);
+      const replaced = await this.importTree(mempool, root, childId, deflated, txs, mined);
       if (replaced) {
         this.replacedBy.set(replaced.tx.txid, txid);
+        if (mempool[replaced.tx.txid]) {
+          mempool[replaced.tx.txid].replacement = true;
+        }
         replaces.push(replaced);
         if (replaced.mined) {
           mined = true;

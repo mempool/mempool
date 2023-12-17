@@ -2,19 +2,7 @@ import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
 import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
-import { feeLevels, mempoolFeeColors } from '../../app.constants';
-import { darken, desaturate, hexToColor } from './utils';
-
-const feeColors = mempoolFeeColors.map(hexToColor);
-const auditFeeColors = feeColors.map((color) => darken(desaturate(color, 0.3), 0.9));
-const marginalFeeColors = feeColors.map((color) => darken(desaturate(color, 0.8), 1.1));
-const auditColors = {
-  censored: hexToColor('f344df'),
-  missing: darken(desaturate(hexToColor('f344df'), 0.3), 0.7),
-  added: hexToColor('0099ff'),
-  selected: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
-  accelerated: hexToColor('8F5FF6'),
-};
+import { defaultColorFunction } from './utils';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
@@ -27,6 +15,7 @@ export default class BlockScene {
   configAnimationOffset: number | null;
   animationOffset: number;
   highlightingEnabled: boolean;
+  filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
   width: number;
   height: number;
   gridWidth: number;
@@ -78,7 +67,7 @@ export default class BlockScene {
   }
 
   setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
-    this.getColor = colorFunction;
+    this.getColor = colorFunction || defaultColorFunction;
     this.dirty = true;
     if (this.initialised && this.scene) {
       this.updateColors(performance.now(), 50);
@@ -277,6 +266,20 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.update(update));
   }
 
+  private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {
+    if (tx.dirty || this.dirty) {
+      const txColor = this.getColor(tx);
+      this.applyTxUpdate(tx, {
+        display: {
+          color: txColor
+        },
+        duration: animate ? (duration || this.animationDuration) : 1,
+        start: startTime,
+        delay: animate ? delay : 0,
+      });
+    }
+  }
+
   private updateTx(tx: TxView, startTime: number, delay: number, direction: string = 'left', animate: boolean = true): void {
     if (tx.dirty || this.dirty) {
       this.saveGridToScreenPosition(tx);
@@ -325,7 +328,7 @@ export default class BlockScene {
     } else {
       this.applyTxUpdate(tx, {
         display: {
-          position: tx.screenPosition
+          position: tx.screenPosition,
         },
         duration: animate ? this.animationDuration : 0,
         minDuration: animate ? (this.animationDuration / 2) : 0,
@@ -903,49 +906,4 @@ class BlockLayout {
 
 function feeRateDescending(a: TxView, b: TxView) {
   return b.feerate - a.feerate;
-}
-
-function defaultColorFunction(tx: TxView): Color {
-  const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
-  const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
-  const feeLevelColor = feeColors[feeLevelIndex] || feeColors[mempoolFeeColors.length - 1];
-  // Normal mode
-  if (!tx.scene?.highlightingEnabled) {
-    if (tx.acc) {
-      return auditColors.accelerated;
-    } else {
-      return feeLevelColor;
-    }
-    return feeLevelColor;
-  }
-  // Block audit
-  switch(tx.status) {
-    case 'censored':
-      return auditColors.censored;
-    case 'missing':
-    case 'sigop':
-    case 'rbf':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
-    case 'fresh':
-    case 'freshcpfp':
-      return auditColors.missing;
-    case 'added':
-      return auditColors.added;
-    case 'selected':
-      return marginalFeeColors[feeLevelIndex] || marginalFeeColors[mempoolFeeColors.length - 1];
-    case 'accelerated':
-      return auditColors.accelerated;
-    case 'found':
-      if (tx.context === 'projected') {
-        return auditFeeColors[feeLevelIndex] || auditFeeColors[mempoolFeeColors.length - 1];
-      } else {
-        return feeLevelColor;
-      }
-    default:
-      if (tx.acc) {
-        return auditColors.accelerated;
-      } else {
-        return feeLevelColor;
-      }
-  }
 }
