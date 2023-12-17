@@ -94,6 +94,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     vsize: number,
   };
   acceleration?: boolean;
+  replacement?: boolean;
   uid?: number;
   flags?: number;
 }

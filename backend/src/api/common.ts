@@ -231,7 +231,7 @@ export class Common {
     if (tx.descendants?.length) {
       flags |= TransactionFlags.cpfp_parent;
     }
-    if (rbfCache.getRbfTree(tx.txid)) {
+    if (tx.replacement) {
       flags |= TransactionFlags.replacement;
     }
 
