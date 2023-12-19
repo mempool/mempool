@@ -439,7 +439,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
-        if (this.accelerationInfo && ['accelerating', 'mined', 'completed'].includes(this.accelerationInfo.status)) {
+        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'mined', 'completed'].includes(this.accelerationInfo.status))) {
           this.audioService.playSound('wind-chimes-harp-ascend');
         } else {
           this.audioService.playSound('magic');
