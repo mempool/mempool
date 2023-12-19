@@ -1,6 +1,6 @@
 <div class="rbf-timeline box" [class.mined]="replacements.mined">
   <div class="timeline-wrapper">
-    <div class="timeline" *ngFor="let timeline of rows; let j = index">
+    <div class="timeline" *ngFor="let timeline of rows; let j = index" [class.fade-out]="!timelineExpanded && j === rowLimit - 1">
       <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <div class="node-spacer"></div>
@@ -37,7 +37,7 @@
           </ng-container>
           <ng-template #nonNode>
             <ng-container [ngSwitch]="cell.connector">
-              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf"></div></div>
+              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf" [class.last-pipe]="!timelineExpanded && j === rowLimit - 1"></div></div>
               <div class="connector" *ngSwitchCase="'corner'"><div class="corner" [class.fullrbf]="cell.fullRbf"></div></div>
               <div class="node-spacer" *ngSwitchDefault></div>
             </ng-container>
