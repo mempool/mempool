@@ -143,7 +143,7 @@ class BlocksRepository {
         block.timestamp,
         block.size,
         block.weight,
-        block.tx_count,
+        block.tx_count || 0,
         block.extras.coinbaseRaw,
         block.difficulty,
         poolDbId.id,
@@ -190,9 +190,9 @@ class BlocksRepository {
 
   /**
    * Save newly indexed data from core coinstatsindex
-   * 
-   * @param utxoSetSize 
-   * @param totalInputAmt 
+   *
+   * @param utxoSetSize
+   * @param totalInputAmt
    */
   public async $updateCoinStatsIndexData(blockHash: string, utxoSetSize: number,
     totalInputAmt: number
@@ -218,9 +218,9 @@ class BlocksRepository {
   /**
    * Update missing fee amounts fields
    *
-   * @param blockHash 
-   * @param feeAmtPercentiles 
-   * @param medianFeeAmt 
+   * @param blockHash
+   * @param feeAmtPercentiles
+   * @param medianFeeAmt
    */
   public async $updateFeeAmounts(blockHash: string, feeAmtPercentiles, medianFeeAmt) : Promise<void> {
     try {
@@ -529,7 +529,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -922,9 +922,9 @@ class BlocksRepository {
 
   /**
    * Save indexed median fee to avoid recomputing it later
-   * 
-   * @param id 
-   * @param feePercentiles 
+   *
+   * @param id
+   * @param feePercentiles
    */
   public async $saveFeePercentilesForBlockId(id: string, feePercentiles: number[]): Promise<void> {
     try {
@@ -941,9 +941,9 @@ class BlocksRepository {
 
   /**
    * Save indexed effective fee statistics
-   * 
-   * @param id 
-   * @param feeStats 
+   *
+   * @param id
+   * @param feeStats
    */
   public async $saveEffectiveFeeStats(id: string, feeStats: EffectiveFeeStats): Promise<void> {
     try {
@@ -961,8 +961,8 @@ class BlocksRepository {
   /**
    * Convert a mysql row block into a BlockExtended. Note that you
    * must provide the correct field into dbBlk object param
-   * 
-   * @param dbBlk 
+   *
+   * @param dbBlk
    */
   private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
@@ -977,12 +977,12 @@ class BlocksRepository {
     blk.nonce = dbBlk.nonce;
     blk.difficulty = dbBlk.difficulty;
     blk.merkle_root = dbBlk.merkle_root;
-    blk.tx_count = dbBlk.tx_count;
+    blk.tx_count = dbBlk.tx_count || 0;
     blk.size = dbBlk.size;
     blk.weight = dbBlk.weight;
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
-    
+
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;

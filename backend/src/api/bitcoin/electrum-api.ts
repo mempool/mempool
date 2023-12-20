@@ -64,9 +64,9 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
 
     try {
       const balance = await this.$getScriptHashBalance(addressInfo.scriptPubKey);
-      const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey);
+      const history = await this.$getScriptHashHistory(addressInfo.scriptPubKey) || [];
 
-      const unconfirmed = history.filter((h) => h.fee).length;
+      const unconfirmed = history.filter((h) => h.fee).length || 0;
 
       return {
         'address': addressInfo.address,
@@ -151,7 +151,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
           'funded_txo_sum': balance.unconfirmed > 0 ? balance.unconfirmed : 0,
           'spent_txo_count': 0,
           'spent_txo_sum': balance.unconfirmed < 0 ? -balance.unconfirmed : 0,
-          'tx_count': unconfirmed,
+          'tx_count': unconfirmed || 0
         },
         'electrum': true,
       };
