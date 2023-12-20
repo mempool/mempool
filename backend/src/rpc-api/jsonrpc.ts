@@ -164,13 +164,14 @@ JsonRPC.prototype.call = function (method, params) {
             // @ts-ignore
             resolve(decodedResponse.result, response.headers)
           } else {
-            if (reject) {
+            //if (reject) {
               err = new Error(decodedResponse.error.message || '')
               if (decodedResponse.error.code) {
                 err.code = decodedResponse.error.code
               }
-              reject(err)
-            }
+              //reject(err)
+              resolve({});
+            //}
           }
         })
       })
