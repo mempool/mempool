@@ -152,13 +152,14 @@ JsonRPC.prototype.call = function (method, params) {
         // unless a batch rpc call response is being processed
         decoded.forEach(function (decodedResponse, i) {
           if (decodedResponse.hasOwnProperty('error') && decodedResponse.error != null) {
-            if (reject) {
+            //if (reject) {
               err = new Error(decodedResponse.error.message || '')
               if (decodedResponse.error.code) {
                 err.code = decodedResponse.error.code
               }
-              reject(err)
-            }
+              //reject(err)
+              resolve({});
+            //
           } else if (decodedResponse.hasOwnProperty('result')) {
             // @ts-ignore
             resolve(decodedResponse.result, response.headers)
