@@ -851,8 +851,8 @@
         <note from="description" priority="1">about.about-the-project</note>
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
-        <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>O projeto de código aberto mempool visa implementar um explorador de alta qualidade e um site de visualização para todo o ecossistema Bitcoin, sem distrações como altcoins, publicidade ou rastreadores de terceiros.</target>
+        <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bells ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
+        <target>O projeto de código aberto mempool visa implementar um explorador de alta qualidade e um site de visualização para todo o ecossistema Bells, sem distrações como altcoins, publicidade ou rastreadores de terceiros.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1537,7 +1537,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
         <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bellsd.</source>
-        <target>Obtenha a lista completa de ID de transações no mempool como um array. A ordem dos IDs de transações é arbitrária e não corresponde ao Bitcoin Core daemon.</target>
+        <target>Obtenha a lista completa de ID de transações no mempool como um array. A ordem dos IDs de transações é arbitrária e não corresponde ao Bells Core daemon.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">63</context>
@@ -1721,7 +1721,7 @@
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
         <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bells.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bellsd's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> format.</source>
-        <target>Retorna uma prova de inclusão de merkle para a transação usando o bloco no formato <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bells.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>merkle do Bitcoin Core daemon<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/>.</target>
+        <target>Retorna uma prova de inclusão de merkle para a transação usando o bloco no formato <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bells.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>merkle do Bells Core daemon<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">155</context>
@@ -1846,32 +1846,32 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
-        <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
-        <target>Retorna todas as transações Bisq que existem em um bloco Bitcoin.</target>
+        <source>Returns all Bisq transactions that exist in a Bells block.</source>
+        <target>Retorna todas as transações Bisq que existem em um bloco Bells.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">260</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
-        <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
-        <target>Retorna :comprimento dos blocos de Bitcoin que contêm transações Bisq, a partir de :índice.</target>
+        <source>Returns :length Bells blocks that contain Bisq transactions, starting from :index.</source>
+        <target>Retorna :comprimento dos blocos de Bells que contêm transações Bisq, a partir de :índice.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">264</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
-        <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
-        <target>Retorna a altura do bloco Bitcoin processado mais recentemente pelo Bisq.</target>
+        <source>Returns the most recently processed Bells block height processed by Bisq.</source>
+        <target>Retorna a altura do bloco Bells processado mais recentemente pelo Bisq.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">268</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
-        <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
-        <target>Retorna todas as transações Bisq pertencentes a um endereço Bitcoin, com 'B' prefixado na frente do endereço.</target>
+        <source>Returns all Bisq transactions belonging to a Bells address, with 'B' prefixed in front of the address.</source>
+        <target>Retorna todas as transações Bisq pertencentes a um endereço Bells, com 'B' prefixado na frente do endereço.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">272</context>

@@ -1130,8 +1130,8 @@
         <note from="description" priority="1">about.about-the-project</note>
       </trans-unit>
       <trans-unit datatype="html" id="489827bef9fd30645fd2a217aea141ac43bd01ef">
-        <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bitcoin ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
-        <target>Mempool avoimen lähdekoodin projektin tavoitteena on toteuttaa korkealaatuinen tutkimus- ja visualisointisivusto koko Bitcoin-ekosysteemille ilman häiriötekijöitä, kuten altcoineja, mainontaa tai kolmannen osapuolen seurantalaitteita.</target>
+        <source>The mempool open-source project aims to implement a high quality explorer and visualization website for the entire Bells ecosystem, without distractions like altcoins, advertising, or third-party trackers.</source>
+        <target>Mempool avoimen lähdekoodin projektin tavoitteena on toteuttaa korkealaatuinen tutkimus- ja visualisointisivusto koko Bells-ekosysteemille ilman häiriötekijöitä, kuten altcoineja, mainontaa tai kolmannen osapuolen seurantalaitteita.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2190,28 +2190,28 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="e7e7c97535181ba299bc0ad02904f851088a0dd5">
-        <source>Returns all Bisq transactions that exist in a Bitcoin block.</source>
+        <source>Returns all Bisq transactions that exist in a Bells block.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">260</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="6fdafaace68cb298c6281e89eedc704f3d8f3f6a">
-        <source>Returns :length Bitcoin blocks that contain Bisq transactions, starting from :index.</source>
+        <source>Returns :length Bells blocks that contain Bisq transactions, starting from :index.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">264</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="ac234ff46c8f499399a20fb5d74005094de7cdcd">
-        <source>Returns the most recently processed Bitcoin block height processed by Bisq.</source>
+        <source>Returns the most recently processed Bells block height processed by Bisq.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">268</context>
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="9604b870a64e6635062828425fcb801371e716ad">
-        <source>Returns all Bisq transactions belonging to a Bitcoin address, with 'B' prefixed in front of the address.</source>
+        <source>Returns all Bisq transactions belonging to a Bells address, with 'B' prefixed in front of the address.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">272</context>

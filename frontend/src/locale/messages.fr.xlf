@@ -502,8 +502,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.block" datatype="html">
-        <source>See all BSQ transactions in Bitcoin block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (block hash <x id="BLOCK_HASH" equiv-text="block.hash"/>).</source>
-        <target>Voir toutes les transactions BSQ dans le bloc Bitcoin <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (hachage de bloc <x id="BLOCK_HASH" equiv-text="block.hash"/>).</target>
+        <source>See all BSQ transactions in Bells block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (block hash <x id="BLOCK_HASH" equiv-text="block.hash"/>).</source>
+        <target>Voir toutes les transactions BSQ dans le bloc Bells <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (hachage de bloc <x id="BLOCK_HASH" equiv-text="block.hash"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">92</context>
@@ -630,8 +630,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.blocks" datatype="html">
-        <source>See a list of recent Bitcoin blocks with BSQ transactions, total BSQ sent per block, and more.</source>
-        <target>Consultez une liste des blocs Bitcoin récents avec des transactions BSQ, le nombre total de BSQ envoyés par bloc, et plus encore.</target>
+        <source>See a list of recent Bells blocks with BSQ transactions, total BSQ sent per block, and more.</source>
+        <target>Consultez une liste des blocs Bells récents avec des transactions BSQ, le nombre total de BSQ envoyés par bloc, et plus encore.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -664,8 +664,8 @@
         <note priority="1" from="description">Bisq All Markets</note>
       </trans-unit>
       <trans-unit id="ece163b62f5e9b0b68a8d6a2d93e216318f557ba" datatype="html">
-        <source>Bitcoin Markets</source>
-        <target>Marchés Bitcoin</target>
+        <source>Bells Markets</source>
+        <target>Marchés Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.html</context>
           <context context-type="linenumber">21</context>
@@ -674,7 +674,7 @@
           <context context-type="sourcefile">src/app/bisq/bisq-main-dashboard/bisq-main-dashboard.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <note priority="1" from="description">Bisq Bitcoin Markets</note>
+        <note priority="1" from="description">Bisq Bells Markets</note>
       </trans-unit>
       <trans-unit id="32072c7fb0469aaf82d256a59b3e0d6ecce973b9" datatype="html">
         <source>Currency</source>
@@ -768,8 +768,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.markets" datatype="html">
-        <source>Explore the full Bitcoin ecosystem with The Mempool Open Source Project™. See Bisq market prices, trading activity, and more.</source>
-        <target>Explorez l'intégralité de l'écosystème Bitcoin avec The Mempool Open Source Project™. Consultez les prix du marché Bisq, l’activité d'échange et bien plus encore.</target>
+        <source>Explore the full Bells ecosystem with The Mempool Open Source Project™. See Bisq market prices, trading activity, and more.</source>
+        <target>Explorez l'intégralité de l'écosystème Bells avec The Mempool Open Source Project™. Consultez les prix du marché Bisq, l’activité d'échange et bien plus encore.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -1437,8 +1437,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.transactions" datatype="html">
-        <source>See recent BSQ transactions: amount, txid, associated Bitcoin block, transaction type, and more.</source>
-        <target>Consultez les transactions BSQ récentes : montant, txid, bloc Bitcoin associé, type de transaction, etc.</target>
+        <source>See recent BSQ transactions: amount, txid, associated Bells block, transaction type, and more.</source>
+        <target>Consultez les transactions BSQ récentes : montant, txid, bloc Bells associé, type de transaction, etc.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">82</context>
@@ -1470,8 +1470,8 @@
         <note priority="1" from="description">about.about-the-project</note>
       </trans-unit>
       <trans-unit id="8a4411dcb4da0aa489ec367bf2a3ec289e07a86e" datatype="html">
-        <source>Our mempool and blockchain explorer for the Bitcoin community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
-        <target>Notre explorateur mempool et blockchain pour la communauté Bitcoin, axé sur le marché des frais de transaction et l'écosystème multicouche, entièrement auto-hébergé sans aucun tiers de confiance.</target>
+        <source>Our mempool and blockchain explorer for the Bells community, focusing on the transaction fee market and multi-layer ecosystem, completely self-hosted without any trusted third-parties.</source>
+        <target>Notre explorateur mempool et blockchain pour la communauté Bells, axé sur le marché des frais de transaction et l'écosystème multicouche, entièrement auto-hébergé sans aucun tiers de confiance.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1837,8 +1837,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bells.address" datatype="html">
-        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
-        <target>Consultez les transactions mempool, les transactions confirmées, le solde et bien plus encore pour l'adresse <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> <x id="INTERPOLATION" equiv-text="this.addressString"/>.</target>
+        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <target>Consultez les transactions mempool, les transactions confirmées, le solde et bien plus encore pour l'adresse <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> <x id="INTERPOLATION" equiv-text="this.addressString"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2296,8 +2296,8 @@
         <note priority="1" from="description">mining.block-fee-rates</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.block-fee-rates" datatype="html">
-        <source>See Bitcoin feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.</source>
-        <target>Consultez les tarifs Bitcoin visualisés au fil du temps, y compris les tarifs minimum et maximum par bloc ainsi que les tarifs à différents centiles.</target>
+        <source>See Bells feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.</source>
+        <target>Consultez les tarifs Bells visualisés au fil du temps, y compris les tarifs minimum et maximum par bloc ainsi que les tarifs à différents centiles.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -2353,8 +2353,8 @@
         <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.block-fees" datatype="html">
-        <source>See the average mining fees earned per Bitcoin block visualized in BEL and USD over time.</source>
-        <target>Consultez les frais de minage moyens gagnés par bloc Bitcoin visualisés en BEL et en USD au fil du temps.</target>
+        <source>See the average mining fees earned per Bells block visualized in BEL and USD over time.</source>
+        <target>Consultez les frais de minage moyens gagnés par bloc Bells visualisés en BEL et en USD au fil du temps.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -2418,8 +2418,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.block-health" datatype="html">
-        <source>See Bitcoin block health visualized over time. Block health is a measure of how many expected transactions were included in an actual mined block. Expected transactions are determined using Mempool's re-implementation of Bitcoin Core's transaction selection algorithm.</source>
-        <target>Voir la santé des blocs Bitcoin visualisée au fil du temps. La santé d'un bloc est une mesure du nombre de transactions attendues incluses dans un bloc réellement trouvé. Les transactions attendues sont déterminées à l'aide de la ré-implémentation par Mempool de l'algorithme de sélection de transactions de Bitcoin Core.</target>
+        <source>See Bells block health visualized over time. Block health is a measure of how many expected transactions were included in an actual mined block. Expected transactions are determined using Mempool's re-implementation of Bells Core's transaction selection algorithm.</source>
+        <target>Voir la santé des blocs Bells visualisée au fil du temps. La santé d'un bloc est une mesure du nombre de transactions attendues incluses dans un bloc réellement trouvé. Les transactions attendues sont déterminées à l'aide de la ré-implémentation par Mempool de l'algorithme de sélection de transactions de Bells Core.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -2702,8 +2702,8 @@
         <note priority="1" from="description">mining.block-rewards</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.block-rewards" datatype="html">
-        <source>See Bitcoin block rewards in BEL and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
-        <target>Consultez les récompenses des blocs Bitcoin en BEL et en USD visualisées au fil du temps. Les récompenses globales correspondent au total des fonds que les mineurs gagnent grâce à la récompense de bloc et aux frais.</target>
+        <source>See Bells block rewards in BEL and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
+        <target>Consultez les récompenses des blocs Bells en BEL et en USD visualisées au fil du temps. Les récompenses globales correspondent au total des fonds que les mineurs gagnent grâce à la récompense de bloc et aux frais.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -2727,8 +2727,8 @@
         <note priority="1" from="description">mining.block-sizes-weights</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.block-sizes" datatype="html">
-        <source>See Bitcoin block sizes (MB) and block weights (weight units) visualized over time.</source>
-        <target>Consultez la taille des blocs Bitcoin (Mo) et le poids des blocs (unités de poids) visualisés au fil du temps.</target>
+        <source>See Bells block sizes (MB) and block weights (weight units) visualized over time.</source>
+        <target>Consultez la taille des blocs Bells (Mo) et le poids des blocs (unités de poids) visualisés au fil du temps.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -2859,8 +2859,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bells.block" datatype="html">
-        <source>See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
-        <target>Consultez la taille, le poids, la fourchette de frais, les transactions incluses, l'audit (attendu et réel) et bien plus encore pour le bloc Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> <x id="BLOCK_HEIGHT" equiv-text="block.height"/> ( <x id="BLOCK_ID" equiv-text="block.id"/>).</target>
+        <source>See size, weight, fee range, included transactions, audit (expected v actual), and more for Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
+        <target>Consultez la taille, le poids, la fourchette de frais, les transactions incluses, l'audit (attendu et réel) et bien plus encore pour le bloc Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> <x id="BLOCK_HEIGHT" equiv-text="block.height"/> ( <x id="BLOCK_ID" equiv-text="block.id"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">114</context>
@@ -3466,8 +3466,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bells.blocks" datatype="html">
-        <source>See the most recent Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blocks along with basic stats such as block height, block reward, block size, and more.</source>
-        <target>Consultez les blocs Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> les plus récents ainsi que les statistiques de base telles que la hauteur du bloc, la récompense du bloc, la taille du bloc, etc.</target>
+        <source>See the most recent Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blocks along with basic stats such as block height, block reward, block size, and more.</source>
+        <target>Consultez les blocs Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> les plus récents ainsi que les statistiques de base telles que la hauteur du bloc, la récompense du bloc, la taille du bloc, etc.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -4117,8 +4117,8 @@
         <note priority="1" from="description">mining.hashrate-difficulty</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.hashrate" datatype="html">
-        <source>See hashrate and difficulty for the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> network visualized over time.</source>
-        <target>Consultez le taux de hachage et la difficulté du réseau Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> visualisés au fil du temps.</target>
+        <source>See hashrate and difficulty for the Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> network visualized over time.</source>
+        <target>Consultez le taux de hachage et la difficulté du réseau Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> visualisés au fil du temps.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -4225,8 +4225,8 @@
         <note priority="1" from="description">documentation.title</note>
       </trans-unit>
       <trans-unit id="meta.description.mempool-block" datatype="html">
-        <source>See stats for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.</source>
-        <target>Consultez les statistiques des transactions <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> dans la mempool: plage de frais, taille globale, etc. Les blocs mempool sont mis à jour en temps réel à mesure que le réseau reçoit de nouvelles transactions.</target>
+        <source>See stats for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.</source>
+        <target>Consultez les statistiques des transactions <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> dans la mempool: plage de frais, taille globale, etc. Les blocs mempool sont mis à jour en temps réel à mesure que le réseau reçoit de nouvelles transactions.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -4330,8 +4330,8 @@
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
       <trans-unit id="meta.description.mining.dashboard" datatype="html">
-        <source>Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
-        <target>Obtenez des statistiques minières Bitcoin en temps réel telles que le taux de hachage, l'ajustement de la difficulté, les récompenses de bloc, la domination du pool, etc.</target>
+        <source>Get real-time Bells mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
+        <target>Obtenez des statistiques minières Bells en temps réel telles que le taux de hachage, l'ajustement de la difficulté, les récompenses de bloc, la domination du pool, etc.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
           <context context-type="linenumber">21</context>
@@ -4519,8 +4519,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bells.graphs.pool-ranking" datatype="html">
-        <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
-        <target>Consultez les meilleurs pools de minage Bitcoin classés par nombre de blocs extraits, sur la période souhaitée.</target>
+        <source>See the top Bells mining pools ranked by number of blocks mined, over your desired timeframe.</source>
+        <target>Consultez les meilleurs pools de minage Bells classés par nombre de blocs extraits, sur la période souhaitée.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -4799,8 +4799,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.push-tx" datatype="html">
-        <source>Broadcast a transaction to the <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network using the transaction's hash.</source>
-        <target>Diffusez une transaction sur le réseau <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> en utilisant le hachage de la transaction.</target>
+        <source>Broadcast a transaction to the <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network using the transaction's hash.</source>
+        <target>Diffusez une transaction sur le réseau <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> en utilisant le hachage de la transaction.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -4846,8 +4846,8 @@
         <note priority="1" from="description">rbf.no-replacements-yet</note>
       </trans-unit>
       <trans-unit id="meta.description.rbf-list" datatype="html">
-        <source>See the most recent RBF replacements on the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
-        <target>Découvrez les remplacements RBF les plus récents sur le réseau Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>, mis à jour en temps réel.</target>
+        <source>See the most recent RBF replacements on the Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
+        <target>Découvrez les remplacements RBF les plus récents sur le réseau Bells<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>, mis à jour en temps réel.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -5023,8 +5023,8 @@
         <note priority="1" from="meaning">shared.sat-vbyte</note>
       </trans-unit>
       <trans-unit id="7deec1c1520f06170e1f8e8ddfbe4532312f638f" datatype="html">
-        <source>Explore the full Bitcoin ecosystem</source>
-        <target>Explorez tout l'écosystème Bitcoin</target>
+        <source>Explore the full Bells ecosystem</source>
+        <target>Explorez tout l'écosystème Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-form.component.html</context>
           <context context-type="linenumber">4</context>
@@ -5049,8 +5049,8 @@
         <note priority="1" from="description">search-form.search-title</note>
       </trans-unit>
       <trans-unit id="0673b255ba8db0bc5e2cccd5962d31dc88c24578" datatype="html">
-        <source>Bitcoin Block Height</source>
-        <target>Hauteur de bloc Bitcoin</target>
+        <source>Bells Block Height</source>
+        <target>Hauteur de bloc Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">3</context>
@@ -5058,8 +5058,8 @@
         <note priority="1" from="description">search.bells-block-height</note>
       </trans-unit>
       <trans-unit id="8b786a14d8c948e31bfb84369f123847a21dbf50" datatype="html">
-        <source>Bitcoin Transaction</source>
-        <target>Transaction Bitcoin</target>
+        <source>Bells Transaction</source>
+        <target>Transaction Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">9</context>
@@ -5067,8 +5067,8 @@
         <note priority="1" from="description">search.bells-transaction</note>
       </trans-unit>
       <trans-unit id="aacf72635ebf6cfe00590e3a426ea6002c43a729" datatype="html">
-        <source>Bitcoin Address</source>
-        <target>Adresse Bitcoin</target>
+        <source>Bells Address</source>
+        <target>Adresse Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">15</context>
@@ -5076,8 +5076,8 @@
         <note priority="1" from="description">search.bells-address</note>
       </trans-unit>
       <trans-unit id="97089c008af92d87389ff1ec5fb2cc96a6ecef0e" datatype="html">
-        <source>Bitcoin Block</source>
-        <target>Bloc de Bitcoin</target>
+        <source>Bells Block</source>
+        <target>Bloc de Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">21</context>
@@ -5085,8 +5085,8 @@
         <note priority="1" from="description">search.bells-block</note>
       </trans-unit>
       <trans-unit id="e89c09d708a1da5f6a59ba6c38ba3db78031fe0e" datatype="html">
-        <source>Bitcoin Addresses</source>
-        <target>Adresses Bitcoin</target>
+        <source>Bells Addresses</source>
+        <target>Adresses Bells</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">27</context>
@@ -5200,8 +5200,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.tv" datatype="html">
-        <source>See Bitcoin blocks and mempool congestion in real-time in a simplified format perfect for a TV.</source>
-        <target>Visualisez les blocs Bitcoin et la congestion de la mempool en temps réel dans un format simplifié parfait pour une TV.</target>
+        <source>See Bells blocks and mempool congestion in real-time in a simplified format perfect for a TV.</source>
+        <target>Visualisez les blocs Bells et la congestion de la mempool en temps réel dans un format simplifié parfait pour une TV.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -5413,8 +5413,8 @@
         <note priority="1" from="description">transactions-list.coinbase</note>
       </trans-unit>
       <trans-unit id="meta.description.bells.transaction" datatype="html">
-        <source>Get real-time status, addresses, fees, script info, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaction with txid {txid}.</source>
-        <target>Obtenez le statut en temps réel, les adresses, les frais, les informations sur le script et bien plus encore pour cette transaction <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>.</target>
+        <source>Get real-time status, addresses, fees, script info, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaction with txid {txid}.</source>
+        <target>Obtenez le statut en temps réel, les adresses, les frais, les informations sur le script et bien plus encore pour cette transaction <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -6042,8 +6042,8 @@
         <note priority="1" from="description">dashboard.incoming-transactions</note>
       </trans-unit>
       <trans-unit id="999bb1a0150c2815a6b4dd64a1850e763603e525" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space fournit simplement des données sur le réseau Bitcoin.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Nous ne pouvons pas vous aider à récupérer des fonds, à résoudre des problèmes de portefeuille, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>Pour toute demande de ce type, vous devez contacter l'entité qui a aidé à effectuer la transaction (logiciel de portefeuille, échange, etc.).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bells network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space fournit simplement des données sur le réseau Bells.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Nous ne pouvons pas vous aider à récupérer des fonds, à résoudre des problèmes de portefeuille, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>Pour toute demande de ce type, vous devez contacter l'entité qui a aidé à effectuer la transaction (logiciel de portefeuille, échange, etc.).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -7792,8 +7792,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-isp" datatype="html">
-        <source>Browse all Bitcoin Lightning nodes using the <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.</source>
-        <target>Parcourez tous les nœuds Bitcoin Lightning à l'aide du FAI <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] et consultez les statistiques globales telles que le nombre total de nœuds, la capacité totale, et plus encore pour le FAI.</target>
+        <source>Browse all Bells Lightning nodes using the <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.</source>
+        <target>Parcourez tous les nœuds Bells Lightning à l'aide du FAI <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] et consultez les statistiques globales telles que le nombre total de nœuds, la capacité totale, et plus encore pour le FAI.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">45</context>
@@ -7898,7 +7898,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.stats-chart" datatype="html">
         <source>See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bells capacity.</source>
-        <target>Visualisez la capacité du réseau Lightning au fil du temps en termes de nombre de canaux ouverts et de capacité totale de Bitcoin.</target>
+        <target>Visualisez la capacité du réseau Lightning au fil du temps en termes de nombre de canaux ouverts et de capacité totale de Bells.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">67</context>
