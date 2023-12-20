@@ -1,3 +1,7 @@
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ', err);
+});
+
 var http = require('http')
 var https = require('https')
 import { readFileSync } from 'fs';
@@ -51,7 +55,7 @@ JsonRPC.prototype.call = function (method, params) {
     }
 
     if (this.opts.ssl && this.opts.sslCa) {
-    // @ts-ignore 
+    // @ts-ignore
       requestOptions.ca = this.opts.sslCa
     }
 

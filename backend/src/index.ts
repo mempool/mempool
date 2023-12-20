@@ -45,6 +45,11 @@ import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ', err);
+});
+
+
 class Server {
   private wss: WebSocket.Server | undefined;
   private server: http.Server | undefined;
@@ -279,7 +284,7 @@ class Server {
     priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
-  
+
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
     pricesRoutes.initRoutes(this.app);
