@@ -18,7 +18,7 @@
       <div class="card-text" i18n-ngbTooltip="mining.fees-per-block-desc" ngbTooltip="Average fees per block in the past 144 blocks" placement="bottom">
         <div class="fee-text">
           {{ (rewardStats.feePerBlock / 100000000) | amountShortener: 4 }}
-          <span i18n="shared.btc-block|BTC/block">BTC/block</span>
+          <span i18n="shared.btc-block|BEL/block">BEL/block</span>
         </div>
         <span class="fiat">
           <app-fiat [value]="rewardStats.feePerBlock"></app-fiat>

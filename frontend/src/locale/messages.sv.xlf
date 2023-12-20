@@ -2133,8 +2133,8 @@
         <note priority="1" from="description">Search Clear Button</note>
       </trans-unit>
       <trans-unit id="meta.description.liquid.assets" datatype="html">
-        <source>Explore all the assets issued on the Liquid network like L-BTC, L-CAD, USDT, and more.</source>
-        <target>Utforska alla tillgångar som ges ut på Liquid-nätverket som L-BTC, L-CAD, USDT och mer.</target>
+        <source>Explore all the assets issued on the Liquid network like L-BEL, L-CAD, USDT, and more.</source>
+        <target>Utforska alla tillgångar som ges ut på Liquid-nätverket som L-BEL, L-CAD, USDT och mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -2353,8 +2353,8 @@
         <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees" datatype="html">
-        <source>See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.</source>
-        <target>Se de genomsnittliga mining-avgifterna som tjänats in per Bitcoin-block visualiserat i BTC och USD över tiden.</target>
+        <source>See the average mining fees earned per Bitcoin block visualized in BEL and USD over time.</source>
+        <target>Se de genomsnittliga mining-avgifterna som tjänats in per Bitcoin-block visualiserat i BEL och USD över tiden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -2702,8 +2702,8 @@
         <note priority="1" from="description">mining.block-rewards</note>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-rewards" datatype="html">
-        <source>See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
-        <target>Se Bitcoin-blockbelöningar i BTC och USD visualiserade över tid. Blockbelöningar är de totala medel som miners tjänar från blocksubventionen och avgifterna.</target>
+        <source>See Bitcoin block rewards in BEL and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
+        <target>Se Bitcoin-blockbelöningar i BEL och USD visualiserade över tid. Blockbelöningar är de totala medel som miners tjänar från blocksubventionen och avgifterna.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -4977,14 +4977,14 @@
         <note priority="1" from="description">mining.fees-per-block-desc</note>
       </trans-unit>
       <trans-unit id="0705223420d290a218e4ed83bd4d904454a9cee8" datatype="html">
-        <source>BTC/block</source>
-        <target>BTC/block</target>
+        <source>BEL/block</source>
+        <target>BEL/block</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <note priority="1" from="description">BTC/block</note>
-        <note priority="1" from="meaning">shared.btc-block</note>
+        <note priority="1" from="description">BEL/block</note>
+        <note priority="1" from="meaning">shared.bells-block</note>
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
@@ -6024,13 +6024,13 @@
         <note priority="1" from="meaning">dashboard.purging</note>
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
-        <source>L-BTC in circulation</source>
-        <target>L-BTC i cirkulation</target>
+        <source>L-BEL in circulation</source>
+        <target>L-BEL i cirkulation</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">250</context>
         </context-group>
-        <note priority="1" from="description">dashboard.lbtc-pegs-in-circulation</note>
+        <note priority="1" from="description">dashboard.lbells-pegs-in-circulation</note>
       </trans-unit>
       <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
         <source>Incoming Transactions</source>
@@ -7570,7 +7570,7 @@
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country-overview" datatype="html">
-        <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.</source>
+        <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BEL capacity for each country, and more.</source>
         <target>Se en geografisk uppdelning av Lightning-nätverket: hur många Lightning-noder som finns i länder runt om i världen, sammanlagd BTC-kapacitet för varje land och mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>

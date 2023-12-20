@@ -3824,7 +3824,7 @@
           <context context-type="linenumber">21,24</context>
         </context-group>
         <note priority="1" from="description">BTC/block</note>
-        <note priority="1" from="meaning">shared.btc-block</note>
+        <note priority="1" from="meaning">shared.bells-block</note>
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
         <source>Avg Tx Fee</source>
@@ -4728,7 +4728,7 @@
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">228,230</context>
         </context-group>
-        <note priority="1" from="description">dashboard.lbtc-pegs-in-circulation</note>
+        <note priority="1" from="description">dashboard.lbells-pegs-in-circulation</note>
       </trans-unit>
       <trans-unit id="cd2330c7e9c74256f6a91e83bccf10e2905f8556" datatype="html">
         <source>REST API service</source>

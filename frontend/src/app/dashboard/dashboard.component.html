@@ -247,7 +247,7 @@
 <ng-template #lbtcPegs let-mempoolInfoData>
   <div class="mempool-info-data">
     <div class="item">
-      <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BTC in circulation</h5>
+      <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BEL in circulation</h5>
       <ng-container *ngIf="(liquidPegsMonth$ | async) as liquidPegsMonth; else loadingTransactions">
         <p class="card-text">{{ liquidPegsMonth.series.slice(-1)[0] | number: '1.2-2' }} <span>L-BTC</span></p>
       </ng-container>

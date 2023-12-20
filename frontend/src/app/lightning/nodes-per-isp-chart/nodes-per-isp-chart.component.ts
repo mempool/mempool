@@ -105,7 +105,7 @@ export class NodesPerISPChartComponent implements OnInit {
       );
 
     if (this.widget) {
-      this.sortBySubject.next(false);  
+      this.sortBySubject.next(false);
     }
   }
 
@@ -159,7 +159,7 @@ export class NodesPerISPChartComponent implements OnInit {
             const nodeCount = isp[4].toString();
             return `<b style="color: white">${isp[1]} (${this.sortBy === 'capacity' ? isp[7] : isp[6]}%)</b><br>` +
               $localize`${nodeCount} nodes` + `<br>` +
-              $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BTC`
+              $localize`${this.amountShortenerPipe.transform(isp[2] / 100000000, 2)} BEL`
             ;
           }
         },
@@ -192,7 +192,7 @@ export class NodesPerISPChartComponent implements OnInit {
           const nodeCount = nodeCountOther.toString();
           return `<b style="color: white">` + $localize`Other (${totalShareOther.toFixed(2) + '%'})` + `</b><br>` +
             $localize`${nodeCount} nodes` + `<br>` +
-            $localize`${this.amountShortenerPipe.transform(capacityOther / 100000000, 2)} BTC`;
+            $localize`${this.amountShortenerPipe.transform(capacityOther / 100000000, 2)} BEL`;
         }
       },
       data: 9999 as any,

@@ -106,7 +106,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">L-BTC</span></div>
+                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">L-BEL</span></div>
               </div>`;
             }
           });
