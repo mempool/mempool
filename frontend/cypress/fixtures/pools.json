@@ -12,13 +12,13 @@
             "name": "1THash",
             "link": "https://www.1thash.top"
         },
-        "/BTC.COM/" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+        "/BEL.COM/" : {
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
-        "/BTC.com/" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+        "/BEL.com/" : {
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "BITFARMS": {
             "name": "Bitfarms",
@@ -32,7 +32,7 @@
             "name": "Huobi.pool",
             "link": "https://www.hpt.com/"
         },
-        "/E2M & BTC.TOP/": {
+        "/E2M & BEL.TOP/": {
             "name": "WAYI.CN",
             "link": "http://www.easy2mine.com/"
         },
@@ -40,17 +40,17 @@
             "name": "CanoePool",
             "link": "https://www.canoepool.com/"
         },
-        "/BTC.TOP/": {
-            "name" : "BTC.TOP",
-            "link" : "http://www.btc.top/"
+        "/BEL.TOP/": {
+            "name" : "BEL.TOP",
+            "link" : "http://www.BEL.top/"
         },
         "pool.bitcoin.com" : {
             "name" : "Bitcoin.com",
             "link" : "https://www.bitcoin.com/"
         },
-        "Mined By 175btc.com" : {
-            "name" : "175btc",
-            "link" : "http://www.175btc.com/"
+        "Mined By 175BEL.com" : {
+            "name" : "175BEL",
+            "link" : "http://www.175BEL.com/"
         },
         "/mined by gbminers/" : {
             "name" : "GBMiners",
@@ -72,17 +72,17 @@
             "name" : "BitcoinRussia",
             "link" : "https://bitcoin-russia.ru"
         },
-        "btcserv" : {
-            "name" : "BTCServ",
-            "link" : "http://btcserv.net/"
+        "BELserv" : {
+            "name" : "BELServ",
+            "link" : "http://BELserv.net/"
         },
         "simplecoin" : {
             "name" : "simplecoin.us",
             "link" : "http://simplecoin.us/"
         },
-        "BTC Guild" : {
-            "name" : "BTC Guild",
-            "link" : "http://www.btcguild.com/"
+        "BEL Guild" : {
+            "name" : "BEL Guild",
+            "link" : "http://www.BELguild.com/"
         },
         "Eligius" : {
             "name" : "Eligius",
@@ -100,9 +100,9 @@
             "name" : "EclipseMC",
             "link" : "https://eclipsemc.com/"
         },
-        "MaxBTC" : {
-            "name" : "MaxBTC",
-            "link" : "http://maxbtc.com/"
+        "MaxBEL" : {
+            "name" : "MaxBEL",
+            "link" : "http://maxBEL.com/"
         },
         "triplemining" : {
             "name" : "TripleMining",
@@ -116,9 +116,9 @@
             "name" : "CoinLab",
             "link" : "http://coinlab.com/"
         },
-        "50BTC" : {
-            "name" : "50BTC",
-            "link" : "https://www.50btc.com/"
+        "50BEL" : {
+            "name" : "50BEL",
+            "link" : "https://www.50BEL.com/"
         },
         "ghash.io" : {
             "name" : "GHash.IO",
@@ -176,9 +176,9 @@
             "name" : "NMCbit",
             "link" : "http://nmcbit.com/"
         },
-        "yourbtc.net" : {
-            "name" : "Yourbtc.net",
-            "link" : "http://yourbtc.net/"
+        "yourBEL.net" : {
+            "name" : "YourBEL.net",
+            "link" : "http://yourBEL.net/"
         },
         "Give-Me-Coins" : {
             "name" : "Give Me Coins",
@@ -236,21 +236,21 @@
             "name" : "Bitcoin Affiliate Network",
             "link" : "https://mining.bitcoinaffiliatenetwork.com/"
         },
-        "BTCChina Pool" : {
-            "name" : "BTCC",
-            "link" : "https://pool.btcc.com/"
+        "BELChina Pool" : {
+            "name" : "BELC",
+            "link" : "https://pool.BELc.com/"
         },
-        "btcchina.com" : {
-            "name" : "BTCC",
-            "link" : "https://pool.btcc.com/"
+        "BELchina.com" : {
+            "name" : "BELC",
+            "link" : "https://pool.BELc.com/"
         },
-        "BTCChina.com" : {
-            "name" : "BTCC",
-            "link" : "https://pool.btcc.com/"
+        "BELChina.com" : {
+            "name" : "BELC",
+            "link" : "https://pool.BELc.com/"
         },
-        "/BTCC/" : {
-            "name" : "BTCC",
-            "link" : "https://pool.btcc.com/"
+        "/BELC/" : {
+            "name" : "BELC",
+            "link" : "https://pool.BELc.com/"
         },
         "BW Pool" : {
             "name" : "BWPool",
@@ -260,9 +260,9 @@
             "name" : "BWPool",
             "link" : "https://bwpool.net/"
         },
-        "xbtc.exx.com&bw.com" : {
+        "xBEL.exx.com&bw.com" : {
             "name" : "EXX&BW",
-            "link" : "https://xbtc.exx.com/"
+            "link" : "https://xBEL.exx.com/"
         },
         "Bitsolo Pool" : {
             "name" : "Bitsolo",
@@ -281,16 +281,16 @@
             "link" : "https://21.co/"
         },
         "/agentD/" : {
-            "name" : "digitalBTC",
-            "link" : "http://digitalbtc.com/"
+            "name" : "digitalBEL",
+            "link" : "http://digitalBEL.com/"
         },
         "/八宝池 8baochi.com/" : {
             "name" : "8baochi",
             "link" : "http://8baochi.com/"
         },
-        "myBTCcoin Pool" : {
-            "name" : "myBTCcoin Pool",
-            "link" : "http://mybtccoin.com/"
+        "myBELcoin Pool" : {
+            "name" : "myBELcoin Pool",
+            "link" : "http://myBELcoin.com/"
         },
         "TBDice" : {
             "name" : "TBDice",
@@ -324,11 +324,11 @@
             "name": "1Hash",
             "link": "http://www.1hash.com/"
         },
-        "/HaoBTC/" : {
+        "/HaoBEL/" : {
             "name": "Bixin",
             "link": "https://haopool.com/"
         },
-        "HAOBTC" : {
+        "HAOBEL" : {
             "name": "Bixin",
             "link": "https://haopool.com/"
         },
@@ -336,21 +336,21 @@
             "name": "Bixin",
             "link": "https://haopool.com/"
         },
-        "/ViaBTC/TATMAS Pool/" : {
+        "/ViaBEL/TATMAS Pool/" : {
             "name" : "TATMAS Pool",
             "link" : "https://tmsminer.com/"
         },
-        "viabtc.com deploy" : {
-            "name": "ViaBTC",
-            "link": "https://viabtc.com"
+        "viaBEL.com deploy" : {
+            "name": "ViaBEL",
+            "link": "https://viaBEL.com"
         },
-        "/ViaBTC/" : {
-            "name": "ViaBTC",
-            "link": "http://viabtc.com/"
+        "/ViaBEL/" : {
+            "name": "ViaBEL",
+            "link": "http://viaBEL.com/"
         },
-        "/ConnectBTC - Home for Miners/" : {
-            "name" : "ConnectBTC",
-            "link" : "https://www.connectbtc.com/"
+        "/ConnectBEL - Home for Miners/" : {
+            "name" : "ConnectBEL",
+            "link" : "https://www.connectBEL.com/"
         },
         "/BATPOOL/" : {
             "name" : "BATPOOL",
@@ -358,11 +358,11 @@
         },
         "/CANOE/" : {
             "name" : "CanoePool",
-            "link" : "https://btc.canoepool.com/"
+            "link" : "https://BEL.canoepool.com/"
         },
         "/WATERHOLE.IO/" : {
             "name" : "Waterhole",
-            "link" : "https://btc.waterhole.io/"
+            "link" : "https://BEL.waterhole.io/"
         },
         "/DCExploration/" : {
             "name" : "DCExploration",
@@ -495,7 +495,7 @@
         "/Minerium.com/" : {
             "name" : "Minerium",
             "link" : "https://www.minerium.com/"
-        },        
+        },
         "/Buffett/": {
             "name" : "Lubian.com",
             "link" : ""
@@ -510,7 +510,7 @@
         },
         "/AAOPOOL/" : {
             "name" : "AAO Pool",
-            "link" : "https://btc.tmspool.top"
+            "link" : "https://BEL.tmspool.top"
         },
         "/one_more_mcd/" : {
             "name" : "EMCDPool",
@@ -540,9 +540,9 @@
             "name": "ArkPool",
             "link": "https://www.arkpool.com/"
         },
-        "/PureBTC.COM/": {
-            "name": "PureBTC.COM",
-            "link": "https://purebtc.com"
+        "/PureBEL.COM/": {
+            "name": "PureBEL.COM",
+            "link": "https://pureBEL.com"
         },
         "MARA Pool": {
             "name": "MARA Pool",
@@ -635,7 +635,7 @@
             "link" : "https://eclipsemc.com/"
         },
         "1BwZeHJo7b7M2op7VDfYnsmcpXsUYEcVHm" : {
-            "name" : "BTC Nuggets",
+            "name" : "BEL Nuggets",
             "link" : "http://104.197.8.250/"
         },
         "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY" : {
@@ -664,7 +664,7 @@
         },
         "12QVFmJH2b4455YUHkMpEnWLeRY3eJ4Jb5" : {
             "name" : "AAO Pool",
-            "link" : "https://btc.tmspool.top "
+            "link" : "https://BEL.tmspool.top "
         },
         "1ALA5v7h49QT7WYLcRsxcXqXUqEqaWmkvw" : {
             "name" : "CloudHashing",
@@ -707,8 +707,8 @@
             "link" : "https://21.co/"
         },
         "1MimPd6LrPKGftPRHWdfk8S3KYBfN4ELnD" : {
-            "name" : "digitalBTC",
-            "link" : "http://digitalbtc.com/"
+            "name" : "digitalBEL",
+            "link" : "http://digitalBEL.com/"
         },
         "1NY15MK947MLzmPUa2gL7UgyR8prLh2xfu" : {
             "name" : "digitalX Mintsy",
@@ -739,20 +739,20 @@
             "link" : "http://www.telco214.com/"
         },
         "152f1muMCNa7goXYhYAQC61hxEgGacmncB" : {
-            "name" : "BTCC",
-            "link" : "https://pool.btcc.com/"
+            "name" : "BELC",
+            "link" : "https://pool.BELc.com/"
         },
         "1PmRrdp1YSkp1LxPyCfcmBHDEipG5X4eJB" : {
-            "name" : "BTC Pool Party",
-            "link" : "https://btcpoolparty.com/"
+            "name" : "BEL Pool Party",
+            "link" : "https://BELpoolparty.com/"
         },
         "1Hk9gD8xMo2XBUhE73y5zXEM8xqgffTB5f" : {
             "name" : "8baochi",
             "link" : "http://8baochi.com/"
         },
         "151T7r1MhizzJV6dskzzUkUdr7V8JxV2Dx" : {
-            "name" : "myBTCcoin Pool",
-            "link" : "http://www.mybtccoin.com/"
+            "name" : "myBELcoin Pool",
+            "link" : "http://www.myBELcoin.com/"
         },
         "1MFsp2txCPwMMBJjNNeKaduGGs8Wi1Ce7X" : {
             "name" : "A-XBT",
@@ -771,15 +771,15 @@
             "link" : "http://sha256.transactioncoinmining.com/"
         },
         "15MxzsutVroEE9XiDckLxUHTCDAEZgPZJi" : {
-            "name" : "BTCDig",
-            "link" : "https://btcdig.com/"
+            "name" : "BELDig",
+            "link" : "https://BELdig.com/"
         },
         "1GBo1f2tzVx5jScV9kJXPUP9RjvYXuNzV7" : {
             "name" : "Nexious",
             "link" : "https://nexious.com/"
         },
         "1AePMyovoijxvHuKhTqWvpaAkRCF4QswC6" : {
-            "name" : "Tricky's BTC Pool",
+            "name" : "Tricky's BEL Pool",
             "link" : "http://pool.wemine.uk/"
         },
         "17judvK4AC2M6KhaBbAEGw8CTKc9Pg8wup" : {
@@ -787,8 +787,8 @@
             "link" : "https://hotpool.co/"
         },
         "1jKSjMLnDNup6NPgCjveeP9tUn4YpT94Y" : {
-            "name" : "BTCMP",
-            "link" : "https://www.btcmp.com/"
+            "name" : "BELMP",
+            "link" : "https://www.BELmp.com/"
         },
         "1MPxhNkSzeTNTHSZAibMaS8HS1esmUL1ne" : {
             "name" : "Eobot",
@@ -815,32 +815,32 @@
             "link" : "http://patelsminingpool.com/"
         },
         "3NA8hsjfdgVkmmVS9moHmkZsVCoLxUkvvv" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "3EhLZarJUNSfV6TWMZY1Nh5mi3FMsdHa5U" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "1Bf9sZvBHPFGVPX71WX2njhd1NXKv5y7v5" : {
-            "name" : "BTC.com",
-            "link" : "https://pool.btc.com"
+            "name" : "BEL.com",
+            "link" : "https://pool.BEL.com"
         },
         "18EPLvrs2UE11kWBB3ABS7Crwj5tTBYPoa" : {
             "name" : "GoGreenLight",
             "link" : "http://www.gogreenlight.se/"
         },
         "1KPQkehgYAqwiC6UCcbojM3mbGjURrQJF2" : {
-            "name" : "ConnectBTC",
-            "link" : "https://www.connectbtc.com/"
+            "name" : "ConnectBEL",
+            "link" : "https://www.connectBEL.com/"
         },
         "167ApWWxUSFQmz2jdz9xop3oAKdLejvMML" : {
             "name" : "BATPOOL",
@@ -864,19 +864,19 @@
         },
         "1FLH1SoLv4U68yUERhDiWzrJn5TggMqkaZ" : {
             "name" : "Waterhole",
-            "link" : "https://btc.waterhole.io/"
+            "link" : "https://BEL.waterhole.io/"
         },
         "1GP8eWArgpwRum76saJS4cZKCHWJHs9PQo" : {
             "name" : "CanoePool",
-            "link" : "https://btc.canoepool.com/"
+            "link" : "https://BEL.canoepool.com/"
         },
         "199EDJoCpqV672qESEkfFgEqNT1iR2gj3t" : {
             "name" : "58COIN",
             "link" : "https://www.58coin.com/"
         },
         "1Cs5RT9SRk1hxsdzivAfkjesNmVVJqfqkw" : {
-            "name" : "EkanemBTC",
-            "link" : "https://ekanembtc.com/"
+            "name" : "EkanemBEL",
+            "link" : "https://ekanemBEL.com/"
         },
         "13Sd8Y7nUao3z4bJFkZvCRXpFqHvLy49YY" : {
             "name" : "Telco 214",
@@ -911,8 +911,8 @@
             "link" : "https://www.brainofshawn.com"
         },
         "1Hz96kJKF2HLPGY15JWLB5m9qGNxvt8tHJ" : {
-            "name" : "BTC.TOP",
-            "link" : "http://btc.top"
+            "name" : "BEL.TOP",
+            "link" : "http://BEL.top"
         },
         "1Afcpc2FpPnREU6i52K3cicmHdvYRAH9Wo" : {
             "name" : "CANOE",

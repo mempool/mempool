@@ -117,8 +117,8 @@ https://www.transifex.com/mempool/mempool/dashboard/
 * Lithuanian @eimze21
 * Hebrew @rapidlab309
 * Georgian @wyd_idk
-* Hungarian @btcdragonlord
-* Dutch @m__btc
+* Hungarian @BELdragonlord
+* Dutch @m__BEL
 * Japanese @wiz @japananon
 * Norwegian @T82771355
 * Polish @maciejsoltysiak

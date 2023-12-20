@@ -122,7 +122,7 @@ export class NodeStatisticsChartComponent implements OnInit {
             if (tick.seriesIndex === 0) { // Channels
               sizeString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}`;
             } else if (tick.seriesIndex === 1) { // Capacity
-              weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100000000, this.locale, '1.0-0')} BTC`;
+              weightString = `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1] / 100000000, this.locale, '1.0-0')} BEL`;
             }
           }
 
@@ -190,7 +190,7 @@ export class NodeStatisticsChartComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${val / 100000000} BTC`;
+              return `${val / 100000000} BEL`;
             }
           },
           splitLine: {

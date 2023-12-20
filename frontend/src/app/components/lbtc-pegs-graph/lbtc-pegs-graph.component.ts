@@ -3,7 +3,7 @@ import { formatDate, formatNumber } from '@angular/common';
 import { EChartsOption } from '../../graphs/echarts';
 
 @Component({
-  selector: 'app-lbtc-pegs-graph',
+  selector: 'app-lBEL-pegs-graph',
   styles: [`
   ::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }
   .loadingGraphs {
@@ -13,10 +13,10 @@ import { EChartsOption } from '../../graphs/echarts';
       z-index: 100;
     }
   `],
-  templateUrl: './lbtc-pegs-graph.component.html',
+  templateUrl: './lBEL-pegs-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LbtcPegsGraphComponent implements OnInit, OnChanges {
+export class LBELPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
   pegsChartOptions: EChartsOption;
 
@@ -106,7 +106,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
                 <div class="grow"></div>
-                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">L-BTC</span></div>
+                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">L-BEL</span></div>
               </div>`;
             }
           });

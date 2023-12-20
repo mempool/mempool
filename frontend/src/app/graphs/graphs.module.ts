@@ -11,7 +11,7 @@ import { BlockSizesWeightsGraphComponent } from '../components/block-sizes-weigh
 import { FeeDistributionGraphComponent } from '../components/fee-distribution-graph/fee-distribution-graph.component';
 import { IncomingTransactionsGraphComponent } from '../components/incoming-transactions-graph/incoming-transactions-graph.component';
 import { MempoolGraphComponent } from '../components/mempool-graph/mempool-graph.component';
-import { LbtcPegsGraphComponent } from '../components/lbtc-pegs-graph/lbtc-pegs-graph.component';
+import { LBELPegsGraphComponent } from '../components/lBEL-pegs-graph/lBEL-pegs-graph.component';
 import { GraphsComponent } from '../components/graphs/graphs.component';
 import { StatisticsComponent } from '../components/statistics/statistics.component';
 import { MempoolBlockComponent } from '../components/mempool-block/mempool-block.component';
@@ -47,7 +47,7 @@ import { CommonModule } from '@angular/common';
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
     MempoolGraphComponent,
-    LbtcPegsGraphComponent,
+    LBELPegsGraphComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,

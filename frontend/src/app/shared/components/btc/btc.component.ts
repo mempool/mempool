@@ -3,11 +3,11 @@ import { Subscription } from 'rxjs';
 import { StateService } from '../../../services/state.service';
 
 @Component({
-  selector: 'app-btc',
-  templateUrl: './btc.component.html',
-  styleUrls: ['./btc.component.scss']
+  selector: 'app-BEL',
+  templateUrl: './BEL.component.html',
+  styleUrls: ['./BEL.component.scss']
 })
-export class BtcComponent implements OnInit, OnChanges {
+export class BELComponent implements OnInit, OnChanges {
   @Input() satoshis: number;
   @Input() addPlus = false;
   @Input() valueOverride: string | undefined = undefined;
@@ -35,7 +35,7 @@ export class BtcComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.satoshis >= 1_000_000) {
       this.value = (this.satoshis / 100_000_000);
-      this.unit = 'BTC'
+      this.unit = 'BEL'
     } else {
       this.value = Math.round(this.satoshis);
       this.unit = 'sats'

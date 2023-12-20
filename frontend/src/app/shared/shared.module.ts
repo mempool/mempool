@@ -74,7 +74,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
-import { BtcComponent } from './components/btc/btc.component';
+import { BELComponent } from './components/BEL/BEL.component';
 import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
@@ -173,7 +173,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
-    BtcComponent,
+    BELComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
@@ -298,7 +298,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
-    BtcComponent,
+    BELComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
