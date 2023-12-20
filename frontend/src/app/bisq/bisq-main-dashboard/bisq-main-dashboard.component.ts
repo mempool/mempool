@@ -23,7 +23,7 @@ export class BisqMainDashboardComponent implements OnInit {
   isLoadingGraph = true;
   bisqMarketPrice = 0;
 
-  allowCryptoCoins = ['usdc', 'l-BEL', 'bsq'];
+  allowCryptoCoins = ['usdc', 'l-btc', 'bsq'];
 
   constructor(
     private websocketService: WebsocketService,
@@ -80,7 +80,7 @@ export class BisqMainDashboardComponent implements OnInit {
 
           if (this.stateService.env.BASE_MODULE !== 'bisq') {
             const pair = t.split('_');
-            if (pair[1] === 'BEL' && this.allowCryptoCoins.indexOf(pair[0]) === -1) {
+            if (pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1) {
               continue;
             }
           }
@@ -118,7 +118,7 @@ export class BisqMainDashboardComponent implements OnInit {
         if (this.stateService.env.BASE_MODULE !== 'bisq') {
           trades = trades.filter((trade) => {
             const pair = trade.market.split('_');
-            return !(pair[1] === 'BEL' && this.allowCryptoCoins.indexOf(pair[0]) === -1);
+            return !(pair[1] === 'btc' && this.allowCryptoCoins.indexOf(pair[0]) === -1);
           });
         }
         return trades.map((trade => {
@@ -128,7 +128,7 @@ export class BisqMainDashboardComponent implements OnInit {
       })
     );
 
-    this.hlocData$ = this.bisqApiService.getMarketsHloc$('BEL_usd', 'day')
+    this.hlocData$ = this.bisqApiService.getMarketsHloc$('btc_usd', 'day')
       .pipe(
       map((hlocData) => {
         this.isLoadingGraph = false;

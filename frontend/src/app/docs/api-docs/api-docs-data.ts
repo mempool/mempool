@@ -304,8 +304,8 @@ export const restApiDocsData = [
           commonJS: [],
           curl: [],
           response: `{
-  BEL: {
-    code: 'BEL',
+  BTC: {
+    code: 'BTC',
     name: 'Bitcoin',
     precision: 8,
     _type: 'crypto'
@@ -355,11 +355,11 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD'],
-          commonJS: ['BEL_USD'],
-          curl: ['BEL_USD'],
+          esModule: ['BTC_USD'],
+          commonJS: ['BTC_USD'],
+          curl: ['BTC_USD'],
           response: `{
-  BEL_usd: {
+  btc_usd: {
     buys: [
       '4.56941560',
       ...
@@ -413,9 +413,9 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD'],
-          commonJS: ['BEL_USD'],
-          curl: ['BEL_USD'],
+          esModule: ['BTC_USD'],
+          commonJS: ['BTC_USD'],
+          curl: ['BTC_USD'],
           response: `[
   {
     period_start: 1609459200,
@@ -468,15 +468,15 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD'],
-          commonJS: ['BEL_USD'],
-          curl: ['BEL_USD'],
+          esModule: ['BTC_USD'],
+          commonJS: ['BTC_USD'],
+          curl: ['BTC_USD'],
           response: `{
-    BEL_brl: {
-      pair: 'BEL_brl',
+    btc_brl: {
+      pair: 'btc_brl',
       lname: 'Bitcoin',
       rname: 'Brazilian Real',
-      lsymbol: 'BEL',
+      lsymbol: 'BTC',
       rsymbol: 'BRL',
       lprecision: 8,
       rprecision: 2,
@@ -529,11 +529,11 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD'],
-          commonJS: ['BEL_USD'],
-          curl: ['BEL_USD'],
+          esModule: ['BTC_USD'],
+          commonJS: ['BTC_USD'],
+          curl: ['BTC_USD'],
           response: `{
-  BEL_usd: {
+  btc_usd: {
     buys: [
       {
         offer_id: "ORHL1BE-0c193d04-be60-4657-ba42-cc172bb4ae5d-172",
@@ -607,9 +607,9 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD'],
-          commonJS: ['BEL_USD'],
-          curl: ['BEL_USD'],
+          esModule: ['BTC_USD'],
+          commonJS: ['BTC_USD'],
+          curl: ['BTC_USD'],
           response: `{
   last: "53923.20570000",
   high: "53923.20570000",
@@ -662,9 +662,9 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD', '1'],
-          commonJS: ['BEL_USD', '1'],
-          curl: ['BEL_USD', '1'],
+          esModule: ['BTC_USD', '1'],
+          commonJS: ['BTC_USD', '1'],
+          curl: ['BTC_USD', '1'],
           response: `[
   {
     price: "53923.20570000",
@@ -717,9 +717,9 @@ export const restApiDocsData = [
         codeSampleSignet: emptyCodeSample,
         codeSampleLiquid: emptyCodeSample,
         codeSampleBisq: {
-          esModule: ['BEL_USD', 'BEL'],
-          commonJS: ['BEL_USD', 'BEL'],
-          curl: ['BEL_USD', 'BEL'],
+          esModule: ['BTC_USD', 'BTC'],
+          commonJS: ['BTC_USD', 'BTC'],
+          curl: ['BTC_USD', 'BTC'],
           response: `[
   {
     period_start: 1451606400,
@@ -1672,7 +1672,7 @@ export const restApiDocsData = [
     fragment: "get-asset-supply",
     title: "GET Asset Supply",
     description: {
-      default: "Get the current total supply of the specified asset. For the native asset (L-BEL), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units."
+      default: "Get the current total supply of the specified asset. For the native asset (L-BTC), this is calculated as [chain,mempool]_stats.peg_in_amount - [chain,mempool]_stats.peg_out_amount - [chain,mempool]_stats.burned_amount. For issued assets, this is calculated as [chain,mempool]_stats.issued_amount - [chain,mempool]_stats.burned_amount. Not available for assets with blinded issuances. If /decimal is specified, returns the supply as a decimal according to the asset's divisibility. Otherwise, returned in base units."
     },
     urlString: "/asset/:asset_id/supply[/decimal]",
     showConditions: liquidNetworks,
@@ -3542,7 +3542,7 @@ export const restApiDocsData = [
     "timestamp": 1650240000,
     "avgHashrate": 19934856925841707000,
     "share": 0.0965854,
-    "poolName": "ViaBEL"
+    "poolName": "ViaBTC"
   },
   {
     "timestamp": 1650240000,
@@ -8654,7 +8654,7 @@ export const restApiDocsData = [
           response: `[
   [
     "039b1717db1193eb332d3c0bfdcce90a6aab60efa478b60963d3b406a8fc45134a",
-    "testnet.demo.BELpayserver.org",
+    "testnet.demo.btcpayserver.org",
     -79.3503,
     43.7806,
     "0273ec4a4c80e767aca1477592649ad6e709ad31e7435668043a9dceccb3020f35",

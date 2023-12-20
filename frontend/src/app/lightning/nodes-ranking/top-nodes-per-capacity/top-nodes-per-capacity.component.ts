@@ -31,7 +31,7 @@ export class TopNodesPerCapacity implements OnInit {
 
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@2d9883d230a47fbbb2ec969e32a186597ea27405:Liquidity Ranking`);
-      this.seoService.setDescription($localize`:@@meta.description.lightning.ranking.liquidity:See Lightning nodes with the most BEL liquidity deployed along with high-level stats like number of open channels, location, node age, and more.`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.ranking.liquidity:See Lightning nodes with the most BTC liquidity deployed along with high-level stats like number of open channels, location, node age, and more.`);
     }
 
     for (let i = 1; i <= (this.widget ? 6 : 100); ++i) {

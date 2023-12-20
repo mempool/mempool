@@ -18,7 +18,7 @@
       <div class="card graph-card">
         <div class="card-body pl-0">
           <div style="padding-left: 1.25rem;">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lBELPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
             <hr>
           </div>
           <ng-template [ngIf]="(network$ | async) !== 'liquid'" [ngIfElse]="liquidPegs">
@@ -33,7 +33,7 @@
             </ng-container>
           </ng-template>
           <ng-template #liquidPegs>
-            <app-lBEL-pegs-graph [data]="liquidPegsMonth$ | async"></app-lBEL-pegs-graph>
+            <app-lbtc-pegs-graph [data]="liquidPegsMonth$ | async"></app-lbtc-pegs-graph>
           </ng-template>
         </div>
       </div>
@@ -244,12 +244,12 @@
   </div>
 </ng-template>
 
-<ng-template #lBELPegs let-mempoolInfoData>
+<ng-template #lbtcPegs let-mempoolInfoData>
   <div class="mempool-info-data">
     <div class="item">
-      <h5 class="card-title" i18n="dashboard.lBEL-pegs-in-circulation">L-BEL in circulation</h5>
+      <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BTC in circulation</h5>
       <ng-container *ngIf="(liquidPegsMonth$ | async) as liquidPegsMonth; else loadingTransactions">
-        <p class="card-text">{{ liquidPegsMonth.series.slice(-1)[0] | number: '1.2-2' }} <span>L-BEL</span></p>
+        <p class="card-text">{{ liquidPegsMonth.series.slice(-1)[0] | number: '1.2-2' }} <span>L-BTC</span></p>
       </ng-container>
     </div>
   </div>

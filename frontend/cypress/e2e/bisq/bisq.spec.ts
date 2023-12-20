@@ -4,7 +4,7 @@ describe('Bisq', () => {
 
   beforeEach(() => {
     cy.intercept('/sockjs-node/info*').as('socket');
-    cy.intercept('/bisq/api/markets/hloc?market=BEL_usd&interval=day').as('hloc');
+    cy.intercept('/bisq/api/markets/hloc?market=btc_usd&interval=day').as('hloc');
     cy.intercept('/bisq/api/markets/ticker').as('ticker');
     cy.intercept('/bisq/api/markets/markets').as('markets');
     cy.intercept('/bisq/api/markets/volumes/7d').as('7d');
@@ -113,7 +113,7 @@ describe('Bisq', () => {
       });
 
       it('loads a specific market', () => {
-        cy.visit(`${basePath}/market/BEL_eur`);
+        cy.visit(`${basePath}/market/btc_eur`);
         cy.waitForSkeletonGone();
         //Buy Offers
         cy.get('.row > :nth-child(1) td').should('have.length.at.least', 1);

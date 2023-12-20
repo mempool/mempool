@@ -282,7 +282,7 @@
                 "avgFeeRate": 19,
                 "pool": {
                     "id": 70,
-                    "name": "ViaBEL"
+                    "name": "ViaBTC"
                 },
                 "matchRate": 91
             },
@@ -330,7 +330,7 @@
                 "avgFeeRate": 11,
                 "pool": {
                     "id": 3,
-                    "name": "BEL.com"
+                    "name": "BTC.com"
                 },
                 "matchRate": 94
             },

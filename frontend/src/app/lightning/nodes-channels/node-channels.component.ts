@@ -105,7 +105,7 @@ export class NodeChannels implements OnChanges {
               }
               let capacity = '';
               if (value.data.value > 100000000) {
-                capacity = formatNumber(Math.round(value.data.value / 100000000), this.locale, '1.2-2') + ' BEL';
+                capacity = formatNumber(Math.round(value.data.value / 100000000), this.locale, '1.2-2') + ' BTC';
               } else {
                 capacity = <string>this.amountShortenerPipe.transform(value.data.value, 2) + ' sats';
               }
@@ -126,7 +126,7 @@ export class NodeChannels implements OnChanges {
           }
         }
       ]
-    };
+    };    
   }
 
   onChartInit(ec: any): void {
