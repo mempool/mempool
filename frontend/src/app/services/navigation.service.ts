@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { StateService } from './state.service';
 
 const networkModules = {
-  bitcoin: {
+  bells: {
     subnets: [
       { name: 'mainnet', path: '' },
       { name: 'testnet', path: '/testnet' },
@@ -44,7 +44,7 @@ export class NavigationService {
     });
   }
 
-  // For each network (bitcoin/liquid/bisq), find and save the longest url path compatible with the current route
+  // For each network (bells/liquid/bisq), find and save the longest url path compatible with the current route
   updateSubnetPaths(root: ActivatedRouteSnapshot): void {
     let path = '';
     const networkPaths = {};

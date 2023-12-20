@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, catchError, filter, from, of, shareReplay,
 import { Transaction, Address, Outspend, Recent, Asset, ScriptHash } from '../interfaces/electrs.interface';
 import { StateService } from './state.service';
 import { BlockExtended } from '../interfaces/node-api.interface';
-import { calcScriptHash$ } from '../bitcoin.utils';
+import { calcScriptHash$ } from '../bells.utils';
 
 @Injectable({
   providedIn: 'root'

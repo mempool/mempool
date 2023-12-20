@@ -28,7 +28,7 @@ export class CalculatorComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       fiat: [0],
-      bitcoin: [0],
+      bells: [0],
       satoshis: [0],
     });
 
@@ -40,7 +40,7 @@ export class CalculatorComponent implements OnInit {
     let currency;
     this.price$ = this.currency$.pipe(
       switchMap((result) => {
-        currency = result; 
+        currency = result;
         return this.stateService.conversions$.asObservable();
       }),
       map((conversions) => {
@@ -57,13 +57,13 @@ export class CalculatorComponent implements OnInit {
       if (isNaN(value)) {
         return;
       }
-      this.form.get('bitcoin').setValue(rate, { emitEvent: false });
+      this.form.get('bells').setValue(rate, { emitEvent: false });
       this.form.get('satoshis').setValue(satsRate, { emitEvent: false } );
     });
 
     combineLatest([
       this.price$,
-      this.form.get('bitcoin').valueChanges
+      this.form.get('bells').valueChanges
     ]).subscribe(([price, value]) => {
       const rate = parseFloat((value * price).toFixed(8));
       if (isNaN(value)) {
@@ -78,12 +78,12 @@ export class CalculatorComponent implements OnInit {
       this.form.get('satoshis').valueChanges
     ]).subscribe(([price, value]) => {
       const rate = parseFloat((value / 100_000_000 * price).toFixed(8));
-      const bitcoinRate = (value / 100_000_000).toFixed(8);
+      const bellsRate = (value / 100_000_000).toFixed(8);
       if (isNaN(value)) {
         return;
       }
       this.form.get('fiat').setValue(rate, { emitEvent: false } );
-      this.form.get('bitcoin').setValue(bitcoinRate, { emitEvent: false });
+      this.form.get('bells').setValue(bellsRate, { emitEvent: false });
     });
 
   }
@@ -98,7 +98,7 @@ export class CalculatorComponent implements OnInit {
       value = '0';
     }
     let sanitizedValue = this.removeExtraDots(value);
-    if (name === 'bitcoin' && this.countDecimals(sanitizedValue) > 8) {
+    if (name === 'bells' && this.countDecimals(sanitizedValue) > 8) {
       sanitizedValue = this.toFixedWithoutRounding(sanitizedValue, 8);
     }
     if (sanitizedValue === '') {

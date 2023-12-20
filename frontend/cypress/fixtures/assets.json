@@ -32,7 +32,7 @@
       "asset_id": "0e99c1a6da379d1f4151fb9df90449d40d0608f6cb33a5bcbfc8c265f42bab0a",
       "contract": {
         "entity": {
-          "domain": "lcad.bullbitcoin.com"
+          "domain": "lcad.bullbells.com"
         },
         "issuer_pubkey": "027fa34026195b05f3aa217335416811dca4f5b579d00271a1bb6304c0152458a8",
         "name": "Liquid CAD",
@@ -52,7 +52,7 @@
       "ticker": "LCAD",
       "precision": 8,
       "entity": {
-        "domain": "lcad.bullbitcoin.com"
+        "domain": "lcad.bullbells.com"
       },
       "version": 0,
       "issuer_pubkey": "027fa34026195b05f3aa217335416811dca4f5b579d00271a1bb6304c0152458a8"
@@ -116,4 +116,3 @@
       "issuer_pubkey": "0337cceec0beea0232ebe14cba0197a9fbd45fcf2ec946749de920e71434c2b904"
     }
   }
-  

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { formatNumber } from '@angular/common';
-import { selectPowerOfTen } from '../../bitcoin.utils';
+import { selectPowerOfTen } from '../../bells.utils';
 import { StateService } from '../../services/state.service';
 
 @Component({

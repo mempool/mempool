@@ -1,42 +1,42 @@
 <div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.addresses.length && !results.nodes.length && !results.channels.length">
   <ng-template [ngIf]="results.blockHeight">
-    <div class="card-title" i18n="search.bitcoin-block-height">Bitcoin Block Height</div>
+    <div class="card-title" i18n="search.bells-block-height">Bitcoin Block Height</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.dateTime">
-    <div class="card-title" i18n="search.bitcoin-block-date">Date</div>
+    <div class="card-title" i18n="search.bells-block-date">Date</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.unixTimestamp">
-    <div class="card-title" i18n="search.bitcoin-block-timestamp">Timestamp</div>
+    <div class="card-title" i18n="search.bells-block-timestamp">Timestamp</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.txId">
-    <div class="card-title" i18n="search.bitcoin-transaction">Bitcoin Transaction</div>
+    <div class="card-title" i18n="search.bells-transaction">Bitcoin Transaction</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.address">
-    <div class="card-title" i18n="search.bitcoin-address">Bitcoin Address</div>
+    <div class="card-title" i18n="search.bells-address">Bitcoin Address</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : isMobile ? 20 : 30 }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.blockHash">
-    <div class="card-title" i18n="search.bitcoin-block">Bitcoin Block</div>
+    <div class="card-title" i18n="search.bells-block">Bitcoin Block</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.addresses.length">
-    <div class="card-title" i18n="search.bitcoin-addresses">Bitcoin Addresses</div>
+    <div class="card-title" i18n="search.bells-addresses">Bitcoin Addresses</div>
     <ng-template ngFor [ngForOf]="results.addresses" let-address let-i="index">
       <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="address | shortenString : isMobile ? 25 : 36" [term]="results.searchText"></ngb-highlight>

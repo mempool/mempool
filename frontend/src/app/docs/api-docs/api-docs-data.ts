@@ -1,4 +1,4 @@
-const bitcoinNetworks = ["", "testnet", "signet"];
+const bellsNetworks = ["", "testnet", "signet"];
 const liquidNetworks = ["liquid", "liquidtestnet"];
 const miningTimeIntervals = "<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>";
 
@@ -110,7 +110,7 @@ export const restApiDocsData = [
     category: "general",
     fragment: "general",
     title: "General",
-    showConditions: bitcoinNetworks.concat(["bisq"])
+    showConditions: bellsNetworks.concat(["bisq"])
   },
   {
     type: "endpoint",
@@ -122,7 +122,7 @@ export const restApiDocsData = [
       default: "Returns details about difficulty adjustment."
     },
     urlString: "/v1/difficulty-adjustment",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -737,7 +737,7 @@ export const restApiDocsData = [
     category: "addresses",
     fragment: "addresses",
     title: "Addresses",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"])
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"])
   },
   {
     type: "endpoint",
@@ -749,7 +749,7 @@ export const restApiDocsData = [
       default: "Returns details about an address. Available fields: <code>address</code>, <code>chain_stats</code>, and <code>mempool_stats</code>. <code>chain_stats</code> and <code>mempool_stats</code> each contain an object with <code>tx_count</code>, <code>funded_txo_count</code>, <code>funded_txo_sum</code>, <code>spent_txo_count</code>, and <code>spent_txo_sum</code>."
     },
     urlString: "/address/:address",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"]),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -908,7 +908,7 @@ export const restApiDocsData = [
       default: "Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <code>:last_seen_txid</code> (see below)."
     },
     urlString: "/address/:address/txs",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -1062,7 +1062,7 @@ export const restApiDocsData = [
       default: "Get confirmed transaction history for the specified address/scripthash, sorted with newest first. Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query."
     },
     urlString: "/address/:address/txs/chain",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -1221,7 +1221,7 @@ export const restApiDocsData = [
       default: "Get unconfirmed transaction history for the specified address/scripthash. Returns up to 50 transactions (no paging)."
     },
     urlString: "/address/:address/txs/mempool",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -1348,7 +1348,7 @@ export const restApiDocsData = [
       liquid: "Get the list of unspent transaction outputs associated with the address/scripthash. Available fields: <code>txid</code>, <code>vout</code>, <code>value</code>, and <code>status</code> (with the status of the funding tx). There is also a <code>valuecommitment</code> field that may appear in place of <code>value</code>, plus the following additional fields: <code>asset</code>/<code>assetcommitment</code>, <code>nonce</code>/<code>noncecommitment</code>, <code>surjection_proof</code>, and <code>range_proof</code>.",
     },
     urlString: "/address/:address/utxo",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -1796,7 +1796,7 @@ export const restApiDocsData = [
     category: "blocks",
     fragment: "blocks",
     title: "Blocks",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"])
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"])
   },
   {
     type: "endpoint",
@@ -1809,7 +1809,7 @@ export const restApiDocsData = [
       liquid: "Returns details about a block. Available fields: <code>id</code>, <code>height</code>, <code>version</code>, <code>timestamp</code>, <code>bits</code>, <code>nonce</code>, <code>merkle_root</code>, <code>tx_count</code>, <code>size</code>, <code>weight</code>,<code>proof</code>, and <code>previousblockhash</code>."
     },
     urlString: "/block/:hash",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"]),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -1990,7 +1990,7 @@ export const restApiDocsData = [
       default: "Returns the hex-encoded block header."
     },
     urlString: "/block/:hash/header",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2056,7 +2056,7 @@ export const restApiDocsData = [
       default: "Returns the hash of the block currently at <code>:height</code>."
     },
     urlString: "/block-height/:height",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2119,7 +2119,7 @@ export const restApiDocsData = [
       default: "Returns the raw block representation in binary."
     },
     urlString: "/block/:hash/raw",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2185,7 +2185,7 @@ export const restApiDocsData = [
       default: "Returns the confirmation status of a block. Available fields: <code>in_best_chain</code> (boolean, false for orphaned blocks), <code>next_best</code> (the hash of the next block, only available for blocks in the best chain)."
     },
     urlString: "/block/:hash/status",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2271,7 +2271,7 @@ export const restApiDocsData = [
       default: "Returns the height of the last block."
     },
     urlString: "/blocks/tip/height",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"]),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2340,7 +2340,7 @@ export const restApiDocsData = [
       default: "Returns the hash of the last block."
     },
     urlString: "/blocks/tip/hash",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2404,7 +2404,7 @@ export const restApiDocsData = [
       default: "Returns the transaction at index <code>:index</code> within the specified block."
     },
     urlString: "/block/:hash/txid/:index",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2470,7 +2470,7 @@ export const restApiDocsData = [
       default: "Returns a list of all txids in the block."
     },
     urlString: "/block/:hash/txids",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2565,7 +2565,7 @@ export const restApiDocsData = [
       default: "Returns a list of transactions in the block (up to 25 transactions beginning at <code>start_index</code>). Transactions returned here do not have the <code>status</code> field, since all the transactions share the same block and confirmation status."
     },
     urlString: "/block/:hash/txs[/:start_index]",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2721,7 +2721,7 @@ export const restApiDocsData = [
       default: "Returns details on the past 15 blocks with fee and mining details in an <code>extras</code> field. If <code>:startHeight</code> is specified, the past 15 blocks before (and including) <code>:startHeight</code> are returned."
     },
     urlString: "/v1/blocks[/:startHeight]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -2925,7 +2925,7 @@ export const restApiDocsData = [
       default: "<p>Returns details on the range of blocks between <code>:minHeight</code> and <code>:maxHeight</code>, inclusive, up to 10 blocks. If <code>:maxHeight</code> is not specified, it defaults to the current tip.</p><p>To return data for more than 10 blocks, consider becoming an <a href='https://mempool.space/enterprise'>enterprise sponsor</a>.</p>"
     },
     urlString: "/v1/blocks-bulk/:minHeight[/:maxHeight]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3290,7 +3290,7 @@ export const restApiDocsData = [
     category: "mining",
     fragment: "mining",
     title: "Mining",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
  {
     type: "endpoint",
@@ -3302,7 +3302,7 @@ export const restApiDocsData = [
       default: "Returns a list of all known mining pools ordered by blocks found over the specified trailing <code>:timePeriod</code>.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify one of the following values: " + miningTimeIntervals + "."
     },
     urlString: "/v1/mining/pools[/:timePeriod]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3401,7 +3401,7 @@ export const restApiDocsData = [
       default: "<p>Returns details about the mining pool specified by <code>:slug</code>.</p>"
     },
     urlString: "/v1/mining/pool/:slug",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3494,7 +3494,7 @@ export const restApiDocsData = [
       default: "<p>Returns average hashrates (and share of total hashrate) of mining pools active in the specified trailing <code>:timePeriod</code>, in descending order of hashrate.</p><p>Leave <code>:timePeriod</code> unspecified to get all available data, or specify any of the following time periods: " + miningTimeIntervals.substr(52) + ".</p>"
     },
     urlString: "/v1/mining/hashrate/pools/[:timePeriod]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3601,7 +3601,7 @@ export const restApiDocsData = [
       default: "Returns all known hashrate data for the mining pool specified by <code>:slug</code>. Hashrate values are weekly averages."
     },
     urlString: "/v1/mining/pool/:slug/hashrate",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3722,7 +3722,7 @@ export const restApiDocsData = [
       default: "Returns past 10 blocks mined by the specified mining pool (<code>:slug</code>) before the specified <code>:blockHeight</code>. If no <code>:blockHeight</code> is specified, the mining pool's 10 most recent blocks are returned."
     },
     urlString: "/v1/mining/pool/:slug/blocks/[:blockHeight]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -3811,7 +3811,7 @@ export const restApiDocsData = [
         codeSampleTestnet: {
           esModule: [],
           commonJS: [],
-          curl: [`bitcoincom`,`2226000`],
+          curl: [`bellscom`,`2226000`],
           response: `[
   {
     "id": "00000000000000ed428cdb70dfdeb0f3927912131cb96e7b1fe274b1bb1181b2",
@@ -3932,7 +3932,7 @@ export const restApiDocsData = [
       default: "<p>Returns network-wide hashrate and difficulty figures over the specified trailing <code>:timePeriod</code>:</p><ul><li>Current (real-time) hashrate</li><li>Current (real-time) difficulty</li><li>Historical daily average hashrates</li><li>Historical difficulty</li></ul><p>Valid values for <code>:timePeriod</code> are " + miningTimeIntervals.substr(52) + ". If no time interval is specified, all available data is returned.</p><p>Be sure that <code>INDEXING_BLOCKS_AMOUNT</code> is set properly in your backend config so that enough blocks are indexed to properly serve your request.</p>"
     },
     urlString: "/v1/mining/hashrate/[:timePeriod]",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4052,7 +4052,7 @@ export const restApiDocsData = [
       default: "Returns block reward and total transactions confirmed for the past <code>:blockCount</code> blocks."
     },
     urlString: "/v1/mining/reward-stats/:blockCount",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4113,7 +4113,7 @@ export const restApiDocsData = [
       default: "<p>Returns average total fees for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and fee amounts are exact (not averages). For the <code>1w</code> time period, fees may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, fees are averages.</p>"
     },
     urlString: "/v1/mining/blocks/fees/:timePeriod",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4212,7 +4212,7 @@ export const restApiDocsData = [
       default: "<p>Returns average block rewards for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and block rewards are exact (not averages). For the <code>1w</code> time period, block rewards may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, block rewards are averages.</p>"
     },
     urlString: "/v1/mining/blocks/rewards/:timePeriod",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4306,7 +4306,7 @@ export const restApiDocsData = [
       default: "Returns average feerate percentiles for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and percentiles are exact (not averages). For the <code>1w</code> time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, percentiles are averages."
     },
     urlString: "/v1/mining/blocks/fee-rates/:timePeriod",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4433,7 +4433,7 @@ export const restApiDocsData = [
       default: "<p>Returns average size (bytes) and average weight (weight units) for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: " + miningTimeIntervals + ".</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and figures are exact (not averages). For the <code>1w</code> time period, figures may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, figures are averages.</p>"
     },
     urlString: "/v1/mining/blocks/sizes-weights/:timePeriod",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -4572,7 +4572,7 @@ export const restApiDocsData = [
     category: "fees",
     fragment: "fees",
     title: "Fees",
-    showConditions: bitcoinNetworks.concat(liquidNetworks)
+    showConditions: bellsNetworks.concat(liquidNetworks)
   },
   {
     type: "endpoint",
@@ -4584,7 +4584,7 @@ export const restApiDocsData = [
       default: "Returns current mempool as projected blocks."
     },
     urlString: "/v1/fees/mempool-blocks",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -4738,7 +4738,7 @@ export const restApiDocsData = [
       default: "Returns our currently suggested fees for new transactions."
     },
     urlString: "/v1/fees/recommended",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -4827,7 +4827,7 @@ export const restApiDocsData = [
     category: "mempool",
     fragment: "mempool",
     title: "Mempool",
-    showConditions: bitcoinNetworks.concat(liquidNetworks)
+    showConditions: bellsNetworks.concat(liquidNetworks)
   },
   {
     type: "endpoint",
@@ -4839,7 +4839,7 @@ export const restApiDocsData = [
       default: "Returns current mempool backlog statistics."
     },
     urlString: "/mempool",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -4940,10 +4940,10 @@ export const restApiDocsData = [
     fragment: "get-mempool-transaction-ids",
     title: "GET Mempool Transaction IDs",
     description: {
-      default: "Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind."
+      default: "Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bellsd."
     },
     urlString: "/mempool/txids",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5030,7 +5030,7 @@ export const restApiDocsData = [
       default: "Get a list of the last 10 transactions to enter the mempool. Each transaction object contains simplified overview data, with the following fields: <code>txid</code>, <code>fee</code>, <code>vsize</code>, and <code>value</code>."
     },
     urlString: "/mempool/recent",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5132,7 +5132,7 @@ export const restApiDocsData = [
     category: "transactions",
     fragment: "transactions",
     title: "Transactions",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"])
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"])
   },
   {
     type: "endpoint",
@@ -5144,7 +5144,7 @@ export const restApiDocsData = [
       default: "Returns the ancestors and the best descendant fees for a transaction."
     },
     urlString: "/v1/fees/cpfp",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5210,7 +5210,7 @@ export const restApiDocsData = [
       default: "Returns details about a transaction. Available fields: <code>txid</code>, <code>version</code>, <code>locktime</code>, <code>size</code>, <code>weight</code>, <code>fee</code>, <code>vin</code>, <code>vout</code>, and <code>status</code>."
     },
     urlString: "/tx/:txid",
-    showConditions: bitcoinNetworks.concat(liquidNetworks).concat(["bisq"]),
+    showConditions: bellsNetworks.concat(liquidNetworks).concat(["bisq"]),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5371,7 +5371,7 @@ export const restApiDocsData = [
       default: "Returns a transaction serialized as hex."
     },
     urlString: "/tx/:txid/hex",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5439,10 +5439,10 @@ export const restApiDocsData = [
     fragment: "get-transaction-merkleblock-proof",
     title: "GET Transaction Merkleblock Proof",
     description: {
-      default: "Returns a merkle inclusion proof for the transaction using <a href='https://bitcoin.org/en/glossary/merkle-block'>bitcoind's merkleblock</a> format."
+      default: "Returns a merkle inclusion proof for the transaction using <a href='https://bells.org/en/glossary/merkle-block'>bellsd's merkleblock</a> format."
     },
     urlString: "/tx/:txid/merkleblock-proof",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5503,7 +5503,7 @@ export const restApiDocsData = [
       default: "Returns a merkle inclusion proof for the transaction using <a href='https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle'>Electrum's blockchain.transaction.get_merkle format."
     },
     urlString: "/tx/:txid/merkle-proof",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5642,7 +5642,7 @@ export const restApiDocsData = [
       default: "Returns the spending status of a transaction output. Available fields: <code>spent</code> (boolean), <code>txid</code> (optional), <code>vin</code> (optional), and <code>status</code> (optional, the status of the spending tx)."
     },
     urlString: "/tx/:txid/outspend/:vout",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5779,7 +5779,7 @@ export const restApiDocsData = [
       default: "Returns the spending status of all transaction outputs."
     },
     urlString: "/tx/:txid/outspends",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -5939,7 +5939,7 @@ export const restApiDocsData = [
       default: "Returns a transaction as binary data."
     },
     urlString: "/tx/:txid/raw",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -6010,7 +6010,7 @@ export const restApiDocsData = [
       default: "Returns the confirmation status of a transaction. Available fields: <code>confirmed</code> (boolean), <code>block_height</code> (optional), and <code>block_hash</code> (optional)."
     },
     urlString: "/tx/:txid/status",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -6166,7 +6166,7 @@ export const restApiDocsData = [
       default: "Broadcast a raw transaction to the network. The transaction should be provided as hex in the request body. The <code>txid</code> will be returned on success."
     },
     urlString: "/api/tx",
-    showConditions: bitcoinNetworks.concat(liquidNetworks),
+    showConditions: bellsNetworks.concat(liquidNetworks),
     showJsExamples: showJsExamplesDefault,
     codeExample: {
       default: {
@@ -6229,7 +6229,7 @@ export const restApiDocsData = [
     category: "lightning",
     fragment: "lightning",
     title: "Lightning",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
@@ -6241,7 +6241,7 @@ export const restApiDocsData = [
       default: "<p>Returns network-wide stats such as total number of channels and nodes, total capacity, and average/median fee figures.</p><p>Pass one of the following for <code>:interval</code>: <code>latest</code>, <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>.</p>"
     },
     urlString: "/v1/lightning/statistics/:interval",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6338,7 +6338,7 @@ export const restApiDocsData = [
       default: "<p>Returns Lightning nodes and channels that match a full-text, case-insensitive search <code>:query</code> across node aliases, node pubkeys, channel IDs, and short channel IDs.</p>"
     },
     urlString: "/v1/lightning/search?searchText=:query",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6424,7 +6424,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of Lightning nodes running on clearnet in the requested <code>:country</code>, where <code>:country</code> is an ISO Alpha-2 country code.</p>"
     },
     urlString: "/v1/lightning/nodes/country/:country",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6647,7 +6647,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity and number of clearnet nodes per country. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/countries",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6792,7 +6792,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of nodes hosted by a specified <code>:isp</code>, where <code>:isp</code> is an ISP's ASN.</p>"
     },
     urlString: "/v1/lightning/nodes/isp/:isp",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -6912,7 +6912,7 @@ export const restApiDocsData = [
       default: "<p>Returns aggregate capacity, number of nodes, and number of channels per ISP. Capacity figures are in satoshis.</p>"
     },
     urlString: "/v1/lightning/nodes/isp-ranking",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7025,7 +7025,7 @@ export const restApiDocsData = [
       default: "<p>Returns two lists of the top 100 nodes: one ordered by liquidity (aggregate channel capacity) and the other ordered by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7149,7 +7149,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by liquidity (aggregate channel capacity).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/liquidity",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7347,7 +7347,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 nodes by connectivity (number of open channels).</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/connectivity",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7544,7 +7544,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of the top 100 oldest nodes.</p>"
     },
     urlString: "/v1/lightning/nodes/rankings/age",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7732,7 +7732,7 @@ export const restApiDocsData = [
       default: "<p>Returns details about a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7897,7 +7897,7 @@ export const restApiDocsData = [
       default: "<p>Returns historical stats for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/nodes/:pubKey/statistics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -7996,7 +7996,7 @@ export const restApiDocsData = [
       default: "<p>Returns info about a Lightning channel with the given <code>:channelId</code>.</p>"
     },
     urlString: "/v1/lightning/channels/:channelId",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8162,7 +8162,7 @@ export const restApiDocsData = [
       default: "<p>Returns channels that correspond to the given <code>:txid</code> (multiple transaction IDs can be specified).</p>"
     },
     urlString: "/v1/lightning/channels/txids?txId[]=:txid",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8364,7 +8364,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of a node's channels given its <code>:pubKey</code>. Ten channels are returned at a time. Use <code>:index</code> for paging. <code>:channelStatus</code> can be <code>open</code>, <code>active</code>, or <code>closed</code>.</p>"
     },
     urlString: "/v1/lightning/channels?public_key=:pubKey&status=:channelStatus",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8501,7 +8501,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding node geodata.</p>"
     },
     urlString: "/v1/lightning/channels-geo",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8610,7 +8610,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of channels with corresponding geodata for a node with the given <code>:pubKey</code>.</p>"
     },
     urlString: "/v1/lightning/channels-geo/:pubKey",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -8717,61 +8717,61 @@ export const faqData = [
     category: "basics",
     fragment: "basics",
     title: "Basics",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-a-mempool",
     title: "What is a mempool?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-a-mempool-explorer",
     title: "What is a mempool explorer?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-a-blockchain",
     title: "What is a blockchain?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-a-block-explorer",
     title: "What is a block explorer?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-mining",
     title: "What is mining?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-are-mining-pools",
     title: "What are mining pools?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-are-vb-wu",
     title: "What are virtual bytes (vB) and weight units (WU)?",
   },
   {
     type: "endpoint",
     category: "basics",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-svb",
     title: "What is sat/vB?",
   },
@@ -8780,26 +8780,26 @@ export const faqData = [
     category: "help",
     fragment: "help-stuck-transaction",
     title: "Help! My transaction is stuck",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
     category: "help",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "why-is-transaction-stuck-in-mempool",
     title: "Why isn't my transaction confirming?",
   },
   {
     type: "endpoint",
     category: "help",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "how-to-get-transaction-confirmed-quickly",
     title: "How can I get my transaction confirmed more quickly?",
   },
   {
     type: "endpoint",
     category: "help",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "how-prevent-stuck-transaction",
     title: "How can I prevent a transaction from getting stuck in the future?",
   },
@@ -8808,40 +8808,40 @@ export const faqData = [
     category: "using",
     fragment: "using-this-website",
     title: "Using this website",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
     category: "how-to",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "looking-up-transactions",
     title: "How can I look up a transaction?",
   },
   {
     type: "endpoint",
     category: "how-to",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "looking-up-addresses",
     title: "How can I look up an address?",
   },
   {
     type: "endpoint",
     category: "how-to",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "looking-up-blocks",
     title: "How can I look up a block?",
   },
   {
     type: "endpoint",
     category: "how-to",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "looking-up-fee-estimates",
     title: "How can I look up fee estimates?",
   },
   {
     type: "endpoint",
     category: "how-to",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "looking-up-historical-trends",
     title: "How can I explore historical trends?",
   },
@@ -8850,19 +8850,19 @@ export const faqData = [
     category: "advanced",
     fragment: "advanced",
     title: "Advanced",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-full-mempool",
     title: "What does it mean for the mempool to be \"full\"?",
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "how-big-is-mempool-used-by-mempool-space",
     title: "How big is the mempool used by mempool.space?",
     options: { officialOnly: true },
@@ -8870,35 +8870,35 @@ export const faqData = [
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "what-is-memory-usage",
     title: "What is memory usage?",
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "why-empty-blocks",
     title: "Why are there empty blocks?",
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "why-block-timestamps-dont-always-increase",
     title: "Why don't block timestamps always increase?",
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "why-dont-fee-ranges-match",
     title: "Why doesn't the fee range shown for a block match the feerates of transactions within the block?",
   },
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     options: { auditOnly: true },
     fragment: "how-do-block-audits-work",
     title: "How do block audits work?",
@@ -8906,7 +8906,7 @@ export const faqData = [
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     options: { auditOnly: true },
     fragment: "what-is-block-health",
     title: "What is block health?",
@@ -8914,7 +8914,7 @@ export const faqData = [
   {
     type: "endpoint",
     category: "advanced",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "how-do-mempool-goggles-work",
     title: "How do Mempool Goggles work?",
   },
@@ -8923,40 +8923,40 @@ export const faqData = [
     category: "self-hosting",
     fragment: "self-hosting",
     title: "Self-Hosting",
-    showConditions: bitcoinNetworks
+    showConditions: bellsNetworks
   },
   {
     type: "endpoint",
     category: "self-hosting",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "who-runs-this-website",
     title: "Who runs this website?",
   },
   {
     type: "endpoint",
     category: "self-hosting",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "host-my-own-instance-raspberry-pi",
     title: "How can I host my own instance on a Raspberry Pi?",
   },
   {
     type: "endpoint",
     category: "self-hosting",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "host-my-own-instance-server",
     title: "How can I host a Mempool instance on my own server?",
   },
   {
     type: "endpoint",
     category: "self-hosting",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "install-mempool-with-docker",
     title: "Can I install Mempool using Docker?",
   },
   {
     type: "endpoint",
     category: "self-hosting",
-    showConditions: bitcoinNetworks,
+    showConditions: bellsNetworks,
     fragment: "address-lookup-issues",
     title: "Why do I get an error for certain address lookups on my Mempool instance?",
   }

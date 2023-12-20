@@ -1902,8 +1902,8 @@
         <note from="meaning" priority="1">api-docs.mempool.mempool</note>
       </trans-unit>
       <trans-unit datatype="html" id="23c346e87b137b1807bac13c27d19dc18f745f8f">
-        <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bitcoind.</source>
-        <target>Hanki täysi luettelo siirtotunnisteista mempoolissa taulukkona. Siirtotunnisteiden järjestys on mielivaltainen eikä vastaa bitcoind:tä.</target>
+        <source>Get the full list of txids in the mempool as an array. The order of the txids is arbitrary and does not match bellsd.</source>
+        <target>Hanki täysi luettelo siirtotunnisteista mempoolissa taulukkona. Siirtotunnisteiden järjestys on mielivaltainen eikä vastaa bellsd:tä.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">63</context>
@@ -2076,8 +2076,8 @@
         </context-group>
       </trans-unit>
       <trans-unit datatype="html" id="d51106cc898981e9862d35a4db40796f0cf464f8">
-        <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bitcoin.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bitcoind's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> format.</source>
-        <target>Palauttaa merkle-todisteen siirtotapahtumalle käyttäen bitcoind:n merkleblock-muotoa.</target>
+        <source>Returns a merkle inclusion proof for the transaction using <x ctype="x-a" equiv-text="&lt;a href=&quot;https://bells.org/en/glossary/merkle-block&quot;&gt;" id="START_LINK"/>bellsd's merkleblock<x ctype="x-a" equiv-text="&lt;/a&gt; " id="CLOSE_LINK"/> format.</source>
+        <target>Palauttaa merkle-todisteen siirtotapahtumalle käyttäen bellsd:n merkleblock-muotoa.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">155</context>

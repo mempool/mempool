@@ -20,8 +20,8 @@
           <div class="input-group-prepend">
             <span class="input-group-text">BEL</span>
           </div>
-          <input type="text" class="form-control" formControlName="bitcoin" (input)="transformInput('bitcoin')" (click)="selectAll($event)">
-          <app-clipboard [button]="true" [text]="form.get('bitcoin').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
+          <input type="text" class="form-control" formControlName="bells" (input)="transformInput('bells')" (click)="selectAll($event)">
+          <app-clipboard [button]="true" [text]="form.get('bells').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
         </div>
 
         <div class="input-group input-group-lg mb-1">
@@ -38,9 +38,9 @@
     <br>
 
     <div class="row justify-content-center">
-      <div class="bitcoin-satoshis-text">
+      <div class="bells-satoshis-text">
         ₿
-         <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span>
+         <span [innerHTML]="form.get('bells').value | bellssatoshis"></span>
         <span class="sats" i18n="shared.sats">sats</span>
       </div>
     </div>

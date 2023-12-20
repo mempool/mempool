@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, OnChanges, Input } from '@angular/core';
-import { calcSegwitFeeGains, isFeatureActive } from '../../bitcoin.utils';
+import { calcSegwitFeeGains, isFeatureActive } from '../../bells.utils';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { StateService } from '../../services/state.service';
 

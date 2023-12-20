@@ -236,7 +236,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   calcTotalValue(tx: Transaction): number {
     let totalOutput = this.tx.vout.reduce((acc, v) => (this.getOutputValue(v) || 0) + acc, 0);
-    // simple sum of outputs + fee for bitcoin
+    // simple sum of outputs + fee for bells
     if (!this.isLiquid) {
       return this.tx.fee ? totalOutput + this.tx.fee : totalOutput;
     } else {

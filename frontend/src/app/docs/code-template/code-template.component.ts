@@ -61,7 +61,7 @@ export class CodeTemplateComponent implements OnInit {
       if (['liquid', 'bisq'].includes(this.network)) {
         codeText = codeText.replace('%{0}', this.network);
       } else {
-        codeText = codeText.replace('%{0}', 'bitcoin');
+        codeText = codeText.replace('%{0}', 'bells');
       }
       if(['', 'main', 'liquid', 'bisq', 'liquidtestnet'].includes(this.network)) {
         codeText = codeText.replace('mempoolJS();', `mempoolJS({
@@ -92,7 +92,7 @@ export class CodeTemplateComponent implements OnInit {
       if (['liquid', 'bisq'].includes(this.network)) {
         codeText = codeText.replace('%{0}', this.network);
       } else {
-        codeText = codeText.replace('%{0}', 'bitcoin');
+        codeText = codeText.replace('%{0}', 'bells');
       }
       if(['', 'main', 'liquid', 'bisq'].includes(this.network)) {
         codeText = codeText.replace('mempoolJS();', `mempoolJS({

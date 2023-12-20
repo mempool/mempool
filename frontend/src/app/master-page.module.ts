@@ -86,7 +86,7 @@ const routes: Routes = [
       {
         path: 'lightning',
         loadChildren: () => import('./lightning/lightning.module').then(m => m.LightningModule),
-        data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true, networks: ['bitcoin'] },
+        data: { preload: browserWindowEnv && browserWindowEnv.LIGHTNING === true, networks: ['bells'] },
       },
       {
         path: 'tools/calculator',

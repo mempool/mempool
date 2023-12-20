@@ -26,12 +26,12 @@ const routes: Routes = [
     children: [
       {
         path: 'mining/pool/:slug',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bells'] },
         component: PoolComponent,
       },
       {
         path: 'mining',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bells'] },
         component: StartComponent,
         children: [
           {
@@ -42,7 +42,7 @@ const routes: Routes = [
       },
       {
         path: 'acceleration',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bells'] },
         component: StartComponent,
         children: [
           {
@@ -53,12 +53,12 @@ const routes: Routes = [
       },
       {
         path: 'acceleration-list',
-        data: { networks: ['bitcoin'] },
+        data: { networks: ['bells'] },
         component: AccelerationsListComponent,
       },
       {
         path: 'mempool-block/:id',
-        data: { networks: ['bitcoin', 'liquid'] },
+        data: { networks: ['bells', 'liquid'] },
         component: StartComponent,
         children: [
           {
@@ -69,57 +69,57 @@ const routes: Routes = [
       },
       {
         path: 'graphs',
-        data: { networks: ['bitcoin', 'liquid'] },
+        data: { networks: ['bells', 'liquid'] },
         component: GraphsComponent,
         children: [
           {
             path: 'mempool',
-            data: { networks: ['bitcoin', 'liquid'] },
+            data: { networks: ['bells', 'liquid'] },
             component: StatisticsComponent,
           },
           {
             path: 'mining/hashrate-difficulty',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: HashrateChartComponent,
           },
           {
             path: 'mining/pools-dominance',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: HashrateChartPoolsComponent,
           },
           {
             path: 'mining/pools',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: PoolRankingComponent,
           },
           {
             path: 'mining/block-fees',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: BlockFeesGraphComponent,
           },
           {
             path: 'mining/block-rewards',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: BlockRewardsGraphComponent,
           },
           {
             path: 'mining/block-fee-rates',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: BlockFeeRatesGraphComponent,
           },
           {
             path: 'mining/block-sizes-weights',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: BlockSizesWeightsGraphComponent,
           },
           {
             path: 'acceleration/fees',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: AccelerationFeesGraphComponent,
           },
           {
             path: 'lightning',
-            data: { preload: true, networks: ['bitcoin'] },
+            data: { preload: true, networks: ['bells'] },
             loadChildren: () => import ('./lightning-graphs.module').then(m => m.LightningGraphsModule),
           },
           {
@@ -129,7 +129,7 @@ const routes: Routes = [
           },
           {
             path: 'mining/block-health',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bells'] },
             component: BlockHealthGraphComponent,
           },
         ]
@@ -146,7 +146,7 @@ const routes: Routes = [
   },
   {
     path: 'tv',
-    data: { networks: ['bitcoin', 'liquid'] },
+    data: { networks: ['bells', 'liquid'] },
     component: TelevisionComponent
   },
 ];
