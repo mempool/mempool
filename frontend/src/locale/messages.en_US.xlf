@@ -3818,12 +3818,12 @@
         <note priority="1" from="description">mining.fees-per-block-desc</note>
       </trans-unit>
       <trans-unit id="0705223420d290a218e4ed83bd4d904454a9cee8" datatype="html">
-        <source>BTC/block</source>
+        <source>BEL/block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21,24</context>
         </context-group>
-        <note priority="1" from="description">BTC/block</note>
+        <note priority="1" from="description">BEL/block</note>
         <note priority="1" from="meaning">shared.bells-block</note>
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
@@ -4723,7 +4723,7 @@
         <note priority="1" from="meaning">dashboard.memory-usage</note>
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
-        <source>L-BTC in circulation</source>
+        <source>L-BEL in circulation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">228,230</context>
@@ -5963,7 +5963,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
-        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
+        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BEL capacity</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">104,102</context>
@@ -6069,7 +6069,7 @@
         <note priority="1" from="description">lightning.top-100-isp-ln</note>
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
-        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
+        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BEL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">158,156</context>

@@ -3542,7 +3542,7 @@ export const restApiDocsData = [
     "timestamp": 1650240000,
     "avgHashrate": 19934856925841707000,
     "share": 0.0965854,
-    "poolName": "ViaBTC"
+    "poolName": "ViaBEL"
   },
   {
     "timestamp": 1650240000,

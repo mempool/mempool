@@ -65,7 +65,7 @@ export class BlockFeesGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Block Fees`);
-    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees:See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fees:See the average mining fees earned per Bitcoin block visualized in BEL and USD over time.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -162,7 +162,7 @@ export class BlockFeesGraphComponent implements OnInit {
 
           for (const tick of data) {
             if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BEL<br>`;
             } else if (tick.seriesIndex === 1) {
               tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency) }<br>`;
             }
@@ -183,7 +183,7 @@ export class BlockFeesGraphComponent implements OnInit {
       legend: data.blockFees.length === 0 ? undefined : {
         data: [
           {
-            name: 'Fees BTC',
+            name: 'Fees BEL',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -206,7 +206,7 @@ export class BlockFeesGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${val} BTC`;
+              return `${val} BEL`;
             }
           },
           splitLine: {
@@ -236,7 +236,7 @@ export class BlockFeesGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 0,
           yAxisIndex: 0,
-          name: 'Fees BTC',
+          name: 'Fees BEL',
           data: data.blockFees,
           type: 'line',
           smooth: 0.25,

@@ -4919,7 +4919,7 @@
           <context context-type="sourcefile">src/app/components/reward-stats/reward-stats.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <note priority="1" from="description">BTC/block</note>
+        <note priority="1" from="description">BEL/block</note>
         <note priority="1" from="meaning">shared.bells-block</note>
       </trans-unit>
       <trans-unit id="cf3a97b1c1546b843411cfe101bc55ba2ac46bac" datatype="html">
@@ -5946,8 +5946,8 @@
         <note priority="1" from="meaning">dashboard.purging</note>
       </trans-unit>
       <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
-        <source>L-BTC in circulation</source>
-        <target>流通中的L-BTC</target>
+        <source>L-BEL in circulation</source>
+        <target>流通中的L-BEL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">250</context>
@@ -7470,7 +7470,7 @@
         <note priority="1" from="description">lightning.share</note>
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country-overview" datatype="html">
-        <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.</source>
+        <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BEL capacity for each country, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -7497,8 +7497,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
-        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BTC capacity</source>
-        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/>BTC 容量</target>
+        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/> BEL capacity</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(country.capacity / 100000000, 2)"/>BEL 容量</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">105</context>
@@ -7635,8 +7635,8 @@
         <note priority="1" from="description">lightning.indexing-in-progress</note>
       </trans-unit>
       <trans-unit id="3627306100664959238" datatype="html">
-        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
-        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</target>
+        <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BEL</source>
+        <target><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BEL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
           <context context-type="linenumber">162</context>
@@ -7752,7 +7752,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.liquidity" datatype="html">
-        <source>See Lightning nodes with the most BTC liquidity deployed along with high-level stats like number of open channels, location, node age, and more.</source>
+        <source>See Lightning nodes with the most BEL liquidity deployed along with high-level stats like number of open channels, location, node age, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.ts</context>
           <context context-type="linenumber">34</context>

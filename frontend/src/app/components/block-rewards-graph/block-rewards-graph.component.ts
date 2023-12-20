@@ -63,7 +63,7 @@ export class BlockRewardsGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
-    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-rewards:See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-rewards:See Bitcoin block rewards in BEL and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -161,7 +161,7 @@ export class BlockRewardsGraphComponent implements OnInit {
 
           for (const tick of data) {
             if (tick.seriesIndex === 0) {
-              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BTC<br>`;
+              tooltip += `${tick.marker} ${tick.seriesName}: ${formatNumber(tick.data[1], this.locale, '1.3-3')} BEL<br>`;
             } else if (tick.seriesIndex === 1) {
               tooltip += `${tick.marker} ${tick.seriesName}: ${this.fiatCurrencyPipe.transform(tick.data[1], null, this.currency)}<br>`;
             }
@@ -182,7 +182,7 @@ export class BlockRewardsGraphComponent implements OnInit {
       legend: data.blockRewards.length === 0 ? undefined : {
         data: [
           {
-            name: 'Rewards BTC',
+            name: 'Rewards BEL',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -205,7 +205,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${val} BTC`;
+              return `${val} BEL`;
             }
           },
           min: (value) => {
@@ -247,7 +247,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           legendHoverLink: false,
           zlevel: 0,
           yAxisIndex: 0,
-          name: 'Rewards BTC',
+          name: 'Rewards BEL',
           data: data.blockRewards,
           type: 'line',
           smooth: 0.25,
