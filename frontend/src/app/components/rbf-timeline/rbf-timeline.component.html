@@ -1,6 +1,6 @@
 <div class="rbf-timeline box" [class.mined]="replacements.mined">
   <div class="timeline-wrapper">
-    <div class="timeline" *ngFor="let timeline of rows; let j = index" [class.fade-out]="!timelineExpanded && j === rowLimit - 1">
+    <div class="timeline" *ngFor="let timeline of rows; let j = index">
       <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <div class="node-spacer"></div>
@@ -50,15 +50,16 @@
         </ng-container>
       </div>
     </div>
-    <div class="toggle-wrapper" *ngIf="rows.length > rowLimit && rowLimit !== 0">
-      <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(true);" *ngIf="!timelineExpanded; else collapseBtn">
-        <span i18n="show-all">Show all</span>
-        (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: rows.length - rowLimit}"></ng-container>)
-      </button>
-      <ng-template #collapseBtn>
-        <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(false);"><span i18n="show-less">Show less</span></button>
-      </ng-template>
-    </div>
+  </div>
+  <div [class.fade-out]="!timelineExpanded && rows.length > rowLimit"></div>
+  <div class="toggle-wrapper" *ngIf="rows.length > rowLimit && rowLimit !== 0">
+    <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(true);" *ngIf="!timelineExpanded; else collapseBtn">
+      <span i18n="show-all">Show all</span>
+      (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: rows.length - rowLimit}"></ng-container>)
+    </button>
+    <ng-template #collapseBtn>
+      <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(false);"><span i18n="show-less">Show less</span></button>
+    </ng-template>
   </div>
 
   <ng-template #nodeSpacer>
