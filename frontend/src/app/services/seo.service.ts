@@ -10,7 +10,7 @@ import { StateService } from './state.service';
 export class SeoService {
   network = '';
   baseTitle = 'mempool';
-  baseDescription = 'Explore the full Bitcoin ecosystem with The Mempool Open Source Project™.';
+  baseDescription = 'Explore the full Bells ecosystem with The Mempool Open Source Project™.';
 
   canonicalLink: HTMLElement = document.getElementById('canonical');
 
@@ -79,16 +79,16 @@ export class SeoService {
 
   getTitle(): string {
     if (this.network === 'testnet')
-      return this.baseTitle + ' - Bitcoin Testnet';
+      return this.baseTitle + ' - Bells Testnet';
     if (this.network === 'signet')
-      return this.baseTitle + ' - Bitcoin Signet';
+      return this.baseTitle + ' - Bells Signet';
     if (this.network === 'liquid')
       return this.baseTitle + ' - Liquid Network';
     if (this.network === 'liquidtestnet')
       return this.baseTitle + ' - Liquid Testnet';
     if (this.network === 'bisq')
       return this.baseTitle + ' - Bisq Markets';
-    return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bitcoin') + ' Explorer';
+    return this.baseTitle + ' - ' + (this.network ? this.ucfirst(this.network) : 'Bells') + ' Explorer';
   }
 
   getDescription(): string {

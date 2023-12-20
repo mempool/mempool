@@ -306,7 +306,7 @@ export const restApiDocsData = [
           response: `{
   BEL: {
     code: 'BEL',
-    name: 'Bitcoin',
+    name: 'Bells',
     precision: 8,
     _type: 'crypto'
   }
@@ -474,7 +474,7 @@ export const restApiDocsData = [
           response: `{
     btc_brl: {
       pair: 'btc_brl',
-      lname: 'Bitcoin',
+      lname: 'Bells',
       rname: 'Brazilian Real',
       lsymbol: 'BEL',
       rsymbol: 'BRL',
@@ -482,7 +482,7 @@ export const restApiDocsData = [
       rprecision: 2,
       ltype: 'crypto',
       rtype: 'fiat',
-      name: 'Bitcoin/Brazilian Real'
+      name: 'Bells/Brazilian Real'
     },
     ...
 }`,

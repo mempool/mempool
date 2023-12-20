@@ -147,21 +147,21 @@ export const languages: Language[] = [
 export const specialBlocks = {
   '0': {
     labelEvent: 'Genesis',
-    labelEventCompleted: 'The Genesis of Bitcoin',
+    labelEventCompleted: 'The Genesis of Bells',
     networks: ['mainnet', 'testnet'],
   },
   '210000': {
-    labelEvent: 'Bitcoin\'s 1st Halving',
+    labelEvent: 'Bells\'s 1st Halving',
     labelEventCompleted: 'Block Subsidy has halved to 25 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '420000': {
-    labelEvent: 'Bitcoin\'s 2nd Halving',
+    labelEvent: 'Bells\'s 2nd Halving',
     labelEventCompleted: 'Block Subsidy has halved to 12.5 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '630000': {
-    labelEvent: 'Bitcoin\'s 3rd Halving',
+    labelEvent: 'Bells\'s 3rd Halving',
     labelEventCompleted: 'Block Subsidy has halved to 6.25 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
@@ -171,62 +171,62 @@ export const specialBlocks = {
     networks: ['mainnet'],
   },
   '840000': {
-    labelEvent: 'Bitcoin\'s 4th Halving',
+    labelEvent: 'Bells\'s 4th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 3.125 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '1050000': {
-    labelEvent: 'Bitcoin\'s 5th Halving',
+    labelEvent: 'Bells\'s 5th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 1.5625 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '1260000': {
-    labelEvent: 'Bitcoin\'s 6th Halving',
+    labelEvent: 'Bells\'s 6th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.78125 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '1470000': {
-    labelEvent: 'Bitcoin\'s 7th Halving',
+    labelEvent: 'Bells\'s 7th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.390625 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '1680000': {
-    labelEvent: 'Bitcoin\'s 8th Halving',
+    labelEvent: 'Bells\'s 8th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.1953125 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '1890000': {
-    labelEvent: 'Bitcoin\'s 9th Halving',
+    labelEvent: 'Bells\'s 9th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.09765625 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '2100000': {
-    labelEvent: 'Bitcoin\'s 10th Halving',
+    labelEvent: 'Bells\'s 10th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.04882812 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '2310000': {
-    labelEvent: 'Bitcoin\'s 11th Halving',
+    labelEvent: 'Bells\'s 11th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.02441406 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '2520000': {
-    labelEvent: 'Bitcoin\'s 12th Halving',
+    labelEvent: 'Bells\'s 12th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.01220703 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '2730000': {
-    labelEvent: 'Bitcoin\'s 13th Halving',
+    labelEvent: 'Bells\'s 13th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00610351 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '2940000': {
-    labelEvent: 'Bitcoin\'s 14th Halving',
+    labelEvent: 'Bells\'s 14th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00305175 BEL per block',
     networks: ['mainnet', 'testnet'],
   },
   '3150000': {
-    labelEvent: 'Bitcoin\'s 15th Halving',
+    labelEvent: 'Bells\'s 15th Halving',
     labelEventCompleted: 'Block Subsidy has halved to 0.00152587 BEL per block',
     networks: ['mainnet', 'testnet'],
   }

@@ -29,7 +29,7 @@ export class PushTransactionComponent implements OnInit {
     });
 
     this.seoService.setTitle($localize`:@@meta.title.push-tx:Broadcast Transaction`);
-    this.seoService.setDescription($localize`:@@meta.description.push-tx:Broadcast a transaction to the ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} network using the transaction's hash.`);
+    this.seoService.setDescription($localize`:@@meta.description.push-tx:Broadcast a transaction to the ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bells'}${seoDescriptionNetwork(this.stateService.network)} network using the transaction's hash.`);
   }
 
   postTx() {

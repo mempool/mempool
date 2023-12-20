@@ -118,7 +118,7 @@ describe('Mainnet', () => {
     });
 
     describe('search', () => {
-      it('allows searching for partial Bitcoin addresses', () => {
+      it('allows searching for partial Bells addresses', () => {
         cy.visit('/');
         cy.get('.search-box-container > .form-control').type('1wiz').then(() => {
           cy.wait('@search-1wiz');
@@ -138,7 +138,7 @@ describe('Mainnet', () => {
         cy.get('app-search-results button.dropdown-item.active').click().then(() => {
           cy.url().should('include', '/address/1wizSAYSbuyXbt9d8JV8ytm5acqq2TorC');
           cy.waitForSkeletonGone();
-          cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+          cy.get('.text-center').should('not.have.text', 'Invalid Bells address');
         });
       });
 
@@ -150,7 +150,7 @@ describe('Mainnet', () => {
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1pqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsyjer9e');
               cy.waitForSkeletonGone();
-              cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+              cy.get('.text-center').should('not.have.text', 'Invalid Bells address');
             });
           });
         });
@@ -164,7 +164,7 @@ describe('Mainnet', () => {
             cy.get('app-search-results button.dropdown-item.active').click().then(() => {
               cy.url().should('include', '/address/bc1q000375vxcuf5v04lmwy22vy2thvhqkxghgq7dy');
               cy.waitForSkeletonGone();
-              cy.get('.text-center').should('not.have.text', 'Invalid Bitcoin address');
+              cy.get('.text-center').should('not.have.text', 'Invalid Bells address');
             });
           });
         });

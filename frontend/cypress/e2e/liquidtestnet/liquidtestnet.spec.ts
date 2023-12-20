@@ -75,7 +75,7 @@ describe.skip('Liquid Testnet', () => {
       it('allows searching assets', () => {
         cy.visit(`${basePath}/assets`);
         cy.waitForSkeletonGone();
-        cy.get('.container-xl input').click().type('Liquid Bitcoin').then(() => {
+        cy.get('.container-xl input').click().type('Liquid Bells').then(() => {
           cy.get('ngb-typeahead-window').should('have.length', 1);
         });
       });

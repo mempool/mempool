@@ -167,7 +167,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
   }
 
   // TODO - Refactor this.fees/this.reward for liquid because it is not
-  // used anymore on Bitcoin networks (we use block.extras directly)
+  // used anymore on Bells networks (we use block.extras directly)
   setBlockSubsidy() {
     this.blockSubsidy = 0;
   }

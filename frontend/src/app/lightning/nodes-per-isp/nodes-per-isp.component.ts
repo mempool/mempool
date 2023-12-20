@@ -37,7 +37,7 @@ export class NodesPerISP implements OnInit {
             id: this.route.snapshot.params.isp.split(',').join(', ')
           };
           this.seoService.setTitle($localize`Lightning nodes on ISP: ${response.isp} [AS${this.route.snapshot.params.isp}]`);
-          this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-isp:Browse all Bitcoin Lightning nodes using the ${response.isp} [AS${this.route.snapshot.params.isp}] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.`);
+          this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-isp:Browse all Bells Lightning nodes using the ${response.isp} [AS${this.route.snapshot.params.isp}] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.`);
 
           for (const i in response.nodes) {
             response.nodes[i].geolocation = <GeolocationData>{
@@ -69,7 +69,7 @@ export class NodesPerISP implements OnInit {
             }
           }
           topCountry.flag = getFlagEmoji(topCountry.iso);
-          
+
           return {
             nodes: response.nodes,
             sumLiquidity: sumLiquidity,

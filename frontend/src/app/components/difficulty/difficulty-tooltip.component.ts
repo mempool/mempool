@@ -16,7 +16,7 @@ interface EpochProgress {
   timeUntilHalving: number;
 }
 
-const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
+const EPOCH_BLOCK_LENGTH = 2016; // Bells mainnet
 
 @Component({
   selector: 'app-difficulty-tooltip',
@@ -25,7 +25,7 @@ const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
 })
 export class DifficultyTooltipComponent implements OnChanges {
   @Input() status: string | void;
-  @Input() progress: EpochProgress | void = null; 
+  @Input() progress: EpochProgress | void = null;
   @Input() cursorPosition: { x: number, y: number };
 
   mined: number;

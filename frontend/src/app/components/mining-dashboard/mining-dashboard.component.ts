@@ -18,7 +18,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
     private router: Router
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Mining Dashboard`);
-    this.seoService.setDescription($localize`:@@meta.description.mining.dashboard:Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.`);
+    this.seoService.setDescription($localize`:@@meta.description.mining.dashboard:Get real-time Bells mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.`);
   }
 
   ngOnInit(): void {
