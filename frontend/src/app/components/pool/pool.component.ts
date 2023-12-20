@@ -6,7 +6,7 @@ import { catchError, distinctUntilChanged, map, share, switchMap, tap } from 'rx
 import { BlockExtended, PoolStat } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
-import { selectPowerOfTen } from '../../bells.utils';
+import { selectPowerOfTen } from '../../bitcoin.utils';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
 

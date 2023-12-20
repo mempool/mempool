@@ -64,7 +64,7 @@ describe('Mainnet', () => {
     it('loads the status screen', () => {
       cy.visit('/status');
       cy.get('#mempool-block-0').should('be.visible');
-      cy.get('[id^="bells-block-"]').should('have.length', 22);
+      cy.get('[id^="bitcoin-block-"]').should('have.length', 22);
       cy.get('.footer').should('be.visible');
       cy.get('.row > :nth-child(1)').invoke('text').then((text) => {
         expect(text).to.match(/Incoming transactions.* vB\/s/);
@@ -91,9 +91,9 @@ describe('Mainnet', () => {
           command: 'init'
         }
       });
-      cy.get(':nth-child(1) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(2) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(3) > #bells-block-0').should('not.exist');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
     it('loads the dashboard', () => {
@@ -223,7 +223,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('[data-cy="bells-block-offset-0-index-0"]').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
             cy.waitForPageIdle();
@@ -237,7 +237,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('[data-cy="bells-block-offset-0-index-0"]').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -250,7 +250,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('bells-block-offset-0-index-7').click().then(() => {
+          cy.get('bitcoin-block-offset-0-index-7').click().then(() => {
             cy.waitForPageIdle();
 
             // block 6
@@ -309,7 +309,7 @@ describe('Mainnet', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('[data-cy="bells-block-offset-0-index-0"]').click().then(() => {
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').click().then(() => {
             cy.waitForPageIdle();
             cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('not.exist');
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
@@ -347,9 +347,9 @@ describe('Mainnet', () => {
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
       cy.visit('/');
-      cy.get(':nth-child(1) > #bells-block-0').should('be.visible');
-      cy.get(':nth-child(2) > #bells-block-0').should('be.visible');
-      cy.get(':nth-child(3) > #bells-block-0').should('be.visible');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
       cy.get('#mempool-block-0').should('be.visible');
       cy.get('#mempool-block-1').should('be.visible');
       cy.get('#mempool-block-2').should('be.visible');
@@ -360,9 +360,9 @@ describe('Mainnet', () => {
         }
       });
 
-      cy.get(':nth-child(1) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(2) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(3) > #bells-block-0').should('not.exist');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
     it('loads the pools screen', () => {

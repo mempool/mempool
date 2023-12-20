@@ -52,7 +52,7 @@ export class DocsComponent implements OnInit {
       } else if( this.stateService.network === 'bisq' ) {
         this.seoService.setDescription($localize`:@@meta.description.docs.rest-bisq:Documentation for the bisq.markets REST API service: get info on recent trades, current offers, transactions, network state, and more.`);
       } else {
-        this.seoService.setDescription($localize`:@@meta.description.docs.rest-bells:Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.`);
+        this.seoService.setDescription($localize`:@@meta.description.docs.rest-bitcoin:Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.`);
       }
     } else if( url[1].path === "websocket" ) {
       this.activeTab = 2;
@@ -60,7 +60,7 @@ export class DocsComponent implements OnInit {
       if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
         this.seoService.setDescription($localize`:@@meta.description.docs.websocket-liquid:Documentation for the liquid.network WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.`);
       } else {
-        this.seoService.setDescription($localize`:@@meta.description.docs.websocket-bells:Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.`);
+        this.seoService.setDescription($localize`:@@meta.description.docs.websocket-bitcoin:Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.`);
       }
     } else {
       this.activeTab = 3;

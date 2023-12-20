@@ -12,32 +12,32 @@ import { NodesChannelsMap } from '../lightning/nodes-channels-map/nodes-channels
 const routes: Routes = [
   {
     path: 'nodes-networks',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: NodesNetworksChartComponent,
   },
   {
     path: 'capacity',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: LightningStatisticsChartComponent,
   },
   {
     path: 'nodes-per-isp',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: NodesPerISPChartComponent,
   },
   {
     path: 'nodes-per-country',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: NodesPerCountryChartComponent,
   },
   {
     path: 'nodes-map',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: NodesMap,
   },
   {
     path: 'nodes-channels-map',
-    data: { networks: ['bells'] },
+    data: { networks: ['bitcoin'] },
     component: NodesChannelsMap,
   },
 ];

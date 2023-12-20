@@ -26,9 +26,9 @@ describe('Testnet', () => {
     it.skip('loads the dashboard with the skeleton blocks', () => {
       cy.mockMempoolSocket();
       cy.visit('/testnet');
-      cy.get(':nth-child(1) > #bells-block-0').should('be.visible');
-      cy.get(':nth-child(2) > #bells-block-0').should('be.visible');
-      cy.get(':nth-child(3) > #bells-block-0').should('be.visible');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('be.visible');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('be.visible');
       cy.get('#mempool-block-0').should('be.visible');
       cy.get('#mempool-block-1').should('be.visible');
       cy.get('#mempool-block-2').should('be.visible');
@@ -39,9 +39,9 @@ describe('Testnet', () => {
         }
       });
 
-      cy.get(':nth-child(1) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(2) > #bells-block-0').should('not.exist');
-      cy.get(':nth-child(3) > #bells-block-0').should('not.exist');
+      cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
+      cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
     });
 
     it('loads the pools screen', () => {

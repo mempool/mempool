@@ -18,7 +18,7 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -28,12 +28,12 @@ let routes: Routes = [
       },
       {
         path: 'status',
-        data: { networks: ['bells', 'liquid'] },
+        data: { networks: ['bitcoin', 'liquid'] },
         component: StatusViewComponent
       },
       {
         path: '',
-        loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -53,7 +53,7 @@ let routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -63,12 +63,12 @@ let routes: Routes = [
       },
       {
         path: 'status',
-        data: { networks: ['bells', 'liquid'] },
+        data: { networks: ['bitcoin', 'liquid'] },
         component: StatusViewComponent
       },
       {
         path: '',
-        loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+        loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
         data: { preload: true },
       },
       {
@@ -80,7 +80,7 @@ let routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
   },
   {
@@ -131,12 +131,12 @@ let routes: Routes = [
   },
   {
     path: 'status',
-    data: { networks: ['bells', 'liquid'] },
+    data: { networks: ['bitcoin', 'liquid'] },
     component: StatusViewComponent
   },
   {
     path: '',
-    loadChildren: () => import('./bells-graphs.module').then(m => m.BitcoinGraphsModule),
+    loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
   },
   {
@@ -170,7 +170,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
         },
         {
           path: 'status',
-          data: { networks: ['bells', 'liquid'] },
+          data: { networks: ['bitcoin', 'liquid'] },
           component: StatusViewComponent
         },
         {
@@ -210,7 +210,7 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
     },
     {
       path: 'status',
-      data: { networks: ['bells', 'liquid']},
+      data: { networks: ['bitcoin', 'liquid']},
       component: StatusViewComponent
     },
     {

@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
-  name: 'bellssatoshis'
+  name: 'bitcoinsatoshis'
 })
 export class BitcoinsatoshisPipe implements PipeTransform {
 

@@ -9,7 +9,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '../../shared/graphs.utils';
 import { StorageService } from '../../services/storage.service';
 import { MiningService } from '../../services/mining.service';
-import { selectPowerOfTen } from '../../bells.utils';
+import { selectPowerOfTen } from '../../bitcoin.utils';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -70,7 +70,7 @@ export class BlockFeeRatesGraphComponent implements OnInit {
       this.miningWindowPreference = '1m';
     } else {
       this.seoService.setTitle($localize`:@@ed8e33059967f554ff06b4f5b6049c465b92d9b3:Block Fee Rates`);
-      this.seoService.setDescription($localize`:@@meta.description.bells.graphs.block-fee-rates:See Bitcoin feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-fee-rates:See Bitcoin feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });

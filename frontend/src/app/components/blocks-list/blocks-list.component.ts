@@ -61,7 +61,7 @@ export class BlocksList implements OnInit {
     if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
       this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
     } else {
-      this.seoService.setDescription($localize`:@@meta.description.bells.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.blocks:See the most recent Bitcoin${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block reward, block size, and more.`);
     }
 
 

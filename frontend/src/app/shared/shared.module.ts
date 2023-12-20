@@ -99,7 +99,7 @@ import { ClockchainComponent } from '../components/clockchain/clockchain.compone
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
 import { ClockComponent } from '../components/clock/clock.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
-import { BitcoinsatoshisPipe } from '../shared/pipes/bellssatoshis.pipe';
+import { BitcoinsatoshisPipe } from '../shared/pipes/bitcoinsatoshis.pipe';
 
 import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-directives/weight-directives';
 

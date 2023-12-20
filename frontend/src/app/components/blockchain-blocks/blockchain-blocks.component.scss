@@ -1,4 +1,4 @@
-.bells-block {
+.bitcoin-block {
   width: var(--block-size);
   height: var(--block-size);
 }
@@ -81,7 +81,7 @@
   z-index: 1;
 }
 
-.bells-block::after {
+.bitcoin-block::after {
   content: '';
   width: var(--block-size);
   height: calc(0.192 * var(--block-size));
@@ -93,7 +93,7 @@
   transform-origin:top;
 }
 
-.bells-block::before {
+.bitcoin-block::before {
   content: '';
   width: calc(0.16 * var(--block-size));
   height: var(--block-size);
@@ -106,12 +106,12 @@
   transform-origin: top;
 }
 
-.bells-block.placeholder-block::after {
+.bitcoin-block.placeholder-block::after {
   content: none;
   background: 0;
 }
 
-.bells-block.placeholder-block::before {
+.bitcoin-block.placeholder-block::before {
   content: none;
   background: 0;
 }
@@ -143,7 +143,7 @@
   opacity: 1;
 }
 
-.loading .bells-block.mined-block {
+.loading .bitcoin-block.mined-block {
   background: #2d3348;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .time-ltr {
-  .bells-block {
+  .bitcoin-block {
     transform: scaleX(-1);
   }
 }

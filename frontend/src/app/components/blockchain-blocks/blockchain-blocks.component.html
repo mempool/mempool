@@ -8,56 +8,56 @@
         class="spotlight-bottom"
         [style.left]="blockStyles[i].left"
       ></div>
-      <div [attr.data-cy]="'bells-block-offset-' + offset + '-index-' + i"
-        class="text-center bells-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
+      <div [attr.data-cy]="'bitcoin-block-offset-' + offset + '-index-' + i"
+        class="text-center bitcoin-block mined-block blockchain-blocks-offset-{{ offset }}-index-{{ i }}"
         [class.offscreen]="!static && count && i >= count"
-        id="bells-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
+        id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]"
         [class.blink-bg]="isSpecial(block.height)">
         <a draggable="false" [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }"
           class="blockLink" [ngClass]="{'disabled': (this.stateService.blockScrolling$ | async)}">&nbsp;</a>
-        <div *ngIf="!minimal" [attr.data-cy]="'bells-block-' + i + '-height'" class="block-height">
+        <div *ngIf="!minimal" [attr.data-cy]="'bitcoin-block-' + i + '-height'" class="block-height">
           <a [routerLink]="[getHref(i, block) | relativeUrl]" [state]="{ data: { block: block } }">{{ block.height
             }}</a>
         </div>
         <div class="block-body">
           <ng-container *ngIf="!minimal">
-            <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bells-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
+            <div *ngIf="block?.extras; else emptyfees" [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
               ~<app-fee-rate [fee]="block?.extras?.medianFee" unitClass="" rounding="1.0-0"></app-fee-rate>
             </div>
             <ng-template #emptyfees>
-              <div [attr.data-cy]="'bells-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
+              <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
                 &nbsp;
               </div>
             </ng-template>
-            <div [attr.data-cy]="'bells-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
               *ngIf="block?.extras?.minFee != null && block?.extras?.maxFee != null; else emptyfeespan">
               <app-fee-rate [fee]="block?.extras?.minFee" [showUnit]="false" rounding="1.0-0" unitClass=""></app-fee-rate>
               -
               <app-fee-rate [fee]="block?.extras?.maxFee" rounding="1.0-0" unitClass=""></app-fee-rate>
             </div>
             <ng-template #emptyfeespan>
-              <div [attr.data-cy]="'bells-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
+              <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
                 &nbsp;
               </div>
             </ng-template>
-            <div [attr.data-cy]="'bells-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo"
               class="block-size">
               <app-amount [satoshis]="block.extras?.totalFees ?? 0" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
             </div>
-            <div [attr.data-cy]="'bells-block-' + offset + '-index-' + i + 'block-size'" *ngIf="!showMiningInfo"
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + 'block-size'" *ngIf="!showMiningInfo"
               class="block-size" [innerHTML]="'&lrm;' + (block.size | bytes: 2)"></div>
-            <div [attr.data-cy]="'bells-block-' + i + '-transactions'" class="transaction-count">
+            <div [attr.data-cy]="'bitcoin-block-' + i + '-transactions'" class="transaction-count">
               <ng-container
                 *ngTemplateOutlet="block.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: block.tx_count | number}"></ng-container>
               <ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
               <ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>
             </div>
-            <div [attr.data-cy]="'bells-block-' + offset + '-index-' + i + '-time'" class="time-difference">
+            <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-time'" class="time-difference">
               <app-time kind="since" [time]="block.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time></div>
           </ng-container>
         </div>
         <div class="animated" [class]="showMiningInfo ? 'show' : 'hide'" *ngIf="block.extras?.pool != undefined">
-          <a [attr.data-cy]="'bells-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
+          <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge badge-primary"
             [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             {{ block.extras.pool.name}}</a>
         </div>
@@ -65,17 +65,17 @@
     </ng-container>
     <ng-template #placeholderBlock>
       <ng-container *ngIf="block && block.placeholder && connected && !loadingTip; else loadingBlock">
-        <div [attr.data-cy]="'bells-block-' + offset + '-index-' + i"
-          class="text-center bells-block mined-block placeholder-block blockchain-blocks-{{ i }}"
-          id="bells-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
-
+        <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i"
+          class="text-center bitcoin-block mined-block placeholder-block blockchain-blocks-{{ i }}"
+          id="bitcoin-block-{{ block.height }}" [ngStyle]="blockStyles[i]">
+ 
         </div>
       </ng-container>
     </ng-template>
     <ng-template #loadingBlock>
       <ng-container *ngIf="!connected || loadingTip || (block && block.loading)">
         <div class="flashing loading">
-          <div class="text-center bells-block mined-block" id="bells-block-{{ block.height }}"
+          <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
             [ngStyle]="convertStyleForLoadingBlock(blockStyles[i])"></div>
         </div>
       </ng-container>
@@ -89,7 +89,7 @@
   <div class="blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'">
     <div class="flashing">
       <div *ngFor="let block of emptyBlocks; let i = index; trackBy: trackByBlocksFn">
-        <div class="text-center bells-block mined-block" id="bells-block-{{ block.height }}"
+        <div class="text-center bitcoin-block mined-block" id="bitcoin-block-{{ block.height }}"
           [ngStyle]="emptyBlockStyles[i]" [class.offscreen]="!static && count && i >= count"></div>
       </div>
     </div>
