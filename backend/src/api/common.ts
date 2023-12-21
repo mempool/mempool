@@ -1,10 +1,9 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { Request } from 'express';
-import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
+import { CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
-import rbfCache from './rbf-cache';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 export class Common {
@@ -349,12 +348,16 @@ export class Common {
   }
 
   static classifyTransaction(tx: TransactionExtended): TransactionClassified {
-    const flags = this.getTransactionFlags(tx);
+    const flags = Common.getTransactionFlags(tx);
     tx.flags = flags;
     return {
-      ...this.stripTransaction(tx),
+      ...Common.stripTransaction(tx),
       flags,
     };
+  }
+
+  static classifyTransactions(txs: TransactionExtended[]): TransactionClassified[] {
+    return txs.map(Common.classifyTransaction);
   }
 
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
@@ -369,7 +372,7 @@ export class Common {
   }
 
   static stripTransactions(txs: TransactionExtended[]): TransactionStripped[] {
-    return txs.map(this.stripTransaction);
+    return txs.map(Common.stripTransaction);
   }
 
   static sleep$(ms: number): Promise<void> {

@@ -1,6 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import { BlockSummary, TransactionStripped } from '../mempool.interfaces';
+import { BlockSummary, TransactionClassified } from '../mempool.interfaces';
 
 class BlocksSummariesRepository {
   public async $getByBlockId(id: string): Promise<BlockSummary | undefined> {
@@ -17,7 +17,7 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionStripped[]): Promise<void> {
+  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionClassified[]): Promise<void> {
     try {
       const transactionsStr = JSON.stringify(transactions);
       await DB.query(`
