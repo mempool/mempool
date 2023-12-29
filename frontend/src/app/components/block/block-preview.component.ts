@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
-import { of, Subscription, asyncScheduler } from 'rxjs';
+import { of, Subscription, asyncScheduler, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { OpenGraphService } from '../../services/opengraph.service';
@@ -121,21 +121,37 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     this.overviewSubscription = block$.pipe(
       startWith(null),
       pairwise(),
-      switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
-        .pipe(
-          catchError((err) => {
-            this.overviewError = err;
-            this.openGraphService.fail('block-viz-' + this.rawId);
-            return of([]);
-          }),
-          switchMap((transactions) => {
-            return of({ transactions, direction: 'down' });
-          })
-        )
+      switchMap(([prevBlock, block]) => {
+          return forkJoin([
+            this.apiService.getStrippedBlockTransactions$(block.id)
+              .pipe(
+                catchError((err) => {
+                  this.overviewError = err;
+                  this.openGraphService.fail('block-viz-' + this.rawId);
+                  return of([]);
+                }),
+                switchMap((transactions) => {
+                  return of(transactions);
+                })
+              ),
+            block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          ]);
+        }
       ),
     )
-    .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
+    .subscribe(([transactions, accelerations]) => {
       this.strippedTransactions = transactions;
+
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
+      }
+
       this.isLoadingOverview = false;
       if (this.blockGraph) {
         this.blockGraph.destroy();
