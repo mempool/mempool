@@ -13,7 +13,7 @@ export class AudioService {
     } catch (e) {}
   }
 
-  public playSound(name: 'magic' | 'chime' | 'cha-ching' | 'bright-harmony') {
+  public playSound(name: 'magic' | 'chime' | 'cha-ching' | 'bright-harmony' | 'wind-chimes-harp-ascend' | 'ascend-chime-cartoon') {
     if (this.isPlaying || !this.audio) {
       return;
     }
