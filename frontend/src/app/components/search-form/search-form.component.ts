@@ -38,11 +38,11 @@ export class SearchFormComponent implements OnInit {
   }
 
   regexAddress = getRegex('address', 'mainnet'); // Default to mainnet
-  regexBlockhash = getRegex('blockhash');
+  regexBlockhash = getRegex('blockhash', 'mainnet');
   regexTransaction = getRegex('transaction');
   regexBlockheight = getRegex('blockheight');
-  regexDate = /^(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}(?: \d{1,2}:\d{2})?)$/;
-  regexUnixTimestamp = /^\d{10}$/;
+  regexDate = getRegex('date');
+  regexUnixTimestamp = getRegex('timestamp');
 
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
@@ -72,6 +72,7 @@ export class SearchFormComponent implements OnInit {
       this.network = network;
       // TODO: Eventually change network type here from string to enum of consts
       this.regexAddress = getRegex('address', network as any || 'mainnet');
+      this.regexBlockhash = getRegex('blockhash', network as any || 'mainnet');
     });
 
     this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
@@ -181,8 +182,8 @@ export class SearchFormComponent implements OnInit {
           const lightningResults = result[1];
 
           const matchesBlockHeight = this.regexBlockheight.test(searchText) && parseInt(searchText) <= this.stateService.latestBlockHeight;
-          const matchesDateTime = this.regexDate.test(searchText) && new Date(searchText).toString() !== 'Invalid Date';
-          const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText);
+          const matchesDateTime = this.regexDate.test(searchText) && new Date(searchText).toString() !== 'Invalid Date' && new Date(searchText).getTime() <= Date.now() && new Date(searchText).getTime() >= 1231006505000;
+          const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText) && parseInt(searchText) <= Math.floor(Date.now() / 1000) && parseInt(searchText) >= 1231006505; // 1231006505 is the timestamp of the genesis block
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
           const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
@@ -237,7 +238,7 @@ export class SearchFormComponent implements OnInit {
     if (searchText) {
       this.isSearching = true;
 
-      const otherNetworks = findOtherNetworks(searchText, this.network as any);
+      const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet');
       if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
       } else if (otherNetworks.length > 0) {
@@ -269,6 +270,11 @@ export class SearchFormComponent implements OnInit {
       } else if (this.regexDate.test(searchText) || this.regexUnixTimestamp.test(searchText)) {
         let timestamp: number;
         this.regexDate.test(searchText) ? timestamp = Math.floor(new Date(searchText).getTime() / 1000) : timestamp = searchText;
+        // Check if timestamp is too far in the future or before the genesis block
+        if (timestamp > Math.floor(Date.now() / 1000) || timestamp < 1231006505) {
+          this.isSearching = false;
+          return;
+        }
         this.apiService.getBlockDataFromTimestamp$(timestamp).subscribe(
           (data) => { this.navigate('/block/', data.hash); },
           (error) => { console.log(error); this.isSearching = false; }
