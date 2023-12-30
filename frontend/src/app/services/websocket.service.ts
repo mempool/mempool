@@ -28,8 +28,9 @@ export class WebsocketService {
   private isTrackingTx = false;
   private trackingTxId: string;
   private isTrackingMempoolBlock = false;
-  private isTrackingRbf = false;
+  private isTrackingRbf: 'all' | 'fullRbf' | false = false;
   private isTrackingRbfSummary = false;
+  private isTrackingAddress: string | false = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -75,15 +76,20 @@ export class WebsocketService {
 
         this.stateService.resetChainTip();
 
-        this.websocketSubject.complete();
-        this.subscription.unsubscribe();
-        this.websocketSubject = webSocket<WebsocketResponse>(
-          this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
-        );
-
-        this.startSubscription();
+        this.reconnectWebsocket();
       });
     }
+  }
+
+  reconnectWebsocket(retrying = false, hasInitData = false) {
+    console.log('reconnecting websocket');
+    this.websocketSubject.complete();
+    this.subscription.unsubscribe();
+    this.websocketSubject = webSocket<WebsocketResponse>(
+      this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
+    );
+
+    this.startSubscription(retrying, hasInitData);
   }
 
   startSubscription(retrying = false, hasInitData = false) {
@@ -110,10 +116,19 @@ export class WebsocketService {
           if (this.isTrackingMempoolBlock) {
             this.startTrackMempoolBlock(this.trackingMempoolBlock);
           }
+          if (this.isTrackingRbf) {
+            this.startTrackRbf(this.isTrackingRbf);
+          }
+          if (this.isTrackingRbfSummary) {
+            this.startTrackRbfSummary();
+          }
+          if (this.isTrackingAddress) {
+            this.startTrackAddress(this.isTrackingAddress);
+          }
           this.stateService.connectionState$.next(2);
         }
 
-        if (this.stateService.connectionState$.value === 1) {
+        if (this.stateService.connectionState$.value !== 2) {
           this.stateService.connectionState$.next(2);
         }
 
@@ -151,10 +166,12 @@ export class WebsocketService {
 
   startTrackAddress(address: string) {
     this.websocketSubject.next({ 'track-address': address });
+    this.isTrackingAddress = address;
   }
 
   stopTrackingAddress() {
     this.websocketSubject.next({ 'track-address': 'stop' });
+    this.isTrackingAddress = false;
   }
 
   startTrackAsset(asset: string) {
@@ -166,19 +183,23 @@ export class WebsocketService {
   }
 
   startTrackMempoolBlock(block: number) {
-    this.websocketSubject.next({ 'track-mempool-block': block });
-    this.isTrackingMempoolBlock = true
-    this.trackingMempoolBlock = block
+    // skip duplicate tracking requests
+    if (this.trackingMempoolBlock !== block) {
+      this.websocketSubject.next({ 'track-mempool-block': block });
+      this.isTrackingMempoolBlock = true;
+      this.trackingMempoolBlock = block;
+    }
   }
 
   stopTrackMempoolBlock() {
     this.websocketSubject.next({ 'track-mempool-block': -1 });
-    this.isTrackingMempoolBlock = false
+    this.isTrackingMempoolBlock = false;
+    this.trackingMempoolBlock = null;
   }
 
   startTrackRbf(mode: 'all' | 'fullRbf') {
     this.websocketSubject.next({ 'track-rbf': mode });
-    this.isTrackingRbf = true;
+    this.isTrackingRbf = mode;
   }
 
   stopTrackRbf() {
@@ -225,7 +246,7 @@ export class WebsocketService {
     this.goneOffline = true;
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
-      this.startSubscription(true);
+      this.reconnectWebsocket(true);
     }, retryDelay);
   }
 
@@ -346,6 +367,12 @@ export class WebsocketService {
       });
     }
 
+    if (response['address-removed-transactions']) {
+      response['address-removed-transactions'].forEach((addressTransaction: Transaction) => {
+        this.stateService.mempoolRemovedTransactions$.next(addressTransaction);
+      });
+    }
+
     if (response['block-transactions']) {
       response['block-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.blockTransactions$.next(addressTransaction);
@@ -368,6 +395,11 @@ export class WebsocketService {
 
     if (response.loadingIndicators) {
       this.stateService.loadingIndicators$.next(response.loadingIndicators);
+      if (response.loadingIndicators.mempool != null && response.loadingIndicators.mempool < 100) {
+        this.stateService.isLoadingMempool$.next(true);
+      } else {
+        this.stateService.isLoadingMempool$.next(false);
+      }
     }
 
     if (response.mempoolInfo) {

@@ -1,0 +1,45 @@
+#become-sponsor-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 68px auto;
+}
+
+.become-sponsor {
+  background-color: #1d1f31;
+  border-radius: 16px;
+  padding: 12px 20px;
+  width: 400px;
+  padding: 40px 20px;
+}
+
+.become-sponsor a {
+  margin-top: 10px;
+}
+
+#become-sponsor-container .btn {
+  margin-bottom: 24px;
+}
+
+#become-sponsor-container .ng-fa-icon {
+  color: #2ecc71;
+  margin-right: 5px;
+}
+
+#become-sponsor-container .sponsor-feature {
+  text-align: left;
+  width: 250px;
+  margin: 12px auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+
+  #become-sponsor-container {
+    flex-wrap: wrap;
+  }
+
+}

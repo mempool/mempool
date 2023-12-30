@@ -225,7 +225,7 @@ const witnessSize = (vin: Vin) => vin.witness ? vin.witness.reduce((S, w) => S +
 const scriptSigSize = (vin: Vin) => vin.scriptsig ? vin.scriptsig.length / 2 : 0;
 
 // Power of ten wrapper
-export function selectPowerOfTen(val: number): { divider: number, unit: string } {
+export function selectPowerOfTen(val: number, multiplier = 1): { divider: number, unit: string } {
   const powerOfTen = {
     exa: Math.pow(10, 18),
     peta: Math.pow(10, 15),
@@ -236,17 +236,17 @@ export function selectPowerOfTen(val: number): { divider: number, unit: string }
   };
 
   let selectedPowerOfTen: { divider: number, unit: string };
-  if (val < powerOfTen.kilo) {
+  if (val < powerOfTen.kilo * multiplier) {
     selectedPowerOfTen = { divider: 1, unit: '' }; // no scaling
-  } else if (val < powerOfTen.mega) {
+  } else if (val < powerOfTen.mega * multiplier) {
     selectedPowerOfTen = { divider: powerOfTen.kilo, unit: 'k' };
-  } else if (val < powerOfTen.giga) {
+  } else if (val < powerOfTen.giga * multiplier) {
     selectedPowerOfTen = { divider: powerOfTen.mega, unit: 'M' };
-  } else if (val < powerOfTen.tera) {
+  } else if (val < powerOfTen.tera * multiplier) {
     selectedPowerOfTen = { divider: powerOfTen.giga, unit: 'G' };
-  } else if (val < powerOfTen.peta) {
+  } else if (val < powerOfTen.peta * multiplier) {
     selectedPowerOfTen = { divider: powerOfTen.tera, unit: 'T' };
-  } else if (val < powerOfTen.exa) {
+  } else if (val < powerOfTen.exa * multiplier) {
     selectedPowerOfTen = { divider: powerOfTen.peta, unit: 'P' };
   } else {
     selectedPowerOfTen = { divider: powerOfTen.exa, unit: 'E' };
@@ -280,4 +280,16 @@ export function isFeatureActive(network: string, height: number, feature: 'rbf' 
   } else {
     return false;
   }
+}
+
+export async function calcScriptHash$(script: string): Promise<string> {
+  if (!/^[0-9a-fA-F]*$/.test(script) || script.length % 2 !== 0) {
+    throw new Error('script is not a valid hex string');
+  }
+  const buf = Uint8Array.from(script.match(/.{2}/g).map((byte) => parseInt(byte, 16)));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray
+    .map((bytes) => bytes.toString(16).padStart(2, '0'))
+    .join('');
 }

@@ -42,7 +42,7 @@
             <ng-container *ngIf="!isLoadingBlock; else skeletonRows">
               <tr>
                 <td class="td-width" i18n="block.hash">Hash</td>
-                <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard class="d-none d-sm-inline-block" [text]="block.id"></app-clipboard></td>
+                <td>&lrm;<a [routerLink]="['/block/' | relativeUrl, block.id]" title="{{ block.id }}">{{ block.id | shortenString : 13 }}</a> <app-clipboard [text]="block.id"></app-clipboard></td>
               </tr>
               <tr>
                 <td i18n="block.timestamp">Timestamp</td>
@@ -219,13 +219,13 @@
   <div class="box" *ngIf="!error && webGlEnabled && showAudit">
     <div class="nav nav-tabs" *ngIf="isMobile && showAudit">
       <a class="nav-link" [class.active]="mode === 'projected'"
-        fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.expected">Expected</ng-container>&nbsp;&nbsp;<span class="badge badge-pill badge-warning" i18n="beta">beta</span></a>
+        fragment="projected" (click)="changeMode('projected')"><ng-container i18n="block.expected">Expected</ng-container></a>
       <a class="nav-link" [class.active]="mode === 'actual'" i18n="block.actual"
         fragment="actual" (click)="changeMode('actual')">Actual</a>
     </div>
     <div class="row">
       <div class="col-sm">
-        <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container> <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span></h3>
+        <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
@@ -262,7 +262,7 @@
               <tbody>
                 <tr>
                   <td class="td-width" i18n="transaction.version">Version</td>
-                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" >Taproot</span></td>
+                  <td>{{ block.version | decimal2hex }} <span *ngIf="displayTaprootStatus() && hasTaproot(block.version)" class="badge badge-success ml-1" i18n="tx-features.tag.taproot|Taproot">Taproot</span></td>
                 </tr>
                 <tr *ngIf="network !== 'liquid' && network !== 'liquidtestnet'">
                   <td i18n="block.bits">Bits</td>

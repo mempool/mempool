@@ -1,0 +1,142 @@
+.block-filters {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1em;
+  z-index: 10;
+  pointer-events: none;
+
+  .filter-bar, .active-tags {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .active-tags {
+    flex-wrap: wrap;
+    row-gap: 0.25em;
+    margin-left: 0.5em;
+  }
+
+  .info-badges {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    float: right;
+
+    &:hover, &:active {
+      text-decoration: none;
+    }
+  }
+
+  .menu-toggle {
+    width: 2em;
+    height: 2em;
+    padding: 0px 1px;
+    opacity: 0;
+    cursor: pointer;
+    color: white;
+    background: none;
+    border: solid 2px white;
+    border-radius: 0.35em;
+    pointer-events: all;
+  }
+
+  .filter-menu {
+    h5 {
+      font-size: 0.8rem;
+      color: white;
+      margin: 0;
+      margin-top: 0.5em;
+    }
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 0.25em;
+    margin-bottom: 0.5em;
+  }
+
+  .filter-tag {
+    font-size: 0.9em;
+    background: #181b2daf;
+    border: solid 1px #105fb0;
+    color: white;
+    border-radius: 0.2rem;
+    padding: 0.2em 0.5em;
+    transition: background-color 300ms;
+    margin-right: 0.25em;
+    pointer-events: all;
+
+    &.selected {
+      background-color: #105fb0;
+    }
+  }
+
+  :host-context(.block-overview-graph:hover) &, &:hover, &:active {
+    .menu-toggle {
+      opacity: 0.5;
+      background: #181b2d;
+
+      &:hover {
+        opacity: 1;
+        background: #181b2d7f;
+      }
+    }
+
+    &.menu-open, &.filters-active {
+      .menu-toggle {
+        opacity: 1;
+        background: none;
+
+        &:hover {
+          background: #181b2d7f;
+        }
+      }
+    }
+  }
+
+  &.menu-open, &.filters-active {
+    .menu-toggle {
+      opacity: 1;
+      background: none;
+
+      &:hover {
+        background: #181b2d7f;
+      }
+    }
+  }
+
+  &.menu-open {
+    pointer-events: all;
+    background: #181b2d7f;
+  }
+
+  &.small {
+    .filter-tag {
+      font-size: 0.8em;
+    }
+  }
+
+  &.vsmall {
+    .filter-menu {
+      margin-top: 0.25em;
+      h5 {
+        display: none;
+      }
+    }
+    .filter-tag {
+      font-size: 0.7em;
+    }
+  }
+
+  &.tiny {
+    .filter-tag {
+      font-size: 0.5em;
+    }
+  }
+}

@@ -4,13 +4,10 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { MasterPageComponent } from '../components/master-page/master-page.component';
+import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
-import { BisqMasterPageComponent } from '../components/bisq-master-page/bisq-master-page.component';
-import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
-import { AboutComponent } from '../components/about/about.component';
 import { VbytesPipe } from './pipes/bytes-pipe/vbytes.pipe';
 import { ShortenStringPipe } from './pipes/shorten-string-pipe/shorten-string.pipe';
 import { CeilPipe } from './pipes/math-ceil/math-ceil.pipe';
@@ -44,11 +41,10 @@ import { AmountComponent } from '../components/amount/amount.component';
 import { RouterModule } from '@angular/router';
 import { CapAddressPipe } from './pipes/cap-address-pipe/cap-address-pipe';
 import { StartComponent } from '../components/start/start.component';
-import { TransactionComponent } from '../components/transaction/transaction.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
-import { BlockComponent } from '../components/block/block.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
+import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressComponent } from '../components/address/address.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
@@ -61,13 +57,8 @@ import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
 import { DifficultyMiningComponent } from '../components/difficulty-mining/difficulty-mining.component';
-import { TermsOfServiceComponent } from '../components/terms-of-service/terms-of-service.component';
 import { RbfTimelineComponent } from '../components/rbf-timeline/rbf-timeline.component';
 import { RbfTimelineTooltipComponent } from '../components/rbf-timeline/rbf-timeline-tooltip.component';
-import { TxBowtieGraphComponent } from '../components/tx-bowtie-graph/tx-bowtie-graph.component';
-import { TxBowtieGraphTooltipComponent } from '../components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component';
-import { PrivacyPolicyComponent } from '../components/privacy-policy/privacy-policy.component';
-import { TrademarkPolicyComponent } from '../components/trademark-policy/trademark-policy.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -83,6 +74,7 @@ import { IndexingProgressComponent } from '../components/indexing-progress/index
 import { SvgImagesComponent } from '../components/svg-images/svg-images.component';
 import { ChangeComponent } from '../components/change/change.component';
 import { SatsComponent } from './components/sats/sats.component';
+import { BtcComponent } from './components/btc/btc.component';
 import { FeeRateComponent } from './components/fee-rate/fee-rate.component';
 import { TruncateComponent } from './components/truncate/truncate.component';
 import { SearchResultsComponent } from '../components/search-form/search-results/search-results.component';
@@ -92,7 +84,16 @@ import { ToggleComponent } from './components/toggle/toggle.component';
 import { GeolocationComponent } from '../shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from './components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from './components/global-footer/global-footer.component';
+import { AcceleratePreviewComponent } from '../components/accelerate-preview/accelerate-preview.component';
+import { AccelerateFeeGraphComponent } from '../components/accelerate-preview/accelerate-fee-graph.component';
+import { MempoolErrorComponent } from './components/mempool-error/mempool-error.component';
+import { AccelerationsListComponent } from '../components/acceleration/accelerations-list/accelerations-list.component';
+import { PendingStatsComponent } from '../components/acceleration/pending-stats/pending-stats.component';
+import { AccelerationStatsComponent } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
+import { BlockViewComponent } from '../components/block-view/block-view.component';
+import { EightBlocksComponent } from '../components/eight-blocks/eight-blocks.component';
+import { MempoolBlockViewComponent } from '../components/mempool-block-view/mempool-block-view.component';
 import { MempoolBlockOverviewComponent } from '../components/mempool-block-overview/mempool-block-overview.component';
 import { ClockchainComponent } from '../components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '../components/clock-face/clock-face.component';
@@ -130,19 +131,18 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FiatCurrencyPipe,
     ColoredPriceDirective,
     BlockchainComponent,
+    BlockViewComponent,
+    EightBlocksComponent,
+    MempoolBlockViewComponent,
     MempoolBlocksComponent,
     BlockchainBlocksComponent,
     AmountComponent,
-    AboutComponent,
-    MasterPageComponent,
+    MenuComponent,
     PreviewTitleComponent,
-    BisqMasterPageComponent,
-    LiquidMasterPageComponent,
     StartComponent,
-    TransactionComponent,
-    BlockComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
     SearchFormComponent,
@@ -157,11 +157,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TxBowtieGraphComponent,
-    TxBowtieGraphTooltipComponent,
-    TermsOfServiceComponent,
-    PrivacyPolicyComponent,
-    TrademarkPolicyComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -178,6 +173,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    BtcComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
@@ -187,14 +183,23 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
+    AcceleratePreviewComponent,
+    AccelerateFeeGraphComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
+    BlockViewComponent,
+    EightBlocksComponent,
+    MempoolBlockViewComponent,
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
     ClockFaceComponent,
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
+    MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
+    PendingStatsComponent,
   ],
   imports: [
     CommonModule,
@@ -210,6 +215,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     FontAwesomeModule,
   ],
   providers: [
+    BytesPipe,
     VbytesPipe,
     WuBytesPipe,
     RelativeUrlPipe,
@@ -219,6 +225,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AmountShortenerPipe,
   ],
   exports: [
+    MenuComponent,
     RouterModule,
     ReactiveFormsModule,
     NgbNavModule,
@@ -259,10 +266,9 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockchainBlocksComponent,
     AmountComponent,
     StartComponent,
-    TransactionComponent,
-    BlockComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
     SearchFormComponent,
@@ -277,11 +283,6 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     DifficultyTooltipComponent,
     RbfTimelineComponent,
     RbfTimelineTooltipComponent,
-    TxBowtieGraphComponent,
-    TxBowtieGraphTooltipComponent,
-    TermsOfServiceComponent,
-    PrivacyPolicyComponent,
-    TrademarkPolicyComponent,
     PushTransactionComponent,
     AssetsNavComponent,
     AssetsFeaturedComponent,
@@ -297,6 +298,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     SvgImagesComponent,
     ChangeComponent,
     SatsComponent,
+    BtcComponent,
     FeeRateComponent,
     TruncateComponent,
     SearchResultsComponent,
@@ -304,8 +306,15 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ConfirmationsComponent,
     ToggleComponent,
     GeolocationComponent,
+    TestnetAlertComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
+    AcceleratePreviewComponent,
+    AccelerateFeeGraphComponent,
+    MempoolErrorComponent,
+    AccelerationsListComponent,
+    AccelerationStatsComponent,
+    PendingStatsComponent,
 
     MempoolBlockOverviewComponent,
     ClockchainComponent,
@@ -313,7 +322,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockFaceComponent,
 
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
   ]
 })
 export class SharedModule {
@@ -358,5 +367,22 @@ export class SharedModule {
     library.addIcons(faQrcode);
     library.addIcons(faArrowRightArrowLeft);
     library.addIcons(faExchangeAlt);
+    library.addIcons(faList);
+    library.addIcons(faFastForward);
+    library.addIcons(faWallet);
+    library.addIcons(faUserClock);
+    library.addIcons(faWrench);
+    library.addIcons(faUserFriends);
+    library.addIcons(faQuestionCircle);
+    library.addIcons(faHistory);
+    library.addIcons(faSignOutAlt);
+    library.addIcons(faKey);
+    library.addIcons(faSuitcase);
+    library.addIcons(faIdCardAlt);
+    library.addIcons(faNetworkWired);
+    library.addIcons(faUserCheck);
+    library.addIcons(faCircleCheck);
+    library.addIcons(faUserCircle);
+    library.addIcons(faCheck);
   }
 }

@@ -48,7 +48,8 @@ export class BisqMarketComponent implements OnInit, OnDestroy {
         map(([markets, routeParams]) => {
           const pair = routeParams.get('pair');
           const pairUpperCase = pair.replace('_', '/').toUpperCase();
-          this.seoService.setTitle(`Bisq market: ${pairUpperCase}`);
+          this.seoService.setTitle($localize`:@@meta.title.bisq.market:Bisq market: ${pairUpperCase}`);
+          this.seoService.setDescription($localize`:@@meta.description.bisq.market:See price history, current buy/sell offers, and latest trades for the ${pairUpperCase} market on Bisq.`);
 
           return {
             pair: pairUpperCase,

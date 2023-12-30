@@ -19,12 +19,14 @@ export interface Transaction {
   ancestors?: Ancestor[];
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
+  acceleration?: boolean;
   deleteAfter?: number;
   _unblinded?: any;
   _deduced?: boolean;
   _outspends?: Outspend[];
   _channels?: TransactionChannels;
   price?: Price;
+  sigops?: number;
 }
 
 export interface TransactionChannels {
@@ -127,6 +129,22 @@ export interface Block {
 export interface Address {
   electrum?: boolean;
   address: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
+  is_pubkey?: boolean;
+}
+
+export interface ScriptHash {
+  electrum?: boolean;
+  scripthash: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
+}
+
+export interface AddressOrScriptHash {
+  electrum?: boolean;
+  address?: string;
+  scripthash?: string;
   chain_stats: ChainStats;
   mempool_stats: MempoolStats;
 }

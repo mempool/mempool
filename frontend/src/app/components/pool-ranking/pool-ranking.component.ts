@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { merge, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
@@ -56,6 +56,7 @@ export class PoolRankingComponent implements OnInit {
       this.miningWindowPreference = '1w';
     } else {
       this.seoService.setTitle($localize`:@@mining.mining-pools:Mining Pools`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.pool-ranking:See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -116,7 +117,7 @@ export class PoolRankingComponent implements OnInit {
     } else if (this.widget) {
       poolShareThreshold = 1;
     }
-    
+
     const data: object[] = [];
     let totalShareOther = 0;
     let totalBlockOther = 0;

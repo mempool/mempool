@@ -1,15 +1,21 @@
 import { FastVertexArray } from './fast-vertex-array';
 import TxView from './tx-view';
 import { TransactionStripped } from '../../interfaces/websocket.interface';
-import { Position, Square, ViewUpdateParams } from './sprite-types';
+import { Color, Position, Square, ViewUpdateParams } from './sprite-types';
+import { defaultColorFunction } from './utils';
 
 export default class BlockScene {
   scene: { count: number, offset: { x: number, y: number}};
   vertexArray: FastVertexArray;
   txs: { [key: string]: TxView };
+  getColor: ((tx: TxView) => Color) = defaultColorFunction;
   orientation: string;
   flip: boolean;
+  animationDuration: number = 1000;
+  configAnimationOffset: number | null;
+  animationOffset: number;
   highlightingEnabled: boolean;
+  filterFlags: bigint | null = 0b00000100_00000000_00000000_00000000n;
   width: number;
   height: number;
   gridWidth: number;
@@ -23,11 +29,11 @@ export default class BlockScene {
   animateUntil = 0;
   dirty: boolean;
 
-  constructor({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
-      { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+  constructor({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
+      { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ) {
-    this.init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting });
+    this.init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction });
   }
 
   resize({ width = this.width, height = this.height, animate = true }: { width?: number, height?: number, animate: boolean }): void {
@@ -36,6 +42,7 @@ export default class BlockScene {
     this.gridSize = this.width / this.gridWidth;
     this.unitPadding =  Math.max(1, Math.floor(this.gridSize / 5));
     this.unitWidth = this.gridSize - (this.unitPadding * 2);
+    this.animationOffset = this.configAnimationOffset == null ? (this.width * 1.4) : this.configAnimationOffset;
 
     this.dirty = true;
     if (this.initialised && this.scene) {
@@ -56,6 +63,14 @@ export default class BlockScene {
     this.highlightingEnabled = enabled;
     if (this.initialised && this.scene) {
       this.updateAll(performance.now(), 50);
+    }
+  }
+
+  setColorFunction(colorFunction: ((tx: TxView) => Color) | null): void {
+    this.getColor = colorFunction || defaultColorFunction;
+    this.dirty = true;
+    if (this.initialised && this.scene) {
+      this.updateColors(performance.now(), 50);
     }
   }
 
@@ -82,7 +97,7 @@ export default class BlockScene {
       this.applyTxUpdate(txView, {
         display: {
           position: txView.screenPosition,
-          color: txView.getColor()
+          color: this.getColor(txView)
         },
         duration: 0
       });
@@ -90,8 +105,8 @@ export default class BlockScene {
   }
 
   // Animate new block entering scene
-  enter(txs: TransactionStripped[], direction) {
-    this.replace(txs, direction);
+  enter(txs: TransactionStripped[], direction, startTime?: number) {
+    this.replace(txs, direction, false, startTime);
   }
 
   // Animate block leaving scene
@@ -108,8 +123,7 @@ export default class BlockScene {
   }
 
   // Reset layout and replace with new set of transactions
-  replace(txs: TransactionStripped[], direction: string = 'left', sort: boolean = true): void {
-    const startTime = performance.now();
+  replace(txs: TransactionStripped[], direction: string = 'left', sort: boolean = true, startTime: number = performance.now()): void {
     const nextIds = {};
     const remove = [];
     txs.forEach(tx => {
@@ -133,7 +147,7 @@ export default class BlockScene {
       removed.forEach(tx => {
         tx.destroy();
       });
-    }, 1000);
+    }, (startTime - performance.now()) + this.animationDuration + 1000);
 
     this.layout = new BlockLayout({ width: this.gridWidth, height: this.gridHeight });
 
@@ -147,10 +161,10 @@ export default class BlockScene {
       });
     }
 
-    this.updateAll(startTime, 200, direction);
+    this.updateAll(startTime, 50, direction);
   }
 
-  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
+  update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     const startTime = performance.now();
     const removed = this.removeBatch(remove, startTime, direction);
 
@@ -175,6 +189,7 @@ export default class BlockScene {
       // update effective rates
       change.forEach(tx => {
         if (this.txs[tx.txid]) {
+          this.txs[tx.txid].acc = tx.acc;
           this.txs[tx.txid].feerate = tx.rate || (this.txs[tx.txid].fee / this.txs[tx.txid].vsize);
           this.txs[tx.txid].rate = tx.rate;
           this.txs[tx.txid].dirty = true;
@@ -213,14 +228,18 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.setHighlight(value));
   }
 
-  private init({ width, height, resolution, blockLimit, orientation, flip, vertexArray, highlighting }:
-      { width: number, height: number, resolution: number, blockLimit: number,
-        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean }
+  private init({ width, height, resolution, blockLimit, animationDuration, animationOffset, orientation, flip, vertexArray, highlighting, colorFunction }:
+      { width: number, height: number, resolution: number, blockLimit: number, animationDuration: number, animationOffset: number,
+        orientation: string, flip: boolean, vertexArray: FastVertexArray, highlighting: boolean, colorFunction: ((tx: TxView) => Color) | null }
   ): void {
+    this.animationDuration = animationDuration || 1000;
+    this.configAnimationOffset = animationOffset;
+    this.animationOffset = this.configAnimationOffset == null ? (this.width * 1.4) : this.configAnimationOffset;
     this.orientation = orientation;
     this.flip = flip;
     this.vertexArray = vertexArray;
     this.highlightingEnabled = highlighting;
+    this.getColor = colorFunction || defaultColorFunction;
 
     this.scene = {
       count: 0,
@@ -247,6 +266,20 @@ export default class BlockScene {
     this.animateUntil = Math.max(this.animateUntil, tx.update(update));
   }
 
+  private updateTxColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration?: number): void {
+    if (tx.dirty || this.dirty) {
+      const txColor = this.getColor(tx);
+      this.applyTxUpdate(tx, {
+        display: {
+          color: txColor
+        },
+        duration: animate ? (duration || this.animationDuration) : 1,
+        start: startTime,
+        delay: animate ? delay : 0,
+      });
+    }
+  }
+
   private updateTx(tx: TxView, startTime: number, delay: number, direction: string = 'left', animate: boolean = true): void {
     if (tx.dirty || this.dirty) {
       this.saveGridToScreenPosition(tx);
@@ -254,14 +287,28 @@ export default class BlockScene {
     }
   }
 
+  private updateColor(tx: TxView, startTime: number, delay: number, animate: boolean = true, duration: number = 500): void {
+    if (tx.dirty || this.dirty) {
+      const txColor = this.getColor(tx);
+      this.applyTxUpdate(tx, {
+        display: {
+          color: txColor,
+        },
+        start: startTime,
+        delay,
+        duration: animate ? duration : 0,
+      });
+    }
+  }
+
   private setTxOnScreen(tx: TxView, startTime: number, delay: number = 50, direction: string = 'left', animate: boolean = true): void {
     if (!tx.initialised) {
-      const txColor = tx.getColor();
+      const txColor = this.getColor(tx);
       this.applyTxUpdate(tx, {
         display: {
           position: {
-            x: tx.screenPosition.x + (direction === 'right' ? -this.width : (direction === 'left' ? this.width : 0)) * 1.4,
-            y: tx.screenPosition.y + (direction === 'up' ? -this.height : (direction === 'down' ? this.height : 0)) * 1.4,
+            x: tx.screenPosition.x + (direction === 'right' ? -this.width - this.animationOffset : (direction === 'left' ? this.width + this.animationOffset : 0)),
+            y: tx.screenPosition.y + (direction === 'up' ? -this.height - this.animationOffset : (direction === 'down' ? this.height + this.animationOffset : 0)),
             s: tx.screenPosition.s
           },
           color: txColor,
@@ -274,17 +321,17 @@ export default class BlockScene {
           position: tx.screenPosition,
           color: txColor
         },
-        duration: animate ? 1000 : 1,
+        duration: animate ? this.animationDuration : 1,
         start: startTime,
         delay: animate ? delay : 0,
       });
     } else {
       this.applyTxUpdate(tx, {
         display: {
-          position: tx.screenPosition
+          position: tx.screenPosition,
         },
-        duration: animate ? 1000 : 0,
-        minDuration: animate ? 500 : 0,
+        duration: animate ? this.animationDuration : 0,
+        minDuration: animate ? (this.animationDuration / 2) : 0,
         start: startTime,
         delay: animate ? delay : 0,
         adjust: animate
@@ -314,6 +361,15 @@ export default class BlockScene {
     this.dirty = false;
   }
 
+  private updateColors(startTime: number, delay: number = 50, animate: boolean = true, duration: number = 500): void {
+    const ids = this.getTxList();
+    startTime = startTime || performance.now();
+    for (const id of ids) {
+      this.updateColor(this.txs[id], startTime, delay, animate, duration);
+    }
+    this.dirty = false;
+  }
+
   private remove(id: string, startTime: number, direction: string = 'left'): TxView | void {
     const tx = this.txs[id];
     if (tx) {
@@ -321,11 +377,11 @@ export default class BlockScene {
       this.applyTxUpdate(tx, {
         display: {
           position: {
-            x: tx.screenPosition.x + (direction === 'right' ? this.width : (direction === 'left' ? -this.width : 0)) * 1.4,
-            y: tx.screenPosition.y + (direction === 'up' ? this.height : (direction === 'down' ? -this.height : 0)) * 1.4,
+            x: tx.screenPosition.x + (direction === 'right' ? this.width + this.animationOffset : (direction === 'left' ? -this.width - this.animationOffset : 0)),
+            y: tx.screenPosition.y + (direction === 'up' ? this.height + this.animationOffset : (direction === 'down' ? -this.height - this.animationOffset : 0)),
           }
         },
-        duration: 1000,
+        duration: this.animationDuration,
         start: startTime,
         delay: 50
       });

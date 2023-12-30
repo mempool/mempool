@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { StateService } from '../../services/state.service';
 
@@ -8,12 +8,13 @@ import { StateService } from '../../services/state.service';
   styleUrls: ['./blockchain.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlockchainComponent implements OnInit, OnDestroy {
+export class BlockchainComponent implements OnInit, OnDestroy, OnChanges {
   @Input() pages: any[] = [];
   @Input() pageIndex: number;
   @Input() blocksPerPage: number = 8;
   @Input() minScrollWidth: number = 0;
   @Input() scrollableMempool: boolean = false;
+  @Input() containerWidth: number;
 
   @Output() mempoolOffsetChange: EventEmitter<number> = new EventEmitter();
 
@@ -26,8 +27,11 @@ export class BlockchainComponent implements OnInit, OnDestroy {
   loadingTip: boolean = true;
   connected: boolean = true;
 
-  dividerOffset: number = 0;
-  mempoolOffset: number = 0;
+  dividerOffset: number | null = null;
+  mempoolOffset: number | null = null;
+  positionStyle = {
+    transform: "translateX(1280px)",
+  };
 
   constructor(
     public stateService: StateService,
@@ -39,6 +43,7 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     this.network = this.stateService.network;
     this.timeLtrSubscription = this.stateService.timeLtr.subscribe((ltr) => {
       this.timeLtr = !!ltr;
+      this.updateStyle();
     });
     this.connectionStateSubscription = this.stateService.connectionState$.subscribe(state => {
       this.connected = (state === 2);
@@ -62,46 +67,68 @@ export class BlockchainComponent implements OnInit, OnDestroy {
     const prevOffset = this.mempoolOffset;
     this.mempoolOffset = 0;
     this.mempoolOffsetChange.emit(0);
+    this.updateStyle();
     setTimeout(() => {
       this.ltrTransitionEnabled = true;
       this.flipping = true;
       this.stateService.timeLtr.next(!this.timeLtr);
+      this.cd.markForCheck();
       setTimeout(() => {
         this.ltrTransitionEnabled = false;
         this.flipping = false;
         this.mempoolOffset = prevOffset;
-        this.mempoolOffsetChange.emit(this.mempoolOffset);
+        this.mempoolOffsetChange.emit((this.mempoolOffset || 0));
+        this.updateStyle();
+        this.cd.markForCheck();
       },  1000);
     }, 0);
-    this.cd.markForCheck();
   }
 
   onMempoolWidthChange(width): void {
     if (this.flipping) {
       return;
     }
-    this.mempoolOffset = Math.max(0, width - this.dividerOffset);
-    this.cd.markForCheck();
-    setTimeout(() => {
-      this.mempoolOffsetChange.emit(this.mempoolOffset);
-    }, 0);
+    this.mempoolOffset = Math.max(0, width - (this.dividerOffset || 0));
+    this.updateStyle();
+    this.mempoolOffsetChange.emit(this.mempoolOffset);
   }
 
-  @HostListener('window:resize', ['$event'])
+  updateStyle(): void {
+    if (this.dividerOffset == null || this.mempoolOffset == null) {
+      return;
+    }
+    const oldTransform = this.positionStyle.transform;
+    this.positionStyle = this.timeLtr ? {
+      transform: `translateX(calc(100vw - ${this.dividerOffset + this.mempoolOffset}px)`,
+    } : {
+      transform: `translateX(${this.dividerOffset + this.mempoolOffset}px)`,
+    };
+    if (oldTransform !== this.positionStyle.transform) {
+      this.cd.detectChanges();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.containerWidth) {
+      this.onResize();
+    }
+  }
+
   onResize(): void {
-    if (window.innerWidth >= 768) {
+    const width = this.containerWidth || window.innerWidth;
+    if (width >= 768) {
       if (this.stateService.isLiquid()) {
         this.dividerOffset = 420;
       } else {
-        this.dividerOffset = window.innerWidth * 0.5;
+        this.dividerOffset = width * 0.5;
       }
     } else {
       if (this.stateService.isLiquid()) {
-        this.dividerOffset = window.innerWidth * 0.5;
+        this.dividerOffset = width * 0.5;
       } else {
-        this.dividerOffset = window.innerWidth * 0.95;
+        this.dividerOffset = width * 0.95;
       }
     }
-    this.cd.markForCheck();
+    this.updateStyle();
   }
 }

@@ -5,6 +5,18 @@
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
+  <ng-template [ngIf]="results.dateTime">
+    <div class="card-title" i18n="search.bitcoin-block-date">Date</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
+    </button>
+  </ng-template>
+  <ng-template [ngIf]="results.unixTimestamp">
+    <div class="card-title" i18n="search.bitcoin-block-timestamp">Timestamp</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
+    </button>
+  </ng-template>
   <ng-template [ngIf]="results.txId">
     <div class="card-title" i18n="search.bitcoin-transaction">Bitcoin Transaction</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">

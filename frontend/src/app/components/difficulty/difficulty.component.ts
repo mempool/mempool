@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, HostListener, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { combineLatest, Observable, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, ElementRef, ViewChild, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { StateService } from '../..//services/state.service';
 
 interface EpochProgress {
@@ -44,6 +44,8 @@ export class DifficultyComponent implements OnInit {
   @Input() showProgress = true;
   @Input() showHalving = false;
   @Input() showTitle = true;
+
+  @ViewChild('epochSvg') epochSvgElement: ElementRef<SVGElement>;
  
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
@@ -61,6 +63,7 @@ export class DifficultyComponent implements OnInit {
 
   constructor(
     public stateService: StateService,
+    private cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) private locale: string,
   ) { }
 
@@ -189,16 +192,27 @@ export class DifficultyComponent implements OnInit {
     return shapes;
   }
 
-  @HostListener('pointermove', ['$event'])
-  onPointerMove(event) {
-    this.tooltipPosition = { x: event.clientX, y: event.clientY };
+  @HostListener('pointerdown', ['$event'])
+  onPointerDown(event): void {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
+      this.onPointerMove(event);
+      event.preventDefault();
+    }
   }
 
-  onHover(event, rect): void {
+  @HostListener('pointermove', ['$event'])
+  onPointerMove(event): void {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
+      this.tooltipPosition = { x: event.clientX, y: event.clientY };
+      this.cd.markForCheck();
+    }
+  }
+
+  onHover(_, rect): void {
     this.hoverSection = rect;
   }
 
-  onBlur(event): void {
+  onBlur(): void {
     this.hoverSection = null;
   }
 }

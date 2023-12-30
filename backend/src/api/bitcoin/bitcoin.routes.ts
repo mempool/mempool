@@ -6,7 +6,7 @@ import websocketHandler from '../websocket-handler';
 import mempool from '../mempool';
 import feeApi from '../fee-api';
 import mempoolBlocks from '../mempool-blocks';
-import bitcoinApi, { bitcoinCoreApi } from './bitcoin-api-factory';
+import bitcoinApi from './bitcoin-api-factory';
 import { Common } from '../common';
 import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
@@ -24,7 +24,6 @@ class BitcoinRoutes {
   public initRoutes(app: Application) {
     app
       .get(config.MEMPOOL.API_URL_PREFIX + 'transaction-times', this.getTransactionTimes)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'outspends', this.$getBatchedOutspends)
       .get(config.MEMPOOL.API_URL_PREFIX + 'cpfp/:txId', this.$getCpfpInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
@@ -112,6 +111,7 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/hex', this.getRawTransaction)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/status', this.getTransactionStatus)
           .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/outspends', this.getTransactionOutspends)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'txs/outspends', this.$getBatchedOutspends)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/header', this.getBlockHeader)
           .get(config.MEMPOOL.API_URL_PREFIX + 'blocks/tip/hash', this.getBlockTipHash)
           .get(config.MEMPOOL.API_URL_PREFIX + 'block/:hash/raw', this.getRawBlock)
@@ -121,6 +121,8 @@ class BitcoinRoutes {
           .get(config.MEMPOOL.API_URL_PREFIX + 'block-height/:height', this.getBlockHeight)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address', this.getAddress)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs', this.getAddressTransactions)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash', this.getScriptHash)
+          .get(config.MEMPOOL.API_URL_PREFIX + 'scripthash/:scripthash/txs', this.getScriptHashTransactions)
           .get(config.MEMPOOL.API_URL_PREFIX + 'address-prefix/:prefix', this.getAddressPrefix)
           ;
       }
@@ -172,24 +174,20 @@ class BitcoinRoutes {
     res.json(times);
   }
 
-  private async $getBatchedOutspends(req: Request, res: Response) {
-    if (!Array.isArray(req.query.txId)) {
-      res.status(500).send('Not an array');
+  private async $getBatchedOutspends(req: Request, res: Response): Promise<IEsploraApi.Outspend[][] | void> {
+    const txids_csv = req.query.txids;
+    if (!txids_csv || typeof txids_csv !== 'string') {
+      res.status(500).send('Invalid txids format');
       return;
     }
-    if (req.query.txId.length > 50) {
+    const txids = txids_csv.split(',');
+    if (txids.length > 50) {
       res.status(400).send('Too many txids requested');
       return;
     }
-    const txIds: string[] = [];
-    for (const _txId in req.query.txId) {
-      if (typeof req.query.txId[_txId] === 'string') {
-        txIds.push(req.query.txId[_txId].toString());
-      }
-    }
 
     try {
-      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txIds);
+      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txids);
       res.json(batchedOutspends);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -212,6 +210,7 @@ class BitcoinRoutes {
           effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
           sigops: tx.sigops,
           adjustedVsize: tx.adjustedVsize,
+          acceleration: tx.acceleration
         });
         return;
       }
@@ -248,7 +247,7 @@ class BitcoinRoutes {
 
   private async getTransaction(req: Request, res: Response) {
     try {
-      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true);
+      const transaction = await transactionUtils.$getTransactionExtended(req.params.txId, true, false, false, true);
       res.json(transaction);
     } catch (e) {
       let statusCode = 500;
@@ -475,13 +474,13 @@ class BitcoinRoutes {
       }
 
       let nextHash = startFromHash;
-      for (let i = 0; i < 10 && nextHash; i++) {
+      for (let i = 0; i < 15 && nextHash; i++) {
         const localBlock = blocks.getBlocks().find((b) => b.id === nextHash);
         if (localBlock) {
           returnBlocks.push(localBlock);
           nextHash = localBlock.previousblockhash;
         } else {
-          const block = await bitcoinCoreApi.$getBlock(nextHash);
+          const block = await bitcoinApi.$getBlock(nextHash);
           returnBlocks.push(block);
           nextHash = block.previousblockhash;
         }
@@ -557,6 +556,49 @@ class BitcoinRoutes {
         lastTxId = req.query.after_txid;
       }
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, lastTxId);
+      res.json(transactions);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        res.status(413).send(e instanceof Error ? e.message : e);
+        return;
+      }
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getScriptHash(req: Request, res: Response) {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      // electrum expects scripthashes in little-endian
+      const electrumScripthash = req.params.scripthash.match(/../g)?.reverse().join('') ?? '';
+      const addressData = await bitcoinApi.$getScriptHash(electrumScripthash);
+      res.json(addressData);
+    } catch (e) {
+      if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
+        return res.status(413).send(e instanceof Error ? e.message : e);
+      }
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async getScriptHashTransactions(req: Request, res: Response): Promise<void> {
+    if (config.MEMPOOL.BACKEND === 'none') {
+      res.status(405).send('Address lookups cannot be used with bitcoind as backend.');
+      return;
+    }
+
+    try {
+      // electrum expects scripthashes in little-endian
+      const electrumScripthash = req.params.scripthash.match(/../g)?.reverse().join('') ?? '';
+      let lastTxId: string = '';
+      if (req.query.after_txid && typeof req.query.after_txid === 'string') {
+        lastTxId = req.query.after_txid;
+      }
+      const transactions = await bitcoinApi.$getScriptHashTransactions(electrumScripthash, lastTxId);
       res.json(transactions);
     } catch (e) {
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {

@@ -44,14 +44,14 @@
       </div>
     </div>
 
-    <!-- Latest blocks -->
+    <!-- Recent blocks -->
     <div class="col">
       <div class="card">
         <div class="card-body">
           <a class="title-link" href="" [routerLink]="['/blocks' | relativeUrl]">
-            <h5 class="card-title d-inline" i18n="dashboard.latest-blocks">Latest blocks</h5>
+            <h5 class="card-title d-inline" i18n="dashboard.recent-blocks">Recent Blocks</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-blocks-list [attr.data-cy]="'latest-blocks'" [widget]=true></app-blocks-list>
         </div>
@@ -65,7 +65,7 @@
           <a class="title-link" href="" [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]">
             <h5 class="card-title d-inline" i18n="dashboard.adjustments">Adjustments</h5>
             <span>&nbsp;</span>
-            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: 'text-top'; font-size: 13px; color: '#4a68b9'"></fa-icon>
+            <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
           </a>
           <app-difficulty-adjustments-table [attr.data-cy]="'difficulty-adjustments-table'"></app-difficulty-adjustments-table>
         </div>

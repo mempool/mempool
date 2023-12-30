@@ -9,7 +9,7 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["16", "17", "18"]
+        node: ["18", "20"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -27,10 +27,17 @@ jobs:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install 1.70.x Rust toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Read rust-toolchain file from repository
+        id: gettoolchain
+        run: echo "::set-output name=toolchain::$(cat rust-toolchain)"
+        working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
+
+      - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
+        # Latest version available on this commit is 1.71.1
+        # Commit date is Aug 3, 2023
+        uses: dtolnay/rust-toolchain@be73d7920c329f220ce78e0234b8f96b7ae60248
         with:
-            toolchain: 1.70
+          toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
@@ -49,7 +56,7 @@ jobs:
 
       - name: Unit Tests
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm run test
+        run: npm run test:ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Build
@@ -60,7 +67,7 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["16", "17", "18"]
+        node: ["18", "20"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -99,3 +106,6 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

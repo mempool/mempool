@@ -1,0 +1,53 @@
+<div class="stats-wrapper" *ngIf="accelerationStats$ | async as stats; else loading">
+  <div class="stats-container">
+    <div class="item">
+      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <div class="card-text">
+        <div>{{ stats.count }}</div>
+        <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.average-max-bid">Avg Max Bid</h5>
+      <div class="card-text">
+        <div>{{ stats.avgFeeDelta / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
+        <span class="fiat">
+          <app-fiat [value]="stats.avgFeeDelta"></app-fiat>
+        </span>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vsize</h5>
+      <div class="card-text">
+        <div [innerHTML]="'&lrm;' + (stats.totalVsize * 4 | vbytes: 2)"></div>
+        <div class="symbol">{{ (stats.totalVsize / 1_000_000 * 100).toFixed(2) }}% <span i18n="accelerator.percent-of-next-block"> of next block</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="stats-container loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.average-max-bid">Avg Max Bid</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.total-vsize">Total vsize</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

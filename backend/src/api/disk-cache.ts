@@ -29,7 +29,7 @@ class DiskCache {
   };
 
   constructor() {
-    if (!cluster.isPrimary) {
+    if (!cluster.isPrimary || !config.MEMPOOL.CACHE_ENABLED) {
       return;
     }
     process.on('SIGINT', (e) => {
@@ -39,7 +39,7 @@ class DiskCache {
   }
 
   async $saveCacheToDisk(sync: boolean = false): Promise<void> {
-    if (!cluster.isPrimary) {
+    if (!cluster.isPrimary || !config.MEMPOOL.CACHE_ENABLED) {
       return;
     }
     if (this.isWritingCache) {
@@ -175,10 +175,11 @@ class DiskCache {
   }
 
   async $loadMempoolCache(): Promise<void> {
-    if (!fs.existsSync(DiskCache.FILE_NAME)) {
+    if (!config.MEMPOOL.CACHE_ENABLED || !fs.existsSync(DiskCache.FILE_NAME)) {
       return;
     }
     try {
+      const start = Date.now();
       let data: any = {};
       const cacheData = fs.readFileSync(DiskCache.FILE_NAME, 'utf8');
       if (cacheData) {
@@ -220,6 +221,8 @@ class DiskCache {
         }
       }
 
+      logger.info(`Loaded mempool from disk cache in ${Date.now() - start} ms`);
+
       await memPool.$setMempool(data.mempool);
       if (!this.ignoreBlocksCache) {
         blocks.setBlocks(data.blocks);
@@ -249,7 +252,12 @@ class DiskCache {
       }
 
       if (rbfData?.rbf) {
-        rbfCache.load(rbfData.rbf);
+        rbfCache.load({
+          txs: rbfData.rbf.txs.map(([txid, entry]) => ({ value: entry })),
+          trees: rbfData.rbf.trees,
+          expiring: rbfData.rbf.expiring.map(([txid, value]) => ({ key: txid, value })),
+          mempool: memPool.getMempool(),
+        });
       }
     } catch (e) {
       logger.warn('Failed to parse rbf cache. Skipping. Reason: ' + (e instanceof Error ? e.message : e));

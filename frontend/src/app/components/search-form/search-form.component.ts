@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef, Input } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { EventType, NavigationStart, Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
 import { StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
@@ -18,6 +18,8 @@ import { findOtherNetworks, getRegex } from '../../shared/regex.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchFormComponent implements OnInit {
+  @Input() hamburgerOpen = false;
+  
   network = '';
   assets: object = {};
   isSearching = false;
@@ -39,6 +41,8 @@ export class SearchFormComponent implements OnInit {
   regexBlockhash = getRegex('blockhash');
   regexTransaction = getRegex('transaction');
   regexBlockheight = getRegex('blockheight');
+  regexDate = /^(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}(?: \d{1,2}:\d{2})?)$/;
+  regexUnixTimestamp = /^\d{10}$/;
 
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
@@ -49,6 +53,8 @@ export class SearchFormComponent implements OnInit {
     this.handleKeyDown($event);
   }
 
+  @ViewChild('searchInput') searchInput: ElementRef;
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -57,15 +63,29 @@ export class SearchFormComponent implements OnInit {
     private electrsApiService: ElectrsApiService,
     private apiService: ApiService,
     private relativeUrlPipe: RelativeUrlPipe,
-    private elementRef: ElementRef,
-  ) { }
+    private elementRef: ElementRef
+  ) {
+  }
 
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
       // TODO: Eventually change network type here from string to enum of consts
       this.regexAddress = getRegex('address', network as any || 'mainnet');
+    });
+
+    this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
+      if (this.searchInput && e.type === EventType.NavigationStart) {
+        this.searchInput.nativeElement.blur();
+      }
+    });
+
+    this.stateService.searchFocus$.subscribe(() => {
+      if (!this.searchInput) { // Try again a bit later once the view is properly initialized
+        setTimeout(() => this.searchInput.nativeElement.focus(), 100);
+      } else if (this.searchInput) {
+        this.searchInput.nativeElement.focus();
+      }
     });
 
     this.searchForm = this.formBuilder.group({
@@ -160,7 +180,9 @@ export class SearchFormComponent implements OnInit {
           const addressPrefixSearchResults = result[0];
           const lightningResults = result[1];
 
-          const matchesBlockHeight = this.regexBlockheight.test(searchText);
+          const matchesBlockHeight = this.regexBlockheight.test(searchText) && parseInt(searchText) <= this.stateService.latestBlockHeight;
+          const matchesDateTime = this.regexDate.test(searchText) && new Date(searchText).toString() !== 'Invalid Date';
+          const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText);
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
           const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
@@ -169,10 +191,16 @@ export class SearchFormComponent implements OnInit {
             searchText = 'B' + searchText;
           }
 
+          if (matchesDateTime && searchText.indexOf('/') !== -1) {
+            searchText = searchText.replace(/\//g, '-');
+          }
+
           return {
             searchText: searchText,
-            hashQuickMatch: +(matchesBlockHeight || matchesBlockHash || matchesTxId || matchesAddress),
+            hashQuickMatch: +(matchesBlockHeight || matchesBlockHash || matchesTxId || matchesAddress || matchesUnixTimestamp || matchesDateTime),
             blockHeight: matchesBlockHeight,
+            dateTime: matchesDateTime,
+            unixTimestamp: matchesUnixTimestamp,
             txId: matchesTxId,
             blockHash: matchesBlockHash,
             address: matchesAddress,
@@ -195,7 +223,7 @@ export class SearchFormComponent implements OnInit {
   selectedResult(result: any): void {
     if (typeof result === 'string') {
       this.search(result);
-    } else if (typeof result === 'number') {
+    } else if (typeof result === 'number' && result <= this.stateService.latestBlockHeight) {
       this.navigate('/block/', result.toString());
     } else if (result.alias) {
       this.navigate('/lightning/node/', result.public_key);
@@ -215,8 +243,10 @@ export class SearchFormComponent implements OnInit {
       } else if (otherNetworks.length > 0) {
         // Change the network to the first match
         this.navigate('/address/', searchText, undefined, otherNetworks[0]);
-      } else if (this.regexBlockhash.test(searchText) || this.regexBlockheight.test(searchText)) {
+      } else if (this.regexBlockhash.test(searchText)) {
         this.navigate('/block/', searchText);
+      } else if (this.regexBlockheight.test(searchText)) {
+        parseInt(searchText) <= this.stateService.latestBlockHeight ? this.navigate('/block/', searchText) : this.isSearching = false;
       } else if (this.regexTransaction.test(searchText)) {
         const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid' || this.network === 'liquidtestnet') {
@@ -236,6 +266,13 @@ export class SearchFormComponent implements OnInit {
         } else {
           this.navigate('/tx/', matches[0]);
         }
+      } else if (this.regexDate.test(searchText) || this.regexUnixTimestamp.test(searchText)) {
+        let timestamp: number;
+        this.regexDate.test(searchText) ? timestamp = Math.floor(new Date(searchText).getTime() / 1000) : timestamp = searchText;
+        this.apiService.getBlockDataFromTimestamp$(timestamp).subscribe(
+          (data) => { this.navigate('/block/', data.hash); },
+          (error) => { console.log(error); this.isSearching = false; }
+        );
       } else {
         this.searchResults.searchButtonClick();
         this.isSearching = false;

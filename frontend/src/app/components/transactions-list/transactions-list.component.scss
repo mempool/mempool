@@ -46,7 +46,16 @@
 }
 
 td.amount {
-	width: 32.5%;
+	width: 36%;
+	@media (max-width: 576px) {
+		width: 50%;
+	}
+}
+td.amount.large {
+	width: 45%;
+	@media (max-width: 576px) {
+		width: 60%;
+	}
 }
 
 .extra-info {
@@ -138,6 +147,15 @@ h2 {
 
 .address {
 	font-family: monospace;
+}
+
+.p2pk-address {
+	display: inline-block;
+	margin-left: 1em;
+	max-width: 100px;
+	@media (min-width: 576px) {
+		max-width: 200px
+	}
 }
 
 .grey-info-text {

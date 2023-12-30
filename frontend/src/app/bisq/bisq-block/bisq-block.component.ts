@@ -69,6 +69,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree(['/bisq/block/', hash]).toString()
                   );
+                  this.seoService.updateCanonical(this.location.path());
                   return this.bisqApiService.getBlock$(this.blockHash)
                     .pipe(catchError(this.caughtHttpError.bind(this)));
                 }),
@@ -82,11 +83,13 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
       )
       .subscribe((block: BisqBlock) => {
         if (!block) {
+          this.seoService.logSoft404();
           return;
         }
         this.isLoading = false;
         this.blockHeight = block.height;
         this.seoService.setTitle($localize`:@@bisq-block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.hash}:BLOCK_HASH:`);
+        this.seoService.setDescription($localize`:@@meta.description.bisq.block:See all BSQ transactions in Bitcoin block ${block.height}:BLOCK_HEIGHT: (block hash ${block.hash}:BLOCK_HASH:).`);
         this.block = block;
       });
   }
@@ -97,6 +100,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
 
   caughtHttpError(err: HttpErrorResponse){
     this.error = err;
+    this.seoService.logSoft404();
     return of(null);
   }
 }

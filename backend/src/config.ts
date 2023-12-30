@@ -12,6 +12,7 @@ interface IConfig {
     API_URL_PREFIX: string;
     POLL_RATE_MS: number;
     CACHE_DIR: string;
+    CACHE_ENABLED: boolean;
     CLEAR_PROTECTION_MINUTES: number;
     RECOMMENDED_FEE_PERCENTILE: number;
     BLOCK_WEIGHT_UNITS: number;
@@ -37,11 +38,16 @@ interface IConfig {
     DISK_CACHE_BLOCK_INTERVAL: number;
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
+    PRICE_UPDATES_PER_HOUR: number;
   };
   ESPLORA: {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
+    BATCH_QUERY_BASE_SIZE: number;
     RETRY_UNIX_SOCKET_AFTER: number;
+    REQUEST_TIMEOUT: number;
+    FALLBACK_TIMEOUT: number;
+    FALLBACK: string[];
   };
   LIGHTNING: {
     ENABLED: boolean;
@@ -73,6 +79,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
@@ -80,6 +88,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -90,6 +100,7 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    PID_DIR: string;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -114,10 +125,6 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
   };
-  PRICE_DATA_SERVER: {
-    TOR_URL: string;
-    CLEARNET_URL: string;
-  };
   EXTERNAL_DATA_SERVER: {
     MEMPOOL_API: string;
     MEMPOOL_ONION: string;
@@ -137,7 +144,16 @@ interface IConfig {
     AUDIT: boolean;
     AUDIT_START_HEIGHT: number;
     SERVERS: string[];
-  }
+  },
+  MEMPOOL_SERVICES: {
+    API: string;
+    ACCELERATIONS: boolean;
+  },
+  REDIS: {
+    ENABLED: boolean;
+    UNIX_SOCKET_PATH: string;
+    BATCH_QUERY_BASE_SIZE: number;
+  },
 }
 
 const defaults: IConfig = {
@@ -150,6 +166,7 @@ const defaults: IConfig = {
     'API_URL_PREFIX': '/api/v1/',
     'POLL_RATE_MS': 2000,
     'CACHE_DIR': './cache',
+    'CACHE_ENABLED': true,
     'CLEAR_PROTECTION_MINUTES': 20,
     'RECOMMENDED_FEE_PERCENTILE': 50,
     'BLOCK_WEIGHT_UNITS': 4000000,
@@ -175,11 +192,16 @@ const defaults: IConfig = {
     'DISK_CACHE_BLOCK_INTERVAL': 6,
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
+    'PRICE_UPDATES_PER_HOUR': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
+    'BATCH_QUERY_BASE_SIZE': 1000,
     'RETRY_UNIX_SOCKET_AFTER': 30000,
+    'REQUEST_TIMEOUT': 10000,
+    'FALLBACK_TIMEOUT': 5000,
+    'FALLBACK': [],
   },
   'ELECTRUM': {
     'HOST': '127.0.0.1',
@@ -192,6 +214,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -199,6 +223,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'DATABASE': {
     'ENABLED': true,
@@ -209,6 +235,7 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 180000,
+    'PID_DIR': '',
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -252,10 +279,6 @@ const defaults: IConfig = {
     'USERNAME': '',
     'PASSWORD': ''
   },
-  'PRICE_DATA_SERVER': {
-    'TOR_URL': 'http://wizpriceje6q5tdrxkyiazsgu7irquiqjy2dptezqhrtu7l2qelqktid.onion/getAllMarketPrices',
-    'CLEARNET_URL': 'https://price.bisq.wiz.biz/getAllMarketPrices'
-  },
   'EXTERNAL_DATA_SERVER': {
     'MEMPOOL_API': 'https://mempool.space/api/v1',
     'MEMPOOL_ONION': 'http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion/api/v1',
@@ -275,7 +298,16 @@ const defaults: IConfig = {
     'AUDIT': false,
     'AUDIT_START_HEIGHT': 774000,
     'SERVERS': [],
-  }
+  },
+  'MEMPOOL_SERVICES': {
+    'API': '',
+    'ACCELERATIONS': false,
+  },
+  'REDIS': {
+    'ENABLED': false,
+    'UNIX_SOCKET_PATH': '',
+    'BATCH_QUERY_BASE_SIZE': 5000,
+  },
 };
 
 class Config implements IConfig {
@@ -292,10 +324,11 @@ class Config implements IConfig {
   LND: IConfig['LND'];
   CLIGHTNING: IConfig['CLIGHTNING'];
   SOCKS5PROXY: IConfig['SOCKS5PROXY'];
-  PRICE_DATA_SERVER: IConfig['PRICE_DATA_SERVER'];
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
+  MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
+  REDIS: IConfig['REDIS'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -312,10 +345,11 @@ class Config implements IConfig {
     this.LND = configs.LND;
     this.CLIGHTNING = configs.CLIGHTNING;
     this.SOCKS5PROXY = configs.SOCKS5PROXY;
-    this.PRICE_DATA_SERVER = configs.PRICE_DATA_SERVER;
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
+    this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
+    this.REDIS = configs.REDIS;
   }
 
   merge = (...objects: object[]): IConfig => {
