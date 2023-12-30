@@ -328,15 +328,26 @@ export class BlockComponent implements OnInit, OnDestroy {
                 this.overviewError = err;
                 return of(null);
               })
-            )
+            ),
+          block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
         ]);
       })
     )
-    .subscribe(([transactions, blockAudit]) => {
+    .subscribe(([transactions, blockAudit, accelerations]) => {
       if (transactions) {
         this.strippedTransactions = transactions;
       } else {
         this.strippedTransactions = [];
+      }
+
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
       }
 
       this.blockAudit = null;

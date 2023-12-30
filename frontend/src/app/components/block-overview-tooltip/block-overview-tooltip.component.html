@@ -58,6 +58,10 @@
           <td *ngSwitchCase="'accelerated'"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></td>
         </ng-container>
       </tr>
+      <tr *ngIf="!auditEnabled && tx && tx.status === 'accelerated'">
+        <td class="td-width"></td>
+        <td><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></td>
+      </tr>
     </tbody>
   </table>
 </div>
