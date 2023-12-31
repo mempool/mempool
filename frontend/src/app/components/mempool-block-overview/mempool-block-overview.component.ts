@@ -35,6 +35,8 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   blockSub: Subscription;
   deltaSub: Subscription;
 
+  firstLoad: boolean = true;
+
   constructor(
     public stateService: StateService,
     private websocketService: WebsocketService,
@@ -58,7 +60,40 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       )
       .pipe(switchMap(() => this.stateService.mempoolBlockTransactions$))
       .subscribe((transactionsStripped) => {
-        this.replaceBlock(transactionsStripped);
+        if (this.firstLoad) {
+          this.replaceBlock(transactionsStripped);
+        } else {
+          const inOldBlock = {};
+          const inNewBlock = {};
+          const added: TransactionStripped[] = [];
+          const changed: { txid: string, rate: number | undefined, acc: boolean | undefined }[] = [];
+          const removed: string[] = [];
+          for (const tx of transactionsStripped) {
+            inNewBlock[tx.txid] = true;
+          }
+          for (const txid of Object.keys(this.blockGraph?.scene?.txs || {})) {
+            inOldBlock[txid] = true;
+            if (!inNewBlock[txid]) {
+              removed.push(txid);
+            }
+          }
+          for (const tx of transactionsStripped) {
+            if (!inOldBlock[tx.txid]) {
+              added.push(tx);
+            } else {
+              changed.push({
+                txid: tx.txid,
+                rate: tx.rate,
+                acc: tx.acc
+              });
+            }
+          }
+          this.updateBlock({
+            removed,
+            changed,
+            added
+          });
+        }
       });
     this.deltaSub = this.stateService.mempoolBlockDelta$.subscribe((delta) => {
       this.updateBlock(delta);
@@ -67,6 +102,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngOnChanges(changes): void {
     if (changes.index) {
+      this.firstLoad = true;
       if (this.blockGraph) {
         this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? this.chainDirection : this.poolDirection);
       }

@@ -282,8 +282,7 @@ class WebsocketHandler {
           }
 
           if (Object.keys(response).length) {
-            const serializedResponse = this.serializeResponse(response);
-            client.send(serializedResponse);
+            client.send(this.serializeResponse(response));
           }
         } catch (e) {
           logger.debug(`Error parsing websocket message from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
@@ -392,8 +391,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        const serializedResponse = this.serializeResponse(response);
-        client.send(serializedResponse);
+        client.send(this.serializeResponse(response));
       }
     });
   }
@@ -639,8 +637,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        const serializedResponse = this.serializeResponse(response);
-        client.send(serializedResponse);
+        client.send(this.serializeResponse(response));
       }
     });
   }
@@ -738,10 +735,13 @@ class WebsocketHandler {
       }
     }
 
+    const confirmedTxids: { [txid: string]: boolean } = {};
+
     // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
       delete _memPool[txId];
       rbfCache.mined(txId);
+      confirmedTxids[txId] = true;
     }
 
     if (config.MEMPOOL.ADVANCED_GBT_MEMPOOL) {
@@ -772,6 +772,8 @@ class WebsocketHandler {
       'da': da?.previousTime ? da : undefined,
       'fees': fees,
     });
+
+    const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
 
     const responseCache = { ...this.socketData };
     function getCachedResponse(key, data): string {
@@ -808,7 +810,7 @@ class WebsocketHandler {
 
       if (client['track-tx']) {
         const trackTxid = client['track-tx'];
-        if (trackTxid && txIds.indexOf(trackTxid) > -1) {
+        if (trackTxid && confirmedTxids[trackTxid]) {
           response['txConfirmed'] = JSON.stringify(trackTxid);
         } else {
           const mempoolTx = _memPool[trackTxid];
@@ -880,17 +882,24 @@ class WebsocketHandler {
 
       if (client['track-mempool-block'] >= 0 && memPool.isInSync()) {
         const index = client['track-mempool-block'];
-        if (mBlockDeltas && mBlockDeltas[index]) {
-          response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-${index}`, {
-            index: index,
-            delta: mBlockDeltas[index],
-          });
+
+        if (mBlockDeltas && mBlockDeltas[index] && mBlocksWithTransactions[index]?.transactions?.length) {
+          if (mBlockDeltas[index].added.length > (mBlocksWithTransactions[index]?.transactions.length / 2)) {
+            response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-full-${index}`, {
+              index: index,
+              blockTransactions: mBlocksWithTransactions[index].transactions,
+            });
+          } else {
+            response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-delta-${index}`, {
+              index: index,
+              delta: mBlockDeltas[index],
+            });
+          }
         }
       }
 
       if (Object.keys(response).length) {
-        const serializedResponse = this.serializeResponse(response);
-        client.send(serializedResponse);
+        client.send(this.serializeResponse(response));
       }
     });
   }
@@ -951,10 +960,27 @@ class WebsocketHandler {
 
   private printLogs(): void {
     if (this.wss) {
+      let numTxSubs = 0;
+      let numProjectedSubs = 0;
+      let numRbfSubs = 0;
+
+      this.wss.clients.forEach((client) => {
+        if (client['track-tx']) {
+          numTxSubs++;
+        }
+        if (client['track-mempool-block'] >= 0) {
+          numProjectedSubs++;
+        }
+        if (client['track-rbf']) {
+          numRbfSubs++;
+        }
+      })
+
       const count = this.wss?.clients?.size || 0;
       const diff = count - this.numClients;
       this.numClients = count;
       logger.debug(`${count} websocket clients | ${this.numConnected} connected | ${this.numDisconnected} disconnected | (${diff >= 0 ? '+' : ''}${diff})`);
+      logger.debug(`websocket subscriptions: track-tx: ${numTxSubs}, track-mempool-block: ${numProjectedSubs} track-rbf: ${numRbfSubs}`);
       this.numConnected = 0;
       this.numDisconnected = 0;
     }
