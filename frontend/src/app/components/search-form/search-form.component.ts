@@ -2,14 +2,14 @@ import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewC
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EventType, NavigationStart, Router } from '@angular/router';
 import { AssetsService } from '../../services/assets.service';
-import { StateService } from '../../services/state.service';
+import { Env, StateService } from '../../services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map, startWith,  tap } from 'rxjs/operators';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { ApiService } from '../../services/api.service';
 import { SearchResultsComponent } from './search-results/search-results.component';
-import { findOtherNetworks, getRegex } from '../../shared/regex.utils';
+import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChange } from '../../shared/regex.utils';
 
 @Component({
   selector: 'app-search-form',
@@ -19,7 +19,7 @@ import { findOtherNetworks, getRegex } from '../../shared/regex.utils';
 })
 export class SearchFormComponent implements OnInit {
   @Input() hamburgerOpen = false;
-  
+  env: Env;
   network = '';
   assets: object = {};
   isSearching = false;
@@ -68,6 +68,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.env = this.stateService.env;
     this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
       // TODO: Eventually change network type here from string to enum of consts
@@ -103,9 +104,6 @@ export class SearchFormComponent implements OnInit {
     const searchText$ = this.searchForm.get('searchText').valueChanges
     .pipe(
       map((text) => {
-        if (this.network === 'bisq' && text.match(/^(b)[^c]/i)) {
-          return text.substr(1);
-        }
         return text.trim();
       }),
       tap((text) => {
@@ -139,9 +137,6 @@ export class SearchFormComponent implements OnInit {
         );
       }),
       map((result: any[]) => {
-        if (this.network === 'bisq') {
-          result[0] = result[0].map((address: string) => 'B' + address);
-        }
         return result;
       }),
       tap(() => {
@@ -171,6 +166,7 @@ export class SearchFormComponent implements OnInit {
               blockHeight: false,
               txId: false,
               address: false,
+              otherNetworks: [],
               addresses: [],
               nodes: [],
               channels: [],
@@ -186,10 +182,13 @@ export class SearchFormComponent implements OnInit {
           const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText) && parseInt(searchText) <= Math.floor(Date.now() / 1000) && parseInt(searchText) >= 1231006505; // 1231006505 is the timestamp of the genesis block
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
-          const matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
+          let matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
+          const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet');
 
-          if (matchesAddress && this.network === 'bisq') {
-            searchText = 'B' + searchText;
+          // Add B prefix to addresses in Bisq network
+          if (!matchesAddress && this.network === 'bisq' && getRegex('address', 'mainnet').test(searchText)) {
+              searchText = 'B' + searchText;
+              matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
           }
 
           if (matchesDateTime && searchText.indexOf('/') !== -1) {
@@ -205,7 +204,8 @@ export class SearchFormComponent implements OnInit {
             txId: matchesTxId,
             blockHash: matchesBlockHash,
             address: matchesAddress,
-            addresses: addressPrefixSearchResults,
+            addresses: matchesAddress && addressPrefixSearchResults.length === 1 && searchText === addressPrefixSearchResults[0] ? [] : addressPrefixSearchResults, // If there is only one address and it matches the search text, don't show it in the dropdown
+            otherNetworks: otherNetworks,
             nodes: lightningResults.nodes,
             channels: lightningResults.channels,
           };
@@ -230,6 +230,8 @@ export class SearchFormComponent implements OnInit {
       this.navigate('/lightning/node/', result.public_key);
     } else if (result.short_id) {
       this.navigate('/lightning/channel/', result.id);
+    } else if (result.network) {
+      this.navigate('/address/', result.address, undefined, result.network);
     }
   }
 
@@ -238,12 +240,8 @@ export class SearchFormComponent implements OnInit {
     if (searchText) {
       this.isSearching = true;
 
-      const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet');
       if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
-      } else if (otherNetworks.length > 0) {
-        // Change the network to the first match
-        this.navigate('/address/', searchText, undefined, otherNetworks[0]);
       } else if (this.regexBlockhash.test(searchText)) {
         this.navigate('/block/', searchText);
       } else if (this.regexBlockheight.test(searchText)) {
@@ -288,11 +286,15 @@ export class SearchFormComponent implements OnInit {
 
 
   navigate(url: string, searchText: string, extras?: any, swapNetwork?: string) {
-    this.router.navigate([this.relativeUrlPipe.transform(url, swapNetwork), searchText], extras);
-    this.searchTriggered.emit();
-    this.searchForm.setValue({
-      searchText: '',
-    });
-    this.isSearching = false;
+    if (needBaseModuleChange(this.env.BASE_MODULE as 'liquid' | 'bisq' | 'mempool', swapNetwork as Network)) {
+      window.location.href = getTargetUrl(swapNetwork as Network, searchText, this.env);
+    } else {
+      this.router.navigate([this.relativeUrlPipe.transform(url, swapNetwork), searchText], extras);
+      this.searchTriggered.emit();
+      this.searchForm.setValue({
+        searchText: '',
+      });
+      this.isSearching = false;
+    }
   }
 }
