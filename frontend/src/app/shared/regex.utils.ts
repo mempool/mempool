@@ -41,11 +41,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `bc1` // Starts with bc1
         + BECH32_CHARS_LW
-        + `{6,100}` // As per bech32, 6 char checksum is minimum
+        + `{20,100}` // As per bech32, 6 char checksum is minimum
       + `|`
         + `BC1` // All upper case version
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
   testnet: {
@@ -55,11 +55,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `tb1` // Starts with tb1
         + BECH32_CHARS_LW
-        + `{6,100}` // As per bech32, 6 char checksum is minimum
+        + `{20,100}` // As per bech32, 6 char checksum is minimum
       + `|`
         + `TB1` // All upper case version
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
   signet: {
@@ -69,11 +69,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `tb1` // Starts with tb1
         + BECH32_CHARS_LW
-        + `{6,100}`
+        + `{20,100}`
       + `|`
         + `TB1` // All upper case version
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
   liquid: {
@@ -87,7 +87,7 @@ const ADDRESS_CHARS: {
           + `lq1`
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{6,100}`
+        + `{20,100}`
       + `|`
         + `(?:` // Same as above but all upper case
           + `EX1`
@@ -95,7 +95,7 @@ const ADDRESS_CHARS: {
           + `LQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
   liquidtestnet: {
@@ -109,7 +109,7 @@ const ADDRESS_CHARS: {
           + `tlq1` // TODO: does this exist?
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{6,100}`
+        + `{20,100}`
       + `|`
         + `(?:` // Same as above but all upper case
           + `TEX1`
@@ -117,7 +117,7 @@ const ADDRESS_CHARS: {
           + `TLQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
   bisq: {
@@ -127,11 +127,11 @@ const ADDRESS_CHARS: {
     bech32: `(?:`
         + `[bB]bc1` // b or B at the start, followed by bc1
         + BECH32_CHARS_LW
-        + `{6,100}` 
+        + `{20,100}` 
       + `|`
         + `[bB]BC1` // b or B at the start, followed by BC1
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{20,100}`
       + `)`,
   },
 }
