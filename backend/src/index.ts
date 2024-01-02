@@ -195,11 +195,11 @@ class Server {
       }
     });
 
-    this.serverUnixSocket.listen('/tmp/sock', () => {
+    this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
       if (worker) {
         logger.info(`Mempool Server worker #${process.pid} started`);
       } else {
-        logger.notice(`Mempool Server is listening on '/tmp/sock'`);
+        logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
       }
     });
   }
