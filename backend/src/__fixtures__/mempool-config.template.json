@@ -5,6 +5,7 @@
     "BACKEND": "__MEMPOOL_BACKEND__",
     "BLOCKS_SUMMARIES_INDEXING": true,
     "HTTP_PORT": 1,
+    "UNIX_SOCKET_PATH": "/mempool/socket/mempool-bitcoin-mainnet",
     "SPAWN_CLUSTER_PROCS": 2,
     "API_URL_PREFIX": "__MEMPOOL_API_URL_PREFIX__",
     "AUTOMATIC_BLOCK_REINDEXING": false,
