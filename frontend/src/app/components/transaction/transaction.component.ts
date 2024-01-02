@@ -242,6 +242,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
+      filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
       }),

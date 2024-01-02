@@ -134,7 +134,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
                   return of(transactions);
                 })
               ),
-            block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+            this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
           ]);
         }
       ),
