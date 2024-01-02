@@ -297,7 +297,7 @@ class WebsocketHandler {
 
   handleNewDonation(id: string) {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle new donation');
     }
 
     this.websocketServers.forEach(wss => {
@@ -314,7 +314,7 @@ class WebsocketHandler {
 
   handleLoadingChanged(indicators: ILoadingIndicators) {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle loading changed');
     }
 
     this.updateSocketDataFields({ 'loadingIndicators': indicators });
@@ -332,7 +332,7 @@ class WebsocketHandler {
 
   handleNewConversionRates(conversionRates: ApiPrice) {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle new conversion rates');
     }
 
     this.updateSocketDataFields({ 'conversions': conversionRates });
@@ -350,7 +350,7 @@ class WebsocketHandler {
 
   handleNewStatistic(stats: OptimizedStatistic) {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle new statistics');
     }
 
     this.printLogs();
@@ -376,7 +376,7 @@ class WebsocketHandler {
 
   handleReorg(): void {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle reorg');
     }
 
     const da = difficultyAdjustment.getDifficultyAdjustment();
@@ -412,7 +412,7 @@ class WebsocketHandler {
   async $handleMempoolChange(newMempool: { [txid: string]: MempoolTransactionExtended }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]): Promise<void> {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle mempool change');
     }
 
     this.printLogs();
@@ -661,7 +661,7 @@ class WebsocketHandler {
  
   async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
     if (!this.websocketServers.length) {
-      throw new Error('no websocket server set, cannot setup connection handlers');
+      throw new Error('no websocket server set, cannot handle new block');
     }
 
     this.printLogs();
