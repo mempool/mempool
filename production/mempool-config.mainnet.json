@@ -106,7 +106,12 @@
       "node206.tk7.mempool.space"
     ]
   },
-    "MEMPOOL_SERVICES": {
+  "REDIS": {
+    "ENABLED": true,
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
+  },
+  "MEMPOOL_SERVICES": {
     "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": true
   }
