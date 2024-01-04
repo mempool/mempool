@@ -64,6 +64,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
         }),
         tap(() => {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
+          this.websocketService.startTrackMempoolBlock(this.mempoolBlockIndex);
         })
       );
 
