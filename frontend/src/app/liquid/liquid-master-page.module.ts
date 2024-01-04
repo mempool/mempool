@@ -10,6 +10,7 @@ import { PushTransactionComponent } from '../components/push-transaction/push-tr
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
 import { AssetsComponent } from '../components/assets/assets.component';
+import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component'
 import { AssetComponent } from '../components/asset/asset.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
 
@@ -72,6 +73,11 @@ const routes: Routes = [
             path: 'all',
             data: { networks: ['liquid'] },
             component: AssetsComponent,
+          },
+          {
+            path: 'featured',
+            data: { networks: ['liquid'] },
+            component: AssetsFeaturedComponent,
           },
           {
             path: 'asset/:id',
