@@ -335,7 +335,6 @@ class MempoolBlocks {
   }
 
   private resetRustGbt(): void {
-    console.log('reset rust gbt');
     this.rustInitialized = false;
     this.rustGbtGenerator = new GbtGenerator();
   }
@@ -418,8 +417,6 @@ class MempoolBlocks {
     }
     const removedUids = removed.map(tx => this.getUid(tx)).filter(uid => (uid !== null && uid !== undefined)) as number[];
 
-    console.log(`removing ${removed.length} (${removedUids.length} with uids)`);
-
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
     const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
@@ -428,8 +425,6 @@ class MempoolBlocks {
         delta: acc.feeDelta,
       };
     });
-
-    console.log(`${acceleratedList.length} accelerations`);
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
@@ -458,7 +453,7 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {    
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], candidates: GbtCandidates | undefined, accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const [txid, rate] of rates) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);

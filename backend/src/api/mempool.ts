@@ -18,7 +18,6 @@ class Mempool {
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
   private mempoolCandidates: { [txid: string ]: boolean } = {};
-  private minFeeMempool: { [txId: string]: boolean } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private mempoolInfo: IBitcoinApi.MempoolInfo = { loaded: false, size: 0, bytes: 0, usage: 0, total_fee: 0,
                                                     maxmempool: 300000000, mempoolminfee: Common.isLiquid() ? 0.00000100 : 0.00001000, minrelaytxfee: Common.isLiquid() ? 0.00000100 : 0.00001000 };
@@ -449,12 +448,10 @@ class Mempool {
   public async getNextCandidates(minFeeTransactions: string[], blockHeight: number): Promise<GbtCandidates | undefined> {
     if (this.limitGBT) {
       const newCandidateTxMap = {};
-      this.minFeeMempool = {};
       for (const txid of minFeeTransactions) {
         if (this.mempoolCache[txid]) {
           newCandidateTxMap[txid] = true;
         }
-        this.minFeeMempool[txid] = true;
       }
       const removed: MempoolTransactionExtended[] = [];
       const added: MempoolTransactionExtended[] = [];
@@ -466,16 +463,22 @@ class Mempool {
       } else {
         for (const txid of Object.keys(this.mempoolCandidates)) {
           if (!newCandidateTxMap[txid]) {
-            const tx = this.mempoolCache[txid];
-            removed.push(tx);
+            removed.push(this.mempoolCache[txid]);
+            if (this.mempoolCache[txid]) {
+              this.mempoolCache[txid].effectiveFeePerVsize = this.mempoolCache[txid].adjustedFeePerVsize;
+              this.mempoolCache[txid].ancestors = [];
+              this.mempoolCache[txid].descendants = [];
+              this.mempoolCache[txid].bestDescendant = null;
+              this.mempoolCache[txid].cpfpChecked = false;
+              this.mempoolCache[txid].cpfpUpdated = undefined;
+            }
           }
         }
       }
 
       for (const txid of Object.keys(newCandidateTxMap)) {
         if (!this.mempoolCandidates[txid]) {
-          const tx = this.mempoolCache[txid];
-          added.push(tx);
+          added.push(this.mempoolCache[txid]);
         }
       }
 
