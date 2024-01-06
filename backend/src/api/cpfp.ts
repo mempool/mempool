@@ -1,6 +1,7 @@
 import { CpfpInfo, MempoolTransactionExtended } from '../mempool.interfaces';
 
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
+const MAX_GRAPH_SIZE = 50; // the maximum number of in-mempool relatives to consider
 
 interface GraphTx extends MempoolTransactionExtended {
   depends: string[];
@@ -92,13 +93,13 @@ function mempoolToGraphTx(tx: MempoolTransactionExtended): GraphTx {
 }
 
 /**
- * Takes a map of transaction ancestors, and expands it into a full graph of up to 50 in-mempool relatives
+ * Takes a map of transaction ancestors, and expands it into a full graph of up to MAX_GRAPH_SIZE in-mempool relatives
  */
 function expandRelativesGraph(mempool: { [txid: string]: MempoolTransactionExtended }, ancestors: Map<string, GraphTx>): Map<string, GraphTx> {
   const relatives: Map<string, GraphTx> = new Map();
   const stack: GraphTx[] = Array.from(ancestors.values());
   while (stack.length > 0) {
-    if (relatives.size > 50) {
+    if (relatives.size > MAX_GRAPH_SIZE) {
       return relatives;
     }
 
@@ -170,7 +171,7 @@ function calculateCpfpCluster(txid: string, graph: Map<string, GraphTx>): Map<st
   let sortedRelatives = Array.from(graph.values()).sort(mempoolComparator);
 
   // Iterate until we reach a cluster that includes our target tx
-  let maxIterations = 50;
+  let maxIterations = MAX_GRAPH_SIZE;
   let best = sortedRelatives.shift();
   let bestCluster = new Map<string, GraphTx>(best?.ancestorMap?.entries() || []);
   while (sortedRelatives.length && best && (best.txid !== tx.txid && !best.ancestorMap.has(tx.txid)) && maxIterations > 0) {
@@ -236,7 +237,7 @@ function calculateCpfpCluster(txid: string, graph: Map<string, GraphTx>): Map<st
    */
 function setAncestors(tx: GraphTx, all: Map<string, GraphTx>, visited: Map<string, Map<string, GraphTx>>, depth: number = 0): Map<string, GraphTx> {
   // sanity check for infinite recursion / too many ancestors (should never happen)
-  if (depth > 50) {
+  if (depth > MAX_GRAPH_SIZE) {
     return tx.ancestorMap;
   }
   
