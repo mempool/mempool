@@ -41,8 +41,6 @@ describe('Mempool Backend Config', () => {
         POOLS_JSON_TREE_URL: 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
         POOLS_JSON_URL: 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
         AUDIT: false,
-        ADVANCED_GBT_AUDIT: false,
-        ADVANCED_GBT_MEMPOOL: false,
         RUST_GBT: false,
         CPFP_INDEXING: false,
         MAX_BLOCKS_BULK_QUERY: 0,

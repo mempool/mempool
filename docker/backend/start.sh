@@ -29,8 +29,6 @@ __MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__=${MEMPOOL_AUTOMATIC_BLOCK_REINDEXING:=fal
 __MEMPOOL_POOLS_JSON_URL__=${MEMPOOL_POOLS_JSON_URL:=https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json}
 __MEMPOOL_POOLS_JSON_TREE_URL__=${MEMPOOL_POOLS_JSON_TREE_URL:=https://api.github.com/repos/mempool/mining-pools/git/trees/master}
 __MEMPOOL_AUDIT__=${MEMPOOL_AUDIT:=false}
-__MEMPOOL_ADVANCED_GBT_AUDIT__=${MEMPOOL_ADVANCED_GBT_AUDIT:=false}
-__MEMPOOL_ADVANCED_GBT_MEMPOOL__=${MEMPOOL_ADVANCED_GBT_MEMPOOL:=false}
 __MEMPOOL_RUST_GBT__=${MEMPOOL_RUST_GBT:=false}
 __MEMPOOL_CPFP_INDEXING__=${MEMPOOL_CPFP_INDEXING:=false}
 __MEMPOOL_MAX_BLOCKS_BULK_QUERY__=${MEMPOOL_MAX_BLOCKS_BULK_QUERY:=0}
@@ -189,9 +187,7 @@ sed -i "s!__MEMPOOL_AUTOMATIC_BLOCK_REINDEXING__!${__MEMPOOL_AUTOMATIC_BLOCK_REI
 sed -i "s!__MEMPOOL_POOLS_JSON_URL__!${__MEMPOOL_POOLS_JSON_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_POOLS_JSON_TREE_URL__!${__MEMPOOL_POOLS_JSON_TREE_URL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_AUDIT__!${__MEMPOOL_AUDIT__}!g" mempool-config.json
-sed -i "s!__MEMPOOL_ADVANCED_GBT_MEMPOOL__!${__MEMPOOL_ADVANCED_GBT_MEMPOOL__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_RUST_GBT__!${__MEMPOOL_RUST_GBT__}!g" mempool-config.json
-sed -i "s!__MEMPOOL_ADVANCED_GBT_AUDIT__!${__MEMPOOL_ADVANCED_GBT_AUDIT__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_CPFP_INDEXING__!${__MEMPOOL_CPFP_INDEXING__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_MAX_BLOCKS_BULK_QUERY__!${__MEMPOOL_MAX_BLOCKS_BULK_QUERY__}!g" mempool-config.json
 sed -i "s!__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__!${__MEMPOOL_DISK_CACHE_BLOCK_INTERVAL__}!g" mempool-config.json

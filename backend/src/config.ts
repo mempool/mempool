@@ -32,8 +32,6 @@ interface IConfig {
     POOLS_JSON_URL: string,
     POOLS_JSON_TREE_URL: string,
     AUDIT: boolean;
-    ADVANCED_GBT_AUDIT: boolean;
-    ADVANCED_GBT_MEMPOOL: boolean;
     RUST_GBT: boolean;
     LIMIT_GBT: boolean;
     CPFP_INDEXING: boolean;
@@ -195,8 +193,6 @@ const defaults: IConfig = {
     'POOLS_JSON_URL': 'https://raw.githubusercontent.com/mempool/mining-pools/master/pools-v2.json',
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'AUDIT': false,
-    'ADVANCED_GBT_AUDIT': false,
-    'ADVANCED_GBT_MEMPOOL': false,
     'RUST_GBT': false,
     'LIMIT_GBT': false,
     'CPFP_INDEXING': false,
