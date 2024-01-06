@@ -127,7 +127,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         let next_from_stack = next_valid_from_stack(&mut mempool_stack, &audit_pool);
         let next_from_queue = next_valid_from_queue(&mut modified, &audit_pool);
         if next_from_stack.is_none() && next_from_queue.is_none() {
-            continue;
+            break;
         }
         let (next_tx, from_stack) = match (next_from_stack, next_from_queue) {
             (Some(stack_tx), Some(queue_tx)) => match queue_tx.cmp(stack_tx) {
@@ -203,10 +203,13 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
-            if !transactions.is_empty() {
-                blocks.push(transactions);
-                block_weights.push(block_weight);
+            if transactions.is_empty() {
+                break;
             }
+
+            blocks.push(transactions);
+            block_weights.push(block_weight);
+
             // reset for the next block
             transactions = Vec::with_capacity(initial_txes_per_block);
             block_weight = BLOCK_RESERVED_WEIGHT;
