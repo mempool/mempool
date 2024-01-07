@@ -320,8 +320,6 @@ class Mempool {
       }, 1000 * 60 * config.MEMPOOL.CLEAR_PROTECTION_MINUTES);
     }
 
-    const candidates = await this.getNextCandidates(minFeeMempool, minFeeTip);
-
     const deletedTransactions: MempoolTransactionExtended[] = [];
 
     if (this.mempoolProtection !== 1) {
@@ -340,6 +338,8 @@ class Mempool {
         delete this.mempoolCache[tx.txid];
       }
     }
+
+    const candidates = await this.getNextCandidates(minFeeMempool, minFeeTip, deletedTransactions);
 
     const newMempoolSize = currentMempoolSize + newTransactions.length - deletedTransactions.length;
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
@@ -445,8 +445,12 @@ class Mempool {
     }
   }
 
-  public async getNextCandidates(minFeeTransactions: string[], blockHeight: number): Promise<GbtCandidates | undefined> {
+  public async getNextCandidates(minFeeTransactions: string[], blockHeight: number, deletedTransactions: MempoolTransactionExtended[]): Promise<GbtCandidates | undefined> {
     if (this.limitGBT) {
+      const deletedTxsMap = {};
+      for (const tx of deletedTransactions) {
+        deletedTxsMap[tx.txid] = tx;
+      }
       const newCandidateTxMap = {};
       for (const txid of minFeeTransactions) {
         if (this.mempoolCache[txid]) {
@@ -463,14 +467,16 @@ class Mempool {
       } else {
         for (const txid of Object.keys(this.mempoolCandidates)) {
           if (!newCandidateTxMap[txid]) {
-            removed.push(this.mempoolCache[txid]);
             if (this.mempoolCache[txid]) {
+              removed.push(this.mempoolCache[txid]);
               this.mempoolCache[txid].effectiveFeePerVsize = this.mempoolCache[txid].adjustedFeePerVsize;
               this.mempoolCache[txid].ancestors = [];
               this.mempoolCache[txid].descendants = [];
               this.mempoolCache[txid].bestDescendant = null;
               this.mempoolCache[txid].cpfpChecked = false;
               this.mempoolCache[txid].cpfpUpdated = undefined;
+            } else if (deletedTxsMap[txid]) {
+              removed.push(deletedTxsMap[txid]);
             }
           }
         }

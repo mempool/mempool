@@ -750,7 +750,7 @@ class WebsocketHandler {
     const _memPool = memPool.getMempool();
     const candidateTxs = await memPool.getMempoolCandidates();
     let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
-    let transactionIds: string[] = (memPool.limitGBT && candidates) ? Object.keys(_memPool) : Object.keys(candidates?.txs || {});
+    let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
 
     const accelerations = Object.values(mempool.getAccelerations());
     await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, transactions);
@@ -839,7 +839,7 @@ class WebsocketHandler {
     if (memPool.limitGBT) {
       const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      candidates = await memPool.getNextCandidates(minFeeMempool, minFeeTip);
+      candidates = await memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
       transactionIds = Object.keys(candidates?.txs || {});
     } else {
       candidates = undefined;
