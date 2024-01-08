@@ -420,16 +420,6 @@ class MempoolBlocks {
             block: blockIndex,
             vsize: totalVsize + (mempoolTx.vsize / 2),
           };
-          if (!mempoolTx.cpfpChecked) {
-            if (mempoolTx.ancestors?.length) {
-              mempoolTx.ancestors = [];
-            }
-            if (mempoolTx.descendants?.length) {
-              mempoolTx.descendants = [];
-            }
-            mempoolTx.bestDescendant = null;
-            mempoolTx.cpfpChecked = true;
-          }
 
           const acceleration = accelerations[txid];
           if (isAccelerated[txid] || (acceleration && (!accelerationPool || acceleration.pools.includes(accelerationPool)))) {

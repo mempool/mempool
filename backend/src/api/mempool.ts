@@ -91,6 +91,10 @@ class Mempool {
     return this.spendMap;
   }
 
+  public getFromSpendMap(txid, index): MempoolTransactionExtended | void {
+    return this.spendMap.get(`${txid}:${index}`);
+  }
+
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
     let count = 0;
@@ -113,6 +117,9 @@ class Mempool {
         await redisCache.$addTransaction(this.mempoolCache[txid]);
       }
       this.mempoolCache[txid].flags = Common.getTransactionFlags(this.mempoolCache[txid]);
+      this.mempoolCache[txid].cpfpChecked = false;
+      this.mempoolCache[txid].cpfpDirty = true;
+      this.mempoolCache[txid].cpfpUpdated = undefined;
     }
     if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
       await redisCache.$flushTransactions();

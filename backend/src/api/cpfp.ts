@@ -1,4 +1,5 @@
 import { CpfpInfo, MempoolTransactionExtended } from '../mempool.interfaces';
+import memPool from './mempool';
 
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
 const MAX_GRAPH_SIZE = 50; // the maximum number of in-mempool relatives to consider
@@ -77,8 +78,8 @@ export function calculateCpfp(tx: MempoolTransactionExtended, mempool: { [txid: 
 function mempoolToGraphTx(tx: MempoolTransactionExtended): GraphTx {
   return {
     ...tx,
-    depends: [],
-    spentby: [],
+    depends: tx.vin.map(v => v.txid),
+    spentby: tx.vout.map((v, i) => memPool.getFromSpendMap(tx.txid, i)).map(tx => tx?.txid).filter(txid => txid != null) as string[],
     ancestorMap: new Map(),
     fees: {
       base: tx.fee,
@@ -176,7 +177,7 @@ function calculateCpfpCluster(txid: string, graph: Map<string, GraphTx>): Map<st
   let bestCluster = new Map<string, GraphTx>(best?.ancestorMap?.entries() || []);
   while (sortedRelatives.length && best && (best.txid !== tx.txid && !best.ancestorMap.has(tx.txid)) && maxIterations > 0) {
     maxIterations--;
-    if (bestCluster && bestCluster.has(tx.txid)) {
+    if ((best && best.txid === tx.txid) || (bestCluster && bestCluster.has(tx.txid))) {
       break;
     } else {
       // Remove this cluster (it doesn't include our target tx)
@@ -194,6 +195,8 @@ function calculateCpfpCluster(txid: string, graph: Map<string, GraphTx>): Map<st
       }
     }
   }
+
+  bestCluster.set(tx.txid, tx);
 
   return bestCluster;
 }
