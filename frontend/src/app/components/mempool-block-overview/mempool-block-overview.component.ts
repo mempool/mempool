@@ -35,6 +35,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   blockSub: Subscription;
   rateLimit = 1000;
   private lastEventTime = Date.now() - this.rateLimit;
+  private subId = 0;
 
   firstLoad: boolean = true;
 
@@ -59,23 +60,30 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
       this.stateService.mempoolBlockTransactions$,
       this.stateService.mempoolBlockDelta$,
     ).pipe(
-      concatMap(event => {
+      concatMap(update => {
         const now = Date.now();
         const timeSinceLastEvent = now - this.lastEventTime;
         this.lastEventTime = Math.max(now, this.lastEventTime + this.rateLimit);
+
+        const subId = this.subId;
 
         // If time since last event is less than X seconds, delay this event
         if (timeSinceLastEvent < this.rateLimit) {
           return timer(this.rateLimit - timeSinceLastEvent).pipe(
             // Emit the event after the timer
-            map(() => event)
+            map(() => ({ update, subId }))
           );
         } else {
           // If enough time has passed, emit the event immediately
-          return of(event);
+          return of({ update, subId });
         }
       })
-    ).subscribe((update) => {
+    ).subscribe(({ update, subId }) => {
+      // discard stale updates after a block transition
+      if (subId !== this.subId) {
+        return;
+      }
+      // process update
       if (update['added']) {
         // delta
         this.updateBlock(update as MempoolBlockDelta);
@@ -122,6 +130,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngOnChanges(changes): void {
     if (changes.index) {
+      this.subId++;
       this.firstLoad = true;
       if (this.blockGraph) {
         this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? this.chainDirection : this.poolDirection);
