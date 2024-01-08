@@ -18,6 +18,7 @@ class MempoolBlocks {
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
+  private txidMap: Map<string, number> = new Map(); // map full txids back to short numerical uids
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -503,33 +504,38 @@ class MempoolBlocks {
 
   private resetUids(): void {
     this.uidMap.clear();
+    this.txidMap.clear();
     this.nextUid = 1;
   }
 
   private setUid(tx: MempoolTransactionExtended, skipSet = false): number {
-    if (tx.uid === null || tx.uid === undefined || !skipSet) {
+    if (!this.txidMap.has(tx.txid) || !skipSet) {
       const uid = this.nextUid;
       this.nextUid++;
       this.uidMap.set(uid, tx.txid);
+      this.txidMap.set(tx.txid, uid);
       tx.uid = uid;
       return uid;
     } else {
+      tx.uid = this.txidMap.get(tx.txid) as number;
       return tx.uid;
     }
   }
 
   private getUid(tx: MempoolTransactionExtended): number | void {
-    if (tx?.uid !== null && tx?.uid !== undefined && this.uidMap.has(tx.uid)) {
-      return tx.uid;
+    if (tx) {
+      return this.txidMap.get(tx.txid);
     }
   }
 
   private removeUids(txs: MempoolTransactionExtended[]): void {
     for (const tx of txs) {
-      if (tx.uid != null) {
-        this.uidMap.delete(tx.uid);
-        tx.uid = undefined;
+      const uid = this.txidMap.get(tx.txid);
+      if (uid != null) {
+        this.uidMap.delete(uid);
+        this.txidMap.delete(tx.txid);
       }
+      tx.uid = undefined;
     }
   }
 

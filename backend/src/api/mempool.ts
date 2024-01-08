@@ -457,6 +457,12 @@ class Mempool {
           newCandidateTxMap[txid] = true;
         }
       }
+      const accelerations = this.getAccelerations();
+      for (const txid of Object.keys(accelerations)) {
+        if (this.mempoolCache[txid]) {
+          newCandidateTxMap[txid] = true;
+        }
+      }
       const removed: MempoolTransactionExtended[] = [];
       const added: MempoolTransactionExtended[] = [];
       // don't prematurely remove txs included in a new block
