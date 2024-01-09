@@ -92,12 +92,23 @@ class BitcoinBackendRoutes {
 
   private async $getRawTransaction(req: Request, res: Response): Promise<void> {
     const txid = req.query.txid;
+    const verbose = req.query.verbose;
     try {
       if (typeof(txid) !== 'string' || txid.length !== 64) {
         res.status(400).send(`invalid param txid ${txid}. must be a string of 64 char`);
         return;
       }
-      const decodedTx = await bitcoinClient.getRawTransaction(txid);
+      if (typeof(verbose) !== 'string') {
+        res.status(400).send(`invalid param verbose ${verbose}. must be a string representing an integer`);
+        return;
+      }
+      const verboseNumber = parseInt(verbose, 10);
+      if (typeof(verboseNumber) !== 'number') {
+        res.status(400).send(`invalid param verbose ${verbose}. must be a valid integer`);
+        return;
+      }
+
+      const decodedTx = await bitcoinClient.getRawTransaction(txid, verboseNumber);
       if (!decodedTx) {
         res.status(400).send(`unable to get raw transaction for txid ${txid}`);
         return;
@@ -127,15 +138,15 @@ class BitcoinBackendRoutes {
   }
 
   private async $testMempoolAccept(req: Request, res: Response): Promise<void> {
-    const rawTx = req.body.rawTx;
+    const rawTxs = req.body.rawTxs;
     try {
-      if (typeof(rawTx) !== 'string') {
-        res.status(400).send(`invalid param rawTx ${rawTx}. must be a string`);
+      if (typeof(rawTxs) !== 'object') {
+        res.status(400).send(`invalid param rawTxs ${JSON.stringify(rawTxs)}. must be an array of string`);
         return;
       }
-      const txHex = await bitcoinClient.testMempoolAccept([rawTx]);
+      const txHex = await bitcoinClient.testMempoolAccept(rawTxs);
       if (typeof(txHex) !== 'object' || txHex.length === 0) {
-        res.status(400).send(`testmempoolaccept failed for raw tx ${rawTx}, got an empty result`);
+        res.status(400).send(`testmempoolaccept failed for raw txs ${JSON.stringify(rawTxs)}, got an empty result`);
         return;
       }
       res.status(200).send(txHex);
@@ -146,12 +157,23 @@ class BitcoinBackendRoutes {
 
   private async $getMempoolAncestors(req: Request, res: Response): Promise<void> {
     const txid = req.query.txid;
+    const verbose = req.query.verbose;
     try {
       if (typeof(txid) !== 'string' || txid.length !== 64) {
         res.status(400).send(`invalid param txid ${txid}. must be a string of 64 char`);
         return;
       }
-      const decodedTx = await bitcoinClient.getMempoolAncestors(txid);
+      if (typeof(verbose) !== 'string') {
+        res.status(400).send(`invalid param verbose ${verbose}. must be a string representing an integer`);
+        return;
+      }
+      const verboseNumber = parseInt(verbose, 10);
+      if (typeof(verboseNumber) !== 'number') {
+        res.status(400).send(`invalid param verbose ${verbose}. must be a valid integer`);
+        return;
+      }
+
+      const decodedTx = await bitcoinClient.getMempoolAncestors(txid, verboseNumber);
       if (!decodedTx) {
         res.status(400).send(`unable to get mempool ancestors for txid ${txid}`);
         return;
@@ -164,12 +186,23 @@ class BitcoinBackendRoutes {
 
   private async $getBlock(req: Request, res: Response): Promise<void> {
     const blockHash = req.query.hash;
+    const verbosity = req.query.verbosity;
     try {
       if (typeof(blockHash) !== 'string' || blockHash.length !== 64) {
         res.status(400).send(`invalid param blockHash ${blockHash}. must be a string of 64 char`);
         return;
       }
-      const block = await bitcoinClient.getBlock(blockHash);
+      if (typeof(verbosity) !== 'string') {
+        res.status(400).send(`invalid param verbosity ${verbosity}. must be a string representing an integer`);
+        return;
+      }
+      const verbosityNumber = parseInt(verbosity, 10);
+      if (typeof(verbosityNumber) !== 'number') {
+        res.status(400).send(`invalid param verbosity ${verbosity}. must be a valid integer`);
+        return;
+      }
+
+      const block = await bitcoinClient.getBlock(blockHash, verbosityNumber);
       if (!block) {
         res.status(400).send(`unable to get block for block hash ${blockHash}`);
         return;
@@ -188,7 +221,7 @@ class BitcoinBackendRoutes {
         return;
       }
       const blockHeightNumber = parseInt(blockHeight, 10);
-      if (!blockHeightNumber) {
+      if (typeof(blockHeightNumber) !== 'number') {
         res.status(400).send(`invalid param blockHeight ${blockHeight}. must be a valid integer`);
         return;
       }
