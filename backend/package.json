@@ -49,6 +49,7 @@
     "mysql2": "~3.6.0",
     "rust-gbt": "file:./rust-gbt",
     "redis": "^4.6.6",
+    "sd-journald": "^0.4.0",
     "socks-proxy-agent": "~7.0.0",
     "typescript": "~4.9.3",
     "ws": "~8.13.0"

@@ -1,5 +1,7 @@
 import config from './config';
 import * as dgram from 'dgram';
+import { Journald } from 'sd-journald';
+import { Map as ImmutableMap } from 'immutable';
 
 class Logger {
   static priorities = {
@@ -56,6 +58,7 @@ class Logger {
 
   private name = 'mempool';
   private client: dgram.Socket;
+  private journald?: Journald;
   private network: string;
 
   constructor() {
@@ -67,6 +70,8 @@ class Logger {
     }
     this.client = dgram.createSocket('udp4');
     this.network = this.getNetwork();
+    if (config.JOURNALD.ENABLED)
+      this.journald = new Journald();
   }
 
   public updateNetwork(): void {
@@ -108,6 +113,13 @@ class Logger {
     if (config.SYSLOG.ENABLED && Logger.priorities[priority] <= Logger.priorities[config.SYSLOG.MIN_PRIORITY]) {
       syslogmsg = `<${(Logger.facilities[config.SYSLOG.FACILITY] * 8 + prionum)}> ${this.name}[${process.pid}]: ${priority.toUpperCase()}${network} ${tag ? '[' + tag + '] ' : ''}${msg}`;
       this.syslog(syslogmsg);
+    }
+    if (this.journald && prionum <= Logger.priorities[config.JOURNALD.MIN_PRIORITY]) {
+      let kv = {"name": this.name, "network": network};
+      if (tag !== undefined) {
+        kv["tag"] = tag;
+      }
+      this.journald.send(prionum, msg, ImmutableMap(kv));
     }
     if (Logger.priorities[priority] > Logger.priorities[config.MEMPOOL.STDOUT_LOG_MIN_PRIORITY]) {
       return;

@@ -109,6 +109,10 @@ interface IConfig {
     MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
     FACILITY: string;
   };
+  JOURNALD: {
+    ENABLED: boolean;
+    MIN_PRIORITY: 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
+  };
   STATISTICS: {
     ENABLED: boolean;
     TX_PER_SECOND_SAMPLE_PERIOD: number;
@@ -244,6 +248,10 @@ const defaults: IConfig = {
     'MIN_PRIORITY': 'info',
     'FACILITY': 'local7'
   },
+  'JOURNALD': {
+    'ENABLED': false,
+    'MIN_PRIORITY': 'info',
+  },
   'STATISTICS': {
     'ENABLED': true,
     'TX_PER_SECOND_SAMPLE_PERIOD': 150
@@ -318,6 +326,7 @@ class Config implements IConfig {
   SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
   SYSLOG: IConfig['SYSLOG'];
+  JOURNALD: IConfig['JOURNALD'];
   STATISTICS: IConfig['STATISTICS'];
   BISQ: IConfig['BISQ'];
   LIGHTNING: IConfig['LIGHTNING'];
@@ -339,6 +348,7 @@ class Config implements IConfig {
     this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
     this.DATABASE = configs.DATABASE;
     this.SYSLOG = configs.SYSLOG;
+    this.JOURNALD = configs.JOURNALD;
     this.STATISTICS = configs.STATISTICS;
     this.BISQ = configs.BISQ;
     this.LIGHTNING = configs.LIGHTNING;
