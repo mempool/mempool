@@ -12,8 +12,6 @@
     "BLOCKS_SUMMARIES_INDEXING": true,
     "AUDIT": true,
     "CPFP_INDEXING": true,
-    "ADVANCED_GBT_AUDIT": true,
-    "ADVANCED_GBT_MEMPOOL": true,
     "RUST_GBT": true,
     "USE_SECOND_NODE_FOR_MINFEE": true,
     "DISK_CACHE_BLOCK_INTERVAL": 1,

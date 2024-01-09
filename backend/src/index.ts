@@ -44,6 +44,7 @@ import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
+import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -206,11 +207,13 @@ class Server {
         }
       }
       const newMempool = await bitcoinApi.$getRawMempool();
+      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
+      const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const newAccelerations = await accelerationApi.$fetchAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool, newAccelerations, pollRate);
+        await memPool.$updateMempool(newMempool, newAccelerations, minFeeMempool, minFeeTip, pollRate);
       }
       indexer.$run();
       priceUpdater.$run();

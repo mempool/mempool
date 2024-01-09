@@ -184,6 +184,10 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   update(add: TransactionStripped[], remove: string[], change: { txid: string, rate: number | undefined, acc: boolean | undefined }[], direction: string = 'left', resetLayout: boolean = false): void {
     if (this.scene) {
+      add = add.filter(tx => !this.scene.txs[tx.txid]);
+      remove = remove.filter(txid => this.scene.txs[txid]);
+      change = change.filter(tx => this.scene.txs[tx.txid]);
+
       this.scene.update(add, remove, change, direction, resetLayout);
       this.start();
       this.updateSearchHighlight();

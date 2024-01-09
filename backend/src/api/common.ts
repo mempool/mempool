@@ -382,69 +382,6 @@ export class Common {
     }
   }
 
-  static setRelativesAndGetCpfpInfo(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): CpfpInfo {
-    const parents = this.findAllParents(tx, memPool);
-    const lowerFeeParents = parents.filter((parent) => parent.adjustedFeePerVsize < tx.effectiveFeePerVsize);
-
-    let totalWeight = (tx.adjustedVsize * 4) + lowerFeeParents.reduce((prev, val) => prev + (val.adjustedVsize * 4), 0);
-    let totalFees = tx.fee + lowerFeeParents.reduce((prev, val) => prev + val.fee, 0);
-
-    tx.ancestors = parents
-      .map((t) => {
-        return {
-          txid: t.txid,
-          weight: (t.adjustedVsize * 4),
-          fee: t.fee,
-        };
-      });
-
-    // Add high (high fee) decendant weight and fees
-    if (tx.bestDescendant) {
-      totalWeight += tx.bestDescendant.weight;
-      totalFees += tx.bestDescendant.fee;
-    }
-
-    tx.effectiveFeePerVsize = Math.max(0, totalFees / (totalWeight / 4));
-    tx.cpfpChecked = true;
-
-    return {
-      ancestors: tx.ancestors,
-      bestDescendant: tx.bestDescendant || null,
-    };
-  }
-
-
-  private static findAllParents(tx: MempoolTransactionExtended, memPool: { [txid: string]: MempoolTransactionExtended }): MempoolTransactionExtended[] {
-    let parents: MempoolTransactionExtended[] = [];
-    tx.vin.forEach((parent) => {
-      if (parents.find((p) => p.txid === parent.txid)) {
-        return;
-      }
-
-      const parentTx = memPool[parent.txid];
-      if (parentTx) {
-        if (tx.bestDescendant && tx.bestDescendant.fee / (tx.bestDescendant.weight / 4) > parentTx.adjustedFeePerVsize) {
-          if (parentTx.bestDescendant && parentTx.bestDescendant.fee < tx.fee + tx.bestDescendant.fee) {
-            parentTx.bestDescendant = {
-              weight: (tx.adjustedVsize * 4) + tx.bestDescendant.weight,
-              fee: tx.fee + tx.bestDescendant.fee,
-              txid: tx.txid,
-            };
-          }
-        } else if (tx.adjustedFeePerVsize > parentTx.adjustedFeePerVsize) {
-          parentTx.bestDescendant = {
-            weight: (tx.adjustedVsize * 4),
-            fee: tx.fee,
-            txid: tx.txid
-          };
-        }
-        parents.push(parentTx);
-        parents = parents.concat(this.findAllParents(parentTx, memPool));
-      }
-    });
-    return parents;
-  }
-
   // calculates the ratio of matched transactions to projected transactions by weight
   static getSimilarity(projectedBlock: MempoolBlockWithTransactions, transactions: TransactionExtended[]): number {
     let matchedWeight = 0;
