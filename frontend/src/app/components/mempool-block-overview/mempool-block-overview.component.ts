@@ -3,8 +3,8 @@ import { Component, ComponentRef, ViewChild, HostListener, Input, Output, EventE
 import { StateService } from '../../services/state.service';
 import { MempoolBlockDelta, TransactionStripped } from '../../interfaces/websocket.interface';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
-import { Subscription, BehaviorSubject, merge, of } from 'rxjs';
-import { switchMap, filter } from 'rxjs/operators';
+import { Subscription, BehaviorSubject, merge, of, timer } from 'rxjs';
+import { switchMap, filter, concatMap, map } from 'rxjs/operators';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Router } from '@angular/router';
@@ -33,7 +33,11 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   poolDirection: string = 'left';
 
   blockSub: Subscription;
-  deltaSub: Subscription;
+  rateLimit = 1000;
+  private lastEventTime = Date.now() - this.rateLimit;
+  private subId = 0;
+
+  firstLoad: boolean = true;
 
   constructor(
     public stateService: StateService,
@@ -53,20 +57,81 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngAfterViewInit(): void {
     this.blockSub = merge(
-        of(true),
-        this.stateService.connectionState$.pipe(filter((state) => state === 2))
-      )
-      .pipe(switchMap(() => this.stateService.mempoolBlockTransactions$))
-      .subscribe((transactionsStripped) => {
-        this.replaceBlock(transactionsStripped);
-      });
-    this.deltaSub = this.stateService.mempoolBlockDelta$.subscribe((delta) => {
-      this.updateBlock(delta);
+      this.stateService.mempoolBlockTransactions$,
+      this.stateService.mempoolBlockDelta$,
+    ).pipe(
+      concatMap(update => {
+        const now = Date.now();
+        const timeSinceLastEvent = now - this.lastEventTime;
+        this.lastEventTime = Math.max(now, this.lastEventTime + this.rateLimit);
+
+        const subId = this.subId;
+
+        // If time since last event is less than X seconds, delay this event
+        if (timeSinceLastEvent < this.rateLimit) {
+          return timer(this.rateLimit - timeSinceLastEvent).pipe(
+            // Emit the event after the timer
+            map(() => ({ update, subId }))
+          );
+        } else {
+          // If enough time has passed, emit the event immediately
+          return of({ update, subId });
+        }
+      })
+    ).subscribe(({ update, subId }) => {
+      // discard stale updates after a block transition
+      if (subId !== this.subId) {
+        return;
+      }
+      // process update
+      if (update['added']) {
+        // delta
+        this.updateBlock(update as MempoolBlockDelta);
+      } else {
+        const transactionsStripped = update as TransactionStripped[];
+        // new transactions
+        if (this.firstLoad) {
+          this.replaceBlock(transactionsStripped);
+        } else {
+          const inOldBlock = {};
+          const inNewBlock = {};
+          const added: TransactionStripped[] = [];
+          const changed: { txid: string, rate: number | undefined, acc: boolean | undefined }[] = [];
+          const removed: string[] = [];
+          for (const tx of transactionsStripped) {
+            inNewBlock[tx.txid] = true;
+          }
+          for (const txid of Object.keys(this.blockGraph?.scene?.txs || {})) {
+            inOldBlock[txid] = true;
+            if (!inNewBlock[txid]) {
+              removed.push(txid);
+            }
+          }
+          for (const tx of transactionsStripped) {
+            if (!inOldBlock[tx.txid]) {
+              added.push(tx);
+            } else {
+              changed.push({
+                txid: tx.txid,
+                rate: tx.rate,
+                acc: tx.acc
+              });
+            }
+          }
+          this.updateBlock({
+            removed,
+            changed,
+            added
+          });
+        }
+      }
     });
   }
 
   ngOnChanges(changes): void {
     if (changes.index) {
+      this.subId++;
+      this.firstLoad = true;
       if (this.blockGraph) {
         this.blockGraph.clear(changes.index.currentValue > changes.index.previousValue ? this.chainDirection : this.poolDirection);
       }
@@ -77,7 +142,6 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
 
   ngOnDestroy(): void {
     this.blockSub.unsubscribe();
-    this.deltaSub.unsubscribe();
     this.timeLtrSubscription.unsubscribe();
     this.websocketService.stopTrackMempoolBlock();
   }

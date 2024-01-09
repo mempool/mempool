@@ -222,6 +222,7 @@ class RedisCache {
       txs: rbfTxs,
       trees: rbfTrees.map(loadedTree => { loadedTree.value.key = loadedTree.key; return loadedTree.value; }),
       expiring: rbfExpirations,
+      mempool: memPool.getMempool(),
     });
   }
 

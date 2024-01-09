@@ -124,7 +124,7 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       MEMPOOL_NETWORK: ""
       MEMPOOL_BACKEND: ""
-      MEMPOOL_HTTP_PORT: ""
+      BACKEND_HTTP_PORT: ""
       MEMPOOL_SPAWN_CLUSTER_PROCS: ""
       MEMPOOL_API_URL_PREFIX: ""
       MEMPOOL_POLL_RATE_MS: ""

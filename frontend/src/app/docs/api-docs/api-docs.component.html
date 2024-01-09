@@ -279,12 +279,101 @@
     <p class='note'>Because of this feature's resource usage and availability requirements, it is only supported on official mempool.space instances.</p>
 </ng-template>
 
+<ng-template type="how-do-mempool-goggles-work">
+  <p>Mempool Goggles are a set of filters that can be applied to the <a [routerLink]="['/mempool-block/0' | relativeUrl]">mempool block visualizations</a> to highlight different types of transactions.</p>
+  <p>There are currently 25 different Mempool Goggles filters, grouped into six categories:</p>
+  <dl>
+    <dt>Features</dt>
+    <dd>
+      <dl>
+        <dt>RBF enabled</dt>
+        <dd>The transaction opts-in to BIP-125 replaceability.</dd>
+        <dt>RBF disabled</dt>
+        <dd>The transaction does not opt-in to BIP-125 replaceability.</dd>
+        <dt>Version 1</dt>
+        <dd>The default version for most transactions.</dd>
+        <dt>Version 2</dt>
+        <dd>Required for transactions which use OP_CHECKSEQUENCEVERIFY relative timelocks.</dd>
+      </dl>
+    </dd>
+
+    <dt>Address Types</dt>
+    <dd>
+      <dl>
+        <dt>P2PK</dt>
+        <dd>Pay-to-public-key. A legacy output format most commonly found in old coinbase transactions.</dd>
+        <dt>Bare multisig</dt>
+        <dd>A legacy form of multisig, most commonly used for data embedding schemes (see also "Fake pubkey").</dd>
+        <dt>P2PKH</dt>
+        <dd>Pay-to-public-key-hash. A legacy address type that locks outputs to a public key.</dd>
+        <dt>P2SH</dt>
+        <dd>Pay-to-script-hash. A legacy address type that locks outputs to a <em>redeem script</em>.</dd>
+        <dt>P2WPKH</dt>
+        <dd>Pay-to-witness-public-key-hash. The SegWit version of P2PKH.</dd>
+        <dt>P2WSH</dt>
+        <dd>Pay-to-witness-script-hash. The SegWit version of P2SH.</dd>
+        <dt>Taproot</dt>
+        <dd>Addresses using the SegWit V1 format added in the Taproot upgrade.</dd>
+      </dl>
+    </dd>
+
+    <dt>Behavior</dt>
+    <dd>
+      <dl>
+        <dt>Paid for by child</dt>
+        <dd>The transaction's effective fee rate has been increased by a higher rate CPFP child.</dd>
+        <dt>Pays for parent</dt>
+        <dd>The transaction bumps the effective fee rate of a lower rate CPFP ancestor.</dd>
+        <dt>Replacement</dt>
+        <dd>The transaction replaced a prior version via RBF.</dd>
+      </dl>
+    </dd>
+
+    <dt>Data</dt>
+    <dd>
+      Different methods of embedding arbitrary data in a Bitcoin transaction.
+      <dl>
+        <dt>OP_RETURN</dt>
+        <dt>Fake pubkey</dt>
+        <dd>Data may be embedded in an invalid public key in a P2PK or Bare multisig output. This is a heuristic filter and can be prone to false positives and false negatives.</dd>
+        <dt>Inscription</dt>
+        <dd>Data is embedded in the witness script of a taproot input.</dd>
+      </dl>
+    </dd>
+
+    <dt>Heuristics</dt>
+    <dd>
+      These filters match common types of transactions according to subjective criteria.
+      <dl>
+        <dt>Coinjoin</dt>
+        <dd>A type of collaborative privacy-improving transaction.</dd>
+        <dt>Consolidation</dt>
+        <dd>The transaction condenses many inputs into a few outputs.</dd>
+        <dt>Batch payment</dt>
+        <dd>The transaction sends coins from a few inputs to many outputs.</dd>
+      </dl>
+    </dd>
+
+    <dt>Sighash Flags</dt>
+    <dd>
+      Different ways of signing inputs to Bitcoin transactions. Note that selecting multiple sighash filters will highlight transactions in which each sighash flag is used, but not necessarily in the same input.
+      <dl>
+        <dt>sighash_all</dt>
+        <dt>sighash_none</dt>
+        <dt>sighash_single</dt>
+        <dt>sighash_default</dt>
+        <dt>sighash_anyonecanpay</dt>
+      </dl>
+    </dd>
+  </dl>
+</ng-template>
+
 <ng-template type="who-runs-this-website">
   The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a [routerLink]="['/about']">About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community.
 </ng-template>
 
 <ng-template type="host-my-own-instance-raspberry-pi">
-  We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, RoninDojo, and Start9's Embassy.
+  We support one-click installation on a number of Raspberry Pi full-node distros including Umbrel, RaspiBlitz, MyNode, RoninDojo, and StartOS.
 </ng-template>
 
 <ng-template type="host-my-own-instance-server">
