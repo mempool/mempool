@@ -75,6 +75,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
+    this.websocketService.stopTrackMempoolBlock();
   }
 
   getOrdinal(mempoolBlock: MempoolBlock): string {
