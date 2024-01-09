@@ -271,6 +271,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         block_weights,
         clusters,
         rates,
+        overflow,
     }
 }
 
