@@ -432,15 +432,16 @@ class MempoolBlocks {
           this.nextUid,
         ),
       );
-      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
-      if (mempoolSize !== resultMempoolSize) {
-        throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
-      } else {
+      //// different number of transactions is now expected, if any were unmineable
+      // const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
+      // if (mempoolSize !== resultMempoolSize) {
+      //   throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
+      // } else {
         const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
         this.removeUids(removedUids);
         logger.debug(`RUST updateBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
         return processed;
-      }
+      // }
     } catch (e) {
       logger.err('RUST updateBlockTemplates failed. ' + (e instanceof Error ? e.message : e));
       this.resetRustGbt();
