@@ -37,7 +37,7 @@ class Logger {
   public tags = {
     mining: 'Mining',
     ln: 'Lightning',
-  };  
+  };
 
   // @ts-ignore
   public emerg: ((msg: string, tag?: string) => void);
@@ -88,7 +88,7 @@ class Logger {
 
   private getNetwork(): string {
     if (config.LIGHTNING.ENABLED) {
-      return config.MEMPOOL.NETWORK === 'mainnet' ? 'lightning' : `${config.MEMPOOL.NETWORK}-lightning`; 
+      return config.MEMPOOL.NETWORK === 'mainnet' ? 'lightning' : `${config.MEMPOOL.NETWORK}-lightning`;
     }
     if (config.BISQ.ENABLED) {
       return 'bisq';
