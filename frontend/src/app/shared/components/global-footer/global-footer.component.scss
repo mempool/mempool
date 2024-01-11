@@ -136,6 +136,28 @@ footer .sponsor {
   max-width: 160px;
 }
 
+.explore-tagline-desktop {
+  display: none;
+}
+
+.explore-tagline-mobile {
+  display: block;
+}
+
+@media (min-width: 901px) {
+  .language-selector {
+    float: right !important;
+  }
+
+  .explore-tagline-desktop {
+    display: block;
+  }
+
+  .explore-tagline-mobile {
+    display: none;
+  }
+}
+
 @media (max-width: 1200px) {
 
   .main-logo {
