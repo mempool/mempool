@@ -132,6 +132,7 @@ footer .row.version p a {
 footer .sponsor {
   height: 31px;
   align-items: center;
+  margin-right: 5px;
   margin-left: 5px;
   max-width: 160px;
 }
@@ -145,8 +146,11 @@ footer .sponsor {
 }
 
 @media (min-width: 901px) {
-  .language-selector {
+  :host-context(.ltr-layout) .language-selector {
     float: right !important;
+  }
+  :host-context(.rtl-layout) .language-selector {
+    float: left !important;
   }
 
   .explore-tagline-desktop {
@@ -216,10 +220,6 @@ footer .sponsor {
   footer .site-options {
     float: none;
     margin-top: 15px;
-  }
-
-  footer .selector:not(:last-child) {
-    margin-right: 10px;
   }
 }
 

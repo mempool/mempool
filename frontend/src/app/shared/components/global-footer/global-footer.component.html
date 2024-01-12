@@ -26,7 +26,7 @@
             <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
           </a>
         </div>
-        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-3 mb-2" [routerLink]="['/login' | relativeUrl]">
+        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
           <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
           <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
         </a>
