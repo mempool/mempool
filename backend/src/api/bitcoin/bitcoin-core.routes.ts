@@ -163,22 +163,17 @@ class BitcoinBackendRoutes {
         res.status(400).send(`invalid param txid ${txid}. must be a string of 64 char`);
         return;
       }
-      if (typeof(verbose) !== 'string') {
-        res.status(400).send(`invalid param verbose ${verbose}. must be a string representing an integer`);
+      if (typeof(verbose) !== 'string' || (verbose !== 'true' && verbose !== 'false')) {
+        res.status(400).send(`invalid param verbose ${verbose}. must be a string ('true' | 'false')`);
         return;
       }
-      const verboseNumber = parseInt(verbose, 10);
-      if (typeof(verboseNumber) !== 'number') {
-        res.status(400).send(`invalid param verbose ${verbose}. must be a valid integer`);
-        return;
-      }
-
-      const decodedTx = await bitcoinClient.getMempoolAncestors(txid, verboseNumber);
-      if (!decodedTx) {
+    
+      const ancestors = await bitcoinClient.getMempoolAncestors(txid, verbose === 'true' ? true : false);
+      if (!ancestors) {
         res.status(400).send(`unable to get mempool ancestors for txid ${txid}`);
         return;
       }
-      res.status(200).send(decodedTx);
+      res.status(200).send(ancestors);
     } catch (e: any) {
       BitcoinBackendRoutes.handleException(e, 'getMempoolAncestors', res);
     }
