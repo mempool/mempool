@@ -10082,6 +10082,27 @@ export const faqData = [
     title: "How do Mempool Goggles work?",
   },
   {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "what-are-sigops",
+    title: "What are sigops?",
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "what-is-adjusted-vsize",
+    title: "What is adjusted vsize?",
+  },
+  {
+    type: "endpoint",
+    category: "advanced",
+    showConditions: bitcoinNetworks,
+    fragment: "why-do-the-projected-block-fee-ranges-overlap",
+    title: "Why do the projected block fee ranges overlap?",
+  },
+  {
     type: "category",
     category: "self-hosting",
     fragment: "self-hosting",
