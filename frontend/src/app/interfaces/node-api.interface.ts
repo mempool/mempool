@@ -180,6 +180,7 @@ export interface TransactionStripped {
   value: number;
   rate?: number; // effective fee rate
   acc?: boolean;
+  flags?: number | null;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }

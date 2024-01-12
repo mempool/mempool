@@ -1,10 +1,10 @@
-<div class="container-xl" style="min-height: 335px" [class.widget]="widget" [class.full-height]="!widget">
+<div class="container-xl widget-container" [class.widget]="widget" [class.full-height]="!widget">
   <h1 *ngIf="!widget" class="float-left" i18n="master-page.blocks">Accelerations</h1>
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>
 
-  <div style="min-height: 295px" *ngIf="accelerationList$ | async as accelerations">
+  <div class="acceleration-list" *ngIf="accelerationList$ | async as accelerations">
     <table *ngIf="!accelerations || accelerations.length; else noData" class="table table-borderless table-fixed">
       <thead>
         <th class="txid text-left" i18n="dashboard.latest-transactions.txid">TXID</th>

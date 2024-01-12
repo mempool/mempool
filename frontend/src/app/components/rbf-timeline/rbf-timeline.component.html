@@ -1,7 +1,7 @@
 <div class="rbf-timeline box" [class.mined]="replacements.mined">
   <div class="timeline-wrapper">
-    <div class="timeline" *ngFor="let timeline of rows">
-      <div class="intervals">
+    <div class="timeline" *ngFor="let timeline of rows; let j = index">
+      <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <div class="node-spacer"></div>
           <ng-container *ngIf="i < timeline.length - 1">
@@ -13,7 +13,7 @@
           </ng-container>
         </ng-container>
       </div>
-      <div class="nodes">
+      <div class="nodes" *ngIf="j < rowLimit || timelineExpanded">
         <ng-container *ngFor="let cell of timeline; let i = index;">
           <ng-container *ngIf="cell.replacement?.tx; else nonNode">
             <div class="node"
@@ -37,7 +37,7 @@
           </ng-container>
           <ng-template #nonNode>
             <ng-container [ngSwitch]="cell.connector">
-              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf"></div></div>
+              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf" [class.last-pipe]="!timelineExpanded && j === rowLimit - 1"></div></div>
               <div class="connector" *ngSwitchCase="'corner'"><div class="corner" [class.fullrbf]="cell.fullRbf"></div></div>
               <div class="node-spacer" *ngSwitchDefault></div>
             </ng-container>
@@ -50,6 +50,16 @@
         </ng-container>
       </div>
     </div>
+  </div>
+  <div [class.fade-out]="!timelineExpanded && rows.length > rowLimit"></div>
+  <div class="toggle-wrapper" *ngIf="rows.length > rowLimit && rowLimit !== 0">
+    <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(true);" *ngIf="!timelineExpanded; else collapseBtn">
+      <span i18n="show-all">Show all</span>
+      (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: rows.length - rowLimit}"></ng-container>)
+    </button>
+    <ng-template #collapseBtn>
+      <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(false);"><span i18n="show-less">Show less</span></button>
+    </ng-template>
   </div>
 
   <ng-template #nodeSpacer>
@@ -72,3 +82,5 @@
     [isConnector]="hoverConnector"
   ></app-rbf-timeline-tooltip> -->
 </div>
+
+<ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>

@@ -1,9 +1,12 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { Request } from 'express';
-import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats } from '../mempool.interfaces';
+import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
+import rbfCache from './rbf-cache';
+import transactionUtils from './transaction-utils';
+import { isPoint } from '../utils/secp256k1';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -136,6 +139,217 @@ export class Common {
       }
     }
     return matches;
+  }
+
+  static setSchnorrSighashFlags(flags: bigint, witness: string[]): bigint {
+    // no witness items
+    if (!witness?.length) {
+      return flags;
+    }
+    const hasAnnex = witness.length > 1 && witness[witness.length - 1].startsWith('50');
+    if (witness?.length === (hasAnnex ? 2 : 1)) {
+      // keypath spend, signature is the only witness item
+      if (witness[0].length === 130) {
+        flags |= this.setSighashFlags(flags, witness[0]);
+      } else {
+        flags |= TransactionFlags.sighash_default;
+      }
+    } else {
+      // scriptpath spend, all items except for the script, control block and annex could be signatures
+      for (let i = 0; i < witness.length - (hasAnnex ? 3 : 2); i++) {
+        // handle probable signatures
+        if (witness[i].length === 130) {
+          flags |= this.setSighashFlags(flags, witness[i]);
+        } else if (witness[i].length === 128) {
+          flags |= TransactionFlags.sighash_default;
+        }
+      }
+    }
+    return flags;
+  }
+
+  static isDERSig(w: string): boolean {
+    // heuristic to detect probable DER signatures
+    return (w.length >= 18
+      && w.startsWith('30') // minimum DER signature length is 8 bytes + sighash flag (see https://mempool.space/testnet/tx/c6c232a36395fa338da458b86ff1327395a9afc28c5d2daa4273e410089fd433)
+      && ['01', '02', '03', '81', '82', '83'].includes(w.slice(-2)) // signature must end with a valid sighash flag
+      && (w.length === (2 * parseInt(w.slice(2, 4), 16)) + 6) // second byte encodes the combined length of the R and S components
+    );
+  }
+
+  static setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
+    for (const w of witness) {
+      if (this.isDERSig(w)) {
+        flags |= this.setSighashFlags(flags, w);
+      }
+    }
+    return flags;
+  }
+
+  static setLegacySighashFlags(flags: bigint, scriptsig_asm: string): bigint {
+    for (const item of scriptsig_asm.split(' ')) {
+      // skip op_codes
+      if (item.startsWith('OP_')) {
+        continue;
+      }
+      // check pushed data
+      if (this.isDERSig(item)) {
+        flags |= this.setSighashFlags(flags, item);
+      }
+    }
+    return flags;
+  }
+
+  static setSighashFlags(flags: bigint, signature: string): bigint {
+    switch(signature.slice(-2)) {
+      case '01': return flags | TransactionFlags.sighash_all;
+      case '02': return flags | TransactionFlags.sighash_none;
+      case '03': return flags | TransactionFlags.sighash_single;
+      case '81': return flags | TransactionFlags.sighash_all | TransactionFlags.sighash_acp;
+      case '82': return flags | TransactionFlags.sighash_none | TransactionFlags.sighash_acp;
+      case '83': return flags | TransactionFlags.sighash_single | TransactionFlags.sighash_acp;
+      default: return flags | TransactionFlags.sighash_default; // taproot only
+    }
+  }
+
+  static isBurnKey(pubkey: string): boolean {
+    return [
+      '022222222222222222222222222222222222222222222222222222222222222222',
+      '033333333333333333333333333333333333333333333333333333333333333333',
+      '020202020202020202020202020202020202020202020202020202020202020202',
+      '030303030303030303030303030303030303030303030303030303030303030303',
+    ].includes(pubkey);
+  }
+
+  static getTransactionFlags(tx: TransactionExtended): number {
+    let flags = tx.flags ? BigInt(tx.flags) : 0n;
+
+    // Update variable flags (CPFP, RBF)
+    if (tx.ancestors?.length) {
+      flags |= TransactionFlags.cpfp_child;
+    }
+    if (tx.descendants?.length) {
+      flags |= TransactionFlags.cpfp_parent;
+    }
+    if (tx.replacement) {
+      flags |= TransactionFlags.replacement;
+    }
+
+    // Already processed static flags, no need to do it again
+    if (tx.flags) {
+      return Number(flags);
+    }
+
+    // Process static flags
+    if (tx.version === 1) {
+      flags |= TransactionFlags.v1;
+    } else if (tx.version === 2) {
+      flags |= TransactionFlags.v2;
+    }
+    const reusedAddresses: { [address: string ]: number } = {};
+    const inValues = {};
+    const outValues = {};
+    let rbf = false;
+    for (const vin of tx.vin) {
+      if (vin.sequence < 0xfffffffe) {
+        rbf = true;
+      }
+      switch (vin.prevout?.scriptpubkey_type) {
+        case 'p2pk': flags |= TransactionFlags.p2pk; break;
+        case 'multisig': flags |= TransactionFlags.p2ms; break;
+        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+        case 'p2sh': flags |= TransactionFlags.p2sh; break;
+        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+        case 'v1_p2tr': {
+          flags |= TransactionFlags.p2tr;
+          if (vin.witness.length > 2) {
+            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - 2]);
+            if (asm?.includes('OP_0 OP_IF')) {
+              flags |= TransactionFlags.inscription;
+            }
+          }
+        } break;
+      }
+
+      // sighash flags
+      if (vin.prevout?.scriptpubkey_type === 'v1_p2tr') {
+        flags |= this.setSchnorrSighashFlags(flags, vin.witness);
+      } else if (vin.witness) {
+        flags |= this.setSegwitSighashFlags(flags, vin.witness);
+      } else if (vin.scriptsig?.length) {
+        flags |= this.setLegacySighashFlags(flags, vin.scriptsig_asm || transactionUtils.convertScriptSigAsm(vin.scriptsig));
+      }
+
+      if (vin.prevout?.scriptpubkey_address) {
+        reusedAddresses[vin.prevout?.scriptpubkey_address] = (reusedAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
+      }
+      inValues[vin.prevout?.value || Math.random()] = (inValues[vin.prevout?.value || Math.random()] || 0) + 1;
+    }
+    if (rbf) {
+      flags |= TransactionFlags.rbf;
+    } else {
+      flags |= TransactionFlags.no_rbf;
+    }
+    let hasFakePubkey = false;
+    for (const vout of tx.vout) {
+      switch (vout.scriptpubkey_type) {
+        case 'p2pk': {
+          flags |= TransactionFlags.p2pk;
+          // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
+          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey.slice(2, -2));
+        } break;
+        case 'multisig': {
+          flags |= TransactionFlags.p2ms;
+          // detect fake pubkeys (i.e. not valid DER points on the secp256k1 curve)
+          const asm = vout.scriptpubkey_asm || transactionUtils.convertScriptSigAsm(vout.scriptpubkey);
+          for (const key of (asm?.split(' ') || [])) {
+            if (!hasFakePubkey && !key.startsWith('OP_')) {
+              hasFakePubkey = hasFakePubkey || this.isBurnKey(key) || !isPoint(key);
+            }
+          }
+        } break;
+        case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
+        case 'p2sh': flags |= TransactionFlags.p2sh; break;
+        case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
+        case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
+        case 'v1_p2tr': flags |= TransactionFlags.p2tr; break;
+        case 'op_return': flags |= TransactionFlags.op_return; break;
+      }
+      if (vout.scriptpubkey_address) {
+        reusedAddresses[vout.scriptpubkey_address] = (reusedAddresses[vout.scriptpubkey_address] || 0) + 1;
+      }
+      outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
+    }
+    if (hasFakePubkey) {
+      flags |= TransactionFlags.fake_pubkey;
+    }
+    
+    // fast but bad heuristic to detect possible coinjoins
+    // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
+    const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
+    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+      flags |= TransactionFlags.coinjoin;
+    }
+    // more than 5:1 input:output ratio
+    if (tx.vin.length / tx.vout.length >= 5) {
+      flags |= TransactionFlags.consolidation;
+    }
+    // less than 1:5 input:output ratio
+    if (tx.vin.length / tx.vout.length <= 0.2) {
+      flags |= TransactionFlags.batch_payout;
+    }
+
+    return Number(flags);
+  }
+
+  static classifyTransaction(tx: TransactionExtended): TransactionClassified {
+    const flags = this.getTransactionFlags(tx);
+    tx.flags = flags;
+    return {
+      ...this.stripTransaction(tx),
+      flags,
+    };
   }
 
   static stripTransaction(tx: TransactionExtended): TransactionStripped {

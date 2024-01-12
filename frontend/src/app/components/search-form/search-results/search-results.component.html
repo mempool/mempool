@@ -35,7 +35,7 @@
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
     </button>
   </ng-template>
-  <ng-template [ngIf]="results.addresses.length">
+  <ng-template [ngIf]="results.addresses.length && !(results.address && results.addresses.length === 1 && results.searchText === results.addresses[0])">
     <div class="card-title" i18n="search.bitcoin-addresses">Bitcoin Addresses</div>
     <ng-template ngFor [ngForOf]="results.addresses" let-address let-i="index">
       <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" type="button" role="option" class="dropdown-item">

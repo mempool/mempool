@@ -46,7 +46,9 @@
         <app-fee-distribution-graph *ngIf="webGlEnabled" [transactions]="mempoolBlockTransactions$ | async" [feeRange]="mempoolBlock.isStack ? mempoolBlock.feeRange : []" [vsize]="mempoolBlock.blockVSize" ></app-fee-distribution-graph>
       </div>
       <div class="col-md chart-container">
-        <app-mempool-block-overview *ngIf="webGlEnabled" [index]="mempoolBlockIndex" (txPreviewEvent)="setTxPreview($event)"></app-mempool-block-overview>
+        <div class="block-with-filters" *ngIf="webGlEnabled">
+          <app-mempool-block-overview [index]="mempoolBlockIndex" (txPreviewEvent)="setTxPreview($event)" [showFilters]="true"></app-mempool-block-overview>
+        </div>
         <app-fee-distribution-graph *ngIf="!webGlEnabled" [transactions]="mempoolBlockTransactions$ | async" [feeRange]="mempoolBlock.isStack ? mempoolBlock.feeRange : []" [vsize]="mempoolBlock.blockVSize" ></app-fee-distribution-graph>
       </div>
     </div>
