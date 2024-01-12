@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
 import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { nextRoundNumber } from '../../shared/common.utils';
+import { AudioService } from '../../services/audio.service';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -55,14 +56,16 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   maxCost = 0;
   userBid = 0;
   selectFeeRateIndex = 1;
-  showTable: 'estimated' | 'maximum' = 'maximum';
   isMobile: boolean = window.innerWidth <= 767.98;
+  user: any = undefined;
 
   maxRateOptions: RateOption[] = [];
 
   constructor(
     private apiService: ApiService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private audioService: AudioService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnDestroy(): void {
@@ -73,11 +76,13 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scrollEvent) {
-      this.scrollToPreview('acceleratePreviewAnchor', 'center');
+      this.scrollToPreview('acceleratePreviewAnchor', 'start');
     }
   }
 
   ngOnInit() {
+    this.user = this.storageService.getAuth()?.user ?? null;
+
     this.estimateSubscription = this.apiService.estimate$(this.tx.txid).pipe(
       tap((response) => {
         if (response.status === 204) {
@@ -93,7 +98,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
             this.estimateSubscription.unsubscribe();
           }
 
-          if (this.estimate.userBalance <= 0) {
+          if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
             if (this.isLoggedIn()) {
               this.error = `not_enough_balance`;
               this.scrollToPreviewWithTimeout('mempoolError', 'center');
@@ -126,7 +131,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
           this.maxCost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
 
           if (!this.error) {
-            this.scrollToPreview('acceleratePreviewAnchor', 'center');
+            this.scrollToPreview('acceleratePreviewAnchor', 'start');
           }
         }
       }),
@@ -162,13 +167,14 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   scrollToPreview(id: string, position: ScrollLogicalPosition) {
     const acceleratePreviewAnchor = document.getElementById(id);
     if (acceleratePreviewAnchor) {
+      this.cd.markForCheck();
       acceleratePreviewAnchor.scrollIntoView({
         behavior: 'smooth',
         inline: position,
         block: position,
       });
     }
-}
+  }
 
   /**
    * Send acceleration request
@@ -182,12 +188,17 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       this.userBid
     ).subscribe({
       next: () => {
+        this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.scrollToPreviewWithTimeout('successAlert', 'center');
         this.estimateSubscription.unsubscribe();
       },
       error: (response) => {
-        this.error = response.error;
+        if (response.status === 403 && response.error === 'not_available') {
+          this.error = 'waitlisted';
+        } else {
+          this.error = response.error;
+        }
         this.scrollToPreviewWithTimeout('mempoolError', 'center');
       }
     });

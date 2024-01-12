@@ -1,0 +1,53 @@
+<div class="stats-wrapper" *ngIf="accelerationStats$ | async as stats; else loading">
+  <div class="stats-container">
+    <div class="item">
+      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <div class="card-text">
+        <div>{{ stats.count }}</div>
+        <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.out-of-band-fees">Out-of-band Fees</h5>
+      <div class="card-text">
+        <div>{{ stats.totalFeesPaid / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
+        <span class="fiat">
+          <app-fiat [value]="stats.totalFeesPaid"></app-fiat>
+        </span>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.success-rate">Success rate</h5>
+      <div class="card-text">
+        <div>{{ stats.successRate.toFixed(2) }} %</div>
+        <div class="symbol" i18n="accelerator.mined-next-block">mined</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="stats-container loading-container">
+    <div class="item">
+      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.out-of-band-fees">Out-of-band Fees</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+    <div class="item">
+      <h5 class="card-title" i18n="accelerator.success-rate">Success rate</h5>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>

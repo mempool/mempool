@@ -81,6 +81,7 @@ class Blocks {
   private async $getTransactionsExtended(
     blockHash: string,
     blockHeight: number,
+    blockTime: number,
     onlyCoinbase: boolean,
     txIds: string[] | null = null,
     quiet: boolean = false,
@@ -101,6 +102,12 @@ class Blocks {
     if (!onlyCoinbase) {
       for (const txid of txIds) {
         if (mempool[txid]) {
+          mempool[txid].status = {
+            confirmed: true,
+            block_height: blockHeight,
+            block_hash: blockHash,
+            block_time: blockTime,
+          };
           transactionMap[txid] = mempool[txid];
           foundInMempool++;
           totalFound++;
@@ -608,7 +615,7 @@ class Blocks {
           }
           const blockHash = await bitcoinApi.$getBlockHash(blockHeight);
           const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
-          const transactions = await this.$getTransactionsExtended(blockHash, block.height, true, null, true);
+          const transactions = await this.$getTransactionsExtended(blockHash, block.height, block.timestamp, true, null, true);
           const blockExtended = await this.$getBlockExtended(block, transactions);
 
           newlyIndexed++;
@@ -701,7 +708,7 @@ class Blocks {
       const verboseBlock = await bitcoinClient.getBlock(blockHash, 2);
       const block = BitcoinApi.convertBlock(verboseBlock);
       const txIds: string[] = verboseBlock.tx.map(tx => tx.txid);
-      const transactions = await this.$getTransactionsExtended(blockHash, block.height, false, txIds, false, true) as MempoolTransactionExtended[];
+      const transactions = await this.$getTransactionsExtended(blockHash, block.height, block.timestamp, false, txIds, false, true) as MempoolTransactionExtended[];
 
       // fill in missing transaction fee data from verboseBlock
       for (let i = 0; i < transactions.length; i++) {
@@ -754,8 +761,13 @@ class Blocks {
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
 
         if (!fastForwarded) {
-          const lastestPriceId = await PricesRepository.$getLatestPriceId();
-          this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          let lastestPriceId;
+          try {
+            lastestPriceId = await PricesRepository.$getLatestPriceId();
+            this.updateTimerProgress(timer, `got latest price id ${this.currentBlockHeight}`);
+          } catch (e) {
+            logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
+          }
           if (priceUpdater.historyInserted === true && lastestPriceId !== null) {
             await blocksRepository.$saveBlockPrices([{
               height: blockExtended.height,
@@ -764,9 +776,7 @@ class Blocks {
             this.updateTimerProgress(timer, `saved prices for ${this.currentBlockHeight}`);
           } else {
             logger.debug(`Cannot save block price for ${blockExtended.height} because the price updater hasnt completed yet. Trying again in 10 seconds.`, logger.tags.mining);
-            setTimeout(() => {
-              indexer.runSingleTask('blocksPrices');
-            }, 10000);
+            indexer.scheduleSingleTask('blocksPrices', 10000);
           }
 
           // Save blocks summary for visualization if it's enabled
@@ -890,7 +900,7 @@ class Blocks {
 
     const blockHash = await bitcoinApi.$getBlockHash(height);
     const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
-    const transactions = await this.$getTransactionsExtended(blockHash, block.height, true);
+    const transactions = await this.$getTransactionsExtended(blockHash, block.height, block.timestamp, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
     if (Common.indexingEnabled()) {
@@ -902,7 +912,7 @@ class Blocks {
 
   public async $indexStaleBlock(hash: string): Promise<BlockExtended> {
     const block: IEsploraApi.Block = await bitcoinApi.$getBlock(hash);
-    const transactions = await this.$getTransactionsExtended(hash, block.height, true);
+    const transactions = await this.$getTransactionsExtended(hash, block.height, block.timestamp, true);
     const blockExtended = await this.$getBlockExtended(block, transactions);
 
     blockExtended.canonical = await bitcoinApi.$getBlockHash(block.height);

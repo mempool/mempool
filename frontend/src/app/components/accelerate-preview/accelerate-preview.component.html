@@ -1,14 +1,16 @@
+<span id="successAlert" class="m-0 p-0 d-block" style="height: 1px;"></span>
 <div class="row" *ngIf="showSuccess">
-  <div class="col" id="successAlert">
+  <div class="col">
     <div class="alert alert-success">
-      Transaction has now been submitted to mining pools for acceleration. You can track the progress <a class="alert-link" routerLink="/services/accelerator/history">here</a>.
+      Transaction has now been <a class="alert-link" routerLink="/services/accelerator/history">submitted</a> to mining pools for acceleration.
     </div>
   </div>
 </div>
 
+<span id="mempoolError" class="m-0 p-0 d-block" style="height: 1px;"></span>
 <div class="row" *ngIf="error">
-  <div class="col" id="mempoolError">
-    <app-mempool-error [error]="error"></app-mempool-error>
+  <div class="col">
+    <app-mempool-error [error]="error" [alertClass]="error === 'waitlisted' ? 'alert-mempool' : 'alert-danger'"></app-mempool-error>
   </div>
 </div>
 
@@ -23,8 +25,13 @@
     ></app-accelerate-fee-graph>
   </ng-container>
 
-  <ng-container *ngIf="estimate">
+  <ng-container *ngIf="estimate else loadingEstimate">
     <div [class]="{estimateDisabled: error}">
+
+      <div *ngIf="user && !estimate.hasAccess">
+        <div class="alert alert-mempool">You are currently on the waitlist</div>
+      </div>
+
       <h5>Your transaction</h5>
       <div class="row">
         <div class="col">
@@ -37,10 +44,10 @@
                 <td class="item">
                   Virtual size
                 </td>
-                <td class="units" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
+                <td style="text-align: end;" [innerHTML]="'&lrm;' + (estimate.txSummary.effectiveVsize | vbytes: 2)"></td>
               </tr>
               <tr class="info">
-                <td class="info">
+                <td class="info" colspan=3>
                   <i><small>Size in vbytes of this transaction<span *ngIf="hasAncestors"> and its unconfirmed ancestors</span></small></i>
                 </td>
               </tr>
@@ -48,12 +55,12 @@
                 <td class="item">
                   In-band fees
                 </td>
-                <td class="units">
-                  {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats|sats">sats</span>
+                <td style="text-align: end;">
+                  {{ estimate.txSummary.effectiveFee | number : '1.0-0' }} <span class="symbol" i18n="shared.sats">sats</span>
                 </td>
               </tr>
               <tr class="info group-last">
-                <td class="info">
+                <td class="info" colspan=3>
                   <i><small>Fees already paid by this transaction<span *ngIf="hasAncestors"> and its unconfirmed ancestors</span></small></i>
                 </td>
               </tr>
@@ -74,8 +81,8 @@
               <div class="d-flex mb-0">
                 <ng-container *ngFor="let option of maxRateOptions">
                   <button type="button" class="btn btn-primary flex-grow-1 btn-border btn-sm feerate" [class]="{active: selectFeeRateIndex === option.index}" (click)="setUserBid(option)">
-                    <span class="fee">{{ option.fee | number }} <span class="symbol" i18n="shared.sats|sats">sats</span></span>
-                    <span class="rate">~ <app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
+                    <span class="fee">{{ option.fee + estimate.mempoolBaseFee + estimate.vsizeFee | number }} <span class="symbol" i18n="shared.sats">sats</span></span>
+                    <span class="rate">~<app-fee-rate [fee]="option.rate" rounding="1.0-0"></app-fee-rate></span>
                   </button>
                 </ng-container>
               </div>
@@ -87,23 +94,15 @@
       <h5>Acceleration summary</h5>
       <div class="row mb-3">
         <div class="col">
-          <div class="table-toggle btn-group btn-group-toggle">
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'estimated'" (click)="showTable = 'estimated'">
-              <span>Estimated cost</span>
-            </div>
-            <div class="btn btn-primary btn-sm" [class.active]="showTable === 'maximum'" (click)="showTable = 'maximum'">
-              <span>Maximum cost</span>
-            </div>
-          </div>
           <table class="table table-borderless table-border table-dark table-accelerator">
             <tbody>
               <!-- ESTIMATED FEE -->
-              <ng-container *ngIf="showTable === 'estimated'">
+              <ng-container>
                 <tr class="group-first">
                   <td class="item">
                     Next block market rate
                   </td>
-                  <td class="amt" style="font-size: 20px">
+                  <td class="amt" style="font-size: 16px">
                     {{ estimate.targetFeeRate | number : '1.0-0' }}
                   </td>
                   <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
@@ -116,34 +115,8 @@
                     {{ math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee) | number }}
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
-                  </td>
-                </tr>
-              </ng-container>
-              <!-- USER MAX BID -->
-              <ng-container *ngIf="showTable === 'maximum'">
-                <tr class="group-first">
-                  <td class="item">
-                    Your maximum
-                  </td>
-                  <td class="amt" style="width: 45%; font-size: 20px">
-                    ~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}
-                  </td>
-                  <td class="units"><span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></td>
-                </tr>
-                <tr class="info">
-                  <td class="info">
-                    <i><small>The maximum extra transaction fee you could pay</small></i>
-                  </td>
-                  <td class="amt">
-                    <span>
-                      {{ userBid | number }}
-                    </span>
-                  </td>
-                  <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="userBid"></app-fiat></span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
+                    <span class="fiat ml-1"><app-fiat [value]="math.max(0, estimate.nextBlockFee - estimate.txSummary.effectiveFee)"></app-fiat></span>
                   </td>
                 </tr>
               </ng-container>
@@ -162,11 +135,11 @@
                   +{{ estimate.mempoolBaseFee | number }}
                 </td>
                 <td class="units">
-                  <span class="symbol" i18n="shared.sats|sats">sats</span>
-                  <span class="fiat"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
+                  <span class="symbol" i18n="shared.sats">sats</span>
+                  <span class="fiat ml-1"><app-fiat [value]="estimate.mempoolBaseFee"></app-fiat></span>
                 </td>
               </tr>
-              <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
+              <tr class="info group-last">
                 <td class="info">
                   <i><small>Transaction vsize fee</small></i>
                 </td>
@@ -174,14 +147,14 @@
                   +{{ estimate.vsizeFee | number }}
                 </td>
                 <td class="units">
-                  <span class="symbol" i18n="shared.sats|sats">sats</span>
-                  <span class="fiat"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
+                  <span class="symbol" i18n="shared.sats">sats</span>
+                  <span class="fiat ml-1"><app-fiat [value]="estimate.vsizeFee"></app-fiat></span>
                 </td>
               </tr>
 
               <!-- NEXT BLOCK ESTIMATE -->
-              <ng-container *ngIf="showTable === 'estimated'">
-                <tr class="group-first">
+              <ng-container>
+                <tr class="group-first" style="border-top: 1px dashed grey; border-collapse: collapse;">
                   <td class="item">
                     <b style="background-color: #5E35B1" class="p-1 pl-0">Estimated acceleration cost</b>
                   </td>
@@ -191,19 +164,19 @@
                     </span>
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
+                    <span class="symbol" i18n="shared.sats">sats</span>
+                    <span class="fiat ml-1"><app-fiat [value]="estimate.cost + estimate.mempoolBaseFee + estimate.vsizeFee"></app-fiat></span>
                   </td>
                 </tr>
-                <tr class="info group-last">
-                  <td class="info">
+                <tr class="info group-last" style="border-bottom: 1px solid lightgrey">
+                  <td class="info" colspan=3>
                     <i><small>If your tx is accelerated to </small><small>{{ estimate.targetFeeRate | number : '1.0-0' }} <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
                   </td>
                 </tr>
               </ng-container>
   
               <!-- MAX COST -->
-              <ng-container *ngIf="showTable === 'maximum'">
+              <ng-container>
                 <tr class="group-first">
                   <td class="item">
                     <b style="background-color: #105fb0;" class="p-1 pl-0">Maximum acceleration cost</b>
@@ -214,21 +187,21 @@
                     </span>
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat">
+                    <span class="symbol" i18n="shared.sats">sats</span>
+                    <span class="fiat ml-1">
                       <app-fiat [value]="maxCost" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
                   </td>
                 </tr>
                 <tr class="info group-last">
-                  <td class="info">
+                  <td class="info" colspan=3>
                     <i><small>If your tx is accelerated to </small><small>~{{ ((estimate.txSummary.effectiveFee + userBid) / estimate.txSummary.effectiveVsize) | number : '1.0-0' }}  <span class="symbol" i18n="shared.sat-vbyte|sat/vB">sat/vB</span></small></i>
                   </td>
                 </tr>
               </ng-container>
   
               <!-- USER BALANCE -->
-              <ng-container *ngIf="estimate.userBalance < maxCost">
+              <ng-container *ngIf="isLoggedIn() && estimate.userBalance < maxCost">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item">
                     Available balance
@@ -237,10 +210,21 @@
                     {{ estimate.userBalance | number }}
                   </td>
                   <td class="units">
-                    <span class="symbol" i18n="shared.sats|sats">sats</span>
-                    <span class="fiat">
+                    <span class="symbol" i18n="shared.sats">sats</span>
+                    <span class="fiat ml-1">
                       <app-fiat [value]="estimate.userBalance" [colorClass]="estimate.userBalance < maxCost ? 'red-color' : 'green-color'"></app-fiat>
                     </span>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <!-- LOGIN CTA -->
+              <ng-container *ngIf="!isLoggedIn()">
+                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                  <td class="item"></td>
+                  <td class="amt"></td>
+                  <td class="units d-flex">
+                    <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1">Login</a>
                   </td>
                 </tr>
               </ng-container>
@@ -251,7 +235,7 @@
   
       <div class="row mb-3" *ngIf="isLoggedIn()">
         <div class="col">
-          <div class="d-flex justify-content-end">
+          <div class="d-flex justify-content-end" *ngIf="user && estimate.hasAccess">
             <button class="btn btn-sm btn-primary btn-success" style="width: 150px" (click)="accelerate()">Accelerate</button>
           </div>
         </div>
@@ -260,3 +244,8 @@
     </div>
   </ng-container>
 </div>
+
+<ng-template #loadingEstimate>
+  <div class="skeleton-loader"></div>
+  <br>
+</ng-template>

@@ -239,3 +239,14 @@ main {
   transition: 0.2s;
   transition-property: max-width;
 }
+
+// empty sidenav
+.empty-sidenav {
+  z-index: 1;
+  background-color: transparent;
+  width: 0px;
+  height: calc(100vh - 65px);
+  position: sticky;
+  top: 65px;
+  padding-bottom: 20px;
+}

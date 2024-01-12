@@ -2,6 +2,7 @@ import { Block, Transaction } from "./electrs.interface";
 
 export interface OptimizedMempoolStats {
   added: number;
+  count: number;
   vbytes_per_second: number;
   total_fee: number;
   mempool_byte_weight: number;
@@ -179,6 +180,7 @@ export interface TransactionStripped {
   value: number;
   rate?: number; // effective fee rate
   acc?: boolean;
+  flags?: number | null;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
@@ -300,4 +302,29 @@ export interface INode {
   latitude: number;
   funding_balance?: number;
   closing_balance?: number;
+}
+
+export interface Acceleration {
+  txid: string;
+  status: 'requested' | 'accelerating' | 'mined' | 'completed' | 'failed';
+  pools: number[];
+  feePaid: number;
+  added: number; // timestamp
+  lastUpdated: number; // timestamp
+  baseFee: number;
+  vsizeFee: number;
+  effectiveFee: number;
+  effectiveVsize: number;
+  feeDelta: number;
+  blockHash: string;
+  blockHeight: number;
+
+  actualFeeDelta?: number;
+}
+
+export interface AccelerationHistoryParams {
+  timeframe?: string,
+  status?: string,
+  pool?: string,
+  blockHash?: string,
 }

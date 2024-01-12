@@ -68,17 +68,17 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Init repo for Dockerization
         run: docker/init.sh "$TAG"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         id: qemu
 
       - name: Setup Docker buildx action
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         id: buildx
 
       - name: Available platforms
@@ -98,7 +98,7 @@ jobs:
           docker buildx build \
           --cache-from "type=local,src=/tmp/.buildx-cache" \
           --cache-to "type=local,dest=/tmp/.buildx-cache" \
-          --platform linux/amd64,linux/arm64,linux/arm/v7 \
+          --platform linux/amd64,linux/arm64 \
           --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:$TAG \
           --tag ${{ secrets.DOCKER_HUB_USER }}/${{ matrix.service }}:latest \
           --output "type=registry" ./${{ matrix.service }}/ \

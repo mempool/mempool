@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { merge, Observable, of } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -204,7 +204,7 @@ export class HashrateChartComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E99' },
           { offset: 0.25, color: '#FB8C0099' },
           { offset: 0.5, color: '#FFB30099' },
@@ -212,7 +212,7 @@ export class HashrateChartComponent implements OnInit {
           { offset: 1, color: '#7CB34299' }
         ]),
         '#D81B60',
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },
@@ -249,10 +249,8 @@ export class HashrateChartComponent implements OnInit {
           for (const tick of ticks) {
             if (tick.seriesIndex === 0) { // Hashrate
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
+              hashrate = tick.data[1] / hashratePowerOfTen.divider;
               hashrateString = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s<br>`;
             } else if (tick.seriesIndex === 1) { // Difficulty
               let difficultyPowerOfTen = hashratePowerOfTen;
@@ -260,18 +258,14 @@ export class HashrateChartComponent implements OnInit {
               if (difficulty === null) {
                 difficultyString = `${tick.marker} ${tick.seriesName}: No data<br>`;
               } else {
-                if (this.isMobile()) {
-                  difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
-                  difficulty = Math.round(tick.data[1] / difficultyPowerOfTen.divider);
-                }
+                difficultyPowerOfTen = selectPowerOfTen(tick.data[1]);
+                difficulty = tick.data[1] / difficultyPowerOfTen.divider;
                 difficultyString = `${tick.marker} ${tick.seriesName}: ${formatNumber(difficulty, this.locale, '1.2-2')} ${difficultyPowerOfTen.unit}<br>`;
               }
             } else if (tick.seriesIndex === 2) { // Hashrate MA
               let hashrate = tick.data[1];
-              if (this.isMobile()) {
-                hashratePowerOfTen = selectPowerOfTen(tick.data[1]);
-                hashrate = Math.round(tick.data[1] / hashratePowerOfTen.divider);
-              }
+              hashratePowerOfTen = selectPowerOfTen(tick.data[1], 10);
+              hashrate = tick.data[1] / hashratePowerOfTen.divider;
               hashrateStringMA = `${tick.marker} ${tick.seriesName}: ${formatNumber(hashrate, this.locale, '1.0-0')} ${hashratePowerOfTen.unit}H/s`;
             }
           }
@@ -342,7 +336,7 @@ export class HashrateChartComponent implements OnInit {
           type: 'value',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
+            formatter: (val): string => {
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);
               return `${newVal} ${selectedPowerOfTen.unit}H/s`;
@@ -364,9 +358,9 @@ export class HashrateChartComponent implements OnInit {
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
-            formatter: (val) => {
+            formatter: (val): string => {
               if (this.stateService.network === 'signet') {
-                return val;
+                return `${val}`;
               }
               const selectedPowerOfTen: any = selectPowerOfTen(val);
               const newVal = Math.round(val / selectedPowerOfTen.divider);

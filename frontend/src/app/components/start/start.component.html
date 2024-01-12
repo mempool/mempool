@@ -14,6 +14,7 @@
   <div id="blockchain-container" [dir]="timeLtr ? 'rtl' : 'ltr'" #blockchainContainer
     [class.menu-open]="menuOpen"
     [class.menu-closing]="menuSliding && !menuOpen"
+    [class.with-menu]="hasMenu"
     (mousedown)="onMouseDown($event)"
     (pointerdown)="onPointerDown($event)"
     (touchmove)="onTouchMove($event)"

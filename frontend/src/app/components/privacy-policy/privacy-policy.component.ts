@@ -17,6 +17,6 @@ export class PrivacyPolicyComponent {
 
   ngOnInit(): void {
     this.seoService.setTitle('Privacy Policy');
-    this.seoService.setDescription('Trusted third parties are security holes, as are trusted first parties...you should only trust your own self-hosted instance of The Mempool Open Source Project™.');
+    this.seoService.setDescription('Trusted third parties are security holes, as are trusted first parties...you should only trust your own self-hosted instance of The Mempool Open Source Project®.');
   }
 }

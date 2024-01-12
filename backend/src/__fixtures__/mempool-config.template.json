@@ -41,7 +41,9 @@
     "PORT": 15,
     "USERNAME": "__CORE_RPC_USERNAME__",
     "PASSWORD": "__CORE_RPC_PASSWORD__",
-    "TIMEOUT": 1000
+    "TIMEOUT": 1000,
+    "COOKIE": false,
+    "COOKIE_PATH": "__CORE_RPC_COOKIE_PATH__"
   },
   "ELECTRUM": {
     "HOST": "__ELECTRUM_HOST__",
@@ -51,7 +53,10 @@
   "ESPLORA": {
     "REST_API_URL": "__ESPLORA_REST_API_URL__",
     "UNIX_SOCKET_PATH": "__ESPLORA_UNIX_SOCKET_PATH__",
+    "BATCH_QUERY_BASE_SIZE": 1000,
     "RETRY_UNIX_SOCKET_AFTER": 888,
+    "REQUEST_TIMEOUT": 10000,
+    "FALLBACK_TIMEOUT": 5000,
     "FALLBACK": []
   },
   "SECOND_CORE_RPC": {
@@ -59,7 +64,9 @@
     "PORT": 17,
     "USERNAME": "__SECOND_CORE_RPC_USERNAME__",
     "PASSWORD": "__SECOND_CORE_RPC_PASSWORD__",
-    "TIMEOUT": 2000
+    "TIMEOUT": 2000,
+    "COOKIE": false,
+    "COOKIE_PATH": "__SECOND_CORE_RPC_COOKIE_PATH__"
   },
   "DATABASE": {
     "ENABLED": false,
@@ -69,6 +76,7 @@
     "DATABASE": "__DATABASE_DATABASE__",
     "USERNAME": "__DATABASE_USERNAME__",
     "PASSWORD": "__DATABASE_PASSWORD__",
+    "PID_DIR": "__DATABASE_PID_FILE__",
     "TIMEOUT": 3000
   },
   "SYSLOG": {
@@ -133,6 +141,7 @@
   },
   "REDIS": {
     "ENABLED": false,
-    "UNIX_SOCKET_PATH": "/tmp/redis.sock"
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
   }
 }

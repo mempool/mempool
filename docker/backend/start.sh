@@ -43,6 +43,8 @@ __CORE_RPC_PORT__=${CORE_RPC_PORT:=8332}
 __CORE_RPC_USERNAME__=${CORE_RPC_USERNAME:=mempool}
 __CORE_RPC_PASSWORD__=${CORE_RPC_PASSWORD:=mempool}
 __CORE_RPC_TIMEOUT__=${CORE_RPC_TIMEOUT:=60000}
+__CORE_RPC_COOKIE__=${CORE_RPC_COOKIE:=false}
+__CORE_RPC_COOKIE_PATH__=${CORE_RPC_COOKIE_PATH:=""}
 
 # ELECTRUM
 __ELECTRUM_HOST__=${ELECTRUM_HOST:=127.0.0.1}
@@ -52,7 +54,10 @@ __ELECTRUM_TLS_ENABLED__=${ELECTRUM_TLS_ENABLED:=false}
 # ESPLORA
 __ESPLORA_REST_API_URL__=${ESPLORA_REST_API_URL:=http://127.0.0.1:3000}
 __ESPLORA_UNIX_SOCKET_PATH__=${ESPLORA_UNIX_SOCKET_PATH:="null"}
+__ESPLORA_BATCH_QUERY_BASE_SIZE__=${ESPLORA_BATCH_QUERY_BASE_SIZE:=1000}
 __ESPLORA_RETRY_UNIX_SOCKET_AFTER__=${ESPLORA_RETRY_UNIX_SOCKET_AFTER:=30000}
+__ESPLORA_REQUEST_TIMEOUT__=${ESPLORA_REQUEST_TIMEOUT:=5000}
+__ESPLORA_FALLBACK_TIMEOUT__=${ESPLORA_FALLBACK_TIMEOUT:=5000}
 __ESPLORA_FALLBACK__=${ESPLORA_FALLBACK:=[]}
 
 # SECOND_CORE_RPC
@@ -61,6 +66,8 @@ __SECOND_CORE_RPC_PORT__=${SECOND_CORE_RPC_PORT:=8332}
 __SECOND_CORE_RPC_USERNAME__=${SECOND_CORE_RPC_USERNAME:=mempool}
 __SECOND_CORE_RPC_PASSWORD__=${SECOND_CORE_RPC_PASSWORD:=mempool}
 __SECOND_CORE_RPC_TIMEOUT__=${SECOND_CORE_RPC_TIMEOUT:=60000}
+__SECOND_CORE_RPC_COOKIE__=${SECOND_CORE_RPC_COOKIE:=false}
+__SECOND_CORE_RPC_COOKIE_PATH__=${SECOND_CORE_RPC_COOKIE_PATH:=""}
 
 # DATABASE
 __DATABASE_ENABLED__=${DATABASE_ENABLED:=true}
@@ -71,6 +78,7 @@ __DATABASE_DATABASE__=${DATABASE_DATABASE:=mempool}
 __DATABASE_USERNAME__=${DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${DATABASE_PASSWORD:=mempool}
 __DATABASE_TIMEOUT__=${DATABASE_TIMEOUT:=180000}
+__DATABASE_PID_DIR__=${DATABASE_PID_DIR:=""}
 
 # SYSLOG
 __SYSLOG_ENABLED__=${SYSLOG_ENABLED:=false}
@@ -139,8 +147,9 @@ __MEMPOOL_SERVICES_API__=${MEMPOOL_SERVICES_API:=""}
 __MEMPOOL_SERVICES_ACCELERATIONS__=${MEMPOOL_SERVICES_ACCELERATIONS:=false}
 
 # REDIS
-__REDIS_ENABLED__=${REDIS_ENABLED:=true}
+__REDIS_ENABLED__=${REDIS_ENABLED:=false}
 __REDIS_UNIX_SOCKET_PATH__=${REDIS_UNIX_SOCKET_PATH:=true}
+__REDIS_BATCH_QUERY_BASE_SIZE__=${REDIS_BATCH_QUERY_BASE_SIZE:=5000}
 
 mkdir -p "${__MEMPOOL_CACHE_DIR__}"
 
@@ -185,6 +194,8 @@ sed -i "s!__CORE_RPC_PORT__!${__CORE_RPC_PORT__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_USERNAME__!${__CORE_RPC_USERNAME__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_PASSWORD__!${__CORE_RPC_PASSWORD__}!g" mempool-config.json
 sed -i "s!__CORE_RPC_TIMEOUT__!${__CORE_RPC_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_COOKIE__!${__CORE_RPC_COOKIE__}!g" mempool-config.json
+sed -i "s!__CORE_RPC_COOKIE_PATH__!${__CORE_RPC_COOKIE_PATH__}!g" mempool-config.json
 
 sed -i "s!__ELECTRUM_HOST__!${__ELECTRUM_HOST__}!g" mempool-config.json
 sed -i "s!__ELECTRUM_PORT__!${__ELECTRUM_PORT__}!g" mempool-config.json
@@ -192,7 +203,10 @@ sed -i "s!__ELECTRUM_TLS_ENABLED__!${__ELECTRUM_TLS_ENABLED__}!g" mempool-config
 
 sed -i "s!__ESPLORA_REST_API_URL__!${__ESPLORA_REST_API_URL__}!g" mempool-config.json
 sed -i "s!__ESPLORA_UNIX_SOCKET_PATH__!${__ESPLORA_UNIX_SOCKET_PATH__}!g" mempool-config.json
+sed -i "s!__ESPLORA_BATCH_QUERY_BASE_SIZE__!${__ESPLORA_BATCH_QUERY_BASE_SIZE__}!g" mempool-config.json
 sed -i "s!__ESPLORA_RETRY_UNIX_SOCKET_AFTER__!${__ESPLORA_RETRY_UNIX_SOCKET_AFTER__}!g" mempool-config.json
+sed -i "s!__ESPLORA_REQUEST_TIMEOUT__!${__ESPLORA_REQUEST_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__ESPLORA_FALLBACK_TIMEOUT__!${__ESPLORA_FALLBACK_TIMEOUT__}!g" mempool-config.json
 sed -i "s!__ESPLORA_FALLBACK__!${__ESPLORA_FALLBACK__}!g" mempool-config.json
 
 sed -i "s!__SECOND_CORE_RPC_HOST__!${__SECOND_CORE_RPC_HOST__}!g" mempool-config.json
@@ -200,6 +214,8 @@ sed -i "s!__SECOND_CORE_RPC_PORT__!${__SECOND_CORE_RPC_PORT__}!g" mempool-config
 sed -i "s!__SECOND_CORE_RPC_USERNAME__!${__SECOND_CORE_RPC_USERNAME__}!g" mempool-config.json
 sed -i "s!__SECOND_CORE_RPC_PASSWORD__!${__SECOND_CORE_RPC_PASSWORD__}!g" mempool-config.json
 sed -i "s!__SECOND_CORE_RPC_TIMEOUT__!${__SECOND_CORE_RPC_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_COOKIE__!${__SECOND_CORE_RPC_COOKIE__}!g" mempool-config.json
+sed -i "s!__SECOND_CORE_RPC_COOKIE_PATH__!${__SECOND_CORE_RPC_COOKIE_PATH__}!g" mempool-config.json
 
 sed -i "s!__DATABASE_ENABLED__!${__DATABASE_ENABLED__}!g" mempool-config.json
 sed -i "s!__DATABASE_HOST__!${__DATABASE_HOST__}!g" mempool-config.json
@@ -209,6 +225,7 @@ sed -i "s!__DATABASE_DATABASE__!${__DATABASE_DATABASE__}!g" mempool-config.json
 sed -i "s!__DATABASE_USERNAME__!${__DATABASE_USERNAME__}!g" mempool-config.json
 sed -i "s!__DATABASE_PASSWORD__!${__DATABASE_PASSWORD__}!g" mempool-config.json
 sed -i "s!__DATABASE_TIMEOUT__!${__DATABASE_TIMEOUT__}!g" mempool-config.json
+sed -i "s!__DATABASE_PID_DIR__!${__DATABASE_PID_DIR__}!g" mempool-config.json
 
 sed -i "s!__SYSLOG_ENABLED__!${__SYSLOG_ENABLED__}!g" mempool-config.json
 sed -i "s!__SYSLOG_HOST__!${__SYSLOG_HOST__}!g" mempool-config.json
@@ -274,5 +291,6 @@ sed -i "s!__MEMPOOL_SERVICES_ACCELERATIONS__!${__MEMPOOL_SERVICES_ACCELERATIONS_
 # REDIS
 sed -i "s!__REDIS_ENABLED__!${__REDIS_ENABLED__}!g" mempool-config.json
 sed -i "s!__REDIS_UNIX_SOCKET_PATH__!${__REDIS_UNIX_SOCKET_PATH__}!g" mempool-config.json
+sed -i "s!__REDIS_BATCH_QUERY_BASE_SIZE__!${__REDIS_BATCH_QUERY_BASE_SIZE__}!g" mempool-config.json
 
 node /backend/package/index.js

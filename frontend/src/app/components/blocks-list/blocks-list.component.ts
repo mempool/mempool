@@ -19,6 +19,7 @@ export class BlocksList implements OnInit {
 
   blocks$: Observable<BlockExtended[]> = undefined;
 
+  isMempoolModule = false;
   indexingAvailable = false;
   auditAvailable = false;
   isLoading = true;
@@ -39,6 +40,7 @@ export class BlocksList implements OnInit {
     private cd: ChangeDetectorRef,
     private seoService: SeoService,
   ) {
+    this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
   }
 
   ngOnInit(): void {
@@ -53,7 +55,9 @@ export class BlocksList implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
 
-    this.seoService.setTitle($localize`:@@meta.title.blocks-list:Blocks`);
+    if (!this.widget) {
+      this.seoService.setTitle($localize`:@@m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
+    }
     if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
       this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
     } else {
@@ -75,11 +79,10 @@ export class BlocksList implements OnInit {
                 this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
               }),
               map(blocks => {
-                if (this.indexingAvailable) {
+                if (this.stateService.env.BASE_MODULE === 'mempool') {
                   for (const block of blocks) {
                     // @ts-ignore: Need to add an extra field for the template
-                    block.extras.pool.logo = `/resources/mining-pools/` +
-                      block.extras.pool.slug + '.svg';
+                    block.extras.pool.logo = `/resources/mining-pools/` + block.extras.pool.slug + '.svg';
                   }
                 }
                 if (this.widget) {
@@ -110,7 +113,7 @@ export class BlocksList implements OnInit {
           }
           if (blocks[1]) {
             this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
-            if (this.stateService.env.MINING_DASHBOARD) {
+            if (this.isMempoolModule) {
               // @ts-ignore: Need to add an extra field for the template
               blocks[1][0].extras.pool.logo = `/resources/mining-pools/` +
                 blocks[1][0].extras.pool.slug + '.svg';
@@ -121,9 +124,11 @@ export class BlocksList implements OnInit {
           return acc;
         }, []),
         switchMap((blocks) => {
-          blocks.forEach(block => {
-            block.extras.feeDelta = block.extras.expectedFees ? (block.extras.totalFees - block.extras.expectedFees) / block.extras.expectedFees : 0;
-          });
+          if (this.isMempoolModule && this.auditAvailable) {
+            blocks.forEach(block => {
+              block.extras.feeDelta = block.extras.expectedFees ? (block.extras.totalFees - block.extras.expectedFees) / block.extras.expectedFees : 0;
+            });
+          }
           return of(blocks);
         })
       );

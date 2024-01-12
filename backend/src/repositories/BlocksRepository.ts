@@ -541,7 +541,7 @@ class BlocksRepository {
    */
   public async $getBlocksDifficulty(): Promise<object[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty, bits FROM blocks`);
+      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty, bits FROM blocks ORDER BY height ASC`);
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks difficulty list from the db. Reason: ' + (e instanceof Error ? e.message : e));

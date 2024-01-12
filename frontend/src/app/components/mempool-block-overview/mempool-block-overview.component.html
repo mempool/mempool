@@ -5,5 +5,7 @@
   [blockLimit]="stateService.blockVSize"
   [orientation]="timeLtr ? 'right' : 'left'"
   [flip]="true"
+  [showFilters]="showFilters"
+  [overrideColors]="overrideColors"
   (txClickEvent)="onTxClick($event)"
 ></app-block-overview-graph>
