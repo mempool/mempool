@@ -186,7 +186,7 @@ export class SearchFormComponent implements OnInit {
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
           let matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
-          const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet');
+          const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
 
           // Add B prefix to addresses in Bisq network
           if (!matchesAddress && this.network === 'bisq' && getRegex('address', 'mainnet').test(searchText)) {
@@ -234,7 +234,14 @@ export class SearchFormComponent implements OnInit {
     } else if (result.short_id) {
       this.navigate('/lightning/channel/', result.id);
     } else if (result.network) {
-      this.navigate('/address/', result.address, undefined, result.network);
+      if (result.isNetworkAvailable) {
+        this.navigate('/address/', result.address, undefined, result.network);
+      } else {
+        this.searchForm.setValue({
+          searchText: '',
+        });
+        this.isSearching = false;
+      }
     }
   }
 

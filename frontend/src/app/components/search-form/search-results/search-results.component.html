@@ -38,7 +38,7 @@
   <ng-template [ngIf]="results.otherNetworks.length">
     <div class="card-title danger" i18n="search.other-networks">Other Networks Address</div>
     <ng-template ngFor [ngForOf]="results.otherNetworks" let-otherNetwork let-i="index">
-      <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" type="button" role="option" class="dropdown-item">
+      <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" [class.inactive]="!otherNetwork.isNetworkAvailable" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="(otherNetwork.address + ' (' + otherNetwork.network + ')') | shortenString : isMobile ? 25 : 36" [term]="otherNetwork.network"></ngb-highlight>
       </button>
     </ng-template>

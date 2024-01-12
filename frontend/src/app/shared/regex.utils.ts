@@ -144,10 +144,29 @@ export type Network = typeof NETWORKS[number]; // Turn const array into union ty
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
   .map(network => [getRegex('address', network), network])
 
-export function findOtherNetworks(address: string, skipNetwork: Network): {network: Network, address: string}[] {
+export function findOtherNetworks(address: string, skipNetwork: Network, env: Env): { network: Network, address: string, isNetworkAvailable: boolean }[] {
   return ADDRESS_REGEXES
     .filter(([regex, network]) => network !== skipNetwork && regex.test(address))
-    .map(([, network]) => ({ network, address }));
+    .map(([, network]) => ({ network, address, isNetworkAvailable: isNetworkAvailable(network, env) }));
+}
+
+function isNetworkAvailable(network: Network, env: Env): boolean {
+  switch (network) {
+    case 'testnet':
+      return env.TESTNET_ENABLED === true;
+    case 'signet':
+      return env.SIGNET_ENABLED === true;
+    case 'liquid':
+      return env.LIQUID_ENABLED === true;
+    case 'liquidtestnet':
+      return env.LIQUID_TESTNET_ENABLED === true;
+    case 'bisq':
+      return env.BISQ_ENABLED === true;
+    case 'mainnet':
+      return true; // There is no "MAINNET_ENABLED" flag
+    default:
+      return false;
+  }
 }
 
 export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid' | 'bisq', toNetwork: Network): boolean {
