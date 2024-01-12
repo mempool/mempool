@@ -242,6 +242,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
+      filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
       }),
@@ -439,7 +440,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
-        this.audioService.playSound('magic');
+        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'mined', 'completed'].includes(this.accelerationInfo.status))) {
+          this.audioService.playSound('wind-chimes-harp-ascend');
+        } else {
+          this.audioService.playSound('magic');
+        }
         this.fetchAcceleration$.next(block.id);
       }
     });
