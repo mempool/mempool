@@ -11,7 +11,7 @@ export default class BlockScene {
   getColor: ((tx: TxView) => Color) = defaultColorFunction;
   orientation: string;
   flip: boolean;
-  animationDuration: number = 1000;
+  animationDuration: number = 900;
   configAnimationOffset: number | null;
   animationOffset: number;
   highlightingEnabled: boolean;

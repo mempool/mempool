@@ -968,7 +968,7 @@ class WebsocketHandler {
         if (client['track-tx']) {
           numTxSubs++;
         }
-        if (client['track-mempool-block'] >= 0) {
+        if (client['track-mempool-block'] != null && client['track-mempool-block'] >= 0) {
           numProjectedSubs++;
         }
         if (client['track-rbf']) {
