@@ -59,7 +59,7 @@
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
               <tr *ngIf="auditAvailable">
-                <td><ng-container i18n="latest-blocks.health">Health</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
+                <td><ng-container i18n="latest-blocks.health">Health</ng-container>&nbsp;<a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
                 <td>
                   <span
                     class="health-badge badge"
