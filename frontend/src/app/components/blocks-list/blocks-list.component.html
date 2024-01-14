@@ -46,7 +46,7 @@
             </div>
           </td>
           <td class="timestamp" *ngIf="!widget" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
-            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
           </td>
           <td *ngIf="auditAvailable" class="health text-right" [ngClass]="{'widget': widget, 'legacy': !isMempoolModule}">
             <a
