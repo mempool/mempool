@@ -45,6 +45,9 @@ export class SearchResultsComponent implements OnChanges {
         break;
       case 'Enter':
         event.preventDefault();
+        if (this.resultsFlattened[this.activeIdx]?.isNetworkAvailable === false) {
+          return;
+        }
         if (this.resultsFlattened[this.activeIdx]) {
           this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
         } else {
