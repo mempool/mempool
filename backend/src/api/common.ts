@@ -222,7 +222,25 @@ export class Common {
   }
 
   static getTransactionFlags(tx: TransactionExtended): number {
-    let flags = 0n;
+    let flags = tx.flags ? BigInt(tx.flags) : 0n;
+
+    // Update variable flags (CPFP, RBF)
+    if (tx.ancestors?.length) {
+      flags |= TransactionFlags.cpfp_child;
+    }
+    if (tx.descendants?.length) {
+      flags |= TransactionFlags.cpfp_parent;
+    }
+    if (tx.replacement) {
+      flags |= TransactionFlags.replacement;
+    }
+
+    // Already processed static flags, no need to do it again
+    if (tx.flags) {
+      return Number(flags);
+    }
+
+    // Process static flags
     if (tx.version === 1) {
       flags |= TransactionFlags.v1;
     } else if (tx.version === 2) {
@@ -245,8 +263,13 @@ export class Common {
         case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
         case 'v1_p2tr': {
           flags |= TransactionFlags.p2tr;
-          if (vin.witness.length > 2) {
-            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - 2]);
+          // in taproot, if the last witness item begins with 0x50, it's an annex
+          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+          // script spends have more than one witness item, not counting the annex (if present)
+          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+            // the script itself is the second-to-last witness item, not counting the annex
+            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
+            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
             if (asm?.includes('OP_0 OP_IF')) {
               flags |= TransactionFlags.inscription;
             }
@@ -306,15 +329,7 @@ export class Common {
     if (hasFakePubkey) {
       flags |= TransactionFlags.fake_pubkey;
     }
-    if (tx.ancestors?.length) {
-      flags |= TransactionFlags.cpfp_child;
-    }
-    if (tx.descendants?.length) {
-      flags |= TransactionFlags.cpfp_parent;
-    }
-    if (rbfCache.getRbfTree(tx.txid)) {
-      flags |= TransactionFlags.replacement;
-    }
+    
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
@@ -335,6 +350,7 @@ export class Common {
 
   static classifyTransaction(tx: TransactionExtended): TransactionClassified {
     const flags = this.getTransactionFlags(tx);
+    tx.flags = flags;
     return {
       ...this.stripTransaction(tx),
       flags,

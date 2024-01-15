@@ -121,6 +121,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     } else {
       this.scene.setColorFunction(this.overrideColors);
     }
+    this.start();
   }
 
   ngOnDestroy(): void {

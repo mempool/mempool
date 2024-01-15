@@ -59,6 +59,7 @@
       </trans-unit>
       <trans-unit id="ngb.progressbar.value" datatype="html">
         <source><x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -66,6 +67,7 @@
       </trans-unit>
       <trans-unit id="ngb.carousel.slide-number" datatype="html">
         <source> Slide <x id="INTERPOLATION"/> of <x id="INTERPOLATION_1"/> </source>
+        <target> Lysbilde <x id="INTERPOLATION"/> av <x id="INTERPOLATION_1"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/src/ngb-config.ts</context>
           <context context-type="linenumber">13</context>
@@ -404,6 +406,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.address" datatype="html">
         <source>See current balance, pending transactions, and history of confirmed transactions for BSQ address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <target>Se gjeldende saldo, ventende transaksjoner og historikk for bekreftede transaksjoner for BSQ-adresse <x id="INTERPOLATION" equiv-text="this.addressString"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-address/bisq-address.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -500,6 +503,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.block" datatype="html">
         <source>See all BSQ transactions in Bitcoin block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (block hash <x id="BLOCK_HASH" equiv-text="block.hash"/>).</source>
+        <target>Se alle BSQ-transaksjoner i Bitcoin-blokk <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (blokkhash <x id="BLOCK_HASH" equiv-text="block.hash"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-block/bisq-block.component.ts</context>
           <context context-type="linenumber">92</context>
@@ -627,6 +631,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.blocks" datatype="html">
         <source>See a list of recent Bitcoin blocks with BSQ transactions, total BSQ sent per block, and more.</source>
+        <target>Se en liste over nylige Bitcoin-blokker med BSQ-transaksjoner, totalt BSQ sendt per blokk og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-blocks/bisq-blocks.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -756,6 +761,7 @@
       </trans-unit>
       <trans-unit id="meta.title.bisq.markets" datatype="html">
         <source>Markets</source>
+        <target>Markeder</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -763,6 +769,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.markets" datatype="html">
         <source>Explore the full Bitcoin ecosystem with The Mempool Open Source Project™. See Bisq market prices, trading activity, and more.</source>
+        <target>Utforsk hele Bitcoin-økosystemet med The Mempool Open Source Project™. Se Bisq markedspriser, handelsaktivitet og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-dashboard/bisq-dashboard.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -848,6 +855,7 @@
       </trans-unit>
       <trans-unit id="meta.title.bisq.market" datatype="html">
         <source>Bisq market: <x id="PH" equiv-text="pairUpperCase"/></source>
+        <target>Bisq-markedet: <x id="PH" equiv-text="pairUpperCase"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.ts</context>
           <context context-type="linenumber">51</context>
@@ -855,6 +863,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.market" datatype="html">
         <source>See price history, current buy/sell offers, and latest trades for the <x id="PH" equiv-text="pairUpperCase"/> market on Bisq.</source>
+        <target>Se prishistorikk, gjeldende kjøps-/salgstilbud og siste handler for <x id="PH" equiv-text="pairUpperCase"/>-markedet på Bisq.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-market/bisq-market.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -990,6 +999,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.stats" datatype="html">
         <source>See high-level stats on the BSQ economy: supply metrics, number of addresses, BSQ price, market cap, and more.</source>
+        <target>Se statistikk om BSQ-økonomien: forsyningsstatistikk, antall adresser, BSQ-pris, markedsverdi og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-stats/bisq-stats.component.ts</context>
           <context context-type="linenumber">29</context>
@@ -1169,6 +1179,7 @@
       </trans-unit>
       <trans-unit id="d21fcec8ace7941d2bf7c822ce2003cdd9ecff43" datatype="html">
         <source>Fee per weight unit</source>
+        <target>Avgift per vektenhet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1237,6 +1248,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.transaction" datatype="html">
         <source>See inputs, outputs, transaction type, burnt amount, and more for transaction with txid <x id="INTERPOLATION" equiv-text="this.txId"/>.</source>
+        <target>Se innganger, utganger, transaksjonstype, brent beløp og mer for transaksjon med txid <x id="INTERPOLATION" equiv-text="this.txId"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transaction/bisq-transaction.component.ts</context>
           <context context-type="linenumber">51</context>
@@ -1426,6 +1438,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bisq.transactions" datatype="html">
         <source>See recent BSQ transactions: amount, txid, associated Bitcoin block, transaction type, and more.</source>
+        <target>Se nylige BSQ-transaksjoner: beløp, txid, tilhørende Bitcoin-blokk, transaksjonstype og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/bisq/bisq-transactions/bisq-transactions.component.ts</context>
           <context context-type="linenumber">82</context>
@@ -1466,6 +1479,7 @@
       </trans-unit>
       <trans-unit id="9bada74bc2b36480a6db8734d56a2b89135de590" datatype="html">
         <source>Become a Community Sponsor</source>
+        <target>Bli en samfunnssponsor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1474,6 +1488,7 @@
       </trans-unit>
       <trans-unit id="bef4c03ebfa29b890665fbcf6bf097b9ae29a91e" datatype="html">
         <source>Become an Enterprise Sponsor</source>
+        <target>Bli en bedriftssponsor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1491,6 +1506,7 @@
       </trans-unit>
       <trans-unit id="299789f4d4817ccf915f6a5b0e48c093b646b079" datatype="html">
         <source>Whale Sponsors</source>
+        <target>Hvalsponsorer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">202</context>
@@ -1499,6 +1515,7 @@
       </trans-unit>
       <trans-unit id="2dca632c813555d7153785d4b6d25cc0f04d6bcd" datatype="html">
         <source>Chad Sponsors</source>
+        <target>Chadsponsorer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">215</context>
@@ -1507,6 +1524,7 @@
       </trans-unit>
       <trans-unit id="0a441237b27eaeacbeba376cabd33921fa4bb2d6" datatype="html">
         <source>OG Sponsors ❤️</source>
+        <target>OG Sponsorer ❤️</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.html</context>
           <context context-type="linenumber">228</context>
@@ -1589,6 +1607,7 @@
       </trans-unit>
       <trans-unit id="meta.description.about" datatype="html">
         <source>Learn more about The Mempool Open Source Project®: enterprise sponsors, individual sponsors, integrations, who contributes, FOSS licensing, and more.</source>
+        <target>Lær mer om The Mempool Open Source Project®: bedriftssponsorer, individuelle sponsorer, integrasjoner, hvem som bidrar, FOSS-lisensiering og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/about/about.component.ts</context>
           <context context-type="linenumber">46</context>
@@ -1818,7 +1837,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.address" datatype="html">
-        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <target>Se mempool-transaksjoner, bekreftede transaksjoner, saldo og mer for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> adresse <x id="INTERPOLATION" equiv-text="this.addressString"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -2114,6 +2134,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.assets" datatype="html">
         <source>Explore all the assets issued on the Liquid network like L-BTC, L-CAD, USDT, and more.</source>
+        <target>Utforsk alle eiendelene utstedt på Liquid-nettverket som L-BTC, L-CAD, USDT og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/assets/assets-nav/assets-nav.component.ts</context>
           <context context-type="linenumber">43</context>
@@ -2276,6 +2297,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fee-rates" datatype="html">
         <source>See Bitcoin feerates visualized over time, including minimum and maximum feerates per block along with feerates at various percentiles.</source>
+        <target>Se Bitcoin-gebyrer visualisert over tid, inkludert minimums- og maksimumsgebyrer per blokk sammen med gebyrer på forskjellige persentiler.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -2332,6 +2354,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees" datatype="html">
         <source>See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.</source>
+        <target>Se gjennomsnittlig utvinningsavgift tjent per Bitcoin-blokk visualisert i BTC og USD over tid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -2375,6 +2398,7 @@
       </trans-unit>
       <trans-unit id="b1fa5b210c9670d49a6506f046d4a0c2797fd402" datatype="html">
         <source>Block Health</source>
+        <target>Blokkhelse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2387,6 +2411,7 @@
       </trans-unit>
       <trans-unit id="d7d5fcf50179ad70c938491c517efb82de2c8146" datatype="html">
         <source>Block Health</source>
+        <target>Blokkhelse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -2394,6 +2419,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-health" datatype="html">
         <source>See Bitcoin block health visualized over time. Block health is a measure of how many expected transactions were included in an actual mined block. Expected transactions are determined using Mempool's re-implementation of Bitcoin Core's transaction selection algorithm.</source>
+        <target>Se Bitcoin-blokkhelse visualisert over tid. Blokkhelse er et mål på hvor mange forventede transaksjoner som ble inkludert i en faktisk utvunnet blokk. Forventede transaksjoner bestemmes ved hjelp av Mempools re-implementering av Bitcoin Cores transaksjonsvalgalgoritme.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -2416,7 +2442,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
-          <context context-type="linenumber">215</context>
+          <context context-type="linenumber">216</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
@@ -2425,6 +2451,7 @@
       </trans-unit>
       <trans-unit id="2041675390931385838" datatype="html">
         <source>Health</source>
+        <target>Helse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-health-graph/block-health-graph.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -2515,6 +2542,7 @@
       </trans-unit>
       <trans-unit id="a85400ca5aa86c938188f02b5fca2757d20b46ad" datatype="html">
         <source>Accelerated fee rate</source>
+        <target>Akselerert gebyrsats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">33</context>
@@ -2546,6 +2574,7 @@
       </trans-unit>
       <trans-unit id="13f5a75f3e01e5924e45052d2f336eda8bac37e8" datatype="html">
         <source>Weight</source>
+        <target>Vekt</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">43</context>
@@ -2603,6 +2632,7 @@
       </trans-unit>
       <trans-unit id="42795e8b4dc68e08fbf27cf2f7e724bbc2930610" datatype="html">
         <source>High sigop count</source>
+        <target>Høyt antall sigops</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">52</context>
@@ -2620,6 +2650,7 @@
       </trans-unit>
       <trans-unit id="c9b422e0850708663a9748e778a9d6feb4d6394e" datatype="html">
         <source>Recently CPFP'd</source>
+        <target>Nylig CPFPet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">54</context>
@@ -2637,6 +2668,7 @@
       </trans-unit>
       <trans-unit id="136c04d97155209abbe3f2535bcf5cf32f91b465" datatype="html">
         <source>Conflicting</source>
+        <target>Motstridende</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">57</context>
@@ -2645,6 +2677,7 @@
       </trans-unit>
       <trans-unit id="b484583f0ce10f3341ab36750d05271d9d22c9a1" datatype="html">
         <source>Accelerated</source>
+        <target>Akselerert</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
           <context context-type="linenumber">58</context>
@@ -2670,6 +2703,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-rewards" datatype="html">
         <source>See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.</source>
+        <target>Se Bitcoin-blokkbelønninger i BTC og USD visualisert over tid. Blokkbelønninger er de totale midlene utvinnerene tjener fra blokksubsidier og gebyr.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-rewards-graph/block-rewards-graph.component.ts</context>
           <context context-type="linenumber">66</context>
@@ -2694,6 +2728,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-sizes" datatype="html">
         <source>See Bitcoin block sizes (MB) and block weights (weight units) visualized over time.</source>
+        <target>Se Bitcoin-blokkstørrelser (MB) og blokkvekter (vektenheter) visualisert over tid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-sizes-weights-graph/block-sizes-weights-graph.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -2809,6 +2844,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.block" datatype="html">
         <source>See size, weight, fee range, included transactions, and more for Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
+        <target>Se størrelse, vekt, gebyrområde, inkluderte transaksjoner og mer for Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blokk <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">112</context>
@@ -2824,6 +2860,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.block" datatype="html">
         <source>See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> block <x id="BLOCK_HEIGHT" equiv-text="block.height"/> (<x id="BLOCK_ID" equiv-text="block.id"/>).</source>
+        <target>Se størrelse, vekt, gebyrområde, inkluderte transaksjoner, revisjon (forventet v faktisk) og mer for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blokk <x id="BLOCK_HEIGHT" equiv-text="block.height"/> ( <x id="BLOCK_ID" equiv-text="block.id"/>).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-view/block-view.component.ts</context>
           <context context-type="linenumber">114</context>
@@ -2912,6 +2949,7 @@
       </trans-unit>
       <trans-unit id="e170a90ee0d3a604adf439a60c890caff9152466" datatype="html">
         <source>This block does not belong to the main chain, it has been replaced by:</source>
+        <target>Denne blokken tilhører ikke hovedkjeden, den er erstattet av:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2947,6 +2985,7 @@
       </trans-unit>
       <trans-unit id="0dc973e4853621b49d9e31be902a0680334f632d" datatype="html">
         <source>Stale</source>
+        <target>Foreldet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3412,6 +3451,7 @@
       </trans-unit>
       <trans-unit id="m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54" datatype="html">
         <source>Blocks</source>
+        <target>Blokker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -3419,6 +3459,7 @@
       </trans-unit>
       <trans-unit id="meta.description.liquid.blocks" datatype="html">
         <source>See the most recent Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blocks along with basic stats such as block height, block size, and more.</source>
+        <target>Se de nyeste Liquid<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>-blokkene sammen med grunnleggende statistikk som blokkhøyde, blokkstørrelse og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
           <context context-type="linenumber">62</context>
@@ -3426,6 +3467,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.blocks" datatype="html">
         <source>See the most recent Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> blocks along with basic stats such as block height, block reward, block size, and more.</source>
+        <target>Se de nyeste Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>-blokkene sammen med grunnleggende statistikk som blokkhøyde, blokkbelønning, blokkstørrelse og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.ts</context>
           <context context-type="linenumber">64</context>
@@ -3433,6 +3475,7 @@
       </trans-unit>
       <trans-unit id="cf8caac4de0166eae6cd0fdfd010ee92b995cd96" datatype="html">
         <source>Calculator</source>
+        <target>Kalkulator</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/calculator/calculator.component.html</context>
           <context context-type="linenumber">3</context>
@@ -3470,6 +3513,7 @@
       </trans-unit>
       <trans-unit id="b7dde2cf8ec2fcd328295c9c7fcc944c4d3720b6" datatype="html">
         <source>Memory Usage</source>
+        <target>Minnebruk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/clock/clock.component.html</context>
           <context context-type="linenumber">65</context>
@@ -3549,6 +3593,7 @@
       </trans-unit>
       <trans-unit id="1bb6965f8e1bbe40c076528ffd841da86f57f119" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blocks<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target><x id="INTERPOLATION" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;blocks&lt;/span&gt;&lt;/ng-template&gt;             &lt;ng-"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;shared-block&quot;&gt;"/>blokker<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
           <context context-type="linenumber">10,11</context>
@@ -3852,6 +3897,7 @@
       </trans-unit>
       <trans-unit id="93168b4de564d2c5d21d67cf2fb263f27b45e4c8" datatype="html">
         <source>WU/s</source>
+        <target>WU/s</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">14</context>
@@ -4024,7 +4070,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">lightning.nodes-channels-world-map</note>
       </trans-unit>
@@ -4072,6 +4118,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.hashrate" datatype="html">
         <source>See hashrate and difficulty for the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> network visualized over time.</source>
+        <target>Se hashrate og vanskelighetsgrad for Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/>-nettverket visualisert over tid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -4179,6 +4226,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mempool-block" datatype="html">
         <source>See stats for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transactions in the mempool: fee range, aggregate size, and more. Mempool blocks are updated in real-time as the network receives new transactions.</source>
+        <target>Se statistikk for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaksjoner i mempoolen: gebyrområde, samlet størrelse og mer. Mempool-blokker oppdateres i sanntid etter hvert som nettverket mottar nye transaksjoner.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -4202,6 +4250,7 @@
       </trans-unit>
       <trans-unit id="8177873832400820695" datatype="html">
         <source>Count</source>
+        <target>Antall</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-graph/mempool-graph.component.ts</context>
           <context context-type="linenumber">325</context>
@@ -4229,6 +4278,7 @@
       </trans-unit>
       <trans-unit id="287d3301a32a65a1b31116bda5d3a6463158c42a" datatype="html">
         <source>Sign in</source>
+        <target>Logg inn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/menu/menu.component.html</context>
           <context context-type="linenumber">10</context>
@@ -4255,6 +4305,7 @@
       </trans-unit>
       <trans-unit id="93ce500c36b94b52219495ae1491efc2fca40cb6" datatype="html">
         <source>Recent Blocks</source>
+        <target>Nylige blokker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
           <context context-type="linenumber">52</context>
@@ -4280,6 +4331,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mining.dashboard" datatype="html">
         <source>Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
+        <target>Få sanntids Bitcoin-utvinningsstatistikk som hashrate, vanskeliggradsjustering, blokkbelønninger, gruppedominans og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
           <context context-type="linenumber">21</context>
@@ -4296,6 +4348,7 @@
       </trans-unit>
       <trans-unit id="4e338e7daa64c7a074cee3824fbd7425e5b7c9a5" datatype="html">
         <source>Pools Luck</source>
+        <target>Gruppeflaks</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">9</context>
@@ -4326,6 +4379,7 @@
       </trans-unit>
       <trans-unit id="ade0bf412a0fae1e4672505fc1fa79ade185db05" datatype="html">
         <source>Pools Count</source>
+        <target>Antall grupper</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">17</context>
@@ -4440,6 +4494,7 @@
       </trans-unit>
       <trans-unit id="5d680aaa8e24bb235cf4fbeff3df0bfc8e2f564e" datatype="html">
         <source>Empty Blocks</source>
+        <target>Tomme blokker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">98</context>
@@ -4465,6 +4520,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
         <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
+        <target>Se de beste utvinningsgruppene rangert etter antall blokker utvunnet, over ønsket tidsramme.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -4554,6 +4610,7 @@
       </trans-unit>
       <trans-unit id="meta.description.mining.pool" datatype="html">
         <source>See mining pool stats for <x id="PH" equiv-text="poolStats.pool.name"/>: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.</source>
+        <target>Se utvinningsgruppe-statistikk for <x id="PH" equiv-text="poolStats.pool.name"/>: siste utvunnede blokker, hashrate over tid, total blokkbelønning hittil, kjente coinbaseadresser og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool-preview.component.ts</context>
           <context context-type="linenumber">86</context>
@@ -4620,6 +4677,7 @@
       </trans-unit>
       <trans-unit id="3dc78651b2810cbb6e830fe7e57499d8cf6a8e4d" datatype="html">
         <source>Blocks (24h)</source>
+        <target>Blokker (24 timer)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">146</context>
@@ -4734,6 +4792,7 @@
       </trans-unit>
       <trans-unit id="meta.title.push-tx" datatype="html">
         <source>Broadcast Transaction</source>
+        <target>Kringkast transaksjon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -4741,6 +4800,7 @@
       </trans-unit>
       <trans-unit id="meta.description.push-tx" datatype="html">
         <source>Broadcast a transaction to the <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network using the transaction's hash.</source>
+        <target>Kringkast en transaksjon til <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>-nettverket ved å bruke transaksjonens hash.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/push-transaction/push-transaction.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -4748,6 +4808,7 @@
       </trans-unit>
       <trans-unit id="5e3d5a82750902f159122fcca487b07f1af3141f" datatype="html">
         <source>RBF Replacements</source>
+        <target>RBF-erstatninger</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">2</context>
@@ -4760,6 +4821,7 @@
       </trans-unit>
       <trans-unit id="8a9b3afe9486474f0d7767605fe99af99c8ea430" datatype="html">
         <source>Full RBF</source>
+        <target>Full RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">24</context>
@@ -4776,6 +4838,7 @@
       </trans-unit>
       <trans-unit id="c88914ee712e3ab5ad5f88de8a6ed12050919ccb" datatype="html">
         <source>There are no replacements in the mempool yet!</source>
+        <target>Det er ingen erstatninger i mempoolen ennå!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.html</context>
           <context context-type="linenumber">34</context>
@@ -4784,6 +4847,7 @@
       </trans-unit>
       <trans-unit id="meta.description.rbf-list" datatype="html">
         <source>See the most recent RBF replacements on the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> network, updated in real-time.</source>
+        <target>Se de siste RBF-erstatningene på Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.stateService.network)"/>-nettverket, oppdatert i sanntid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-list/rbf-list.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -4829,6 +4893,7 @@
       </trans-unit>
       <trans-unit id="aa28c3afcb8b1a556fc1e1842e48a57f24fd643f" datatype="html">
         <source>Status</source>
+        <target>Status</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">33</context>
@@ -4846,6 +4911,7 @@
       </trans-unit>
       <trans-unit id="eb3b032a755fc367f7f6e957d0c7dc9d6db49464" datatype="html">
         <source>RBF</source>
+        <target>RBF</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/rbf-timeline/rbf-timeline-tooltip.component.html</context>
           <context context-type="linenumber">36</context>
@@ -5065,6 +5131,7 @@
       </trans-unit>
       <trans-unit id="d0e134a0886ae71207e912575d226525062b62f1" datatype="html">
         <source>Clock (Mempool)</source>
+        <target>Klokke (Mempool)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">17</context>
@@ -5117,6 +5184,7 @@
       </trans-unit>
       <trans-unit id="68d44b7bd049ae93c2bc15973eb5266aec64693e" datatype="html">
         <source>Cap outliers</source>
+        <target>Fjern avvikere</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.html</context>
           <context context-type="linenumber">122</context>
@@ -5125,6 +5193,7 @@
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.mempool" datatype="html">
         <source>See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.</source>
+        <target>Se mempoolstørrelse (i MvB) og transaksjoner per sekund (i vB/s) visualisert over tid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -5132,6 +5201,7 @@
       </trans-unit>
       <trans-unit id="meta.description.tv" datatype="html">
         <source>See Bitcoin blocks and mempool congestion in real-time in a simplified format perfect for a TV.</source>
+        <target>Se Bitcoin-blokker og mempool i sanntid i et forenklet format perfekt for en TV.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/television/television.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -5343,7 +5413,8 @@
         <note priority="1" from="description">transactions-list.coinbase</note>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.transaction" datatype="html">
-        <source>Get real-time status, addresses, fees, script info, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaction with txid {txid}.</source>
+        <source>Get real-time status, addresses, fees, script info, and more for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaction with txid <x id="PH_2" equiv-text="this.txId"/>.</source>
+        <target>Få sanntidsstatus, adresser, gebyrer, skriptinformasjon og mer for <x id="PH" equiv-text="this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> transaksjon med txid <x id="PH_2" equiv-text="this.txId"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction-preview.component.ts</context>
           <context context-type="linenumber">91</context>
@@ -5385,6 +5456,7 @@
       </trans-unit>
       <trans-unit id="913e89d2d1ae354079cccf48b3d3f4ebf2e74080" datatype="html">
         <source>Accelerate</source>
+        <target>Akselerer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">123</context>
@@ -5422,6 +5494,7 @@
       </trans-unit>
       <trans-unit id="03721a62015a76e794be64ba2b7e053e801215ea" datatype="html">
         <source>RBF History</source>
+        <target>RBF historie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">218</context>
@@ -5493,6 +5566,7 @@
       </trans-unit>
       <trans-unit id="a8a4dd861f790141e19f773153cf42b5d0b0e6b6" datatype="html">
         <source>Adjusted vsize</source>
+        <target>Justert vsize</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">298</context>
@@ -5511,6 +5585,7 @@
       </trans-unit>
       <trans-unit id="3dd65e8fa7035988a691aadcb583862c2a9e336a" datatype="html">
         <source>Sigops</source>
+        <target>Sigops</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">320</context>
@@ -5538,6 +5613,7 @@
       </trans-unit>
       <trans-unit id="8b01e0411c7160bfee109e504c84ecee5079c326" datatype="html">
         <source>Accelerated fee rate</source>
+        <target>Akselerert gebyrsats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
           <context context-type="linenumber">516</context>
@@ -5893,6 +5969,7 @@
       </trans-unit>
       <trans-unit id="4fe744df6d36b5e9b0afab728b77fc635b99f040" datatype="html">
         <source>Recent Replacements</source>
+        <target>Nylige erstatninger</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">79</context>
@@ -5901,6 +5978,7 @@
       </trans-unit>
       <trans-unit id="23c872b0336e20284724607f2887da39bd8142c3" datatype="html">
         <source>Previous fee</source>
+        <target>Tidligere avgift</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">86</context>
@@ -5909,6 +5987,7 @@
       </trans-unit>
       <trans-unit id="df33bef035883b7afeb388977087f99ab5a54409" datatype="html">
         <source>New fee</source>
+        <target>Ny avgift</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">87</context>
@@ -5917,6 +5996,7 @@
       </trans-unit>
       <trans-unit id="aa6ce7e6e6fe5cd080713965451f25bca15a2a25" datatype="html">
         <source>Recent Transactions</source>
+        <target>Nylige transaksjoner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">153</context>
@@ -5954,6 +6034,7 @@
       </trans-unit>
       <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
         <source>Incoming Transactions</source>
+        <target>Innkommende transaksjoner</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">259</context>
@@ -5962,6 +6043,7 @@
       </trans-unit>
       <trans-unit id="999bb1a0150c2815a6b4dd64a1850e763603e525" datatype="html">
         <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space gir bare data om Bitcoin-nettverket.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Det kan ikke hjelpe deg med å hente midler, lommebokproblemer osv.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For slike forespørsler må du ta kontakt med enheten som bidro til transaksjonen (lommebokprogramvare, børsselskap osv.).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
           <context context-type="linenumber">15,16</context>
@@ -6056,6 +6138,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.faq" datatype="html">
         <source>FAQ</source>
+        <target>FAQ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">45</context>
@@ -6063,6 +6146,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.faq" datatype="html">
         <source>Get answers to common questions like: What is a mempool? Why isn't my transaction confirming? How can I run my own instance of The Mempool Open Source Project? And more.</source>
+        <target>Få svar på vanlige spørsmål som: Hva er en mempool? Hvorfor bekreftes ikke transaksjonen min? Hvordan kan jeg kjøre min egen instans av Mempool Open Source Project? Og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">46</context>
@@ -6070,6 +6154,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.rest" datatype="html">
         <source>REST API</source>
+        <target>REST API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">49</context>
@@ -6077,6 +6162,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-liquid" datatype="html">
         <source>Documentation for the liquid.network REST API service: get info on addresses, transactions, assets, blocks, and more.</source>
+        <target>Dokumentasjon for liquid.network REST API-tjenesten: få informasjon om adresser, transaksjoner, eiendeler, blokker og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">51</context>
@@ -6084,6 +6170,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-bisq" datatype="html">
         <source>Documentation for the bisq.markets REST API service: get info on recent trades, current offers, transactions, network state, and more.</source>
+        <target>Dokumentasjon for bisq.markets REST API-tjenesten: få informasjon om nylige handler, nåværende tilbud, transaksjoner, nettverkstilstand og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">53</context>
@@ -6091,6 +6178,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.rest-bitcoin" datatype="html">
         <source>Documentation for the mempool.space REST API service: get info on addresses, transactions, blocks, fees, mining, the Lightning network, and more.</source>
+        <target>Dokumentasjon for mempool.space REST API-tjenesten: få informasjon om adresser, transaksjoner, blokker, avgifter, utvinning, Lightning-nettverket og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -6098,6 +6186,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.websocket" datatype="html">
         <source>WebSocket API</source>
+        <target>WebSocket API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -6105,6 +6194,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-liquid" datatype="html">
         <source>Documentation for the liquid.network WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
+        <target>Dokumentasjon for liquid.network WebSocket API-tjenesten: få sanntidsinformasjon om blokker, mempooler, transaksjoner, adresser og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -6112,6 +6202,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.websocket-bitcoin" datatype="html">
         <source>Documentation for the mempool.space WebSocket API service: get real-time info on blocks, mempools, transactions, addresses, and more.</source>
+        <target>Dokumentasjon for mempool.space WebSocket API-tjenesten: få sanntidsinformasjon om blokker, mempooler, transaksjoner, adresser og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">63</context>
@@ -6119,6 +6210,7 @@
       </trans-unit>
       <trans-unit id="meta.title.docs.electrum" datatype="html">
         <source>Electrum RPC</source>
+        <target>Electrum RPC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -6126,6 +6218,7 @@
       </trans-unit>
       <trans-unit id="meta.description.docs.electrumrpc" datatype="html">
         <source>Documentation for our Electrum RPC interface: get instant, convenient, and reliable access to an Esplora instance.</source>
+        <target>Dokumentasjon for vårt Electrum RPC-grensesnitt: få umiddelbar, praktisk og pålitelig tilgang til en Esplora-instans.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -6438,6 +6531,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.channel" datatype="html">
         <source>Overview for Lightning channel <x id="PH" equiv-text="params.get('short_id')"/>. See channel capacity, the Lightning nodes involved, related on-chain transactions, and more.</source>
+        <target>Oversikt for Lightning-kanalen <x id="PH" equiv-text="params.get('short_id')"/>. Se kanalkapasitet, Lightning-nodene som er involvert, relaterte transaksjoner i kjeden og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.ts</context>
           <context context-type="linenumber">37</context>
@@ -6936,6 +7030,7 @@
       </trans-unit>
       <trans-unit id="ec42ed2d917189340598d7993c29b30c7fd32af4" datatype="html">
         <source>Connect</source>
+        <target>Koble til</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
           <context context-type="linenumber">73</context>
@@ -6986,6 +7081,7 @@
       </trans-unit>
       <trans-unit id="34e302a08660d9860dda71e3f350351d34bda498" datatype="html">
         <source>Penalties</source>
+        <target>Straffer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/justice-list/justice-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -7062,7 +7158,8 @@
         <note priority="1" from="description">lightning.connectivity-ranking</note>
       </trans-unit>
       <trans-unit id="meta.description.lightning.dashboard" datatype="html">
-        <source>Get stats on the Lightning network (aggregate capacity, connectivity, etc) and Lightning nodes (channels, liquidity, etc) and Lightning channels (status, fees, etc).</source>
+        <source>Get stats on the Lightning network (aggregate capacity, connectivity, etc), Lightning nodes (channels, liquidity, etc) and Lightning channels (status, fees, etc).</source>
+        <target>Få statistikk om Lightning-nettverket (samlet kapasitet, tilkobling osv.), Lightning-noder (kanaler, likviditet osv.) og Lightning-kanaler (status, avgifter osv.).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -7172,6 +7269,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node" datatype="html">
         <source>Overview for the Lightning network node named <x id="PH" equiv-text="node.alias"/>. See channels, capacity, location, fee stats, and more.</source>
+        <target>Oversikt for Lightning-nettverksnoden <x id="PH" equiv-text="node.alias"/>. Se kanaler, kapasitet, plassering, gebyrstatistikk og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node-preview.component.ts</context>
           <context context-type="linenumber">52</context>
@@ -7232,6 +7330,7 @@
       </trans-unit>
       <trans-unit id="a737eb6814b234b0fd00e81b645b95a396711f15" datatype="html">
         <source>Decoded</source>
+        <target>Dekodet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
           <context context-type="linenumber">136</context>
@@ -7344,7 +7443,7 @@
         <target>(Tor-noder ekskludert)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.html</context>
@@ -7365,14 +7464,15 @@
         <target>Lightning-kanaler verdenskart</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-map" datatype="html">
         <source>See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
+        <target>Se kanalene til ikke-Tor Lightning-nettverksnoder visualisert på et verdenskart. Hold musepekeren/trykk på punkter på kartet for nodenavn og detaljer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4390631969351833104" datatype="html">
@@ -7380,7 +7480,7 @@
         <target>Ingen geolokaliseringsdata tilgjengelig</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-channels-map/nodes-channels-map.component.ts</context>
-          <context context-type="linenumber">227</context>
+          <context context-type="linenumber">228</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a4d393ee035f4225083c22cc3909b26a05a87528" datatype="html">
@@ -7394,6 +7494,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.node-channel-map" datatype="html">
         <source>See the locations of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.</source>
+        <target>Se plasseringen til ikke-Tor Lightning-nettverksnoder visualisert på et verdenskart. Hold musepekeren/trykk på punkter på kartet for nodenavn og detaljer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-map/nodes-map.component.ts</context>
           <context context-type="linenumber">51</context>
@@ -7401,6 +7502,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-network" datatype="html">
         <source>See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.</source>
+        <target>Se antall Lightning-nettverksnoder visualisert over tid etter nettverk: bare clearnet (IPv4, IPv6), darknet (Tor, I2p, cjdns) og begge deler.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -7469,6 +7571,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country-overview" datatype="html">
         <source>See a geographical breakdown of the Lightning network: how many Lightning nodes are hosted in countries around the world, aggregate BTC capacity for each country, and more.</source>
+        <target>Se en geografisk inndeling av Lightning-nettverket: hvor mange Lightning-noder er det i land rundt om i verden, samlet BTC-kapasitet for hvert land, og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -7539,6 +7642,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country" datatype="html">
         <source>Explore all the Lightning nodes hosted in <x id="PH" equiv-text="response.country.en"/> and see an overview of each node's capacity, number of open channels, and more.</source>
+        <target>Utforsk alle Lightning-nodene som er i <x id="PH" equiv-text="response.country.en"/> og se en oversikt over hver nodes kapasitet, antall åpne kanaler og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
           <context context-type="linenumber">36</context>
@@ -7689,6 +7793,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-isp" datatype="html">
         <source>Browse all Bitcoin Lightning nodes using the <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP and see aggregate stats like total number of nodes, total capacity, and more for the ISP.</source>
+        <target>Bla gjennom alle Bitcoin Lightning-noder ved å bruke <x id="PH" equiv-text="response.isp"/> [AS<x id="PH_1" equiv-text="this.route.snapshot.params.isp"/>] ISP og se samlet statistikk som totalt antall noder, total kapasitet, og mer for Internett-leverandøren.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp-preview.component.ts</context>
           <context context-type="linenumber">45</context>
@@ -7744,6 +7849,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.oldest" datatype="html">
         <source>See the oldest nodes on the Lightning network along with their capacity, number of channels, location, etc.</source>
+        <target>Se de eldste nodene på Lightning-nettverket sammen med deres kapasitet, antall kanaler, plassering osv.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/oldest-nodes/oldest-nodes.component.ts</context>
           <context context-type="linenumber">28</context>
@@ -7751,6 +7857,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.liquidity" datatype="html">
         <source>See Lightning nodes with the most BTC liquidity deployed along with high-level stats like number of open channels, location, node age, and more.</source>
+        <target>Se Lightning-noder med mest BTC-likviditet utplassert sammen med statistikk som antall åpne kanaler, plassering, nodens alder og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.ts</context>
           <context context-type="linenumber">34</context>
@@ -7758,6 +7865,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.ranking.channels" datatype="html">
         <source>See Lightning nodes with the most channels open along with high-level stats like total node capacity, node age, and more.</source>
+        <target>Se Lightning-noder med flest åpne kanaler sammen med statistikk som total nodekapasitet, nodealder og mer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.ts</context>
           <context context-type="linenumber">38</context>
@@ -7781,7 +7889,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.rankings-dashboard" datatype="html">
-        <source>See top the Lightning network nodes ranked by liquidity, connectivity, and age.</source>
+        <source>See the top Lightning network nodes ranked by liquidity, connectivity, and age.</source>
+        <target>Se de beste Lightning-nettverksnodene rangert etter likviditet, tilkobling og alder.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-rankings-dashboard/nodes-rankings-dashboard.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -7789,6 +7898,7 @@
       </trans-unit>
       <trans-unit id="meta.description.lightning.stats-chart" datatype="html">
         <source>See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.</source>
+        <target>Se kapasiteten til Lightning-nettverket visualisert over tid i form av antall åpne kanaler og total bitcoin-kapasitet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
           <context context-type="linenumber">67</context>
@@ -7796,6 +7906,7 @@
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmation</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bekreftelse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
           <context context-type="linenumber">4</context>
@@ -7805,6 +7916,7 @@
       </trans-unit>
       <trans-unit id="bc5b0a2631f0b7bc71aaec6aa6f01af21f9a80d4" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ i }}"/> confirmations</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ i }}"/> bekreftelser</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
           <context context-type="linenumber">5</context>
@@ -7814,6 +7926,7 @@
       </trans-unit>
       <trans-unit id="a001c3d27d5fe4a7a362a6089b5b5020ef8c1c95" datatype="html">
         <source>Replaced</source>
+        <target>Erstattet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
           <context context-type="linenumber">12</context>
@@ -7823,6 +7936,7 @@
       </trans-unit>
       <trans-unit id="58fbcd58e305ab289b99fad67d223f3e83ddb755" datatype="html">
         <source>Removed</source>
+        <target>Fjernet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/confirmations/confirmations.component.html</context>
           <context context-type="linenumber">15</context>
@@ -7842,6 +7956,7 @@
       </trans-unit>
       <trans-unit id="57a6f49237ac457ecc67fabdf1361a112ccdbf93" datatype="html">
         <source>sat/WU</source>
+        <target>sat/WU</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
           <context context-type="linenumber">3</context>
@@ -7851,6 +7966,7 @@
       </trans-unit>
       <trans-unit id="5ce2bda884ea801c34a1a6c23627d9a5e08f0a82" datatype="html">
         <source>My Account</source>
+        <target>Min konto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">25</context>
@@ -7863,6 +7979,7 @@
       </trans-unit>
       <trans-unit id="ba4f24bf9bf3dc4db3d6bc1b8b63339295f0b806" datatype="html">
         <source>Sign In</source>
+        <target>Logg inn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">26</context>
@@ -7875,6 +7992,7 @@
       </trans-unit>
       <trans-unit id="1773b1dad3e4b72bca77621985366b9e6a92ae28" datatype="html">
         <source>Explore</source>
+        <target>Utforsk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">41</context>
@@ -7883,6 +8001,7 @@
       </trans-unit>
       <trans-unit id="52dd0ddd9ab3ea7caafcb4d6ac95e9459ef635f5" datatype="html">
         <source>Connect to our Nodes</source>
+        <target>Koble til nodene våre</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">46</context>
@@ -7891,6 +8010,7 @@
       </trans-unit>
       <trans-unit id="1cd6dc07ed789f4013d299b031200224977cbb8b" datatype="html">
         <source>API Documentation</source>
+        <target>API-dokumentasjon</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">47</context>
@@ -7899,6 +8019,7 @@
       </trans-unit>
       <trans-unit id="04dfb6eb5a67d7fa19fb24f0e50324ea63fd8f08" datatype="html">
         <source>Learn</source>
+        <target>Lær</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">50</context>
@@ -7907,6 +8028,7 @@
       </trans-unit>
       <trans-unit id="14f76d294f3ae892e8033d60bb960701cafca66f" datatype="html">
         <source>What is a mempool?</source>
+        <target>Hva er en mempool?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">51</context>
@@ -7915,6 +8037,7 @@
       </trans-unit>
       <trans-unit id="8ac787087e3eec254d15a4e16492f8877107087b" datatype="html">
         <source>What is a block explorer?</source>
+        <target>Hva er en blokkutforsker?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">52</context>
@@ -7923,6 +8046,7 @@
       </trans-unit>
       <trans-unit id="0ab3729578bb613995fc5c90c4d7aa45588dd2a1" datatype="html">
         <source>What is a mempool explorer?</source>
+        <target>Hva er en mempool utforsker?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">53</context>
@@ -7931,6 +8055,7 @@
       </trans-unit>
       <trans-unit id="8fe988a9cb02c11f99631ca85721d34d67fc32ff" datatype="html">
         <source>Why isn't my transaction confirming?</source>
+        <target>Hvorfor bekreftes ikke transaksjonen min?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">54</context>
@@ -7939,6 +8064,7 @@
       </trans-unit>
       <trans-unit id="03f766a5a2abdbfbdcc2b6135691b9fb1f2ed530" datatype="html">
         <source>More FAQs »</source>
+        <target>Flere vanlige spørsmål »</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">55</context>
@@ -7947,6 +8073,7 @@
       </trans-unit>
       <trans-unit id="7a1c82a943fc99d3080aeffeeb7d21f0726ad8cc" datatype="html">
         <source>Networks</source>
+        <target>Nettverk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">59</context>
@@ -7955,6 +8082,7 @@
       </trans-unit>
       <trans-unit id="f96488094a57809ea9bfe4a2f2bf91af66a0d0a3" datatype="html">
         <source>Mainnet Explorer</source>
+        <target>Mainnet utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">60</context>
@@ -7963,6 +8091,7 @@
       </trans-unit>
       <trans-unit id="a31347c0f3ec966c373229584cfb7bd6725a0e64" datatype="html">
         <source>Testnet Explorer</source>
+        <target>Testnet utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">61</context>
@@ -7971,6 +8100,7 @@
       </trans-unit>
       <trans-unit id="c9bf4b5d16994e42297cbe174e831a7edd9cfe72" datatype="html">
         <source>Signet Explorer</source>
+        <target>Signet utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">62</context>
@@ -7979,6 +8109,7 @@
       </trans-unit>
       <trans-unit id="c127ef3218deed36fb86af83def0b54846f92252" datatype="html">
         <source>Liquid Testnet Explorer</source>
+        <target>Liquid testnet utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">63</context>
@@ -7987,6 +8118,7 @@
       </trans-unit>
       <trans-unit id="3c07f1c84d76a9999153e87343fd642852bb6d34" datatype="html">
         <source>Liquid Explorer</source>
+        <target>Liquid utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">64</context>
@@ -7995,6 +8127,7 @@
       </trans-unit>
       <trans-unit id="16e770142bcac84dce7dfb9840d11961ee87ae6c" datatype="html">
         <source>Bisq Explorer</source>
+        <target>Bisq utforsker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">65</context>
@@ -8003,6 +8136,7 @@
       </trans-unit>
       <trans-unit id="fefee13017c2b85143cd131ee253e327a14053a0" datatype="html">
         <source>Tools</source>
+        <target>Verktøy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">69</context>
@@ -8011,6 +8145,7 @@
       </trans-unit>
       <trans-unit id="8c23995422ac012b80a2369a878b199c39271906" datatype="html">
         <source>Clock (Mined)</source>
+        <target>Klokke (utvunnet)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">71</context>
@@ -8019,6 +8154,7 @@
       </trans-unit>
       <trans-unit id="9a91783e9c0f790ed49edae730f9156070ed9dd5" datatype="html">
         <source>Legal</source>
+        <target>Lovlig</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">76</context>
@@ -8047,6 +8183,7 @@
       </trans-unit>
       <trans-unit id="6a0a8485405b9b289101e52a46e282342c8dc9e0" datatype="html">
         <source>Trademark Policy</source>
+        <target>Varemerkepolitikk</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
           <context context-type="linenumber">79</context>
@@ -8056,6 +8193,7 @@
       </trans-unit>
       <trans-unit id="64dd13424d9486cf3d680d934987ec685bac0b3d" datatype="html">
         <source>This is a test network. Coins have no value.</source>
+        <target>Dette er et testnettverk. Mynter har ingen verdi.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/testnet-alert/testnet-alert.component.html</context>
           <context context-type="linenumber">3</context>

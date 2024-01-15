@@ -5,6 +5,7 @@ import { StorageService } from '../../services/storage.service';
 import { Transaction } from '../../interfaces/electrs.interface';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
+import { AudioService } from '../../services/audio.service';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -64,6 +65,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   constructor(
     private servicesApiService: ServicesApiServices,
     private storageService: StorageService,
+    private audioService: AudioService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -187,6 +189,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
       this.userBid
     ).subscribe({
       next: () => {
+        this.audioService.playSound('ascend-chime-cartoon');
         this.showSuccess = true;
         this.scrollToPreviewWithTimeout('successAlert', 'center');
         this.estimateSubscription.unsubscribe();

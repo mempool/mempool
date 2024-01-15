@@ -1,7 +1,11 @@
 <div class="block-filters" [class.filters-active]="activeFilters.length > 0" [class.menu-open]="menuOpen" [class.small]="cssWidth < 500" [class.vsmall]="cssWidth < 400" [class.tiny]="cssWidth < 200">
+  <a *ngIf="menuOpen" [routerLink]="['/docs/faq' | relativeUrl]" fragment="how-do-mempool-goggles-work" class="info-badges" i18n-ngbTooltip="Mempool Goggles tooltip" ngbTooltip="select filter categories to highlight matching transactions">
+    <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span>
+    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true" size="lg"></fa-icon>
+  </a>
   <div class="filter-bar">
-    <button class="menu-toggle" (click)="menuOpen = !menuOpen">
-      <fa-icon [icon]="['fas', 'filter']"></fa-icon>
+    <button class="menu-toggle" (click)="menuOpen = !menuOpen" title="Mempool Goggles">
+      <app-svg-images name="goggles" width="100%" height="100%"></app-svg-images>
     </button>
     <div class="active-tags">
       <ng-container *ngFor="let filter of activeFilters;">

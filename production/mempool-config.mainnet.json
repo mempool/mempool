@@ -3,6 +3,7 @@
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8999,
+    "CACHE_ENABLED": false,
     "MINED_BLOCKS_CACHE": 144,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",
@@ -106,7 +107,12 @@
       "node206.tk7.mempool.space"
     ]
   },
-    "MEMPOOL_SERVICES": {
+  "REDIS": {
+    "ENABLED": true,
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
+  },
+  "MEMPOOL_SERVICES": {
     "API": "https://mempool.space/api/v1/services",
     "ACCELERATIONS": true
   }
