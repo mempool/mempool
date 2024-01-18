@@ -255,6 +255,29 @@ export interface INodesRanking {
   topByChannels: ITopNodesPerChannels[];
 }
 
+export interface INodesStatisticsEntry {
+  added: string;
+  avg_base_fee_mtokens: number; 
+  avg_capacity: number;
+  avg_fee_rate: number;
+  channel_count: number;
+  clearnet_nodes: number;
+  clearnet_tor_nodes: number;
+  id: number; 
+  med_base_fee_mtokens: number;
+  med_capacity: number;
+  med_fee_rate: number;
+  node_count: number;
+  tor_nodes: number;
+  total_capacity: number;
+  unannounced_nodes: number;
+}
+
+export interface INodesStatistics {
+  latest: INodesStatisticsEntry;
+  previous: INodesStatisticsEntry;
+}
+
 export interface IOldestNodes {
   publicKey: string,
   alias: string,
