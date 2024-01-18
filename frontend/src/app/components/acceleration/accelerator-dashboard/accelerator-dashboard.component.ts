@@ -66,7 +66,7 @@ export class AcceleratorDashboardComponent implements OnInit {
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status))
+        return accelerations.filter(acc => ['mined', 'completed', 'failed'].includes(acc.status))
       })
     );
 
