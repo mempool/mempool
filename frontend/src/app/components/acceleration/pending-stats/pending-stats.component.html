@@ -1,10 +1,10 @@
 <div class="stats-wrapper" *ngIf="accelerationStats$ | async as stats; else loading">
   <div class="stats-container">
     <div class="item">
-      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <h5 class="card-title" i18n="accelerator.requests">Requests</h5>
       <div class="card-text">
         <div>{{ stats.count }}</div>
-        <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
+        <div class="symbol" i18n="accelerator.total-pending">pending</div>
       </div>
     </div>
     <div class="item">
@@ -29,7 +29,7 @@
 <ng-template #loading>
   <div class="stats-container loading-container">
     <div class="item">
-      <h5 class="card-title" i18n="address.transactions">Transactions</h5>
+      <h5 class="card-title" i18n="accelerator.requests">Requests</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

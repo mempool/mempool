@@ -81,7 +81,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         }),
         map(([accelerations, blockFeesResponse]) => {
           return {
-            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feePaid, 0) / accelerations.length
+            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + (acc.feePaid - acc.baseFee - acc.vsizeFee), 0) / accelerations.length
           };
         }),
       );
@@ -151,7 +151,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       while (last <= val.avgHeight) {
         blockCount++;
         totalFeeDelta += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feeDelta, 0);
-        totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feePaid, 0);
+        totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + (acc.feePaid - acc.baseFee - acc.vsizeFee), 0);
         totalCount += (blockAccelerations[last] || []).length;
         last++;
       }
@@ -246,7 +246,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
             icon: 'roundRect',
           },
           {
-            name: 'Out-of-band fees per block',
+            name: 'Total bid boost per block',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -256,7 +256,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         ],
         selected: {
           'In-band fees per block': false,
-          'Out-of-band fees per block': true,
+          'Total bid boost per block': true,
         },
         show: !this.widget,
       },
@@ -299,7 +299,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         {
           legendHoverLink: false,
           zlevel: 1,
-          name: 'Out-of-band fees per block',
+          name: 'Total bid boost per block',
           data: data.map(block =>  [block.timestamp * 1000, block.avgFeePaid, block.avgHeight]),
           stack: 'Total',
           type: 'bar',
