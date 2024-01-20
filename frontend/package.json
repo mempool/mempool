@@ -113,7 +113,7 @@
     "cypress": "^13.6.2",
     "cypress-fail-on-console-error": "~4.0.2",
     "cypress-wait-until": "^1.7.2",
-    "mock-socket": "~9.1.5",
+    "mock-socket": "~9.3.1",
     "start-server-and-test": "~1.14.0"
   },
   "scarfSettings": {
