@@ -96,8 +96,8 @@ class ElementsParser {
       logger.debug(`Saved new Federation address ${bitcoinaddress} to federation addresses.`);
 
       // Add the UTXO to the federation txos table
-      const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0];
+      const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, pegtxid, pegindex) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, txid, txindex];
       await DB.query(query_utxos, params_utxos);
       const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`)
       await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
@@ -228,8 +228,8 @@ class ElementsParser {
           // Check that the UTXO was not already added in the DB by previous scans
           const [rows_check] = await DB.query(`SELECT txid FROM federation_txos WHERE txid = ? AND txindex = ?`, [tx.txid, output.n]) as any[];
           if (rows_check.length === 0) {
-            const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0];
+            const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, pegtxid, pegindex) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, '', 0];
             await DB.query(query_utxos, params_utxos);
             // Add the UTXO to the utxo array
             spentAsTip.push({
@@ -348,7 +348,7 @@ class ElementsParser {
 
   // Get all of the UTXOs held by the federation, most recent first
   public async $getFederationUtxos(): Promise<any> {
-    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime FROM federation_txos WHERE unspent = 1 ORDER BY blocktime DESC;`;
+    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex FROM federation_txos WHERE unspent = 1 ORDER BY blocktime DESC;`;
     const [rows] = await DB.query(query);
     return rows;
   }
@@ -369,7 +369,7 @@ class ElementsParser {
   // Get all of the UTXOs held by the federation one month ago, most recent first
   public async $getFederationUtxosOneMonthAgo(): Promise<any> {
     const query = `
-    SELECT txid, txindex, amount, blocknumber, blocktime FROM federation_txos 
+    SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex FROM federation_txos 
     WHERE
         (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
       AND
