@@ -71,6 +71,20 @@ export interface MempoolBlockDelta {
   changed: MempoolDeltaChange[];
 }
 
+export interface MempoolDeltaTxids {
+  added: string[];
+  removed: string[];
+  mined: string[];
+  replaced: { replaced: string, by: string }[];
+}
+
+export interface MempoolDelta {
+  added: MempoolTransactionExtended[];
+  removed: string[];
+  mined: string[];
+  replaced: { replaced: string, by: TransactionExtended }[];
+}
+
 interface VinStrippedToScriptsig {
   scriptsig: string;
 }
