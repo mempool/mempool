@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
-import { catchError, filter, map, scan, share, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { combineLatest, concat, EMPTY, interval, merge, Observable, of, Subscription } from 'rxjs';
+import { catchError, delay, filter, map, mergeMap, scan, share, skip, startWith, switchMap, tap } from 'rxjs/operators';
+import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -47,8 +47,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   transactionsWeightPerSecondOptions: any;
   isLoadingWebSocket$: Observable<boolean>;
   liquidPegsMonth$: Observable<any>;
+  currentPeg$: Observable<CurrentPegs>;
+  auditStatus$: Observable<AuditStatus>;
+  liquidReservesMonth$: Observable<any>;
+  currentReserves$: Observable<CurrentPegs>;
+  fullHistory$: Observable<any>;
   currencySubscription: Subscription;
   currency: string;
+  private lastPegBlockUpdate: number = 0;
+  private lastReservesBlockUpdate: number = 0;
 
   constructor(
     public stateService: StateService,
@@ -82,35 +89,35 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.stateService.mempoolInfo$,
       this.stateService.vbytesPerSecond$
     ])
-    .pipe(
-      map(([mempoolInfo, vbytesPerSecond]) => {
-        const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
+      .pipe(
+        map(([mempoolInfo, vbytesPerSecond]) => {
+          const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
-        let progressColor = 'bg-success';
-        if (vbytesPerSecond > 1667) {
-          progressColor = 'bg-warning';
-        }
-        if (vbytesPerSecond > 3000) {
-          progressColor = 'bg-danger';
-        }
+          let progressColor = 'bg-success';
+          if (vbytesPerSecond > 1667) {
+            progressColor = 'bg-warning';
+          }
+          if (vbytesPerSecond > 3000) {
+            progressColor = 'bg-danger';
+          }
 
-        const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
-        let mempoolSizeProgress = 'bg-danger';
-        if (mempoolSizePercentage <= 50) {
-          mempoolSizeProgress = 'bg-success';
-        } else if (mempoolSizePercentage <= 75) {
-          mempoolSizeProgress = 'bg-warning';
-        }
+          const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
+          let mempoolSizeProgress = 'bg-danger';
+          if (mempoolSizePercentage <= 50) {
+            mempoolSizeProgress = 'bg-success';
+          } else if (mempoolSizePercentage <= 75) {
+            mempoolSizeProgress = 'bg-warning';
+          }
 
-        return {
-          memPoolInfo: mempoolInfo,
-          vBytesPerSecond: vbytesPerSecond,
-          progressWidth: percent + '%',
-          progressColor: progressColor,
-          mempoolSizeProgress: mempoolSizeProgress,
-        };
-      })
-    );
+          return {
+            memPoolInfo: mempoolInfo,
+            vBytesPerSecond: vbytesPerSecond,
+            progressWidth: percent + '%',
+            progressColor: progressColor,
+            mempoolSizeProgress: mempoolSizeProgress,
+          };
+        })
+      );
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -204,8 +211,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       );
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
-      this.liquidPegsMonth$ = this.apiService.listLiquidPegsMonth$()
+      ////////// Pegs historical data //////////
+      this.liquidPegsMonth$ = interval(60 * 60 * 1000)
         .pipe(
+          startWith(0),
+          switchMap(() => this.apiService.listLiquidPegsMonth$()),
           map((pegs) => {
             const labels = pegs.map(stats => stats.date);
             const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
@@ -216,6 +226,89 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             };
           }),
           share(),
+        );
+
+      this.currentPeg$ = concat(
+        // We fetch the current peg when the page load and
+        // wait for the API response before listening to websocket blocks
+        this.apiService.liquidPegs$()
+          .pipe(
+            tap((currentPeg) => this.lastPegBlockUpdate = currentPeg.lastBlockUpdate)
+          ),
+        // Or when we receive a newer block, we wait 2 seconds so that the backend updates and we fetch the current peg
+        this.stateService.blocks$
+          .pipe(
+            delay(2000),
+            switchMap((_) => this.apiService.liquidPegs$()),
+            filter((currentPeg) => currentPeg.lastBlockUpdate > this.lastPegBlockUpdate),
+            tap((currentPeg) => this.lastPegBlockUpdate = currentPeg.lastBlockUpdate)
+          )
+      ).pipe(
+        share()
+      );
+
+      ////////// BTC Reserves historical data //////////
+      this.auditStatus$ = concat(
+        this.apiService.federationAuditSynced$().pipe(share()),
+        this.stateService.blocks$.pipe(
+          skip(1),
+          delay(2000),
+          switchMap(() => this.apiService.federationAuditSynced$()),
+          share()
+        )
+      );
+      
+      this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
+        startWith(0),
+        mergeMap(() => this.apiService.federationAuditSynced$()),
+        switchMap((auditStatus) => {
+          return auditStatus.isAuditSynced ? this.apiService.listLiquidReservesMonth$() : EMPTY;
+        }),
+        map(reserves => {
+          const labels = reserves.map(stats => stats.date);
+          const series = reserves.map(stats => parseFloat(stats.amount) / 100000000);
+          return {
+            series,
+            labels
+          };
+        }),
+        share()
+      );
+
+      this.currentReserves$ = this.auditStatus$.pipe(
+        filter(auditStatus => auditStatus.isAuditSynced === true),
+        switchMap(_ =>
+          this.apiService.liquidReserves$().pipe(
+            filter((currentReserves) => currentReserves.lastBlockUpdate > this.lastReservesBlockUpdate),
+            tap((currentReserves) => {
+              this.lastReservesBlockUpdate = currentReserves.lastBlockUpdate;
+            })
+          )
+        ),
+        share()
+      );
+
+      this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$.pipe(startWith(null)), this.currentReserves$.pipe(startWith(null))])
+        .pipe(
+          map(([liquidPegs, currentPeg, liquidReserves, currentReserves]) => {
+            liquidPegs.series[liquidPegs.series.length - 1] = parseFloat(currentPeg.amount) / 100000000;
+
+            if (liquidPegs.series.length === liquidReserves?.series.length) {
+              liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
+            } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
+              liquidReserves.series.push(parseFloat(currentReserves?.amount) / 100000000);
+            } else {
+              liquidReserves = {
+                series: [],
+                labels: []
+              };
+            }
+
+            return {
+              liquidPegs,
+              liquidReserves
+            };
+          })
         );
     }
 
