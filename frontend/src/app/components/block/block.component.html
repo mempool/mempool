@@ -47,7 +47,7 @@
               <tr>
                 <td i18n="block.timestamp">Timestamp</td>
                 <td>
-                  <app-timestamp [unixTime]="block.timestamp" [precision]="1" minUnit="minute"></app-timestamp>
+                  <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="block.timestamp" [precision]="1" minUnit="minute"></app-timestamp>
                 </td>
               </tr>
               <tr>
@@ -59,7 +59,7 @@
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
               <tr *ngIf="auditAvailable">
-                <td><ng-container i18n="latest-blocks.health">Health</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
+                <td><ng-container i18n="latest-blocks.health">Health</ng-container>&nbsp;<a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
                 <td>
                   <span
                     class="health-badge badge"
@@ -233,7 +233,9 @@
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
-          <ng-container *ngTemplateOutlet="isMobile && mode === 'actual' ? actualDetails : expectedDetails"></ng-container>
+          <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
+            <ng-container *ngTemplateOutlet="isMobile && mode === 'actual' ? actualDetails : expectedDetails"></ng-container>
+          </ng-template>
         </ng-container>
       </div>
       <div class="col-sm" *ngIf="!isMobile">
@@ -245,7 +247,9 @@
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
-          <ng-container *ngTemplateOutlet="actualDetails"></ng-container>
+          <ng-template [ngIf]="!isLoadingOverview" [ngIfElse]="loadingDetailsSkeletons">
+            <ng-container *ngTemplateOutlet="actualDetails"></ng-container>
+          </ng-template>
         </ng-container>
       </div>
     </div>
@@ -447,6 +451,25 @@
             {{ blockAudit.txDelta < 0 ? '+' : '' }}{{ (-blockAudit.txDelta * 100) | amountShortener: 2 }}%
           </span>
         </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #loadingDetailsSkeletons>
+  <table class="table table-borderless table-striped audit-details-table">
+    <tbody>
+      <tr>
+        <td class="w-50" i18n="block.total-fees|Total fees in a block">Total fees</td>
+        <td><span class="skeleton-loader"></span></td>
+      </tr>
+      <tr>
+        <td i18n="block.weight">Weight</td>
+        <td><span class="skeleton-loader"></span></td>
+      </tr>
+      <tr>
+        <td i18n="mempool-block.transactions">Transactions</td>
+        <td><span class="skeleton-loader"></span></td>
       </tr>
     </tbody>
   </table>

@@ -299,7 +299,11 @@
                 <td [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></td>
               </tr>
               <tr *ngIf="adjustedVsize != null">
-                <td i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize</td>
+                <td i18n="transaction.adjusted-vsize|Transaction Adjusted VSize">Adjusted vsize
+                  <a class="info-link" [routerLink]="['/docs/faq/' | relativeUrl]" fragment="what-is-adjusted-vsize">
+                    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                  </a>
+                </td>
                 <td [innerHTML]="'&lrm;' + (adjustedVsize | vbytes: 2)"></td>
               </tr>
               <tr>
@@ -321,7 +325,11 @@
                 <td [innerHTML]="'&lrm;' + (tx.locktime | number)"></td>
               </tr>
               <tr *ngIf="sigops != null">
-                <td i18n="transaction.sigops|Transaction Sigops">Sigops</td>
+                <td i18n="transaction.sigops|Transaction Sigops">Sigops
+                  <a class="info-link" [routerLink]="['/docs/faq/' | relativeUrl]" fragment="what-are-sigops">
+                    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                  </a>
+                </td>
                 <td [innerHTML]="'&lrm;' + (sigops | number)"></td>
               </tr>
               <tr>
@@ -521,7 +529,7 @@
         <td *ngIf="!(tx.acceleration || accelerationInfo)" i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         <td>
           <div class="effective-fee-container">
-            <app-fee-rate *ngIf="accelerationInfo" [fee]="accelerationInfo.actualFeeDelta" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
+            <app-fee-rate *ngIf="accelerationInfo" [fee]="accelerationInfo.acceleratedFee" [weight]="accelerationInfo.effectiveVsize * 4"></app-fee-rate>
             <app-fee-rate *ngIf="!accelerationInfo" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
 
             <ng-template [ngIf]="tx?.status?.confirmed || tx.acceleration || accelerationInfo">

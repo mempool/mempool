@@ -368,12 +368,15 @@ class MempoolBlocks {
     // run the block construction algorithm in a separate thread, and wait for a result
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator();
     try {
-      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
+      const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
         await rustGbt.make(Object.values(newMempool) as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
       );
       if (saveResults) {
         this.rustInitialized = true;
       }
+      const mempoolSize = Object.keys(newMempool).length;
+      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0) + overflow.length;
+      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${mempoolSize} in the mempool, ${overflow.length} were unmineable`);
       const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, saveResults);
       logger.debug(`RUST makeBlockTemplates completed in ${(Date.now() - start)/1000} seconds`);
       return processed;
@@ -424,7 +427,7 @@ class MempoolBlocks {
 
     // run the block construction algorithm in a separate thread, and wait for a result
     try {
-      const { blocks, blockWeights, rates, clusters } = this.convertNapiResultTxids(
+      const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
         await this.rustGbtGenerator.update(
           added as RustThreadTransaction[],
           removedUids,
@@ -432,9 +435,10 @@ class MempoolBlocks {
           this.nextUid,
         ),
       );
-      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0);
+      const resultMempoolSize = blocks.reduce((total, block) => total + block.length, 0) + overflow.length;
+      logger.debug(`RUST updateBlockTemplates returned ${resultMempoolSize} txs out of ${mempoolSize} in the mempool, ${overflow.length} were unmineable`);
       if (mempoolSize !== resultMempoolSize) {
-        throw new Error('GBT returned wrong number of transactions, cache is probably out of sync');
+        throw new Error('GBT returned wrong number of transactions , cache is probably out of sync');
       } else {
         const processed = this.processBlockTemplates(newMempool, blocks, blockWeights, rates, clusters, accelerations, accelerationPool, true);
         this.removeUids(removedUids);
@@ -658,8 +662,8 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters }: GbtResult)
-    : { blocks: string[][], blockWeights: number[], rates: [string, number][], clusters: string[][] } {
+  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters, overflow }: GbtResult)
+    : { blocks: string[][], blockWeights: number[], rates: [string, number][], clusters: string[][], overflow: string[] } {
     const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
       const txid = this.uidMap.get(uid);
       if (txid !== undefined) {
@@ -677,7 +681,15 @@ class MempoolBlocks {
     for (const cluster of clusters) {
       convertedClusters.push(cluster.map(uid => this.uidMap.get(uid)) as string[]);
     }
-    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters };
+    const convertedOverflow: string[] = overflow.map(uid => {
+      const txid = this.uidMap.get(uid);
+      if (txid !== undefined) {
+        return txid;
+      } else {
+        throw new Error('GBT returned an unmineable transaction with unknown uid');
+      }
+    });
+    return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters, overflow: convertedOverflow };
   }
 }
 

@@ -44,6 +44,11 @@ tr, td, th {
   }
 }
 
+.capacity-ratio {
+  font-size: 12px;
+  color: darkgrey;
+}
+
 .geolocation {
   @media (min-width: 768px) and (max-width: 991px) {
     display: none !important;
