@@ -10,6 +10,7 @@
         <th class="txid text-left" [ngClass]="{'widget': widget}">Output</th>
         <th class="address text-left" *ngIf="!widget">Address</th>
         <th class="amount text-right" [ngClass]="{'widget': widget}">Amount</th>
+        <th class="pegin text-right" *ngIf="!widget">Liquid Peg-in</th>
         <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
@@ -42,6 +43,11 @@
             </td>
             <td class="amount text-right">
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+            </td>
+            <td class="pegin text-left">
+              <a *ngIf="utxo.pegtxid" [routerLink]="['/tx', utxo.pegtxid + ':' + utxo.pegindex]" target="_blank" style="color:#116761">
+                <app-truncate [text]="utxo.pegtxid + ':' + utxo.pegindex" [lastChars]="6"></app-truncate>
+              </a>
             </td>
             <td class="timestamp text-right">
               &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}

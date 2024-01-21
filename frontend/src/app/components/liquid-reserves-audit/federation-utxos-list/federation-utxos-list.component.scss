@@ -36,7 +36,7 @@ tr, td, th {
 }
 
 .txid {
-  width: 35%;
+  width: 25%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -62,6 +62,14 @@ tr, td, th {
 }
 .amount.widget {
   width: 25%;
+}
+
+.pegin {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
 }
 
 .timestamp {
