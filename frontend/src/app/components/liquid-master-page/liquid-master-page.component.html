@@ -78,6 +78,9 @@
       <li class="nav-item" routerLinkActive="active" id="btn-assets">
         <a class="nav-link" [routerLink]="['/assets' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'database']" [fixedWidth]="true" i18n-title="master-page.assets" title="Assets"></fa-icon></a>
       </li>
+      <li class="nav-item" routerLinkActive="active" id="btn-audit">
+        <a class="nav-link" [routerLink]="['/audit']" (click)="collapse()"><fa-icon [icon]="['fas', 'check-circle']" [fixedWidth]="true" i18n-title="master-page.about" title="BTC Reserves Audit"></fa-icon></a>
+      </li>
       <li [hidden]="isMobile" class="nav-item mr-2" routerLinkActive="active" id="btn-docs">
         <a class="nav-link" [routerLink]="['/docs' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'book']" [fixedWidth]="true" i18n-title="master-page.docs" title="Docs"></fa-icon></a>
       </li>

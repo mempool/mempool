@@ -1,0 +1,58 @@
+<div class="container-xl dashboard-container" *ngIf="(auditStatus$ | async)?.isAuditSynced; else auditInProgress">
+
+  <div class="row row-cols-1 row-cols-md-2">
+
+    <div class="col">
+      <div class="main-title">
+        <span i18n="liquid.bitcoin-reserves">BTC Reserves</span>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
+          <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="main-title">
+        <span i18n="liquid.federation-utxos">Liquid Federation UTXOs</span>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <app-federation-utxos-stats [federationUtxos$]="federationUtxos$" [federationAddresses$]="federationAddresses$"></app-federation-utxos-stats>
+          <app-federation-utxos-list [federationUtxos$]="federationUtxos$" [widget]="true"></app-federation-utxos-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card graph-card">
+        <div class="card-body pl-2 pr-2">
+          <!-- The historical ratio chart -->
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card graph-card">
+        <div class="card-body pl-2 pr-2">
+          <!-- The addresses table -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #loadingTransactions>
+  <div class="skeleton-loader skeleton-loader-transactions"></div>
+</ng-template>
+
+<ng-template #auditInProgress>
+  <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else loadingTransactions">
+    <div class="in-progress-message" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders; else loadingTransactions">
+      <span i18n="liquid.audit-in-progress">Audit in progress: block {{ auditStatus.lastBlockAudit }} / {{ auditStatus.bitcoinHeaders }}</span>
+    </div>
+  </ng-container>
+</ng-template>

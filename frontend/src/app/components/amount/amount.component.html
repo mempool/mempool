@@ -19,7 +19,7 @@
   </ng-template>
   <ng-template #default>
     &lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ satoshis / 100000000 | number : digitsInfo }}
-    <span class="symbol"><ng-template [ngIf]="network === 'liquid'">L-</ng-template>
+    <span class="symbol"><ng-template [ngIf]="network === 'liquid' && !forceBtc">L-</ng-template>
     <ng-template [ngIf]="network === 'liquidtestnet'">tL-</ng-template>
     <ng-template [ngIf]="network === 'testnet'">t</ng-template>
     <ng-template [ngIf]="network === 'signet'">s</ng-template>BTC</span>

@@ -1,0 +1,84 @@
+<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+  <h1 *ngIf="!widget" class="float-left" i18n="liquid.federation-utxos">Liquid Federation UTXOs</h1>
+  <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
+
+  <div class="clearfix"></div>
+
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead style="vertical-align: middle;">
+        <th class="txid text-left" [ngClass]="{'widget': widget}">Output</th>
+        <th class="address text-left" *ngIf="!widget">Address</th>
+        <th class="amount text-right" [ngClass]="{'widget': widget}">Amount</th>
+        <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
+      </thead>
+      <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+        <ng-container *ngIf="widget; else regularRows">
+          <tr *ngFor="let utxo of utxos | slice:0:5">
+            <td class="txid text-left widget">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="amount text-right widget">
+              <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+            </td>
+            <td class="timestamp text-right widget" [ngClass]="{'widget': widget}">
+              <app-time kind="since" [time]="utxo.blocktime"></app-time>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #regularRows>
+          <tr *ngFor="let utxo of utxos | slice:(page - 1) * pageSize:page * pageSize">
+            <td class="txid text-left">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="address text-left">
+              <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + utxo.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                <app-truncate [text]="utxo.bitcoinaddress" [lastChars]="6"></app-truncate>
+              </a>
+            </td>
+            <td class="amount text-right">
+              <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+            </td>
+            <td class="timestamp text-right">
+              &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+      <ng-template #skeleton>
+        <tbody>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="txid text-left" [ngClass]="{'widget': widget}">
+              <span class="skeleton-loader" style="max-width: 75px"></span>
+            </td>
+            <td class="address text-left" [ngClass]="{'widget': widget}">
+              <span class="skeleton-loader" style="max-width: 125px"></span>
+            </td>
+            <td class="amount" *ngIf="!widget">
+              <span class="skeleton-loader" style="max-width: 150px"></span>
+            </td>
+            <td class="timestamp" *ngIf="!widget">
+              <span class="skeleton-loader" style="max-width: 125px"></span>
+            </td>
+          </tr>
+        </tbody>
+      </ng-template>
+    </table>
+
+    <ngb-pagination *ngIf="!widget && federationUtxos$ | async as utxos" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+      [collectionSize]="utxos.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination>
+
+    <ng-template [ngIf]="!widget">
+      <div class="clearfix"></div>
+      <br>
+    </ng-template>
+  </div>
+  
+</div>
