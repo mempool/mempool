@@ -10,7 +10,7 @@ export class SearchResultsComponent implements OnChanges {
   @Input() results: any = {};
   @Output() selectedResult = new EventEmitter();
 
-  isMobile = (window.innerWidth <= 767.98);
+  isMobile = (window.innerWidth <= 1150);
   resultsFlattened = [];
   activeIdx = 0;
   focusFirst = true;
