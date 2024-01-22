@@ -1,4 +1,4 @@
-<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.otherNetworks.length && !results.addresses.length && !results.nodes.length && !results.channels.length">
+<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.otherNetworks.length && !results.addresses.length && !results.nodes.length && !results.channels.length && !results.liquidAsset.length">
   <ng-template [ngIf]="results.blockHeight">
     <div class="card-title" i18n="search.bitcoin-block-height">Bitcoin Block Height</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
@@ -17,7 +17,7 @@
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
-  <ng-template [ngIf]="results.txId">
+  <ng-template [ngIf]="results.txId && !results.liquidAsset.length">
     <div class="card-title" i18n="search.bitcoin-transaction">Bitcoin Transaction</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
@@ -66,6 +66,12 @@
         <ngb-highlight [result]="channel.short_id" [term]="results.searchText"></ngb-highlight> &nbsp;<span class="symbol">{{ channel.id }}</span>
       </button>
     </ng-template>
+  </ng-template>
+  <ng-template [ngIf]="results.liquidAsset.length">
+    <div class="card-title" i18n="search.liquid-asset">Liquid Asset</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 11 }"></ng-container>&nbsp;<b>({{ results.liquidAsset[1] }})</b>
+    </button>
   </ng-template>
 </div>
 

@@ -170,6 +170,7 @@ export class SearchFormComponent implements OnInit {
               addresses: [],
               nodes: [],
               channels: [],
+              liquidAsset: [],
             };
           }
 
@@ -187,6 +188,7 @@ export class SearchFormComponent implements OnInit {
           const matchesBlockHash = this.regexBlockhash.test(searchText);
           let matchesAddress = !matchesTxId && this.regexAddress.test(searchText);
           const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
+          const liquidAsset = this.assets ? (this.assets[searchText] || []) : [];
 
           // Add B prefix to addresses in Bisq network
           if (!matchesAddress && this.network === 'bisq' && getRegex('address', 'mainnet').test(searchText)) {
@@ -211,6 +213,7 @@ export class SearchFormComponent implements OnInit {
             otherNetworks: otherNetworks,
             nodes: lightningResults.nodes,
             channels: lightningResults.channels,
+            liquidAsset: liquidAsset,
           };
         })
       );
@@ -259,16 +262,16 @@ export class SearchFormComponent implements OnInit {
       } else if (this.regexTransaction.test(searchText)) {
         const matches = this.regexTransaction.exec(searchText);
         if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-          if (this.assets[matches[1]]) {
-            this.navigate('/assets/asset/', matches[1]);
+          if (this.assets[matches[0]]) {
+            this.navigate('/assets/asset/', matches[0]);
           }
-          this.electrsApiService.getAsset$(matches[1])
+          this.electrsApiService.getAsset$(matches[0])
             .subscribe(
-              () => { this.navigate('/assets/asset/', matches[1]); },
+              () => { this.navigate('/assets/asset/', matches[0]); },
               () => {
-                this.electrsApiService.getBlock$(matches[1])
+                this.electrsApiService.getBlock$(matches[0])
                   .subscribe(
-                    (block) => { this.navigate('/block/', matches[1], { state: { data: { block } } }); },
+                    (block) => { this.navigate('/block/', matches[0], { state: { data: { block } } }); },
                     () => { this.navigate('/tx/', matches[0]); });
               }
             );
