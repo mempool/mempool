@@ -1762,8 +1762,8 @@
         <note priority="1" from="description">BTC</note>
         <note priority="1" from="meaning">shared.btc</note>
       </trans-unit>
-      <trans-unit id="4e0fbac5ba55cf78f1accbaf9c871fb23b4b67d9" datatype="html">
-        <source>Success rate</source>
+      <trans-unit id="599dec71fe5c264d05012c7f64080d6347c1dc49" datatype="html">
+        <source>Success Rate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
           <context context-type="linenumber">20</context>
