@@ -1661,6 +1661,10 @@
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
         <note priority="1" from="description">accelerator.acceleration-fees</note>
       </trans-unit>
       <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
@@ -1678,25 +1682,6 @@
           <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">acceleration.total-bid-boost</note>
-      </trans-unit>
-      <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
-        <source>Acceleration Fees</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">69</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
-          <context context-type="linenumber">6</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
-          <context context-type="linenumber">67</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="4793828002882320882" datatype="html">
         <source>At block: <x id="PH" equiv-text="data[0].data[2]"/></source>
@@ -1941,11 +1926,15 @@
         </context-group>
         <note priority="1" from="description">accelerations.no-accelerations</note>
       </trans-unit>
-      <trans-unit id="8adc22d4ccfd987ce3e2c1c86d0ccae17d281328" datatype="html">
-        <source>Active accelerations</source>
+      <trans-unit id="e51c45c636401f8bb3bd8cfd1ed5a3c9810c5fa8" datatype="html">
+        <source>Active Accelerations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
+          <context context-type="linenumber">72</context>
         </context-group>
         <note priority="1" from="description">accelerator.pending-accelerations</note>
       </trans-unit>
@@ -1964,14 +1953,6 @@
           <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">mining.144-blocks</note>
-      </trans-unit>
-      <trans-unit id="e51c45c636401f8bb3bd8cfd1ed5a3c9810c5fa8" datatype="html">
-        <source>Active Accelerations</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
-          <context context-type="linenumber">72</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.recent-accelerations</note>
       </trans-unit>
       <trans-unit id="f0ae1220633178276128371f3965fb53d63581d4" datatype="html">
         <source>Recent Accelerations</source>
@@ -2562,6 +2543,22 @@
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
           <context context-type="linenumber">73</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="6c453b11fd7bd159ae30bc381f367bc736d86909" datatype="html">
+        <source>Block Fees</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-fees-graph/block-fees-graph.component.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">mining.block-fees</note>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.block-fees" datatype="html">
         <source>See the average mining fees earned per Bitcoin block visualized in BTC and USD over time.</source>
@@ -4268,13 +4265,13 @@
         </context-group>
         <note priority="1" from="description">master-page.graphs</note>
       </trans-unit>
-      <trans-unit id="2efef6dfa1c2d2d8fa05b337eccf3e0006af1e94" datatype="html">
-        <source>Acceleration Dashboard</source>
+      <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
+        <source>Accelerator Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <note priority="1" from="description">master-page.acceleration-dashboard</note>
+        <note priority="1" from="description">master-page.accelerator-dashboard</note>
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>
@@ -5547,11 +5544,11 @@
         </context-group>
         <note priority="1" from="description">show-diagram</note>
       </trans-unit>
-      <trans-unit id="9ad256cfb48e88f5bc56243641c992d53461f482" datatype="html">
-        <source>Adjusted vsize <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;info-link&quot; [routerLink]=&quot;[&apos;/docs/faq/&apos; | relativeUrl]&quot; fragment=&quot;what-is-adjusted-vsize&quot;&gt;"/><x id="START_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="&lt;fa-icon [icon]=&quot;[&apos;fas&apos;, &apos;info-circle&apos;]&quot; [fixedWidth]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_FA_ICON" ctype="x-fa_icon"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      <trans-unit id="a8a4dd861f790141e19f773153cf42b5d0b0e6b6" datatype="html">
+        <source>Adjusted vsize</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">302,306</context>
+          <context context-type="linenumber">302</context>
         </context-group>
         <note priority="1" from="description">Transaction Adjusted VSize</note>
         <note priority="1" from="meaning">transaction.adjusted-vsize</note>
@@ -5564,11 +5561,11 @@
         </context-group>
         <note priority="1" from="description">transaction.locktime</note>
       </trans-unit>
-      <trans-unit id="c93f5659ea1b4a8c59a8e4710cbcdb62b37206b0" datatype="html">
-        <source>Sigops <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;info-link&quot; [routerLink]=&quot;[&apos;/docs/faq/&apos; | relativeUrl]&quot; fragment=&quot;what-are-sigops&quot;&gt;"/><x id="START_TAG_FA_ICON" ctype="x-fa_icon" equiv-text="&lt;fa-icon [icon]=&quot;[&apos;fas&apos;, &apos;info-circle&apos;]&quot; [fixedWidth]=&quot;true&quot;&gt;"/><x id="CLOSE_TAG_FA_ICON" ctype="x-fa_icon"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+      <trans-unit id="3dd65e8fa7035988a691aadcb583862c2a9e336a" datatype="html">
+        <source>Sigops</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">328,332</context>
+          <context context-type="linenumber">328</context>
         </context-group>
         <note priority="1" from="description">Transaction Sigops</note>
         <note priority="1" from="meaning">transaction.sigops</note>
