@@ -1,4 +1,4 @@
-<div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget}">
+<div class="container-xl" [ngClass]="{'widget': widget, 'full-height': !widget}">
   <h1 *ngIf="!widget" class="float-left" i18n="liquid.federation-utxos">Liquid Federation UTXOs</h1>
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
@@ -10,8 +10,8 @@
         <th class="txid text-left" [ngClass]="{'widget': widget}">Output</th>
         <th class="address text-left" *ngIf="!widget">Address</th>
         <th class="amount text-right" [ngClass]="{'widget': widget}">Amount</th>
-        <th class="pegin text-right" *ngIf="!widget">Liquid Peg-in</th>
-        <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="pegin text-left" *ngIf="!widget">Liquid Peg-in</th>
+        <th class="timestamp text-left" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
@@ -24,7 +24,7 @@
             <td class="amount text-right widget">
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
-            <td class="timestamp text-right widget" [ngClass]="{'widget': widget}">
+            <td class="timestamp text-left widget">
               <app-time kind="since" [time]="utxo.blocktime"></app-time>
             </td>
           </tr>
@@ -49,7 +49,7 @@
                 <app-truncate [text]="utxo.pegtxid + ':' + utxo.pegindex" [lastChars]="6"></app-truncate>
               </a>
             </td>
-            <td class="timestamp text-right">
+            <td class="timestamp text-left">
               &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
               <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
             </td>
@@ -57,22 +57,38 @@
         </ng-template>
       </tbody>
       <ng-template #skeleton>
-        <tbody>
+        <tbody *ngIf="widget; else regularRowsSkeleton">
           <tr *ngFor="let item of skeletonLines">
-            <td class="txid text-left" [ngClass]="{'widget': widget}">
-              <span class="skeleton-loader" style="max-width: 75px"></span>
+            <td class="txid text-left widget">
+              <span class="skeleton-loader" style="max-width: 190px"></span>
             </td>
-            <td class="address text-left" [ngClass]="{'widget': widget}">
-              <span class="skeleton-loader" style="max-width: 125px"></span>
+            <td class="amount text-right widget">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
-            <td class="amount" *ngIf="!widget">
-              <span class="skeleton-loader" style="max-width: 150px"></span>
-            </td>
-            <td class="timestamp" *ngIf="!widget">
-              <span class="skeleton-loader" style="max-width: 125px"></span>
+            <td class="timestamp text-left widget">
+              <span class="skeleton-loader" style="max-width: 200px"></span>
             </td>
           </tr>
         </tbody>
+        <ng-template #regularRowsSkeleton>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="txid text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="address text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="amount text-right">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+            <td class="pegin text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="timestamp text-left">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+          </tr>
+        </ng-template>
       </ng-template>
     </table>
 

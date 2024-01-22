@@ -9,6 +9,7 @@
 }
 .container-xl.widget {
   padding-left: 0px;
+  padding-right: 0px;
   padding-bottom: 0px;
 }
 
@@ -43,7 +44,7 @@ tr, td, th {
   max-width: 160px;
 }
 .txid.widget {
-  width: 50%;
+  width: 40%;
   
 }
 
@@ -61,7 +62,7 @@ tr, td, th {
   width: 12%;
 }
 .amount.widget {
-  width: 25%;
+  width: 30%;
 }
 
 .pegin {
@@ -84,7 +85,8 @@ tr, td, th {
   }
 }
 .timestamp.widget {
-  width: 25%;
+  width: 30%;
+  padding-right: 0px !important;
   @media (min-width: 768px) AND (max-width: 1050px) {
     display: none;
   }
