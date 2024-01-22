@@ -561,8 +561,8 @@ class DatabaseMigration {
 
     if (databaseSchemaVersion < 67 && config.MEMPOOL.NETWORK === "liquid") {
       // Drop and re-create the elements_pegs table
-      await this.$executeQuery('DROP table IF EXISTS elements_pegs;');
-      await this.$executeQuery(this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
       await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
       // Create the federation_addresses table and add the two Liquid Federation change addresses in
       await this.$executeQuery(this.getCreateFederationAddressesTableQuery(), await this.$checkIfTableExists('federation_addresses'));
@@ -816,8 +816,7 @@ class DatabaseMigration {
       bitcoinaddress varchar(100) NOT NULL,
       bitcointxid varchar(65) NOT NULL,
       bitcoinindex int(11) NOT NULL,
-      final_tx int(11) NOT NULL,
-      PRIMARY KEY (txid, txindex)
+      final_tx int(11) NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
