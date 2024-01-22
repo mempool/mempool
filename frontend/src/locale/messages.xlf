@@ -2001,8 +2001,8 @@
         </context-group>
         <note priority="1" from="description">accelerator.average-max-bid</note>
       </trans-unit>
-      <trans-unit id="62be8da2e6a219a43d83a1887e55dc0ae1be155b" datatype="html">
-        <source>Total vsize</source>
+      <trans-unit id="16fedee43f919b6a0992f32aeec5d6938e8d6b76" datatype="html">
+        <source>Total Vsize</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/pending-stats/pending-stats.component.html</context>
           <context context-type="linenumber">20</context>
