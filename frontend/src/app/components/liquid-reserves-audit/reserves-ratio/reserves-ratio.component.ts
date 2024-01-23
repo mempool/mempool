@@ -12,7 +12,7 @@ import { CurrentPegs } from '../../../interfaces/node-api.interface';
 export class ReservesRatioComponent implements OnInit, OnChanges {
   @Input() currentPeg: CurrentPegs;
   @Input() currentReserves: CurrentPegs;
-  pegsChartOptions: EChartsOption;
+  ratioChartOptions: EChartsOption;
 
   height: number | string = '200';
   right: number | string = '10';
@@ -21,8 +21,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
   template: ('widget' | 'advanced') = 'widget';
   isLoading = true;
 
-  pegsChartOption: EChartsOption = {};
-  pegsChartInitOption = {
+  ratioChartInitOptions = {
     renderer: 'svg'
   };
 
@@ -36,7 +35,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
     if (!this.currentPeg || !this.currentReserves || this.currentPeg.amount === '0') {
       return;
     }
-    this.pegsChartOptions = this.createChartOptions(this.currentPeg, this.currentReserves);
+    this.ratioChartOptions = this.createChartOptions(this.currentPeg, this.currentReserves);
   }
 
   rendered() {

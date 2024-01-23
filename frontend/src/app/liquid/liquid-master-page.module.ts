@@ -19,7 +19,11 @@ import { ReservesAuditDashboardComponent } from '../components/liquid-reserves-a
 import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
 import { FederationUtxosStatsComponent } from '../components/liquid-reserves-audit/federation-utxos-stats/federation-utxos-stats.component';
 import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
+import { FederationAddressesStatsComponent } from '../components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
+import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
 import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
+import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
+import { ReservesRatioGraphComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio-graph.component';
 
 const routes: Routes = [
   {
@@ -86,6 +90,10 @@ const routes: Routes = [
       {
         path: 'audit/utxos',
         component: FederationUtxosListComponent,
+      },
+      {
+        path: 'audit/addresses',
+        component: FederationAddressesListComponent,
       },
       {
         path: 'assets',
@@ -156,7 +164,11 @@ export class LiquidRoutingModule { }
     ReservesSupplyStatsComponent,
     FederationUtxosStatsComponent,
     FederationUtxosListComponent,
+    FederationAddressesStatsComponent,
+    FederationAddressesListComponent,
     ReservesRatioComponent,
+    ReservesRatioStatsComponent,
+    ReservesRatioGraphComponent,
   ]
 })
 export class LiquidMasterPageModule { }

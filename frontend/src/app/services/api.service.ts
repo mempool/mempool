@@ -206,11 +206,11 @@ export class ApiService {
     return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
   }
 
-  federationAddressesOneMonthAgo$(): Observable<FederationAddress[]> {
+  federationAddressesOneMonthAgo$(): Observable<any> {
     return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/previous-month');
   }
 
-  federationUtxosOneMonthAgo$(): Observable<FederationUtxo[]> {
+  federationUtxosOneMonthAgo$(): Observable<any> {
     return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/previous-month');
   }
 

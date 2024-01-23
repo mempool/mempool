@@ -71,6 +71,9 @@ tr, td, th {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 160px;
+  @media (max-width: 872px) {
+    display: none;
+  }
 }
 
 .timestamp {
@@ -85,8 +88,7 @@ tr, td, th {
   }
 }
 .timestamp.widget {
-  width: 30%;
-  padding-right: 0px !important;
+  width: 100%;
   @media (min-width: 768px) AND (max-width: 1050px) {
     display: none;
   }

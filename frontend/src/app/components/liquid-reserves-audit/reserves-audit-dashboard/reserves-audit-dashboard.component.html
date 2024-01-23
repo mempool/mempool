@@ -3,9 +3,6 @@
   <div class="row row-cols-1 row-cols-md-2">
 
     <div class="col">
-      <div class="main-title">
-        <span i18n="liquid.bitcoin-reserves">BTC Reserves</span>
-      </div>
       <div class="card">
         <div class="card-body">
           <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
@@ -14,30 +11,31 @@
       </div>
     </div>
 
-    <div class="col">
-      <div class="main-title">
-        <span i18n="liquid.federation-utxos">Liquid Federation UTXOs</span>
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card"> 
+        <div class="card-title">
+          <app-reserves-ratio-stats [fullHistory$]="fullHistory$"></app-reserves-ratio-stats>
+        </div>
+        <div class="card-body pl-0" style="padding-top: 10px;">
+          <app-reserves-ratio-graph [data]="fullHistory$ | async"></app-reserves-ratio-graph>
+        </div>
       </div>
+    </div>
+
+    <div class="col">
       <div class="card">
         <div class="card-body">
-          <app-federation-utxos-stats [federationUtxos$]="federationUtxos$" [federationAddresses$]="federationAddresses$"></app-federation-utxos-stats>
+          <app-federation-utxos-stats [federationUtxos$]="federationUtxos$" [federationUtxosOneMonthAgo$]="federationUtxosOneMonthAgo$"></app-federation-utxos-stats>
           <app-federation-utxos-list [federationUtxos$]="federationUtxos$" [widget]="true"></app-federation-utxos-list>
         </div>
       </div>
     </div>
 
     <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card graph-card">
-        <div class="card-body pl-2 pr-2">
-          <!-- The historical ratio chart -->
-        </div>
-      </div>
-    </div>
-
-    <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card graph-card">
-        <div class="card-body pl-2 pr-2">
-          <!-- The addresses table -->
+      <div class="card">
+        <div class="card-body">
+          <app-federation-addresses-stats [federationAddresses$]="federationAddresses$" [federationAddressesOneMonthAgo$]="federationAddressesOneMonthAgo$"></app-federation-addresses-stats>
+          <app-federation-addresses-list [federationAddresses$]="federationAddresses$" [widget]="true"></app-federation-addresses-list>
         </div>
       </div>
     </div>
@@ -51,9 +49,6 @@
     <div class="row row-cols-1 row-cols-md-2">
   
       <div class="col">
-        <div class="main-title">
-          <span i18n="liquid.bitcoin-reserves">BTC Reserves</span>
-        </div>
         <div class="card">
           <div class="card-body">
             <app-reserves-supply-stats></app-reserves-supply-stats>
@@ -61,11 +56,19 @@
           </div>
         </div>
       </div>
+
+      <div class="col" style="margin-bottom: 1.47rem">
+        <div class="card"> 
+          <div class="card-title">
+            <app-reserves-ratio-stats></app-reserves-ratio-stats>
+          </div>
+          <div class="card-body pl-0" style="padding-top: 10px;">
+            <app-reserves-ratio-graph></app-reserves-ratio-graph>
+          </div>
+        </div>
+      </div>
   
       <div class="col">
-        <div class="main-title">
-          <span i18n="liquid.federation-utxos">Liquid Federation UTXOs</span>
-        </div>
         <div class="card">
           <div class="card-body">
             <app-federation-utxos-stats></app-federation-utxos-stats>
@@ -75,17 +78,10 @@
       </div>
   
       <div class="col" style="margin-bottom: 1.47rem">
-        <div class="card graph-card">
-          <div class="card-body pl-2 pr-2">
-            <!-- The historical ratio chart -->
-          </div>
-        </div>
-      </div>
-  
-      <div class="col" style="margin-bottom: 1.47rem">
-        <div class="card graph-card">
-          <div class="card-body pl-2 pr-2">
-            <!-- The addresses table -->
+        <div class="card">
+          <div class="card-body">
+            <app-federation-addresses-stats></app-federation-addresses-stats>
+            <app-federation-addresses-list [widget]="true"></app-federation-addresses-list>
           </div>
         </div>
       </div>

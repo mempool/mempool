@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
-import { Observable, concat, delay, filter, share, skip, switchMap, tap, throttleTime } from 'rxjs';
+import { Observable, combineLatest, concat, delay, filter, interval, map, mergeMap, of, share, skip, startWith, switchMap, tap, throttleTime } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
-import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo } from '../../../interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo, LiquidPegs } from '../../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-reserves-audit-dashboard',
@@ -14,10 +14,16 @@ import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo } from '../
 })
 export class ReservesAuditDashboardComponent implements OnInit {
   auditStatus$: Observable<AuditStatus>;
+  auditUpdated$: Observable<boolean>;
   currentPeg$: Observable<CurrentPegs>;
   currentReserves$: Observable<CurrentPegs>;
   federationUtxos$: Observable<FederationUtxo[]>;
+  federationUtxosOneMonthAgo$: Observable<any>;
   federationAddresses$: Observable<FederationAddress[]>;
+  federationAddressesOneMonthAgo$: Observable<any>;
+  liquidPegsMonth$: Observable<any>;
+  liquidReservesMonth$: Observable<any>;
+  fullHistory$: Observable<any>;
   private lastPegBlockUpdate: number = 0;
   private lastReservesBlockUpdate: number = 0;
 
@@ -45,8 +51,16 @@ export class ReservesAuditDashboardComponent implements OnInit {
       )
     );
 
-    this.currentReserves$ = this.auditStatus$.pipe(
+    this.auditUpdated$ = this.auditStatus$.pipe(
       filter(auditStatus => auditStatus.isAuditSynced === true),
+      map(auditStatus => auditStatus.lastBlockAudit),
+      switchMap((lastBlockAudit) => {
+        return lastBlockAudit > this.lastReservesBlockUpdate ? of(true) : of(false);
+      }),
+    );
+
+    this.currentReserves$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
       switchMap(_ =>
         this.apiService.liquidReserves$().pipe(
           filter((currentReserves) => currentReserves.lastBlockUpdate > this.lastReservesBlockUpdate),
@@ -71,17 +85,84 @@ export class ReservesAuditDashboardComponent implements OnInit {
       share()
     );
 
-    this.federationUtxos$ = this.auditStatus$.pipe(
-      filter(auditStatus => auditStatus.isAuditSynced === true),
+    this.federationUtxos$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
       switchMap(_ => this.apiService.federationUtxos$()),
       share()
     );
 
-    this.federationAddresses$ = this.auditStatus$.pipe(
-      filter(auditStatus => auditStatus.isAuditSynced === true),
+    this.federationAddresses$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
       switchMap(_ => this.apiService.federationAddresses$()),
       share()
     );
+
+    this.federationUtxosOneMonthAgo$ = interval(60 * 60 * 1000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.apiService.federationUtxosOneMonthAgo$())
+      );
+
+    this.federationAddressesOneMonthAgo$ = interval(60 * 60 * 1000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.apiService.federationAddressesOneMonthAgo$())
+      );
+
+    this.liquidPegsMonth$ = interval(60 * 60 * 1000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.apiService.listLiquidPegsMonth$()),
+        map((pegs) => {
+          const labels = pegs.map(stats => stats.date);
+          const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
+          series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
+          return {
+            series,
+            labels
+          };
+        }),
+        share(),
+      );
+
+    this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
+      startWith(0),
+      switchMap(() => this.apiService.listLiquidReservesMonth$()),
+      map(reserves => {
+        const labels = reserves.map(stats => stats.date);
+        const series = reserves.map(stats => parseFloat(stats.amount) / 100000000);
+        return {
+          series,
+          labels
+        };
+      }),
+      share()
+    );
+
+    this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$, this.currentReserves$])
+      .pipe(
+        map(([liquidPegs, currentPeg, liquidReserves, currentReserves]) => {
+          liquidPegs.series[liquidPegs.series.length - 1] = parseFloat(currentPeg.amount) / 100000000;
+
+          if (liquidPegs.series.length === liquidReserves?.series.length) {
+            liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
+          } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
+            liquidReserves.series.push(parseFloat(currentReserves?.amount) / 100000000);
+            liquidReserves.labels.push(liquidPegs.labels[liquidPegs.labels.length - 1]);
+          } else {
+            liquidReserves = {
+              series: [],
+              labels: []
+            };
+          }
+
+          return {
+            liquidPegs,
+            liquidReserves
+          };
+        }),
+        share()
+      );
   }
 
 }

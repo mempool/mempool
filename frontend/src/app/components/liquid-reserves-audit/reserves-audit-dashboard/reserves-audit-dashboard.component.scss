@@ -10,19 +10,8 @@
   background-color: #1d1f31;
 }
 
-.graph-card {
-  height: 100%;
-  @media (min-width: 992px) {
-    height: 385px;
-  }
-}
-
 .card-title {
-  font-size: 1rem;
-  color: #4a68b9;
-}
-.card-title > a {
-  color: #4a68b9;
+  padding-top: 20px;
 }
 
 .card-body.pool-ranking {
@@ -46,17 +35,6 @@
 
 .fade-border {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%)
-}
-
-.main-title {
-  position: relative;
-  color: #ffffff91;
-  margin-top: -13px;
-  font-size: 11px;
-  text-transform: uppercase;
-  font-weight: 500;
-  text-align: center;
-  padding-bottom: 3px;
 }
 
 .in-progress-message {

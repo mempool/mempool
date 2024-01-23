@@ -49,6 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   liquidPegsMonth$: Observable<any>;
   currentPeg$: Observable<CurrentPegs>;
   auditStatus$: Observable<AuditStatus>;
+  auditUpdated$: Observable<boolean>;
   liquidReservesMonth$: Observable<any>;
   currentReserves$: Observable<CurrentPegs>;
   fullHistory$: Observable<any>;
@@ -258,7 +259,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           share()
         )
       );
-      
+
+      this.auditUpdated$ = this.auditStatus$.pipe(
+        filter(auditStatus => auditStatus.isAuditSynced === true),
+        map(auditStatus => auditStatus.lastBlockAudit),
+        switchMap((lastBlockAudit) => {
+          return lastBlockAudit > this.lastReservesBlockUpdate ? of(true) : of(false);
+        }),
+      );
+
       this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
         startWith(0),
         mergeMap(() => this.apiService.federationAuditSynced$()),
@@ -276,8 +285,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         share()
       );
 
-      this.currentReserves$ = this.auditStatus$.pipe(
-        filter(auditStatus => auditStatus.isAuditSynced === true),
+      this.currentReserves$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
         switchMap(_ =>
           this.apiService.liquidReserves$().pipe(
             filter((currentReserves) => currentReserves.lastBlockUpdate > this.lastReservesBlockUpdate),
@@ -298,6 +307,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
               liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
             } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
               liquidReserves.series.push(parseFloat(currentReserves?.amount) / 100000000);
+              liquidReserves.labels.push(liquidPegs.labels[liquidPegs.labels.length - 1]);
             } else {
               liquidReserves = {
                 series: [],
@@ -309,7 +319,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
               liquidPegs,
               liquidReserves
             };
-          })
+          }),
+          share()
         );
     }
 

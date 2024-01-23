@@ -3,18 +3,18 @@ import { Observable, concat } from 'rxjs';
 import { delay, filter, map, share, skip, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
-import { AuditStatus, FederationUtxo } from '../../../interfaces/node-api.interface';
+import { AuditStatus, FederationAddress } from '../../../interfaces/node-api.interface';
 import { WebsocketService } from '../../../services/websocket.service';
 
 @Component({
-  selector: 'app-federation-utxos-list',
-  templateUrl: './federation-utxos-list.component.html',
-  styleUrls: ['./federation-utxos-list.component.scss'],
+  selector: 'app-federation-addresses-list',
+  templateUrl: './federation-addresses-list.component.html',
+  styleUrls: ['./federation-addresses-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FederationUtxosListComponent implements OnInit {
+export class FederationAddressesListComponent implements OnInit {
   @Input() widget: boolean = false;
-  @Input() federationUtxos$: Observable<FederationUtxo[]>;
+  @Input() federationAddresses$: Observable<FederationAddress[]>;
 
   env: Env;
   isLoading = true;
@@ -29,7 +29,7 @@ export class FederationUtxosListComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     public stateService: StateService,
-    private websocketService: WebsocketService,
+    private websocketService: WebsocketService
   ) {
   }
 
@@ -59,9 +59,9 @@ export class FederationUtxosListComponent implements OnInit {
         })
       );
 
-      this.federationUtxos$ = this.auditUpdated$.pipe(
+      this.federationAddresses$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
-        switchMap(_ => this.apiService.federationUtxos$()),
+        switchMap(_ => this.apiService.federationAddresses$()),
         tap(_ => this.isLoading = false),
         share()
       );

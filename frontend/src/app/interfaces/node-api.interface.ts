@@ -83,7 +83,7 @@ export interface CurrentPegs {
 }
 
 export interface FederationAddress { 
-  address: string;
+  bitcoinaddress: string;
   balance: string;
 }
 

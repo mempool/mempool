@@ -276,7 +276,7 @@
     </div>
     <div class="item">
       <a class="title-link" [routerLink]="['/audit' | relativeUrl]">
-        <h5 class="card-title" i18n="dashboard.btc-reserves">BTC Reserves <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+        <h5 class="card-title" i18n="dashboard.btc-reserves">BTC Reserves <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon><span class="badge badge-pill badge-warning beta" style="margin-left: 4px; font-size: 10px;">beta</span></h5>
       </a>
       <ng-container *ngIf="(currentReserves$ | async) as currentReserves; else loadingTransactions">
         <p i18n-ngbTooltip="liquid.last-bitcoin-audit-block" [ngbTooltip]="'BTC reserves last updated at Bitcoin block ' + (currentReserves.lastBlockUpdate)" placement="top" class="card-text">{{ +(currentReserves.amount) / 100000000 | number: '1.2-2' }} <span class="bitcoin-color">BTC</span></p>
