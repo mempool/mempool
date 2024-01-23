@@ -222,11 +222,6 @@ jobs:
             promo-video-assets.zip
           key: promo-video-assets-cache
 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: mining-pool-assets
-
       - name: Unzip assets before building (src/resources)
         run: unzip -o mining-pool-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/mining-pools
 
