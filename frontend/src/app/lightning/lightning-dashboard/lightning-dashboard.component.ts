@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { INodesRanking } from '../../interfaces/node-api.interface';
+import { INodesRanking, INodesStatistics } from '../../interfaces/node-api.interface';
 import { SeoService } from '../../services/seo.service';
 import { StateService } from '../../services/state.service';
 import { LightningApiService } from '../lightning-api.service';
@@ -13,7 +13,7 @@ import { LightningApiService } from '../lightning-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightningDashboardComponent implements OnInit, AfterViewInit {
-  statistics$: Observable<any>;
+  statistics$: Observable<INodesStatistics>;
   nodesRanking$: Observable<INodesRanking>;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
 
