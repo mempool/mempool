@@ -14,10 +14,15 @@ export class SearchResultsComponent implements OnChanges {
   resultsFlattened = [];
   activeIdx = 0;
   focusFirst = true;
+  networkName = '';
 
   constructor(
     public stateService: StateService,
     ) { }
+
+  ngOnInit() {
+    this.networkName = this.stateService.network.charAt(0).toUpperCase() + this.stateService.network.slice(1);
+  }
 
   ngOnChanges() {
     this.activeIdx = 0;
