@@ -218,7 +218,7 @@ class WebsocketHandler {
               }
             }
             if (Object.keys(addressMap).length > config.MEMPOOL.MAX_TRACKED_ADDRESSES) {
-              response['track-addresses-error'] = `too many addresses requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} addresses`;
+              response['track-addresses-error'] = `"too many addresses requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} addresses"`;
               client['track-addresses'] = null;
             } else if (Object.keys(addressMap).length > 0) {
               client['track-addresses'] = addressMap;
@@ -235,7 +235,7 @@ class WebsocketHandler {
               }
             }
             if (spks.length > config.MEMPOOL.MAX_TRACKED_ADDRESSES) {
-              response['track-scriptpubkeys-error'] = `too many scriptpubkeys requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} scriptpubkeys`;
+              response['track-scriptpubkeys-error'] = `"too many scriptpubkeys requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} scriptpubkeys"`;
               client['track-scriptpubkeys'] = null;
             } else if (spks.length) {
               client['track-scriptpubkeys'] = spks;
