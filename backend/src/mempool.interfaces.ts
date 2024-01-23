@@ -281,6 +281,7 @@ export interface BlockExtended extends IEsploraApi.Block {
 export interface BlockSummary {
   id: string;
   transactions: TransactionClassified[];
+  version?: number;
 }
 
 export interface AuditSummary extends BlockAudit {

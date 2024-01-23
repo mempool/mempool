@@ -606,55 +606,59 @@ class Blocks {
     logger.debug(`Classifying blocks and templates from #${currentBlockHeight} to #${minHeight}`, logger.tags.goggles);
 
     for (let height = currentBlockHeight; height >= 0; height--) {
-      let txs: TransactionExtended[] | null = null;
-      if (unclassifiedBlocks[height]) {
-        const blockHash = unclassifiedBlocks[height];
-        // fetch transactions
-        txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx));
-        // add CPFP
-        const cpfpSummary = Common.calculateCpfp(height, txs, true);
-        // classify
-        const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
-        BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
-      }
-      if (unclassifiedTemplates[height]) {
-        // classify template
-        const blockHash = unclassifiedTemplates[height];
-        const template = await BlocksSummariesRepository.$getTemplate(blockHash);
-        const alreadyClassified = template?.transactions.reduce((classified, tx) => (classified || tx.flags > 0), false);
-        let classifiedTemplate = template?.transactions || [];
-        if (!alreadyClassified) {
-          const templateTxs: (TransactionExtended | TransactionClassified)[] = [];
-          const blockTxMap: { [txid: string]: TransactionExtended } = {};
-          for (const tx of (txs || [])) {
-            blockTxMap[tx.txid] = tx;
-          }
-          for (const templateTx of (template?.transactions || [])) {
-            let tx: TransactionExtended | null = blockTxMap[templateTx.txid];
-            if (!tx) {
-              try {
-                tx = await transactionUtils.$getTransactionExtended(templateTx.txid, false, true, false);
-              } catch (e) {
-                // transaction probably not found
-              }
-            }
-            templateTxs.push(tx || templateTx);
-          }
-          const cpfpSummary = Common.calculateCpfp(height, txs?.filter(tx => tx.effectiveFeePerVsize != null) as TransactionExtended[], true);
+      try {
+        let txs: TransactionExtended[] | null = null;
+        if (unclassifiedBlocks[height]) {
+          const blockHash = unclassifiedBlocks[height];
+          // fetch transactions
+          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx));
+          // add CPFP
+          const cpfpSummary = Common.calculateCpfp(height, txs, true);
           // classify
           const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
-          const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
-          for (const tx of classifiedTxs) {
-            classifiedTxMap[tx.txid] = tx;
-          }
-          classifiedTemplate = classifiedTemplate.map(tx => {
-            if (classifiedTxMap[tx.txid]) {
-              tx.flags = classifiedTxMap[tx.txid].flags || 0;
-            }
-            return tx;
-          });
+          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
         }
-        BlocksSummariesRepository.$saveTemplate({ height, template: { id: blockHash, transactions: classifiedTemplate }, version: 1 });
+        if (unclassifiedTemplates[height]) {
+          // classify template
+          const blockHash = unclassifiedTemplates[height];
+          const template = await BlocksSummariesRepository.$getTemplate(blockHash);
+          const alreadyClassified = template?.transactions.reduce((classified, tx) => (classified || tx.flags > 0), false);
+          let classifiedTemplate = template?.transactions || [];
+          if (!alreadyClassified) {
+            const templateTxs: (TransactionExtended | TransactionClassified)[] = [];
+            const blockTxMap: { [txid: string]: TransactionExtended } = {};
+            for (const tx of (txs || [])) {
+              blockTxMap[tx.txid] = tx;
+            }
+            for (const templateTx of (template?.transactions || [])) {
+              let tx: TransactionExtended | null = blockTxMap[templateTx.txid];
+              if (!tx) {
+                try {
+                  tx = await transactionUtils.$getTransactionExtended(templateTx.txid, false, true, false);
+                } catch (e) {
+                  // transaction probably not found
+                }
+              }
+              templateTxs.push(tx || templateTx);
+            }
+            const cpfpSummary = Common.calculateCpfp(height, txs?.filter(tx => tx.effectiveFeePerVsize != null) as TransactionExtended[], true);
+            // classify
+            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+            const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
+            for (const tx of classifiedTxs) {
+              classifiedTxMap[tx.txid] = tx;
+            }
+            classifiedTemplate = classifiedTemplate.map(tx => {
+              if (classifiedTxMap[tx.txid]) {
+                tx.flags = classifiedTxMap[tx.txid].flags || 0;
+              }
+              return tx;
+            });
+          }
+          await BlocksSummariesRepository.$saveTemplate({ height, template: { id: blockHash, transactions: classifiedTemplate }, version: 1 });
+        }
+      } catch (e) {
+        logger.warn(`Failed to classify template or block summary at ${height}`, logger.tags.goggles);
       }
 
       // timing & logging
