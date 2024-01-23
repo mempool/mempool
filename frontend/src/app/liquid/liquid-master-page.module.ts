@@ -91,7 +91,7 @@ const routes: Routes = [
           },
           {
             path: '**',
-            redirectTo: 'all'
+            redirectTo: 'featured'
           }
         ]
       },

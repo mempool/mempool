@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { INodesStatistics } from '../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-node-statistics',
@@ -8,7 +9,7 @@ import { Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeStatisticsComponent implements OnInit {
-  @Input() statistics$: Observable<any>;
+  @Input() statistics$: Observable<INodesStatistics>;
 
   constructor() { }
 
