@@ -185,6 +185,7 @@ class Indexer {
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
       await auditReplicator.$sync();
+      await blocks.$classifyBlocks();
     } catch (e) {
       this.indexerRunning = false;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));

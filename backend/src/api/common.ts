@@ -635,12 +635,12 @@ export class Common {
     }
   }
 
-  static calculateCpfp(height: number, transactions: TransactionExtended[]): CpfpSummary {
+  static calculateCpfp(height: number, transactions: TransactionExtended[], saveRelatives: boolean = false): CpfpSummary {
     const clusters: CpfpCluster[] = []; // list of all cpfp clusters in this block
     const clusterMap: { [txid: string]: CpfpCluster } = {}; // map transactions to their cpfp cluster
     let clusterTxs: TransactionExtended[] = []; // working list of elements of the current cluster
     let ancestors: { [txid: string]: boolean } = {}; // working set of ancestors of the current cluster root
-    const txMap = {};
+    const txMap: { [txid: string]: TransactionExtended } = {};
     // initialize the txMap
     for (const tx of transactions) {
       txMap[tx.txid] = tx;
@@ -708,6 +708,15 @@ export class Common {
           // update the existing cluster with the dependent rate
           clusterMap[tx.txid].effectiveFeePerVsize = minAncestorRate;
         }
+      }
+    }
+    if (saveRelatives) {
+      for (const cluster of clusters) {
+        cluster.txs.forEach((member, index) => {
+          txMap[member.txid].descendants = cluster.txs.slice(0, index).reverse();
+          txMap[member.txid].ancestors = cluster.txs.slice(index + 1).reverse();
+          txMap[member.txid].effectiveFeePerVsize = cluster.effectiveFeePerVsize;
+        });
       }
     }
     return {
