@@ -356,27 +356,30 @@ class ElementsParser {
   // Get all of the federation addresses one month ago, most balances first
   public async $getFederationAddressesOneMonthAgo(): Promise<any> {
     const query = `
-    SELECT bitcoinaddress, SUM(amount) AS balance FROM federation_txos 
-    WHERE
-        (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
-      AND
-        ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP()))))
-   	GROUP BY bitcoinaddress ORDER BY balance DESC;`;
+    SELECT COUNT(*) AS addresses_count_one_month FROM (
+      SELECT bitcoinaddress, SUM(amount) AS balance
+      FROM federation_txos 
+      WHERE
+          (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
+        AND
+          ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP()))))
+      GROUP BY bitcoinaddress
+    ) AS result;`;
     const [rows] = await DB.query(query);
-    return rows;
+    return rows[0];
   }
 
   // Get all of the UTXOs held by the federation one month ago, most recent first
   public async $getFederationUtxosOneMonthAgo(): Promise<any> {
     const query = `
-    SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex FROM federation_txos 
+    SELECT COUNT(*) AS utxos_count_one_month FROM federation_txos 
     WHERE
         (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
       AND
         ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP()))))
     ORDER BY blocktime DESC;`;
     const [rows] = await DB.query(query);
-    return rows;
+    return rows[0];
   }
 
 }
