@@ -73,10 +73,10 @@
     "@angular/platform-browser-dynamic": "^14.2.12",
     "@angular/platform-server": "^14.2.12",
     "@angular/router": "^14.2.12",
-    "@fortawesome/angular-fontawesome": "~0.11.1",
-    "@fortawesome/fontawesome-common-types": "~6.2.1",
+    "@fortawesome/angular-fontawesome": "~0.14.1",
+    "@fortawesome/fontawesome-common-types": "~6.5.1",
     "@fortawesome/fontawesome-svg-core": "~6.2.1",
-    "@fortawesome/free-solid-svg-icons": "~6.2.1",
+    "@fortawesome/free-solid-svg-icons": "~6.5.1",
     "@mempool/mempool.js": "2.3.0",
     "@ng-bootstrap/ng-bootstrap": "^13.1.1",
     "@types/qrcode": "~1.5.0",
@@ -93,8 +93,8 @@
     "rxjs": "~7.8.0",
     "tinyify": "^3.1.0",
     "tlite": "^0.1.9",
-    "tslib": "~2.4.1",
-    "zone.js": "~0.12.0"
+    "tslib": "~2.6.2",
+    "zone.js": "~0.14.3"
   },
   "devDependencies": {
     "@angular/compiler-cli": "^14.2.12",
@@ -113,7 +113,7 @@
     "cypress": "^13.6.2",
     "cypress-fail-on-console-error": "~4.0.2",
     "cypress-wait-until": "^1.7.2",
-    "mock-socket": "~9.1.5",
+    "mock-socket": "~9.3.1",
     "start-server-and-test": "~1.14.0"
   },
   "scarfSettings": {
