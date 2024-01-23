@@ -7,11 +7,11 @@
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
         </div>
-        <p class="d-block d-sm-none">
+        <p class="explore-tagline-mobile">
           <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
           <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
         </p>
-        <div class="site-options float-right d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
+        <div class="site-options language-selector d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
           <div class="selector">
             <app-language-selector></app-language-selector>
           </div>
@@ -26,11 +26,11 @@
             <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
           </a>
         </div>
-        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-3 mb-2" [routerLink]="['/login' | relativeUrl]">
+        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
           <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
           <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
         </a>
-        <p class="d-none d-sm-block">
+        <p class="explore-tagline-desktop">
           <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
           <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
         </p>

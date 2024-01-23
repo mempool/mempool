@@ -44,6 +44,7 @@ import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
+import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -282,6 +283,7 @@ class Server {
   
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
+    bitcoinCoreRoutes.initRoutes(this.app);
     pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);

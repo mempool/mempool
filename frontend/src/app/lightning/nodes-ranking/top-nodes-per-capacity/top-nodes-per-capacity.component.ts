@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { INodesRanking, ITopNodesPerCapacity } from '../../../interfaces/node-api.interface';
+import { combineLatest, map, Observable } from 'rxjs';
+import { INodesRanking, INodesStatistics, ITopNodesPerCapacity } from '../../../interfaces/node-api.interface';
 import { SeoService } from '../../../services/seo.service';
 import { StateService } from '../../../services/state.service';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
@@ -14,9 +14,10 @@ import { LightningApiService } from '../../lightning-api.service';
 })
 export class TopNodesPerCapacity implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;
+  @Input() statistics$: Observable<INodesStatistics>;
   @Input() widget: boolean = false;
 
-  topNodesPerCapacity$: Observable<ITopNodesPerCapacity[]>;
+  topNodesPerCapacity$: Observable<{ nodes: ITopNodesPerCapacity[]; statistics: { totalCapacity: number; totalChannels?: number; } }>;
   skeletonRows: number[] = [];
   currency$: Observable<string>;
 
@@ -39,8 +40,12 @@ export class TopNodesPerCapacity implements OnInit {
     }
 
     if (this.widget === false) {
-      this.topNodesPerCapacity$ = this.apiService.getTopNodesByCapacity$().pipe(
-        map((ranking) => {
+      this.topNodesPerCapacity$ = combineLatest([
+        this.apiService.getTopNodesByCapacity$(),
+        this.statistics$
+      ])
+      .pipe(
+        map(([ranking, statistics]) => {
           for (const i in ranking) {
             ranking[i].geolocation = <GeolocationData>{
               country: ranking[i].country?.en,
@@ -49,13 +54,28 @@ export class TopNodesPerCapacity implements OnInit {
               iso: ranking[i].iso_code,
             };
           }
-          return ranking;
+          return {
+            nodes: ranking,
+            statistics: {
+              totalCapacity: statistics.latest.total_capacity,
+              totalChannels: statistics.latest.channel_count,
+            }
+          }
         })
       );
     } else {
-      this.topNodesPerCapacity$ = this.nodes$.pipe(
-        map((ranking) => {
-          return ranking.topByCapacity.slice(0, 6);
+      this.topNodesPerCapacity$ = combineLatest([
+        this.nodes$,
+        this.statistics$
+      ])
+      .pipe(
+        map(([ranking, statistics]) => {
+          return {
+            nodes: ranking.topByCapacity.slice(0, 6),
+            statistics: {
+              totalCapacity: statistics.latest.total_capacity,
+            }
+          }
         })
       );
     }

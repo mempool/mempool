@@ -87,8 +87,8 @@
               <th class="table-cell-new-fee" i18n="dashboard.new-transaction-fee">New fee</th>
               <th class="table-cell-badges" i18n="transaction.status|Transaction Status">Status</th>
             </thead>
-            <tbody>
-              <tr *ngFor="let replacement of replacements$ | async;">
+            <tbody *ngIf="replacements$ | async as replacements; else replacementsSkeleton">
+              <tr *ngFor="let replacement of replacements">
                 <td class="table-cell-txid">
                   <a [routerLink]="['/tx' | relativeUrl, replacement.txid]">
                     <app-truncate [text]="replacement.txid" [lastChars]="5"></app-truncate>
@@ -158,8 +158,8 @@
               <th class="table-cell-fiat" *ngIf="(network$ | async) === ''">{{ currency }}</th>
               <th class="table-cell-fees" i18n="transaction.fee|Transaction fee">Fee</th>
             </thead>
-            <tbody>
-              <tr *ngFor="let transaction of transactions$ | async; let i = index;">
+            <tbody *ngIf="transactions$ | async as transactions else recentTransactionsSkeleton">
+              <tr *ngFor="let transaction of transactions; let i = index;">
                 <td class="table-cell-txid">
                   <a [routerLink]="['/tx' | relativeUrl, transaction.txid]">
                     <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>
@@ -197,6 +197,28 @@
       </tr>
     </tbody>
   </table>
+</ng-template>
+
+<ng-template #replacementsSkeleton>
+  <tbody>
+    <tr *ngFor="let i of [1,2,3,4,5,6]">
+      <td class="table-cell-txid"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-old-fee"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-new-fee"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-badges"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+    </tr>
+  </tbody>
+</ng-template>
+
+<ng-template #recentTransactionsSkeleton>
+  <tbody>
+    <tr *ngFor="let i of [1,2,3,4,5,6]">
+      <td class="table-cell-txid"><div class="skeleton-loader skeleton-loader-transactions"></div> </td>
+      <td class="table-cell-satoshis"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-fiat" *ngIf="(network$ | async) === ''"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-fees"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+    </tr>
+  </tbody>
 </ng-template>
 
 <ng-template #loadingTransactions>
