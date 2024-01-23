@@ -703,7 +703,8 @@ class WebsocketHandler {
           template: {
             id: block.id,
             transactions: stripped,
-          }
+          },
+          version: 1,
         });
 
         BlocksAuditsRepository.$saveAudit({

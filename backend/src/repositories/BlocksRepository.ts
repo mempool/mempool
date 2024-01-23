@@ -1040,16 +1040,18 @@ class BlocksRepository {
       if (extras.feePercentiles === null) {
 
         let summary;
+        let summaryVersion = 0;
         if (config.MEMPOOL.BACKEND === 'esplora') {
           const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id)).map(tx => transactionUtils.extendTransaction(tx));
           summary = blocks.summarizeBlockTransactions(dbBlk.id, txs);
+          summaryVersion = 1;
         } else {
           // Call Core RPC
           const block = await bitcoinClient.getBlock(dbBlk.id, 2);
           summary = blocks.summarizeBlock(block);
         }
 
-        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions);
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions, summaryVersion);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
