@@ -101,21 +101,9 @@ jobs:
             promo-video-assets.zip
           key: promo-video-assets-cache
 
-      # - name: Download mining pool artifact
-      #   uses: actions/download-artifact@v4
-      #   continue-on-error: true
-      #   with:
-      #     name: mining-pool-assets
-
       - name: Unzip assets before building (src/resources)
         continue-on-error: true
         run: unzip -o mining-pool-assets.zip -d assets/frontend/src/resources/mining-pools
-
-      - name: Download promo video artifact
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: promo-video-assets
 
       - name: Unzip assets before building (src/resources)
         continue-on-error: true
