@@ -566,7 +566,7 @@ class Blocks {
    */
   public async $classifyBlocks(): Promise<void> {
     // classification requires an esplora backend
-    if (config.MEMPOOL.BACKEND !== 'esplora') {
+    if (!Common.blocksSummariesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
       return;
     }
 
@@ -577,7 +577,7 @@ class Blocks {
     const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesWithVersion(0);
 
     // nothing to do
-    if (!unclassifiedBlocksList.length && !unclassifiedTemplatesList.length) {
+    if (!unclassifiedBlocksList?.length && !unclassifiedTemplatesList?.length) {
       return;
     }
 
@@ -586,8 +586,8 @@ class Blocks {
     let indexedTotal = 0;
 
     const minHeight = Math.min(
-      unclassifiedBlocksList[unclassifiedBlocksList.length - 1].height ?? Infinity,
-      unclassifiedTemplatesList[unclassifiedTemplatesList.length - 1].height ?? Infinity,
+      unclassifiedBlocksList[unclassifiedBlocksList.length - 1]?.height ?? Infinity,
+      unclassifiedTemplatesList[unclassifiedTemplatesList.length - 1]?.height ?? Infinity,
     );
     const numToIndex = Math.max(
       unclassifiedBlocksList.length,
