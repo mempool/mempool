@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -201,7 +201,8 @@ class Blocks {
         txid: tx.txid,
         vsize: tx.weight / 4,
         fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
-        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
+        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000),
+        flags: 0,
       };
     });
 
@@ -214,7 +215,7 @@ class Blocks {
   public summarizeBlockTransactions(hash: string, transactions: TransactionExtended[]): BlockSummary {
     return {
       id: hash,
-      transactions: Common.stripTransactions(transactions),
+      transactions: Common.classifyTransactions(transactions),
     };
   }
 
@@ -945,7 +946,7 @@ class Blocks {
   }
 
   public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
-    skipDBLookup = false, cpfpSummary?: CpfpSummary, blockHeight?: number): Promise<TransactionStripped[]>
+    skipDBLookup = false, cpfpSummary?: CpfpSummary, blockHeight?: number): Promise<TransactionClassified[]>
   {
     if (skipMemoryCache === false) {
       // Check the memory cache
@@ -974,7 +975,8 @@ class Blocks {
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
-            rate: tx.effectiveFeePerVsize
+            rate: tx.effectiveFeePerVsize,
+            flags: tx.flags || Common.getTransactionFlags(tx),
           };
         }),
       };

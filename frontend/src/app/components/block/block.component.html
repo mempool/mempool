@@ -115,6 +115,8 @@
             [orientation]="'top'"
             [flip]="false"
             [blockConversion]="blockConversion"
+            [showFilters]="true"
+            [excludeFilters]="['replacement']"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
@@ -229,7 +231,8 @@
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
+            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -243,7 +246,8 @@
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
+            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">

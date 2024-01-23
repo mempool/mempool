@@ -1,6 +1,6 @@
 import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, TransactionStripped, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
