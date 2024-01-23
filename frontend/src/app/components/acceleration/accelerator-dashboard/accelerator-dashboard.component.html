@@ -7,7 +7,7 @@
     <!-- pending stats -->
     <div class="col">
       <div class="main-title">
-        <span [attr.data-cy]="'pending-accelerations'" i18n="accelerator.pending-accelerations">Active accelerations</span>
+        <span [attr.data-cy]="'pending-accelerations'" i18n="accelerator.pending-accelerations">Active Accelerations</span>
       </div>
       <div class="card-wrapper">
         <div class="card">
@@ -69,7 +69,7 @@
       <div class="card list-card">
         <div class="card-body">
           <div class="title-link">
-            <h5 class="card-title d-inline" i18n="dashboard.recent-accelerations">Active Accelerations</h5>
+            <h5 class="card-title d-inline" i18n="accelerator.pending-accelerations">Active Accelerations</h5>
           </div>
           <app-accelerations-list [attr.data-cy]="'pending-accelerations'" [widget]=true [pending]="true" [accelerations$]="pendingAccelerations$"></app-accelerations-list>
         </div>

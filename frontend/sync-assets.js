@@ -22,7 +22,7 @@ var PATH;
 if (process.argv[2]) {
   PATH = process.argv[2];
   PATH += PATH.endsWith("/") ? "" : "/"
-  PATH = path.normalize(PATH);
+  PATH = path.resolve(path.normalize(PATH));
   console.log(`[sync-assets] using PATH ${PATH}`);
   if (!fs.existsSync(PATH)){
     console.log(`${LOG_TAG} ${PATH} does not exist, creating`);
@@ -110,7 +110,7 @@ function downloadMiningPoolLogos$() {
           }
           let downloadedCount = 0;
           for (const poolLogo of poolLogos) {
-            const filePath = PATH + `mining-pools/${poolLogo.name}`;
+            const filePath = `${PATH}/mining-pools/${poolLogo.name}`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
               if (verbose) {
@@ -124,7 +124,7 @@ function downloadMiningPoolLogos$() {
               }
             } else {
               console.log(`${LOG_TAG} ${poolLogo.name} is missing, downloading...`);
-              const miningPoolsDir = PATH + `mining-pools/`;
+              const miningPoolsDir = `${PATH}/mining-pools/`;
               if (!fs.existsSync(miningPoolsDir)){
                 fs.mkdirSync(miningPoolsDir, { recursive: true });
               }
@@ -179,7 +179,7 @@ function downloadPromoVideoSubtiles$() {
           }
           let downloadedCount = 0;
           for (const language of videoLanguages) {
-            const filePath = PATH + `promo-video/${language.name}`;
+            const filePath = `${PATH}/promo-video/${language.name}`;
             if (fs.existsSync(filePath)) {
               if (verbose) {
                 console.log(`${LOG_TAG} ${language.name} remote promo video hash ${language.sha}`);
@@ -193,7 +193,7 @@ function downloadPromoVideoSubtiles$() {
               }
             } else {
               console.log(`${LOG_TAG} ${language.name} is missing, downloading`);
-              const promoVideosDir = PATH + `promo-video/`;
+              const promoVideosDir = `${PATH}/promo-video/`;
               if (!fs.existsSync(promoVideosDir)){
                 fs.mkdirSync(promoVideosDir, { recursive: true });
               }
@@ -250,7 +250,7 @@ function downloadPromoVideo$() {
             if (item.name !== 'promo.mp4') {
               continue;
             }
-            const filePath = PATH + `promo-video/mempool-promo.mp4`;
+            const filePath = `${PATH}/promo-video/mempool-promo.mp4`;
             if (fs.existsSync(filePath)) {
               const localHash = getLocalHash(filePath);
 
@@ -288,16 +288,16 @@ if (configContent.BASE_MODULE && configContent.BASE_MODULE === 'liquid') {
   const testnetAssetsMinimalJsonUrl = 'https://raw.githubusercontent.com/Blockstream/asset_registry_testnet_db/master/index.minimal.json';
 
   console.log(`${LOG_TAG} Downloading assets`);
-  download(PATH + 'assets.json', assetsJsonUrl);
+  download(`${PATH}/assets.json`, assetsJsonUrl);
 
   console.log(`${LOG_TAG} Downloading assets minimal`);
-  download(PATH + 'assets.minimal.json', assetsMinimalJsonUrl);
+  download(`${PATH}/assets.minimal.json`, assetsMinimalJsonUrl);
 
   console.log(`${LOG_TAG} Downloading testnet assets`);
-  download(PATH + 'assets-testnet.json', testnetAssetsJsonUrl);
+  download(`${PATH}/assets-testnet.json`, testnetAssetsJsonUrl);
 
   console.log(`${LOG_TAG} Downloading testnet assets minimal`);
-  download(PATH + 'assets-testnet.minimal.json', testnetAssetsMinimalJsonUrl);
+  download(`${PATH}/assets-testnet.minimal.json`, testnetAssetsMinimalJsonUrl);
 } else {
   if (verbose) {
     console.log(`${LOG_TAG} BASE_MODULE is not set to Liquid (${configContent.BASE_MODULE}), skipping downloading assets`);

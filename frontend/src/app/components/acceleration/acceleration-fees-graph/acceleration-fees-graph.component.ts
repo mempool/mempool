@@ -66,7 +66,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Acceleration Fees`);
+    this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
     this.isLoading = true;
     if (this.widget) {
       this.miningWindowPreference = '1m';
