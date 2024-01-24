@@ -117,6 +117,7 @@ export class StateService {
   difficultyAdjustment$ = new ReplaySubject<DifficultyAdjustment>(1);
   mempoolTransactions$ = new Subject<Transaction>();
   mempoolTxPosition$ = new Subject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null}>();
+  mempoolRemovedTransactions$ = new Subject<Transaction>();
   blockTransactions$ = new Subject<Transaction>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);
   isLoadingMempool$ = new BehaviorSubject<boolean>(true);
@@ -148,6 +149,8 @@ export class StateService {
 
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  activeGoggles$: BehaviorSubject<string[]> = new BehaviorSubject([]);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,

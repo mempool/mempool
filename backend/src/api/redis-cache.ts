@@ -122,8 +122,9 @@ class RedisCache {
   async $removeTransactions(transactions: string[]) {
     try {
       await this.$ensureConnected();
-      for (let i = 0; i < Math.ceil(transactions.length / 10000); i++) {
-        const slice = transactions.slice(i * 10000, (i + 1) * 10000);
+      const sliceLength = config.REDIS.BATCH_QUERY_BASE_SIZE;
+      for (let i = 0; i < Math.ceil(transactions.length / sliceLength); i++) {
+        const slice = transactions.slice(i * sliceLength, (i + 1) * sliceLength);
         await this.client.unlink(slice.map(txid => `mempool:tx:${txid}`));
         logger.debug(`Deleted ${slice.length} transactions from the Redis cache`);
       }
@@ -219,8 +220,9 @@ class RedisCache {
     await memPool.$setMempool(loadedMempool);
     await rbfCache.load({
       txs: rbfTxs,
-      trees: rbfTrees.map(loadedTree => loadedTree.value),
+      trees: rbfTrees.map(loadedTree => { loadedTree.value.key = loadedTree.key; return loadedTree.value; }),
       expiring: rbfExpirations,
+      mempool: memPool.getMempool(),
     });
   }
 

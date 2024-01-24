@@ -27,6 +27,8 @@ export interface WebsocketResponse {
   fees?: Recommendedfees;
   'track-tx'?: string;
   'track-address'?: string;
+  'track-addresses'?: string[];
+  'track-scriptpubkeys'?: string[];
   'track-asset'?: string;
   'track-mempool-block'?: number;
   'track-rbf'?: string;
@@ -90,6 +92,7 @@ export interface TransactionStripped {
   value: number;
   acc?: boolean; // is accelerated?
   rate?: number; // effective fee rate
+  flags?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }

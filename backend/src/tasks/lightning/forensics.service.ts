@@ -15,8 +15,6 @@ class ForensicsService {
   txCache: { [txid: string]: IEsploraApi.Transaction } = {};
   tempCached: string[] = [];
 
-  constructor() {}
-
   public async $startService(): Promise<void> {
     logger.info('Starting lightning network forensics service');
 
@@ -66,93 +64,138 @@ class ForensicsService {
   */
 
   public async $runClosedChannelsForensics(onlyNewChannels: boolean = false): Promise<void> {
+    // Only Esplora backend can retrieve spent transaction outputs
     if (config.MEMPOOL.BACKEND !== 'esplora') {
       return;
     }
 
-    let progress = 0;
-
     try {
       logger.debug(`Started running closed channel forensics...`);
-      let channels;
+      let allChannels;
       if (onlyNewChannels) {
-        channels = await channelsApi.$getClosedChannelsWithoutReason();
+        allChannels = await channelsApi.$getClosedChannelsWithoutReason();
       } else {
-        channels = await channelsApi.$getUnresolvedClosedChannels();
+        allChannels = await channelsApi.$getUnresolvedClosedChannels();
       }
 
-      for (const channel of channels) {
-        let reason = 0;
-        let resolvedForceClose = false;
-        // Only Esplora backend can retrieve spent transaction outputs
-        const cached: string[] = [];
+      let progress = 0;
+      const sliceLength = Math.ceil(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 10);
+      // process batches of 1000 channels
+      for (let i = 0; i < Math.ceil(allChannels.length / sliceLength); i++) {
+        const channels = allChannels.slice(i * sliceLength, (i + 1) * sliceLength);
+
+        let allOutspends: IEsploraApi.Outspend[][] = [];
+        const forceClosedChannels: { channel: any, cachedSpends: string[] }[] = [];
+
+        // fetch outspends in bulk
         try {
-          let outspends: IEsploraApi.Outspend[] | undefined;
-          try {
-            outspends = await bitcoinApi.$getOutspends(channel.closing_transaction_id);
-            await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
-          } catch (e) {
-            logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + channel.closing_transaction_id + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
-            continue;
-          }
-          const lightningScriptReasons: number[] = [];
+          const outspendTxids = channels.map(channel => channel.closing_transaction_id);
+          allOutspends = await bitcoinApi.$getBatchedOutspendsInternal(outspendTxids);
+          logger.info(`Fetched outspends for ${allOutspends.length} txs from esplora for LN forensics`);
+          await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
+        } catch (e) {
+          logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/internal/txs/outspends/by-txid'}. Reason ${e instanceof Error ? e.message : e}`);
+        }
+        // fetch spending transactions in bulk and load into txCache
+        const newSpendingTxids: { [txid: string]: boolean } = {};
+        for (const outspends of allOutspends) {
           for (const outspend of outspends) {
             if (outspend.spent && outspend.txid) {
-              let spendingTx = await this.fetchTransaction(outspend.txid);
-              if (!spendingTx) {
-                continue;
-              }
-              cached.push(spendingTx.txid);
-              const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
-              lightningScriptReasons.push(lightningScript);
+              newSpendingTxids[outspend.txid] = true;
             }
           }
-          const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
-          if (filteredReasons.length) {
-            if (filteredReasons.some((r) => r === 2 || r === 4)) {
-              reason = 3;
-            } else {
-              reason = 2;
-              resolvedForceClose = true;
-            }
-          } else {
-            /*
-              We can detect a commitment transaction (force close) by reading Sequence and Locktime
-              https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
-            */
-            let closingTx = await this.fetchTransaction(channel.closing_transaction_id, true);
-            if (!closingTx) {
+        }
+        const allOutspendTxs = await this.fetchTransactions(
+          allOutspends.flatMap(outspends =>
+            outspends
+              .filter(outspend => outspend.spent && outspend.txid)
+              .map(outspend => outspend.txid)
+          )
+        );
+        logger.info(`Fetched ${allOutspendTxs.length} out-spending txs from esplora for LN forensics`);
+
+        // process each outspend
+        for (const [index, channel] of channels.entries()) {
+          let reason = 0;
+          const cached: string[] = [];
+          try {
+            const outspends = allOutspends[index];
+            if (!outspends || !outspends.length) {
+              // outspends are missing
               continue;
             }
-            cached.push(closingTx.txid);
-            const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
-            const locktimeHex: string = closingTx.locktime.toString(16);
-            if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
-              reason = 2; // Here we can't be sure if it's a penalty or not
-            } else {
-              reason = 1;
+            const lightningScriptReasons: number[] = [];
+            for (const outspend of outspends) {
+              if (outspend.spent && outspend.txid) {
+                const spendingTx = this.txCache[outspend.txid];
+                if (!spendingTx) {
+                  continue;
+                }
+                cached.push(spendingTx.txid);
+                const lightningScript = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
+                lightningScriptReasons.push(lightningScript);
+              }
             }
-          }
-          if (reason) {
-            logger.debug('Setting closing reason ' + reason + ' for channel: ' + channel.id + '.');
-            await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
-            if (reason === 2 && resolvedForceClose) {
-              await DB.query(`UPDATE channels SET closing_resolved = ? WHERE id = ?`, [true, channel.id]);
-            }
-            if (reason !== 2 || resolvedForceClose) {
+            const filteredReasons = lightningScriptReasons.filter((r) => r !== 1);
+            if (filteredReasons.length) {
+              if (filteredReasons.some((r) => r === 2 || r === 4)) {
+                // Force closed with penalty
+                reason = 3;
+              } else {
+                // Force closed without penalty
+                reason = 2;
+                await DB.query(`UPDATE channels SET closing_resolved = ? WHERE id = ?`, [true, channel.id]);
+              }
+              await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+              // clean up cached transactions
               cached.forEach(txid => {
                 delete this.txCache[txid];
               });
+            } else {
+              forceClosedChannels.push({ channel, cachedSpends: cached });
             }
+          } catch (e) {
+            logger.err(`$runClosedChannelsForensics() failed for channel ${channel.short_id}. Reason: ${e instanceof Error ? e.message : e}`);
           }
-        } catch (e) {
-          logger.err(`$runClosedChannelsForensics() failed for channel ${channel.short_id}. Reason: ${e instanceof Error ? e.message : e}`);
         }
 
-        ++progress;
+        // fetch force-closing transactions in bulk
+        const closingTxs = await this.fetchTransactions(forceClosedChannels.map(x => x.channel.closing_transaction_id));
+        logger.info(`Fetched ${closingTxs.length} closing txs from esplora for LN forensics`);
+
+        // process channels with no lightning script reasons
+        for (const { channel, cachedSpends } of forceClosedChannels) {
+          const closingTx = this.txCache[channel.closing_transaction_id];
+          if (!closingTx) {
+            // no channel close transaction found yet
+            continue;
+          }
+          /*
+            We can detect a commitment transaction (force close) by reading Sequence and Locktime
+            https://github.com/lightning/bolts/blob/master/03-transactions.md#commitment-transaction
+          */
+          const sequenceHex: string = closingTx.vin[0].sequence.toString(16);
+          const locktimeHex: string = closingTx.locktime.toString(16);
+          let reason;
+          if (sequenceHex.substring(0, 2) === '80' && locktimeHex.substring(0, 2) === '20') {
+            // Force closed, but we can't be sure if it's a penalty or not
+            reason = 2;
+          } else {
+            // Mutually closed
+            reason = 1;
+            // clean up cached transactions
+            delete this.txCache[closingTx.txid];
+            for (const txid of cachedSpends) {
+              delete this.txCache[txid];
+            }
+          }
+          await DB.query(`UPDATE channels SET closing_reason = ? WHERE id = ?`, [reason, channel.id]);
+        }
+
+        progress += channels.length;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > 10) {
-          logger.debug(`Updating channel closed channel forensics ${progress}/${channels.length}`);
+          logger.debug(`Updating channel closed channel forensics ${progress}/${allChannels.length}`);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }
@@ -220,8 +263,11 @@ class ForensicsService {
       logger.debug(`Started running open channel forensics...`);
       const channels = await channelsApi.$getChannelsWithoutSourceChecked();
 
+      // preload open channel transactions
+      await this.fetchTransactions(channels.map(channel => channel.transaction_id), true);
+
       for (const openChannel of channels) {
-        let openTx = await this.fetchTransaction(openChannel.transaction_id, true);
+        const openTx = this.txCache[openChannel.transaction_id];
         if (!openTx) {
           continue;
         }
@@ -276,7 +322,7 @@ class ForensicsService {
 
   // Check if a channel open tx input spends the result of a swept channel close output
   private async $attributeSweptChannelCloses(openChannel: ILightningApi.Channel, input: IEsploraApi.Vin): Promise<void> {
-    let sweepTx = await this.fetchTransaction(input.txid, true);
+    const sweepTx = await this.fetchTransaction(input.txid, true);
     if (!sweepTx) {
       logger.err(`couldn't find input transaction for channel forensics ${openChannel.channel_id} ${input.txid}`);
       return;
@@ -335,7 +381,7 @@ class ForensicsService {
 
     if (matched && !ambiguous) {
       // fetch closing channel transaction and perform forensics on the outputs
-      let prevChannelTx = await this.fetchTransaction(input.txid, true);
+      const prevChannelTx = await this.fetchTransaction(input.txid, true);
       let outspends: IEsploraApi.Outspend[] | undefined;
       try {
         outspends = await bitcoinApi.$getOutspends(input.txid);
@@ -355,17 +401,17 @@ class ForensicsService {
             };
           });
         }
+
+        // preload outspend transactions
+        await this.fetchTransactions(outspends.filter(o => o.spent && o.txid).map(o => o.txid), true);
+
         for (let i = 0; i < outspends?.length; i++) {
           const outspend = outspends[i];
           const output = prevChannel.outputs[i];
           if (outspend.spent && outspend.txid) {
-            try {
-              const spendingTx = await this.fetchTransaction(outspend.txid, true);
-              if (spendingTx) {
-                output.type = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
-              }
-            } catch (e) {
-              logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + outspend.txid}. Reason ${e instanceof Error ? e.message : e}`);
+            const spendingTx = this.txCache[outspend.txid];
+            if (spendingTx) {
+              output.type = this.findLightningScript(spendingTx.vin[outspend.vin || 0]);
             }
           } else {
             output.type = 0;
@@ -430,11 +476,34 @@ class ForensicsService {
         }
         await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
       } catch (e) {
-        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + txid + '/outspends'}. Reason ${e instanceof Error ? e.message : e}`);
+        logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/tx/' + txid}. Reason ${e instanceof Error ? e.message : e}`);
         return null;
       }
     }
     return tx;
+  }
+
+  // fetches a batch of transactions and adds them to the txCache
+  // the returned list of txs does *not* preserve ordering or number
+  async fetchTransactions(txids, temp: boolean = false): Promise<(IEsploraApi.Transaction | null)[]> {
+    // deduplicate txids
+    const uniqueTxids = [...new Set<string>(txids)];
+    // filter out any transactions we already have in the cache
+    const needToFetch: string[] = uniqueTxids.filter(txid => !this.txCache[txid]);
+    try {
+      const txs = await bitcoinApi.$getRawTransactions(needToFetch);
+      for (const tx of txs) {
+        this.txCache[tx.txid] = tx;
+        if (temp) {
+          this.tempCached.push(tx.txid);
+        }
+      }
+      await Common.sleep$(config.LIGHTNING.FORENSICS_RATE_LIMIT);
+    } catch (e) {
+      logger.err(`Failed to call ${config.ESPLORA.REST_API_URL + '/txs'}. Reason ${e instanceof Error ? e.message : e}`);
+      return [];
+    }
+    return txids.map(txid => this.txCache[txid]);
   }
 
   clearTempCache(): void {

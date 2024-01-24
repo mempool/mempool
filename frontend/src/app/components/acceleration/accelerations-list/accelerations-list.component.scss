@@ -1,0 +1,170 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+.container-xl {
+  max-width: 1400px;
+}
+.container-xl.widget {
+  padding-left: 0px;
+  padding-bottom: 0px;
+}
+.container-xl.legacy {
+  max-width: 1140px;
+}
+.container-xl.widget-container {
+  min-height: 335px;
+  @media (max-width: 767px) {
+    min-height: auto;
+  }
+}
+
+.container {
+  max-width: 100%;
+}
+
+.acceleration-list {
+  min-height: 295px;
+  @media (max-width: 767px) {
+    min-height: auto;
+  }
+}
+
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.8rem !important;
+
+  .difference {
+    margin-left: 0.5em;
+
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
+}
+
+.clear-link {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.txid {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 30%;
+  @media (max-width: 1060px) and (min-width: 768px) {
+    display: none;
+  }
+  @media (max-width: 500px) {
+    display: none;
+  }
+}
+
+.fee-rate {
+  width: 20%;
+  @media (max-width: 1060px) and (min-width: 768px) {
+    text-align: start !important;
+  }
+  @media (max-width: 500px) {
+    text-align: start !important;
+  }
+  @media (max-width: 840px) and (min-width: 768px) {
+    display: none;
+  }
+  @media (max-width: 410px) {
+    display: none;
+  }
+}
+
+.bid {
+  width: 30%;
+  min-width: 150px;
+  @media (max-width: 840px) and (min-width: 768px) {
+    text-align: start !important;
+  }
+  @media (max-width: 410px) {
+    text-align: start !important;
+  }
+}
+
+.time {
+  width: 25%;
+}
+
+.fee {
+  width: 35%;
+  @media (max-width: 1060px) and (min-width: 768px) {
+    text-align: start !important;
+  }
+  @media (max-width: 500px) {
+    text-align: start !important;
+  }
+}
+
+.block {
+  width: 20%;
+}
+
+.status {
+  width: 20%
+}
+
+/* Tooltip text */
+.tooltip-custom {
+  position: relative; 
+}
+
+.tooltip-custom .tooltiptext {
+  visibility: hidden;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: 0;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip-custom:hover .tooltiptext {
+  visibility: visible;
+}
+
+.scriptmessage {
+  overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+	max-width: 50vw;
+  text-align: left;
+}
+
+.no-data {
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  height: 280px;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 767px) {
+    height: 100px;
+  }
+}

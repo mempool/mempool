@@ -9,7 +9,7 @@ jobs:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["16", "17", "18", "20"]
+        node: ["18", "20"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -35,7 +35,7 @@ jobs:
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
         # Latest version available on this commit is 1.71.1
         # Commit date is Aug 3, 2023
-        uses: dtolnay/rust-toolchain@f361669954a8ecfc00a3443f35f9ac8e610ffc06
+        uses: dtolnay/rust-toolchain@be73d7920c329f220ce78e0234b8f96b7ae60248
         with:
           toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
@@ -63,11 +63,100 @@ jobs:
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
+
+  cache:
+    name: "Cache assets for builds"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: assets
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install (Prod dependencies only)
+        run: npm ci --omit=dev --omit=optional
+        working-directory: assets/frontend
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Unzip assets before building (src/resources)
+        continue-on-error: true
+        run: unzip -o mining-pool-assets.zip -d assets/frontend/src/resources/mining-pools
+
+      - name: Unzip assets before building (src/resources)
+        continue-on-error: true
+        run: unzip -o promo-video-assets.zip -d assets/frontend/src/resources/promo-video
+
+      # - name: Unzip assets before building (dist)
+      #   continue-on-error: true
+      #   run: unzip assets.zip -d assets/frontend/dist/mempool/browser/resources
+
+      - name: Sync-assets
+        run: npm run sync-assets-dev
+        working-directory: assets/frontend
+
+      - name: Zip mining-pool assets
+        run: zip -jrq mining-pool-assets.zip assets/frontend/src/resources/mining-pools/*
+
+      - name: Zip promo-video assets
+        run: zip -jrq promo-video-assets.zip assets/frontend/src/resources/promo-video/*
+
+      - name: Upload mining pool assets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mining-pool-assets
+          path: mining-pool-assets.zip
+
+      - name: Upload promo video assets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: promo-video-assets
+          path: promo-video-assets.zip
+
+      - name: Save mining pool assets cache
+        id: cache-mining-pool-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Save promo video assets cache
+        id: cache-promo-video-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
   frontend:
+    needs: cache
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
     strategy:
       matrix:
-        node: ["16", "17", "18", "20"]
+        node: ["18", "20"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: "ubuntu-latest"
@@ -103,9 +192,141 @@ jobs:
       # - name: Test
       #   run: npm run test
 
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+
+      - name: Restore promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o mining-pool-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/mining-pools
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o promo-video-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/promo-video
+
+      # - name: Unzip assets before building (dist)
+      #   run: unzip assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/dist/mempool/browser/resources
+
+      - name: Display resulting source tree
+        run: ls -R
+
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  e2e:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
+    runs-on: "ubuntu-latest"
+    needs: frontend
+    strategy:
+      fail-fast: false
+      matrix:
+        # module: ["mempool", "liquid", "bisq"] Disabling bisq support for now
+        module: ["mempool", "liquid"]
+        include:
+          - module: "mempool"
+            spec: |
+              cypress/e2e/mainnet/*.spec.ts
+              cypress/e2e/signet/*.spec.ts
+              cypress/e2e/testnet/*.spec.ts
+          - module: "liquid"
+            spec: |
+              cypress/e2e/liquid/liquid.spec.ts
+              cypress/e2e/liquidtestnet/liquidtestnet.spec.ts
+          # - module: "bisq"
+          #   spec: |
+          #     cypress/e2e/bisq/bisq.spec.ts
 
+    name: E2E tests for ${{ matrix.module }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ${{ matrix.module }}
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
+
+      - name: Restore cached mining pool assets
+        continue-on-error: true
+        id: cache-mining-pool-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mining-pool-assets.zip
+          key: mining-pool-assets-cache
+  
+      - name: Restore cached promo video assets
+        continue-on-error: true
+        id: cache-promo-video-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            promo-video-assets.zip
+          key: promo-video-assets-cache
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mining-pool-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o mining-pool-assets.zip -d ${{ matrix.module }}/frontend/src/resources/mining-pools
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: promo-video-assets
+
+      - name: Unzip assets before building (src/resources)
+        run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
+      
+      - name: Chrome browser tests (${{ matrix.module }})
+        uses: cypress-io/github-action@v5
+        with:
+          tag: ${{ github.event_name }}
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:${{ matrix.module }}
+          start: npm run start:local-staging
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: ${{ matrix.spec }}
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+        

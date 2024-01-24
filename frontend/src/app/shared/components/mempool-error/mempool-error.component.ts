@@ -2,18 +2,18 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 const MempoolErrors = {
+  'internal_server_error': `Something went wrong, please try again later`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
   'acceleration_outbid': `Your fee delta is too low.`,
   'cannot_accelerate_tx': `Cannot accelerate this transaction.`,
   'cannot_decode_raw_tx': `Cannot decode this raw transaction.`,
   'cannot_fetch_raw_tx': `Cannot find this transaction.`,
-  'database_error': `Something went wrong. Please try again later.`,
   'high_sigop_tx': `This transaction cannot be accelerated.`,
   'invalid_acceleration_request': `This acceleration request is not valid.`,
   'invalid_tx_dependencies': `This transaction dependencies are not valid.`,
   'mempool_rejected_raw_tx': `Our mempool rejected this transaction`,
   'no_mining_pool_available': `No mining pool available at the moment`,
-  'not_available': `You current subscription does not allow you to access this feature. Consider <strong><a style="color: #105fb0;" href="/sponsor" target="_blank">upgrading.</a><strong>`,
+  'not_available': `You current subscription does not allow you to access this feature.`,
   'not_enough_balance': `Your account balance is too low. Please make a <a style="color:#105fb0" href="/services/accelerator/overview">deposit.</a>`,
   'not_verified': `You must verify your account to use this feature.`,
   'recommended_fees_not_available': `Recommended fees are not available right now.`,
@@ -33,6 +33,7 @@ export function isMempoolError(error: string) {
 })
 export class MempoolErrorComponent implements OnInit {
   @Input() error: string;
+  @Input() alertClass = 'alert-danger';
   errorContent: SafeHtml;
 
   constructor(private sanitizer: DomSanitizer) { }

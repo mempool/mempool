@@ -6,8 +6,7 @@ import { AssetsService } from '../../services/assets.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '../../services/state.service';
-import { EChartsOption, registerMap } from 'echarts';
-import 'echarts-gl';
+import { EChartsOption, echarts } from '../../graphs/echarts';
 import { isMobile } from '../../shared/common.utils';
 
 @Component({
@@ -66,6 +65,7 @@ export class NodesChannelsMap implements OnInit {
     }
 
     if (this.style === 'graph') {
+      this.center = [0, 5];
       this.seoService.setTitle($localize`Lightning Nodes Channels World Map`);
       this.seoService.setDescription($localize`:@@meta.description.lightning.node-map:See the channels of non-Tor Lightning network nodes visualized on a world map. Hover/tap on points on the map for node names and details.`);
     }
@@ -88,7 +88,7 @@ export class NodesChannelsMap implements OnInit {
           this.style !== 'channelpage' ? this.apiService.getChannelsGeo$(params.get('public_key') ?? undefined, this.style) : [''],
           [params.get('public_key') ?? undefined]
         ).pipe(tap((data) => {
-          registerMap('world', data[0]);
+          echarts.registerMap('world', data[0]);
 
           const channelsLoc = [];
           const nodes = [];
@@ -239,7 +239,6 @@ export class NodesChannelsMap implements OnInit {
       title: title ?? undefined,
       tooltip: {},
       geo: {
-        top: 75,
         animation: false,
         silent: true,
         center: this.center,

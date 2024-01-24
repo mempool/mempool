@@ -55,8 +55,12 @@
           <td *ngSwitchCase="'added'"><span class="badge badge-warning" i18n="transaction.audit.added">Added</span></td>
           <td *ngSwitchCase="'selected'"><span class="badge badge-warning" i18n="transaction.audit.marginal">Marginal fee rate</span></td>
           <td *ngSwitchCase="'rbf'"><span class="badge badge-warning" i18n="transaction.audit.conflicting">Conflicting</span></td>
-          <td *ngSwitchCase="'accelerated'"><span class="badge badge-success" i18n="transaction.audit.accelerated">Accelerated</span></td>
+          <td *ngSwitchCase="'accelerated'"><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></td>
         </ng-container>
+      </tr>
+      <tr *ngIf="!auditEnabled && tx && tx.status === 'accelerated'">
+        <td class="td-width"></td>
+        <td><span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span></td>
       </tr>
     </tbody>
   </table>

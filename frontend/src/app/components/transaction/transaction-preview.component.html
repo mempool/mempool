@@ -40,7 +40,7 @@
       <ng-container [ngSwitch]="extraData">
         <div class="opreturns" *ngSwitchCase="'coinbase'">
             <div class="opreturn-row">
-              <span class="label">Coinbase</span>
+              <span class="label" i18n="transactions-list.coinbase">Coinbase</span>
               <span class="message">{{ tx.vin[0].scriptsig | hex2ascii }}</span>
             </div>
         </div>

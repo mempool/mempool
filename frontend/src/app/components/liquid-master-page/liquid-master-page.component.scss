@@ -1,3 +1,11 @@
+.sticky-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
 li.nav-item.active {
   background-color: #653b9c;
 }

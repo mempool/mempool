@@ -1,11 +1,13 @@
 import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
-import { EChartsOption } from 'echarts';
+import { EChartsOption } from '../../graphs/echarts';
 import { OnChanges } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { download, formatterXAxis, formatterXAxisLabel } from '../../shared/graphs.utils';
 import { formatNumber } from '@angular/common';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
+
+const OUTLIERS_MEDIAN_MULTIPLIER = 4;
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -29,6 +31,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   @Input() left: number | string = '0';
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() windowPreferenceOverride: string;
+  @Input() outlierCappingEnabled: boolean = false;
 
   isLoading = true;
   mempoolStatsChartOption: EChartsOption = {};
@@ -37,8 +40,10 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   };
   windowPreference: string;
   chartInstance: any = undefined;
+  MA: number[][] = [];
   weightMode: boolean = false;
   rateUnitSub: Subscription;
+  medianVbytesPerSecond: number | undefined;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -62,17 +67,107 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       return;
     }
     this.windowPreference = this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference');
+    const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
+    this.MA = this.calculateMA(this.data.series[0], windowSize);
+    if (this.outlierCappingEnabled === true) {
+      this.computeMedianVbytesPerSecond(this.data.series[0]);
+    }
     this.mountChart();
   }
 
   rendered() {
     if (!this.data) {
-      return;
+      return; 
     }
     this.isLoading = false;
   }
 
+  /**
+   * Calculate the median value of the vbytes per second chart to hide outliers
+   */
+  computeMedianVbytesPerSecond(data: number[][]): void {
+    const vBytes: number[] = [];
+    for (const value of data) {
+      vBytes.push(value[1]);
+    }
+    const sorted = vBytes.slice().sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    this.medianVbytesPerSecond = sorted[middle];
+    if (sorted.length % 2 === 0) {
+      this.medianVbytesPerSecond = (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+  }
+
+  /// calculate the moving average of the provided data based on windowSize
+  calculateMA(data: number[][], windowSize: number = 100): number[][] {
+    //update const variables that are not changed
+    const ma: number[][] = [];
+    let sum = 0;
+    let i = 0;
+
+    //calculate the centered moving average
+    for (i = 0; i < data.length; i++) {
+      sum += data[i][1];
+      if (i >= windowSize) {
+        sum -= data[i - windowSize][1];
+        const midpoint = i - Math.floor(windowSize / 2);
+        const avg = sum / windowSize;
+        ma.push([data[midpoint][0], avg]);
+      }
+    }
+
+    //return the moving average array
+    return ma;
+  }
+
   mountChart(): void {
+    //create an array for the echart series
+    //similar to how it is done in mempool-graph.component.ts
+    const seriesGraph = [];
+    seriesGraph.push({
+      zlevel: 0,
+      name: 'data',
+      data: this.data.series[0],
+      type: 'line',
+      smooth: false,
+      showSymbol: false,
+      symbol: 'none',
+      lineStyle: {
+        width: 3,
+      },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: {
+          color: '#fff',
+          opacity: 1,
+          width: 2,
+        },
+        data: [{
+          yAxis: 1667,
+          label: {
+            show: false,
+            color: '#ffffff',
+          }
+        }],
+      }
+    });
+    if (this.template !== 'widget') {
+      seriesGraph.push({
+        zlevel: 0,
+        name: 'MA',
+        data: this.MA,
+        type: 'line',
+        smooth: false,
+        showSymbol: false,
+        symbol: 'none',
+        lineStyle: {
+          width: 2,
+          color: "white",
+        }
+      });
+    }
+
     this.mempoolStatsChartOption = {
       grid: {
         height: this.height,
@@ -114,27 +209,31 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 80;
           return obj;
         },
-        extraCssText: `width: ${(['2h', '24h'].includes(this.windowPreference) || this.template === 'widget') ? '125px' : '135px'};
-                      background: transparent;
+        extraCssText: `background: transparent;
                       border: none;
                       box-shadow: none;`,
         axisPointer: {
           type: 'line',
         },
         formatter: (params: any) => {
-          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);         
+          const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ` + color + `"></span>`;
           let itemFormatted = '<div class="title">' + axisValueLabel + '</div>';
           params.map((item: any, index: number) => {
-            if (index < 26) {
-              itemFormatted += `<div class="item">
-                <div class="indicator-container">${colorSpan(item.color)}</div>
-                <div class="grow"></div>
-                <div class="value">${formatNumber(this.weightMode ? item.value[1] * 4 : item.value[1], this.locale, '1.0-0')} <span class="symbol">${this.weightMode ? 'WU' : 'vB'}/s</span></div>
-              </div>`;
+
+            //Do no include MA in tooltip legend!
+            if (item.seriesName !== 'MA') {
+              if (index < 26) {
+                itemFormatted += `<div class="item">
+                  <div class="indicator-container">${colorSpan(item.color)}</div>
+                  <div class="grow"></div>
+                  <div class="value">${formatNumber(item.value[1], this.locale, '1.0-0')}<span class="symbol">vB/s</span></div>
+                </div>`;
+              }
             }
           });
-          return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
+          return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}" 
+                  style="width: ${(this.windowPreference === '2h' || this.template === 'widget') ? '125px' : '215px'}">${itemFormatted}</div>`;
         }
       },
       xAxis: [
@@ -156,6 +255,13 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         }
       ],
       yAxis: {
+        max: (value) => {
+          if (!this.outlierCappingEnabled || value.max < this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER) {
+            return undefined;
+          } else {
+            return Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
+          }
+        },
         type: 'value',
         axisLabel: {
           fontSize: 11,
@@ -171,35 +277,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           }
         }
       },
-      series: [
-        {
-          zlevel: 0,
-          data: this.data.series[0],
-          type: 'line',
-          smooth: false,
-          showSymbol: false,
-          symbol: 'none',
-          lineStyle: {
-            width: 3,
-          },
-          markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: {
-              color: '#fff',
-              opacity: 1,
-              width: 2,
-            },
-            data: [{
-              yAxis: 1667,
-              label: {
-                show: false,
-                color: '#ffffff',
-              }
-            }],
-          }
-        },
-      ],
+      series: seriesGraph,
       visualMap: {
         show: false,
         top: 50,
