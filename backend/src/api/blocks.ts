@@ -611,7 +611,7 @@ class Blocks {
         if (unclassifiedBlocks[height]) {
           const blockHash = unclassifiedBlocks[height];
           // fetch transactions
-          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx));
+          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx)) || [];
           // add CPFP
           const cpfpSummary = Common.calculateCpfp(height, txs, true);
           // classify
@@ -622,7 +622,7 @@ class Blocks {
           // classify template
           const blockHash = unclassifiedTemplates[height];
           const template = await BlocksSummariesRepository.$getTemplate(blockHash);
-          const alreadyClassified = template?.transactions.reduce((classified, tx) => (classified || tx.flags > 0), false);
+          const alreadyClassified = template?.transactions?.reduce((classified, tx) => (classified || tx.flags > 0), false);
           let classifiedTemplate = template?.transactions || [];
           if (!alreadyClassified) {
             const templateTxs: (TransactionExtended | TransactionClassified)[] = [];
@@ -641,7 +641,7 @@ class Blocks {
               }
               templateTxs.push(tx || templateTx);
             }
-            const cpfpSummary = Common.calculateCpfp(height, txs?.filter(tx => tx.effectiveFeePerVsize != null) as TransactionExtended[], true);
+            const cpfpSummary = Common.calculateCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as TransactionExtended[], true);
             // classify
             const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
             const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
@@ -662,8 +662,10 @@ class Blocks {
       }
 
       // timing & logging
-      indexedThisRun++;
-      indexedTotal++;
+      if (unclassifiedBlocks[height] || unclassifiedTemplates[height]) {
+        indexedThisRun++;
+        indexedTotal++;
+      }
       const elapsedSeconds = (Date.now() - timer) / 1000;
       if (elapsedSeconds > 5) {
         const perSecond = indexedThisRun / elapsedSeconds;
