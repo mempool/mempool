@@ -40,6 +40,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
   @Input() showFilters: boolean = false;
+  @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
@@ -71,6 +72,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   searchText: string;
   searchSubscription: Subscription;
+  filtersAvailable: boolean = true;
+  activeFilterFlags: bigint | null = null;
 
   constructor(
     readonly ngZone: NgZone,
@@ -110,16 +113,19 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.overrideColor && this.scene) {
       this.scene.setColorFunction(this.overrideColors);
     }
-    if ((changes.filterFlags || changes.showFilters) && this.scene) {
-      this.setFilterFlags(this.filterFlags);
+    if ((changes.filterFlags || changes.showFilters)) {
+      this.setFilterFlags();
     }
   }
 
-  setFilterFlags(flags: bigint | null): void {
-    if (flags != null) {
-      this.scene.setColorFunction(this.getFilterColorFunction(flags));
-    } else {
-      this.scene.setColorFunction(this.overrideColors);
+  setFilterFlags(flags?: bigint | null): void {
+    this.activeFilterFlags = this.filterFlags || flags || null;
+    if (this.scene) {
+      if (flags != null) {
+        this.scene.setColorFunction(this.getFilterColorFunction(flags));
+      } else {
+        this.scene.setColorFunction(this.overrideColors);
+      }
     }
     this.start();
   }
@@ -150,6 +156,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   // initialize the scene without any entry transition
   setup(transactions: TransactionStripped[]): void {
+    this.filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
     if (this.scene) {
       this.scene.setup(transactions);
       this.readyNextFrame = true;
@@ -260,7 +267,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
         highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
-        colorFunction: this.overrideColors });
+        colorFunction: this.getColorFunction() });
       this.start();
     }
   }
@@ -502,6 +509,16 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   onTxHover(hoverId: string) {
     this.txHoverEvent.emit(hoverId);
+  }
+
+  getColorFunction(): ((tx: TxView) => Color) {
+    if (this.filterFlags) {
+      return this.getFilterColorFunction(this.filterFlags);
+    } else if (this.activeFilterFlags) {
+      return this.getFilterColorFunction(this.activeFilterFlags);
+    } else {
+      return this.overrideColors;
+    }
   }
 
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
