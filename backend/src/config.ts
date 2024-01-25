@@ -39,6 +39,7 @@ interface IConfig {
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
+    MAX_TRACKED_ADDRESSES: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -193,6 +194,7 @@ const defaults: IConfig = {
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
+    'MAX_TRACKED_ADDRESSES': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

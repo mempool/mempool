@@ -18,7 +18,7 @@
       <h5>{{ group.label }}</h5>
       <div class="filter-group">
         <ng-container *ngFor="let filter of group.filters;">
-          <button class="btn filter-tag" [class.selected]="filterFlags[filter.key]" (click)="toggleFilter(filter.key)">{{ filter.label }}</button>
+          <button *ngIf="!disabledFilters[filter.key]" class="btn filter-tag" [class.selected]="filterFlags[filter.key]" (click)="toggleFilter(filter.key)">{{ filter.label }}</button>
         </ng-container>
       </div>
     </ng-container>
