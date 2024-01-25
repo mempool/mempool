@@ -35,10 +35,15 @@ win.document.body.scrollTo = (() => {});
 win['ResizeObserver'] = ResizeObserver;
 // @ts-ignore
 global['window'] = win;
+// @ts-ignore
 global['document'] = win.document;
 // @ts-ignore
 global['history'] = { state: { } };
-global['navigator'] = win.navigator;
+// @ts-ignore
+Object.defineProperty(global, 'navigator', {
+  value: win.navigator,
+  writable: true
+});
 
 global['localStorage'] = {
   getItem: () => '',
