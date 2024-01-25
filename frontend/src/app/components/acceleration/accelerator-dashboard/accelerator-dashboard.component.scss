@@ -139,6 +139,9 @@
 }
 .list-card {
   height: 410px;
+  @media (max-width: 767px) {
+    height: auto;
+  }
 }
 
 .mempool-block-wrapper {

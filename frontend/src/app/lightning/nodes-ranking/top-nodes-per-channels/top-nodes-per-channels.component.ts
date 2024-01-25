@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { INodesRanking, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
+import { combineLatest, map, Observable } from 'rxjs';
+import { INodesRanking, INodesStatistics, ITopNodesPerChannels } from '../../../interfaces/node-api.interface';
 import { SeoService } from '../../../services/seo.service';
 import { StateService } from '../../../services/state.service';
 import { GeolocationData } from '../../../shared/components/geolocation/geolocation.component';
@@ -14,12 +14,13 @@ import { LightningApiService } from '../../lightning-api.service';
 })
 export class TopNodesPerChannels implements OnInit {
   @Input() nodes$: Observable<INodesRanking>;
+  @Input() statistics$: Observable<INodesStatistics>;
   @Input() widget: boolean = false;
   
-  topNodesPerChannels$: Observable<ITopNodesPerChannels[]>;
+  topNodesPerChannels$: Observable<{ nodes: ITopNodesPerChannels[]; statistics: { totalChannels: number; totalCapacity?: number; } }>;
   skeletonRows: number[] = [];
   currency$: Observable<string>;
-
+  
   constructor(
     private apiService: LightningApiService,
     private stateService: StateService,
@@ -37,8 +38,12 @@ export class TopNodesPerChannels implements OnInit {
       this.seoService.setTitle($localize`:@@c50bf442cf99f6fc5f8b687c460f33234b879869:Connectivity Ranking`);
       this.seoService.setDescription($localize`:@@meta.description.lightning.ranking.channels:See Lightning nodes with the most channels open along with high-level stats like total node capacity, node age, and more.`);
 
-      this.topNodesPerChannels$ = this.apiService.getTopNodesByChannels$().pipe(
-        map((ranking) => {
+      this.topNodesPerChannels$ = combineLatest([
+        this.apiService.getTopNodesByChannels$(),
+        this.statistics$
+      ])
+      .pipe(
+        map(([ranking, statistics]) => {
           for (const i in ranking) {
             ranking[i].geolocation = <GeolocationData>{
               country: ranking[i].country?.en,
@@ -47,12 +52,22 @@ export class TopNodesPerChannels implements OnInit {
               iso: ranking[i].iso_code,
             };
           }
-          return ranking;
+          return {
+            nodes: ranking,
+            statistics: {
+              totalChannels: statistics.latest.channel_count,
+              totalCapacity: statistics.latest.total_capacity,
+            }
+          }
         })
       );
     } else {
-      this.topNodesPerChannels$ = this.nodes$.pipe(
-        map((ranking) => {
+      this.topNodesPerChannels$ = combineLatest([
+        this.nodes$,
+        this.statistics$
+      ])
+      .pipe(
+        map(([ranking, statistics]) => {
           for (const i in ranking.topByChannels) {
             ranking.topByChannels[i].geolocation = <GeolocationData>{
               country: ranking.topByChannels[i].country?.en,
@@ -61,7 +76,12 @@ export class TopNodesPerChannels implements OnInit {
               iso: ranking.topByChannels[i].iso_code,
             };
           }
-          return ranking.topByChannels.slice(0, 6);
+          return {
+            nodes: ranking.topByChannels.slice(0, 6),
+            statistics: {
+              totalChannels: statistics.latest.channel_count,
+            }
+          }
         })
       );
     }

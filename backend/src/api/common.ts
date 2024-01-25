@@ -1,10 +1,9 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { Request } from 'express';
-import { Ancestor, CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
+import { CpfpInfo, CpfpSummary, CpfpCluster, EffectiveFeeStats, MempoolBlockWithTransactions, TransactionExtended, MempoolTransactionExtended, TransactionStripped, WorkingEffectiveFeeStats, TransactionClassified, TransactionFlags } from '../mempool.interfaces';
 import config from '../config';
 import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
-import rbfCache from './rbf-cache';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 export class Common {
@@ -222,7 +221,25 @@ export class Common {
   }
 
   static getTransactionFlags(tx: TransactionExtended): number {
-    let flags = 0n;
+    let flags = tx.flags ? BigInt(tx.flags) : 0n;
+
+    // Update variable flags (CPFP, RBF)
+    if (tx.ancestors?.length) {
+      flags |= TransactionFlags.cpfp_child;
+    }
+    if (tx.descendants?.length) {
+      flags |= TransactionFlags.cpfp_parent;
+    }
+    if (tx.replacement) {
+      flags |= TransactionFlags.replacement;
+    }
+
+    // Already processed static flags, no need to do it again
+    if (tx.flags) {
+      return Number(flags);
+    }
+
+    // Process static flags
     if (tx.version === 1) {
       flags |= TransactionFlags.v1;
     } else if (tx.version === 2) {
@@ -245,8 +262,13 @@ export class Common {
         case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
         case 'v1_p2tr': {
           flags |= TransactionFlags.p2tr;
-          if (vin.witness.length > 2) {
-            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - 2]);
+          // in taproot, if the last witness item begins with 0x50, it's an annex
+          const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
+          // script spends have more than one witness item, not counting the annex (if present)
+          if (vin.witness.length > (hasAnnex ? 2 : 1)) {
+            // the script itself is the second-to-last witness item, not counting the annex
+            const asm = vin.inner_witnessscript_asm || transactionUtils.convertScriptSigAsm(vin.witness[vin.witness.length - (hasAnnex ? 3 : 2)]);
+            // inscriptions smuggle data within an 'OP_0 OP_IF ... OP_ENDIF' envelope
             if (asm?.includes('OP_0 OP_IF')) {
               flags |= TransactionFlags.inscription;
             }
@@ -306,15 +328,7 @@ export class Common {
     if (hasFakePubkey) {
       flags |= TransactionFlags.fake_pubkey;
     }
-    if (tx.ancestors?.length) {
-      flags |= TransactionFlags.cpfp_child;
-    }
-    if (tx.descendants?.length) {
-      flags |= TransactionFlags.cpfp_parent;
-    }
-    if (rbfCache.getRbfTree(tx.txid)) {
-      flags |= TransactionFlags.replacement;
-    }
+    
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
@@ -334,11 +348,16 @@ export class Common {
   }
 
   static classifyTransaction(tx: TransactionExtended): TransactionClassified {
-    const flags = this.getTransactionFlags(tx);
+    const flags = Common.getTransactionFlags(tx);
+    tx.flags = flags;
     return {
-      ...this.stripTransaction(tx),
+      ...Common.stripTransaction(tx),
       flags,
     };
+  }
+
+  static classifyTransactions(txs: TransactionExtended[]): TransactionClassified[] {
+    return txs.map(Common.classifyTransaction);
   }
 
   static stripTransaction(tx: TransactionExtended): TransactionStripped {
@@ -353,7 +372,7 @@ export class Common {
   }
 
   static stripTransactions(txs: TransactionExtended[]): TransactionStripped[] {
-    return txs.map(this.stripTransaction);
+    return txs.map(Common.stripTransaction);
   }
 
   static sleep$(ms: number): Promise<void> {
@@ -616,12 +635,12 @@ export class Common {
     }
   }
 
-  static calculateCpfp(height: number, transactions: TransactionExtended[]): CpfpSummary {
+  static calculateCpfp(height: number, transactions: TransactionExtended[], saveRelatives: boolean = false): CpfpSummary {
     const clusters: CpfpCluster[] = []; // list of all cpfp clusters in this block
     const clusterMap: { [txid: string]: CpfpCluster } = {}; // map transactions to their cpfp cluster
     let clusterTxs: TransactionExtended[] = []; // working list of elements of the current cluster
     let ancestors: { [txid: string]: boolean } = {}; // working set of ancestors of the current cluster root
-    const txMap = {};
+    const txMap: { [txid: string]: TransactionExtended } = {};
     // initialize the txMap
     for (const tx of transactions) {
       txMap[tx.txid] = tx;
@@ -689,6 +708,15 @@ export class Common {
           // update the existing cluster with the dependent rate
           clusterMap[tx.txid].effectiveFeePerVsize = minAncestorRate;
         }
+      }
+    }
+    if (saveRelatives) {
+      for (const cluster of clusters) {
+        cluster.txs.forEach((member, index) => {
+          txMap[member.txid].descendants = cluster.txs.slice(0, index).reverse();
+          txMap[member.txid].ancestors = cluster.txs.slice(index + 1).reverse();
+          txMap[member.txid].effectiveFeePerVsize = cluster.effectiveFeePerVsize;
+        });
       }
     }
     return {
