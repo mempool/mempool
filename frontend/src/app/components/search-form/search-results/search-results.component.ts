@@ -10,14 +10,19 @@ export class SearchResultsComponent implements OnChanges {
   @Input() results: any = {};
   @Output() selectedResult = new EventEmitter();
 
-  isMobile = (window.innerWidth <= 767.98);
+  isMobile = (window.innerWidth <= 1150);
   resultsFlattened = [];
   activeIdx = 0;
   focusFirst = true;
+  networkName = '';
 
   constructor(
     public stateService: StateService,
     ) { }
+
+  ngOnInit() {
+    this.networkName = this.stateService.network.charAt(0).toUpperCase() + this.stateService.network.slice(1);
+  }
 
   ngOnChanges() {
     this.activeIdx = 0;

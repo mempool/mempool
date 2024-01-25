@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 67;
+  private static currentVersion = 68;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -559,8 +559,15 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(66);
     }
 
-    if (databaseSchemaVersion < 67 && config.MEMPOOL.NETWORK === "liquid") {
-      // Drop and re-create the elements_pegs table
+    if (databaseSchemaVersion < 67  && isBitcoin === true) {
+      await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_summaries` ADD INDEX `version` (`version`)');
+      await this.$executeQuery('ALTER TABLE `blocks_templates` ADD version INT NOT NULL DEFAULT 0');
+      await this.$executeQuery('ALTER TABLE `blocks_templates` ADD INDEX `version` (`version`)');
+      await this.updateToSchemaVersion(67);
+    }
+    
+    if (databaseSchemaVersion < 68 && config.MEMPOOL.NETWORK === "liquid") {
       await this.$executeQuery('TRUNCATE TABLE elements_pegs');
       await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
       await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
@@ -571,7 +578,7 @@ class DatabaseMigration {
       // Create the federation_txos table that uses the federation_addresses table as a foreign key
       await this.$executeQuery(this.getCreateFederationTxosTableQuery(), await this.$checkIfTableExists('federation_txos'));
       await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
-      await this.updateToSchemaVersion(67);
+      await this.updateToSchemaVersion(68);
     }
   }
 
