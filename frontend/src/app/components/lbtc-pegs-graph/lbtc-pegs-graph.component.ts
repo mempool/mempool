@@ -113,7 +113,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
                 <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">${item.seriesName}</span></div>
               </div>`;
             }
-          };
+          }
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
