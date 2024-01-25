@@ -35,6 +35,7 @@ class Logger {
   public tags = {
     mining: 'Mining',
     ln: 'Lightning',
+    goggles: 'Goggles',
   };  
 
   // @ts-ignore

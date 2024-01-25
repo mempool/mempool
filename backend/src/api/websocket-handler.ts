@@ -24,6 +24,12 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 
+interface AddressTransactions {
+  mempool: MempoolTransactionExtended[],
+  confirmed: MempoolTransactionExtended[],
+  removed: MempoolTransactionExtended[],
+}
+
 // valid 'want' subscriptions
 const wantable = [
   'blocks',
@@ -195,21 +201,46 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-address']) {
-            if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/
-              .test(parsedMessage['track-address'])) {
-              let matchedAddress = parsedMessage['track-address'];
-              if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}$/.test(parsedMessage['track-address'])) {
-                matchedAddress = matchedAddress.toLowerCase();
-              }
-              if (/^04[a-fA-F0-9]{128}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = '41' + matchedAddress + 'ac';
-              } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(parsedMessage['track-address'])) {
-                client['track-address'] = '21' + matchedAddress + 'ac';
-              } else {
-                client['track-address'] = matchedAddress;
-              }
+            const validAddress = this.testAddress(parsedMessage['track-address']);
+            if (validAddress) {
+              client['track-address'] = validAddress;
             } else {
               client['track-address'] = null;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-addresses'] && Array.isArray(parsedMessage['track-addresses'])) {
+            const addressMap: { [address: string]: string } = {};
+            for (const address of parsedMessage['track-addresses']) {
+              const validAddress = this.testAddress(address);
+              if (validAddress) {
+                addressMap[address] = validAddress;
+              }
+            }
+            if (Object.keys(addressMap).length > config.MEMPOOL.MAX_TRACKED_ADDRESSES) {
+              response['track-addresses-error'] = `"too many addresses requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} addresses"`;
+              client['track-addresses'] = null;
+            } else if (Object.keys(addressMap).length > 0) {
+              client['track-addresses'] = addressMap;
+            } else {
+              client['track-addresses'] = null;
+            }
+          }
+
+          if (parsedMessage && parsedMessage['track-scriptpubkeys'] && Array.isArray(parsedMessage['track-scriptpubkeys'])) {
+            const spks: string[] = [];
+            for (const spk of parsedMessage['track-scriptpubkeys']) {
+              if (/^[a-fA-F0-9]+$/.test(spk)) {
+                spks.push(spk.toLowerCase());
+              }
+            }
+            if (spks.length > config.MEMPOOL.MAX_TRACKED_ADDRESSES) {
+              response['track-scriptpubkeys-error'] = `"too many scriptpubkeys requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} scriptpubkeys"`;
+              client['track-scriptpubkeys'] = null;
+            } else if (spks.length) {
+              client['track-scriptpubkeys'] = spks;
+            } else {
+              client['track-scriptpubkeys'] = null;
             }
           }
 
@@ -544,6 +575,50 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-addresses']) {
+        const addressMap: { [address: string]: AddressTransactions } = {};
+        for (const [address, key] of Object.entries(client['track-addresses'] || {})) {
+          const newTransactions = Array.from(addressCache[key as string]?.values() || []);
+          const removedTransactions = Array.from(removedAddressCache[key as string]?.values() || []);
+          // txs may be missing prevouts in non-esplora backends
+          // so fetch the full transactions now
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
+          if (fullTransactions?.length) {
+            addressMap[address] = {
+              mempool: fullTransactions,
+              confirmed: [],
+              removed: removedTransactions,
+            };
+          }
+        }
+
+        if (Object.keys(addressMap).length > 0) {
+          response['multi-address-transactions'] = JSON.stringify(addressMap);
+        }
+      }
+
+      if (client['track-scriptpubkeys']) {
+        const spkMap: { [spk: string]: AddressTransactions } = {};
+        for (const spk of client['track-scriptpubkeys'] || []) {
+          const newTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          const removedTransactions = Array.from(removedAddressCache[spk as string]?.values() || []);
+          // txs may be missing prevouts in non-esplora backends
+          // so fetch the full transactions now
+          const fullTransactions = (config.MEMPOOL.BACKEND !== 'esplora') ? await this.getFullTransactions(newTransactions) : newTransactions;
+          if (fullTransactions?.length) {
+            spkMap[spk] = {
+              mempool: fullTransactions,
+              confirmed: [],
+              removed: removedTransactions,
+            };
+          }
+        }
+
+        if (Object.keys(spkMap).length > 0) {
+          response['multi-scriptpubkey-transactions'] = JSON.stringify(spkMap);
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -703,7 +778,8 @@ class WebsocketHandler {
           template: {
             id: block.id,
             transactions: stripped,
-          }
+          },
+          version: 1,
         });
 
         BlocksAuditsRepository.$saveAudit({
@@ -843,6 +919,42 @@ class WebsocketHandler {
         }
       }
 
+      if (client['track-addresses']) {
+        const addressMap: { [address: string]: AddressTransactions } = {};
+        for (const [address, key] of Object.entries(client['track-addresses'] || {})) {
+          const fullTransactions = Array.from(addressCache[key as string]?.values() || []);
+          if (fullTransactions?.length) {
+            addressMap[address] = {
+              mempool: [],
+              confirmed: fullTransactions,
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(addressMap).length > 0) {
+          response['multi-address-transactions'] = JSON.stringify(addressMap);
+        }
+      }
+
+      if (client['track-scriptpubkeys']) {
+        const spkMap: { [spk: string]: AddressTransactions } = {};
+        for (const spk of client['track-scriptpubkeys'] || []) {
+          const fullTransactions = Array.from(addressCache[spk as string]?.values() || []);
+          if (fullTransactions?.length) {
+            spkMap[spk] = {
+              mempool: [],
+              confirmed: fullTransactions,
+              removed: [],
+            };
+          }
+        }
+
+        if (Object.keys(spkMap).length > 0) {
+          response['multi-scriptpubkey-transactions'] = JSON.stringify(spkMap);
+        }
+      }
+
       if (client['track-asset']) {
         const foundTransactions: TransactionExtended[] = [];
 
@@ -910,6 +1022,28 @@ class WebsocketHandler {
     return '{'
         + Object.keys(response).map(key => `"${key}": ${response[key]}`).join(', ')
         + '}';
+  }
+
+  // checks if an address conforms to a valid format
+  // returns the canonical form:
+  //  - lowercase for bech32(m)
+  //  - lowercase scriptpubkey for P2PK
+  // or false if invalid
+  private testAddress(address): string | false {
+    if (/^([a-km-zA-HJ-NP-Z1-9]{26,35}|[a-km-zA-HJ-NP-Z1-9]{80}|[a-z]{2,5}1[ac-hj-np-z02-9]{8,100}|[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64})$/.test(address)) {
+      if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(address)) {
+        address = address.toLowerCase();
+      }
+      if (/^04[a-fA-F0-9]{128}$/.test(address)) {
+        return '41' + address + 'ac';
+      } else if (/^(02|03)[a-fA-F0-9]{64}$/.test(address)) {
+        return '21' + address + 'ac';
+      } else {
+        return address;
+      }
+    } else {
+      return false;
+    }
   }
 
   private makeAddressCache(transactions: MempoolTransactionExtended[]): { [address: string]: Set<MempoolTransactionExtended> } {

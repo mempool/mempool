@@ -59,7 +59,7 @@
                 <td [innerHTML]="'&lrm;' + (block.weight | wuBytes: 2)"></td>
               </tr>
               <tr *ngIf="auditAvailable">
-                <td><ng-container i18n="latest-blocks.health">Health</ng-container>&nbsp;<a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
+                <td><ng-container i18n="latest-blocks.health">Health</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="what-is-block-health"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></td>
                 <td>
                   <span
                     class="health-badge badge"
@@ -115,6 +115,8 @@
             [orientation]="'top'"
             [flip]="false"
             [blockConversion]="blockConversion"
+            [showFilters]="true"
+            [excludeFilters]="['replacement']"
             (txClickEvent)="onTxClick($event)"
           ></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
@@ -229,7 +231,8 @@
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="!isMobile && !showAudit"
+            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
           <ng-container *ngIf="!isMobile || mode !== 'actual'; else emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
@@ -239,11 +242,12 @@
         </ng-container>
       </div>
       <div class="col-sm" *ngIf="!isMobile">
-        <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container> <a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
+        <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
             [blockLimit]="stateService.blockVSize" [orientation]="'top'" [flip]="false" [mirrorTxid]="hoverTx" mode="mined"  [auditHighlighting]="showAudit"
-            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"></app-block-overview-graph>
+            (txClickEvent)="onTxClick($event)" (txHoverEvent)="onTxHover($event)" [unavailable]="isMobile && !showAudit"
+            [showFilters]="true" [excludeFilters]="['replacement']"></app-block-overview-graph>
           <ng-container *ngTemplateOutlet="emptyBlockInfo"></ng-container>
         </div>
         <ng-container *ngIf="network !== 'liquid'">
