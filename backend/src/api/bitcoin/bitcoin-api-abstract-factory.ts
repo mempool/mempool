@@ -1,3 +1,4 @@
+import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 
 export interface AbstractBitcoinApi {

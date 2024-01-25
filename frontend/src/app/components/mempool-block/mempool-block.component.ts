@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { StateService } from '../../services/state.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { switchMap, map, tap, filter } from 'rxjs/operators';
@@ -28,6 +28,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private websocketService: WebsocketService,
+    private cd: ChangeDetectorRef,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -63,6 +64,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
         }),
         tap(() => {
           this.stateService.markBlock$.next({ mempoolBlockIndex: this.mempoolBlockIndex });
+          this.websocketService.startTrackMempoolBlock(this.mempoolBlockIndex);
         })
       );
 
@@ -73,6 +75,7 @@ export class MempoolBlockComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateService.markBlock$.next({});
+    this.websocketService.stopTrackMempoolBlock();
   }
 
   getOrdinal(mempoolBlock: MempoolBlock): string {

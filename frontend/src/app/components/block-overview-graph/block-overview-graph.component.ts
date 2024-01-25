@@ -8,6 +8,19 @@ import { Color, Position } from './sprite-types';
 import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
+import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+
+const unmatchedOpacity = 0.2;
+const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditFeeColors = defaultAuditFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedMarginalFeeColors = defaultMarginalFeeColors.map(c => setOpacity(c, unmatchedOpacity));
+const unmatchedAuditColors = {
+  censored: setOpacity(defaultAuditColors.censored, unmatchedOpacity),
+  missing: setOpacity(defaultAuditColors.missing, unmatchedOpacity),
+  added: setOpacity(defaultAuditColors.added, unmatchedOpacity),
+  selected: setOpacity(defaultAuditColors.selected, unmatchedOpacity),
+  accelerated: setOpacity(defaultAuditColors.accelerated, unmatchedOpacity),
+};
 
 @Component({
   selector: 'app-block-overview-graph',
@@ -26,6 +39,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() mirrorTxid: string | void;
   @Input() unavailable: boolean = false;
   @Input() auditHighlighting: boolean = false;
+  @Input() showFilters: boolean = false;
+  @Input() excludeFilters: string[] = [];
+  @Input() filterFlags: bigint | null = null;
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -56,6 +72,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   searchText: string;
   searchSubscription: Subscription;
+  filtersAvailable: boolean = true;
+  activeFilterFlags: bigint | null = null;
 
   constructor(
     readonly ngZone: NgZone,
@@ -92,9 +110,24 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.auditHighlighting) {
       this.setHighlightingEnabled(this.auditHighlighting);
     }
-    if (changes.overrideColor) {
+    if (changes.overrideColor && this.scene) {
       this.scene.setColorFunction(this.overrideColors);
     }
+    if ((changes.filterFlags || changes.showFilters)) {
+      this.setFilterFlags();
+    }
+  }
+
+  setFilterFlags(flags?: bigint | null): void {
+    this.activeFilterFlags = this.filterFlags || flags || null;
+    if (this.scene) {
+      if (flags != null) {
+        this.scene.setColorFunction(this.getFilterColorFunction(flags));
+      } else {
+        this.scene.setColorFunction(this.overrideColors);
+      }
+    }
+    this.start();
   }
 
   ngOnDestroy(): void {
@@ -123,6 +156,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   // initialize the scene without any entry transition
   setup(transactions: TransactionStripped[]): void {
+    this.filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
     if (this.scene) {
       this.scene.setup(transactions);
       this.readyNextFrame = true;
@@ -233,7 +267,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
       this.scene = new BlockScene({ width: this.displayWidth, height: this.displayHeight, resolution: this.resolution,
         blockLimit: this.blockLimit, orientation: this.orientation, flip: this.flip, vertexArray: this.vertexArray,
         highlighting: this.auditHighlighting, animationDuration: this.animationDuration, animationOffset: this.animationOffset,
-        colorFunction: this.overrideColors });
+        colorFunction: this.getColorFunction() });
       this.start();
     }
   }
@@ -374,6 +408,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   onPointerMove(event) {
     if (event.target === this.canvas.nativeElement) {
       this.setPreviewTx(event.offsetX, event.offsetY, false);
+    } else {
+      this.onPointerLeave(event);
     }
   }
 
@@ -473,6 +509,32 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   onTxHover(hoverId: string) {
     this.txHoverEvent.emit(hoverId);
+  }
+
+  getColorFunction(): ((tx: TxView) => Color) {
+    if (this.filterFlags) {
+      return this.getFilterColorFunction(this.filterFlags);
+    } else if (this.activeFilterFlags) {
+      return this.getFilterColorFunction(this.activeFilterFlags);
+    } else {
+      return this.overrideColors;
+    }
+  }
+
+  getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+    return (tx: TxView) => {
+      if ((tx.bigintFlags & flags) === flags) {
+        return defaultColorFunction(tx);
+      } else {
+        return defaultColorFunction(
+          tx,
+          unmatchedFeeColors,
+          unmatchedAuditFeeColors,
+          unmatchedMarginalFeeColors,
+          unmatchedAuditColors
+        );
+      }
+    };
   }
 }
 

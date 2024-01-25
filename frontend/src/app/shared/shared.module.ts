@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -44,6 +44,7 @@ import { StartComponent } from '../components/start/start.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
+import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressComponent } from '../components/address/address.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
@@ -141,6 +142,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     StartComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
     SearchFormComponent,
@@ -266,6 +268,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     StartComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
     SearchFormComponent,
@@ -319,7 +322,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockFaceComponent,
 
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
   ]
 })
 export class SharedModule {
@@ -381,5 +384,6 @@ export class SharedModule {
     library.addIcons(faCircleCheck);
     library.addIcons(faUserCircle);
     library.addIcons(faCheck);
+    library.addIcons(faRocket);
   }
 }

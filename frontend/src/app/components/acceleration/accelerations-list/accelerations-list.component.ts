@@ -49,6 +49,9 @@ export class AccelerationsListComponent implements OnInit {
             acceleration.status = acceleration.status || 'accelerating';
           }
         }
+        for (const acc of accelerations) {
+          acc.boost = acc.feePaid - acc.baseFee - acc.vsizeFee;
+        }
         if (this.widget) {
           return of(accelerations.slice(-6).reverse());
         } else {
