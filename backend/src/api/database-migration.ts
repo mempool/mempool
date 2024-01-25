@@ -578,6 +578,8 @@ class DatabaseMigration {
       // Create the federation_txos table that uses the federation_addresses table as a foreign key
       await this.$executeQuery(this.getCreateFederationTxosTableQuery(), await this.$checkIfTableExists('federation_txos'));
       await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
+      await this.updateToSchemaVersion(68);
+    }
   }
 
   /**
