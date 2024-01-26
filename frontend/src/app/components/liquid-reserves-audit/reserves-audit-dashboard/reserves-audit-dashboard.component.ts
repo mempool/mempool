@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
-import { Observable, combineLatest, concat, delay, filter, interval, map, mergeMap, of, share, skip, startWith, switchMap, tap, throttleTime } from 'rxjs';
+import { Observable, combineLatest, delayWhen, filter, interval, map, of, share, shareReplay, startWith, switchMap, tap, throttleTime, timer } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
-import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo, LiquidPegs } from '../../../interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo } from '../../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-reserves-audit-dashboard',
@@ -24,6 +24,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   liquidPegsMonth$: Observable<any>;
   liquidReservesMonth$: Observable<any>;
   fullHistory$: Observable<any>;
+  isLoad: boolean = true;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
@@ -41,15 +42,12 @@ export class ReservesAuditDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'mempool-blocks']);
 
-    this.auditStatus$ = concat(
-      this.apiService.federationAuditSynced$().pipe(share()),
-      this.stateService.blocks$.pipe(
-        skip(1),
-        throttleTime(40000),
-        delay(2000),
-        switchMap(() => this.apiService.federationAuditSynced$()),
-        share()
-      )
+    this.auditStatus$ = this.stateService.blocks$.pipe(
+      throttleTime(40000),
+      delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
+      tap(() => this.isLoad = false),
+      switchMap(() => this.apiService.federationAuditSynced$()),
+      shareReplay(1)
     );
 
     this.currentPeg$ = this.auditStatus$.pipe(

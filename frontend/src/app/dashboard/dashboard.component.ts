@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, concat, EMPTY, interval, merge, Observable, of, Subscription } from 'rxjs';
-import { catchError, delay, filter, map, mergeMap, scan, share, skip, startWith, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { combineLatest, EMPTY, merge, Observable, of, Subscription, timer } from 'rxjs';
+import { catchError, delayWhen, filter, map, scan, share, shareReplay, startWith, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -53,6 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   liquidReservesMonth$: Observable<any>;
   currentReserves$: Observable<CurrentPegs>;
   fullHistory$: Observable<any>;
+  isLoad: boolean = true;
   currencySubscription: Subscription;
   currency: string;
   private lastPegBlockUpdate: number = 0;
@@ -213,56 +214,44 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       );
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
-      ////////// Pegs historical data //////////
-      this.liquidPegsMonth$ = interval(60 * 60 * 1000)
-        .pipe(
-          startWith(0),
-          switchMap(() => this.apiService.listLiquidPegsMonth$()),
-          map((pegs) => {
-            const labels = pegs.map(stats => stats.date);
-            const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
-            series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
-            return {
-              series,
-              labels
-            };
-          }),
-          share(),
-        );
+      this.auditStatus$ = this.stateService.blocks$.pipe(
+        throttleTime(40000),
+        delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
+        tap(() => this.isLoad = false),
+        switchMap(() => this.apiService.federationAuditSynced$()),
+        shareReplay(1),
+        share()
+      );
 
-      this.currentPeg$ = concat(
-        // We fetch the current peg when the page load and
-        // wait for the API response before listening to websocket blocks
-        this.apiService.liquidPegs$()
-          .pipe(
-            tap((currentPeg) => this.lastPegBlockUpdate = currentPeg.lastBlockUpdate)
-          ),
-        // Or when we receive a newer block, we wait 2 seconds so that the backend updates and we fetch the current peg
-        this.stateService.blocks$
-          .pipe(
-            skip(1),
-            throttleTime(40000),
-            delay(2000),
-            switchMap((_) => this.apiService.liquidPegs$()),
-            filter((currentPeg) => currentPeg.lastBlockUpdate >= this.lastPegBlockUpdate),
-            tap((currentPeg) => this.lastPegBlockUpdate = currentPeg.lastBlockUpdate)
+      ////////// Pegs historical data //////////
+      this.liquidPegsMonth$ = this.auditStatus$.pipe(
+        throttleTime(60 * 60 * 1000),
+        switchMap(() => this.apiService.listLiquidPegsMonth$()),
+        map((pegs) => {
+          const labels = pegs.map(stats => stats.date);
+          const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
+          series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
+          return {
+            series,
+            labels
+          };
+        }),
+        share(),
+      );
+
+      this.currentPeg$ = this.auditStatus$.pipe(
+        switchMap(_ =>
+          this.apiService.liquidPegs$().pipe(
+            filter((currentPegs) => currentPegs.lastBlockUpdate >= this.lastPegBlockUpdate),
+            tap((currentPegs) => {
+              this.lastPegBlockUpdate = currentPegs.lastBlockUpdate;
+            })
           )
-      ).pipe(
+        ),
         share()
       );
 
       ////////// BTC Reserves historical data //////////
-      this.auditStatus$ = concat(
-        this.apiService.federationAuditSynced$().pipe(share()),
-        this.stateService.blocks$.pipe(
-          skip(1),
-          throttleTime(40000),
-          delay(2000),
-          switchMap(() => this.apiService.federationAuditSynced$()),
-          share()
-        )
-      );
-
       this.auditUpdated$ = combineLatest([
         this.auditStatus$,
         this.currentPeg$
@@ -271,20 +260,17 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         map(([auditStatus, currentPeg]) => ({
           lastBlockAudit: auditStatus.lastBlockAudit,
           currentPegAmount: currentPeg.amount
-        })), 
+        })),
         switchMap(({ lastBlockAudit, currentPegAmount }) => {
-          console.log(lastBlockAudit, this.lastReservesBlockUpdate, currentPegAmount, this.lastPegAmount)
           const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
           const amountCheck = currentPegAmount !== this.lastPegAmount;
           this.lastPegAmount = currentPegAmount;
-          console.log(blockAuditCheck || amountCheck)
           return of(blockAuditCheck || amountCheck);
         })
       );
 
-      this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
-        startWith(0),
-        mergeMap(() => this.apiService.federationAuditSynced$()),
+      this.liquidReservesMonth$ = this.auditStatus$.pipe(
+        throttleTime(60 * 60 * 1000),
         switchMap((auditStatus) => {
           return auditStatus.isAuditSynced ? this.apiService.listLiquidReservesMonth$() : EMPTY;
         }),

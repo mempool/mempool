@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, combineLatest, concat, of } from 'rxjs';
-import { delay, filter, map, share, skip, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { Observable, combineLatest, of, timer } from 'rxjs';
+import { delayWhen, filter, map, share, shareReplay, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
 import { AuditStatus, CurrentPegs, FederationUtxo } from '../../../interfaces/node-api.interface';
@@ -28,6 +28,7 @@ export class FederationUtxosListComponent implements OnInit {
   currentPeg$: Observable<CurrentPegs>;
   lastPegBlockUpdate: number = 0;
   lastPegAmount: string = '';
+  isLoad: boolean = true;
 
   constructor(
     private apiService: ApiService,
@@ -42,15 +43,12 @@ export class FederationUtxosListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
     if (!this.widget) {
       this.websocketService.want(['blocks']);
-      this.auditStatus$ = concat(
-        this.apiService.federationAuditSynced$().pipe(share()),
-        this.stateService.blocks$.pipe(
-          skip(1),
-          throttleTime(40000),
-          delay(2000),
-          switchMap(() => this.apiService.federationAuditSynced$()),
-          share()
-        )
+      this.auditStatus$ = this.stateService.blocks$.pipe(
+        throttleTime(40000),
+        delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
+        tap(() => this.isLoad = false),
+        switchMap(() => this.apiService.federationAuditSynced$()),
+        shareReplay(1)
       );
 
       this.currentPeg$ = this.auditStatus$.pipe(
