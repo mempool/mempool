@@ -143,7 +143,7 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
@@ -165,7 +165,7 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
@@ -224,7 +224,7 @@
             <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
           </td>
           <td class="timestamp">
-            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
           </td>
           <td class="mined">
             <app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time>
@@ -433,7 +433,7 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
@@ -458,7 +458,7 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
                         <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v20.5.1
+nvm use v20.7.0
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning signet signet-lightning bisq liquid liquidtestnet;do

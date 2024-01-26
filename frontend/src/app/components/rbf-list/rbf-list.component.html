@@ -6,11 +6,9 @@
     <form class="formRadioGroup">
       <div class="btn-group btn-group-toggle" name="radioBasic">
         <label class="btn btn-primary btn-sm" [class.active]="!fullRbf">
-          <input type="radio" [value]="'All'" fragment="" [routerLink]="[]"> All
-        </label>
+          <input type="radio" [value]="'All'" fragment="" [routerLink]="[]"><span i18n="all">All</span></label>
         <label class="btn btn-primary btn-sm" [class.active]="fullRbf">
-          <input type="radio" [value]="'Full RBF'" fragment="fullrbf" [routerLink]="[]"> Full RBF
-        </label>
+          <input type="radio" [value]="'Full RBF'" fragment="fullrbf" [routerLink]="[]" i18n="transaction.full-rbf">Full RBF</label>
       </div>
     </form>
   </div>
@@ -33,7 +31,7 @@
       </div>
 
       <div class="no-replacements" *ngIf="!trees?.length">
-        <p i18n="rbf.no-replacements-yet">there are no replacements in the mempool yet!</p>
+        <p i18n="rbf.no-replacements-yet">There are no replacements in the mempool yet!</p>
       </div>
     </ng-container>
   </div>

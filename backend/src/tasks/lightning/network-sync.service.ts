@@ -288,22 +288,32 @@ class NetworkSyncService {
       }
       logger.debug(`${log}`, logger.tags.ln);
 
-      const channels = await channelsApi.$getChannelsByStatus([0, 1]);
-      for (const channel of channels) {
-        const spendingTx = await bitcoinApi.$getOutspend(channel.transaction_id, channel.transaction_vout);
-        if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
-          logger.debug(`Marking channel: ${channel.id} as closed.`, logger.tags.ln);
-          await DB.query(`UPDATE channels SET status = 2, closing_date = FROM_UNIXTIME(?) WHERE id = ?`,
-            [spendingTx.status.block_time, channel.id]);
-          if (spendingTx.txid && !channel.closing_transaction_id) {
-            await DB.query(`UPDATE channels SET closing_transaction_id = ? WHERE id = ?`, [spendingTx.txid, channel.id]);
+      const allChannels = await channelsApi.$getChannelsByStatus([0, 1]);
+
+      const sliceLength = Math.ceil(config.ESPLORA.BATCH_QUERY_BASE_SIZE / 2);
+      // process batches of 5000 channels
+      for (let i = 0; i < Math.ceil(allChannels.length / sliceLength); i++) {
+        const channels = allChannels.slice(i * sliceLength, (i + 1) * sliceLength);
+        const outspends = await bitcoinApi.$getOutSpendsByOutpoint(channels.map(channel => {
+          return { txid: channel.transaction_id, vout: channel.transaction_vout };
+        }));
+
+        for (const [index, channel] of channels.entries()) {
+          const spendingTx = outspends[index];
+          if (spendingTx.spent === true && spendingTx.status?.confirmed === true) {
+            // logger.debug(`Marking channel: ${channel.id} as closed.`, logger.tags.ln);
+            await DB.query(`UPDATE channels SET status = 2, closing_date = FROM_UNIXTIME(?) WHERE id = ?`,
+              [spendingTx.status.block_time, channel.id]);
+            if (spendingTx.txid && !channel.closing_transaction_id) {
+              await DB.query(`UPDATE channels SET closing_transaction_id = ? WHERE id = ?`, [spendingTx.txid, channel.id]);
+            }
           }
         }
 
-        ++progress;
+        progress += channels.length;
         const elapsedSeconds = Math.round((new Date().getTime() / 1000) - this.loggerTimer);
         if (elapsedSeconds > config.LIGHTNING.LOGGER_UPDATE_INTERVAL) {
-          logger.debug(`Checking if channel has been closed ${progress}/${channels.length}`, logger.tags.ln);
+          logger.debug(`Checking if channel has been closed ${progress}/${allChannels.length}`, logger.tags.ln);
           this.loggerTimer = new Date().getTime() / 1000;
         }
       }

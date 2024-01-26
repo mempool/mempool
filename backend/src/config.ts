@@ -39,11 +39,15 @@ interface IConfig {
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
+    MAX_TRACKED_ADDRESSES: number;
   };
   ESPLORA: {
     REST_API_URL: string;
     UNIX_SOCKET_PATH: string | void | null;
+    BATCH_QUERY_BASE_SIZE: number;
     RETRY_UNIX_SOCKET_AFTER: number;
+    REQUEST_TIMEOUT: number;
+    FALLBACK_TIMEOUT: number;
     FALLBACK: string[];
   };
   LIGHTNING: {
@@ -76,6 +80,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   SECOND_CORE_RPC: {
     HOST: string;
@@ -83,6 +89,8 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    COOKIE: boolean;
+    COOKIE_PATH: string;
   };
   DATABASE: {
     ENABLED: boolean;
@@ -93,6 +101,7 @@ interface IConfig {
     USERNAME: string;
     PASSWORD: string;
     TIMEOUT: number;
+    PID_DIR: string;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -144,6 +153,7 @@ interface IConfig {
   REDIS: {
     ENABLED: boolean;
     UNIX_SOCKET_PATH: string;
+    BATCH_QUERY_BASE_SIZE: number;
   },
 }
 
@@ -184,11 +194,15 @@ const defaults: IConfig = {
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
+    'MAX_TRACKED_ADDRESSES': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
     'UNIX_SOCKET_PATH': null,
+    'BATCH_QUERY_BASE_SIZE': 1000,
     'RETRY_UNIX_SOCKET_AFTER': 30000,
+    'REQUEST_TIMEOUT': 10000,
+    'FALLBACK_TIMEOUT': 5000,
     'FALLBACK': [],
   },
   'ELECTRUM': {
@@ -202,6 +216,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'SECOND_CORE_RPC': {
     'HOST': '127.0.0.1',
@@ -209,6 +225,8 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 60000,
+    'COOKIE': false,
+    'COOKIE_PATH': '/bitcoin/.cookie'
   },
   'DATABASE': {
     'ENABLED': true,
@@ -219,6 +237,7 @@ const defaults: IConfig = {
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
     'TIMEOUT': 180000,
+    'PID_DIR': '',
   },
   'SYSLOG': {
     'ENABLED': true,
@@ -289,6 +308,7 @@ const defaults: IConfig = {
   'REDIS': {
     'ENABLED': false,
     'UNIX_SOCKET_PATH': '',
+    'BATCH_QUERY_BASE_SIZE': 5000,
   },
 };
 

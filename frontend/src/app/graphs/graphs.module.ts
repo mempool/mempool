@@ -3,6 +3,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { GraphsRoutingModule } from './graphs.routing.module';
 import { SharedModule } from '../shared/shared.module';
 
+import { AccelerationFeesGraphComponent } from '../components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component';
 import { BlockFeesGraphComponent } from '../components/block-fees-graph/block-fees-graph.component';
 import { BlockRewardsGraphComponent } from '../components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '../components/block-fee-rates-graph/block-fee-rates-graph.component';
@@ -19,6 +20,7 @@ import { PoolComponent } from '../components/pool/pool.component';
 import { TelevisionComponent } from '../components/television/television.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { MiningDashboardComponent } from '../components/mining-dashboard/mining-dashboard.component';
+import { AcceleratorDashboardComponent } from '../components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
@@ -30,12 +32,14 @@ import { CommonModule } from '@angular/common';
     MempoolBlockComponent,
 
     MiningDashboardComponent,
+    AcceleratorDashboardComponent,
     PoolComponent,
     PoolRankingComponent,
     TelevisionComponent,
 
     StatisticsComponent,
     GraphsComponent,
+    AccelerationFeesGraphComponent,
     BlockFeesGraphComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
@@ -53,7 +57,7 @@ import { CommonModule } from '@angular/common';
     SharedModule,
     GraphsRoutingModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts')
+      echarts: () => import('./echarts').then(m => m.echarts),
     })
   ],
   exports: [
