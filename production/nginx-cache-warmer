@@ -39,7 +39,6 @@ warmUnfurlURLs=(
 )
 
 warmURLs=(
-	'/api/v1/fees/recommended'
 	'/api/v1/blocks'
 	'/api/v1/statistics/2h'
 	'/api/v1/statistics/24h'
