@@ -25,6 +25,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   liquidReservesMonth$: Observable<any>;
   fullHistory$: Observable<any>;
   private lastPegBlockUpdate: number = 0;
+  private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
 
@@ -51,32 +52,11 @@ export class ReservesAuditDashboardComponent implements OnInit {
       )
     );
 
-    this.auditUpdated$ = this.auditStatus$.pipe(
-      filter(auditStatus => auditStatus.isAuditSynced === true),
-      map(auditStatus => auditStatus.lastBlockAudit),
-      switchMap((lastBlockAudit) => {
-        return lastBlockAudit > this.lastReservesBlockUpdate ? of(true) : of(false);
-      }),
-    );
-
-    this.currentReserves$ = this.auditUpdated$.pipe(
-      filter(auditUpdated => auditUpdated === true),
-      switchMap(_ =>
-        this.apiService.liquidReserves$().pipe(
-          filter((currentReserves) => currentReserves.lastBlockUpdate > this.lastReservesBlockUpdate),
-          tap((currentReserves) => {
-            this.lastReservesBlockUpdate = currentReserves.lastBlockUpdate;
-          })
-        )
-      ),
-      share()
-    );
-
     this.currentPeg$ = this.auditStatus$.pipe(
       filter(auditStatus => auditStatus.isAuditSynced === true),
       switchMap(_ =>
         this.apiService.liquidPegs$().pipe(
-          filter((currentPegs) => currentPegs.lastBlockUpdate > this.lastPegBlockUpdate),
+          filter((currentPegs) => currentPegs.lastBlockUpdate >= this.lastPegBlockUpdate),
           tap((currentPegs) => {
             this.lastPegBlockUpdate = currentPegs.lastBlockUpdate;
           })
@@ -85,14 +65,48 @@ export class ReservesAuditDashboardComponent implements OnInit {
       share()
     );
 
+    this.auditUpdated$ = combineLatest([
+      this.auditStatus$,
+      this.currentPeg$
+    ]).pipe(
+      filter(([auditStatus, _]) => auditStatus.isAuditSynced === true),
+      map(([auditStatus, currentPeg]) => ({
+        lastBlockAudit: auditStatus.lastBlockAudit,
+        currentPegAmount: currentPeg.amount
+      })), 
+      switchMap(({ lastBlockAudit, currentPegAmount }) => {
+        const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
+        const amountCheck = currentPegAmount !== this.lastPegAmount;
+        this.lastPegAmount = currentPegAmount;
+        return of(blockAuditCheck || amountCheck);
+      }),
+      share()
+    );
+
+    this.currentReserves$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
+      switchMap(_ =>
+        this.apiService.liquidReserves$().pipe(
+          filter((currentReserves) => currentReserves.lastBlockUpdate >= this.lastReservesBlockUpdate),
+          tap((currentReserves) => {
+            this.lastReservesBlockUpdate = currentReserves.lastBlockUpdate;
+          })
+        )
+      ),
+      share()
+    );
+
     this.federationUtxos$ = this.auditUpdated$.pipe(
       filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
       switchMap(_ => this.apiService.federationUtxos$()),
       share()
     );
 
     this.federationAddresses$ = this.auditUpdated$.pipe(
       filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
       switchMap(_ => this.apiService.federationAddresses$()),
       share()
     );

@@ -56,6 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currencySubscription: Subscription;
   currency: string;
   private lastPegBlockUpdate: number = 0;
+  private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
   constructor(
@@ -239,9 +240,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         // Or when we receive a newer block, we wait 2 seconds so that the backend updates and we fetch the current peg
         this.stateService.blocks$
           .pipe(
+            skip(1),
+            throttleTime(40000),
             delay(2000),
             switchMap((_) => this.apiService.liquidPegs$()),
-            filter((currentPeg) => currentPeg.lastBlockUpdate > this.lastPegBlockUpdate),
+            filter((currentPeg) => currentPeg.lastBlockUpdate >= this.lastPegBlockUpdate),
             tap((currentPeg) => this.lastPegBlockUpdate = currentPeg.lastBlockUpdate)
           )
       ).pipe(
@@ -260,12 +263,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         )
       );
 
-      this.auditUpdated$ = this.auditStatus$.pipe(
-        filter(auditStatus => auditStatus.isAuditSynced === true),
-        map(auditStatus => auditStatus.lastBlockAudit),
-        switchMap((lastBlockAudit) => {
-          return lastBlockAudit > this.lastReservesBlockUpdate ? of(true) : of(false);
-        }),
+      this.auditUpdated$ = combineLatest([
+        this.auditStatus$,
+        this.currentPeg$
+      ]).pipe(
+        filter(([auditStatus, _]) => auditStatus.isAuditSynced === true),
+        map(([auditStatus, currentPeg]) => ({
+          lastBlockAudit: auditStatus.lastBlockAudit,
+          currentPegAmount: currentPeg.amount
+        })), 
+        switchMap(({ lastBlockAudit, currentPegAmount }) => {
+          console.log(lastBlockAudit, this.lastReservesBlockUpdate, currentPegAmount, this.lastPegAmount)
+          const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
+          const amountCheck = currentPegAmount !== this.lastPegAmount;
+          this.lastPegAmount = currentPegAmount;
+          console.log(blockAuditCheck || amountCheck)
+          return of(blockAuditCheck || amountCheck);
+        })
       );
 
       this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
@@ -287,9 +301,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.currentReserves$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
         switchMap(_ =>
           this.apiService.liquidReserves$().pipe(
-            filter((currentReserves) => currentReserves.lastBlockUpdate > this.lastReservesBlockUpdate),
+            filter((currentReserves) => currentReserves.lastBlockUpdate >= this.lastReservesBlockUpdate),
             tap((currentReserves) => {
               this.lastReservesBlockUpdate = currentReserves.lastBlockUpdate;
             })

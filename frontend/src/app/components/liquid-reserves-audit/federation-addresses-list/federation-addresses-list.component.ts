@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, concat } from 'rxjs';
+import { Observable, combineLatest, concat, of } from 'rxjs';
 import { delay, filter, map, share, skip, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
-import { AuditStatus, FederationAddress } from '../../../interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress } from '../../../interfaces/node-api.interface';
 import { WebsocketService } from '../../../services/websocket.service';
 
 @Component({
@@ -25,6 +25,9 @@ export class FederationAddressesListComponent implements OnInit {
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;
   lastReservesBlockUpdate: number = 0;
+  currentPeg$: Observable<CurrentPegs>;
+  lastPegBlockUpdate: number = 0;
+  lastPegAmount: string = '';
 
   constructor(
     private apiService: ApiService,
@@ -40,7 +43,7 @@ export class FederationAddressesListComponent implements OnInit {
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.auditStatus$ = concat(
-        this.apiService.federationAuditSynced$(),
+        this.apiService.federationAuditSynced$().pipe(share()),
         this.stateService.blocks$.pipe(
           skip(1),
           throttleTime(40000),
@@ -50,17 +53,41 @@ export class FederationAddressesListComponent implements OnInit {
         )
       );
 
-      this.auditUpdated$ = this.auditStatus$.pipe(
+      this.currentPeg$ = this.auditStatus$.pipe(
         filter(auditStatus => auditStatus.isAuditSynced === true),
-        map(auditStatus => {
-          const beforeLastBlockAudit = this.lastReservesBlockUpdate;
-          this.lastReservesBlockUpdate = auditStatus.lastBlockAudit;
-          return auditStatus.lastBlockAudit > beforeLastBlockAudit ? true : false;
-        })
+        switchMap(_ =>
+          this.apiService.liquidPegs$().pipe(
+            filter((currentPegs) => currentPegs.lastBlockUpdate >= this.lastPegBlockUpdate),
+            tap((currentPegs) => {
+              this.lastPegBlockUpdate = currentPegs.lastBlockUpdate;
+            })
+          )
+        ),
+        share()
+      );
+
+      this.auditUpdated$ = combineLatest([
+        this.auditStatus$,
+        this.currentPeg$
+      ]).pipe(
+        filter(([auditStatus, _]) => auditStatus.isAuditSynced === true),
+        map(([auditStatus, currentPeg]) => ({
+          lastBlockAudit: auditStatus.lastBlockAudit,
+          currentPegAmount: currentPeg.amount
+        })),
+        switchMap(({ lastBlockAudit, currentPegAmount }) => {
+          const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
+          const amountCheck = currentPegAmount !== this.lastPegAmount;
+          this.lastReservesBlockUpdate = lastBlockAudit;
+          this.lastPegAmount = currentPegAmount;
+          return of(blockAuditCheck || amountCheck);
+        }),
+        share()
       );
 
       this.federationAddresses$ = this.auditUpdated$.pipe(
         filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
         switchMap(_ => this.apiService.federationAddresses$()),
         tap(_ => this.isLoading = false),
         share()
