@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, combineLatest, of, timer } from 'rxjs';
-import { delayWhen, filter, map, share, shareReplay, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
+import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
 import { AuditStatus, CurrentPegs, FederationAddress } from '../../../interfaces/node-api.interface';
@@ -30,6 +30,8 @@ export class FederationAddressesListComponent implements OnInit {
   lastPegAmount: string = '';
   isLoad: boolean = true;
 
+  private destroy$ = new Subject();
+
   constructor(
     private apiService: ApiService,
     public stateService: StateService,
@@ -44,6 +46,7 @@ export class FederationAddressesListComponent implements OnInit {
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.auditStatus$ = this.stateService.blocks$.pipe(
+        takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
         tap(() => this.isLoad = false),
@@ -92,7 +95,11 @@ export class FederationAddressesListComponent implements OnInit {
       );
     }
 
+  }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(1);
+    this.destroy$.complete();
   }
 
   pageChange(page: number): void {

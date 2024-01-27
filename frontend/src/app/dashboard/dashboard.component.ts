@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, EMPTY, merge, Observable, of, Subscription, timer } from 'rxjs';
-import { catchError, delayWhen, filter, map, scan, share, shareReplay, startWith, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { combineLatest, EMPTY, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { catchError, delayWhen, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -60,6 +60,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
+  private destroy$ = new Subject();
+
   constructor(
     public stateService: StateService,
     private apiService: ApiService,
@@ -74,6 +76,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.currencySubscription.unsubscribe();
     this.websocketService.stopTrackRbfSummary();
+    this.destroy$.next(1);
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
@@ -215,12 +219,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
       this.auditStatus$ = this.stateService.blocks$.pipe(
+        takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
         tap(() => this.isLoad = false),
         switchMap(() => this.apiService.federationAuditSynced$()),
-        shareReplay(1),
-        share()
+        shareReplay(1)
       );
 
       ////////// Pegs historical data //////////

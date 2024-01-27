@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
-import { Observable, combineLatest, delayWhen, filter, interval, map, of, share, shareReplay, startWith, switchMap, tap, throttleTime, timer } from 'rxjs';
+import { Observable, Subject, combineLatest, delayWhen, filter, interval, map, of, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime, timer } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
 import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo } from '../../../interfaces/node-api.interface';
 
@@ -29,6 +29,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
+  private destroy$ = new Subject();
 
   constructor(
     private seoService: SeoService,
@@ -43,11 +44,12 @@ export class ReservesAuditDashboardComponent implements OnInit {
     this.websocketService.want(['blocks', 'mempool-blocks']);
 
     this.auditStatus$ = this.stateService.blocks$.pipe(
+      takeUntil(this.destroy$),
       throttleTime(40000),
       delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),
       tap(() => this.isLoad = false),
       switchMap(() => this.apiService.federationAuditSynced$()),
-      shareReplay(1)
+      shareReplay(1),
     );
 
     this.currentPeg$ = this.auditStatus$.pipe(
@@ -175,6 +177,11 @@ export class ReservesAuditDashboardComponent implements OnInit {
         }),
         share()
       );
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(1);
+    this.destroy$.complete();
   }
 
 }
