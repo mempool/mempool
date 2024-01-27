@@ -566,7 +566,7 @@ class Blocks {
    */
   public async $classifyBlocks(): Promise<void> {
     // classification requires an esplora backend
-    if (!Common.blocksSummariesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
+    if (!Common.gogglesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
       return;
     }
 
@@ -617,6 +617,7 @@ class Blocks {
           // classify
           const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
           await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
+          await Common.sleep$(250);
         }
         if (unclassifiedTemplates[height]) {
           // classify template
@@ -656,6 +657,7 @@ class Blocks {
             });
           }
           await BlocksSummariesRepository.$saveTemplate({ height, template: { id: blockHash, transactions: classifiedTemplate }, version: 1 });
+          await Common.sleep$(250);
         }
       } catch (e) {
         logger.warn(`Failed to classify template or block summary at ${height}`, logger.tags.goggles);
