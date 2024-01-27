@@ -47,19 +47,33 @@
           </div>
         </div>
         <div class="item" *ngIf="showHalving">
-          <h5 class="card-title" i18n="difficulty-box.next-halving" i18n-ngbTooltip="difficulty-box.next-halving"
-          ngbTooltip="Next Halving" placement="bottom" #averagefee [disableTooltip]="!isEllipsisActive(averagefee)">Next Halving</h5>
-          <div class="card-text">
-            <ng-container *ngTemplateOutlet="epochData.blocksUntilHalving === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.blocksUntilHalving }"></ng-container>
-            <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
-            <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+          <h5 class="card-title" i18n="difficulty-box.next-halving">Next Halving</h5>
+          <div class="card-text" i18n-ngbTooltip="mining.average-fee" [ngbTooltip]="halvingBlocksLeft" [tooltipContext]="{ epochData: epochData }" placement="bottom">
+            <span>{{ timeUntilHalving | date }}</span>
+            <div class="symbol" *ngIf="!countdownObject; else countdownValid">
+              <app-time kind="until" [time]="epochData.timeAvg + now" [fastRender]="false" [fixedRender]="true" [precision]="1" minUnit="minute"></app-time>
+            </div>
+            <ng-template #countdownValid>
+              <div class="symbol">
+                <span>In </span>
+                <span *ngIf="countdownObject.years">{{ countdownObject.years }} years </span>
+                <span *ngIf="countdownObject.months">{{ countdownObject.months }} months </span>
+                <span *ngIf="countdownObject.days">{{ countdownObject.days }} days </span>
+                <span *ngIf="countdownObject.hours">{{ countdownObject.hours }} hours</span>
+              </div>
+            </ng-template>
           </div>
-          <div class="symbol"><app-time kind="until" [time]="epochData.timeUntilHalving" [fastRender]="true" [precision]="1"></app-time></div>
-        </div>
+          </div>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #halvingBlocksLeft let-epochData="epochData">
+  <ng-container *ngTemplateOutlet="epochData.blocksUntilHalving === 1 ? blocksSingular : blocksPlural; context: {$implicit: epochData.blocksUntilHalving }"></ng-container>
+  <ng-template #blocksPlural let-i i18n="shared.blocks">{{ i }} <span class="shared-block">blocks</span></ng-template>
+  <ng-template #blocksSingular let-i i18n="shared.block">{{ i }} <span class="shared-block">block</span></ng-template>
+</ng-template>
 
 <ng-template #loadingDifficulty>
   <div class="difficulty-skeleton loading-container">
