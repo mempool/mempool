@@ -9871,7 +9871,292 @@ export const restApiDocsData = [
         codeSampleBisq: emptyCodeSample,
       }
     }
+  },
+  {
+    type: "category",
+    category: "accelerator",
+    fragment: "accelerator",
+    title: "Accelerator",
+    showConditions: [""],
+    options: { officialOnly: true },
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "GET",
+    fragment: "get-deposit-history",
+    title: "GET Deposit History",
+    description: {
+      default: "<p>Returns a list of previous deposits made as prepayment for the accelerator service.</p>"
+    },
+    urlString: "/v1/services/accelerator/deposit-history",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/deposit-history`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: "api_key: stacksats",
+          response: `[
+  {
+    "type": "Bitcoin",
+    "invoiceId": "CCunucVyNw7jUiUz64mmHz",
+    "amount": 10311031,
+    "status": "pending",
+    "date": 1706372653000,
+    "link": "/payment/bitcoin/CCunucVyNw7jUiUz64mmHz"
+  },
+  {
+    "type": "Bitcoin",
+    "invoiceId": "SG1U27R9PdWi3gH3jB9tm9",
+    "amount": 21000000,
+    "status": "paid",
+    "date": 1706372582000,
+    "link": null
+  },
+  ...
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "GET",
+    fragment: "balance",
+    title: "GET Available Balance",
+    description: {
+      default: "<p>Return your current available balance, as well as how much funds are currently locked and much you've been charged so far.</p>"
+    },
+    urlString: "/v1/services/accelerator/balance",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/balance`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: "api_key: stacksats",
+          response: `{
+  "balance": 99900000,
+  "hold": 0,
+  "feesPaid": 200000
+}`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "POST",
+    fragment: "estimate",
+    title: "POST Calculate Estimated Costs",
+    description: {
+      default: "<p>Return an estimation of the costs to accelerate a transaction.</p>"
+    },
+    urlString: "/v1/services/accelerator/estimate",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/estimate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29"],
+          headers: "api_key: stacksats",
+          response: `{
+  "txSummary": {
+    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
+    "effectiveVsize": 154,
+    "effectiveFee": 154,
+    "ancestorCount": 1
+  },
+  "cost": 3850,
+  "targetFeeRate": 26,
+  "nextBlockFee": 4004,
+  "userBalance": 99900000,
+  "mempoolBaseFee": 40000,
+  "vsizeFee": 50000,
+  "hasAccess": true
+}`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "POST",
+    fragment: "accelerate",
+    title: "POST Accelerate A Transaction",
+    description: {
+      default: "<p>Send a request to accelerate a transaction.</p>"
+    },
+    urlString: "/v1/services/accelerator/accelerate",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ["txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000"],
+          headers: "api_key: stacksats",
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "history",
+    httpRequestMethod: "GET",
+    fragment: "history",
+    title: "GET Acceleration History",
+    description: {
+      default: "<p>Return the history of previous acceleration requests.</p>"
+    },
+    urlString: "/v1/services/accelerator/history[?status=all|requested|accelerating|mined|completed|failed]",
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/history?status=all`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: "api_key: stacksats",
+          response: `[
+  {
+    "id": 89,
+    "user_id": 1,
+    "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
+    "status": "failed",
+    "estimated_fee": 247,
+    "fee_paid": 0,
+    "added": 1706378712,
+    "last_updated": 1706378712,
+    "confirmations": 4,
+    "base_fee": 0,
+    "vsize_fee": 0,
+    "max_bid": 7000,
+    "effective_vsize": 135,
+    "effective_fee": 3128,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "failed-at-block-827672",
+        "timestamp": 1706380261
+      }
+    ]
+  },
+  {
+    "id": 88,
+    "user_id": 1,
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "completed",
+    "estimated_fee": 223,
+    "fee_paid": 140019,
+    "added": 1706378704,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 100000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3152,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
+  },
+  {
+    "id": 87,
+    "user_id": 1,
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "completed",
+    "estimated_fee": 115,
+    "fee_paid": 90062,
+    "added": 1706378684,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 50000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3260,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
   }
+]`,
+        },
+      }
+    }
+  },
 ];
 
 export const faqData = [
