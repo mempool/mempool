@@ -66,7 +66,6 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
     this.isLoading = true;
     if (this.widget) {
       this.miningWindowPreference = '1m';
@@ -86,6 +85,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         }),
       );
     } else {
+      this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('1w');
       this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
       this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
