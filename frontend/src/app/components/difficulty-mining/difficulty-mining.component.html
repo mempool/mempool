@@ -50,16 +50,12 @@
           <h5 class="card-title" i18n="difficulty-box.next-halving">Next Halving</h5>
           <div class="card-text" i18n-ngbTooltip="mining.average-fee" [ngbTooltip]="halvingBlocksLeft" [tooltipContext]="{ epochData: epochData }" placement="bottom">
             <span>{{ timeUntilHalving | date }}</span>
-            <div class="symbol" *ngIf="!countdownObject; else countdownValid">
+            <div class="symbol" *ngIf="blocksUntilHalving === 1; else approxTime">
               <app-time kind="until" [time]="epochData.timeAvg + now" [fastRender]="false" [fixedRender]="true" [precision]="1" minUnit="minute"></app-time>
             </div>
-            <ng-template #countdownValid>
+            <ng-template #approxTime>
               <div class="symbol">
-                <span>In </span>
-                <span *ngIf="countdownObject.years">{{ countdownObject.years }} years </span>
-                <span *ngIf="countdownObject.months">{{ countdownObject.months }} months </span>
-                <span *ngIf="countdownObject.days">{{ countdownObject.days }} days </span>
-                <span *ngIf="countdownObject.hours">{{ countdownObject.hours }} hours</span>
+                <app-time kind="until" [time]="timeUntilHalving" [fastRender]="false" [fixedRender]="true" [precision]="0" [numUnits]="2" [units]="['year', 'day', 'hour', 'minute']"></app-time>
               </div>
             </ng-template>
           </div>
