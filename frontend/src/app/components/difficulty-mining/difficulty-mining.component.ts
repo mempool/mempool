@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StateService } from '../../services/state.service';
-const countdown = require('./countdown');
 
 interface EpochProgress {
   base: string;
@@ -28,7 +27,7 @@ interface EpochProgress {
 export class DifficultyMiningComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
-  countdownObject = null;
+  blocksUntilHalving: number | null = null;
   timeUntilHalving = 0;
   now = new Date().getTime();
 
@@ -69,21 +68,9 @@ export class DifficultyMiningComponent implements OnInit {
           colorPreviousAdjustments = '#ffffff66';
         }
 
-        const blocksUntilHalving = 210000 - (maxHeight % 210000);
-        this.timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
+        this.blocksUntilHalving = 210000 - (maxHeight % 210000);
+        this.timeUntilHalving = new Date().getTime() + (this.blocksUntilHalving * 600000);
         this.now = new Date().getTime();
-        
-        if (blocksUntilHalving - 1 === 0) {
-          this.countdownObject = null;
-        } else {
-          this.countdownObject = countdown(this.timeUntilHalving, new Date().getTime(), countdown.YEARS | countdown.MONTHS);
-          if (this.countdownObject.years === 0) {
-            this.countdownObject = countdown(this.timeUntilHalving, new Date().getTime(), countdown.DAYS | countdown.HOURS);
-          }
-          if (this.countdownObject.hours === 0) {
-            this.countdownObject = countdown(this.timeUntilHalving, new Date().getTime(), countdown.MINUTES);
-          }
-        }
 
         const data = {
           base: `${da.progressPercent.toFixed(2)}%`,
@@ -95,7 +82,7 @@ export class DifficultyMiningComponent implements OnInit {
           newDifficultyHeight: da.nextRetargetHeight,
           estimatedRetargetDate: da.estimatedRetargetDate,
           previousRetarget: da.previousRetarget,
-          blocksUntilHalving,
+          blocksUntilHalving: this.blocksUntilHalving,
           timeUntilHalving: this.timeUntilHalving,
           timeAvg: da.timeAvg,
         };
