@@ -23,8 +23,8 @@ class BlocksSummariesRepository {
       await DB.query(`
         INSERT INTO blocks_summaries
         SET height = ?, transactions = ?, id = ?, version = ?
-        ON DUPLICATE KEY UPDATE transactions = ?`,
-        [blockHeight, transactionsStr, blockId, version, transactionsStr]);
+        ON DUPLICATE KEY UPDATE transactions = ?, version = ?`,
+        [blockHeight, transactionsStr, blockId, version, transactionsStr, version]);
     } catch (e: any) {
       logger.debug(`Cannot save block summary transactions for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
@@ -39,8 +39,9 @@ class BlocksSummariesRepository {
         INSERT INTO blocks_templates (id, template, version)
         VALUE (?, ?, ?)
         ON DUPLICATE KEY UPDATE
-          template = ?
-      `, [blockId, transactions, params.version, transactions]);
+          template = ?,
+          version = ?
+      `, [blockId, transactions, params.version, transactions, params.version]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block template for ${blockId} because it has already been indexed, ignoring`);
@@ -57,6 +58,7 @@ class BlocksSummariesRepository {
         return {
           id: templates[0].id,
           transactions: JSON.parse(templates[0].template),
+          version: templates[0].version,
         };
       }
     } catch (e) {

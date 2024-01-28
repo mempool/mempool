@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { combineLatest, Observable, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { StateService } from '../../services/state.service';
 
 interface EpochProgress {
@@ -15,6 +15,7 @@ interface EpochProgress {
   previousRetarget: number;
   blocksUntilHalving: number;
   timeUntilHalving: number;
+  timeAvg: number;
 }
 
 @Component({
@@ -26,6 +27,9 @@ interface EpochProgress {
 export class DifficultyMiningComponent implements OnInit {
   isLoadingWebSocket$: Observable<boolean>;
   difficultyEpoch$: Observable<EpochProgress>;
+  blocksUntilHalving: number | null = null;
+  timeUntilHalving = 0;
+  now = new Date().getTime();
 
   @Input() showProgress = true;
   @Input() showHalving = false;
@@ -64,8 +68,9 @@ export class DifficultyMiningComponent implements OnInit {
           colorPreviousAdjustments = '#ffffff66';
         }
 
-        const blocksUntilHalving = 210000 - (maxHeight % 210000);
-        const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
+        this.blocksUntilHalving = 210000 - (maxHeight % 210000);
+        this.timeUntilHalving = new Date().getTime() + (this.blocksUntilHalving * 600000);
+        this.now = new Date().getTime();
 
         const data = {
           base: `${da.progressPercent.toFixed(2)}%`,
@@ -77,8 +82,9 @@ export class DifficultyMiningComponent implements OnInit {
           newDifficultyHeight: da.nextRetargetHeight,
           estimatedRetargetDate: da.estimatedRetargetDate,
           previousRetarget: da.previousRetarget,
-          blocksUntilHalving,
-          timeUntilHalving,
+          blocksUntilHalving: this.blocksUntilHalving,
+          timeUntilHalving: this.timeUntilHalving,
+          timeAvg: da.timeAvg,
         };
         return data;
       })
