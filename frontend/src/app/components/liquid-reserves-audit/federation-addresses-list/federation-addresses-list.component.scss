@@ -1,16 +1,14 @@
+.address-container {
+  @media (min-width: 1100px) {
+    margin-left: 80px;
+    margin-right: 80px;  
+  }
+}
+
 .spinner-border {
   height: 25px;
   width: 25px;
   margin-top: 13px;
-}
-
-.container-xl {
-  max-width: 1000px;
-}
-.container-xl.widget {
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-bottom: 0px;
 }
 
 tr, td, th {

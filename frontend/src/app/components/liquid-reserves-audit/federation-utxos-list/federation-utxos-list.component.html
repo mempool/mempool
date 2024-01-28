@@ -1,5 +1,4 @@
-<div class="container-xl" [ngClass]="{'widget': widget, 'full-height': !widget}">
-  <h1 *ngIf="!widget" class="float-left" i18n="liquid.federation-utxos">Liquid Federation UTXOs</h1>
+<div [ngClass]="{'widget': widget}">
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>

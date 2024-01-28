@@ -2,7 +2,7 @@
   
     <div class="fee-estimation-container">
       <div class="item">
-        <a class="title-link" [routerLink]="['/audit/utxos' | relativeUrl]">
+        <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]">
           <h5 class="card-title" i18n="liquid.federation-utxos">Liquid Federation UTXOs <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
         </a>
         <div class="card-text">
@@ -18,7 +18,7 @@
 <ng-template #loadingData>
   <div class="fee-estimation-container loading-container">
     <div class="item">
-      <a class="title-link" [routerLink]="['/audit/utxos' | relativeUrl]">
+      <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]">
         <h5 class="card-title" i18n="liquid.federation-utxos">Liquid Federation UTXOs <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
       </a>
       <div class="card-text">

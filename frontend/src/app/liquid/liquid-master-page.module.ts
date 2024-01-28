@@ -18,6 +18,7 @@ import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.c
 import { ReservesAuditDashboardComponent } from '../components/liquid-reserves-audit/reserves-audit-dashboard/reserves-audit-dashboard.component';
 import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
 import { FederationUtxosStatsComponent } from '../components/liquid-reserves-audit/federation-utxos-stats/federation-utxos-stats.component';
+import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
 import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
 import { FederationAddressesStatsComponent } from '../components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
 import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
@@ -88,12 +89,25 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'audit/utxos',
-        component: FederationUtxosListComponent,
-      },
-      {
-        path: 'audit/addresses',
-        component: FederationAddressesListComponent,
+        path: 'audit/wallet',
+        data: { networks: ['liquid'] },
+        component: FederationWalletComponent,
+        children: [
+          {
+            path: 'utxos',
+            data: { networks: ['liquid'] },
+            component: FederationUtxosListComponent,
+          },
+          {
+            path: 'addresses',
+            data: { networks: ['liquid'] },
+            component: FederationAddressesListComponent,
+          },
+          {
+            path: '**',
+            redirectTo: 'utxos'
+          }
+        ]
       },
       {
         path: 'assets',
@@ -163,6 +177,7 @@ export class LiquidRoutingModule { }
     ReservesAuditDashboardComponent,
     ReservesSupplyStatsComponent,
     FederationUtxosStatsComponent,
+    FederationWalletComponent,
     FederationUtxosListComponent,
     FederationAddressesStatsComponent,
     FederationAddressesListComponent,
