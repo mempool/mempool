@@ -271,7 +271,7 @@
     <div class="item">
       <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BTC in circulation</h5>
       <ng-container *ngIf="(currentPeg$ | async) as currentPeg; else loadingTransactions">
-        <p i18n-ngbTooltip="liquid.last-elements-audit-block" [ngbTooltip]="'L-BTC supply last updated at Liquid block ' + (currentPeg.lastBlockUpdate)" placement="top" class="card-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span class="liquid-color">L-BTC</span></p>
+        <p i18n-ngbTooltip="liquid.last-elements-audit-block" [ngbTooltip]="'L-BTC supply last updated at Liquid block ' + (currentPeg.lastBlockUpdate)" placement="top" class="card-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></p>
       </ng-container>
     </div>
     <div class="item">

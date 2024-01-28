@@ -46,7 +46,7 @@
             </td>
             <td class="pegin text-left">
               <ng-container *ngIf="utxo.pegtxid; else noPeginMessage">
-                <a [routerLink]="['/tx', utxo.pegtxid + ':' + utxo.pegindex]" target="_blank" style="color:#116761">
+                <a [routerLink]="['/tx' | relativeUrl, utxo.pegtxid + ':' + utxo.pegindex]">
                   <app-truncate [text]="utxo.pegtxid + ':' + utxo.pegindex" [lastChars]="6"></app-truncate>
                 </a>
               </ng-container>
