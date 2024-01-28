@@ -11,6 +11,7 @@
     "POLL_RATE_MS": 1000,
     "INDEXING_BLOCKS_AMOUNT": -1,
     "BLOCKS_SUMMARIES_INDEXING": true,
+    "GOGGLES_INDEXING": true,
     "AUDIT": true,
     "CPFP_INDEXING": true,
     "ADVANCED_GBT_AUDIT": true,
