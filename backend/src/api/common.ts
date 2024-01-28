@@ -508,6 +508,13 @@ export class Common {
     );
   }
 
+  static gogglesIndexingEnabled(): boolean {
+    return (
+      Common.blocksSummariesIndexingEnabled() &&
+      config.MEMPOOL.GOGGLES_INDEXING === true
+    );
+  }
+
   static cpfpIndexingEnabled(): boolean {
     return (
       Common.indexingEnabled() &&

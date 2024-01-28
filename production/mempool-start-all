@@ -24,7 +24,13 @@ done
 # start nginx warm cacher
 for site in mainnet;do
     echo "starting mempool cache warmer: ${site}"
-    screen -dmS "warmer-${site}" $HOME/mainnet/production/nginx-cache-warmer
+    screen -dmS "warmer-${site}" $HOME/mempool/production/nginx-cache-warmer
+done
+
+# start nginx hot cacher
+for site in mainnet;do
+    echo "starting mempool cache heater: ${site}"
+    screen -dmS "heater-${site}" $HOME/mempool/production/nginx-cache-heater
 done
 
 exit 0
