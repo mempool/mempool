@@ -1,8 +1,18 @@
 <div [ngClass]="{'widget': widget}">
+  
+  <div *ngIf="!widget" class="form-check">
+    <div style="padding-left: 0.75rem;">
+      <input style="margin-top: 6px" class="form-check-input" type="checkbox" [checked]="showChangeUtxosToggle$ | async" id="show-change-utxos" (change)="onShowChangeUtxosToggleChange($event)">
+      <label class="form-check-label" for="show-change-utxos">
+        <small i18n="liquid.include-change-utxos">Include Change UTXOs</small>
+      </label>
+    </div>
+  </div>
+
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>
-
+  
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead style="vertical-align: middle;">
@@ -12,7 +22,7 @@
         <th class="pegin text-left" *ngIf="!widget" i18n="liquid.peg-in">Liquid Peg-in</th>
         <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
-      <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+      <tbody *ngIf="filteredFederationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let utxo of utxos | slice:0:5">
             <td class="txid text-left widget">
@@ -96,7 +106,7 @@
       </ng-template>
     </table>
 
-    <ngb-pagination *ngIf="!widget && federationUtxos$ | async as utxos" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+    <ngb-pagination *ngIf="!widget && filteredFederationUtxos$ | async as utxos" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
       [collectionSize]="utxos.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>

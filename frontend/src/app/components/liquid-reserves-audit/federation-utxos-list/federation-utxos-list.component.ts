@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
@@ -22,8 +22,12 @@ export class FederationUtxosListComponent implements OnInit {
   pageSize = 15;
   maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   skeletonLines: number[] = [];
+  changeAddress: string = "bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4";
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;
+  showChangeUtxosToggleSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showChangeUtxosToggle$: Observable<boolean> = this.showChangeUtxosToggleSubject.asObservable();
+  filteredFederationUtxos$: Observable<FederationUtxo[]>;
   lastReservesBlockUpdate: number = 0;
   currentPeg$: Observable<CurrentPegs>;
   lastPegBlockUpdate: number = 0;
@@ -31,7 +35,7 @@ export class FederationUtxosListComponent implements OnInit {
   isLoad: boolean = true;
 
   private destroy$ = new Subject();
-
+  
   constructor(
     private apiService: ApiService,
     public stateService: StateService,
@@ -43,6 +47,7 @@ export class FederationUtxosListComponent implements OnInit {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
     this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+
     if (!this.widget) {
       this.websocketService.want(['blocks']);
       this.auditStatus$ = this.stateService.blocks$.pipe(
@@ -94,6 +99,16 @@ export class FederationUtxosListComponent implements OnInit {
         share()
       );
     }
+    
+    if (this.federationUtxos$) {
+      this.filteredFederationUtxos$ = combineLatest([
+        this.federationUtxos$,
+        this.showChangeUtxosToggle$
+      ]).pipe(
+        switchMap(([federationUtxos, showChangeUtxosToggle]) => showChangeUtxosToggle ? of(federationUtxos) : of(federationUtxos.filter(utxo => utxo.bitcoinaddress !== this.changeAddress))),
+        share()
+      );
+    }
 
   }
 
@@ -106,4 +121,7 @@ export class FederationUtxosListComponent implements OnInit {
     this.page = page;
   }
 
+  onShowChangeUtxosToggleChange(e): void {
+    this.showChangeUtxosToggleSubject.next(e.target.checked);
+  }
 }
