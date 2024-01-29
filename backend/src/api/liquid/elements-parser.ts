@@ -67,12 +67,12 @@ class ElementsParser {
     for (const output of tx.vout) {
       if (output.scriptPubKey.pegout_chain) {
         await this.$savePegToDatabase(block.height, block.time, 0 - output.value * 100000000, tx.txid, output.n,
-          (output.scriptPubKey.pegout_addresses && output.scriptPubKey.pegout_addresses[0] || ''), '', 0, 0, 0, 0);
+          (output.scriptPubKey.pegout_address || ''), '', 0, 0, 0, 0);
       }
       if (!output.scriptPubKey.pegout_chain && output.scriptPubKey.type === 'nulldata'
         && output.value && output.value > 0 && output.asset && output.asset === Common.nativeAssetId) {
         await this.$savePegToDatabase(block.height, block.time, 0 - output.value * 100000000, tx.txid, output.n,
-          (output.scriptPubKey.pegout_addresses && output.scriptPubKey.pegout_addresses[0] || ''), '', 0, 0, 0, 1);
+          (output.scriptPubKey.pegout_address || ''), '', 0, 0, 0, 1);
       }
     }
   }
