@@ -9891,7 +9891,7 @@ export const restApiDocsData = [
       default: "<p>Returns a list of previous deposits made as prepayment for the accelerator service.</p>"
     },
     urlString: "/v1/services/accelerator/deposit-history",
-    showConditions: bitcoinNetworks,
+    showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -9939,7 +9939,7 @@ export const restApiDocsData = [
       default: "<p>Return your current available balance, as well as how much funds are currently locked and much you've been charged so far.</p>"
     },
     urlString: "/v1/services/accelerator/balance",
-    showConditions: bitcoinNetworks,
+    showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -9973,7 +9973,7 @@ export const restApiDocsData = [
       default: "<p>Return an estimation of the costs to accelerate a transaction.</p>"
     },
     urlString: "/v1/services/accelerator/estimate",
-    showConditions: bitcoinNetworks,
+    showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -10017,7 +10017,7 @@ export const restApiDocsData = [
       default: "<p>Send a request to accelerate a transaction.</p>"
     },
     urlString: "/v1/services/accelerator/accelerate",
-    showConditions: bitcoinNetworks,
+    showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
@@ -10047,7 +10047,7 @@ export const restApiDocsData = [
       default: "<p>Return the history of previous acceleration requests.</p>"
     },
     urlString: "/v1/services/accelerator/history[?status=all|requested|accelerating|mined|completed|failed]",
-    showConditions: bitcoinNetworks,
+    showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
