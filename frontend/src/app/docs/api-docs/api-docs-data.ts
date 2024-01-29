@@ -9888,7 +9888,7 @@ export const restApiDocsData = [
     fragment: "get-deposit-history",
     title: "GET Deposit History",
     description: {
-      default: "<p>Returns a list of previous deposits made as prepayment for the accelerator service.</p>"
+      default: "<p>Returns a list of deposits made as prepayment for the accelerator service.</p>"
     },
     urlString: "/v1/services/accelerator/deposit-history",
     showConditions: [""],
@@ -9936,7 +9936,7 @@ export const restApiDocsData = [
     fragment: "balance",
     title: "GET Available Balance",
     description: {
-      default: "<p>Return your current available balance, as well as how much funds are currently locked and much you've been charged so far.</p>"
+      default: "<p>Returns your currently available balance, currently locked funds, and total fees paid so far.</p>"
     },
     urlString: "/v1/services/accelerator/balance",
     showConditions: [""],
@@ -9970,7 +9970,7 @@ export const restApiDocsData = [
     fragment: "estimate",
     title: "POST Calculate Estimated Costs",
     description: {
-      default: "<p>Return an estimation of the costs to accelerate a transaction.</p>"
+      default: "<p>Returns estimated costs to accelerate a transaction.</p>"
     },
     urlString: "/v1/services/accelerator/estimate",
     showConditions: [""],
@@ -10044,9 +10044,9 @@ export const restApiDocsData = [
     fragment: "history",
     title: "GET Acceleration History",
     description: {
-      default: "<p>Return the history of previous acceleration requests.</p>"
+      default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.</p>"
     },
-    urlString: "/v1/services/accelerator/history[?status=all|requested|accelerating|mined|completed|failed]",
+    urlString: "/v1/services/accelerator/history?status=:status",
     showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
