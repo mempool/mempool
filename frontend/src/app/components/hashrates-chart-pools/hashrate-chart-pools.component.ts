@@ -126,13 +126,21 @@ export class HashrateChartPoolsComponent implements OnInit {
       }
       times[hashrate.timestamp].hashrates[hashrate.poolName] = hashrate;
       if (!pools[hashrate.poolName]) {
-        pools[hashrate.poolName] = 0;
+        pools[hashrate.poolName] = true;
       }
-      pools[hashrate.poolName] += hashrate.share;
     }
 
     const sortedTimes = Object.keys(times).sort((a,b) => parseInt(a) - parseInt(b)).map(time => ({ time: parseInt(time), hashrates: times[time].hashrates }));
-    const sortedPools = Object.keys(pools).sort((a,b) => pools[b] - pools[a]);
+    const lastHashrates = sortedTimes[sortedTimes.length - 1].hashrates;
+    const sortedPools = Object.keys(pools).sort((a,b) => {
+      if (lastHashrates[b]?.share ?? lastHashrates[a]?.share ?? false) {
+        // sort by descending share of hashrate in latest period
+        return (lastHashrates[b]?.share || 0) - (lastHashrates[a]?.share || 0);
+      } else {
+        // tiebreak by pool name
+        b < a;
+      }
+    });
 
     const series = [];
     const legends = [];
