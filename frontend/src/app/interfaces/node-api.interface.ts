@@ -96,6 +96,16 @@ export interface FederationUtxo {
   blocktime: number;
   pegtxid: string;
   pegindex: number;
+  pegblocktime: number;
+}
+
+export interface RecentPeg {
+  txid: string;
+  txindex: number; // input #0 for peg-ins
+  amount: number;
+  bitcointxid: string;
+  bitcoinindex: number;
+  blocktime: number;
 }
 
 export interface AuditStatus {

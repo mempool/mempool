@@ -4,7 +4,7 @@ import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
 import { Observable, Subject, combineLatest, delayWhen, filter, interval, map, of, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime, timer } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
-import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo } from '../../../interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo, RecentPeg } from '../../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-reserves-audit-dashboard',
@@ -18,6 +18,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   currentPeg$: Observable<CurrentPegs>;
   currentReserves$: Observable<CurrentPegs>;
   federationUtxos$: Observable<FederationUtxo[]>;
+  recentPegIns$: Observable<RecentPeg[]>;
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesOneMonthAgo$: Observable<any>;
   liquidPegsMonth$: Observable<any>;
@@ -72,7 +73,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
       map(([auditStatus, currentPeg]) => ({
         lastBlockAudit: auditStatus.lastBlockAudit,
         currentPegAmount: currentPeg.amount
-      })), 
+      })),
       switchMap(({ lastBlockAudit, currentPegAmount }) => {
         const blockAuditCheck = lastBlockAudit > this.lastReservesBlockUpdate;
         const amountCheck = currentPegAmount !== this.lastPegAmount;
@@ -100,6 +101,20 @@ export class ReservesAuditDashboardComponent implements OnInit {
       filter(auditUpdated => auditUpdated === true),
       throttleTime(40000),
       switchMap(_ => this.apiService.federationUtxos$()),
+      share()
+    );
+
+    this.recentPegIns$ = this.federationUtxos$.pipe(
+      map(federationUtxos => federationUtxos.filter(utxo => utxo.pegtxid).map(utxo => {
+        return {
+          txid: utxo.pegtxid,
+          txindex: utxo.pegindex,
+          amount: utxo.amount,
+          bitcointxid: utxo.txid,
+          bitcoinindex: utxo.txindex,
+          blocktime: utxo.pegblocktime,
+        }
+      })),
       share()
     );
 
