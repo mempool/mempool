@@ -92,7 +92,7 @@
 <ng-template #auditInProgress>
   <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else loadingSkeleton">
     <div class="in-progress-message" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders; else loadingSkeleton">
-      <span i18n="liquid.audit-in-progress">Audit in progress: block {{ auditStatus.lastBlockAudit }} / {{ auditStatus.bitcoinHeaders }}</span>
+      <span i18n="liquid.audit-in-progress">Audit in progress: Bitcoin block height #{{ auditStatus.lastBlockAudit }} / #{{ auditStatus.bitcoinHeaders }}</span>
     </div>
   </ng-container>
 </ng-template>

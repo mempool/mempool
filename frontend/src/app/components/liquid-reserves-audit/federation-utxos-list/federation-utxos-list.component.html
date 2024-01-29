@@ -19,7 +19,7 @@
         <th class="txid text-left" [ngClass]="{'widget': widget}" i18n="liquid.output">Output</th>
         <th class="address text-left" *ngIf="!widget" i18n="liquid.address">Address</th>
         <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="liquid.amount">Amount</th>
-        <th class="pegin text-left" *ngIf="!widget" i18n="liquid.peg-in">Liquid Peg-in</th>
+        <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
         <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
       <tbody *ngIf="filteredFederationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
