@@ -1,7 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { FederationUtxo } from '../../../interfaces/node-api.interface';
-
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-federation-utxos-stats',
   templateUrl: './federation-utxos-stats.component.html',
@@ -9,12 +6,10 @@ import { FederationUtxo } from '../../../interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FederationUtxosStatsComponent implements OnInit {
-  @Input() federationUtxos$: Observable<FederationUtxo[]>;
-  @Input() federationUtxosOneMonthAgo$: Observable<any>;
-
   constructor() { }
 
   ngOnInit(): void {
+    
   }
 
 }

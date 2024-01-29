@@ -22,6 +22,7 @@ export class FederationUtxosListComponent implements OnInit {
   pageSize = 15;
   maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   skeletonLines: number[] = [];
+  changeAddress: string = "bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4";
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;
   showChangeUtxosToggleSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -45,7 +46,7 @@ export class FederationUtxosListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
@@ -104,7 +105,7 @@ export class FederationUtxosListComponent implements OnInit {
         this.federationUtxos$,
         this.showChangeUtxosToggle$
       ]).pipe(
-        switchMap(([federationUtxos, showChangeUtxosToggle]) => showChangeUtxosToggle ? of(federationUtxos) : of(federationUtxos.filter(utxo => utxo.pegtxid))),
+        switchMap(([federationUtxos, showChangeUtxosToggle]) => showChangeUtxosToggle ? of(federationUtxos) : of(federationUtxos.filter(utxo => utxo.bitcoinaddress !== this.changeAddress))),
         share()
       );
     }

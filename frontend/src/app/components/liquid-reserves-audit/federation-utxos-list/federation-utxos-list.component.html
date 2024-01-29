@@ -24,7 +24,7 @@
       </thead>
       <tbody *ngIf="filteredFederationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
-          <tr *ngFor="let utxo of utxos | slice:0:5">
+          <tr *ngFor="let utxo of utxos | slice:0:6">
             <td class="txid text-left widget">
               <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + utxo.txid + ':' + utxo.txindex }}" target="_blank" style="color:#b86d12">
                 <app-truncate [text]="utxo.txid + ':' + utxo.txindex" [lastChars]="6"></app-truncate>

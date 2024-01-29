@@ -1,34 +1,7 @@
-<div *ngIf="(federationUtxos$ | async) as federationUtxos; else loadingData">
-  
-    <div class="fee-estimation-container">
-      <div class="item">
-        <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]">
-          <h5 class="card-title" i18n="liquid.federation-utxos">Liquid Federation UTXOs <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
-        </a>
-        <div class="card-text">
-          <div class="fee-text">{{ federationUtxos.length }} <span>UTXOs</span></div>
-          <span class="fiat" *ngIf="(federationUtxosOneMonthAgo$ | async) as federationUtxosOneMonthAgo; else loadingSkeleton" i18n-ngbTooltip="liquid.percentage-change-last-month" ngbTooltip="Percentage change past month" placement="bottom">
-            <app-change [current]="federationUtxos.length" [previous]="federationUtxosOneMonthAgo.utxos_count_one_month"></app-change>
-          </span>
-        </div>
-      </div>
-    </div>
-</div>
-
-<ng-template #loadingData>
-  <div class="fee-estimation-container loading-container">
-    <div class="item">
-      <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]">
-        <h5 class="card-title" i18n="liquid.federation-utxos">Liquid Federation UTXOs <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
-      </a>
-      <div class="card-text">
-        <div class="skeleton-loader"></div>
-        <div class="skeleton-loader"></div>
-      </div>
-    </div>
+<div class="fee-estimation-container">
+  <div class="item">
+    <a class="title-link" [routerLink]="['/audit/wallet/utxos' | relativeUrl]">
+      <h5 class="card-title" i18n="liquid.recent-peg-ins">Recent Peg-Ins <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+    </a>
   </div>
-</ng-template>
-
-<ng-template #loadingSkeleton>
-  <div class="skeleton-loader skeleton-loader-transactions" style="margin-top: 2px; margin-bottom: 5px;"></div>
-</ng-template>
+</div>

@@ -18,7 +18,6 @@ export class ReservesAuditDashboardComponent implements OnInit {
   currentPeg$: Observable<CurrentPegs>;
   currentReserves$: Observable<CurrentPegs>;
   federationUtxos$: Observable<FederationUtxo[]>;
-  federationUtxosOneMonthAgo$: Observable<any>;
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesOneMonthAgo$: Observable<any>;
   liquidPegsMonth$: Observable<any>;
@@ -110,12 +109,6 @@ export class ReservesAuditDashboardComponent implements OnInit {
       switchMap(_ => this.apiService.federationAddresses$()),
       share()
     );
-
-    this.federationUtxosOneMonthAgo$ = interval(60 * 60 * 1000)
-      .pipe(
-        startWith(0),
-        switchMap(() => this.apiService.federationUtxosOneMonthAgo$())
-      );
 
     this.federationAddressesOneMonthAgo$ = interval(60 * 60 * 1000)
       .pipe(
