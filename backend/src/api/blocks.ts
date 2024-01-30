@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -451,7 +451,9 @@ class Blocks {
         if (config.MEMPOOL.BACKEND === 'esplora') {
           const txs = (await bitcoinApi.$getTxsForBlock(block.hash)).map(tx => transactionUtils.extendTransaction(tx));
           const cpfpSummary = await this.$indexCPFP(block.hash, block.height, txs);
-          await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
+          if (cpfpSummary) {
+            await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
+          }
         } else {
           await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
         }
@@ -995,11 +997,11 @@ class Blocks {
     return state;
   }
 
-  private updateTimerProgress(state, msg) {
+  private updateTimerProgress(state, msg): void {
     state.progress = msg;
   }
 
-  private clearTimer(state) {
+  private clearTimer(state): void {
     if (state.timer) {
       clearTimeout(state.timer);
     }
@@ -1088,13 +1090,19 @@ class Blocks {
       summary = {
         id: hash,
         transactions: cpfpSummary.transactions.map(tx => {
+          let flags: number = 0;
+          try {
+            flags = tx.flags || Common.getTransactionFlags(tx);
+          } catch (e) {
+            logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
+          }
           return {
             txid: tx.txid,
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
             rate: tx.effectiveFeePerVsize,
-            flags: tx.flags || Common.getTransactionFlags(tx),
+            flags: flags,
           };
         }),
       };
@@ -1284,7 +1292,7 @@ class Blocks {
     return blocks;
   }
 
-  public async $getBlockAuditSummary(hash: string): Promise<any> {
+  public async $getBlockAuditSummary(hash: string): Promise<BlockAudit | null> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       return BlocksAuditsRepository.$getBlockAudit(hash);
     } else {
@@ -1304,7 +1312,7 @@ class Blocks {
     return this.currentBlockHeight;
   }
 
-  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary> {
+  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary | null> {
     let transactions = txs;
     if (!transactions) {
       if (config.MEMPOOL.BACKEND === 'esplora') {
@@ -1319,14 +1327,19 @@ class Blocks {
       }
     }
 
-    const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
+    if (transactions?.length != null) {
+      const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
 
-    await this.$saveCpfp(hash, height, summary);
+      await this.$saveCpfp(hash, height, summary);
 
-    const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
-    await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
+      const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
+      await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
 
-    return summary;
+      return summary;
+    } else {
+      logger.err(`Cannot index CPFP for block ${height} - missing transaction data`);
+      return null;
+    }
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {

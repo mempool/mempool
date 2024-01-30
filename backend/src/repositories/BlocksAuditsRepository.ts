@@ -59,7 +59,7 @@ class BlocksAuditRepositories {
     }
   }
 
-  public async $getBlockAudit(hash: string): Promise<any> {
+  public async $getBlockAudit(hash: string): Promise<BlockAudit | null> {
     try {
       const [rows]: any[] = await DB.query(
         `SELECT blocks_audits.height, blocks_audits.hash as id, UNIX_TIMESTAMP(blocks_audits.time) as timestamp,

@@ -6,6 +6,7 @@ import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
+import logger from '../logger';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -261,6 +262,9 @@ export class Common {
         case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
         case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
         case 'v1_p2tr': {
+          if (!vin.witness?.length) {
+            throw new Error('Taproot input missing witness data');
+          }
           flags |= TransactionFlags.p2tr;
           // in taproot, if the last witness item begins with 0x50, it's an annex
           const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
@@ -301,7 +305,7 @@ export class Common {
         case 'p2pk': {
           flags |= TransactionFlags.p2pk;
           // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
-          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey.slice(2, -2));
+          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey?.slice(2, -2));
         } break;
         case 'multisig': {
           flags |= TransactionFlags.p2ms;
@@ -348,7 +352,12 @@ export class Common {
   }
 
   static classifyTransaction(tx: TransactionExtended): TransactionClassified {
-    const flags = Common.getTransactionFlags(tx);
+    let flags = 0;
+    try {
+      flags = Common.getTransactionFlags(tx);
+    } catch (e) {
+      logger.warn('Failed to add classification flags to transaction: ' + (e instanceof Error ? e.message : e));
+    }
     tx.flags = flags;
     return {
       ...Common.stripTransaction(tx),
