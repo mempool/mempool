@@ -5,8 +5,6 @@
       <h1 i18n="liquid.recent-pegs">Recent Peg-In / Out's</h1>
     </div>
 
-    <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
-
     <div class="clearfix"></div>
     
     <div style="min-height: 295px">
@@ -14,7 +12,8 @@
         <thead style="vertical-align: middle;">
           <th class="transaction text-left" [ngClass]="{'widget': widget}" i18n="shared.transaction">Transaction</th>
           <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
-          <th class="output text-left" *ngIf="!widget" i18n="liquid.bitcoin-funding-redeem">BTC Funding / Redeem</th>
+          <th class="output text-left" *ngIf="!widget" i18n="liquid.fund-redemption-tx">Fund / Redemption Tx</th>
+          <th class="address text-left" *ngIf="!widget" i18n="liquid.bitcoin-address">BTC Address</th>
           <th class="timestamp text-right" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
         </thead>
         <tbody *ngIf="recentPegs$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
@@ -23,17 +22,17 @@
               <td class="transaction text-left widget">
                 <ng-container *ngIf="peg.amount > 0">
                   <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
-                    <app-truncate [text]="peg.txid" [lastChars]="6"></app-truncate>
+                    <app-truncate [text]="peg.txid"></app-truncate>
                   </a>
                 </ng-container>
                 <ng-container *ngIf="peg.amount < 0">
                   <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vout=' + peg.txindex">
-                    <app-truncate [text]="peg.txid" [lastChars]="6"></app-truncate>
+                    <app-truncate [text]="peg.txid"></app-truncate>
                   </a>
                 </ng-container>
               </td>
-              <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0}">
-                {{ peg.amount > 0 ? '+' : '-' }}<app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+              <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0}">
+                <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
               </td>
               <td class="timestamp text-right widget">
                 <app-time kind="since" [time]="peg.blocktime"></app-time>
@@ -55,7 +54,7 @@
                 </ng-container>
               </td>
               <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0}">
-                {{ peg.amount > 0 ? '+' : '-' }}<app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
+                <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
               </td>
               <td class="output text-left">
                 <ng-container *ngIf="peg.bitcointxid; else redeemInProgress">
@@ -65,7 +64,7 @@
                 </ng-container>
                 <ng-template #redeemInProgress>
                   <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
-                    <span class="text-muted" i18n="liquid.redemption-in-progress">BTC Redemption in progress...</span>
+                    <i><span class="text-muted" i18n="liquid.redemption-in-progress">Peg out in progress...</span></i>
                   </ng-container>
                 </ng-template>
               </td>

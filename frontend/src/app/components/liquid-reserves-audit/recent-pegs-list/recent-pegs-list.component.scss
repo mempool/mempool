@@ -32,7 +32,7 @@ tr, td, th {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 160px;
+  max-width: 120px;
 }
 .transaction.widget {
   width: 40%;
@@ -62,7 +62,7 @@ tr, td, th {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 160px;
-  @media (max-width: 840px) {
+  @media (max-width: 825px) {
     display: none;
   }
 }
@@ -72,7 +72,7 @@ tr, td, th {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 160px;
-  @media (max-width: 527px) {
+  @media (max-width: 840px) {
     display: none;
   }
 }

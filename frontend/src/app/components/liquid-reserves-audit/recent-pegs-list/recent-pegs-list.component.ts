@@ -14,8 +14,8 @@ import { WebsocketService } from '../../../services/websocket.service';
 })
 export class RecentPegsListComponent implements OnInit {
   @Input() widget: boolean = false;
-  @Input() recentPegIns$: Observable<RecentPeg[]>;
-  @Input() recentPegOuts$: Observable<RecentPeg[]>;
+  @Input() recentPegIns$: Observable<RecentPeg[]> = of([]);
+  @Input() recentPegOuts$: Observable<RecentPeg[]> = of([]);
 
   env: Env;
   isLoading = true;
@@ -133,6 +133,7 @@ export class RecentPegsListComponent implements OnInit {
           return b.blocktime - a.blocktime;
         });
       }),
+      filter(recentPegs => recentPegs.length > 0),
       tap(_ => this.isLoading = false),
       share()
     );

@@ -6,7 +6,7 @@
         <div class="card-text">
           <div class="fee-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></div>
           <span class="fiat">
-            <span>As of block&nbsp;<a [routerLink]="['/block', currentPeg.hash]" target="_blank">{{ currentPeg.lastBlockUpdate }}</a></span>
+            <span>As of block&nbsp;<a [routerLink]="['/block', currentPeg.hash]">{{ currentPeg.lastBlockUpdate }}</a></span>
           </span>
         </div>
       </div>
