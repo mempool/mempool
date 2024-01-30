@@ -173,10 +173,13 @@ function makeBlockTemplates(mempool: Map<number, CompactThreadTransaction>)
     // this block is full
     const exceededPackageTries = failures > 1000 && blockWeight > (config.MEMPOOL.BLOCK_WEIGHT_UNITS - 4000);
     const queueEmpty = top >= mempoolArray.length && modified.isEmpty();
+
     if ((exceededPackageTries || queueEmpty) && blocks.length < 7) {
       // construct this block
       if (transactions.length) {
         blocks.push(transactions.map(t => t.uid));
+      } else {
+        break;
       }
       // reset for the next block
       transactions = [];

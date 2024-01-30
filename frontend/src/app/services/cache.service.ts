@@ -40,6 +40,7 @@ export class CacheService {
     this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
       this.resetBlockCache();
+      this.txCache = {};
     });
   }
 

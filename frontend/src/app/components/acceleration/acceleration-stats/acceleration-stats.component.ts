@@ -27,11 +27,11 @@ export class AccelerationStatsComponent implements OnInit {
         let totalFeesPaid = 0;
         let totalSucceeded = 0;
         let totalCanceled = 0;
-        for (const acceleration of accelerations) {
-          if (acceleration.status === 'completed') {
+        for (const acc of accelerations) {
+          if (acc.status === 'completed') {
             totalSucceeded++;
-            totalFeesPaid += acceleration.feePaid || 0;
-          } else if (acceleration.status === 'failed') {
+            totalFeesPaid += (acc.feePaid - acc.baseFee - acc.vsizeFee) || 0;
+          } else if (acc.status === 'failed') {
             totalCanceled++;
           }
         }

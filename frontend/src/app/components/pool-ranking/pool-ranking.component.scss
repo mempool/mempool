@@ -41,6 +41,18 @@
   }
 }
 
+@media (max-width: 430px) {
+  .pool-name {
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .health-column {
+    display: none;
+  }
+}
+
 .loadingGraphs {
   position: absolute;
   top: 50%;

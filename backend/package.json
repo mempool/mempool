@@ -35,7 +35,8 @@
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
     "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
-    "rust-build": "cd rust-gbt && npm run build-release"
+    "rust-clean": "cd rust-gbt && rm -f *.node index.d.ts index.js && rm -rf target && cd ../",
+    "rust-build": "npm run rust-clean && cd rust-gbt && npm run build-release"
   },
   "dependencies": {
     "@babel/core": "^7.23.2",
@@ -46,7 +47,7 @@
     "crypto-js": "~4.2.0",
     "express": "~4.18.2",
     "maxmind": "~4.3.11",
-    "mysql2": "~3.6.0",
+    "mysql2": "~3.7.0",
     "rust-gbt": "file:./rust-gbt",
     "redis": "^4.6.6",
     "socks-proxy-agent": "~7.0.0",

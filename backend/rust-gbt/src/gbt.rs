@@ -60,6 +60,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         indexed_accelerations[acceleration.uid as usize] = Some(acceleration);
     }
 
+    info!("Initializing working vecs with uid capacity for {}", max_uid + 1);
     let mempool_len = mempool.len();
     let mut audit_pool: AuditPool = Vec::with_capacity(max_uid + 1);
     audit_pool.resize(max_uid + 1, None);
@@ -127,74 +128,75 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         let next_from_stack = next_valid_from_stack(&mut mempool_stack, &audit_pool);
         let next_from_queue = next_valid_from_queue(&mut modified, &audit_pool);
         if next_from_stack.is_none() && next_from_queue.is_none() {
-            continue;
-        }
-        let (next_tx, from_stack) = match (next_from_stack, next_from_queue) {
-            (Some(stack_tx), Some(queue_tx)) => match queue_tx.cmp(stack_tx) {
-                std::cmp::Ordering::Less => (stack_tx, true),
-                _ => (queue_tx, false),
-            },
-            (Some(stack_tx), None) => (stack_tx, true),
-            (None, Some(queue_tx)) => (queue_tx, false),
-            (None, None) => unreachable!(),
-        };
-
-        if from_stack {
-            mempool_stack.pop();
+            info!("No transactions left! {:#?} in overflow", overflow.len());
         } else {
-            modified.pop();
-        }
+            let (next_tx, from_stack) = match (next_from_stack, next_from_queue) {
+                (Some(stack_tx), Some(queue_tx)) => match queue_tx.cmp(stack_tx) {
+                    std::cmp::Ordering::Less => (stack_tx, true),
+                    _ => (queue_tx, false),
+                },
+                (Some(stack_tx), None) => (stack_tx, true),
+                (None, Some(queue_tx)) => (queue_tx, false),
+                (None, None) => unreachable!(),
+            };
 
-        if blocks.len() < (MAX_BLOCKS - 1)
-            && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize())
-                >= MAX_BLOCK_WEIGHT_UNITS)
-                || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
-        {
-            // hold this package in an overflow list while we check for smaller options
-            overflow.push(next_tx.uid);
-            failures += 1;
-        } else {
-            let mut package: Vec<(u32, u32, usize)> = Vec::new();
-            let mut cluster: Vec<u32> = Vec::new();
-            let is_cluster: bool = !next_tx.ancestors.is_empty();
-            for ancestor_id in &next_tx.ancestors {
-                if let Some(Some(ancestor)) = audit_pool.get(*ancestor_id as usize) {
-                    package.push((*ancestor_id, ancestor.order(), ancestor.ancestors.len()));
-                }
-            }
-            package.sort_unstable_by(|a, b| -> Ordering {
-                if a.2 != b.2 {
-                    // order by ascending ancestor count
-                    a.2.cmp(&b.2)
-                } else if a.1 != b.1 {
-                    // tie-break by ascending partial txid
-                    a.1.cmp(&b.1)
-                } else {
-                    // tie-break partial txid collisions by ascending uid
-                    a.0.cmp(&b.0)
-                }
-            });
-            package.push((next_tx.uid, next_tx.order(), next_tx.ancestors.len()));
-
-            let cluster_rate = next_tx.cluster_rate();
-
-            for (txid, _, _) in &package {
-                cluster.push(*txid);
-                if let Some(Some(tx)) = audit_pool.get_mut(*txid as usize) {
-                    tx.used = true;
-                    tx.set_dirty_if_different(cluster_rate);
-                    transactions.push(tx.uid);
-                    block_weight += tx.weight;
-                    block_sigops += tx.sigops;
-                }
-                update_descendants(*txid, &mut audit_pool, &mut modified, cluster_rate);
+            if from_stack {
+                mempool_stack.pop();
+            } else {
+                modified.pop();
             }
 
-            if is_cluster {
-                clusters.push(cluster);
-            }
+            if blocks.len() < (MAX_BLOCKS - 1)
+                && ((block_weight + (4 * next_tx.ancestor_sigop_adjusted_vsize())
+                    >= MAX_BLOCK_WEIGHT_UNITS)
+                    || (block_sigops + next_tx.ancestor_sigops() > BLOCK_SIGOPS))
+            {
+                // hold this package in an overflow list while we check for smaller options
+                overflow.push(next_tx.uid);
+                failures += 1;
+            } else {
+                let mut package: Vec<(u32, u32, usize)> = Vec::new();
+                let mut cluster: Vec<u32> = Vec::new();
+                let is_cluster: bool = !next_tx.ancestors.is_empty();
+                for ancestor_id in &next_tx.ancestors {
+                    if let Some(Some(ancestor)) = audit_pool.get(*ancestor_id as usize) {
+                        package.push((*ancestor_id, ancestor.order(), ancestor.ancestors.len()));
+                    }
+                }
+                package.sort_unstable_by(|a, b| -> Ordering {
+                    if a.2 != b.2 {
+                        // order by ascending ancestor count
+                        a.2.cmp(&b.2)
+                    } else if a.1 != b.1 {
+                        // tie-break by ascending partial txid
+                        a.1.cmp(&b.1)
+                    } else {
+                        // tie-break partial txid collisions by ascending uid
+                        a.0.cmp(&b.0)
+                    }
+                });
+                package.push((next_tx.uid, next_tx.order(), next_tx.ancestors.len()));
 
-            failures = 0;
+                let cluster_rate = next_tx.cluster_rate();
+
+                for (txid, _, _) in &package {
+                    cluster.push(*txid);
+                    if let Some(Some(tx)) = audit_pool.get_mut(*txid as usize) {
+                        tx.used = true;
+                        tx.set_dirty_if_different(cluster_rate);
+                        transactions.push(tx.uid);
+                        block_weight += tx.weight;
+                        block_sigops += tx.sigops;
+                    }
+                    update_descendants(*txid, &mut audit_pool, &mut modified, cluster_rate);
+                }
+
+                if is_cluster {
+                    clusters.push(cluster);
+                }
+
+                failures = 0;
+            }
         }
 
         // this block is full
@@ -203,10 +205,14 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         let queue_is_empty = mempool_stack.is_empty() && modified.is_empty();
         if (exceeded_package_tries || queue_is_empty) && blocks.len() < (MAX_BLOCKS - 1) {
             // finalize this block
-            if !transactions.is_empty() {
-                blocks.push(transactions);
-                block_weights.push(block_weight);
+            if transactions.is_empty() {
+                info!("trying to push an empty block! breaking loop! mempool {:#?} | modified {:#?} | overflow {:#?}", mempool_stack.len(), modified.len(), overflow.len());
+                break;
             }
+
+            blocks.push(transactions);
+            block_weights.push(block_weight);
+
             // reset for the next block
             transactions = Vec::with_capacity(initial_txes_per_block);
             block_weight = BLOCK_RESERVED_WEIGHT;
@@ -265,6 +271,7 @@ pub fn gbt(mempool: &mut ThreadTransactionsMap, accelerations: &[ThreadAccelerat
         block_weights,
         clusters,
         rates,
+        overflow,
     }
 }
 

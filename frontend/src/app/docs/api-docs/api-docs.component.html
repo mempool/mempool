@@ -368,6 +368,28 @@
   </dl>
 </ng-template>
 
+<ng-template type="what-are-sigops">
+  <p>A "sigop" is a way of accounting for the cost of "signature operations" in Bitcoin script, like <code>OP_CHECKSIG</code>, <code>OP_CHECKSIGVERIFY</code>, <code>OP_CHECKMULTISIG</code> and <code>OP_CHECKMULTISIGVERIFY</code></p>
+  <p>These signature operations incur different costs depending on whether they are single or multi-sig operations, and on where they appear in a Bitcoin transaction.</p>
+  <p>By consensus, each Bitcoin block is permitted to include a maximum of 80,000 sigops.</p>
+</ng-template>
+
+<ng-template type="what-is-adjusted-vsize">
+  <p>Bitcoin blocks have two independent consensus-enforced resource constraints - a 4MWU weight limit, and the 80,000 sigop limit.</p>
+  <p>Most transactions use a more of the weight limit than the sigop limit. However, some transactions use a disproportionate number of sigops compared to their weight.</p>
+  <p>To account for this, Bitcoin Core calculates and uses an "adjusted vsize" equal 5 times the number of sigops, or the unadjusted vsize, whichever is larger.</p>
+  <p>Then, during block template construction, Bitcoin Core selects transactions in descending order of fee rate measured in satoshis per <i>adjusted vsize</i></p>
+  <p>On mempool.space, effective fee rates for unconfirmed transactions are also measured in terms of satoshis per adjusted vsize, after accounting for CPFP relationships and other dependencies.</p>
+</ng-template>
+
+<ng-template type="why-do-the-projected-block-fee-ranges-overlap">
+  <p>The projected mempool blocks represent what we expect the next blocks would look like if they were mined right now, and so each projected block follows all of the same rules and constraints as real mined blocks.</p>
+  <p>Those constraints can sometimes cause transactions with lower fee rates to be included "ahead" of transactions with higher rates.</p>
+  <p>For example, if one projected block has a very small amount of space left, it might be able to fit one more tiny low fee rate transaction, while larger higher fee rate transactions have to wait for the following block.</p>
+  <p>A similar effect can occur when there are a large number of transactions with very many sigops. In that scenario, each projected block can only include up to 80,000 sigops worth of transactions, after which the remaining space can only be filled by potentially much lower fee transactions with zero sigops.</p>
+  <p>In extreme cases this can produce several projected blocks in a row with overlapping fee ranges, as a result of each projected block containing both high-feerate high-sigop transactions and lower feerate zero-sigop transactions.</p>
+</ng-template>
+
 <ng-template type="who-runs-this-website">
   The official mempool.space website is operated by The Mempool Open Source Project. See more information on our <a [routerLink]="['/about']">About page</a>. There are also many unofficial instances of this website operated by individual members of the Bitcoin community.
 </ng-template>

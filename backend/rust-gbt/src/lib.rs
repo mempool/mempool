@@ -133,6 +133,7 @@ pub struct GbtResult {
     pub block_weights: Vec<u32>,
     pub clusters: Vec<Vec<u32>>,
     pub rates: Vec<Vec<f64>>, // Tuples not supported. u32 fits inside f64
+    pub overflow: Vec<u32>,
 }
 
 /// All on another thread, this runs an arbitrary task in between
