@@ -17,6 +17,7 @@ describe('Mempool Backend Config', () => {
         NETWORK: 'mainnet',
         BACKEND: 'none',
         BLOCKS_SUMMARIES_INDEXING: false,
+        GOGGLES_INDEXING: false,
         HTTP_PORT: 8999,
         SPAWN_CLUSTER_PROCS: 0,
         API_URL_PREFIX: '/api/v1/',
