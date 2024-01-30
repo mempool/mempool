@@ -11,7 +11,7 @@
       </div>
 
       <div class="item"> 
-        <h5 class="card-title" i18n="liquid.peg-ratio-history">Avg Peg Ratio</h5> 
+        <h5 class="card-title" i18n="liquid.avg-peg-ratio">Avg Peg Ratio</h5> 
         <div class="card-text">
           <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.avg < 1, 'correct': unbackedMonths.avg >= 1}">
             {{ unbackedMonths.avg.toFixed(5) }}
@@ -25,14 +25,14 @@
 <ng-template #loadingData>
   <div class="fee-estimation-container loading-container">
     <div class="item">
-      <h5 class="card-title" i18n="liquid.peg-ratio-history">Peg Ratio History</h5>
+      <h5 class="card-title" i18n="liquid.unpeg">Unpeg</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
       </div>
     </div>
 
     <div class="item"> 
-      <h5 class="card-title" i18n="liquid.peg-ratio-history">Avg Peg Ratio</h5> 
+      <h5 class="card-title" i18n="liquid.avg-peg-ratio">Avg Peg Ratio</h5> 
       <div class="card-text">
         <div class="skeleton-loader"></div>
       </div>

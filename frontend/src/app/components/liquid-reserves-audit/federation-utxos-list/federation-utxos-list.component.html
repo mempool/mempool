@@ -7,11 +7,11 @@
   <div style="min-height: 295px">
     <table class="table table-borderless">
       <thead style="vertical-align: middle;">
-        <th class="txid text-left" [ngClass]="{'widget': widget}" i18n="liquid.output">Output</th>
-        <th class="address text-left" *ngIf="!widget" i18n="liquid.address">Address</th>
-        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="liquid.amount">Amount</th>
+        <th class="txid text-left" [ngClass]="{'widget': widget}" i18n="transaction.output">Output</th>
+        <th class="address text-left" *ngIf="!widget" i18n="shared.address">Address</th>
+        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
         <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
-        <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="timestamp text-right" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">

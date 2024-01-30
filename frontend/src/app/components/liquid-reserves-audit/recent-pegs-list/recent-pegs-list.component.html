@@ -13,9 +13,9 @@
       <table class="table table-borderless">
         <thead style="vertical-align: middle;">
           <th class="transaction text-left" [ngClass]="{'widget': widget}" i18n="shared.transaction">Transaction</th>
-          <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="liquid.amount">Amount</th>
+          <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
           <th class="output text-left" *ngIf="!widget" i18n="liquid.bitcoin-funding-redeem">BTC Funding / Redeem</th>
-          <th class="timestamp text-right" i18n="latest-blocks.date" [ngClass]="{'widget': widget}">Date</th>
+          <th class="timestamp text-right" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
         </thead>
         <tbody *ngIf="recentPegs$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <ng-container *ngIf="widget; else regularRows">
@@ -65,7 +65,7 @@
                 </ng-container>
                 <ng-template #redeemInProgress>
                   <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
-                    <span class="text-muted">BTC Redemption in progress...</span>
+                    <span class="text-muted" i18n="liquid.redemption-in-progress">BTC Redemption in progress...</span>
                   </ng-container>
                 </ng-template>
               </td>
