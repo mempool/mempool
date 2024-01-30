@@ -15,6 +15,7 @@ import { WebsocketService } from '../../../services/websocket.service';
 export class RecentPegsListComponent implements OnInit {
   @Input() widget: boolean = false;
   @Input() recentPegIns$: Observable<RecentPeg[]>;
+  @Input() recentPegOuts$: Observable<RecentPeg[]>;
 
   env: Env;
   isLoading = true;
@@ -103,6 +104,7 @@ export class RecentPegsListComponent implements OnInit {
             txid: utxo.pegtxid,
             txindex: utxo.pegindex,
             amount: utxo.amount,
+            bitcoinaddress: utxo.bitcoinaddress,
             bitcointxid: utxo.txid,
             bitcoinindex: utxo.txindex,
             blocktime: utxo.pegblocktime,
@@ -110,9 +112,30 @@ export class RecentPegsListComponent implements OnInit {
         })),
         share()
       );
+
+      this.recentPegOuts$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.recentPegOuts$()),
+        share()
+      );
+  
     }
 
-    this.recentPegs$ = this.recentPegIns$;
+    this.recentPegs$ = combineLatest([
+      this.recentPegIns$,
+      this.recentPegOuts$
+    ]).pipe(
+      map(([recentPegIns, recentPegOuts]) => {
+        return [
+          ...recentPegIns,
+          ...recentPegOuts
+        ].sort((a, b) => {
+          return b.blocktime - a.blocktime;
+        });
+      }),
+      share()
+    );
   }
 
   ngOnDestroy(): void {

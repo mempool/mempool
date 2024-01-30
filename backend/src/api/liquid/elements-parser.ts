@@ -163,6 +163,10 @@ class ElementsParser {
           unspentAsTip = [];
         }
 
+        // Get the peg-out addresses that need to be scanned
+        const redeemAddresses = await this.$getRedeemAddressesToScan();
+        if (redeemAddresses.length > 0) logger.debug(`Found ${redeemAddresses.length} peg-out addresses to scan`);
+
         // The slow way: parse the block to look for the spending tx
         logger.debug(`${spentAsTip.length} / ${utxos.length} Federation UTXOs are spent as of tip`);
 
@@ -170,7 +174,7 @@ class ElementsParser {
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
         const nbUtxos = spentAsTip.length;
         await DB.query('START TRANSACTION;');
-        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip);
+        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
         await DB.query(`COMMIT;`);
         logger.debug(`Watched for spending of ${nbUtxos} Federation UTXOs in block ${auditProgress.lastBlockAudit} / ${auditProgress.confirmedTip}`);
 
@@ -210,12 +214,14 @@ class ElementsParser {
     return {spentAsTip, unspentAsTip};
   }
 
-  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: any[], unspentAsTip: any[], confirmedTip: number) {
+  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: any[], unspentAsTip: any[], confirmedTip: number, redeemAddresses: string[] = []) {
+    let mightRedeemInThisBlock = false; // If a Federation UTXO is spent in this block, we might find a peg-out address in the outputs...
     for (const tx of block.tx) {
       // Check if the Federation UTXOs that was spent as of tip are spent in this block
       for (const input of tx.vin) {
         const txo = spentAsTip.find(txo => txo.txid === input.txid && txo.txindex === input.vout);
         if (txo) {
+          mightRedeemInThisBlock = true;
           await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
           // Remove the TXO from the utxo array
           spentAsTip.splice(spentAsTip.indexOf(txo), 1);
@@ -240,6 +246,13 @@ class ElementsParser {
             });
             logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} of ${output.value * 100000000} sats belonging to ${output.scriptPubKey.address} (Federation change address).`);
           }
+        }
+        if (mightRedeemInThisBlock && output.scriptPubKey.address && redeemAddresses.includes(output.scriptPubKey.address)) {
+          const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ?`;
+          const params_add_redeem: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address];
+          await DB.query(query_add_redeem, params_add_redeem);
+          redeemAddresses.splice(redeemAddresses.indexOf(output.scriptPubKey.address), 1);
+          logger.debug(`Added redeem txid ${tx.txid}:${output.n} to peg-out address ${output.scriptPubKey.address}`);
         }
       }
     }
@@ -283,9 +296,15 @@ class ElementsParser {
     return rows[0]['number'];
   }
 
-    ///////////// DATA QUERY //////////////
+  protected async $getRedeemAddressesToScan(): Promise<string[]> {
+    const query = `SELECT bitcoinaddress FROM elements_pegs where amount < 0 AND bitcoinaddress != '' AND bitcointxid = '';`;
+    const [rows]: any[] = await DB.query(query);
+    return rows.map((row: any) => row.bitcoinaddress);
+  }
 
-    public async $getAuditStatus(): Promise<any> {
+  ///////////// DATA QUERY //////////////
+
+  public async $getAuditStatus(): Promise<any> {
     const lastBlockAudit = await this.$getLastBlockAudit();
     const bitcoinBlocksToSync = await this.$getBitcoinBlockchainState();
     return {
@@ -382,6 +401,12 @@ class ElementsParser {
     return rows[0];
   }
 
+  // Get the 300 most recent pegouts from the federation
+  public async $getRecentPegouts(): Promise<any> {
+    const query = `SELECT txid, txindex, amount, bitcoinaddress, bitcointxid, bitcoinindex, datetime AS blocktime FROM elements_pegs WHERE amount < 0 ORDER BY blocktime DESC LIMIT 300;`;
+    const [rows] = await DB.query(query);
+    return rows;
+  }
 }
 
 export default new ElementsParser();

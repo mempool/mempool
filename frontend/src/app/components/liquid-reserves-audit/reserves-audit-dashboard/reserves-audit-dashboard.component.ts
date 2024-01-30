@@ -19,6 +19,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   currentReserves$: Observable<CurrentPegs>;
   federationUtxos$: Observable<FederationUtxo[]>;
   recentPegIns$: Observable<RecentPeg[]>;
+  recentPegOuts$: Observable<RecentPeg[]>;
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesOneMonthAgo$: Observable<any>;
   liquidPegsMonth$: Observable<any>;
@@ -110,11 +111,19 @@ export class ReservesAuditDashboardComponent implements OnInit {
           txid: utxo.pegtxid,
           txindex: utxo.pegindex,
           amount: utxo.amount,
+          bitcoinaddress: utxo.bitcoinaddress,
           bitcointxid: utxo.txid,
           bitcoinindex: utxo.txindex,
           blocktime: utxo.pegblocktime,
         }
       })),
+      share()
+    );
+
+    this.recentPegOuts$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
+      switchMap(_ => this.apiService.recentPegOuts$()),
       share()
     );
 

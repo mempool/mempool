@@ -101,8 +101,9 @@ export interface FederationUtxo {
 
 export interface RecentPeg {
   txid: string;
-  txindex: number; // input #0 for peg-ins
+  txindex: number;
   amount: number;
+  bitcoinaddress: string;
   bitcointxid: string;
   bitcoinindex: number;
   blocktime: number;

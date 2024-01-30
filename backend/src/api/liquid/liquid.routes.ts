@@ -19,6 +19,7 @@ class LiquidRoutes {
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/previous-month', this.$getFederationAddressesOneMonthAgo)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
@@ -171,6 +172,18 @@ class LiquidRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
       res.json(federationUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegOuts(req: Request, res: Response) {
+    try {
+      const recentPegOuts = await elementsParser.$getRecentPegouts();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(recentPegOuts);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
