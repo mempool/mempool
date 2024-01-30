@@ -67,6 +67,16 @@ tr, td, th {
   }
 }
 
+.address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 527px) {
+    display: none;
+  }
+}
+
 .timestamp {
   width: 18%;
   @media (max-width: 650px) {

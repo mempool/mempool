@@ -58,9 +58,21 @@
                 {{ peg.amount > 0 ? '+' : '-' }}<app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
               </td>
               <td class="output text-left">
-                <ng-container *ngIf="peg.bitcointxid; else noPeginMessage">
+                <ng-container *ngIf="peg.bitcointxid; else redeemInProgress">
                   <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:#b86d12">
                     <app-truncate [text]="peg.bitcointxid + ':' + peg.bitcoinindex" [lastChars]="6"></app-truncate>
+                  </a>
+                </ng-container>
+                <ng-template #redeemInProgress>
+                  <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
+                    <span class="text-muted">BTC Redemption in progress...</span>
+                  </ng-container>
+                </ng-template>
+              </td>
+              <td class="address text-left">
+                <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
+                  <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                    <app-truncate [text]="peg.bitcoinaddress" [lastChars]="6"></app-truncate>
                   </a>
                 </ng-container>
               </td>
@@ -96,6 +108,9 @@
               <td class="output text-left">
                 <span class="skeleton-loader" style="max-width: 300px"></span>
               </td>
+              <td class="address text-left">
+                <span class="skeleton-loader" style="max-width: 140px"></span>
+              </td>
               <td class="timestamp text-right">
                 <span class="skeleton-loader" style="max-width: 140px"></span>
               </td>
@@ -120,6 +135,6 @@
 
 <br>
 
-<ng-template #noPeginMessage>
-  <span class="text-muted">BTC Redeem in progress...</span>
+<ng-template #noRedeem>
+  <span class="text-muted">-</span>
 </ng-template>

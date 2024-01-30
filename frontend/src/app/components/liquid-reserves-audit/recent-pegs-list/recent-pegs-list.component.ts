@@ -94,7 +94,6 @@ export class RecentPegsListComponent implements OnInit {
         filter(auditUpdated => auditUpdated === true),
         throttleTime(40000),
         switchMap(_ => this.apiService.federationUtxos$()),
-        tap(_ => this.isLoading = false),
         share()
       );
 
@@ -134,6 +133,7 @@ export class RecentPegsListComponent implements OnInit {
           return b.blocktime - a.blocktime;
         });
       }),
+      tap(_ => this.isLoading = false),
       share()
     );
   }
