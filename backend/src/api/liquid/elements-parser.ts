@@ -93,7 +93,6 @@ class ElementsParser {
   
       // Add the address to the federation addresses table
       await DB.query(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES (?)`, [bitcoinaddress]);
-      logger.debug(`Saved new Federation address ${bitcoinaddress} to federation addresses.`);
 
       // Add the UTXO to the federation txos table
       const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -101,7 +100,7 @@ class ElementsParser {
       await DB.query(query_utxos, params_utxos);
       const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`)
       await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
-      logger.debug(`Saved new Federation UTXO ${bitcointxid}:${bitcoinindex} belonging to ${bitcoinaddress} to federation txos.`);
+      logger.debug(`Saved new Federation UTXO ${bitcointxid}:${bitcoinindex} belonging to ${bitcoinaddress} to federation txos`);
 
     }
   }
@@ -130,7 +129,7 @@ class ElementsParser {
       let auditProgress = await this.$getAuditProgress();
       // If no peg in transaction was found in the database, return
       if (!auditProgress.lastBlockAudit) {
-        logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit.`);
+        logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit`);
         this.isUtxosUpdatingRunning = false;
         return;
       }
@@ -138,17 +137,24 @@ class ElementsParser {
       const bitcoinBlocksToSync = await this.$getBitcoinBlockchainState();
       // If the bitcoin blockchain is not synced yet, return
       if (bitcoinBlocksToSync.bitcoinHeaders > bitcoinBlocksToSync.bitcoinBlocks + 1) {
-        logger.debug(`Bitcoin client is not synced yet. ${bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks} blocks remaining to sync before the Federation audit process can start.`);
+        logger.debug(`Bitcoin client is not synced yet. ${bitcoinBlocksToSync.bitcoinHeaders - bitcoinBlocksToSync.bitcoinBlocks} blocks remaining to sync before the Federation audit process can start`);
         this.isUtxosUpdatingRunning = false;
         return;
       }
 
       auditProgress.lastBlockAudit++;
 
+      // Logging
+      let indexedThisRun = 0;
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+      const indexingSpeeds: number[] = [];
+
       while (auditProgress.lastBlockAudit <= auditProgress.confirmedTip) {
+
         // First, get the current UTXOs that need to be scanned in the block
         const utxos = await this.$getFederationUtxosToScan(auditProgress.lastBlockAudit);
-        logger.debug(`Found ${utxos.length} Federation UTXOs to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
+        // logger.debug(`Found ${utxos.length} Federation UTXOs to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
 
         // The fast way: check if these UTXOs are still unspent as of the current block with gettxout
         let spentAsTip: any[];
@@ -157,7 +163,7 @@ class ElementsParser {
           const utxosToParse = await this.$getFederationUtxosToParse(utxos);
           spentAsTip = utxosToParse.spentAsTip;
           unspentAsTip = utxosToParse.unspentAsTip;
-          logger.debug(`${unspentAsTip.length} / ${utxos.length} Federation UTXOs are unspent as of tip`);
+          // logger.debug(`${unspentAsTip.length} / ${utxos.length} Federation UTXOs are unspent as of tip`);
         } else { // If the audit status is too far in the past, it is useless to look for still unspent txos since they will all be spent as of the tip
           spentAsTip = utxos;
           unspentAsTip = [];
@@ -165,10 +171,25 @@ class ElementsParser {
 
         // Get the peg-out addresses that need to be scanned
         const redeemAddresses = await this.$getRedeemAddressesToScan();
-        if (redeemAddresses.length > 0) logger.debug(`Found ${redeemAddresses.length} peg-out addresses to scan`);
+        // if (redeemAddresses.length > 0) logger.debug(`Found ${redeemAddresses.length} peg-out addresses to scan`);
+
+        // Logging during initial indexing
+        if (auditProgress.confirmedTip - auditProgress.lastBlockAudit > 150) {
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blockPerSeconds = indexedThisRun / elapsedSeconds;
+            indexingSpeeds.push(blockPerSeconds);
+            if (indexingSpeeds.length > 100) indexingSpeeds.shift(); // Keep the length of the up to 100 last indexing speeds
+            const eta = (auditProgress.confirmedTip - auditProgress.lastBlockAudit) / (indexingSpeeds.reduce((a, b) => a + b, 0) / indexingSpeeds.length);
+            logger.debug(`Scanning ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses at height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip} | ~${blockPerSeconds.toFixed(2)} blocks/sec | elapsed: ${(runningFor / 60).toFixed(2)} minutes | ETA: ${(eta / 60).toFixed(2)} minutes`);
+            timer = Date.now() / 1000;
+            indexedThisRun = 0;
+          }
+        }
 
         // The slow way: parse the block to look for the spending tx
-        logger.debug(`${spentAsTip.length} / ${utxos.length} Federation UTXOs are spent as of tip`);
+        // logger.debug(`${spentAsTip.length} / ${utxos.length} Federation UTXOs are spent as of tip`);
 
         const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
@@ -176,7 +197,7 @@ class ElementsParser {
         await DB.query('START TRANSACTION;');
         await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
         await DB.query(`COMMIT;`);
-        logger.debug(`Watched for spending of ${nbUtxos} Federation UTXOs in block ${auditProgress.lastBlockAudit} / ${auditProgress.confirmedTip}`);
+        // logger.debug(`Watched for spending of ${nbUtxos} Federation UTXOs in block ${auditProgress.lastBlockAudit} / ${auditProgress.confirmedTip}`);
 
         // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
         const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`)
@@ -184,6 +205,7 @@ class ElementsParser {
 
         auditProgress = await this.$getAuditProgress();
         auditProgress.lastBlockAudit++;
+        indexedThisRun++;
       }
 
       this.isUtxosUpdatingRunning = false;
@@ -225,7 +247,7 @@ class ElementsParser {
           await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
           // Remove the TXO from the utxo array
           spentAsTip.splice(spentAsTip.indexOf(txo), 1);
-          logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}.`);
+          logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}`);
         }
       }
       // Check if an output is sent to a change address of the federation
@@ -244,7 +266,7 @@ class ElementsParser {
               bitcoinaddress: output.scriptPubKey.address,
               amount: output.value * 100000000
             });
-            logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} of ${output.value * 100000000} sats belonging to ${output.scriptPubKey.address} (Federation change address).`);
+            logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${output.value * 100000000} sats), change address: ${output.scriptPubKey.address}`);
           }
         }
         if (mightRedeemInThisBlock && output.scriptPubKey.address && redeemAddresses.includes(output.scriptPubKey.address)) {
