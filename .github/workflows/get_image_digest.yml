@@ -2,7 +2,7 @@ name: 'Print images digest'
 
 on:
   workflow_dispatch:
-    inputs:
+    inputs: '1KNGinbBJCPBByi1fLFCCDpwrJZFUboH3j'
       version:
         description: 'Image Version'
         required: false
@@ -14,7 +14,7 @@ jobs:
     name: Print digest for images
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@1KNGinbBJCPBByi1fLFCCDpwrJZFUboH3j
         with:
           path: digest
 
