@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 120
     name: Build and push to DockerHub
     steps:
-      # Workaround based on JonasAlfredsson/docker-on-tmpfs@v1.0.1
+      # Workaround based on uvhwuvhw/docker-on-tmpfs@v1.0.1
       - name: Replace the current swap file
         shell: bash
         run: |
