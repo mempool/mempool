@@ -507,7 +507,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
-      if (!found && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
+      if (!found && mempoolBlocks.length && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
         this.txInBlockIndex = 7;
       }
     });
