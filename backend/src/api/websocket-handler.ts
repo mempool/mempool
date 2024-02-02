@@ -206,7 +206,8 @@ class WebsocketHandler {
                 }
                 response['txPosition'] = JSON.stringify({
                   txid: trackTxid,
-                  position
+                  position,
+                  accelerationPositions: memPool.getAccelerationPositions(tx.txid),
                 });
               }
             } else {
@@ -821,7 +822,8 @@ class WebsocketHandler {
               ...mempoolTx.position,
               accelerated: mempoolTx.acceleration || undefined,
               acceleratedBy: mempoolTx.acceleratedBy || undefined,
-            }
+            },
+            accelerationPositions: memPool.getAccelerationPositions(mempoolTx.txid),
           };
           if (!mempoolTx.cpfpChecked && !mempoolTx.acceleration) {
             calculateCpfp(mempoolTx, newMempool);
@@ -834,7 +836,7 @@ class WebsocketHandler {
               effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
               sigops: mempoolTx.sigops,
               adjustedVsize: mempoolTx.adjustedVsize,
-              acceleration: mempoolTx.acceleration
+              acceleration: mempoolTx.acceleration,
             };
           }
           response['txPosition'] = JSON.stringify(positionData);
@@ -1137,7 +1139,8 @@ class WebsocketHandler {
                 ...mempoolTx.position,
                 accelerated: mempoolTx.acceleration || undefined,
                 acceleratedBy: mempoolTx.acceleratedBy || undefined,
-              }
+              },
+              accelerationPositions: memPool.getAccelerationPositions(mempoolTx.txid),
             });
           }
         }

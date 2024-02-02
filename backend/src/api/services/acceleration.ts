@@ -10,6 +10,12 @@ export interface Acceleration {
   effectiveFee: number,
   feeDelta: number,
   pools: number[],
+  positions?: {
+    [pool: number]: {
+      block: number,
+      vbytes: number,
+    },
+  },
 };
 
 export interface AccelerationHistory {
