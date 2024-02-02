@@ -7,6 +7,14 @@ export interface Acceleration {
   txid: string,
   feeDelta: number,
   pools: number[],
+  effectiveFee: number;
+  effectiveVsize: number;
+  positions?: {
+    [pool: number]: {
+      block: number,
+      vbytes: number,
+    },
+  },
 }
 
 class AccelerationApi {

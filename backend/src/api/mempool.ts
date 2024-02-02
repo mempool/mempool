@@ -25,6 +25,7 @@ class Mempool {
     deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => Promise<void>) | undefined;
 
   private accelerations: { [txId: string]: Acceleration } = {};
+  private accelerationPositions: { [txid: string]: { [pool: number]: { block: number, vbytes: number } } } = {};
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -429,6 +430,14 @@ class Mempool {
       logger.debug(`Failed to update accelerations: ` + (e instanceof Error ? e.message : e));
       return [];
     }
+  }
+
+  setAccelerationPositions(positions: { [txid: string]: { [pool: number]: { block: number, vbytes: number } } }): void {
+    this.accelerationPositions = positions;
+  }
+
+  getAccelerationPositions(txid: string): { [pool: number]: { block: number, vbytes: number } } | undefined {
+    return this.accelerationPositions[txid];
   }
 
   private startTimer() {

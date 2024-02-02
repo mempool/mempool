@@ -6,6 +6,7 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
+import { Acceleration } from './services/acceleration';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -452,7 +453,7 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations: { [txid: string]: Acceleration }, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const [txid, rate] of rates) {
       if (txid in mempool) {
         mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
@@ -586,7 +587,7 @@ class MempoolBlocks {
       const deltas = this.calculateMempoolDeltas(this.mempoolBlocks, mempoolBlocks);
       this.mempoolBlocks = mempoolBlocks;
       this.mempoolBlockDeltas = deltas;
-
+      this.updateAccelerationPositions(mempool, accelerations, mempoolBlocks);
     }
 
     return mempoolBlocks;
@@ -690,6 +691,94 @@ class MempoolBlocks {
       }
     });
     return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters, overflow: convertedOverflow };
+  }
+
+  // estimates and saves positions of accelerations in mining partner mempools
+  private updateAccelerationPositions(mempoolCache: { [txid: string]: MempoolTransactionExtended }, accelerations: { [txid: string]: Acceleration }, mempoolBlocks: MempoolBlockWithTransactions[]): void {
+    const accelerationPositions: { [txid: string]: { [pool: string]: { block: number, vbytes: number } } } = {};
+    // keep track of simulated mempool blocks for each active pool
+    const pools: {
+      [pool: string]: { block: number, vsize: number, accelerations: string[] };
+    } = {};
+    // prepare a list of accelerations in ascending order (we'll pop items off the end of the list)
+    const accQueue: { acceleration: Acceleration, rate: number, vsize: number }[] = Object.values(accelerations).map(acc => {
+      let vsize = mempoolCache[acc.txid].vsize;
+      for (const ancestor of mempoolCache[acc.txid].ancestors || []) {
+        vsize += (ancestor.weight / 4);
+      }
+      return {
+        acceleration: acc,
+        rate: mempoolCache[acc.txid].effectiveFeePerVsize,
+        vsize
+      };
+    }).sort((a, b) => a.rate - b.rate);
+    // initialize the pool tracker
+    for (const { acceleration }  of accQueue) {
+      accelerationPositions[acceleration.txid] = {};
+      for (const pool of acceleration.pools) {
+        if (!pools[pool]) {
+          pools[pool] = {
+            block: 0,
+            vsize: 0,
+            accelerations: [],
+          };
+        }
+        pools[pool].accelerations.push(acceleration.txid);
+      }
+      for (const ancestor of mempoolCache[acceleration.txid].ancestors || []) {
+        accelerationPositions[ancestor.txid] = {};
+      }
+    }
+    let block = 0;
+    let index = 0;
+    let next = accQueue.pop();
+    // build simulated blocks for each pool by taking the best option from
+    // either the mempool or the list of accelerations.
+    while (next && block < mempoolBlocks.length) {
+      while (next && index < mempoolBlocks[block].transactions.length) {
+        const nextTx = mempoolBlocks[block].transactions[index];
+        if (next.rate >= (nextTx.rate || (nextTx.fee / nextTx.vsize))) {
+          for (const pool of next.acceleration.pools) {
+            if (pools[pool].vsize + next.vsize <= 999_000) {
+              pools[pool].vsize += next.vsize;
+            } else {
+              pools[pool].block++;
+              pools[pool].vsize = next.vsize;
+            }
+            // insert the acceleration into matching pool's blocks
+            accelerationPositions[next.acceleration.txid][pool] = {
+              block: pools[pool].block,
+              vbytes: pools[pool].vsize - (next.vsize / 2),
+            };
+            // and any accelerated ancestors
+            for (const ancestor of mempoolCache[next.acceleration.txid].ancestors || []) {
+              accelerationPositions[ancestor.txid][pool] = {
+                block: pools[pool].block,
+                vbytes: pools[pool].vsize - (next.vsize / 2),
+              };
+            }
+          }
+          next = accQueue.pop();
+        } else {
+          // skip accelerated transactions and their CPFP ancestors
+          if (accelerationPositions[nextTx.txid] == null) {
+            // insert into all pools' blocks
+            for (const pool of Object.keys(pools)) {
+              if (pools[pool].vsize + nextTx.vsize <= 999_000) {
+                pools[pool].vsize += nextTx.vsize;
+              } else {
+                pools[pool].block++;
+                pools[pool].vsize = nextTx.vsize;
+              }
+            }
+          }
+          index++;
+        }
+      }
+      block++;
+      index = 0;
+    }
+    mempool.setAccelerationPositions(accelerationPositions);
   }
 }
 
