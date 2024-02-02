@@ -25,7 +25,7 @@ class Mempool {
     deletedTransactions: MempoolTransactionExtended[], accelerationDelta: string[]) => Promise<void>) | undefined;
 
   private accelerations: { [txId: string]: Acceleration } = {};
-  private accelerationPositions: { [txid: string]: { [pool: number]: { block: number, vbytes: number } } } = {};
+  private accelerationPositions: { [txid: string]: { poolId: number, pool: string, block: number, vsize: number }[] } = {};
 
   private txPerSecondArray: number[] = [];
   private txPerSecond: number = 0;
@@ -432,11 +432,11 @@ class Mempool {
     }
   }
 
-  setAccelerationPositions(positions: { [txid: string]: { [pool: number]: { block: number, vbytes: number } } }): void {
+  setAccelerationPositions(positions: { [txid: string]: { poolId: number, pool: string, block: number, vsize: number }[] }): void {
     this.accelerationPositions = positions;
   }
 
-  getAccelerationPositions(txid: string): { [pool: number]: { block: number, vbytes: number } } | undefined {
+  getAccelerationPositions(txid: string): { [pool: number]: { poolId: number, pool: string, block: number, vsize: number } } | undefined {
     return this.accelerationPositions[txid];
   }
 

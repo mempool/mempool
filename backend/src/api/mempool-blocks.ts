@@ -7,6 +7,7 @@ import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
 import { Acceleration } from './services/acceleration';
+import PoolsRepository from '../repositories/PoolsRepository';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -19,6 +20,17 @@ class MempoolBlocks {
 
   private nextUid: number = 1;
   private uidMap: Map<number, string> = new Map(); // map short numerical uids to full txids
+
+  private pools: { [id: number]: PoolTag } = {};
+
+  constructor() {
+    PoolsRepository.$getPools().then(allPools => {
+      this.pools = {};
+      for (const pool of allPools) {
+        this.pools[pool.uniqueId] = pool;
+      }
+    });
+  }
 
   public getMempoolBlocks(): MempoolBlock[] {
     return this.mempoolBlocks.map((block) => {
@@ -695,10 +707,10 @@ class MempoolBlocks {
 
   // estimates and saves positions of accelerations in mining partner mempools
   private updateAccelerationPositions(mempoolCache: { [txid: string]: MempoolTransactionExtended }, accelerations: { [txid: string]: Acceleration }, mempoolBlocks: MempoolBlockWithTransactions[]): void {
-    const accelerationPositions: { [txid: string]: { [pool: string]: { block: number, vbytes: number } } } = {};
+    const accelerationPositions: { [txid: string]: { poolId: number, pool: string, block: number, vsize: number }[] } = {};
     // keep track of simulated mempool blocks for each active pool
     const pools: {
-      [pool: string]: { block: number, vsize: number, accelerations: string[] };
+      [pool: string]: { name: string, block: number, vsize: number, accelerations: string[], complete: boolean };
     } = {};
     // prepare a list of accelerations in ascending order (we'll pop items off the end of the list)
     const accQueue: { acceleration: Acceleration, rate: number, vsize: number }[] = Object.values(accelerations).map(acc => {
@@ -714,21 +726,31 @@ class MempoolBlocks {
     }).sort((a, b) => a.rate - b.rate);
     // initialize the pool tracker
     for (const { acceleration }  of accQueue) {
-      accelerationPositions[acceleration.txid] = {};
+      accelerationPositions[acceleration.txid] = [];
       for (const pool of acceleration.pools) {
         if (!pools[pool]) {
           pools[pool] = {
+            name: this.pools[pool]?.name || 'unknown',
             block: 0,
             vsize: 0,
             accelerations: [],
+            complete: false,
           };
         }
         pools[pool].accelerations.push(acceleration.txid);
       }
       for (const ancestor of mempoolCache[acceleration.txid].ancestors || []) {
-        accelerationPositions[ancestor.txid] = {};
+        accelerationPositions[ancestor.txid] = [];
       }
     }
+
+    for (const pool of Object.keys(pools)) {
+      // if any pools accepted *every* acceleration, we can just use the GBT result positions directly
+      if (pools[pool].accelerations.length === Object.keys(accelerations).length) {
+        pools[pool].complete = true;
+      }
+    }
+
     let block = 0;
     let index = 0;
     let next = accQueue.pop();
@@ -746,16 +768,36 @@ class MempoolBlocks {
               pools[pool].vsize = next.vsize;
             }
             // insert the acceleration into matching pool's blocks
-            accelerationPositions[next.acceleration.txid][pool] = {
-              block: pools[pool].block,
-              vbytes: pools[pool].vsize - (next.vsize / 2),
-            };
+            if (pools[pool].complete && mempoolCache[next.acceleration.txid]?.position !== undefined) {
+              accelerationPositions[next.acceleration.txid].push({
+                ...mempoolCache[next.acceleration.txid].position as { block: number, vsize: number },
+                poolId: pool,
+                pool: pools[pool].name
+              });
+            } else {
+              accelerationPositions[next.acceleration.txid].push({
+                poolId: pool,
+                pool: pools[pool].name,
+                block: pools[pool].block,
+                vsize: pools[pool].vsize - (next.vsize / 2),
+              });
+            }
             // and any accelerated ancestors
             for (const ancestor of mempoolCache[next.acceleration.txid].ancestors || []) {
-              accelerationPositions[ancestor.txid][pool] = {
-                block: pools[pool].block,
-                vbytes: pools[pool].vsize - (next.vsize / 2),
-              };
+              if (pools[pool].complete && mempoolCache[ancestor.txid]?.position !== undefined) {
+                accelerationPositions[ancestor.txid].push({
+                  ...mempoolCache[ancestor.txid].position as { block: number, vsize: number },
+                  poolId: pool,
+                  pool: pools[pool].name,
+                });
+              } else {
+                accelerationPositions[ancestor.txid].push({
+                  poolId: pool,
+                  pool: pools[pool].name,
+                  block: pools[pool].block,
+                  vsize: pools[pool].vsize - (next.vsize / 2),
+                });
+              }
             }
           }
           next = accQueue.pop();

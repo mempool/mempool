@@ -196,6 +196,11 @@ export interface MempoolPosition {
   accelerated?: boolean
 }
 
+export interface AccelerationPosition extends MempoolPosition {
+  pool: string;
+  offset?: number;
+}
+
 export interface RewardStats {
   startBlock: number;
   endBlock: number;

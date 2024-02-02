@@ -21,7 +21,7 @@ import { ApiService } from '../../services/api.service';
 import { SeoService } from '../../services/seo.service';
 import { StorageService } from '../../services/storage.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
-import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration } from '../../interfaces/node-api.interface';
+import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '../../interfaces/node-api.interface';
 import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
@@ -38,6 +38,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   txId: string;
   txInBlockIndex: number;
   mempoolPosition: MempoolPosition;
+  accelerationPositions: AccelerationPosition[];
   isLoadingTx = true;
   error: any = undefined;
   errorUnblinded: any = undefined;
@@ -265,10 +266,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
         this.mempoolPosition = txPosition.position;
+        this.accelerationPositions = txPosition.accelerationPositions;
         if (this.tx && !this.tx.status.confirmed) {
+          const txFeePerVSize = this.getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
           this.stateService.markBlock$.next({
             txid: txPosition.txid,
-            mempoolPosition: this.mempoolPosition
+            txFeePerVSize,
+            mempoolPosition: this.mempoolPosition,
+            accelerationPositions: this.accelerationPositions,
           });
           this.txInBlockIndex = this.mempoolPosition.block;
 
@@ -278,6 +283,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       } else {
         this.mempoolPosition = null;
+        this.accelerationPositions = null;
       }
     });
 
@@ -400,11 +406,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             });
             this.fetchCpfp$.next(this.tx.txid);
           } else {
+            const txFeePerVSize = this.getUnacceleratedFeeRate(this.tx, this.tx.acceleration || this.mempoolPosition?.accelerated);
             if (tx.cpfpChecked) {
               this.stateService.markBlock$.next({
                 txid: tx.txid,
-                txFeePerVSize: tx.effectiveFeePerVsize,
+                txFeePerVSize,
                 mempoolPosition: this.mempoolPosition,
+                accelerationPositions: this.accelerationPositions,
               });
               this.cpfpInfo = {
                 ancestors: tx.ancestors,
@@ -619,6 +627,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accelerationInfo = null;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
+    this.accelerationPositions = null;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -630,6 +639,20 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   roundToOneDecimal(cpfpTx: any): number {
     return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
+  }
+
+  getUnacceleratedFeeRate(tx: Transaction, accelerated: boolean): number {
+    if (accelerated) {
+      let ancestorVsize = tx.weight / 4;
+      let ancestorFee = tx.fee;
+      for (const ancestor of tx.ancestors || []) {
+        ancestorVsize += (ancestor.weight / 4);
+        ancestorFee += ancestor.fee;
+      }
+      return Math.min(tx.fee / (tx.weight / 4), (ancestorFee / ancestorVsize));
+    } else {
+      return tx.effectiveFeePerVsize;
+    }
   }
 
   setupGraph() {

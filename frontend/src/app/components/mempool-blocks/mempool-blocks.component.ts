@@ -8,7 +8,7 @@ import { feeLevels, mempoolFeeColors } from '../../app.constants';
 import { specialBlocks } from '../../app.constants';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Location } from '@angular/common';
-import { DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
+import { AccelerationPosition, DifficultyAdjustment, MempoolPosition } from '../../interfaces/node-api.interface';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -66,13 +66,19 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
   blockPadding: number = 30;
   containerOffset: number = 40;
   arrowVisible = false;
+  accelerationArrow = true;
   tabHidden = false;
   feeRounding = '1.0-0';
 
   rightPosition = 0;
   transition = 'background 2s, right 2s, transform 1s';
+  accelerationPositions: AccelerationPosition[] = [];
+  accTransition = 'background 2s, right 2s, transform 1s';
+  animatingAcceleration: boolean = false;
 
   markIndex: number;
+  markedTxid: string;
+
   txPosition: MempoolPosition;
   txFeePerVSize: number;
 
@@ -160,7 +166,6 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           this.now = Date.now();
 
           this.updateMempoolBlockStyles();
-          this.calculateTransactionPosition();
  
           return this.mempoolBlocks;
         }),
@@ -188,6 +193,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.markIndex = undefined;
         this.txPosition = undefined;
         this.txFeePerVSize = undefined;
+        this.accelerationPositions = [];
         if (state.mempoolBlockIndex !== undefined) {
           this.markIndex = state.mempoolBlockIndex;
         }
@@ -197,7 +203,20 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
         if (state.txFeePerVSize) {
           this.txFeePerVSize = state.txFeePerVSize;
         }
-        this.calculateTransactionPosition();
+        if (state.accelerationPositions) {
+          this.accelerationPositions = state.accelerationPositions;
+        }
+        if (this.txPosition && this.txPosition.accelerated) {
+          const newlyAccelerated = (!this.accelerationArrow && state.txid === this.markedTxid);
+          this.calculateTransactionPosition(true);
+          if (newlyAccelerated || !this.animatingAcceleration) {
+            this.calculateAccelerationPositions(newlyAccelerated);
+          }
+        } else {
+          this.accelerationArrow = false;
+          this.calculateTransactionPosition();
+        }
+        this.markedTxid = state.txid;
         this.cd.markForCheck();
       });
 
@@ -287,6 +306,10 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   trackByFn(index: number, block: MempoolBlock) {
     return (block.isStack) ? `stack-${block.index}` : block.index;
+  }
+
+  accTrackByFn(index: number, pool: AccelerationPosition) {
+    return pool.pool;
   }
 
   reduceEmptyBlocksToFitScreen(blocks: MempoolBlock[]): MempoolBlock[] {
@@ -389,7 +412,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  calculateTransactionPosition() {
+  calculateTransactionPosition(fromFee: boolean = false) {
     if ((!this.txPosition && !this.txFeePerVSize && (this.markIndex === undefined || this.markIndex === -1)) || !this.mempoolBlocks) {
       this.arrowVisible = false;
       return;
@@ -408,7 +431,7 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
     this.arrowVisible = true;
 
-    if (this.txPosition) {
+    if (this.txPosition && !fromFee) {
       if (this.txPosition.block >= this.mempoolBlocks.length) {
         this.rightPosition = ((this.mempoolBlocks.length - 1) * (this.blockWidth + this.blockPadding)) + this.blockWidth;
       } else {
@@ -418,9 +441,9 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     } else {
       let found = false;
-      for (let txInBlockIndex = 0; txInBlockIndex < this.mempoolBlocks.length && !found; txInBlockIndex++) {
+      for (let txInBlockIndex = this.mempoolBlocks.length - 1; txInBlockIndex >= 0 && !found; txInBlockIndex--) {
         const block = this.mempoolBlocks[txInBlockIndex];
-        for (let i = 0; i < block.feeRange.length - 1 && !found; i++) {
+        for (let i = block.feeRange.length - 2; i >= 0 && !found; i--) {
           if (this.txFeePerVSize < block.feeRange[i + 1] && this.txFeePerVSize >= block.feeRange[i]) {
             const feeRangeIndex = i;
             const feeRangeChunkSize = 1 / (block.feeRange.length - 1);
@@ -445,6 +468,39 @@ export class MempoolBlocksComponent implements OnInit, OnChanges, OnDestroy {
           found = true;
         }
       }
+    }
+  }
+
+  calculateAccelerationPositions(animate: boolean = false) {
+    if (!this.accelerationPositions || !this.mempoolBlocks) {
+      this.accelerationArrow = false;
+      return;
+    }
+
+    this.accelerationArrow = true;
+
+    const applyPositions = () => {
+      for (const accelerationPosition of this.accelerationPositions) {
+        if (accelerationPosition.block >= this.mempoolBlocks.length) {
+          accelerationPosition.offset = ((this.mempoolBlocks.length - 1) * (this.blockWidth + this.blockPadding)) + this.blockWidth;
+        } else {
+          const positionInBlock = Math.min(1, this.txPosition.vsize / this.stateService.blockVSize) * this.blockWidth;
+          const positionOfBlock = accelerationPosition.block * (this.blockWidth + this.blockPadding);
+          accelerationPosition.offset = positionOfBlock + positionInBlock;
+        }
+      }
+    };
+    if (animate) {
+      this.animatingAcceleration = true;
+      for (const accelerationPosition of this.accelerationPositions) {
+        accelerationPosition.offset = this.rightPosition;
+      }
+      setTimeout(applyPositions, 100);
+      setTimeout(() => {
+        this.animatingAcceleration = false;
+      }, 200);
+    } else {
+      applyPositions();
     }
   }
 

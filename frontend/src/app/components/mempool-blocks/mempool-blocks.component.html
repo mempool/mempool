@@ -49,7 +49,10 @@
         </div>
       </ng-template>
     </div>
-    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }" [class.blink]="txPosition?.accelerated"></div>
+    <div *ngIf="arrowVisible" id="arrow-up" [ngStyle]="{'right': rightPosition + 75 + 'px', transition: transition }"></div>
+    <ng-container *ngFor="let pool of accelerationPositions; trackBy: accTrackByFn">
+      <div class="acceleration-arrow blink" [ngStyle]="{'right': pool.offset + 75 + 'px', transition: 'background 2s, right 2s, transform 1s' }"></div>
+    </ng-container>
   </div>
 </ng-container>
 
