@@ -6,6 +6,13 @@
 /out-tsc
 server.run.js
 
+# docker
+Dockerfile
+entrypoint.sh
+nginx-mempool.conf
+nginx.conf
+wait-for
+
 # Only exists if Bazel was run
 /bazel-out
 
