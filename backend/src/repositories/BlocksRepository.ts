@@ -5,7 +5,7 @@ import logger from '../logger';
 import { Common } from '../api/common';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
-import { escape } from 'mysql2';
+import { RowDataPacket, escape } from 'mysql2';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
 import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
@@ -478,7 +478,7 @@ class BlocksRepository {
   public async $getBlocksByPool(slug: string, startHeight?: number): Promise<BlockExtended[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error('This mining pool does not exist ' + escape(slug));
+      throw new Error('This mining pool does not exist');
     }
 
     const params: any[] = [];
@@ -802,10 +802,10 @@ class BlocksRepository {
   /**
    * Get a list of blocks that have been indexed
    */
-  public async $getIndexedBlocks(): Promise<any[]> {
+  public async $getIndexedBlocks(): Promise<{ height: number, hash: string }[]> {
     try {
-      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`);
-      return rows;
+      const [rows] = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`) as RowDataPacket[][];
+      return rows as { height: number, hash: string }[];
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
@@ -815,7 +815,7 @@ class BlocksRepository {
   /**
    * Get a list of blocks that have not had CPFP data indexed
    */
-   public async $getCPFPUnindexedBlocks(): Promise<any[]> {
+   public async $getCPFPUnindexedBlocks(): Promise<number[]> {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
@@ -825,13 +825,13 @@ class BlocksRepository {
       }
       const minHeight = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      const [rows]: any[] = await DB.query(`
+      const [rows] = await DB.query(`
         SELECT height
         FROM compact_cpfp_clusters
         WHERE height <= ? AND height >= ?
         GROUP BY height
         ORDER BY height DESC;
-      `, [currentBlockHeight, minHeight]);
+      `, [currentBlockHeight, minHeight]) as RowDataPacket[][];
 
       const indexedHeights = {};
       rows.forEach((row) => { indexedHeights[row.height] = true; });
