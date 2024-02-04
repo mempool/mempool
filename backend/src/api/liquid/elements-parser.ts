@@ -26,14 +26,11 @@ class ElementsParser {
       for (let height = latestBlockHeight + 1; height <= tip; height++) {
         const blockHash: IBitcoinApi.ChainTips = await bitcoinClient.getBlockHash(height);
         const block: IBitcoinApi.Block = await bitcoinClient.getBlock(blockHash, 2);
-        await DB.query('START TRANSACTION;');
         await this.$parseBlock(block);
         await this.$saveLatestBlockToDatabase(block.height);
-        await DB.query('COMMIT;');
       }
       this.isRunning = false;
     } catch (e) {
-      await DB.query('ROLLBACK;');
       this.isRunning = false;
       throw new Error(e instanceof Error ? e.message : 'Error');
     }
@@ -189,9 +186,7 @@ class ElementsParser {
         // The slow way: parse the block to look for the spending tx
         const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
         const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
-        await DB.query('START TRANSACTION;');
         await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddresses);
-        await DB.query(`COMMIT;`);
 
         // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
         const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`)
@@ -204,7 +199,6 @@ class ElementsParser {
 
       this.isUtxosUpdatingRunning = false;
     } catch (e) {
-      await DB.query('ROLLBACK;');
       this.isUtxosUpdatingRunning = false;
       throw new Error(e instanceof Error ? e.message : 'Error');
     } 
