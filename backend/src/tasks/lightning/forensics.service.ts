@@ -64,7 +64,8 @@ class ForensicsService {
          └──────────────────┘
   */
 
-
+public async $runClosedChannelsForensics(onlyNewChannels: boolean = false): Promise<void> {
+    // Only Esplora backend can retrieve spent transaction outputs
     if (config.MEMPOOL.BACKEND !== 'esplora' && indexer.isCoreIndexReady('txospenderindex') !== null) {
       return;
     }
