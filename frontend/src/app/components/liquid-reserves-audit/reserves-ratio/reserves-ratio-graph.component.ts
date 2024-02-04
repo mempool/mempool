@@ -1,24 +1,17 @@
 import { Component, Inject, LOCALE_ID, ChangeDetectionStrategy, Input, OnChanges, OnInit } from '@angular/core';
 import { formatDate, formatNumber } from '@angular/common';
-import { EChartsOption } from '../../graphs/echarts';
+import { EChartsOption } from '../../../graphs/echarts';
 
 @Component({
-  selector: 'app-lbtc-pegs-graph',
-  styles: [`
-  ::ng-deep .tx-wrapper-tooltip-chart { width: 135px; }
-  .loadingGraphs {
-      position: absolute;
-      top: 50%;
-      left: calc(50% - 16px);
-      z-index: 100;
-    }
-  `],
-  templateUrl: './lbtc-pegs-graph.component.html',
+  selector: 'app-reserves-ratio-graph',
+  templateUrl: './reserves-ratio-graph.component.html',
+  styleUrls: ['./reserves-ratio-graph.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LbtcPegsGraphComponent implements OnInit, OnChanges {
+export class ReservesRatioGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
-  pegsChartOptions: EChartsOption;
+  ratioHistoryChartOptions: EChartsOption;
+  ratioSeries: number[] = [];
 
   height: number | string = '200';
   right: number | string = '10';
@@ -27,7 +20,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   template: ('widget' | 'advanced') = 'widget';
   isLoading = true;
 
-  pegsChartInitOption = {
+  ratioHistoryChartInitOptions = {
     renderer: 'svg'
   };
 
@@ -40,24 +33,27 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (!this.data?.liquidPegs) {
+    if (!this.data) {
       return;
     }
-    if (!this.data.liquidReserves) {
-      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels);
-    } else {
-      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels, this.data.liquidReserves.series);
-    }
+    // Compute the ratio series: the ratio of the reserves to the pegs
+    this.ratioSeries = this.data.liquidReserves.series.map((value: number, index: number) => value / this.data.liquidPegs.series[index]);
+    // Truncate the ratio series and labels series to last 3 years
+    this.ratioSeries = this.ratioSeries.slice(Math.max(this.ratioSeries.length - 36, 0));
+    this.data.liquidPegs.labels = this.data.liquidPegs.labels.slice(Math.max(this.data.liquidPegs.labels.length - 36, 0));
+    // Cut the values that are too high or too low
+    this.ratioSeries = this.ratioSeries.map((value: number) => Math.min(Math.max(value, 0.995), 1.005));
+    this.ratioHistoryChartOptions = this.createChartOptions(this.ratioSeries, this.data.liquidPegs.labels);
   }
 
   rendered() {
-    if (!this.data.liquidPegs) {
+    if (!this.data) {
       return;
     }
     this.isLoading = false;
   }
 
-  createChartOptions(pegSeries: number[], labels: string[], reservesSeries?: number[],): EChartsOption {
+  createChartOptions(ratioSeries: number[], labels: string[]): EChartsOption {
     return {
       grid: {
         height: this.height,
@@ -104,16 +100,14 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         formatter: (params: any) => {
           const colorSpan = (color: string) => `<span class="indicator" style="background-color: ${color};"></span>`;
           let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
-          for (let index = params.length - 1; index >= 0; index--) {
-            const item = params[index];
-            if (index < 26) {
-              itemFormatted += `<div class="item">
-                <div class="indicator-container">${colorSpan(item.color)}</div>
-                <div style="margin-right: 5px"></div>
-                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">${item.seriesName}</span></div>
-              </div>`;
-            }
-          }
+          const item = params[0];
+          const formattedValue = formatNumber(item.value, this.locale, '1.5-5');
+          const symbol = (item.value === 1.005) ? '≥ ' : (item.value === 0.995) ? '≤ ' : '';
+          itemFormatted += `<div class="item">
+            <div class="indicator-container">${colorSpan(item.color)}</div>
+            <div style="margin-right: 5px"></div>
+            <div class="value">${symbol}${formattedValue}</div>
+          </div>`;
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
@@ -138,39 +132,63 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             color: '#ffffff66',
             opacity: 0.25,
           }
-        }
+        },
+        min: 0.995,
+        max: 1.005,
       },
       series: [
         {
-          data: pegSeries,
-          name: 'L-BTC',
-          color: '#116761',
-          type: 'line',
-          stack: 'total',
-          smooth: true,
-          showSymbol: false,
-          areaStyle: {
-            opacity: 0.2,
-            color: '#116761',
-          },
-          lineStyle: {
-            width: 2,
-            color: '#116761',
-          },
-        },
-        {
-          data: reservesSeries,
-          name: 'BTC',
-          color: '#EA983B',
+          data: ratioSeries,
+          name: '',
           type: 'line',
           smooth: true,
           showSymbol: false,
           lineStyle: {
-            width: 2,
-            color: '#EA983B',
+            width: 3,
+            
+          },
+          markLine: {
+            silent: true,
+            symbol: 'none',
+            lineStyle: {
+              color: '#fff',
+              opacity: 1,
+              width: 1,
+            },
+            data: [{
+              yAxis: 1,
+              label: {
+                show: false,
+                color: '#ffffff',
+              }
+            }],
           },
         },
       ],
+      visualMap: {
+        show: false,
+        top: 50,
+        right: 10,
+        pieces: [{
+          gt: 0,
+          lte: 0.999,
+          color: '#D81B60'
+        },
+        {
+          gt: 0.999,
+          lte: 1.001,
+          color: '#FDD835'
+        },
+        {
+          gt: 1.001,
+          lte: 2,
+          color: '#7CB342'
+        }
+        ],
+        outOfRange: {
+          color: '#999'
+        }
+      },
     };
   }
 }

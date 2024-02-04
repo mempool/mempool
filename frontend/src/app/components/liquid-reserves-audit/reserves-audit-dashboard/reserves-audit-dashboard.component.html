@@ -1,0 +1,98 @@
+<div class="container-xl dashboard-container" *ngIf="(auditStatus$ | async)?.isAuditSynced; else auditInProgress">
+
+  <div class="row row-cols-1 row-cols-md-2">
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
+          <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card"> 
+        <div class="card-title">
+          <app-reserves-ratio-stats [fullHistory$]="fullHistory$"></app-reserves-ratio-stats>
+        </div>
+        <div class="card-body pl-0" style="padding-top: 10px;">
+          <app-reserves-ratio-graph [data]="fullHistory$ | async"></app-reserves-ratio-graph>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <app-recent-pegs-stats></app-recent-pegs-stats>
+          <app-recent-pegs-list [recentPegIns$]="recentPegIns$" [recentPegOuts$]="recentPegOuts$"[widget]="true"></app-recent-pegs-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-bottom: 1.47rem">
+      <div class="card">
+        <div class="card-body">
+          <app-federation-addresses-stats [federationAddresses$]="federationAddresses$" [federationAddressesOneMonthAgo$]="federationAddressesOneMonthAgo$"></app-federation-addresses-stats>
+          <app-federation-addresses-list [federationAddresses$]="federationAddresses$" [widget]="true"></app-federation-addresses-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #loadingSkeleton>
+  <div class="container-xl dashboard-container">
+
+    <div class="row row-cols-1 row-cols-md-2">
+  
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <app-reserves-supply-stats></app-reserves-supply-stats>
+            <app-reserves-ratio></app-reserves-ratio>
+          </div>
+        </div>
+      </div>
+
+      <div class="col" style="margin-bottom: 1.47rem">
+        <div class="card"> 
+          <div class="card-title">
+            <app-reserves-ratio-stats></app-reserves-ratio-stats>
+          </div>
+          <div class="card-body pl-0" style="padding-top: 10px;">
+            <app-reserves-ratio-graph></app-reserves-ratio-graph>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <app-recent-pegs-stats></app-recent-pegs-stats>
+            <app-recent-pegs-list [widget]="true"></app-recent-pegs-list>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col" style="margin-bottom: 1.47rem">
+        <div class="card">
+          <div class="card-body">
+            <app-federation-addresses-stats></app-federation-addresses-stats>
+            <app-federation-addresses-list [widget]="true"></app-federation-addresses-list>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #auditInProgress>
+  <ng-container *ngIf="(auditStatus$ | async) as auditStatus; else loadingSkeleton">
+    <div class="in-progress-message" *ngIf="auditStatus.lastBlockAudit && auditStatus.bitcoinHeaders; else loadingSkeleton">
+      <span i18n="liquid.audit-in-progress">Audit in progress: Bitcoin block height #{{ auditStatus.lastBlockAudit }} / #{{ auditStatus.bitcoinHeaders }}</span>
+    </div>
+  </ng-container>
+</ng-template>
