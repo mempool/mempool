@@ -246,7 +246,8 @@ export class Common {
     } else if (tx.version === 2) {
       flags |= TransactionFlags.v2;
     }
-    const reusedAddresses: { [address: string ]: number } = {};
+    const reusedInputAddresses: { [address: string ]: number } = {};
+    const reusedOutputAddresses: { [address: string ]: number } = {};
     const inValues = {};
     const outValues = {};
     let rbf = false;
@@ -290,7 +291,7 @@ export class Common {
       }
 
       if (vin.prevout?.scriptpubkey_address) {
-        reusedAddresses[vin.prevout?.scriptpubkey_address] = (reusedAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
+        reusedInputAddresses[vin.prevout?.scriptpubkey_address] = (reusedInputAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
       }
       inValues[vin.prevout?.value || Math.random()] = (inValues[vin.prevout?.value || Math.random()] || 0) + 1;
     }
@@ -325,7 +326,7 @@ export class Common {
         case 'op_return': flags |= TransactionFlags.op_return; break;
       }
       if (vout.scriptpubkey_address) {
-        reusedAddresses[vout.scriptpubkey_address] = (reusedAddresses[vout.scriptpubkey_address] || 0) + 1;
+        reusedOutputAddresses[vout.scriptpubkey_address] = (reusedOutputAddresses[vout.scriptpubkey_address] || 0) + 1;
       }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
     }
@@ -335,7 +336,7 @@ export class Common {
     
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
-    const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
+    const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
     if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
       flags |= TransactionFlags.coinjoin;
     }
