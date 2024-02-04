@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-federation-wallet',
@@ -7,7 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FederationWalletComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private seoService: SeoService
+  ) {
+    this.seoService.setTitle($localize`:@@993e5bc509c26db81d93018e24a6afe6e50cae52:Liquid Federation Wallet`);
+  }
 
   ngOnInit(): void {
   }

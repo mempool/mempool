@@ -5,6 +5,7 @@ import { ApiService } from '../../../services/api.service';
 import { Env, StateService } from '../../../services/state.service';
 import { AuditStatus, CurrentPegs, FederationUtxo, RecentPeg } from '../../../interfaces/node-api.interface';
 import { WebsocketService } from '../../../services/websocket.service';
+import { SeoService } from '../../../services/seo.service';
 
 @Component({
   selector: 'app-recent-pegs-list',
@@ -39,6 +40,7 @@ export class RecentPegsListComponent implements OnInit {
     private apiService: ApiService,
     public stateService: StateService,
     private websocketService: WebsocketService,
+    private seoService: SeoService
   ) {
   }
 
@@ -48,6 +50,7 @@ export class RecentPegsListComponent implements OnInit {
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
 
     if (!this.widget) {
+      this.seoService.setTitle($localize`:@@a8b0889ea1b41888f1e247f2731cc9322198ca04:Recent Peg-In / Out's`);
       this.websocketService.want(['blocks']);
       this.auditStatus$ = this.stateService.blocks$.pipe(
         takeUntil(this.destroy$),
