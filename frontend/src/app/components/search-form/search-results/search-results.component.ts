@@ -10,19 +10,24 @@ export class SearchResultsComponent implements OnChanges {
   @Input() results: any = {};
   @Output() selectedResult = new EventEmitter();
 
-  isMobile = (window.innerWidth <= 767.98);
+  isMobile = (window.innerWidth <= 1150);
   resultsFlattened = [];
   activeIdx = 0;
   focusFirst = true;
+  networkName = '';
 
   constructor(
     public stateService: StateService,
     ) { }
 
+  ngOnInit() {
+    this.networkName = this.stateService.network.charAt(0).toUpperCase() + this.stateService.network.slice(1);
+  }
+
   ngOnChanges() {
     this.activeIdx = 0;
     if (this.results) {
-      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.addresses, ...this.results.nodes, ...this.results.channels];
+      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.otherNetworks, ...this.results.addresses, ...this.results.nodes, ...this.results.channels];
     }
   }
 
@@ -45,6 +50,9 @@ export class SearchResultsComponent implements OnChanges {
         break;
       case 'Enter':
         event.preventDefault();
+        if (this.resultsFlattened[this.activeIdx]?.isNetworkAvailable === false) {
+          return;
+        }
         if (this.resultsFlattened[this.activeIdx]) {
           this.selectedResult.emit(this.resultsFlattened[this.activeIdx]);
         } else {

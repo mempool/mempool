@@ -1,32 +1,52 @@
-<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.addresses.length && !results.nodes.length && !results.channels.length">
+<div class="dropdown-menu show" *ngIf="results" [hidden]="!results.hashQuickMatch && !results.otherNetworks.length && !results.addresses.length && !results.nodes.length && !results.channels.length && !results.liquidAsset.length">
   <ng-template [ngIf]="results.blockHeight">
-    <div class="card-title" i18n="search.bitcoin-block-height">Bitcoin Block Height</div>
+    <div class="card-title" i18n="search.bitcoin-block-height">{{ networkName }} Block Height</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
     </button>
   </ng-template>
-  <ng-template [ngIf]="results.txId">
-    <div class="card-title" i18n="search.bitcoin-transaction">Bitcoin Transaction</div>
+  <ng-template [ngIf]="results.dateTime">
+    <div class="card-title" i18n="search.bitcoin-block-date">Date</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
+    </button>
+  </ng-template>
+  <ng-template [ngIf]="results.unixTimestamp">
+    <div class="card-title" i18n="search.bitcoin-block-timestamp">Timestamp</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText }"></ng-container>
+    </button>
+  </ng-template>
+  <ng-template [ngIf]="results.txId && !results.liquidAsset.length">
+    <div class="card-title" i18n="search.bitcoin-transaction">{{ networkName }} Transaction</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.address">
-    <div class="card-title" i18n="search.bitcoin-address">Bitcoin Address</div>
+    <div class="card-title" i18n="search.bitcoin-address">{{ networkName }} Address</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
-      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : isMobile ? 20 : 30 }"></ng-container>
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : isMobile ? 17 : 30 }"></ng-container>
     </button>
   </ng-template>
   <ng-template [ngIf]="results.blockHash">
-    <div class="card-title" i18n="search.bitcoin-block">Bitcoin Block</div>
+    <div class="card-title" i18n="search.bitcoin-block">{{ networkName }} Block</div>
     <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
       <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 13 }"></ng-container>
     </button>
   </ng-template>
+  <ng-template [ngIf]="results.otherNetworks.length">
+    <div class="card-title danger" i18n="search.other-networks">Other Network Address</div>
+    <ng-template ngFor [ngForOf]="results.otherNetworks" let-otherNetwork let-i="index">
+      <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" [class.inactive]="!otherNetwork.isNetworkAvailable" type="button" role="option" class="dropdown-item">
+        <ng-container *ngTemplateOutlet="goTo; context: { $implicit: otherNetwork.address| shortenString : isMobile ? 12 : 20 }"></ng-container>&nbsp;<b>({{ otherNetwork.network.charAt(0).toUpperCase() + otherNetwork.network.slice(1) }})</b>
+      </button>
+    </ng-template>
+  </ng-template>
   <ng-template [ngIf]="results.addresses.length">
-    <div class="card-title" i18n="search.bitcoin-addresses">Bitcoin Addresses</div>
+    <div class="card-title" i18n="search.bitcoin-addresses">{{ networkName }} Addresses</div>
     <ng-template ngFor [ngForOf]="results.addresses" let-address let-i="index">
-      <button (click)="clickItem(results.hashQuickMatch + i)" [class.active]="(results.hashQuickMatch + i) === activeIdx" type="button" role="option" class="dropdown-item">
+      <button (click)="clickItem(results.hashQuickMatch + results.otherNetworks.length + i)" [class.active]="(results.hashQuickMatch + results.otherNetworks.length + i) === activeIdx" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="address | shortenString : isMobile ? 25 : 36" [term]="results.searchText"></ngb-highlight>
       </button>
     </ng-template>
@@ -34,7 +54,7 @@
   <ng-template [ngIf]="results.nodes.length">
     <div class="card-title" i18n="search.lightning-nodes">Lightning Nodes</div>
     <ng-template ngFor [ngForOf]="results.nodes" let-node let-i="index">
-      <button (click)="clickItem(results.hashQuickMatch + results.addresses.length + i)" [class.inactive]="node.status === 0" [class.active]="results.hashQuickMatch + results.addresses.length + i === activeIdx" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]" type="button" role="option" class="dropdown-item">
+      <button (click)="clickItem(results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + i)" [class.inactive]="node.status === 0" [class.active]="results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + i === activeIdx" [routerLink]="['/lightning/node' | relativeUrl, node.public_key]" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="node.alias" [term]="results.searchText"></ngb-highlight> &nbsp;<span class="symbol">{{ node.public_key | shortenString : 10 }}</span>
       </button>
     </ng-template>
@@ -42,10 +62,16 @@
   <ng-template [ngIf]="results.channels.length">
     <div class="card-title" i18n="search.lightning-channels">Lightning Channels</div>
     <ng-template ngFor [ngForOf]="results.channels" let-channel let-i="index">
-      <button (click)="clickItem(results.hashQuickMatch + results.addresses.length + results.nodes.length + i)" [class.inactive]="channel.status === 2"  [class.active]="results.hashQuickMatch + results.addresses.length + results.nodes.length + i === activeIdx" type="button" role="option" class="dropdown-item">
+      <button (click)="clickItem(results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + i)" [class.inactive]="channel.status === 2"  [class.active]="results.hashQuickMatch + results.otherNetworks.length + results.addresses.length + results.nodes.length + i === activeIdx" type="button" role="option" class="dropdown-item">
         <ngb-highlight [result]="channel.short_id" [term]="results.searchText"></ngb-highlight> &nbsp;<span class="symbol">{{ channel.id }}</span>
       </button>
     </ng-template>
+  </ng-template>
+  <ng-template [ngIf]="results.liquidAsset.length">
+    <div class="card-title" i18n="search.liquid-asset">Liquid Asset</div>
+    <button (click)="clickItem(0)" [class.active]="0 === activeIdx" type="button" role="option" class="dropdown-item">
+      <ng-container *ngTemplateOutlet="goTo; context: { $implicit: results.searchText | shortenString : 11 }"></ng-container>&nbsp;<b>({{ results.liquidAsset[1] }})</b>
+    </button>
   </ng-template>
 </div>
 

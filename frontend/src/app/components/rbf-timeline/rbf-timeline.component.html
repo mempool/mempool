@@ -1,0 +1,86 @@
+<div class="rbf-timeline box" [class.mined]="replacements.mined">
+  <div class="timeline-wrapper">
+    <div class="timeline" *ngFor="let timeline of rows; let j = index">
+      <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
+        <ng-container *ngFor="let cell of timeline; let i = index;">
+          <div class="node-spacer"></div>
+          <ng-container *ngIf="i < timeline.length - 1">
+            <div class="interval" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+              <div class="interval-time">
+                <app-time [time]="cell.replacement.interval" [relative]="false"></app-time>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="nodes" *ngIf="j < rowLimit || timelineExpanded">
+        <ng-container *ngFor="let cell of timeline; let i = index;">
+          <ng-container *ngIf="cell.replacement?.tx; else nonNode">
+            <div class="node"
+              [id]="'node-'+cell.replacement.tx.txid"
+              [class.selected]="txid === cell.replacement.tx.txid"
+              [class.mined]="cell.replacement.tx.mined"
+              [class.first-node]="cell.first"
+            >
+              <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
+              <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
+              <a class="shape-border"
+                [class.rbf]="cell.replacement.tx.rbf"
+                [routerLink]="['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                (pointerover)="onHover($event, cell.replacement);"
+                (pointerout)="onBlur($event);"
+              >
+                <div class="shape"></div>
+              </a>
+              <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
+            </div>
+          </ng-container>
+          <ng-template #nonNode>
+            <ng-container [ngSwitch]="cell.connector">
+              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf" [class.last-pipe]="!timelineExpanded && j === rowLimit - 1"></div></div>
+              <div class="connector" *ngSwitchCase="'corner'"><div class="corner" [class.fullrbf]="cell.fullRbf"></div></div>
+              <div class="node-spacer" *ngSwitchDefault></div>
+            </ng-container>
+          </ng-template>
+          <ng-container *ngIf="i < timeline.length - 1">
+            <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+              <div class="track" [class.fullrbf]="cell.fullRbf"></div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <div [class.fade-out]="!timelineExpanded && rows.length > rowLimit"></div>
+  <div class="toggle-wrapper" *ngIf="rows.length > rowLimit && rowLimit !== 0">
+    <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(true);" *ngIf="!timelineExpanded; else collapseBtn">
+      <span i18n="show-all">Show all</span>
+      (<ng-container *ngTemplateOutlet="xRemaining; context: {$implicit: rows.length - rowLimit}"></ng-container>)
+    </button>
+    <ng-template #collapseBtn>
+      <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(false);"><span i18n="show-less">Show less</span></button>
+    </ng-template>
+  </div>
+
+  <ng-template #nodeSpacer>
+    <div class="node-spacer"></div>
+  </ng-template>
+
+  <ng-template #intervalSpacer>
+    <div class="interval-spacer"></div>
+  </ng-template>
+
+  <app-rbf-timeline-tooltip
+    [rbfInfo]="hoverInfo"
+    [cursorPosition]="tooltipPosition"
+  ></app-rbf-timeline-tooltip>
+
+  <!-- <app-rbf-timeline-tooltip
+    *ngIf=[tooltip]
+    [line]="hoverLine"
+    [cursorPosition]="tooltipPosition"
+    [isConnector]="hoverConnector"
+  ></app-rbf-timeline-tooltip> -->
+</div>
+
+<ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>

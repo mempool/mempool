@@ -10,6 +10,15 @@ import { dates } from '../../shared/i18n/dates';
 export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   interval: number;
   text: string;
+  precisionThresholds = {
+    year: 100,
+    month: 18,
+    week: 12,
+    day: 31,
+    hour: 48,
+    minute: 90,
+    second: 90
+  };
   intervals = {};
 
   @Input() time: number;
@@ -18,7 +27,10 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
   @Input() fastRender = false;
   @Input() fixedRender = false;
   @Input() relative = false;
-  @Input() forceFloorOnTimeIntervals: string[];
+  @Input() precision: number = 0;
+  @Input() numUnits: number = 1;
+  @Input() units: string[] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
+  @Input() minUnit: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' = 'second';
   @Input() fractionDigits: number = 0;
 
   constructor(
@@ -83,114 +95,139 @@ export class TimeComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     let counter: number;
-    for (const i in this.intervals) {
-      if (this.kind !== 'until' || this.forceFloorOnTimeIntervals && this.forceFloorOnTimeIntervals.indexOf(i) > -1) {
-        counter = Math.floor(seconds / this.intervals[i]);
-      } else {
-        counter = Math.round(seconds / this.intervals[i]);
+    const result = [];
+    let usedUnits = 0;
+    for (const [index, unit] of this.units.entries()) {
+      let precisionUnit = this.units[Math.min(this.units.length - 1, index + this.precision)];
+      counter = Math.floor(seconds / this.intervals[unit]);
+      const precisionCounter = Math.round(seconds / this.intervals[precisionUnit]);
+      if (precisionCounter > this.precisionThresholds[precisionUnit]) {
+        precisionUnit = unit;
       }
-      let rounded = counter;
-      if (this.fractionDigits) {
-        const roundFactor = Math.pow(10,this.fractionDigits);
-        rounded = Math.round((seconds / this.intervals[i]) * roundFactor) / roundFactor;
+      if (this.units.indexOf(precisionUnit) === this.units.indexOf(this.minUnit)) {
+        counter = Math.max(1, counter);
       }
-      const dateStrings = dates(rounded);
       if (counter > 0) {
-        switch (this.kind) {
-          case 'since':
-            if (counter === 1) {
-              switch (i) { // singular (1 day)
-                case 'year': return $localize`:@@time-since:${dateStrings.i18nYear}:DATE: ago`; break;
-                case 'month': return $localize`:@@time-since:${dateStrings.i18nMonth}:DATE: ago`; break;
-                case 'week': return $localize`:@@time-since:${dateStrings.i18nWeek}:DATE: ago`; break;
-                case 'day': return $localize`:@@time-since:${dateStrings.i18nDay}:DATE: ago`; break;
-                case 'hour': return $localize`:@@time-since:${dateStrings.i18nHour}:DATE: ago`; break;
-                case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinute}:DATE: ago`; break;
-                case 'second': return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`; break;
-              }
-            } else {
-              switch (i) { // plural (2 days)
-                case 'year': return $localize`:@@time-since:${dateStrings.i18nYears}:DATE: ago`; break;
-                case 'month': return $localize`:@@time-since:${dateStrings.i18nMonths}:DATE: ago`; break;
-                case 'week': return $localize`:@@time-since:${dateStrings.i18nWeeks}:DATE: ago`; break;
-                case 'day': return $localize`:@@time-since:${dateStrings.i18nDays}:DATE: ago`; break;
-                case 'hour': return $localize`:@@time-since:${dateStrings.i18nHours}:DATE: ago`; break;
-                case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinutes}:DATE: ago`; break;
-                case 'second': return $localize`:@@time-since:${dateStrings.i18nSeconds}:DATE: ago`; break;
-              }
-            }
-            break;
-          case 'until':
-            if (counter === 1) {
-              switch (i) { // singular (In ~1 day)
-                case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYear}:DATE:`; break;
-                case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonth}:DATE:`; break;
-                case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeek}:DATE:`; break;
-                case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDay}:DATE:`; break;
-                case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHour}:DATE:`; break;
-                case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
-                case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
-              }
-            } else {
-              switch (i) { // plural (In ~2 days)
-                case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYears}:DATE:`; break;
-                case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonths}:DATE:`; break;
-                case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
-                case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDays}:DATE:`; break;
-                case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
-                case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`; break;
-                case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`; break;
-              }
-            }
-            break;
-          case 'span':
-            if (counter === 1) {
-              switch (i) { // singular (1 day)
-                case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYear}:DATE:`; break;
-                case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonth}:DATE:`; break;
-                case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeek}:DATE:`; break;
-                case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDay}:DATE:`; break;
-                case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHour}:DATE:`; break;
-                case 'minute': return $localize`:@@time-span:After ${dateStrings.i18nMinute}:DATE:`; break;
-                case 'second': return $localize`:@@time-span:After ${dateStrings.i18nSecond}:DATE:`; break;
-              }
-            } else {
-              switch (i) { // plural (2 days)
-                case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYears}:DATE:`; break;
-                case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonths}:DATE:`; break;
-                case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeeks}:DATE:`; break;
-                case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDays}:DATE:`; break;
-                case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHours}:DATE:`; break;
-                case 'minute': return $localize`:@@time-span:After ${dateStrings.i18nMinutes}:DATE:`; break;
-                case 'second': return $localize`:@@time-span:After ${dateStrings.i18nSeconds}:DATE:`; break;
-              }
-            }
-            break;
-          default:
-            if (counter === 1) {
-              switch (i) { // singular (1 day)
-                case 'year': return dateStrings.i18nYear; break;
-                case 'month': return dateStrings.i18nMonth; break;
-                case 'week': return dateStrings.i18nWeek; break;
-                case 'day': return dateStrings.i18nDay; break;
-                case 'hour': return dateStrings.i18nHour; break;
-                case 'minute': return dateStrings.i18nMinute; break;
-                case 'second': return dateStrings.i18nSecond; break;
-              }
-            } else {
-              switch (i) { // plural (2 days)
-                case 'year': return dateStrings.i18nYears; break;
-                case 'month': return dateStrings.i18nMonths; break;
-                case 'week': return dateStrings.i18nWeeks; break;
-                case 'day': return dateStrings.i18nDays; break;
-                case 'hour': return dateStrings.i18nHours; break;
-                case 'minute': return dateStrings.i18nMinutes; break;
-                case 'second': return dateStrings.i18nSeconds; break;
-              }
-            }
+        let rounded;
+        const roundFactor = Math.pow(10,this.fractionDigits || 0);
+        if (this.kind === 'until' && usedUnits < this.numUnits) {
+          rounded = Math.floor((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
+        } else {
+          rounded = Math.round((seconds / this.intervals[precisionUnit]) * roundFactor) / roundFactor;
+        }
+        if (this.kind !== 'until' || this.numUnits === 1) {
+          return this.formatTime(this.kind, precisionUnit, rounded);
+        } else {
+          if (!usedUnits) {
+            result.push(this.formatTime(this.kind, precisionUnit, rounded));
+          } else {
+            result.push(this.formatTime('', precisionUnit, rounded));
+          }
+          seconds -= (rounded * this.intervals[precisionUnit]);
+          usedUnits++;
+          if (usedUnits >= this.numUnits) {
+            return result.join(', ');
+          }
         }
       }
     }
+    return result.join(', ');
   }
 
+  private formatTime(kind, unit, number): string {
+    const dateStrings = dates(number);
+    switch (kind) {
+      case 'since':
+        if (number === 1) {
+          switch (unit) { // singular (1 day)
+            case 'year': return $localize`:@@time-since:${dateStrings.i18nYear}:DATE: ago`; break;
+            case 'month': return $localize`:@@time-since:${dateStrings.i18nMonth}:DATE: ago`; break;
+            case 'week': return $localize`:@@time-since:${dateStrings.i18nWeek}:DATE: ago`; break;
+            case 'day': return $localize`:@@time-since:${dateStrings.i18nDay}:DATE: ago`; break;
+            case 'hour': return $localize`:@@time-since:${dateStrings.i18nHour}:DATE: ago`; break;
+            case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinute}:DATE: ago`; break;
+            case 'second': return $localize`:@@time-since:${dateStrings.i18nSecond}:DATE: ago`; break;
+          }
+        } else {
+          switch (unit) { // plural (2 days)
+            case 'year': return $localize`:@@time-since:${dateStrings.i18nYears}:DATE: ago`; break;
+            case 'month': return $localize`:@@time-since:${dateStrings.i18nMonths}:DATE: ago`; break;
+            case 'week': return $localize`:@@time-since:${dateStrings.i18nWeeks}:DATE: ago`; break;
+            case 'day': return $localize`:@@time-since:${dateStrings.i18nDays}:DATE: ago`; break;
+            case 'hour': return $localize`:@@time-since:${dateStrings.i18nHours}:DATE: ago`; break;
+            case 'minute': return $localize`:@@time-since:${dateStrings.i18nMinutes}:DATE: ago`; break;
+            case 'second': return $localize`:@@time-since:${dateStrings.i18nSeconds}:DATE: ago`; break;
+          }
+        }
+        break;
+      case 'until':
+        if (number === 1) {
+          switch (unit) { // singular (In ~1 day)
+            case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYear}:DATE:`; break;
+            case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonth}:DATE:`; break;
+            case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeek}:DATE:`; break;
+            case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDay}:DATE:`; break;
+            case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHour}:DATE:`; break;
+            case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinute}:DATE:`;
+            case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSecond}:DATE:`;
+          }
+        } else {
+          switch (unit) { // plural (In ~2 days)
+            case 'year': return $localize`:@@time-until:In ~${dateStrings.i18nYears}:DATE:`; break;
+            case 'month': return $localize`:@@time-until:In ~${dateStrings.i18nMonths}:DATE:`; break;
+            case 'week': return $localize`:@@time-until:In ~${dateStrings.i18nWeeks}:DATE:`; break;
+            case 'day': return $localize`:@@time-until:In ~${dateStrings.i18nDays}:DATE:`; break;
+            case 'hour': return $localize`:@@time-until:In ~${dateStrings.i18nHours}:DATE:`; break;
+            case 'minute': return $localize`:@@time-until:In ~${dateStrings.i18nMinutes}:DATE:`; break;
+            case 'second': return $localize`:@@time-until:In ~${dateStrings.i18nSeconds}:DATE:`; break;
+          }
+        }
+        break;
+      case 'span':
+        if (number === 1) {
+          switch (unit) { // singular (1 day)
+            case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYear}:DATE:`; break;
+            case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonth}:DATE:`; break;
+            case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeek}:DATE:`; break;
+            case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDay}:DATE:`; break;
+            case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHour}:DATE:`; break;
+            case 'minute': return $localize`:@@time-span:After ${dateStrings.i18nMinute}:DATE:`; break;
+            case 'second': return $localize`:@@time-span:After ${dateStrings.i18nSecond}:DATE:`; break;
+          }
+        } else {
+          switch (unit) { // plural (2 days)
+            case 'year': return $localize`:@@time-span:After ${dateStrings.i18nYears}:DATE:`; break;
+            case 'month': return $localize`:@@time-span:After ${dateStrings.i18nMonths}:DATE:`; break;
+            case 'week': return $localize`:@@time-span:After ${dateStrings.i18nWeeks}:DATE:`; break;
+            case 'day': return $localize`:@@time-span:After ${dateStrings.i18nDays}:DATE:`; break;
+            case 'hour': return $localize`:@@time-span:After ${dateStrings.i18nHours}:DATE:`; break;
+            case 'minute': return $localize`:@@time-span:After ${dateStrings.i18nMinutes}:DATE:`; break;
+            case 'second': return $localize`:@@time-span:After ${dateStrings.i18nSeconds}:DATE:`; break;
+          }
+        }
+        break;
+      default:
+        if (number === 1) {
+          switch (unit) { // singular (1 day)
+            case 'year': return dateStrings.i18nYear; break;
+            case 'month': return dateStrings.i18nMonth; break;
+            case 'week': return dateStrings.i18nWeek; break;
+            case 'day': return dateStrings.i18nDay; break;
+            case 'hour': return dateStrings.i18nHour; break;
+            case 'minute': return dateStrings.i18nMinute; break;
+            case 'second': return dateStrings.i18nSecond; break;
+          }
+        } else {
+          switch (unit) { // plural (2 days)
+            case 'year': return dateStrings.i18nYears; break;
+            case 'month': return dateStrings.i18nMonths; break;
+            case 'week': return dateStrings.i18nWeeks; break;
+            case 'day': return dateStrings.i18nDays; break;
+            case 'hour': return dateStrings.i18nHours; break;
+            case 'minute': return dateStrings.i18nMinutes; break;
+            case 'second': return dateStrings.i18nSeconds; break;
+          }
+        }
+    }
+  }
 }

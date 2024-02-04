@@ -92,9 +92,9 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.reward">Reward</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -117,9 +117,9 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.reward">Reward</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.hashrate">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="latest-blocks.avg_health" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -143,9 +143,9 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -165,9 +165,9 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -224,7 +224,7 @@
             <a [routerLink]="['/block' | relativeUrl, block.id]">{{ block.height }}</a>
           </td>
           <td class="timestamp">
-            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm' }}
+            &lrm;{{ block.timestamp * 1000 | date:'yyyy-MM-dd HH:mm:ss' }}
           </td>
           <td class="mined">
             <app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time>
@@ -382,9 +382,9 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -407,9 +407,9 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.total-reward">Reward</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.estimated">Hashrate (24h)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="mining.luck" *ngIf="auditAvailable">Avg Health</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -433,9 +433,9 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -458,9 +458,9 @@
                   <table class="table table-xs table-data text-center">
                     <thead>
                       <tr>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="24h">Blocks 24h</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="1w">1w</th>
-                        <th scope="col" class="block-count-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="24h">Blocks (24h)</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">1w</th>
+                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>

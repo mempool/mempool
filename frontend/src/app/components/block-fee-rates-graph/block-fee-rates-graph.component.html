@@ -1,13 +1,13 @@
-<app-indexing-progress></app-indexing-progress>
+<app-indexing-progress *ngIf="!widget"></app-indexing-progress>
 
-<div class="full-container">
-  <div class="card-header mb-0 mb-md-4">
+<div [class.full-container]="!widget">
+  <div *ngIf="!widget" class="card-header mb-0 mb-md-4">
     <div class="d-flex d-md-block align-items-baseline">
       <span i18n="mining.block-fee-rates">Block Fee Rates</span>
       <button class="btn p-0 pl-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
-    </div>  
+    </div>
 
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group btn-group-toggle" name="radioBasic" [class]="{'disabled': isLoading}">
@@ -45,7 +45,24 @@
     </form>
   </div>
 
-  <div class="chart" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+  <div *ngIf="widget">
+    <div class="block-fee-rates">
+      <div class="item" *ngIf="(hrStatsObservable$ | async) as stats; else loadingHrStats">
+        <h5 class="card-title" i18n="mining.avg-block-fee-24h">Avg Block Fee (24h)</h5>
+        <p class="card-text">
+          <app-fee-rate [fee]="stats.avgMedianRate"></app-fee-rate>
+        </p>
+      </div>
+      <div class="item" *ngIf="(statsObservable$ | async) as stats; else loadingStats">
+        <h5 class="card-title" i18n="mining.avg-block-fee-1m">Avg Block Fee (1m)</h5>
+        <p class="card-text">
+          <app-fee-rate [fee]="stats.avgMedianRate"></app-fee-rate>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div [class.chart]="!widget" [class.chart-widget]="widget" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
     (chartInit)="onChartInit($event)">
   </div>
   <div class="text-center loadingGraphs" *ngIf="isLoading">
@@ -53,3 +70,20 @@
   </div>
 
 </div>
+
+<ng-template #loadingHrStats>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.avg-block-fee-24h">Avg Block Fee (24h)</h5>
+    <p class="card-text">
+      <span class="skeleton-loader skeleton-loader-big"></span>
+    </p>
+  </div>
+</ng-template>
+<ng-template #loadingStats>
+  <div class="item">
+    <h5 class="card-title" i18n="mining.avg-block-fee-1m">Avg Block Fee (1m)</h5>
+    <p class="card-text">
+      <span class="skeleton-loader skeleton-loader-big"></span>
+    </p>
+  </div>
+</ng-template>

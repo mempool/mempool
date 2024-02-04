@@ -1,0 +1,8 @@
+<span *ngIf="valueOverride !== undefined">{{ valueOverride }}</span>
+<span *ngIf="valueOverride === undefined">&lrm;{{ addPlus && satoshis >= 0 ? '+' : '' }}{{ value | number }} </span>
+<span class="symbol">
+  <ng-template [ngIf]="network === 'liquid'">L-</ng-template>
+  <ng-template [ngIf]="network === 'liquidtestnet'">tL-</ng-template>
+  <ng-template [ngIf]="network === 'testnet'">t-</ng-template>
+  <ng-template [ngIf]="network === 'signet'">s-</ng-template>{{ unit }}
+</span>

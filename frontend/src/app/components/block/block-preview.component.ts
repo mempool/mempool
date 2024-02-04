@@ -2,12 +2,13 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
-import { of, Subscription, asyncScheduler } from 'rxjs';
+import { of, Subscription, asyncScheduler, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { OpenGraphService } from '../../services/opengraph.service';
 import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 
 @Component({
@@ -82,6 +83,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
               }),
               catchError((err) => {
                 this.error = err;
+                this.seoService.logSoft404();
                 this.openGraphService.fail('block-data-' + this.rawId);
                 this.openGraphService.fail('block-viz-' + this.rawId);
                 return of(null);
@@ -96,6 +98,11 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
         this.blockHeight = block.height;
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
+        if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+          this.seoService.setDescription($localize`:@@meta.description.liquid.block:See size, weight, fee range, included transactions, and more for Liquid${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        } else {
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.block:See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        }
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block?.extras?.reward !== undefined) {
@@ -114,21 +121,37 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     this.overviewSubscription = block$.pipe(
       startWith(null),
       pairwise(),
-      switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
-        .pipe(
-          catchError((err) => {
-            this.overviewError = err;
-            this.openGraphService.fail('block-viz-' + this.rawId);
-            return of([]);
-          }),
-          switchMap((transactions) => {
-            return of({ transactions, direction: 'down' });
-          })
-        )
+      switchMap(([prevBlock, block]) => {
+          return forkJoin([
+            this.apiService.getStrippedBlockTransactions$(block.id)
+              .pipe(
+                catchError((err) => {
+                  this.overviewError = err;
+                  this.openGraphService.fail('block-viz-' + this.rawId);
+                  return of([]);
+                }),
+                switchMap((transactions) => {
+                  return of(transactions);
+                })
+              ),
+            this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          ]);
+        }
       ),
     )
-    .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
+    .subscribe(([transactions, accelerations]) => {
       this.strippedTransactions = transactions;
+
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
+      }
+
       this.isLoadingOverview = false;
       if (this.blockGraph) {
         this.blockGraph.destroy();
@@ -138,6 +161,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     (error) => {
       this.error = error;
       this.isLoadingOverview = false;
+      this.seoService.logSoft404();
       this.openGraphService.fail('block-viz-' + this.rawId);
       this.openGraphService.fail('block-data-' + this.rawId);
       if (this.blockGraph) {

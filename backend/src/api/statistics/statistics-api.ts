@@ -15,6 +15,7 @@ class StatisticsApi {
               mempool_byte_weight,
               fee_data,
               total_fee,
+              min_fee,
               vsize_1,
               vsize_2,
               vsize_3,
@@ -54,7 +55,7 @@ class StatisticsApi {
               vsize_1800,
               vsize_2000
             )
-            VALUES (NOW(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            VALUES (NOW(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`;
       const [result]: any = await DB.query(query);
       return result.insertId;
@@ -73,6 +74,7 @@ class StatisticsApi {
               mempool_byte_weight,
               fee_data,
               total_fee,
+              min_fee,
               vsize_1,
               vsize_2,
               vsize_3,
@@ -112,7 +114,7 @@ class StatisticsApi {
               vsize_1800,
               vsize_2000
             )
-            VALUES (${statistics.added}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            VALUES (${statistics.added}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const params: (string | number)[] = [
@@ -122,6 +124,7 @@ class StatisticsApi {
         statistics.mempool_byte_weight,
         statistics.fee_data,
         statistics.total_fee,
+        statistics.min_fee,
         statistics.vsize_1,
         statistics.vsize_2,
         statistics.vsize_3,
@@ -171,7 +174,9 @@ class StatisticsApi {
   private getQueryForDaysAvg(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
+      CAST(avg(min_fee) as DOUBLE) as min_fee,
       CAST(avg(vsize_1) as DOUBLE) as vsize_1,
       CAST(avg(vsize_2) as DOUBLE) as vsize_2,
       CAST(avg(vsize_3) as DOUBLE) as vsize_3,
@@ -211,7 +216,7 @@ class StatisticsApi {
       CAST(avg(vsize_1800) as DOUBLE) as vsize_1800,
       CAST(avg(vsize_2000) as DOUBLE) as vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'all' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -219,7 +224,9 @@ class StatisticsApi {
   private getQueryForDays(div: number, interval: string) {
     return `SELECT
       UNIX_TIMESTAMP(added) as added,
+      CAST(avg(unconfirmed_transactions) as DOUBLE) as unconfirmed_transactions,
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
+      CAST(avg(min_fee) as DOUBLE) as min_fee,
       vsize_1,
       vsize_2,
       vsize_3,
@@ -259,7 +266,7 @@ class StatisticsApi {
       vsize_1800,
       vsize_2000 \
       FROM statistics \
-      WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() \
+      ${interval === 'all' ? '' : `WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`} \
       GROUP BY UNIX_TIMESTAMP(added) DIV ${div} \
       ORDER BY statistics.added DESC;`;
   }
@@ -386,13 +393,26 @@ class StatisticsApi {
     }
   }
 
+  public async $listAll(): Promise<OptimizedStatistic[]> {
+    try {
+      const query = this.getQueryForDays(43200, 'all'); // 12h interval
+      const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
+      return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
+    } catch (e) {
+      logger.err('$listAll() error' + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
       return {
         added: s.added,
+        count: s.unconfirmed_transactions,
         vbytes_per_second: s.vbytes_per_second,
         mempool_byte_weight: s.mempool_byte_weight,
         total_fee: s.total_fee,
+        min_fee: s.min_fee,
         vsizes: [
           s.vsize_1,
           s.vsize_2,

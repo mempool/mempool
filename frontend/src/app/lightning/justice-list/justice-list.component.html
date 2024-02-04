@@ -1,0 +1,83 @@
+
+
+<div class="container-xl full-height" style="min-height: 335px">
+  <h1 class="float-left" i18n="lightning.liquidity-ranking">Penalties</h1>
+
+  <div class="clearfix"></div>
+
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead>
+        <th class="timestamp" i18n="lightning.closed-at">Closed</th>
+        <th class="channels text-right" i18n="lightning.capacity">Capacity</th>
+        <th class="node text-right"></th>
+        <th class="node text-right" i18n="lightning.node">Nodes</th>
+        <th class="channelid text-right" i18n="channels.id">Channel ID</th>
+        <th></th>
+      </thead>
+      <tbody *ngIf="justiceChannels$ | async as channels">
+        <ng-container *ngFor="let channel of channels;">
+          <tr>
+            <td class="timestamp">
+              &lrm;{{ channel.closing_date | date:'yyyy-MM-dd HH:mm' }}
+            </td>
+            <td class="capacity text-right">
+              <app-amount *ngIf="channel.capacity > 100000000; else smallnode" [satoshis]="channel.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+              <ng-template #smallnode>
+                {{ channel.capacity | amountShortener: 1 }}
+                <span class="sats" i18n="shared.sats">sats</span>
+              </ng-template>
+            </td>
+            <td class="alias text-right">
+              <app-truncate [text]="channel.alias_left || '?'" [maxWidth]="200" [lastChars]="6" textAlign="end" [inline]="true"></app-truncate>
+            </td>
+            <td class="alias text-right">
+              <app-truncate [text]="channel.alias_right || '?'" [maxWidth]="200" [lastChars]="6" textAlign="end" [inline]="true"></app-truncate>
+            </td>
+            <td class="channelid text-right">
+              <a [routerLink]="['/lightning/channel' | relativeUrl, channel.id]">{{ channel.short_id }}</a>
+             </td>
+             <td class="text-right">
+              <button type="button" class="btn btn-outline-info details-button btn-sm" (click)="toggleDetails(channel)"
+                i18n="transaction.details|Transaction Details">Details</button>
+             </td>
+          </tr>
+          <tr *ngIf="channel.short_id === expanded">
+            <ng-container *ngTemplateOutlet="channelTransactions"></ng-container>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <div class="clearfix"></div>
+    <br>
+  </div>
+  
+</div>
+
+<ng-template #channelTransactions>
+  <td colspan="6" *ngIf="transactions && !loadingTransactions else loadingTemplate;">
+    <ng-template [ngIf]="transactions[0]">
+      <div class="d-flex">
+        <h5 i18n="lightning.opening-transaction">Opening transaction</h5>
+      </div>
+      <app-transactions-list #txList1 [transactions]="[transactions[0]]" [showConfirmations]="true" [rowLimit]="5">
+      </app-transactions-list>
+    </ng-template>
+    <ng-template [ngIf]="transactions[1]">
+      <div class="closing-header d-flex">
+        <h5 style="margin: 0;" i18n="lightning.closing-transaction">Closing transaction</h5>&nbsp;&nbsp;<app-closing-type [type]="3"></app-closing-type>
+      </div>
+      <app-transactions-list #txList2 [transactions]="[transactions[1]]" [showConfirmations]="true" [rowLimit]="5">
+      </app-transactions-list>
+    </ng-template>
+  </td>
+</ng-template>
+
+<ng-template #loadingTemplate>
+  <td colspan="6">
+    <div class="text-center">
+      <div class="spinner-border text-light"></div>
+    </div>
+  </td>
+</ng-template>

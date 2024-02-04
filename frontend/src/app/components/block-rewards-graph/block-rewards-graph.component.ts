@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
@@ -63,6 +63,7 @@ export class BlockRewardsGraphComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@8ba8fe810458280a83df7fdf4c614dfc1a826445:Block Rewards`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.block-rewards:See Bitcoin block rewards in BTC and USD visualized over time. Block rewards are the total funds miners earn from the block subsidy and fees.`);
     this.miningWindowPreference = this.miningService.getDefaultTimespan('3m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -122,11 +123,11 @@ export class BlockRewardsGraphComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#FDD835' },
           { offset: 1, color: '#FB8C00' },
         ]),
-        new graphic.LinearGradient(0, 0, 0, 1, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 1, [
           { offset: 0, color: '#C0CA33' },
           { offset: 1, color: '#1B5E20' },
         ]),
@@ -191,7 +192,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           {
             name: 'Rewards ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
-            textStyle: {  
+            textStyle: {
               color: 'white',
             },
             icon: 'roundRect',

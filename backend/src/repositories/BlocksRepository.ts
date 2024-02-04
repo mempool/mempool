@@ -1,10 +1,11 @@
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
-import { escape } from 'mysql2';
+import { RowDataPacket, escape } from 'mysql2';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
 import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
@@ -12,6 +13,49 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import transactionUtils from '../api/transaction-utils';
+
+interface DatabaseBlock {
+  id: string;
+  height: number;
+  version: number;
+  timestamp: number;
+  bits: number;
+  nonce: number;
+  difficulty: number;
+  merkle_root: string;
+  tx_count: number;
+  size: number;
+  weight: number;
+  previousblockhash: string;
+  mediantime: number;
+  totalFees: number;
+  medianFee: number;
+  feeRange: string;
+  reward: number;
+  poolId: number;
+  poolName: string;
+  poolSlug: string;
+  avgFee: number;
+  avgFeeRate: number;
+  coinbaseRaw: string;
+  coinbaseAddress: string;
+  coinbaseSignature: string;
+  coinbaseSignatureAscii: string;
+  avgTxSize: number;
+  totalInputs: number;
+  totalOutputs: number;
+  totalOutputAmt: number;
+  medianFeeAmt: number;
+  feePercentiles: string;
+  segwitTotalTxs: number;
+  segwitTotalSize: number;
+  segwitTotalWeight: number;
+  header: string;
+  utxoSetChange: number;
+  utxoSetSize: number;
+  totalInputAmt: number;
+}
 
 const BLOCK_DB_FIELDS = `
   blocks.hash AS id,
@@ -52,7 +96,7 @@ const BLOCK_DB_FIELDS = `
   blocks.header,
   blocks.utxoset_change AS utxoSetChange,
   blocks.utxoset_size AS utxoSetSize,
-  blocks.total_input_amt AS totalInputAmts
+  blocks.total_input_amt AS totalInputAmt
 `;
 
 class BlocksRepository {
@@ -167,6 +211,32 @@ class BlocksRepository {
       await DB.query(query, params);
     } catch (e: any) {
       logger.err('Cannot update indexed block coinstatsindex. Reason: ' + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Update missing fee amounts fields
+   *
+   * @param blockHash 
+   * @param feeAmtPercentiles 
+   * @param medianFeeAmt 
+   */
+  public async $updateFeeAmounts(blockHash: string, feeAmtPercentiles, medianFeeAmt) : Promise<void> {
+    try {
+      const query = `
+        UPDATE blocks
+        SET fee_percentiles = ?, median_fee_amt = ?
+        WHERE hash = ?
+      `;
+      const params: any[] = [
+        JSON.stringify(feeAmtPercentiles),
+        medianFeeAmt,
+        blockHash
+      ];
+      await DB.query(query, params);
+    } catch (e: any) {
+      logger.err(`Cannot update fee amounts for block ${blockHash}. Reason: ' + ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }
@@ -333,7 +403,7 @@ class BlocksRepository {
   /**
    * Get average block health for all blocks for a single pool
    */
-  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number> {
+  public async $getAvgBlockHealthPerPoolId(poolId: number): Promise<number | null> {
     const params: any[] = [];
     const query = `
       SELECT AVG(blocks_audits.match_rate) AS avg_match_rate
@@ -345,8 +415,8 @@ class BlocksRepository {
 
     try {
       const [rows] = await DB.query(query, params);
-      if (!rows[0] || !rows[0].avg_match_rate) {
-        return 0;
+      if (!rows[0] || rows[0].avg_match_rate == null) {
+        return null;
       }
       return Math.round(rows[0].avg_match_rate * 100) / 100;
     } catch (e) {
@@ -408,7 +478,7 @@ class BlocksRepository {
   public async $getBlocksByPool(slug: string, startHeight?: number): Promise<BlockExtended[]> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error('This mining pool does not exist ' + escape(slug));
+      throw new Error('This mining pool does not exist');
     }
 
     const params: any[] = [];
@@ -432,7 +502,7 @@ class BlocksRepository {
 
       const blocks: BlockExtended[] = [];
       for (const block of rows) {
-        blocks.push(await this.formatDbBlockIntoExtendedBlock(block));
+        blocks.push(await this.formatDbBlockIntoExtendedBlock(block as DatabaseBlock));
       }
 
       return blocks;
@@ -459,7 +529,7 @@ class BlocksRepository {
         return null;
       }
 
-      return await this.formatDbBlockIntoExtendedBlock(rows[0]);  
+      return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);  
     } catch (e) {
       logger.err(`Cannot get indexed block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -471,7 +541,7 @@ class BlocksRepository {
    */
   public async $getBlocksDifficulty(): Promise<object[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty FROM blocks`);
+      const [rows]: any[] = await DB.query(`SELECT UNIX_TIMESTAMP(blockTimestamp) as time, height, difficulty, bits FROM blocks ORDER BY height ASC`);
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks difficulty list from the db. Reason: ' + (e instanceof Error ? e.message : e));
@@ -505,19 +575,6 @@ class BlocksRepository {
         'Cannot get block height from timestamp from the db. Reason: ' +
           (e instanceof Error ? e.message : e),
       );
-      throw e;
-    }
-  }
-
-  /**
-   * Return blocks height
-   */
-   public async $getBlocksHeightsAndTimestamp(): Promise<object[]> {
-    try {
-      const [rows]: any[] = await DB.query(`SELECT height, blockTimestamp as timestamp FROM blocks`);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -745,10 +802,10 @@ class BlocksRepository {
   /**
    * Get a list of blocks that have been indexed
    */
-  public async $getIndexedBlocks(): Promise<any[]> {
+  public async $getIndexedBlocks(): Promise<{ height: number, hash: string }[]> {
     try {
-      const [rows]: any = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`);
-      return rows;
+      const [rows] = await DB.query(`SELECT height, hash FROM blocks ORDER BY height DESC`) as RowDataPacket[][];
+      return rows as { height: number, hash: string }[];
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
@@ -758,7 +815,7 @@ class BlocksRepository {
   /**
    * Get a list of blocks that have not had CPFP data indexed
    */
-   public async $getCPFPUnindexedBlocks(): Promise<any[]> {
+   public async $getCPFPUnindexedBlocks(): Promise<number[]> {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
@@ -768,13 +825,13 @@ class BlocksRepository {
       }
       const minHeight = Math.max(0, currentBlockHeight - indexingBlockAmount + 1);
 
-      const [rows]: any[] = await DB.query(`
+      const [rows] = await DB.query(`
         SELECT height
         FROM compact_cpfp_clusters
         WHERE height <= ? AND height >= ?
         GROUP BY height
         ORDER BY height DESC;
-      `, [currentBlockHeight, minHeight]);
+      `, [currentBlockHeight, minHeight]) as RowDataPacket[][];
 
       const indexedHeights = {};
       rows.forEach((row) => { indexedHeights[row.height] = true; });
@@ -793,7 +850,7 @@ class BlocksRepository {
    */
   public async $getOldestConsecutiveBlock(): Promise<any> {
     try {
-      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty FROM blocks ORDER BY height DESC`);
+      const [rows]: any = await DB.query(`SELECT height, UNIX_TIMESTAMP(blockTimestamp) as timestamp, difficulty, bits FROM blocks ORDER BY height DESC`);
       for (let i = 0; i < rows.length - 1; ++i) {
         if (rows[i].height - rows[i + 1].height > 1) {
           return rows[i];
@@ -809,7 +866,7 @@ class BlocksRepository {
   /**
    * Get all blocks which have not be linked to a price yet
    */
-   public async $getBlocksWithoutPrice(): Promise<object[]> {
+  public async $getBlocksWithoutPrice(): Promise<object[]> {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT UNIX_TIMESTAMP(blocks.blockTimestamp) as timestamp, blocks.height
@@ -821,7 +878,7 @@ class BlocksRepository {
       return rows;
     } catch (e) {
       logger.err('Cannot get blocks height and timestamp from the db. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -841,7 +898,6 @@ class BlocksRepository {
         logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
       } else {
         logger.err(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] into db. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
       }
     }
   }
@@ -860,7 +916,7 @@ class BlocksRepository {
       return blocks;
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinstatsindex. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
+      return [];
     }
   }
 
@@ -908,7 +964,7 @@ class BlocksRepository {
    * 
    * @param dbBlk 
    */
-  private async formatDbBlockIntoExtendedBlock(dbBlk: any): Promise<BlockExtended> {
+  private async formatDbBlockIntoExtendedBlock(dbBlk: DatabaseBlock): Promise<BlockExtended> {
     const blk: Partial<BlockExtended> = {};
     const extras: Partial<BlockExtension> = {};
 
@@ -964,10 +1020,14 @@ class BlocksRepository {
 
     // Match rate is not part of the blocks table, but it is part of APIs so we must include it
     extras.matchRate = null;
+    extras.expectedFees = null;
+    extras.expectedWeight = null;
     if (config.MEMPOOL.AUDIT) {
       const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
       if (auditScore != null) {
         extras.matchRate = auditScore.matchRate;
+        extras.expectedFees = auditScore.expectedFees;
+        extras.expectedWeight = auditScore.expectedWeight;
       }
     }
 
@@ -978,13 +1038,25 @@ class BlocksRepository {
     {
       extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       if (extras.feePercentiles === null) {
-        const block = await bitcoinClient.getBlock(dbBlk.id, 2);
-        const summary = blocks.summarizeBlock(block);
-        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.hash, summary.transactions);
+
+        let summary;
+        let summaryVersion = 0;
+        if (config.MEMPOOL.BACKEND === 'esplora') {
+          const txs = (await bitcoinApi.$getTxsForBlock(dbBlk.id)).map(tx => transactionUtils.extendTransaction(tx));
+          summary = blocks.summarizeBlockTransactions(dbBlk.id, txs);
+          summaryVersion = 1;
+        } else {
+          // Call Core RPC
+          const block = await bitcoinClient.getBlock(dbBlk.id, 2);
+          summary = blocks.summarizeBlock(block);
+        }
+
+        await BlocksSummariesRepository.$saveTransactions(dbBlk.height, dbBlk.id, summary.transactions, summaryVersion);
         extras.feePercentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(dbBlk.id);
       }
       if (extras.feePercentiles !== null) {
         extras.medianFeeAmt = extras.feePercentiles[3];
+        await this.$updateFeeAmounts(dbBlk.id, extras.feePercentiles, extras.medianFeeAmt);
       }
     }
 

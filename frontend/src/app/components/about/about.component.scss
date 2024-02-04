@@ -10,6 +10,9 @@
     margin: 25px;
     line-height: 32px;
   }
+  .unknown {
+    border: 1px solid #b4b4b4;
+  }
 
   .image.not-rounded {
     border-radius: 0;
@@ -19,6 +22,7 @@
 
   .intro {
     margin: 25px auto 30px;
+    margin-top: 25px;
     width: 250px;
     display: flex;
     flex-direction: column;

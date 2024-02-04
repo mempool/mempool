@@ -30,9 +30,12 @@ export class StatisticsComponent implements OnInit {
   spinnerLoading = false;
   feeLevels = feeLevels;
   chartColors = chartColors;
+  filterSize = 100000;
   filterFeeIndex = 1;
+  showCount = false;
+  maxFeeIndex: number;
   dropDownOpen = false;
-
+  outlierCappingEnabled = false;
   mempoolStats: OptimizedMempoolStats[] = [];
 
   mempoolVsizeFeesData: any;
@@ -44,6 +47,7 @@ export class StatisticsComponent implements OnInit {
   inverted: boolean;
   feeLevelDropdownData = [];
   timespan = '';
+  titleCount = $localize`Count`;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -60,8 +64,10 @@ export class StatisticsComponent implements OnInit {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
+    this.outlierCappingEnabled = this.storageService.getValue('cap-outliers') === 'true';
 
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
@@ -70,8 +76,10 @@ export class StatisticsComponent implements OnInit {
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y'].indexOf(fragment) > -1) {
+        if (['2h', '24h', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'].indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        } else {
+          this.radioGroupForm.controls.dateSpan.setValue('2h', { emitEvent: false });
         }
       });
 
@@ -112,7 +120,12 @@ export class StatisticsComponent implements OnInit {
         if (this.radioGroupForm.controls.dateSpan.value === '3y') {
           return this.apiService.list3YStatistics$();
         }
-        return this.apiService.list4YStatistics$();
+        if (this.radioGroupForm.controls.dateSpan.value === '4y') {
+          return this.apiService.list4YStatistics$();
+        }
+        if (this.radioGroupForm.controls.dateSpan.value === 'all') {
+          return this.apiService.listAllTimeStatistics$();
+        }
       })
     )
     .subscribe((mempoolStats: any) => {
@@ -134,7 +147,15 @@ export class StatisticsComponent implements OnInit {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
-    this.capExtremeVbytesValues();
+    let maxTier = 0;
+    for (let index = 37; index > -1; index--) {
+      mempoolStats.forEach((stats) => {
+        if (stats.vsizes[index] >= this.filterSize) {
+          maxTier = Math.max(maxTier, index);
+        }
+      });
+    }
+    this.maxFeeIndex = maxTier;
 
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
@@ -152,58 +173,47 @@ export class StatisticsComponent implements OnInit {
   }
 
   setFeeLevelDropdownData() {
-    let _feeLevels = feeLevels
+    let _feeLevels = feeLevels;
     let _chartColors = chartColors;
     if (!this.inverted) {
       _feeLevels = [...feeLevels].reverse();
       _chartColors = [...chartColors].reverse();
     }
     _feeLevels.forEach((fee, i) => {
+      let range;
+      const nextIndex = this.inverted ? i + 1 : i - 1;
+      if (this.stateService.isLiquid()) {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${(_feeLevels[i] / 10).toFixed(1)}+`;
+        } else {
+          range = `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[nextIndex] / 10).toFixed(1)}`;
+        }
+      } else {
+        if (_feeLevels[nextIndex] == null) {
+          range = `${_feeLevels[i]}+`;
+        } else {
+          range = `${_feeLevels[i]} - ${_feeLevels[nextIndex]}`;
+        }
+      }
       if (this.inverted) {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i + 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i + 1]}`,
+          range,
           color: _chartColors[i],
         });
       } else {
         this.feeLevelDropdownData.push({
           fee: fee,
-          range: this.stateService.isLiquid() ? `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[i - 1] / 10).toFixed(1)}` : `${_feeLevels[i]} - ${_feeLevels[i - 1]}`,
-          color: _chartColors[i - 1],
+          range,
+          color: _chartColors[i],
         });
       }
-    })
+    });
   }
-
-  /**
-   * All value higher that "median * capRatio" are capped
-   */
-  capExtremeVbytesValues() {
-    if (this.stateService.network.length !== 0) {
-      return; // Only cap on Bitcoin mainnet
-    }
-
-    let capRatio = 10;
-    if (['1m', '3m',  '6m', '1y', '2y', '3y', '4y'].includes(this.graphWindowPreference)) {
-      capRatio = 4;
-    }
-
-    // Find median value
-    const vBytes: number[] = [];
-    for (const stat of this.mempoolStats) {
-      vBytes.push(stat.vbytes_per_second);
-    }
-    const sorted = vBytes.slice().sort((a, b) => a - b);
-    const middle = Math.floor(sorted.length / 2);
-    let median = sorted[middle];
-    if (sorted.length % 2 === 0) {
-      median = (sorted[middle - 1] + sorted[middle]) / 2;
-    }
-
-    // Cap
-    for (const stat of this.mempoolStats) {
-      stat.vbytes_per_second = Math.min(median * capRatio, stat.vbytes_per_second);
-    }
+  
+  onOutlierToggleChange(e): void {
+    this.outlierCappingEnabled = e.target.checked;
+    this.storageService.setValue('cap-outliers', e.target.checked);
   }
 
   onSaveChart(name) {

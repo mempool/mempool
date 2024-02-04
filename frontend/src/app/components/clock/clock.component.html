@@ -1,0 +1,73 @@
+<div class="clock-wrapper" [style]="wrapperStyle">
+  <div class="clockchain-bar" [style.height]="chainHeight + 'px'">
+    <div class="clockchain">
+      <app-clockchain
+        [width]="chainWidth"
+        [height]="chainHeight"
+        [mode]="mode"
+        [index]="blockIndex"
+      ></app-clockchain>
+    </div>
+  </div>
+  <div class="clock-face">
+    <app-clock-face [size]="clockSize">
+      <div class="block-wrapper">
+        <ng-container *ngIf="blocks && blocks.length">
+          <ng-container *ngIf="mode === 'mined'; else mempoolMode;">
+            <div class="block-cube">
+              <div class="side top"></div>
+              <div class="side bottom"></div>
+              <div class="side right" [style]="blockStyle"></div>
+              <div class="side left" [style]="blockStyle"></div>
+              <div class="side front" [style]="blockStyle"></div>
+              <div class="side back" [style]="blockStyle"></div>
+            </div>
+          </ng-container>
+          <ng-template #mempoolMode>
+            <div class="block-sizer" [style]="blockSizerStyle">
+              <app-mempool-block-overview [index]="blockIndex"></app-mempool-block-overview>
+            </div>
+          </ng-template>
+          <div class="fader"></div>
+          <div class="title-wrapper">
+            <h1 class="block-height">{{ blocks[mode === 'mempool' ? 0 : blockIndex].height }}</h1>
+          </div>
+        </ng-container>
+      </div>
+    </app-clock-face>
+  </div>
+  <ng-container *ngIf="!hideStats">
+    <div class="stats top left">
+      <p class="label" i18n>Price</p>
+      <p>
+        <app-fiat [value]="100000000" digitsInfo="1.2-2" colorClass="white-color"></app-fiat>
+      </p>
+    </div>
+    <div class="stats top right">
+      <p class="label" i18n="fees-box.high-priority">High Priority</p>
+      <p *ngIf="recommendedFees$ | async as recommendedFees;">
+        <app-fee-rate [fee]="recommendedFees.fastestFee" unitClass="" rounding="1.0-0"></app-fee-rate>
+      </p>
+    </div>
+    <div *ngIf="mode !== 'mempool' && blocks?.length" class="stats bottom left">
+      <p [innerHTML]="blocks[blockIndex].size | bytes: 2"></p>
+      <p class="label" i18n="block.size">Size</p>
+    </div>
+    <div *ngIf="mode !== 'mempool' && blocks?.length" class="stats bottom right">
+      <p class="force-wrap">
+        {{ blocks[blockIndex].tx_count | number }}
+        <span class="label" i18n="dashboard.txs">Transactions</span>
+      </p>
+    </div>
+    <ng-container *ngIf="mempoolInfo$ | async as mempoolInfo;">
+      <div *ngIf="mode === 'mempool'" class="stats bottom left">
+        <p [innerHTML]="mempoolInfo.usage | bytes: 0"></p>
+        <p class="label" i18n="dashboard.memory-usage|Memory usage">Memory Usage</p>
+      </div>
+      <div *ngIf="mode === 'mempool'" class="stats bottom right">
+        <p>{{ mempoolInfo.size | number }}</p>
+        <p class="label" i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</p>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

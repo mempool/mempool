@@ -1,6 +1,19 @@
 #!/usr/bin/env zsh
+delay=0.15
 hostname=$(hostname)
 slugs=(`curl -sSL https://${hostname}/api/v1/mining/pools/3y|jq -r -S '(.pools[].slug)'`)
+
+warmSlurp()
+{
+	echo "$1"
+	curl -i -s -H 'User-Agent: Googlebot' "$1" | head -1
+}
+
+warmUnfurl()
+{
+	echo "$1"
+	curl -i -s -H 'User-Agent: Twitterbot' "$1" | head -1
+}
 
 warm()
 {
@@ -8,132 +21,172 @@ warm()
 	curl -i -s "$1" | head -1
 }
 
-while true
-do for url in / \
-	'/api/v1/blocks' \
-	'/api/v1/statistics/2h' \
-	'/api/v1/statistics/24h' \
-	'/api/v1/statistics/1w' \
-	'/api/v1/statistics/1m' \
-	'/api/v1/statistics/3m' \
-	'/api/v1/statistics/6m' \
-	'/api/v1/statistics/1y' \
-	'/api/v1/statistics/2y' \
-	'/api/v1/statistics/3y' \
-	'/api/v1/statistics/4y' \
-	'/api/v1/mining/pools/24h' \
-	'/api/v1/mining/pools/3d' \
-	'/api/v1/mining/pools/1w' \
-	'/api/v1/mining/pools/1m' \
-	'/api/v1/mining/pools/3m' \
-	'/api/v1/mining/pools/6m' \
-	'/api/v1/mining/pools/1y' \
-	'/api/v1/mining/pools/2y' \
-	'/api/v1/mining/pools/3y' \
-	'/api/v1/mining/pools/all' \
-	'/api/v1/mining/hashrate/3m' \
-	'/api/v1/mining/hashrate/6m' \
-	'/api/v1/mining/hashrate/1y' \
-	'/api/v1/mining/hashrate/2y' \
-	'/api/v1/mining/hashrate/3y' \
-	'/api/v1/mining/hashrate/all' \
-	'/api/v1/mining/hashrate/pools/3m' \
-	'/api/v1/mining/hashrate/pools/6m' \
-	'/api/v1/mining/hashrate/pools/1y' \
-	'/api/v1/mining/hashrate/pools/2y' \
-	'/api/v1/mining/hashrate/pools/3y' \
-	'/api/v1/mining/hashrate/pools/all' \
-	'/api/v1/mining/reward-stats/144' \
-	'/api/v1/mining/blocks/fees/24h' \
-	'/api/v1/mining/blocks/fees/3d' \
-	'/api/v1/mining/blocks/fees/1w' \
-	'/api/v1/mining/blocks/fees/1m' \
-	'/api/v1/mining/blocks/fees/3m' \
-	'/api/v1/mining/blocks/fees/6m' \
-	'/api/v1/mining/blocks/fees/1y' \
-	'/api/v1/mining/blocks/fees/2y' \
-	'/api/v1/mining/blocks/fees/3y' \
-	'/api/v1/mining/blocks/fees/all' \
-	'/api/v1/mining/blocks/rewards/24h' \
-	'/api/v1/mining/blocks/rewards/3d' \
-	'/api/v1/mining/blocks/rewards/1w' \
-	'/api/v1/mining/blocks/rewards/1m' \
-	'/api/v1/mining/blocks/rewards/3m' \
-	'/api/v1/mining/blocks/rewards/6m' \
-	'/api/v1/mining/blocks/rewards/1y' \
-	'/api/v1/mining/blocks/rewards/2y' \
-	'/api/v1/mining/blocks/rewards/3y' \
-	'/api/v1/mining/blocks/rewards/all' \
-	'/api/v1/mining/blocks/fee-rates/24h' \
-	'/api/v1/mining/blocks/fee-rates/3d' \
-	'/api/v1/mining/blocks/fee-rates/1w' \
-	'/api/v1/mining/blocks/fee-rates/1m' \
-	'/api/v1/mining/blocks/fee-rates/3m' \
-	'/api/v1/mining/blocks/fee-rates/6m' \
-	'/api/v1/mining/blocks/fee-rates/1y' \
-	'/api/v1/mining/blocks/fee-rates/2y' \
-	'/api/v1/mining/blocks/fee-rates/3y' \
-	'/api/v1/mining/blocks/fee-rates/all' \
-	'/api/v1/mining/difficulty-adjustments/24h' \
-	'/api/v1/mining/difficulty-adjustments/3d' \
-	'/api/v1/mining/difficulty-adjustments/1w' \
-	'/api/v1/mining/difficulty-adjustments/1m' \
-	'/api/v1/mining/difficulty-adjustments/3m' \
-	'/api/v1/mining/difficulty-adjustments/6m' \
-	'/api/v1/mining/difficulty-adjustments/1y' \
-	'/api/v1/mining/difficulty-adjustments/2y' \
-	'/api/v1/mining/difficulty-adjustments/3y' \
-	'/api/v1/mining/difficulty-adjustments/all' \
-	'/api/v1/lightning/channels-geo?style=widget' \
-	'/api/v1/lightning/channels-geo?style=graph' \
-	'/api/v1/lightning/statistics/latest' \
-	'/api/v1/lightning/statistics/1m' \
-	'/api/v1/lightning/statistics/3m' \
-	'/api/v1/lightning/statistics/6m' \
-	'/api/v1/lightning/statistics/1y' \
-	'/api/v1/lightning/statistics/2y' \
-	'/api/v1/lightning/statistics/3y' \
-	'/api/v1/lightning/statistics/all' \
-	'/api/v1/lightning/nodes/isp-ranking' \
-	'/api/v1/lightning/nodes/isp/15169,396982' `# Google` \
-	'/api/v1/lightning/nodes/isp/14618,16509' `# Amazon` \
-	'/api/v1/lightning/nodes/isp/39572' `# DataWeb` \
-	'/api/v1/lightning/nodes/isp/14061' `# Digital Ocean` \
-	'/api/v1/lightning/nodes/isp/24940,213230' `# Hetzner` \
-	'/api/v1/lightning/nodes/isp/394745' `# LunaNode` \
-	'/api/v1/lightning/nodes/isp/45102' `# Alibaba` \
-	'/api/v1/lightning/nodes/isp/3209' `# Vodafone Germany` \
-	'/api/v1/lightning/nodes/isp/7922' `# Comcast Cable` \
-	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL` \
-	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU` \
-	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS` \
-	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,20115,33363' `# Spectrum` \
-	'/api/v1/lightning/nodes/isp/701' `# Verizon` \
-	'/api/v1/lightning/nodes/isp/12876' `# Scaleway` \
-	'/api/v1/lightning/nodes/isp/33915' `# Ziggo` \
-	'/api/v1/lightning/nodes/isp/3320' `# Deutsche Telekom AG` \
-	'/api/v1/lightning/nodes/isp/8075' `# Microsoft Azure` \
-	'/api/v1/lightning/nodes/isp/212531', `# UAB Interneto vizija` \
-	'/api/v1/lightning/nodes/isp/63949', `# Linode` \
-	'/api/v1/lightning/nodes/isp/51167', `# Contabo GmbH` \
-	'/api/v1/lightning/nodes/countries' \
-	'/api/v1/lightning/nodes/rankings' \
-	'/api/v1/lightning/nodes/rankings/liquidity' \
-	'/api/v1/lightning/nodes/rankings/connectivity' \
-	'/api/v1/lightning/nodes/rankings/age' \
+warmSlurpURLs=(
+	'/'
+	'/mining'
+	'/lightning'
+	'/graphs'
+	'/docs'
+	'/docs/faq'
+	'/docs/api/rest'
+	'/about'
+)
 
+warmUnfurlURLs=(
+	'/'
+	'/mining'
+	'/lightning'
+)
+
+warmURLs=(
+	'/api/v1/blocks'
+	'/api/v1/statistics/2h'
+	'/api/v1/statistics/24h'
+	'/api/v1/statistics/1w'
+	'/api/v1/statistics/1m'
+	'/api/v1/statistics/3m'
+	'/api/v1/statistics/6m'
+	'/api/v1/statistics/1y'
+	'/api/v1/statistics/2y'
+	'/api/v1/statistics/3y'
+	'/api/v1/statistics/4y'
+	'/api/v1/statistics/all'
+	'/api/v1/mining/pools/24h'
+	'/api/v1/mining/pools/3d'
+	'/api/v1/mining/pools/1w'
+	'/api/v1/mining/pools/1m'
+	'/api/v1/mining/pools/3m'
+	'/api/v1/mining/pools/6m'
+	'/api/v1/mining/pools/1y'
+	'/api/v1/mining/pools/2y'
+	'/api/v1/mining/pools/3y'
+	'/api/v1/mining/pools/all'
+	'/api/v1/mining/hashrate/3m'
+	'/api/v1/mining/hashrate/6m'
+	'/api/v1/mining/hashrate/1y'
+	'/api/v1/mining/hashrate/2y'
+	'/api/v1/mining/hashrate/3y'
+	'/api/v1/mining/hashrate/all'
+	'/api/v1/mining/hashrate/pools/3m'
+	'/api/v1/mining/hashrate/pools/6m'
+	'/api/v1/mining/hashrate/pools/1y'
+	'/api/v1/mining/hashrate/pools/2y'
+	'/api/v1/mining/hashrate/pools/3y'
+	'/api/v1/mining/hashrate/pools/all'
+	'/api/v1/mining/reward-stats/144'
+	'/api/v1/mining/blocks/fees/24h'
+	'/api/v1/mining/blocks/fees/3d'
+	'/api/v1/mining/blocks/fees/1w'
+	'/api/v1/mining/blocks/fees/1m'
+	'/api/v1/mining/blocks/fees/3m'
+	'/api/v1/mining/blocks/fees/6m'
+	'/api/v1/mining/blocks/fees/1y'
+	'/api/v1/mining/blocks/fees/2y'
+	'/api/v1/mining/blocks/fees/3y'
+	'/api/v1/mining/blocks/fees/all'
+	'/api/v1/mining/blocks/rewards/24h'
+	'/api/v1/mining/blocks/rewards/3d'
+	'/api/v1/mining/blocks/rewards/1w'
+	'/api/v1/mining/blocks/rewards/1m'
+	'/api/v1/mining/blocks/rewards/3m'
+	'/api/v1/mining/blocks/rewards/6m'
+	'/api/v1/mining/blocks/rewards/1y'
+	'/api/v1/mining/blocks/rewards/2y'
+	'/api/v1/mining/blocks/rewards/3y'
+	'/api/v1/mining/blocks/rewards/all'
+	'/api/v1/mining/blocks/fee-rates/24h'
+	'/api/v1/mining/blocks/fee-rates/3d'
+	'/api/v1/mining/blocks/fee-rates/1w'
+	'/api/v1/mining/blocks/fee-rates/1m'
+	'/api/v1/mining/blocks/fee-rates/3m'
+	'/api/v1/mining/blocks/fee-rates/6m'
+	'/api/v1/mining/blocks/fee-rates/1y'
+	'/api/v1/mining/blocks/fee-rates/2y'
+	'/api/v1/mining/blocks/fee-rates/3y'
+	'/api/v1/mining/blocks/fee-rates/all'
+	'/api/v1/mining/difficulty-adjustments/24h'
+	'/api/v1/mining/difficulty-adjustments/3d'
+	'/api/v1/mining/difficulty-adjustments/1w'
+	'/api/v1/mining/difficulty-adjustments/1m'
+	'/api/v1/mining/difficulty-adjustments/3m'
+	'/api/v1/mining/difficulty-adjustments/6m'
+	'/api/v1/mining/difficulty-adjustments/1y'
+	'/api/v1/mining/difficulty-adjustments/2y'
+	'/api/v1/mining/difficulty-adjustments/3y'
+	'/api/v1/mining/difficulty-adjustments/all'
+	'/api/v1/lightning/channels-geo?style=widget'
+	'/api/v1/lightning/channels-geo?style=graph'
+	'/api/v1/lightning/statistics/latest'
+	'/api/v1/lightning/statistics/1m'
+	'/api/v1/lightning/statistics/3m'
+	'/api/v1/lightning/statistics/6m'
+	'/api/v1/lightning/statistics/1y'
+	'/api/v1/lightning/statistics/2y'
+	'/api/v1/lightning/statistics/3y'
+	'/api/v1/lightning/statistics/all'
+	'/api/v1/lightning/nodes/isp-ranking'
+	'/api/v1/lightning/nodes/isp/15169,396982' `# Google`
+	'/api/v1/lightning/nodes/isp/14618,16509' `# Amazon`
+	'/api/v1/lightning/nodes/isp/39572' `# DataWeb`
+	'/api/v1/lightning/nodes/isp/14061' `# Digital Ocean`
+	'/api/v1/lightning/nodes/isp/24940,213230' `# Hetzner`
+	'/api/v1/lightning/nodes/isp/394745' `# LunaNode`
+	'/api/v1/lightning/nodes/isp/45102' `# Alibaba`
+	'/api/v1/lightning/nodes/isp/3209' `# Vodafone Germany`
+	'/api/v1/lightning/nodes/isp/7922' `# Comcast Cable`
+	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL`
+	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU`
+	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS`
+	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,2$delay,33363' `# Spectrum`
+	'/api/v1/lightning/nodes/isp/701' `# Verizon`
+	'/api/v1/lightning/nodes/isp/12876' `# Scaleway`
+	'/api/v1/lightning/nodes/isp/33915' `# Ziggo`
+	'/api/v1/lightning/nodes/isp/3320' `# Deutsche Telekom AG`
+	'/api/v1/lightning/nodes/isp/8075' `# Microsoft Azure`
+	'/api/v1/lightning/nodes/isp/212531' `# UAB Interneto vizija`
+	'/api/v1/lightning/nodes/isp/63949' `# Linode`
+	'/api/v1/lightning/nodes/isp/51167' `# Contabo GmbH`
+	'/api/v1/lightning/nodes/countries'
+	'/api/v1/lightning/nodes/rankings'
+	'/api/v1/lightning/nodes/rankings/liquidity'
+	'/api/v1/lightning/nodes/rankings/connectivity'
+	'/api/v1/lightning/nodes/rankings/age'
+)
+
+echo "waiting for mempool backend to start..."
+sleep 60
+
+while true
+do
+	echo "starting warm cache cycle..."
+
+	for url in $warmSlurpURLs
+	do
+		warmSlurp "https://${hostname}${url}"
+		sleep $delay # delay between queries to not DoS unfurler
+	done
+
+	for url in $warmUnfurlURLs
+	do
+		warmUnfurl "https://${hostname}${url}"
+		sleep $delay # delay between queries to not DoS unfurler
+	done
+
+	for url in $warmURLs
 	do
 		warm "https://${hostname}${url}"
-		sleep 0.25 # wait 250ms between queries to not DoS mariadb
+		sleep $delay # delay between queries to not DoS mariadb
 	done
 
 	for slug in $slugs
 	do
 		warm "https://${hostname}/api/v1/mining/pool/${slug}"
-		sleep 0.25 # wait 250ms between queries to not DoS mariadb
+		sleep $delay # delay between queries to not DoS mariadb
 		warm "https://${hostname}/api/v1/mining/pool/${slug}/hashrate"
-		sleep 0.25 # wait 250ms between queries to not DoS mariadb
+		sleep $delay # delay between queries to not DoS mariadb
 		warm "https://${hostname}/api/v1/mining/pool/${slug}/blocks"
-		sleep 0.25 # wait 250ms between queries to not DoS mariadb
+		sleep $delay # delay between queries to not DoS mariadb
 	done
+
+	sleep 1
 done

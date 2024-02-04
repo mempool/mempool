@@ -2,6 +2,6 @@
 <span *ngIf="seconds !== undefined">
   &lrm;{{ seconds * 1000 | date: customFormat ?? 'yyyy-MM-dd HH:mm' }}
   <div class="lg-inline" *ngIf="!hideTimeSince">
-    <i class="symbol">(<app-time kind="since" [time]="seconds" [fastRender]="true"></app-time>)</i>
+    <i class="symbol">(<app-time kind="since" [time]="seconds" [fastRender]="true" [precision]="precision" [minUnit]="minUnit"></app-time>)</i>
   </div>
 </span>

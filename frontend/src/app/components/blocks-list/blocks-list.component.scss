@@ -23,6 +23,17 @@ tr, td, th {
   border: 0px;
   padding-top: 0.65rem !important;
   padding-bottom: 0.7rem !important;
+
+  .difference {
+    margin-left: 0.5em;
+
+    &.positive {
+      color: rgb(66, 183, 71);
+    }
+    &.negative {
+      color: rgb(183, 66, 66);
+    }
+  }
 }
 
 .clear-link {
@@ -90,7 +101,7 @@ tr, td, th {
 }
 
 .timestamp {
-  width: 18%;
+  width: 10%;
   @media (max-width: 1100px) {
     display: none;
   }
@@ -123,8 +134,8 @@ tr, td, th {
 }
 
 .txs {
-  padding-right: 40px;
-  width: 8%;
+  padding-right: 20px;
+  width: 6%;
   @media (max-width: 1100px) {
     padding-right: 10px;
   }
@@ -159,6 +170,16 @@ tr, td, th {
 }
 .fees.widget {
   width: 20%;
+}
+.fee-delta {
+  width: 6%;
+  padding-left: 0;
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+.fee-delta.widget {
+  display: none;
 }
 
 .reward {
@@ -214,7 +235,7 @@ tr, td, th {
 
 .health {
   width: 10%;
-  @media (max-width: 1105px) {
+  @media (max-width: 1100px) {
     width: 13%;
   }
   @media (max-width: 560px) {

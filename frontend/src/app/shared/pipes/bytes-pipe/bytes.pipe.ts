@@ -1,6 +1,6 @@
 /* tslint:disable */
 import { Pipe, PipeTransform } from '@angular/core';
-import { isNumberFinite, isPositive, isInteger, toDecimal } from './utils';
+import { isNumberFinite, isPositive, isInteger, toDecimal, toSigFigs } from './utils';
 
 export type ByteUnit = 'B' | 'kB' | 'MB' | 'GB' | 'TB';
 
@@ -17,7 +17,7 @@ export class BytesPipe implements PipeTransform {
         'TB': {max: Number.MAX_SAFE_INTEGER, prev: 'GB'}
     };
 
-    transform(input: any, decimal: number = 0, from: ByteUnit = 'B', to?: ByteUnit): any {
+    transform(input: any, decimal: number = 0, from: ByteUnit = 'B', to?: ByteUnit, plaintext = false, sigfigs?: number): any {
 
         if (!(isNumberFinite(input) &&
                 isNumberFinite(decimal) &&
@@ -33,27 +33,35 @@ export class BytesPipe implements PipeTransform {
             unit = BytesPipe.formats[unit].prev!;
         }
 
+        let numberFormat = sigfigs == null ?
+            (number) => toDecimal(number, decimal).toString() :
+            (number) => toSigFigs(number, sigfigs);
+
         if (to) {
             const format = BytesPipe.formats[to];
 
-            const result = toDecimal(BytesPipe.calculateResult(format, bytes), decimal);
+            const result = numberFormat(BytesPipe.calculateResult(format, bytes));
 
-            return BytesPipe.formatResult(result, to);
+            return BytesPipe.formatResult(result, to, plaintext);
         }
 
         for (const key in BytesPipe.formats) {
             const format = BytesPipe.formats[key];
             if (bytes < format.max) {
 
-                const result = toDecimal(BytesPipe.calculateResult(format, bytes), decimal);
+                const result = numberFormat(BytesPipe.calculateResult(format, bytes));
 
-                return BytesPipe.formatResult(result, key);
+                return BytesPipe.formatResult(result, key, plaintext);
             }
         }
     }
 
-    static formatResult(result: number, unit: string): string {
-        return `${result} <span class="symbol">${unit}</span>`;
+    static formatResult(result: string, unit: string, plaintext): string {
+        if (plaintext) {
+            return `${result} ${unit}`;
+        } else {
+            return `${result} <span class="symbol">${unit}</span>`;
+        }
     }
 
     static calculateResult(format: { max: number, prev?: ByteUnit }, bytes: number) {

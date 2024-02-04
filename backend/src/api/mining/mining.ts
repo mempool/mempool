@@ -11,20 +11,30 @@ import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjust
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
 import PricesRepository from '../../repositories/PricesRepository';
-import { bitcoinCoreApi } from '../bitcoin/bitcoin-api-factory';
+import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import { IEsploraApi } from '../bitcoin/esplora-api.interface';
 import database from '../../database';
+
+interface DifficultyBlock {
+  timestamp: number,
+  height: number,
+  bits: number,
+  difficulty: number,
+}
 
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
   public lastWeeklyHashrateIndexingDate: number | null = null;
+  
+  public reindexHashrateRequested = false;
+  public reindexDifficultyAdjustmentRequested = false;
 
   /**
-   * Get historical block predictions match rate
+   * Get historical blocks health
    */
-   public async $getBlockPredictionsHistory(interval: string | null = null): Promise<any> {
-    return await BlocksAuditsRepository.$getBlockPredictionsHistory(
+  public async $getBlocksHealthHistory(interval: string | null = null): Promise<any> {
+    return await BlocksAuditsRepository.$getBlocksHealthHistory(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );
@@ -53,7 +63,7 @@ class Mining {
   /**
    * Get historical block fee rates percentiles
    */
-   public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFeeRates(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -63,7 +73,7 @@ class Mining {
   /**
    * Get historical block sizes
    */
-   public async $getHistoricalBlockSizes(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockSizes(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockSizes(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -73,7 +83,7 @@ class Mining {
   /**
    * Get historical block weights
    */
-   public async $getHistoricalBlockWeights(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockWeights(interval: string | null = null): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockWeights(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
@@ -103,6 +113,8 @@ class Mining {
         emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+        avgFeeDelta: poolInfo.avgFeeDelta,
+        poolUniqueId: poolInfo.poolUniqueId
       };
       poolsStats.push(poolStat);
     });
@@ -130,7 +142,7 @@ class Mining {
   public async $getPoolStat(slug: string): Promise<object> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error('This mining pool does not exist ' + escape(slug));
+      throw new Error('This mining pool does not exist');
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(pool.id);
@@ -197,7 +209,7 @@ class Mining {
     try {
       const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
 
       const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
@@ -290,6 +302,14 @@ class Mining {
    * Generate daily hashrate data
    */
   public async $generateNetworkHashrateHistory(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexHashrateRequested === true) {
+      logger.notice(`hashrates will now be re-indexed`);
+      await database.query(`TRUNCATE hashrates`);
+      this.lastHashrateIndexingDate = 0;
+      this.reindexHashrateRequested = false;
+    }
+
     // We only run this once a day around midnight
     const today = new Date().getUTCDate();
     if (today === this.lastHashrateIndexingDate) {
@@ -300,7 +320,7 @@ class Mining {
     const oldestConsecutiveBlockTimestamp = 1000 * (await BlocksRepository.$getOldestConsecutiveBlock()).timestamp;
 
     try {
-      const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+      const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
       const genesisTimestamp = genesisBlock.timestamp * 1000;
       const indexedTimestamp = (await HashratesRepository.$getRawNetworkDailyHashrate(null)).map(hashrate => hashrate.timestamp);
       const lastMidnight = this.getDateMidnight(new Date());
@@ -395,15 +415,24 @@ class Mining {
    * Index difficulty adjustments
    */
   public async $indexDifficultyAdjustments(): Promise<void> {
+    // If a re-index was requested, truncate first
+    if (this.reindexDifficultyAdjustmentRequested === true) {
+      logger.notice(`difficulty_adjustments will now be re-indexed`);
+      await database.query(`TRUNCATE difficulty_adjustments`);
+      this.reindexDifficultyAdjustmentRequested = false;
+    }
+
     const indexedHeightsArray = await DifficultyAdjustmentsRepository.$getAdjustmentsHeights();
     const indexedHeights = {};
     for (const height of indexedHeightsArray) {
       indexedHeights[height] = true;
     }
 
+    // gets {time, height, difficulty, bits} of blocks in ascending order of height
     const blocks: any = await BlocksRepository.$getBlocksDifficulty();
-    const genesisBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(await bitcoinClient.getBlockHash(0));
+    const genesisBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(await bitcoinApi.$getBlockHash(0));
     let currentDifficulty = genesisBlock.difficulty;
+    let currentBits = genesisBlock.bits;
     let totalIndexed = 0;
 
     if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT === -1 && indexedHeights[0] !== true) {
@@ -415,38 +444,45 @@ class Mining {
       });
     }
 
-    const oldestConsecutiveBlock = await BlocksRepository.$getOldestConsecutiveBlock();
-    if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT !== -1) {
-      currentDifficulty = oldestConsecutiveBlock.difficulty;
+    if (!blocks?.length) {
+      // no blocks in database yet
+      return;
     }
+
+    const oldestConsecutiveBlock = this.getOldestConsecutiveBlock(blocks);
+
+    currentBits = oldestConsecutiveBlock.bits;
+    currentDifficulty = oldestConsecutiveBlock.difficulty;
 
     let totalBlockChecked = 0;
     let timer = new Date().getTime() / 1000;
 
     for (const block of blocks) {
-      if (block.difficulty !== currentDifficulty) {
-        if (indexedHeights[block.height] === true) { // Already indexed
-          if (block.height >= oldestConsecutiveBlock.height) {
-            currentDifficulty = block.difficulty;
-          }
-          continue;          
+      // skip until the first block after the oldest consecutive block
+      if (block.height <= oldestConsecutiveBlock.height) {
+        continue;
+      }
+
+      // difficulty has changed between two consecutive blocks!
+      if (block.bits !== currentBits) {
+        // skip if already indexed
+        if (indexedHeights[block.height] !== true) {
+          let adjustment = block.difficulty / currentDifficulty;
+          adjustment = Math.round(adjustment * 1000000) / 1000000; // Remove float point noise
+
+          await DifficultyAdjustmentsRepository.$saveAdjustments({
+            time: block.time,
+            height: block.height,
+            difficulty: block.difficulty,
+            adjustment: adjustment,
+          });
+
+          totalIndexed++;
         }
-
-        let adjustment = block.difficulty / currentDifficulty;
-        adjustment = Math.round(adjustment * 1000000) / 1000000; // Remove float point noise
-
-        await DifficultyAdjustmentsRepository.$saveAdjustments({
-          time: block.time,
-          height: block.height,
-          difficulty: block.difficulty,
-          adjustment: adjustment,
-        });
-
-        totalIndexed++;
-        if (block.height >= oldestConsecutiveBlock.height) {
-          currentDifficulty = block.difficulty;
-        }
-    }
+        // update the current difficulty
+        currentDifficulty = block.difficulty;
+        currentBits = block.bits;
+      }
 
       totalBlockChecked++;
       const elapsedSeconds = Math.max(1, Math.round((new Date().getTime() / 1000) - timer));
@@ -473,11 +509,11 @@ class Mining {
     }
     this.blocksPriceIndexingRunning = true;
 
+    let totalInserted = 0;
     try {
       const prices: any[] = await PricesRepository.$getPricesTimesAndId();    
       const blocksWithoutPrices: any[] = await BlocksRepository.$getBlocksWithoutPrice();
 
-      let totalInserted = 0;
       const blocksPrices: BlockPrice[] = [];
 
       for (const block of blocksWithoutPrices) {
@@ -522,7 +558,13 @@ class Mining {
       }
     } catch (e) {
       this.blocksPriceIndexingRunning = false;
-      throw e;
+      logger.err(`Cannot index block prices. ${e}`);
+    }
+
+    if (totalInserted > 0) {
+      logger.info(`Indexing blocks prices completed. Indexed ${totalInserted}`, logger.tags.mining);
+    } else {
+      logger.debug(`Indexing blocks prices completed. Indexed 0.`, logger.tags.mining);
     }
 
     this.blocksPriceIndexingRunning = false;
@@ -565,6 +607,20 @@ class Mining {
     }
   }
 
+  /**
+   * List existing mining pools
+   */
+  public async $listPools(): Promise<{name: string, slug: string, unique_id: number}[] | null> {
+    const [rows] = await database.query(`
+      SELECT
+        name,
+        slug,
+        unique_id
+      FROM pools`
+    );
+    return rows as {name: string, slug: string, unique_id: number}[];
+  }
+
   private getDateMidnight(date: Date): Date {
     date.setUTCHours(0);
     date.setUTCMinutes(0);
@@ -588,6 +644,17 @@ class Mining {
       case '24h': return 1 * scale;
       default: return 86400 * scale;
     }
+  }
+
+  // Finds the oldest block in a consecutive chain back from the tip
+  // assumes `blocks` is sorted in ascending height order
+  private getOldestConsecutiveBlock(blocks: DifficultyBlock[]): DifficultyBlock {
+    for (let i = blocks.length - 1; i > 0; i--) {
+      if ((blocks[i].height - blocks[i - 1].height) > 1) {
+        return blocks[i];
+      }
+    }
+    return blocks[0];
   }
 }
 

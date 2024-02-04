@@ -1,4 +1,16 @@
-const configFile = require('../config.json');
+const fs = require('fs');
+const path = require('path');
+
+const configPath = process.env.UNFURLER_CONFIG || './config.json';
+const absolutePath = path.resolve(configPath);
+let config;
+
+try {
+  config = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+} catch (e) {
+  console.error(`Could not read config file ${absolutePath}: ${e}`);
+  process.exit(-1);
+}
 
 interface IConfig {
   SERVER: {
@@ -57,7 +69,7 @@ class Config implements IConfig {
   SYSLOG: IConfig['SYSLOG'];
 
   constructor() {
-    const configs = this.merge(configFile, defaults);
+    const configs = this.merge(config, defaults);
     this.SERVER = configs.SERVER;
     this.MEMPOOL = configs.MEMPOOL;
     this.PUPPETEER = configs.PUPPETEER;

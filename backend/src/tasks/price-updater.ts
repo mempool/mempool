@@ -23,9 +23,20 @@ export interface PriceHistory {
   [timestamp: number]: ApiPrice;
 }
 
+function getMedian(arr: number[]): number {
+  const sortedArr = arr.slice().sort((a, b) => a - b);
+  const mid = Math.floor(sortedArr.length / 2);
+  return sortedArr.length % 2 !== 0
+      ? sortedArr[mid]
+      : (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+}
+
 class PriceUpdater {
   public historyInserted = false;
-  private lastRun = 0;
+  private timeBetweenUpdatesMs = 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
+  private cyclePosition = -1;
+  private firstRun = true;
+  private lastTime = -1;
   private lastHistoricalRun = 0;
   private running = false;
   private feeds: PriceFeed[] = [];
@@ -41,6 +52,8 @@ class PriceUpdater {
     this.feeds.push(new CoinbaseApi());
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
+
+    this.setCyclePosition();
   }
 
   public getLatestPrices(): ApiPrice {
@@ -100,21 +113,47 @@ class PriceUpdater {
     this.running = false;
   }
 
+  private getMillisecondsSinceBeginningOfHour(): number {
+    const now = new Date();
+    const beginningOfHour = new Date(now);
+    beginningOfHour.setMinutes(0, 0, 0);
+    return now.getTime() - beginningOfHour.getTime();
+  }
+
+  private setCyclePosition(): void {
+    const millisecondsSinceBeginningOfHour = this.getMillisecondsSinceBeginningOfHour();
+    for (let i = 0; i < config.MEMPOOL.PRICE_UPDATES_PER_HOUR; i++) {
+      if (this.timeBetweenUpdatesMs * i > millisecondsSinceBeginningOfHour) {
+        this.cyclePosition = i;
+        return;
+      }
+    }
+    this.cyclePosition = config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
+  }
+
   /**
    * Fetch last BTC price from exchanges, average them, and save it in the database once every hour
    */
   private async $updatePrice(): Promise<void> {
-    if (this.lastRun === 0 && config.DATABASE.ENABLED === true) {
-      this.lastRun = await PricesRepository.$getLatestPriceTime();
+    let forceUpdate = false;
+    if (this.firstRun === true && config.DATABASE.ENABLED === true) {
+      const lastUpdate = await PricesRepository.$getLatestPriceTime();
+      if (new Date().getTime() / 1000 - lastUpdate > this.timeBetweenUpdatesMs / 1000) {
+        forceUpdate = true;
+      }
+      this.firstRun = false;
     }
 
-    if ((Math.round(new Date().getTime() / 1000) - this.lastRun) < 3600) {
-      // Refresh only once every hour
+    const millisecondsSinceBeginningOfHour = this.getMillisecondsSinceBeginningOfHour();
+
+    // Reset the cycle on new hour
+    if (this.lastTime > millisecondsSinceBeginningOfHour) {
+      this.cyclePosition = 0;
+    }
+    this.lastTime = millisecondsSinceBeginningOfHour;
+    if (millisecondsSinceBeginningOfHour < this.timeBetweenUpdatesMs * this.cyclePosition && !forceUpdate && this.cyclePosition !== 0) {
       return;
     }
-
-    const previousRun = this.lastRun;
-    this.lastRun = new Date().getTime() / 1000;
 
     for (const currency of this.currencies) {
       let prices: number[] = [];
@@ -142,29 +181,31 @@ class PriceUpdater {
       if (prices.length === 0) {
         this.latestPrices[currency] = -1;
       } else {
-        this.latestPrices[currency] = Math.round((prices.reduce((partialSum, a) => partialSum + a, 0)) / prices.length);
+        this.latestPrices[currency] = Math.round(getMedian(prices));
       }
     }
 
-    logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
-
-    if (config.DATABASE.ENABLED === true) {
+    if (config.DATABASE.ENABLED === true && this.cyclePosition === 0) {
       // Save everything in db
       try {
         const p = 60 * 60 * 1000; // milliseconds in an hour
         const nowRounded = new Date(Math.round(new Date().getTime() / p) * p); // https://stackoverflow.com/a/28037042
         await PricesRepository.$savePrices(nowRounded.getTime() / 1000, this.latestPrices);
       } catch (e) {
-        this.lastRun = previousRun + 5 * 60;
         logger.err(`Cannot save latest prices into db. Trying again in 5 minutes. Reason: ${(e instanceof Error ? e.message : e)}`);
       }
     }
+
+    this.latestPrices.time = Math.round(new Date().getTime() / 1000);
+    logger.info(`Latest BTC fiat averaged price: ${JSON.stringify(this.latestPrices)}`);
 
     if (this.ratesChangedCallback) {
       this.ratesChangedCallback(this.latestPrices);
     }
 
-    this.lastRun = new Date().getTime() / 1000;
+    if (!forceUpdate) {
+      this.cyclePosition++;
+    }
 
     if (this.latestPrices.USD === -1) {
       this.latestPrices = await PricesRepository.$getLatestConversionRates();
@@ -267,9 +308,7 @@ class PriceUpdater {
         if (grouped[time][currency].length === 0) {
           continue;
         }
-        prices[currency] = Math.round((grouped[time][currency].reduce(
-          (partialSum, a) => partialSum + a, 0)
-        ) / grouped[time][currency].length);
+        prices[currency] = Math.round(getMedian(grouped[time][currency]));
       }
       await PricesRepository.$savePrices(parseInt(time, 10), prices);
       ++totalInserted;

@@ -1,15 +1,11 @@
 :host ::ng-deep {
   .dropdown-item {
     white-space: nowrap;
-    width: calc(100% - 34px);
   }
   .dropdown-menu {
     width: calc(100% - 34px);
   }
   @media (min-width: 768px) {
-    .dropdown-item {
-      width: 410px;
-    }
     .dropdown-menu {
       width: 410px;
     }
@@ -18,12 +14,20 @@
 
 form {
   margin-top: 5px;
-  @media (min-width: 576px) {
+  @media (min-width: 564px) {
     margin-top: 0px;
-    margin-left: 8px;
+    margin-left: 5px;
+    margin-right: -5px;
   }
   @media (min-width: 992px) {
     width: 100%;
+  }
+
+  &.hamburgerOpen {
+    @media (max-width: 613px) {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
   }
 }
 
@@ -38,7 +42,7 @@ form {
     min-width: 400px;
   }
   @media (min-width: 992px) {
-    min-width: 200px;
+    min-width: 142px;
   }
   @media (min-width: 1200px) {
     min-width: 300px;

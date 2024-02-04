@@ -1,62 +1,19 @@
-import cluster, { Cluster } from 'cluster';
 import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
-import { Ancestor } from '../mempool.interfaces';
+import { Ancestor, CpfpCluster } from '../mempool.interfaces';
 import transactionRepository from '../repositories/TransactionRepository';
 
 class CpfpRepository {
-  public async $saveCluster(clusterRoot: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number): Promise<boolean> {
-    if (!txs[0]) {
-      return false;
-    }
-    // skip clusters of transactions with the same fees
-    const roundedEffectiveFee = Math.round(effectiveFeePerVsize * 100) / 100;
-    const equalFee = txs.reduce((acc, tx) => {
-      return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
-    }, true);
-    if (equalFee) {
-      return false;
-    }
-
-    try {
-      const packedTxs = Buffer.from(this.pack(txs));
-      await DB.query(
-        `
-          INSERT INTO compact_cpfp_clusters(root, height, txs, fee_rate)
-          VALUE (UNHEX(?), ?, ?, ?)
-          ON DUPLICATE KEY UPDATE
-            height = ?,
-            txs = ?,
-            fee_rate = ?
-        `,
-        [clusterRoot, height, packedTxs, effectiveFeePerVsize, height, packedTxs, effectiveFeePerVsize]
-      );
-      const maxChunk = 10;
-      let chunkIndex = 0;
-      while (chunkIndex < txs.length) {
-        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk).map(tx => {
-          return { txid: tx.txid, cluster: clusterRoot };
-        });
-        await transactionRepository.$batchSetCluster(chunk);
-        chunkIndex += maxChunk;
-      }
-      return true;
-    } catch (e: any) {
-      logger.err(`Cannot save cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
   public async $batchSaveClusters(clusters: { root: string, height: number, txs: Ancestor[], effectiveFeePerVsize: number }[]): Promise<boolean> {
     try {
-      const clusterValues: any[] = [];
-      const txs: any[] = [];
+      const clusterValues: [string, number, Buffer, number][] = [];
+      const txs: { txid: string, cluster: string }[] = [];
 
       for (const cluster of clusters) {
-        if (cluster.txs?.length > 1) {
+        if (cluster.txs?.length) {
           const roundedEffectiveFee = Math.round(cluster.effectiveFeePerVsize * 100) / 100;
-          const equalFee = cluster.txs.reduce((acc, tx) => {
+          const equalFee = cluster.txs.length > 1 && cluster.txs.reduce((acc, tx) => {
             return (acc && Math.round(((tx.fee || 0) / (tx.weight / 4)) * 100) / 100 === roundedEffectiveFee);
           }, true);
           if (!equalFee) {
@@ -77,16 +34,10 @@ class CpfpRepository {
         return false;
       }
 
+      const queries: { query, params }[] = [];
+
       const maxChunk = 100;
       let chunkIndex = 0;
-      // insert transactions in batches of up to 100 rows
-      while (chunkIndex < txs.length) {
-        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk);
-        await transactionRepository.$batchSetCluster(chunk);
-        chunkIndex += maxChunk;
-      }
-
-      chunkIndex = 0;
       // insert clusters in batches of up to 100 rows
       while (chunkIndex < clusterValues.length) {
         const chunk = clusterValues.slice(chunkIndex, chunkIndex + maxChunk);
@@ -98,12 +49,23 @@ class CpfpRepository {
           return (' (UNHEX(?), ?, ?, ?)');
         }) + ';';
         const values = chunk.flat();
-        await DB.query(
+        queries.push({
           query,
-          values
-        );
+          params: values,
+        });
         chunkIndex += maxChunk;
       }
+
+      chunkIndex = 0;
+      // insert transactions in batches of up to 100 rows
+      while (chunkIndex < txs.length) {
+        const chunk = txs.slice(chunkIndex, chunkIndex + maxChunk);
+        queries.push(transactionRepository.buildBatchSetQuery(chunk));
+        chunkIndex += maxChunk;
+      }
+
+      await DB.$atomicQuery(queries);
+
       return true;
     } catch (e: any) {
       logger.err(`Cannot save cpfp clusters into db. Reason: ` + (e instanceof Error ? e.message : e));
@@ -111,7 +73,7 @@ class CpfpRepository {
     }
   }
 
-  public async $getCluster(clusterRoot: string): Promise<Cluster | void> {
+  public async $getCluster(clusterRoot: string): Promise<CpfpCluster | void> {
     const [clusterRows]: any = await DB.query(
       `
         SELECT *
@@ -122,6 +84,7 @@ class CpfpRepository {
     );
     const cluster = clusterRows[0];
     if (cluster?.txs) {
+      cluster.effectiveFeePerVsize = cluster.fee_rate;
       cluster.txs = this.unpack(cluster.txs);
       return cluster;
     }

@@ -6,6 +6,24 @@
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  width: 100%;
+
+  transform: translateX(0px);
+  transition: transform 0;
+
+  &.menu-open {
+    transform: translateX(-112.5px);
+    transition: transform 0.25s;
+  }
+
+  &.menu-closing {
+    transform: translateX(0px);
+    transition: transform 0.25s;
+  }
+
+  &.with-menu {
+    width: calc(100% + 120px);
+  }
 }
 
 #blockchain-container::-webkit-scrollbar {
@@ -126,52 +144,86 @@ body {
   overflow: hidden;
 }
 
-.pyro > .before, .pyro > .after {
+.pyro > .inner {
   z-index: 100;
   position: absolute;
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  @include animation((1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards));
+  @include animation((1.25s ease-out infinite bang, 1.25s ease-in infinite gravity, 10s linear infinite position));
+
+  &.b {
+    @include animation-delay((-4.35s, -4.35s, -4.35s));
+    @include animation-duration((1.45s, 1.45s, 11.6s));
+  }
+  &.c {
+    @include animation-delay((-3.2s, -3.2s, -3.2s));
+    @include animation-duration((1.6s, 1.6s, 12.8s));
+  }
 }
 
-.pyro > .after {
-  @include animation-delay((1.25s, 1.25s, 1.25s));
-  @include animation-duration((1.25s, 1.25s, 6.25s));
-}
-
-@keyframes bang{
-  to{
-      box-shadow:-314.6666666667px -362.6666666667px red,-51.6666666667px 32.3333333333px #ff3700,-354.6666666667px -264.6666666667px #7b00ff,-319.6666666667px -73.6666666667px #00f7ff,-135.6666666667px -154.6666666667px #00ff48,57.3333333333px -402.6666666667px #0d00ff,-126.6666666667px -121.6666666667px #00ff7b,-335.6666666667px -5.6666666667px #00fff2,-291.6666666667px -.6666666667px #4f0,-126.6666666667px -187.6666666667px #7f0,-413.6666666667px -224.6666666667px #00ffbf,-283.6666666667px -391.6666666667px #00ff3c,-340.6666666667px -345.6666666667px #02f,-168.6666666667px -179.6666666667px #eaff00,7.3333333333px -153.6666666667px #26ff00,-175.6666666667px -234.6666666667px #8400ff,-324.6666666667px -254.6666666667px #0048ff,-335.6666666667px -9.6666666667px #00ff59,-304.6666666667px -8.6666666667px #001eff,-331.6666666667px -44.6666666667px #3f0,.3333333333px -49.6666666667px #0fc,-370.6666666667px -60.6666666667px #0015ff,29.3333333333px -13.6666666667px #8cff00,-168.6666666667px -281.6666666667px #f80,-48.6666666667px -61.6666666667px #f0b,33.3333333333px -113.6666666667px #ff00e1,-193.6666666667px -196.6666666667px #ff7b00,-14.6666666667px -24.6666666667px #ff0037,-149.6666666667px -273.6666666667px #0fa,-19.6666666667px -63.6666666667px #ff0004,13.3333333333px -227.6666666667px #7f0,-265.6666666667px -43.6666666667px #ff4800,-121.6666666667px -95.6666666667px #bfff00,-241.6666666667px -90.6666666667px #6200ff,-307.6666666667px -231.6666666667px #ff0062,78.3333333333px -128.6666666667px #ffbf00,27.3333333333px 44.3333333333px #95ff00,-81.6666666667px 6.3333333333px #ffc800,-343.6666666667px -247.6666666667px #2f0,-225.6666666667px -250.6666666667px #08f,-9.6666666667px -243.6666666667px #ff1a00,83.3333333333px -409.6666666667px #04f,-380.6666666667px -331.6666666667px #84ff00,-103.6666666667px -51.6666666667px #f02,-174.6666666667px -169.6666666667px #ffc800,20.3333333333px -191.6666666667px #ff0059,-40.6666666667px -55.6666666667px #0400ff,-199.6666666667px -66.6666666667px #ffd500,-358.6666666667px -5.6666666667px #0051ff,-84.6666666667px -289.6666666667px #f7ff00,-193.6666666667px -184.6666666667px #80f
+@keyframes bang {
+  0%, 15% {
+    box-sizing: none;
+  }
+  84% {
+    box-shadow: -30.55vw -35.21vw red,-5.02vw 3.14vw #ff3700,-34.43vw -25.70vw #7b00ff,-31.04vw -7.15vw #00f7ff,-13.17vw -15.02vw #00ff48,5.57vw -39.09vw #0d00ff,-12.30vw -11.81vw #00ff7b,-32.59vw -0.55vw #00fff2,-28.32vw -.6666666667px #4f0,-12.30vw -18.22vw #7f0,-40.16vw -21.81vw #00ffbf,-27.54vw -38.03vw #00ff3c,-33.07vw -33.56vw #02f,-16.38vw -17.44vw #eaff00,0.71vw -14.92vw #26ff00,-17.06vw -22.78vw #8400ff,-31.52vw -24.72vw #0048ff,-32.59vw -0.94vw #00ff59,-29.58vw -0.84vw #001eff,-32.20vw -4.34vw #3f0,.3333333333px -4.82vw #0fc,-35.99vw -5.89vw #0015ff,2.85vw -1.33vw #8cff00,-16.38vw -27.35vw #f80,-4.72vw -5.99vw #f0b,3.24vw -11.04vw #ff00e1,-18.80vw -19.09vw #ff7b00,-1.42vw -2.39vw #ff0037,-14.53vw -26.57vw #0fa,-1.91vw -6.18vw #ff0004,1.29vw -22.10vw #7f0,-25.79vw -4.24vw #ff4800,-11.81vw -9.29vw #bfff00,-23.46vw -8.80vw #6200ff,-29.87vw -22.49vw #ff0062,7.61vw -12.49vw #ffbf00,2.65vw 4.30vw #95ff00,-7.93vw 0.61vw #ffc800,-33.37vw -24.05vw #2f0,-21.91vw -24.34vw #08f,-0.94vw -23.66vw #ff1a00,8.09vw -39.77vw #04f,-36.96vw -32.20vw #84ff00,-10.06vw -5.02vw #f02,-16.96vw -16.47vw #ffc800,1.97vw -18.61vw #ff0059,-3.95vw -5.40vw #0400ff,-19.39vw -6.47vw #ffd500,-34.82vw -0.55vw #0051ff,-8.22vw -28.12vw #f7ff00,-18.80vw -17.93vw #80f;
+  }
+  85%, 100% {
+    box-sizing: none;
   }
 }
 
 @include keyframes(gravity)  {
-  to {
+  0% {
+    @include transform(translateY(0px));
+    opacity: 0;
+  }
+  15% {
+    @include transform(translateY(0px));
+    opacity: 1;
+  }
+  84% {
+    @include transform(translateY(400px));
+    opacity: 0;
+  }
+  85%, 100% {
     @include transform(translateY(200px));
     opacity: 0;
   }
 }
 
 @include keyframes(position) {
-  0%, 19.9% {
-    margin-top: 10%;
-    margin-left: 40%;
+  0%, 12.4% {
+    margin-top: 10vw;
+    margin-left: 50%;
   }
-  20%, 39.9% {
-    margin-top: 40%;
-    margin-left: 30%;
+  12.5%, 24.9% {
+    margin-top: 22vw;
+    margin-left: 35%;
   }
-  40%, 59.9% {
-    margin-top: 20%;
-    margin-left: 70%
+  25%, 37.4% {
+    margin-top: 15vw;
+    margin-left: 80%
   }
-  60%, 79.9% {
-    margin-top: 30%;
-    margin-left: 20%;
+  37.5%, 49.9% {
+    margin-top: 28vw;
+    margin-left: 72%;
   }
-  80%, 99.9% {
-    margin-top: 30%;
-    margin-left: 80%;
+  50%, 62.4% {
+    margin-top: 22vw;
+    margin-left: 37%;
+  }
+  62.5%, 74.9% {
+    margin-top: 10vw;
+    margin-left: 66%;
+  }
+  75%, 87.4% {
+    margin-top: 25vw;
+    margin-left: 49%;
+  }
+  87.5%, 99.9% {
+    margin-top: 18vw;
+    margin-left: 58%;
   }
 }

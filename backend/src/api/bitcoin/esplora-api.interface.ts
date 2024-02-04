@@ -6,6 +6,7 @@ export namespace IEsploraApi {
     size: number;
     weight: number;
     fee: number;
+    sigops?: number;
     vin: Vin[];
     vout: Vout[];
     status: Status;
@@ -89,10 +90,18 @@ export namespace IEsploraApi {
     weight: number;
     previousblockhash: string;
     mediantime: number;
+    stale: boolean;
   }
 
   export interface Address {
     address: string;
+    chain_stats: ChainStats;
+    mempool_stats: MempoolStats;
+    electrum?: boolean;
+  }
+
+  export interface ScriptHash {
+    scripthash: string;
     chain_stats: ChainStats;
     mempool_stats: MempoolStats;
     electrum?: boolean;

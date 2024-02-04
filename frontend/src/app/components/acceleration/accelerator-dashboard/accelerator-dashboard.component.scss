@@ -1,0 +1,151 @@
+.dashboard-container {
+  text-align: center;
+  margin-top: 0.5rem;
+  .col {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.card {
+  background-color: #1d1f31;
+}
+
+.graph-card {
+  height: 100%;
+  @media (min-width: 992px) {
+    height: 385px;
+  }
+}
+
+.card-title {
+  font-size: 1rem;
+  color: #4a68b9;
+}
+.card-title > a {
+  color: #4a68b9;
+}
+
+.card-body.pool-ranking {
+  padding: 1.25rem 0.25rem 0.75rem 0.25rem;
+}
+.card-text {
+  font-size: 22px;
+}
+
+#blockchain-container {
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#blockchain-container::-webkit-scrollbar {
+  display: none;
+}
+
+.fade-border {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%)
+}
+
+.main-title {
+  position: relative;
+  color: #ffffff91;
+  margin-top: -13px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 3px;
+}
+
+.more-padding {
+  padding: 24px 20px !important;
+}
+
+.card-wrapper {
+  .card {
+    height: auto !important;
+  }
+  .card-body {
+    display: flex;
+    flex: inherit;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 22px 20px;
+  }
+}
+
+.skeleton-loader {
+  width: 100%;
+  display: block;
+  &:first-child {
+    max-width: 90px;
+    margin: 15px auto 3px;
+  }
+  &:last-child {
+    margin: 10px auto 3px;
+    max-width: 55px;
+  }
+}
+
+.card-text {
+  font-size: 22px;
+}
+
+.title-link, .title-link:hover, .title-link:focus, .title-link:active {
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lastest-blocks-table {
+  width: 100%;
+  text-align: left;
+  tr, td, th {
+    border: 0px;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.8rem !important;
+  }
+  .table-cell-height {
+    width: 25%;
+  }
+  .table-cell-fee {
+    width: 25%;
+    text-align: right;
+  }
+  .table-cell-pool {
+    text-align: left;
+    width: 30%;
+
+    @media (max-width: 875px) {
+      display: none;
+    }
+
+    .pool-name {
+      margin-left: 1em;
+    }
+  }
+  .table-cell-acceleration-count {
+    text-align: right;
+    width: 20%;
+  }
+}
+
+.card {
+  height: 385px;
+}
+.list-card {
+  height: 410px;
+  @media (max-width: 767px) {
+    height: auto;
+  }
+}
+
+.mempool-block-wrapper {
+  max-height: 380px;
+  max-width: 380px;
+  margin: auto;
+}

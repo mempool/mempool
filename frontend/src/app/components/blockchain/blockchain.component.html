@@ -1,9 +1,9 @@
 <div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
-  <div class="position-container" [ngClass]="network ? network : ''">
+  <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
         <div class="scroll-spacer" *ngIf="minScrollWidth" [style.left]="minScrollWidth + 'px'"></div>
-        <app-mempool-blocks [hidden]="pageIndex > 0"></app-mempool-blocks>
+        <app-mempool-blocks [hidden]="pageIndex > 0" [allBlocks]="scrollableMempool" (widthChange)="onMempoolWidthChange($event)"></app-mempool-blocks>
         <app-blockchain-blocks [hidden]="pageIndex > 0"></app-blockchain-blocks>
         <ng-container *ngFor="let page of pages; trackBy: trackByPageFn">
           <app-blockchain-blocks [static]="true" [offset]="page.offset" [height]="page.height" [count]="blocksPerPage" [loadingTip]="loadingTip" [connected]="connected"></app-blockchain-blocks>

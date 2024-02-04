@@ -48,7 +48,7 @@ load_rc_config ${name}
 : ${bitcoin_syslog_facility:="local0"}
 : ${bitcoin_syslog_priority:="info"}
 : ${bitcoin_syslog_tag:="bitcoin"}
-: ${bitcoin_kill_after:="300"}
+: ${bitcoin_kill_after:="600"}
 : ${bitcoinlimits_args:="-e -U ${bitcoin_user}"}
 
 # set up dependant variables

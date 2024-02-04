@@ -16,8 +16,8 @@
         <th *ngIf="!widget" class="d-none d-md-table-cell timestamp text-right" i18n="lightning.last_update">Last update</th>
         <th *ngIf="!widget" class="d-none d-md-table-cell text-right" i18n="lightning.location">Location</th>
       </thead>
-      <tbody *ngIf="topNodesPerCapacity$ | async as nodes">
-        <tr *ngFor="let node of nodes;">
+      <tbody *ngIf="topNodesPerCapacity$ | async as data">
+        <tr *ngFor="let node of data.nodes;">
           <td class="pool text-left">
             <div class="tooltip-custom d-block w-100">
               <a class="link d-block w-100" [routerLink]="['/lightning/node' | relativeUrl, node.publicKey]">
@@ -27,12 +27,14 @@
           </td>
           <td class="text-right">
             <app-amount [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+            <span class="capacity-ratio">&nbsp;({{ (node?.capacity / data.statistics.totalCapacity * 100) | number:'1.1-1' }}%)</span>
           </td>
           <td class="d-table-cell fiat text-right" [ngClass]="{'widget': widget}">
             <app-fiat [value]="node.capacity"></app-fiat>
           </td>
           <td *ngIf="!widget" class="d-none d-md-table-cell text-right">
             {{ node.channels | number }}
+            <span class="capacity-ratio">&nbsp;({{ (node?.channels / data.statistics.totalChannels * 100) | number:'1.1-1' }}%)</span>
           </td>
           <td *ngIf="!widget" class="d-none d-md-table-cell text-right">
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.firstSeen" [hideTimeSince]="true"></app-timestamp>
