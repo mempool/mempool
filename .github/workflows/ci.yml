@@ -115,6 +115,10 @@ jobs:
 
       - name: Sync-assets
         run: npm run sync-assets-dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMPOOL_CDN: 1
+          VERBOSE: 1
         working-directory: assets/frontend
 
       - name: Zip mining-pool assets
@@ -237,6 +241,8 @@ jobs:
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMPOOL_CDN: 1
+          VERBOSE: 1
   
   e2e:
     if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
