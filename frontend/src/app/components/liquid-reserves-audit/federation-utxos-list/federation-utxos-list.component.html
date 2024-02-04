@@ -9,7 +9,7 @@
         <th class="address text-left" *ngIf="!widget" i18n="shared.address">Address</th>
         <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
         <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
-        <th class="timestamp text-right" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
@@ -22,7 +22,7 @@
             <td class="amount text-right widget">
               <app-amount [satoshis]="utxo.amount" [noFiat]="true" [forceBtc]="true"></app-amount>
             </td>
-            <td class="timestamp text-right widget">
+            <td class="timestamp text-left widget">
               <app-time kind="since" [time]="utxo.blocktime"></app-time>
             </td>
           </tr>
@@ -52,7 +52,7 @@
                 <i><span class="text-muted" i18n="liquid.change-output">Change output</span></i>
               </ng-template>
             </td>
-            <td class="timestamp text-right">
+            <td class="timestamp text-left">
               &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
               <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
             </td>
@@ -68,7 +68,7 @@
             <td class="amount text-right widget">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="timestamp text-right widget">
+            <td class="timestamp text-left widget">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
           </tr>
@@ -87,7 +87,7 @@
             <td class="pegin text-left">
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
-            <td class="timestamp text-right">
+            <td class="timestamp text-left">
               <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
           </tr>
