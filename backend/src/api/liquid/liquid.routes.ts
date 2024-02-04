@@ -15,7 +15,16 @@ class LiquidRoutes {
     
     if (config.DATABASE.ENABLED) {
       app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/previous-month', this.$getFederationAddressesOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/previous-month', this.$getFederationUtxosOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/status', this.$getFederationAuditStatus)
         ;
     }
   }
@@ -63,11 +72,123 @@ class LiquidRoutes {
   private async $getElementsPegsByMonth(req: Request, res: Response) {
     try {
       const pegs = await elementsParser.$getPegDataByMonth();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60).toUTCString());
       res.json(pegs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
+
+  private async $getFederationReservesByMonth(req: Request, res: Response) {
+    try {
+      const reserves = await elementsParser.$getFederationReservesByMonth();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60).toUTCString());
+      res.json(reserves);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getElementsPegs(req: Request, res: Response) {
+    try {
+      const currentSupply = await elementsParser.$getCurrentLbtcSupply();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(currentSupply);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationReserves(req: Request, res: Response) {
+    try {
+      const currentReserves = await elementsParser.$getCurrentFederationReserves();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(currentReserves);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAuditStatus(req: Request, res: Response) {
+    try {
+      const auditStatus = await elementsParser.$getAuditStatus();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(auditStatus);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAddresses(req: Request, res: Response) {
+    try {
+      const federationAddresses = await elementsParser.$getFederationAddresses();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationAddresses);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAddressesOneMonthAgo(req: Request, res: Response) {
+    try {
+      const federationAddresses = await elementsParser.$getFederationAddressesOneMonthAgo();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.json(federationAddresses);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationUtxos(req: Request, res: Response) {
+    try {
+      const federationUtxos = await elementsParser.$getFederationUtxos();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationUtxosOneMonthAgo(req: Request, res: Response) {
+    try {
+      const federationUtxos = await elementsParser.$getFederationUtxosOneMonthAgo();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.json(federationUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegOuts(req: Request, res: Response) {
+    try {
+      const recentPegOuts = await elementsParser.$getRecentPegouts();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(recentPegOuts);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
 }
 
 export default new LiquidRoutes();

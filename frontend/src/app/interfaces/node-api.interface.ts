@@ -76,6 +76,46 @@ export interface LiquidPegs {
   date: string;
 }
 
+export interface CurrentPegs {
+  amount: string;
+  lastBlockUpdate: number;
+  hash: string;
+}
+
+export interface FederationAddress { 
+  bitcoinaddress: string;
+  balance: string;
+}
+
+export interface FederationUtxo {
+  txid: string;
+  txindex: number;
+  bitcoinaddress: string;
+  amount: number;
+  blocknumber: number;
+  blocktime: number;
+  pegtxid: string;
+  pegindex: number;
+  pegblocktime: number;
+}
+
+export interface RecentPeg {
+  txid: string;
+  txindex: number;
+  amount: number;
+  bitcoinaddress: string;
+  bitcointxid: string;
+  bitcoinindex: number;
+  blocktime: number;
+}
+
+export interface AuditStatus {
+  bitcoinBlocks: number;
+  bitcoinHeaders: number;
+  lastBlockAudit: number;
+  isAuditSynced: boolean;
+}
+
 export interface ITranslators { [language: string]: string; }
 
 /**
