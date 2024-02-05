@@ -150,6 +150,8 @@ export class StateService {
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  activeGoggles$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,
     @Inject(LOCALE_ID) private locale: string,

@@ -1,0 +1,34 @@
+<div *ngIf="(federationAddresses$ | async) as federationAddresses; else loadingData">
+  
+    <div class="fee-estimation-container">
+      <div class="item">
+        <a class="title-link" [routerLink]="['/audit/wallet/addresses' | relativeUrl]">
+          <h5 class="card-title"><ng-container i18n="liquid.federation-wallet">Liquid Federation Wallet</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+        </a>
+        <div class="card-text">
+          <div class="fee-text">{{ federationAddresses.length }} <span i18n="shared.addresses">addresses</span></div>
+          <span class="fiat" *ngIf="(federationAddressesOneMonthAgo$ | async) as federationAddressesOneMonthAgo; else loadingSkeleton" i18n-ngbTooltip="liquid.percentage-change-last-month" ngbTooltip="Percentage change past month" placement="bottom">
+            <app-change [current]="federationAddresses.length" [previous]="federationAddressesOneMonthAgo.addresses_count_one_month"></app-change>
+          </span>
+        </div>
+      </div>
+    </div>
+</div>
+
+<ng-template #loadingData>
+  <div class="fee-estimation-container loading-container">
+    <div class="item">
+      <a class="title-link" [routerLink]="['/audit/wallet/addresses' | relativeUrl]">
+        <h5 class="card-title"><ng-container i18n="liquid.federation-wallet">Liquid Federation Wallet</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
+      </a>
+      <div class="card-text">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #loadingSkeleton>
+  <div class="skeleton-loader skeleton-loader-transactions" style="margin-top: 2px; margin-bottom: 5px;"></div>
+</ng-template>

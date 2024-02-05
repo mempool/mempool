@@ -91,4 +91,5 @@ module.exports = {
   walletPassphraseChange: 'walletpassphrasechange',
   getTxoutSetinfo: 'gettxoutsetinfo',
   getIndexInfo: 'getindexinfo',
+  testMempoolAccept: 'testmempoolaccept',
 };

@@ -21,6 +21,7 @@ interface IConfig {
     MEMPOOL_BLOCKS_AMOUNT: number;
     INDEXING_BLOCKS_AMOUNT: number;
     BLOCKS_SUMMARIES_INDEXING: boolean;
+    GOGGLES_INDEXING: boolean;
     USE_SECOND_NODE_FOR_MINFEE: boolean;
     EXTERNAL_ASSETS: string[];
     EXTERNAL_MAX_RETRY: number;
@@ -40,6 +41,7 @@ interface IConfig {
     MAX_PUSH_TX_SIZE_WEIGHT: number;
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
+    MAX_TRACKED_ADDRESSES: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -176,6 +178,7 @@ const defaults: IConfig = {
     'MEMPOOL_BLOCKS_AMOUNT': 8,
     'INDEXING_BLOCKS_AMOUNT': 11000, // 0 = disable indexing, -1 = index all blocks
     'BLOCKS_SUMMARIES_INDEXING': false,
+    'GOGGLES_INDEXING': false,
     'USE_SECOND_NODE_FOR_MINFEE': false,
     'EXTERNAL_ASSETS': [],
     'EXTERNAL_MAX_RETRY': 1,
@@ -195,6 +198,7 @@ const defaults: IConfig = {
     'MAX_PUSH_TX_SIZE_WEIGHT': 400000,
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
+    'MAX_TRACKED_ADDRESSES': 1,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

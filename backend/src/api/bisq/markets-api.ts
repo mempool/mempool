@@ -646,7 +646,7 @@ class BisqMarketsApi {
         case 'year':
             return strtotime('midnight first day of january', ts);
         default:
-            throw new Error('Unsupported interval: ' + interval);
+            throw new Error('Unsupported interval');
     }
 }
 

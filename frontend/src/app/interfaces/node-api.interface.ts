@@ -76,6 +76,46 @@ export interface LiquidPegs {
   date: string;
 }
 
+export interface CurrentPegs {
+  amount: string;
+  lastBlockUpdate: number;
+  hash: string;
+}
+
+export interface FederationAddress { 
+  bitcoinaddress: string;
+  balance: string;
+}
+
+export interface FederationUtxo {
+  txid: string;
+  txindex: number;
+  bitcoinaddress: string;
+  amount: number;
+  blocknumber: number;
+  blocktime: number;
+  pegtxid: string;
+  pegindex: number;
+  pegblocktime: number;
+}
+
+export interface RecentPeg {
+  txid: string;
+  txindex: number;
+  amount: number;
+  bitcoinaddress: string;
+  bitcointxid: string;
+  bitcoinindex: number;
+  blocktime: number;
+}
+
+export interface AuditStatus {
+  bitcoinBlocks: number;
+  bitcoinHeaders: number;
+  lastBlockAudit: number;
+  isAuditSynced: boolean;
+}
+
 export interface ITranslators { [language: string]: string; }
 
 /**
@@ -255,6 +295,29 @@ export interface INodesRanking {
   topByChannels: ITopNodesPerChannels[];
 }
 
+export interface INodesStatisticsEntry {
+  added: string;
+  avg_base_fee_mtokens: number; 
+  avg_capacity: number;
+  avg_fee_rate: number;
+  channel_count: number;
+  clearnet_nodes: number;
+  clearnet_tor_nodes: number;
+  id: number; 
+  med_base_fee_mtokens: number;
+  med_capacity: number;
+  med_fee_rate: number;
+  node_count: number;
+  tor_nodes: number;
+  total_capacity: number;
+  unannounced_nodes: number;
+}
+
+export interface INodesStatistics {
+  latest: INodesStatisticsEntry;
+  previous: INodesStatisticsEntry;
+}
+
 export interface IOldestNodes {
   publicKey: string,
   alias: string,
@@ -319,7 +382,8 @@ export interface Acceleration {
   blockHash: string;
   blockHeight: number;
 
-  actualFeeDelta?: number;
+  acceleratedFee?: number;
+  boost?: number;
 }
 
 export interface AccelerationHistoryParams {

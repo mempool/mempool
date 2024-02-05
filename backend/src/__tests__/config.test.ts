@@ -17,6 +17,7 @@ describe('Mempool Backend Config', () => {
         NETWORK: 'mainnet',
         BACKEND: 'none',
         BLOCKS_SUMMARIES_INDEXING: false,
+        GOGGLES_INDEXING: false,
         HTTP_PORT: 8999,
         UNIX_SOCKET_PATH: '/mempool/socket/mempool-bitcoin-mainnet',
         SPAWN_CLUSTER_PROCS: 0,
@@ -49,6 +50,7 @@ describe('Mempool Backend Config', () => {
         MAX_PUSH_TX_SIZE_WEIGHT: 400000,
         ALLOW_UNREACHABLE: true,
         PRICE_UPDATES_PER_HOUR: 1,
+        MAX_TRACKED_ADDRESSES: 1,
       });
 
       expect(config.ELECTRUM).toStrictEqual({ HOST: '127.0.0.1', PORT: 3306, TLS_ENABLED: true });

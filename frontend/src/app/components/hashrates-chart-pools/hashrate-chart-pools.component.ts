@@ -11,6 +11,13 @@ import { MiningService } from '../../services/mining.service';
 import { download } from '../../shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 
+interface Hashrate {
+  timestamp: number;
+  avgHashRate: number;
+  share: number;
+  poolName: string;
+}
+
 @Component({
   selector: 'app-hashrate-chart-pools',
   templateUrl: './hashrate-chart-pools.component.html',
@@ -32,6 +39,7 @@ export class HashrateChartPoolsComponent implements OnInit {
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
+  hashrates: Hashrate[];
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
@@ -87,56 +95,9 @@ export class HashrateChartPoolsComponent implements OnInit {
           return this.apiService.getHistoricalPoolsHashrate$(timespan)
             .pipe(
               tap((response) => {
-                const hashrates = response.body;
+                this.hashrates = response.body;
                 // Prepare series (group all hashrates data point by pool)
-                const grouped = {};
-                for (const hashrate of hashrates) {
-                  if (!grouped.hasOwnProperty(hashrate.poolName)) {
-                    grouped[hashrate.poolName] = [];
-                  }
-                  grouped[hashrate.poolName].push(hashrate);
-                }
-
-                const series = [];
-                const legends = [];
-                for (const name in grouped) {
-                  series.push({
-                    zlevel: 0,
-                    stack: 'Total',
-                    name: name,
-                    showSymbol: false,
-                    symbol: 'none',
-                    data: grouped[name].map((val) => [val.timestamp * 1000, val.share * 100]),
-                    type: 'line',
-                    lineStyle: { width: 0 },
-                    areaStyle: { opacity: 1 },
-                    smooth: true,
-                    color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
-                    emphasis: {
-                      disabled: true,
-                      scale: false,
-                    },
-                  });
-
-                  legends.push({
-                    name: name,
-                    inactiveColor: 'rgb(110, 112, 121)',
-                    textStyle: {
-                      color: 'white',
-                    },
-                    icon: 'roundRect',
-                    itemStyle: {
-                      color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
-                    },
-                  });
-                }
-
-                this.prepareChartOptions({
-                  legends: legends,
-                  series: series,
-                });
-                this.isLoading = false;
-
+                const series = this.applyHashrates();
                 if (series.length === 0) {
                   this.cd.markForCheck();
                   throw new Error();
@@ -154,6 +115,77 @@ export class HashrateChartPoolsComponent implements OnInit {
         }),
         share()
       );
+  }
+
+  applyHashrates(): any[] {
+    const times: { [time: number]: { hashrates: { [pool: string]: Hashrate } } } = {};
+    const pools = {};
+    for (const hashrate of this.hashrates) {
+      if (!times[hashrate.timestamp]) {
+        times[hashrate.timestamp] = { hashrates: {} };
+      }
+      times[hashrate.timestamp].hashrates[hashrate.poolName] = hashrate;
+      if (!pools[hashrate.poolName]) {
+        pools[hashrate.poolName] = true;
+      }
+    }
+
+    const sortedTimes = Object.keys(times).sort((a,b) => parseInt(a) - parseInt(b)).map(time => ({ time: parseInt(time), hashrates: times[time].hashrates }));
+    const lastHashrates = sortedTimes[sortedTimes.length - 1].hashrates;
+    const sortedPools = Object.keys(pools).sort((a,b) => {
+      if (lastHashrates[b]?.share ?? lastHashrates[a]?.share ?? false) {
+        // sort by descending share of hashrate in latest period
+        return (lastHashrates[b]?.share || 0) - (lastHashrates[a]?.share || 0);
+      } else {
+        // tiebreak by pool name
+        b < a;
+      }
+    });
+
+    const series = [];
+    const legends = [];
+    for (const name of sortedPools) {
+      const data = sortedTimes.map(({ time, hashrates }) => {
+        return [time * 1000, (hashrates[name]?.share || 0) * 100];
+      });
+      series.push({
+        zlevel: 0,
+        stack: 'Total',
+        name: name,
+        showSymbol: false,
+        symbol: 'none',
+        data,
+        type: 'line',
+        lineStyle: { width: 0 },
+        areaStyle: { opacity: 1 },
+        smooth: true,
+        color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()],
+        emphasis: {
+          disabled: true,
+          scale: false,
+        },
+      });
+
+      legends.push({
+        name: name,
+        inactiveColor: 'rgb(110, 112, 121)',
+        textStyle: {
+          color: 'white',
+        },
+        icon: 'roundRect',
+        itemStyle: {
+          color: poolsColor[name.replace(/[^a-zA-Z0-9]/g, "").toLowerCase()],
+        },
+      });
+    }
+
+    this.prepareChartOptions({
+      legends: legends,
+      series: series,
+    });
+    this.isLoading = false;
+
+    return series;
   }
 
   prepareChartOptions(data) {
@@ -256,6 +288,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         },
       }],
     };
+    this.cd.markForCheck();
   }
 
   onChartInit(ec) {
