@@ -59,7 +59,7 @@ class BlocksAuditRepositories {
     }
   }
 
-  public async $getBlockAudit(hash: string): Promise<any> {
+  public async $getBlockAudit(hash: string): Promise<BlockAudit | null> {
     try {
       const [rows]: any[] = await DB.query(
         `SELECT blocks_audits.height, blocks_audits.hash as id, UNIX_TIMESTAMP(blocks_audits.time) as timestamp,
@@ -75,8 +75,8 @@ class BlocksAuditRepositories {
         expected_weight as expectedWeight
         FROM blocks_audits
         JOIN blocks_templates ON blocks_templates.id = blocks_audits.hash
-        WHERE blocks_audits.hash = "${hash}"
-      `);
+        WHERE blocks_audits.hash = ?
+      `, [hash]);
       
       if (rows.length) {
         rows[0].missingTxs = JSON.parse(rows[0].missingTxs);
@@ -101,8 +101,8 @@ class BlocksAuditRepositories {
       const [rows]: any[] = await DB.query(
         `SELECT hash, match_rate as matchRate, expected_fees as expectedFees, expected_weight as expectedWeight
         FROM blocks_audits
-        WHERE blocks_audits.hash = "${hash}"
-      `);
+        WHERE blocks_audits.hash = ?
+      `, [hash]);
       return rows[0];
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));

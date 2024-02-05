@@ -1,3 +1,4 @@
+import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
 import { BlockSummary, TransactionClassified } from '../mempool.interfaces';
@@ -69,7 +70,7 @@ class BlocksSummariesRepository {
 
   public async $getIndexedSummariesId(): Promise<string[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries`);
+      const [rows] = await DB.query(`SELECT id from blocks_summaries`) as RowDataPacket[][];
       return rows.map(row => row.id);
     } catch (e) {
       logger.err(`Cannot get block summaries id list. Reason: ` + (e instanceof Error ? e.message : e));

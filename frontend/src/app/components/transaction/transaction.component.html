@@ -540,7 +540,7 @@
               </ng-container>
             </ng-template>
           </div>
-          <button *ngIf="cpfpInfo.bestDescendant || cpfpInfo.descendants?.length || cpfpInfo.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
+          <button *ngIf="cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
         </td>
       </tr>
     </tbody>

@@ -45,28 +45,30 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.pendingAccelerations$ = interval(30000).pipe(
       startWith(true),
       switchMap(() => {
-        return this.serviceApiServices.getAccelerations$();
-      }),
-      catchError((e) => {
-        return of([]);
+        return this.serviceApiServices.getAccelerations$().pipe(
+          catchError(() => {
+            return of([]);
+          }),
+        );
       }),
       share(),
     );
 
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
-      switchMap((chainTip) => {
-        return this.serviceApiServices.getAccelerationHistory$({ timeframe: '1m' });
-      }),
-      catchError((e) => {
-        return of([]);
+      switchMap(() => {
+        return this.serviceApiServices.getAccelerationHistory$({ timeframe: '1m' }).pipe(
+          catchError(() => {
+            return of([]);
+          }),
+        );
       }),
       share(),
     );
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed', 'failed'].includes(acc.status))
+        return accelerations.filter(acc => ['mined', 'completed', 'failed'].includes(acc.status));
       })
     );
 

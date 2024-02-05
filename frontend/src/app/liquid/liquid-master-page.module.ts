@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
+import { NgxEchartsModule } from 'ngx-echarts';
 import { LiquidMasterPageComponent } from '../components/liquid-master-page/liquid-master-page.component';
+
 
 import { StartComponent } from '../components/start/start.component';
 import { AddressComponent } from '../components/address/address.component';
@@ -13,6 +15,17 @@ import { AssetsComponent } from '../components/assets/assets.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component'
 import { AssetComponent } from '../components/asset/asset.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
+import { ReservesAuditDashboardComponent } from '../components/liquid-reserves-audit/reserves-audit-dashboard/reserves-audit-dashboard.component';
+import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
+import { RecentPegsStatsComponent } from '../components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
+import { RecentPegsListComponent } from '../components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
+import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
+import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
+import { FederationAddressesStatsComponent } from '../components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
+import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
+import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
+import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
+import { ReservesRatioGraphComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio-graph.component';
 
 const routes: Routes = [
   {
@@ -63,6 +76,44 @@ const routes: Routes = [
         component: StartComponent,
         data: { preload: true, networkSpecific: true },
         loadChildren: () => import('../components/block/block.module').then(m => m.BlockModule),
+      },
+      {
+        path: 'audit',
+        data: { networks: ['liquid'] },
+        component: StartComponent,
+        children: [
+          {
+            path: '',
+            data: { networks: ['liquid'] },
+            component: ReservesAuditDashboardComponent,
+          }
+        ]
+      },
+      {
+        path: 'audit/wallet',
+        data: { networks: ['liquid'] },
+        component: FederationWalletComponent,
+        children: [
+          {
+            path: 'utxos',
+            data: { networks: ['liquid'] },
+            component: FederationUtxosListComponent,
+          },
+          {
+            path: 'addresses',
+            data: { networks: ['liquid'] },
+            component: FederationAddressesListComponent,
+          },
+          {
+            path: '**',
+            redirectTo: 'utxos'
+          }
+        ]
+      },
+      {
+        path: 'audit/pegs',
+        data: { networks: ['liquid'] },
+        component: RecentPegsListComponent,
       },
       {
         path: 'assets',
@@ -123,9 +174,23 @@ export class LiquidRoutingModule { }
     CommonModule,
     LiquidRoutingModule,
     SharedModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('../graphs/echarts').then(m => m.echarts),
+    })
   ],
   declarations: [
     LiquidMasterPageComponent,
+    ReservesAuditDashboardComponent,
+    ReservesSupplyStatsComponent,
+    RecentPegsStatsComponent,
+    RecentPegsListComponent,
+    FederationWalletComponent,
+    FederationUtxosListComponent,
+    FederationAddressesStatsComponent,
+    FederationAddressesListComponent,
+    ReservesRatioComponent,
+    ReservesRatioStatsComponent,
+    ReservesRatioGraphComponent,
   ]
 })
 export class LiquidMasterPageModule { }

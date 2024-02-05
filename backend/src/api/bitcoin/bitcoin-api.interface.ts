@@ -106,6 +106,7 @@ export namespace IBitcoinApi {
       address?: string;              //  (string) bitcoin address
       addresses?: string[];           //  (string) bitcoin addresses
       pegout_chain?: string;         //  (string) Elements peg-out chain
+      pegout_address?: string;       //  (string) Elements peg-out address
       pegout_addresses?: string[];   //  (string) Elements peg-out addresses
     };
   }
