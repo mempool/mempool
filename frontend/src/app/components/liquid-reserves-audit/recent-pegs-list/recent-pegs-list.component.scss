@@ -105,3 +105,16 @@ tr, td, th {
 .debit {
   color: #D81B60;
 }
+
+.glow-effect {
+  animation: color-oscillation 1s ease-in-out infinite alternate;
+}
+
+@keyframes color-oscillation {
+  0% {
+      color: #777983;
+  }
+  100% {
+      color: #D81B60;
+  }
+}
