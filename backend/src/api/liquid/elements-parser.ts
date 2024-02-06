@@ -433,6 +433,16 @@ class ElementsParser {
     const [rows] = await DB.query(query);
     return rows;
   }
+
+  // Get all peg in / out from the last month
+  public async $getPegsVolumeDaily(): Promise<any> {
+    const pegInQuery = await DB.query(`SELECT SUM(amount) AS volume, COUNT(*) AS number FROM elements_pegs WHERE amount > 0 and datetime > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()));`);
+    const pegOutQuery = await DB.query(`SELECT SUM(amount) AS volume, COUNT(*) AS number FROM elements_pegs WHERE amount < 0 and datetime > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()));`);
+    return [
+      pegInQuery[0][0],
+      pegOutQuery[0][0]
+    ];
+  }
 }
 
 export default new ElementsParser();

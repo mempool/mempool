@@ -82,6 +82,11 @@ export interface CurrentPegs {
   hash: string;
 }
 
+export interface PegsVolume {
+  volume: string;
+  number: number;
+}
+
 export interface FederationAddress { 
   bitcoinaddress: string;
   balance: string;

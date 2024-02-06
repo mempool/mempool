@@ -18,7 +18,7 @@
         </thead>
         <tbody *ngIf="recentPegs$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <ng-container *ngIf="widget; else regularRows">
-            <tr *ngFor="let peg of pegs | slice:0:6">
+            <tr *ngFor="let peg of pegs | slice:0:5">
               <td class="transaction text-left widget">
                 <ng-container *ngIf="peg.amount > 0">
                   <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
