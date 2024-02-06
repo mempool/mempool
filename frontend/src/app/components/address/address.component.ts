@@ -31,8 +31,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
 
-  totalConfirmedTxCount = 0;
-  loadedConfirmedTxCount = 0;
+  fullyLoaded = false;
   txCount = 0;
   received = 0;
   sent = 0;
@@ -66,7 +65,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         switchMap((params: ParamMap) => {
           this.error = undefined;
           this.isLoadingAddress = true;
-          this.loadedConfirmedTxCount = 0;
+          this.fullyLoaded = false;
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
@@ -128,7 +127,6 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.tempTransactions = transactions;
           if (transactions.length) {
             this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-            this.loadedConfirmedTxCount += transactions.filter((tx) => tx.status.confirmed).length;
           }
 
           const fetchTxs: string[] = [];
@@ -191,8 +189,6 @@ export class AddressComponent implements OnInit, OnDestroy {
             this.audioService.playSound('magic');
           }
         }
-        this.totalConfirmedTxCount++;
-        this.loadedConfirmedTxCount++;
       });
   }
 
@@ -252,16 +248,20 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   loadMore() {
-    if (this.isLoadingTransactions || !this.totalConfirmedTxCount || this.loadedConfirmedTxCount >= this.totalConfirmedTxCount) {
+    if (this.isLoadingTransactions || this.fullyLoaded) {
       return;
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
     this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
-        this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-        this.loadedConfirmedTxCount += transactions.length;
-        this.transactions = this.transactions.concat(transactions);
+        if (transactions && transactions.length) {
+          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
+          this.transactions = this.transactions.concat(transactions);
+        }
+        if (transactions?.length == null || transactions.length < 50) {
+          this.fullyLoaded = true;
+        }
         this.isLoadingTransactions = false;
       },
       (error) => {
@@ -278,7 +278,6 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.received = this.address.chain_stats.funded_txo_sum + this.address.mempool_stats.funded_txo_sum;
     this.sent = this.address.chain_stats.spent_txo_sum + this.address.mempool_stats.spent_txo_sum;
     this.txCount = this.address.chain_stats.tx_count + this.address.mempool_stats.tx_count;
-    this.totalConfirmedTxCount = this.address.chain_stats.tx_count;
   }
 
   ngOnDestroy() {
