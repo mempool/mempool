@@ -20,6 +20,7 @@ import { isMobile } from '../../shared/common.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
+  @Input() height: number = 300;
   @Input() widget = false;
 
   miningWindowPreference: string;
