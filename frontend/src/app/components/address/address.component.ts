@@ -258,8 +258,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         if (transactions && transactions.length) {
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
           this.transactions = this.transactions.concat(transactions);
-        }
-        if (transactions?.length == null || transactions.length < 50) {
+        } else {
           this.fullyLoaded = true;
         }
         this.isLoadingTransactions = false;
