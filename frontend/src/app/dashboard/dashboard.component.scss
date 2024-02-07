@@ -44,8 +44,11 @@
 
 .graph-card {
   height: 100%;
+  @media (min-width: 768px) {
+    height: 415px;
+  }
   @media (min-width: 992px) {
-    height: 385px;
+    height: 500px;
   }
 }
 
@@ -258,6 +261,12 @@
 
 .mempool-graph {
   height: 255px;
+  @media (min-width: 768px) {
+    height: 285px;
+  }
+  @media (min-width: 992px) {
+    height: 370px;
+  }
 }
 .loadingGraphs{
   height: 250px;
@@ -363,4 +372,19 @@
   margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
+}
+
+.mempool-block-wrapper {
+  max-height: 430px;
+  max-width: 430px;
+  margin: auto;
+
+  @media (min-width: 768px) {
+    max-height: 344px;
+    max-width: 344px;
+  }
+  @media (min-width: 992px) {
+    max-height: 430px;
+    max-width: 430px;
+  }
 }
