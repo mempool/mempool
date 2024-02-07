@@ -27,7 +27,6 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   template: ('widget' | 'advanced') = 'widget';
   isLoading = true;
 
-  pegsChartOption: EChartsOption = {};
   pegsChartInitOption = {
     renderer: 'svg'
   };
@@ -41,20 +40,24 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (!this.data) {
+    if (!this.data?.liquidPegs) {
       return;
     }
-    this.pegsChartOptions = this.createChartOptions(this.data.series, this.data.labels);
+    if (!this.data.liquidReserves) {
+      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels);
+    } else {
+      this.pegsChartOptions = this.createChartOptions(this.data.liquidPegs.series, this.data.liquidPegs.labels, this.data.liquidReserves.series);
+    }
   }
 
   rendered() {
-    if (!this.data) {
+    if (!this.data.liquidPegs) {
       return;
     }
     this.isLoading = false;
   }
 
-  createChartOptions(series: number[], labels: string[]): EChartsOption {
+  createChartOptions(pegSeries: number[], labels: string[], reservesSeries?: number[],): EChartsOption {
     return {
       grid: {
         height: this.height,
@@ -99,17 +102,18 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
           type: 'line',
         },
         formatter: (params: any) => {
-          const colorSpan = (color: string) => `<span class="indicator" style="background-color: #116761;"></span>`;
+          const colorSpan = (color: string) => `<span class="indicator" style="background-color: ${color};"></span>`;
           let itemFormatted = '<div class="title">' + params[0].axisValue + '</div>';
-          params.map((item: any, index: number) => {
+          for (let index = params.length - 1; index >= 0; index--) {
+            const item = params[index];
             if (index < 26) {
               itemFormatted += `<div class="item">
                 <div class="indicator-container">${colorSpan(item.color)}</div>
-                <div class="grow"></div>
-                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">L-BTC</span></div>
+                <div style="margin-right: 5px"></div>
+                <div class="value">${formatNumber(item.value, this.locale, '1.2-2')} <span class="symbol">${item.seriesName}</span></div>
               </div>`;
             }
-          });
+          }
           return `<div class="tx-wrapper-tooltip-chart ${(this.template === 'advanced') ? 'tx-wrapper-tooltip-chart-advanced' : ''}">${itemFormatted}</div>`;
         }
       },
@@ -138,18 +142,32 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
       },
       series: [
         {
-          data: series,
+          data: pegSeries,
+          name: 'L-BTC',
+          color: '#116761',
           type: 'line',
           stack: 'total',
-          smooth: false,
+          smooth: true,
           showSymbol: false,
           areaStyle: {
             opacity: 0.2,
             color: '#116761',
           },
           lineStyle: {
-            width: 3,
+            width: 2,
             color: '#116761',
+          },
+        },
+        {
+          data: reservesSeries,
+          name: 'BTC',
+          color: '#EA983B',
+          type: 'line',
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            width: 2,
+            color: '#EA983B',
           },
         },
       ],

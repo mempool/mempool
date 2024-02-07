@@ -142,7 +142,7 @@ class Mining {
   public async $getPoolStat(slug: string): Promise<object> {
     const pool = await PoolsRepository.$getPool(slug);
     if (!pool) {
-      throw new Error('This mining pool does not exist ' + escape(slug));
+      throw new Error('This mining pool does not exist');
     }
 
     const blockCount: number = await BlocksRepository.$blockCount(pool.id);

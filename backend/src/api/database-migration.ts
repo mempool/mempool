@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 67;
+  private static currentVersion = 68;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -566,6 +566,20 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `blocks_templates` ADD INDEX `version` (`version`)');
       await this.updateToSchemaVersion(67);
     }
+    
+    if (databaseSchemaVersion < 68 && config.MEMPOOL.NETWORK === "liquid") {
+      await this.$executeQuery('TRUNCATE TABLE elements_pegs');
+      await this.$executeQuery('ALTER TABLE elements_pegs ADD PRIMARY KEY (txid, txindex);');
+      await this.$executeQuery(`UPDATE state SET number = 0 WHERE name = 'last_elements_block';`);
+      // Create the federation_addresses table and add the two Liquid Federation change addresses in
+      await this.$executeQuery(this.getCreateFederationAddressesTableQuery(), await this.$checkIfTableExists('federation_addresses'));
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('bc1qxvay4an52gcghxq5lavact7r6qe9l4laedsazz8fj2ee2cy47tlqff4aj4')`); // Federation change address
+      await this.$executeQuery(`INSERT INTO federation_addresses (bitcoinaddress) VALUES ('3EiAcrzq1cELXScc98KeCswGWZaPGceT1d')`); // Federation change address
+      // Create the federation_txos table that uses the federation_addresses table as a foreign key
+      await this.$executeQuery(this.getCreateFederationTxosTableQuery(), await this.$checkIfTableExists('federation_txos'));
+      await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
+      await this.updateToSchemaVersion(68);
+    }
   }
 
   /**
@@ -810,6 +824,32 @@ class DatabaseMigration {
       bitcointxid varchar(65) NOT NULL,
       bitcoinindex int(11) NOT NULL,
       final_tx int(11) NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFederationAddressesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS federation_addresses (
+      bitcoinaddress varchar(100) NOT NULL,
+      PRIMARY KEY (bitcoinaddress)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFederationTxosTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS federation_txos (
+      txid varchar(65) NOT NULL,
+      txindex int(11) NOT NULL,
+      bitcoinaddress varchar(100) NOT NULL,
+      amount bigint(20) unsigned NOT NULL,
+      blocknumber int(11) unsigned NOT NULL,
+      blocktime int(11) unsigned NOT NULL,
+      unspent tinyint(1) NOT NULL,
+      lastblockupdate int(11) unsigned NOT NULL,
+      lasttimeupdate int(11) unsigned NOT NULL,
+      pegtxid varchar(65) NOT NULL,
+      pegindex int(11) NOT NULL,
+      pegblocktime int(11) unsigned NOT NULL,
+      PRIMARY KEY (txid, txindex), 
+      FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

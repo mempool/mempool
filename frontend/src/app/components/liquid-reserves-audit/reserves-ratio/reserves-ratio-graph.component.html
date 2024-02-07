@@ -1,0 +1,4 @@
+<div class="echarts" echarts [initOpts]="ratioHistoryChartInitOptions" [options]="ratioHistoryChartOptions" (chartRendered)="rendered()"></div>
+<div class="text-center loadingGraphs" *ngIf="isLoading">
+  <div class="spinner-border text-light"></div>
+</div>
