@@ -23,12 +23,12 @@ export class ElectrsApiService {
     if (!stateService.isBrowser) { // except when inside AU SSR process
       this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
     }
-    this.apiBasePath = ''; // assume mainnet by default
+    this.apiBasePath = this.stateService.env.API_PREFIX; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq') {
         network = '';
       }
-      this.apiBasePath = network ? '/' + network : '';
+      this.apiBasePath = this.stateService.env.API_PREFIX + (network ? '/' + network : '');
     });
   }
 

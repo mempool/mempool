@@ -10,15 +10,13 @@ import { Conversion } from './price.service';
 import { MenuGroup } from '../interfaces/services.interface';
 import { StorageService } from './storage.service';
 
-// Todo - move to config.json
-const SERVICES_API_PREFIX = `/api/v1/services`;
-
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+  private servicesApiPrefix: string;
 
   private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
 
@@ -27,16 +25,17 @@ export class ApiService {
     private stateService: StateService,
     private storageService: StorageService
   ) {
+    this.servicesApiPrefix = `${this.stateService.env.API_PREFIX}/api/v1/services`;
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
       this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
     }
-    this.apiBasePath = ''; // assume mainnet by default
+    this.apiBasePath = this.stateService.env.API_PREFIX; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
-      this.apiBasePath = network ? '/' + network : '';
+      this.apiBasePath = this.stateService.env.API_PREFIX + (network ? '/' + network : '');
     });
 
     if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
@@ -422,7 +421,7 @@ export class ApiService {
   getNodeOwner$(publicKey: string): Observable<any> {
     let params = new HttpParams()
       .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
+    return this.httpClient.get<any>(`${this.servicesApiPrefix}/lightning/claim/current`, { params, observe: 'response' });
   }
 
   getUserMenuGroups$(): Observable<MenuGroup[]> {
@@ -431,7 +430,7 @@ export class ApiService {
       return of(null);
     }
 
-    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
+    return this.httpClient.get<MenuGroup[]>(`${this.servicesApiPrefix}/account/menu`);
   }
 
   getUserInfo$(): Observable<any> {
@@ -440,7 +439,7 @@ export class ApiService {
       return of(null);
     }
 
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
+    return this.httpClient.get<any>(`${this.servicesApiPrefix}/account`);
   }
 
   logout$(): Observable<any> {
@@ -450,26 +449,26 @@ export class ApiService {
     }
 
     localStorage.removeItem('auth');
-    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
+    return this.httpClient.post(`${this.servicesApiPrefix}/auth/logout`, {});
   }
 
   getServicesBackendInfo$(): Observable<IBackendInfo> {
-    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
+    return this.httpClient.get<IBackendInfo>(`${this.servicesApiPrefix}/version`);
   }
 
   estimate$(txInput: string) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
+    return this.httpClient.post<any>(`${this.servicesApiPrefix}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
 
   accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
+    return this.httpClient.post<any>(`${this.servicesApiPrefix}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
+    return this.httpClient.get<Acceleration[]>(`${this.servicesApiPrefix}/accelerator/accelerations`);
   }
 
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
+    return this.httpClient.get<Acceleration[]>(`${this.servicesApiPrefix}/accelerator/accelerations/history`, { params: { ...params } });
   }
 }

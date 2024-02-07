@@ -13,14 +13,12 @@ const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
 const EXPECT_PING_RESPONSE_AFTER_MS = 5000;
 
-const initData = makeStateKey('/api/v1/init-data');
-
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
   private webSocketProtocol = (document.location.protocol === 'https:') ? 'wss:' : 'ws:';
-  private webSocketUrl = this.webSocketProtocol + '//' + document.location.hostname + ':' + document.location.port + '{network}/api/v1/ws';
+  private webSocketUrl;
 
   private websocketSubject: WebSocketSubject<WebsocketResponse>;
   private goneOffline = false;
@@ -44,6 +42,8 @@ export class WebsocketService {
     private transferState: TransferState,
     private cacheService: CacheService,
   ) {
+    this.webSocketUrl = `${this.webSocketProtocol}//${document.location.hostname}:${document.location.port}${this.stateService.env.API_PREFIX}`
+      + '{network}/api/v1/ws';
     if (!this.stateService.isBrowser) {
       // @ts-ignore
       this.websocketSubject = { next: () => {}};
@@ -55,6 +55,7 @@ export class WebsocketService {
       this.network = this.stateService.network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND ? '' : this.stateService.network;
       this.websocketSubject = webSocket<WebsocketResponse>(this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : ''));
 
+      const initData = makeStateKey(`${this.stateService.env.API_PREFIX}/api/v1/init-data`);
       const theInitData = this.transferState.get<any>(initData, null);
       if (theInitData) {
         this.handleResponse(theInitData.body);

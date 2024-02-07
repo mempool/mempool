@@ -16,12 +16,12 @@ export class LightningApiService {
     private httpClient: HttpClient,
     private stateService: StateService,
   ) {
-    this.apiBasePath = ''; // assume mainnet by default
+    this.apiBasePath = this.stateService.env.API_PREFIX; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
       if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
         network = '';
       }
-      this.apiBasePath = network ? '/' + network : '';
+      this.apiBasePath = this.stateService.env.API_PREFIX + (network ? '/' + network : '');
     });
   }
 
