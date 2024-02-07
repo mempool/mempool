@@ -335,4 +335,32 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-        
+
+  validate_docker_json:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')"
+    runs-on: "ubuntu-latest"
+    name: Validate generated backend Docker JSON
+
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: docker
+      
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Create new start script to run on CI
+        run: |
+          sed '$d' start.sh > start_ci.sh
+        working-directory: docker/docker/backend
+
+      - name: Run the script to generate the sample JSON
+        run: |
+          sh start_ci.sh
+        working-directory: docker/docker/backend
+
+      - name: Validate JSON syntax
+        run: |
+          cat mempool-config.json | jq
+        working-directory: docker/docker/backend
