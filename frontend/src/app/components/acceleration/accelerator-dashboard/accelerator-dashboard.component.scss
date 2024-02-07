@@ -17,6 +17,16 @@
   }
 }
 
+.mempool-graph {
+  height: 295px;
+  @media (min-width: 768px) {
+    height: 325px;
+  }
+  @media (min-width: 992px) {
+    height: 400px;
+  }
+}
+
 .card-title {
   font-size: 1rem;
   color: #4a68b9;
@@ -135,7 +145,12 @@
 }
 
 .card {
-  height: 385px;
+  @media (min-width: 768px) {
+    height: 420px;
+  }
+  @media (min-width: 992px) {
+    height: 500px;
+  }
 }
 .list-card {
   height: 410px;
@@ -145,7 +160,16 @@
 }
 
 .mempool-block-wrapper {
-  max-height: 380px;
-  max-width: 380px;
+  max-height: 430px;
+  max-width: 430px;
   margin: auto;
+
+  @media (min-width: 768px) {
+    max-height: 344px;
+    max-width: 344px;
+  }
+  @media (min-width: 992px) {
+    max-height: 430px;
+    max-width: 430px;
+  }
 }
