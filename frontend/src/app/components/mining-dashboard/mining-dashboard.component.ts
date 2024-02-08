@@ -42,7 +42,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (window.innerWidth >= 992) {
-      this.graphHeight = 375;
+      this.graphHeight = 335;
     } else if (window.innerWidth >= 768) {
       this.graphHeight = 245;
     } else {
