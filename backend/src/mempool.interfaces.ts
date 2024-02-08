@@ -65,9 +65,9 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
-  added: TransactionClassified[];
+  added: TransactionCompressed[];
   removed: string[];
-  changed: { txid: string, rate: number | undefined, flags?: number }[];
+  changed: MempoolDeltaChange[];
 }
 
 interface VinStrippedToScriptsig {
@@ -195,6 +195,11 @@ export interface TransactionStripped {
 export interface TransactionClassified extends TransactionStripped {
   flags: number;
 }
+
+// [txid, fee, vsize, value, rate, flags, acceleration?]
+export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+// [txid, rate, flags, acceleration?]
+export type MempoolDeltaChange = [string, number, number, (1|0)];
 
 // binary flags for transaction classification
 export const TransactionFlags = {

@@ -259,7 +259,7 @@ class WebsocketHandler {
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
               response['projected-block-transactions'] = JSON.stringify({
                 index: index,
-                blockTransactions: mBlocksWithTransactions[index]?.transactions || [],
+                blockTransactions: (mBlocksWithTransactions[index]?.transactions || []).map(mempoolBlocks.compressTx),
               });
             } else {
               client['track-mempool-block'] = null;
@@ -999,7 +999,7 @@ class WebsocketHandler {
           if (mBlockDeltas[index].added.length > (mBlocksWithTransactions[index]?.transactions.length / 2)) {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-full-${index}`, {
               index: index,
-              blockTransactions: mBlocksWithTransactions[index].transactions,
+              blockTransactions: mBlocksWithTransactions[index].transactions.map(mempoolBlocks.compressTx),
             });
           } else {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-delta-${index}`, {
