@@ -3,12 +3,12 @@ import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
-import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
-import { ApiService } from '../../../services/api.service';
+import { Observable, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
 import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+import { ServicesApiServices } from '../../../services/services-api.service';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
 const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
@@ -35,7 +35,7 @@ export class AcceleratorDashboardComponent implements OnInit {
   constructor(
     private seoService: SeoService,
     private websocketService: WebsocketService,
-    private apiService: ApiService,
+    private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
@@ -48,7 +48,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.pendingAccelerations$ = interval(30000).pipe(
       startWith(true),
       switchMap(() => {
-        return this.apiService.getAccelerations$().pipe(
+        return this.serviceApiServices.getAccelerations$().pipe(
           catchError(() => {
             return of([]);
           }),
@@ -60,7 +60,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
       switchMap(() => {
-        return this.apiService.getAccelerationHistory$({ timeframe: '1m' }).pipe(
+        return this.serviceApiServices.getAccelerationHistory$({ timeframe: '1m' }).pipe(
           catchError(() => {
             return of([]);
           }),
@@ -71,7 +71,7 @@ export class AcceleratorDashboardComponent implements OnInit {
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status));
+        return accelerations.filter(acc => ['mined', 'completed', 'failed'].includes(acc.status));
       })
     );
 

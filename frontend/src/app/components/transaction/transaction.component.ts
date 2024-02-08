@@ -7,7 +7,6 @@ import {
   catchError,
   retryWhen,
   delay,
-  map,
   mergeMap,
   tap
 } from 'rxjs/operators';
@@ -26,6 +25,7 @@ import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-transaction',
@@ -113,6 +113,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private seoService: SeoService,
     private priceService: PriceService,
     private storageService: StorageService
@@ -247,7 +248,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.accelerationInfo = null;
       }),
       switchMap((blockHash: string) => {
-        return this.apiService.getAccelerationHistory$({ blockHash });
+        return this.servicesApiService.getAccelerationHistory$({ blockHash });
       }),
       catchError(() => {
         return of(null);

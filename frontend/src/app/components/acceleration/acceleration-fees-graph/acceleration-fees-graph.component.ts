@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, L
 import { EChartsOption, graphic } from 'echarts';
 import { Observable, Subscription, combineLatest, fromEvent } from 'rxjs';
 import { map, max, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../../services/api.service';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -11,6 +10,8 @@ import { StorageService } from '../../../services/storage.service';
 import { MiningService } from '../../../services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { Acceleration } from '../../../interfaces/node-api.interface';
+import { ServicesApiServices } from '../../../services/services-api.service';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -55,6 +56,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
@@ -73,7 +75,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       this.timespan = this.miningWindowPreference;
 
       this.statsObservable$ = combineLatest([
-        (this.accelerations$ || this.apiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
+        (this.accelerations$ || this.servicesApiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
         this.apiService.getHistoricalBlockFees$(this.miningWindowPreference),
         fromEvent(window, 'resize').pipe(startWith(null)),
       ]).pipe(
@@ -103,7 +105,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
             this.isLoading = true;
             this.storageService.setValue('miningWindowPreference', timespan);
             this.timespan = timespan;
-            return this.apiService.getAccelerationHistory$({});
+            return this.servicesApiService.getAccelerationHistory$({});
           })
         ),
         this.radioGroupForm.get('dateSpan').valueChanges.pipe(

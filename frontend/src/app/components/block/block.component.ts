@@ -16,6 +16,7 @@ import { detectWebGL } from '../../shared/graphs.utils';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block',
@@ -103,6 +104,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private priceService: PriceService,
     private cacheService: CacheService,
+    private servicesApiService: ServicesApiServices,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -329,7 +331,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                 return of(null);
               })
             ),
-          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
         ]);
       })
     )
