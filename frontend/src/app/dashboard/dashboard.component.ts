@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, EMPTY, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
@@ -54,11 +54,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currentReserves$: Observable<CurrentPegs>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
+  mempoolInfoSubscription: Subscription;
   currencySubscription: Subscription;
   currency: string;
+  incomingGraphHeight: number = 300;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
+
+  goggleResolution = 82;
+  goggleCycle = [
+    { index: 0, name: 'All' },
+    { index: 1, name: 'Consolidations', flag: 0b00000010_00000000_00000000_00000000_00000000n },
+    { index: 2, name: 'Coinjoin', flag: 0b00000001_00000000_00000000_00000000_00000000n },
+    { index: 3, name: '💩', flag: 0b00000100_00000000_00000000_00000000n | 0b00000010_00000000_00000000_00000000n | 0b00000001_00000000_00000000_00000000n },
+  ];
+  goggleIndex = 0; // Math.floor(Math.random() * this.goggleCycle.length);
 
   private destroy$ = new Subject();
 
@@ -74,6 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.mempoolInfoSubscription.unsubscribe();
     this.currencySubscription.unsubscribe();
     this.websocketService.stopTrackRbfSummary();
     this.destroy$.next(1);
@@ -81,6 +93,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.onResize();
     this.isLoadingWebSocket$ = this.stateService.isLoadingWebSocket$;
     this.seoService.resetTitle();
     this.seoService.resetDescription();
@@ -95,36 +108,37 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
       this.stateService.vbytesPerSecond$
-    ])
-      .pipe(
-        map(([mempoolInfo, vbytesPerSecond]) => {
-          const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
+    ]).pipe(
+      map(([mempoolInfo, vbytesPerSecond]) => {
+        const percent = Math.round((Math.min(vbytesPerSecond, this.vBytesPerSecondLimit) / this.vBytesPerSecondLimit) * 100);
 
-          let progressColor = 'bg-success';
-          if (vbytesPerSecond > 1667) {
-            progressColor = 'bg-warning';
-          }
-          if (vbytesPerSecond > 3000) {
-            progressColor = 'bg-danger';
-          }
+        let progressColor = 'bg-success';
+        if (vbytesPerSecond > 1667) {
+          progressColor = 'bg-warning';
+        }
+        if (vbytesPerSecond > 3000) {
+          progressColor = 'bg-danger';
+        }
 
-          const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
-          let mempoolSizeProgress = 'bg-danger';
-          if (mempoolSizePercentage <= 50) {
-            mempoolSizeProgress = 'bg-success';
-          } else if (mempoolSizePercentage <= 75) {
-            mempoolSizeProgress = 'bg-warning';
-          }
+        const mempoolSizePercentage = (mempoolInfo.usage / mempoolInfo.maxmempool * 100);
+        let mempoolSizeProgress = 'bg-danger';
+        if (mempoolSizePercentage <= 50) {
+          mempoolSizeProgress = 'bg-success';
+        } else if (mempoolSizePercentage <= 75) {
+          mempoolSizeProgress = 'bg-warning';
+        }
 
-          return {
-            memPoolInfo: mempoolInfo,
-            vBytesPerSecond: vbytesPerSecond,
-            progressWidth: percent + '%',
-            progressColor: progressColor,
-            mempoolSizeProgress: mempoolSizeProgress,
-          };
-        })
-      );
+        return {
+          memPoolInfo: mempoolInfo,
+          vBytesPerSecond: vbytesPerSecond,
+          progressWidth: percent + '%',
+          progressColor: progressColor,
+          mempoolSizeProgress: mempoolSizeProgress,
+        };
+      })
+    );
+
+    this.mempoolInfoSubscription = this.mempoolInfoData$.subscribe();
 
     this.mempoolBlocksData$ = this.stateService.mempoolBlocks$
       .pipe(
@@ -346,5 +360,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackByBlock(index: number, block: BlockExtended) {
     return block.height;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.incomingGraphHeight = 300;
+      this.goggleResolution = 82;
+    } else if (window.innerWidth >= 768) {
+      this.incomingGraphHeight = 215;
+      this.goggleResolution = 80;
+    } else {
+      this.incomingGraphHeight = 180;
+      this.goggleResolution = 86;
+    }
   }
 }

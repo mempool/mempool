@@ -42,6 +42,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() showFilters: boolean = false;
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
+  @Input() filterMode: 'and' | 'or' = 'and';
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -113,7 +114,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.overrideColor && this.scene) {
       this.scene.setColorFunction(this.overrideColors);
     }
-    if ((changes.filterFlags || changes.showFilters)) {
+    if ((changes.filterFlags || changes.showFilters || changes.filterMode)) {
       this.setFilterFlags();
     }
   }
@@ -121,8 +122,8 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   setFilterFlags(flags?: bigint | null): void {
     this.activeFilterFlags = this.filterFlags || flags || null;
     if (this.scene) {
-      if (flags != null) {
-        this.scene.setColorFunction(this.getFilterColorFunction(flags));
+      if (this.activeFilterFlags != null) {
+        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
       } else {
         this.scene.setColorFunction(this.overrideColors);
       }
@@ -523,7 +524,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
     return (tx: TxView) => {
-      if ((tx.bigintFlags & flags) === flags) {
+      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (tx.bigintFlags & flags) > 0n)) {
         return defaultColorFunction(tx);
       } else {
         return defaultColorFunction(

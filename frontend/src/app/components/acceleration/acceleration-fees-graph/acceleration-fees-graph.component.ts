@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
-import { Observable, Subscription, combineLatest } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { EChartsOption, graphic } from 'echarts';
+import { Observable, Subscription, combineLatest, fromEvent } from 'rxjs';
+import { map, max, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -29,6 +29,7 @@ import { ApiService } from '../../../services/api.service';
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;
+  @Input() height: number | string = '200';
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
   @Input() accelerations$: Observable<Acceleration[]>;
@@ -76,6 +77,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       this.statsObservable$ = combineLatest([
         (this.accelerations$ || this.servicesApiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
         this.apiService.getHistoricalBlockFees$(this.miningWindowPreference),
+        fromEvent(window, 'resize').pipe(startWith(null)),
       ]).pipe(
         tap(([accelerations, blockFeesResponse]) => {
           this.prepareChartOptions(accelerations, blockFeesResponse.body);
@@ -175,6 +177,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       ],
       animation: false,
       grid: {
+        height: this.height,
         right: this.right,
         left: this.left,
         bottom: this.widget ? 30 : 80,

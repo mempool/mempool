@@ -8,7 +8,7 @@ import { StateService } from '../../../services/state.service';
   styleUrls: ['./fee-rate.component.scss']
 })
 export class FeeRateComponent implements OnInit {
-  @Input() fee: number;
+  @Input() fee: number | undefined;
   @Input() weight: number = 4;
   @Input() rounding: string = null;
   @Input() showUnit: boolean = true;

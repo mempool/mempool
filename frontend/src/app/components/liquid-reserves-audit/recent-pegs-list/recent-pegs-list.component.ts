@@ -47,7 +47,7 @@ export class RecentPegsListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
-    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
 
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@a8b0889ea1b41888f1e247f2731cc9322198ca04:Recent Peg-In / Out's`);

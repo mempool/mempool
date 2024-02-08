@@ -16,23 +16,34 @@
     </ng-container>
     <div class="col">
       <div class="card graph-card">
-        <div class="card-body pl-0">
-          <div style="padding-left: 1.25rem;">
-            <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
-            <hr>
-          </div>
+        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
           <ng-template [ngIf]="(network$ | async) !== 'liquid'" [ngIfElse]="liquidPegs">
-            <ng-container *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
-              <div class="mempool-graph">
-                <app-mempool-graph
-                [template]="'widget'"
-                [data]="mempoolStats.value?.mempool"
-                [windowPreferenceOverride]="'2h'"
-                ></app-mempool-graph>
+            <a class="title-link mb-0" style="margin-top: -2px" href="" [routerLink]="['/mempool-block/0' | relativeUrl]">
+              <h5 class="card-title d-inline"><span i18n="dashboard.mempool-goggles">Mempool Goggles</span>: {{ goggleCycle[goggleIndex].name }}</h5>
+              <span>&nbsp;</span>
+              <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
+            </a>
+            <div class="quick-filter">
+              <div class="btn-group btn-group-toggle">
+                <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
+                  <input type="radio" [value]="'3m'" fragment="3m" (click)="goggleIndex = filter.index" [attr.data-cy]="'3m'"> {{ filter.name }}
+                </label>
               </div>
-            </ng-container>
+            </div>
+            <div class="mempool-block-wrapper">
+              <app-mempool-block-overview
+                [index]="0"
+                [resolution]="goggleResolution"
+                [filterFlags]="goggleCycle[goggleIndex].flag"
+                filterMode="or"
+              ></app-mempool-block-overview>
+            </div>
           </ng-template>
           <ng-template #liquidPegs>
+            <div style="padding-left: 1.25rem;">
+              <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+              <hr>
+            </div>
             <app-lbtc-pegs-graph [data]="fullHistory$ | async"></app-lbtc-pegs-graph>
           </ng-template>
         </div>
@@ -41,9 +52,21 @@
     <div class="col">
       <div class="card graph-card">
         <div class="card-body">
-          <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? mempoolTable : txPerSecond; context: { $implicit: mempoolInfoData }"></ng-container>
-          <hr>
-          <div class="mempool-graph" *ngIf="stateService.network === 'liquid'; else mempoolGraph">
+          <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
+          <ng-container *ngIf="stateService.network !== 'liquid'">
+            <h5 class="card-title mt-3" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
+            <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
+              <app-incoming-transactions-graph
+                [height]="incomingGraphHeight"
+                [left]="50"
+                [right]="20"
+                [data]="mempoolStats.value?.weightPerSecond"
+                [windowPreferenceOverride]="'2h'"
+                ></app-incoming-transactions-graph>
+            </div>
+          </ng-container>
+          <div class="mempool-graph" *ngIf="stateService.network === 'liquid'">
+            <hr>
             <table class="table table-borderless table-striped" *ngIf="(featuredAssets$ | async) as featuredAssets else loadingAssetsTable">
               <tbody>
                 <tr *ngFor="let group of featuredAssets">
@@ -60,15 +83,6 @@
               </tbody>
             </table>
           </div>
-          <ng-template #mempoolGraph>
-            <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
-              <app-incoming-transactions-graph
-                [left]="50"
-                [data]="mempoolStats.value?.weightPerSecond"
-                [windowPreferenceOverride]="'2h'"
-                ></app-incoming-transactions-graph>
-            </div>
-          </ng-template>
         </div>
       </div>
     </div>
@@ -117,22 +131,14 @@
             <table class="table lastest-blocks-table">
               <thead>
                 <th class="table-cell-height" i18n="dashboard.latest-blocks.height">Height</th>
-                <th *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
-                <th *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4" i18n="mining.pool-name">Pool</th>
+                <th class="table-cell-mined" i18n="dashboard.latest-blocks.mined">Mined</th>
                 <th class="table-cell-transaction-count" i18n="dashboard.latest-blocks.transaction-count">TXs</th>
                 <th class="table-cell-size" i18n="dashboard.latest-blocks.size">Size</th>
               </thead>
-              <tbody>
-                <tr *ngFor="let block of blocks$ | async; let i = index; trackBy: trackByBlock">
+              <tbody *ngIf="blocks$ | async as blocks; else blocksSkeleton">
+                <tr *ngFor="let block of blocks; let i = index; trackBy: trackByBlock">
                   <td class="table-cell-height" ><a [routerLink]="['/block' | relativeUrl, block.id]" [state]="{ data: { block: block } }">{{ block.height }}</a></td>
-                  <td *ngIf="!stateService.env.MINING_DASHBOARD" class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></td>
-                  <td *ngIf="stateService.env.MINING_DASHBOARD" class="table-cell-mined pl-lg-4">
-                    <a class="clear-link" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
-                      <img width="22" height="22" src="{{ block.extras.pool['logo'] }}"
-                        onError="this.src = '/resources/mining-pools/default.svg'">
-                      <span class="pool-name">{{ block.extras.pool.name }}</span>
-                    </a>
-                  </td>
+                  <td class="table-cell-mined" ><app-time kind="since" [time]="block.timestamp" [fastRender]="true"></app-time></td>
                   <td class="table-cell-transaction-count">{{ block.tx_count | number }}</td>
                   <td class="table-cell-size">
                     <div class="progress">
@@ -221,6 +227,17 @@
   </tbody>
 </ng-template>
 
+<ng-template #blocksSkeleton>
+  <tbody>
+    <tr *ngFor="let i of [1,2,3,4,5,6]">
+      <td class="table-cell-height"><div class="skeleton-loader skeleton-loader-transactions"></div> </td>
+      <td class="table-cell-mined"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-transaction-count"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+      <td class="table-cell-size"><div class="skeleton-loader skeleton-loader-transactions"></div></td>
+    </tr>
+  </tbody>
+</ng-template>
+
 <ng-template #loadingTransactions>
   <div class="skeleton-loader skeleton-loader-transactions"></div>
 </ng-template>
@@ -283,20 +300,4 @@
       </ng-container>
     </div>
   </div>
-</ng-template>
-
-<ng-template #txPerSecond let-mempoolInfoData>
-  <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
-  <ng-template [ngIf]="(isLoadingWebSocket$ | async) === false && mempoolInfoData.value" [ngIfElse]="loadingTransactions">
-    <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
-      &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
-    </span>
-    <ng-template #inSync>
-      <div class="progress inc-tx-progress-bar">
-        <div class="progress-bar {{ mempoolInfoData.value.progressColor }}" role="progressbar" [ngStyle]="{'width': mempoolInfoData.value.progressWidth}">&nbsp;</div>
-        <div *only-vsize class="progress-text">&lrm;{{ mempoolInfoData.value.vBytesPerSecond | ceil | number }} <ng-container i18n="shared.vbytes-per-second|vB/s">vB/s</ng-container></div>
-        <div *only-weight class="progress-text">&lrm;{{ mempoolInfoData.value.vBytesPerSecond * 4 | ceil | number }} <ng-container i18n="shared.weight-per-second|WU/s">WU/s</ng-container></div>
-      </div>
-    </ng-template>
-  </ng-template>
 </ng-template>

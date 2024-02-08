@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
@@ -30,6 +30,8 @@ export class AcceleratorDashboardComponent implements OnInit {
   minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
 
+  graphHeight: number = 300;
+
   constructor(
     private seoService: SeoService,
     private websocketService: WebsocketService,
@@ -40,6 +42,7 @@ export class AcceleratorDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.onResize();
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
     this.pendingAccelerations$ = interval(30000).pipe(
@@ -119,6 +122,17 @@ export class AcceleratorDashboardComponent implements OnInit {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
       return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.graphHeight = 330;
+    } else if (window.innerWidth >= 768) {
+      this.graphHeight = 245;
+    } else {
+      this.graphHeight = 210;
     }
   }
 }
