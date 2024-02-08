@@ -40,8 +40,9 @@
     <div class="col">
       <div class="card graph-card">
         <div class="card-body">
+          <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           <ng-container *ngIf="stateService.network !== 'liquid'">
-            <h5 class="card-title" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
+            <h5 class="card-title mt-3" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
             <div class="mempool-graph" *ngIf="{ value: (mempoolStats$ | async) } as mempoolStats">
               <app-incoming-transactions-graph
                 [height]="incomingGraphHeight"
@@ -52,7 +53,6 @@
                 ></app-incoming-transactions-graph>
             </div>
           </ng-container>
-          <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
           <div class="mempool-graph" *ngIf="stateService.network === 'liquid'">
             <hr>
             <table class="table table-borderless table-striped" *ngIf="(featuredAssets$ | async) as featuredAssets else loadingAssetsTable">
