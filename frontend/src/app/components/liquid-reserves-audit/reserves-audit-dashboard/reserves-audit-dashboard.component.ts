@@ -4,7 +4,7 @@ import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
 import { Observable, Subject, combineLatest, delayWhen, filter, interval, map, of, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime, timer } from 'rxjs';
 import { ApiService } from '../../../services/api.service';
-import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo, RecentPeg } from '../../../interfaces/node-api.interface';
+import { AuditStatus, CurrentPegs, FederationAddress, FederationUtxo, PegsVolume, RecentPeg } from '../../../interfaces/node-api.interface';
 
 @Component({
   selector: 'app-reserves-audit-dashboard',
@@ -20,6 +20,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   federationUtxos$: Observable<FederationUtxo[]>;
   recentPegIns$: Observable<RecentPeg[]>;
   recentPegOuts$: Observable<RecentPeg[]>;
+  pegsVolume$: Observable<PegsVolume[]>;
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesOneMonthAgo$: Observable<any>;
   liquidPegsMonth$: Observable<any>;
@@ -124,6 +125,13 @@ export class ReservesAuditDashboardComponent implements OnInit {
       filter(auditUpdated => auditUpdated === true),
       throttleTime(40000),
       switchMap(_ => this.apiService.recentPegOuts$()),
+      share()
+    );
+
+    this.pegsVolume$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
+      switchMap(_ => this.apiService.pegsVolume$()),
       share()
     );
 

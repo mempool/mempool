@@ -18,7 +18,7 @@
         </thead>
         <tbody *ngIf="recentPegs$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
           <ng-container *ngIf="widget; else regularRows">
-            <tr *ngFor="let peg of pegs | slice:0:6">
+            <tr *ngFor="let peg of pegs | slice:0:5">
               <td class="transaction text-left widget">
                 <ng-container *ngIf="peg.amount > 0">
                   <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
@@ -34,7 +34,7 @@
               <td class="timestamp text-left widget">
                 <app-time kind="since" [time]="peg.blocktime"></app-time>
               </td>
-              <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0}">
+              <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
                 <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
               </td>
             </tr>
@@ -57,7 +57,7 @@
                 &lrm;{{ peg.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
                 <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="peg.blocktime"></app-time>)</i></div>
               </td>
-              <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0}">
+              <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
                 <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
               </td>
               <td class="output text-left">

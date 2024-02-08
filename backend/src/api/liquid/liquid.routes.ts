@@ -17,6 +17,7 @@ class LiquidRoutes {
       app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/volume', this.$getPegsVolumeDaily)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
@@ -184,6 +185,18 @@ class LiquidRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(recentPegOuts);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsVolumeDaily(req: Request, res: Response) {
+    try {
+      const pegsVolume = await elementsParser.$getPegsVolumeDaily();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsVolume);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
