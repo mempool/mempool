@@ -24,13 +24,11 @@
               <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="vertical-align: text-top; font-size: 13px; color: #4a68b9"></fa-icon>
             </a>
             <div class="quick-filter">
-              <ng-container *ngFor="let filter of goggleCycle">
-                <div
-                  class="goggle-badge badge badge-primary"
-                  [class.active]="filter.index === goggleIndex"
-                  (click)="goggleIndex = filter.index"
-                >{{ filter.name }}</div>
-              </ng-container>
+              <div class="btn-group btn-group-toggle">
+                <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
+                  <input type="radio" [value]="'3m'" fragment="3m" (click)="goggleIndex = filter.index" [attr.data-cy]="'3m'"> {{ filter.name }}
+                </label>
+              </div>
             </div>
             <div class="mempool-block-wrapper">
               <app-mempool-block-overview

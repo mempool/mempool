@@ -65,8 +65,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   goggleResolution = 82;
   goggleCycle = [
     { index: 0, name: 'All' },
-    { index: 1, name: 'CPFP', flag: 0b00000010_00000000_00000000n },
-    { index: 2, name: 'RBF', flag: 0b00000100_00000000_00000000n },
+    { index: 1, name: 'Consolidations', flag: 0b00000010_00000000_00000000_00000000_00000000n },
+    { index: 2, name: 'Coinjoin', flag: 0b00000001_00000000_00000000_00000000_00000000n },
     { index: 3, name: '💩', flag: 0b00000100_00000000_00000000_00000000n | 0b00000010_00000000_00000000_00000000n | 0b00000001_00000000_00000000_00000000n },
   ];
   goggleIndex = 0; // Math.floor(Math.random() * this.goggleCycle.length);
