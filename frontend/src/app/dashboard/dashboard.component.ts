@@ -62,6 +62,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
 
+  goggleResolution = 82;
+  goggleCycle = [
+    { index: 0, name: 'All' },
+    { index: 1, name: 'CPFP', flag: 0b00000010_00000000_00000000n },
+    { index: 2, name: 'RBF', flag: 0b00000100_00000000_00000000n },
+    { index: 3, name: '💩', flag: 0b00000100_00000000_00000000_00000000n | 0b00000010_00000000_00000000_00000000n | 0b00000001_00000000_00000000_00000000n },
+  ];
+  goggleIndex = 0; // Math.floor(Math.random() * this.goggleCycle.length);
+
   private destroy$ = new Subject();
 
   constructor(
@@ -357,10 +366,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;
+      this.goggleResolution = 82;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
+      this.goggleResolution = 80;
     } else {
       this.incomingGraphHeight = 180;
+      this.goggleResolution = 86;
     }
   }
 }

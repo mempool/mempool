@@ -375,8 +375,8 @@
 }
 
 .mempool-block-wrapper {
-  max-height: 430px;
-  max-width: 430px;
+  max-height: 410px;
+  max-width: 410px;
   margin: auto;
 
   @media (min-width: 768px) {
@@ -384,7 +384,18 @@
     max-width: 344px;
   }
   @media (min-width: 992px) {
-    max-height: 430px;
-    max-width: 430px;
+    max-height: 410px;
+    max-width: 410px;
+  }
+}
+
+.badge {
+  margin: 6px 5px 8px;
+  background: none;
+  border: solid 2px #105fb0;
+  cursor: pointer;
+
+  &.active {
+    background: #105fb0;
   }
 }

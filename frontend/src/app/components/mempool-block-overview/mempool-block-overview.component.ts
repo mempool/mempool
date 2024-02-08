@@ -18,8 +18,11 @@ import TxView from '../block-overview-graph/tx-view';
 })
 export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() index: number;
+  @Input() resolution = 86;
   @Input() showFilters: boolean = false;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
+  @Input() filterFlags: bigint | undefined = undefined;
+  @Input() filterMode: 'and' | 'or' = 'and';
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;
