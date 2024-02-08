@@ -20,7 +20,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
   pegsChartOptions: EChartsOption;
 
-  height: number | string = '200';
+  height: number | string = '320';
   right: number | string = '10';
   top: number | string = '20';
   left: number | string = '50';

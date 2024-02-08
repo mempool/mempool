@@ -162,7 +162,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
               newArray.push(feature);
             }
           }
-          return newArray.slice(0, 4);
+          return newArray.slice(0, 6);
         }),
       );
 
