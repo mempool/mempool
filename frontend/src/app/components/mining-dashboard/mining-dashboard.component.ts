@@ -11,7 +11,7 @@ import { EventType, NavigationStart, Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MiningDashboardComponent implements OnInit, AfterViewInit {
-  graphHeight = 300;
+  graphHeight = 375;
 
   constructor(
     private seoService: SeoService,
@@ -42,7 +42,7 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (window.innerWidth >= 992) {
-      this.graphHeight = 340;
+      this.graphHeight = 375;
     } else if (window.innerWidth >= 768) {
       this.graphHeight = 245;
     } else {
