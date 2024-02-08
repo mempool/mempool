@@ -1,11 +1,13 @@
 <app-block-overview-graph
   #blockGraph
   [isLoading]="isLoading$ | async"
-  [resolution]="86"
+  [resolution]="resolution"
   [blockLimit]="stateService.blockVSize"
   [orientation]="timeLtr ? 'right' : 'left'"
   [flip]="true"
   [showFilters]="showFilters"
+  [filterFlags]="filterFlags"
+  [filterMode]="filterMode"
   [overrideColors]="overrideColors"
   (txClickEvent)="onTxClick($event)"
 ></app-block-overview-graph>
