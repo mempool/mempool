@@ -41,7 +41,7 @@ export class LightningDashboardComponent implements OnInit, AfterViewInit {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (window.innerWidth >= 992) {
-      this.graphHeight = 330;
+      this.graphHeight = 340;
     } else if (window.innerWidth >= 768) {
       this.graphHeight = 245;
     } else {
