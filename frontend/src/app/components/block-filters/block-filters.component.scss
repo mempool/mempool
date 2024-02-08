@@ -20,7 +20,21 @@
     margin-left: 0.5em;
   }
 
+  .info-badges {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    float: right;
+
+    &:hover, &:active {
+      text-decoration: none;
+    }
+  }
+
   .menu-toggle {
+    width: 2em;
+    height: 2em;
+    padding: 0px 1px;
     opacity: 0;
     cursor: pointer;
     color: white;

@@ -26,7 +26,7 @@
             </div>
             <ng-template #emptyfees>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fees">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-fee-span'" class="fee-span"
@@ -37,7 +37,7 @@
             </div>
             <ng-template #emptyfeespan>
               <div [attr.data-cy]="'bitcoin-block-offset=' + offset + '-index-' + i + '-fees'" class="fee-span">
-                &nbsp;
+                <app-fee-rate unitClass=""></app-fee-rate>
               </div>
             </ng-template>
             <div [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-total-fees'" *ngIf="showMiningInfo"

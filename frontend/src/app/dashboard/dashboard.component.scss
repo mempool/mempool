@@ -44,8 +44,11 @@
 
 .graph-card {
   height: 100%;
+  @media (min-width: 768px) {
+    height: 415px;
+  }
   @media (min-width: 992px) {
-    height: 385px;
+    height: 510px;
   }
 }
 
@@ -96,6 +99,9 @@
       span {
         color: #ffffff66;
         font-size: 12px;
+      }
+      .bitcoin-color {
+        color: #b86d12;
       }
     }
     .progress {
@@ -255,6 +261,12 @@
 
 .mempool-graph {
   height: 255px;
+  @media (min-width: 768px) {
+    height: 285px;
+  }
+  @media (min-width: 992px) {
+    height: 370px;
+  }
 }
 .loadingGraphs{
   height: 250px;
@@ -360,4 +372,40 @@
   margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
+}
+
+.mempool-block-wrapper {
+  max-height: 410px;
+  max-width: 410px;
+  margin: auto;
+
+  @media (min-width: 768px) {
+    max-height: 344px;
+    max-width: 344px;
+  }
+  @media (min-width: 992px) {
+    max-height: 410px;
+    max-width: 410px;
+  }
+}
+
+.goggle-badge {
+  margin: 6px 5px 8px;
+  background: none;
+  border: solid 2px #105fb0;
+  cursor: pointer;
+
+  &.active {
+    background: #105fb0;
+  }
+}
+
+.btn-xs {
+  padding: 0.35rem 0.5rem;
+  font-size: 12px;
+}
+
+.quick-filter {
+  margin-top: 5px;
+  margin-bottom: 6px;
 }

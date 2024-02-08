@@ -52,7 +52,7 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'acceleration-list',
+        path: 'acceleration/list',
         data: { networks: ['bitcoin'] },
         component: AccelerationsListComponent,
       },

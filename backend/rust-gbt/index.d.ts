@@ -45,5 +45,6 @@ export class GbtResult {
   blockWeights: Array<number>
   clusters: Array<Array<number>>
   rates: Array<Array<number>>
-  constructor(blocks: Array<Array<number>>, blockWeights: Array<number>, clusters: Array<Array<number>>, rates: Array<Array<number>>)
+  overflow: Array<number>
+  constructor(blocks: Array<Array<number>>, blockWeights: Array<number>, clusters: Array<Array<number>>, rates: Array<Array<number>>, overflow: Array<number>)
 }

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
-import { Observable, Subscription, combineLatest } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { EChartsOption, graphic } from 'echarts';
+import { Observable, Subscription, combineLatest, fromEvent } from 'rxjs';
+import { map, max, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -29,6 +29,7 @@ import { ApiService } from '../../../services/api.service';
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;
+  @Input() height: number | string = '200';
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
   @Input() accelerations$: Observable<Acceleration[]>;
@@ -68,7 +69,6 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@6c453b11fd7bd159ae30bc381f367bc736d86909:Acceleration Fees`);
     this.isLoading = true;
     if (this.widget) {
       this.miningWindowPreference = '1m';
@@ -77,17 +77,19 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       this.statsObservable$ = combineLatest([
         (this.accelerations$ || this.servicesApiService.getAccelerationHistory$({ timeframe: this.miningWindowPreference })),
         this.apiService.getHistoricalBlockFees$(this.miningWindowPreference),
+        fromEvent(window, 'resize').pipe(startWith(null)),
       ]).pipe(
         tap(([accelerations, blockFeesResponse]) => {
           this.prepareChartOptions(accelerations, blockFeesResponse.body);
         }),
         map(([accelerations, blockFeesResponse]) => {
           return {
-            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + acc.feePaid, 0) / accelerations.length
+            avgFeesPaid: accelerations.filter(acc => acc.status === 'completed').reduce((total, acc) => total + (acc.feePaid - acc.baseFee - acc.vsizeFee), 0) / accelerations.length
           };
         }),
       );
     } else {
+      this.seoService.setTitle($localize`:@@bcf34abc2d9ed8f45a2f65dd464c46694e9a181e:Acceleration Fees`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('1w');
       this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
       this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -153,7 +155,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       while (last <= val.avgHeight) {
         blockCount++;
         totalFeeDelta += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feeDelta, 0);
-        totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + acc.feePaid, 0);
+        totalFeePaid += (blockAccelerations[last] || []).reduce((total, acc) => total + (acc.feePaid - acc.baseFee - acc.vsizeFee), 0);
         totalCount += (blockAccelerations[last] || []).length;
         last++;
       }
@@ -175,6 +177,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       ],
       animation: false,
       grid: {
+        height: this.height,
         right: this.right,
         left: this.left,
         bottom: this.widget ? 30 : 80,
@@ -248,7 +251,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
             icon: 'roundRect',
           },
           {
-            name: 'Out-of-band fees per block',
+            name: 'Total bid boost per block',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
               color: 'white',
@@ -258,7 +261,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         ],
         selected: {
           'In-band fees per block': false,
-          'Out-of-band fees per block': true,
+          'Total bid boost per block': true,
         },
         show: !this.widget,
       },
@@ -301,7 +304,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         {
           legendHoverLink: false,
           zlevel: 1,
-          name: 'Out-of-band fees per block',
+          name: 'Total bid boost per block',
           data: data.map(block =>  [block.timestamp * 1000, block.avgFeePaid, block.avgHeight]),
           stack: 'Total',
           type: 'bar',

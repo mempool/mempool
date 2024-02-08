@@ -39,15 +39,25 @@ class FeeApi {
     const secondMedianFee = pBlocks[1] ? this.optimizeMedianFee(pBlocks[1], pBlocks[2], firstMedianFee) : this.defaultFee;
     const thirdMedianFee = pBlocks[2] ? this.optimizeMedianFee(pBlocks[2], pBlocks[3], secondMedianFee) : this.defaultFee;
 
+    let fastestFee = Math.max(minimumFee, firstMedianFee);
+    let halfHourFee = Math.max(minimumFee, secondMedianFee);
+    let hourFee = Math.max(minimumFee, thirdMedianFee);
+    const economyFee = Math.max(minimumFee, Math.min(2 * minimumFee, thirdMedianFee));
+
+    // ensure recommendations always increase w/ priority
+    fastestFee = Math.max(fastestFee, halfHourFee, hourFee, economyFee);
+    halfHourFee = Math.max(halfHourFee, hourFee, economyFee);
+    hourFee = Math.max(hourFee, economyFee);
+
     // explicitly enforce a minimum of ceil(mempoolminfee) on all recommendations.
     // simply rounding up recommended rates is insufficient, as the purging rate
     // can exceed the median rate of projected blocks in some extreme scenarios
     // (see https://bitcoin.stackexchange.com/a/120024)
     return {
-      'fastestFee': Math.max(minimumFee, firstMedianFee),
-      'halfHourFee': Math.max(minimumFee, secondMedianFee),
-      'hourFee': Math.max(minimumFee, thirdMedianFee),
-      'economyFee': Math.max(minimumFee, Math.min(2 * minimumFee, thirdMedianFee)),
+      'fastestFee': fastestFee,
+      'halfHourFee': halfHourFee,
+      'hourFee': hourFee,
+      'economyFee': economyFee,
       'minimumFee': minimumFee,
     };
   }

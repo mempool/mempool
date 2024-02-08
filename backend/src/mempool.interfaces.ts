@@ -94,7 +94,9 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     vsize: number,
   };
   acceleration?: boolean;
+  replacement?: boolean;
   uid?: number;
+  flags?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
@@ -278,7 +280,8 @@ export interface BlockExtended extends IEsploraApi.Block {
 
 export interface BlockSummary {
   id: string;
-  transactions: TransactionStripped[];
+  transactions: TransactionClassified[];
+  version?: number;
 }
 
 export interface AuditSummary extends BlockAudit {
@@ -286,8 +289,8 @@ export interface AuditSummary extends BlockAudit {
   size?: number,
   weight?: number,
   tx_count?: number,
-  transactions: TransactionStripped[];
-  template?: TransactionStripped[];
+  transactions: TransactionClassified[];
+  template?: TransactionClassified[];
 }
 
 export interface BlockPrice {

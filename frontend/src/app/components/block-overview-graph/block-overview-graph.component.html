@@ -13,6 +13,6 @@
       [auditEnabled]="auditHighlighting"
       [blockConversion]="blockConversion"
     ></app-block-overview-tooltip>
-    <app-block-filters *ngIf="showFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+    <app-block-filters *ngIf="showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
   </div>
 </div>
