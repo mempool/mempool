@@ -10,6 +10,7 @@ import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
 import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
+import { detectWebGL } from '../../shared/graphs.utils';
 
 const unmatchedOpacity = 0.2;
 const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
@@ -77,11 +78,14 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   filtersAvailable: boolean = true;
   activeFilterFlags: bigint | null = null;
 
+  webGlEnabled = true;
+
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
     private stateService: StateService,
   ) {
+    this.webGlEnabled = detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
     this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
       this.searchText = text;
@@ -506,11 +510,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
-    const x = cssX * window.devicePixelRatio;
-    const y = cssY * window.devicePixelRatio;
-    const selected = this.scene.getTxAt({ x, y });
-    if (selected && selected.txid) {
-      this.txClickEvent.emit({ tx: selected, keyModifier });
+    if (this.scene) {
+      const x = cssX * window.devicePixelRatio;
+      const y = cssY * window.devicePixelRatio;
+      const selected = this.scene.getTxAt({ x, y });
+      if (selected && selected.txid) {
+        this.txClickEvent.emit({ tx: selected, keyModifier });
+      }
     }
   }
 
@@ -529,7 +535,6 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
-    console.log('getting filter color function: ', flags, this.filterMode);
     return (tx: TxView) => {
       if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
         return defaultColorFunction(tx);
