@@ -22,7 +22,8 @@ export class ReservesAuditDashboardComponent implements OnInit {
   recentPegOuts$: Observable<RecentPeg[]>;
   pegsVolume$: Observable<PegsVolume[]>;
   federationAddresses$: Observable<FederationAddress[]>;
-  federationAddressesOneMonthAgo$: Observable<any>;
+  federationAddressesNumber$: Observable<number>;
+  federationUtxosNumber$: Observable<number>;
   liquidPegsMonth$: Observable<any>;
   liquidReservesMonth$: Observable<any>;
   pegRatioGraphHeight: number = 320;
@@ -143,11 +144,21 @@ export class ReservesAuditDashboardComponent implements OnInit {
       share()
     );
 
-    this.federationAddressesOneMonthAgo$ = interval(60 * 60 * 1000)
-      .pipe(
-        startWith(0),
-        switchMap(() => this.apiService.federationAddressesOneMonthAgo$())
-      );
+    this.federationAddressesNumber$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
+      switchMap(_ => this.apiService.federationAddressesNumber$()),
+      map(count => count.address_count),
+      share()
+    );
+
+    this.federationUtxosNumber$ = this.auditUpdated$.pipe(
+      filter(auditUpdated => auditUpdated === true),
+      throttleTime(40000),
+      switchMap(_ => this.apiService.federationUtxosNumber$()),
+      map(count => count.utxo_count),
+      share()
+    );
 
     this.liquidPegsMonth$ = interval(60 * 60 * 1000)
       .pipe(

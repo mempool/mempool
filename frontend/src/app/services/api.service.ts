@@ -204,12 +204,12 @@ export class ApiService {
     return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegouts');
   }
 
-  federationAddressesOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/previous-month');
+  federationAddressesNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/total');
   }
 
-  federationUtxosOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/previous-month');
+  federationUtxosNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/total');
   }
 
   listFeaturedAssets$(): Observable<any[]> {

@@ -22,9 +22,9 @@ class LiquidRoutes {
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/previous-month', this.$getFederationAddressesOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/total', this.$getFederationAddressesNumber)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/previous-month', this.$getFederationUtxosOneMonthAgo)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/total', this.$getFederationUtxosNumber)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/status', this.$getFederationAuditStatus)
         ;
     }
@@ -142,12 +142,12 @@ class LiquidRoutes {
     }
   }
 
-  private async $getFederationAddressesOneMonthAgo(req: Request, res: Response) {
+  private async $getFederationAddressesNumber(req: Request, res: Response) {
     try {
-      const federationAddresses = await elementsParser.$getFederationAddressesOneMonthAgo();
+      const federationAddresses = await elementsParser.$getFederationAddressesNumber();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(federationAddresses);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
@@ -166,12 +166,12 @@ class LiquidRoutes {
     }
   }
 
-  private async $getFederationUtxosOneMonthAgo(req: Request, res: Response) {
+  private async $getFederationUtxosNumber(req: Request, res: Response) {
     try {
-      const federationUtxos = await elementsParser.$getFederationUtxosOneMonthAgo();
+      const federationUtxos = await elementsParser.$getFederationUtxosNumber();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(federationUtxos);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
