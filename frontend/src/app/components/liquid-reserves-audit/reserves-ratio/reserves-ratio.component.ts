@@ -108,14 +108,14 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             fontFamily: 'inherit',
             fontWeight: 500,
             formatter: function (value) {
-              return (value).toFixed(5);
+              return (value * 100).toFixed(3) + ' %';
             },
             color: 'inherit'
           },
           data: [
             {
               value: parseFloat(currentReserves.amount) / parseFloat(currentPeg.amount),
-              name: 'Peg-O-Meter'
+              name: 'Assets vs Liabilities'
             }
           ]
         }

@@ -10,10 +10,10 @@ import { EChartsOption } from '../../../graphs/echarts';
 })
 export class ReservesRatioGraphComponent implements OnInit, OnChanges {
   @Input() data: any;
+  @Input() height: number | string = '320';
   ratioHistoryChartOptions: EChartsOption;
   ratioSeries: number[] = [];
 
-  height: number | string = '200';
   right: number | string = '10';
   top: number | string = '20';
   left: number | string = '50';

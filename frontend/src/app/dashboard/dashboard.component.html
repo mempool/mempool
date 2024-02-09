@@ -284,11 +284,11 @@
 </ng-template>
 
 <ng-template #lbtcPegs let-mempoolInfoData>
-  <div class="mempool-info-data">
+  <div class="mempool-info-data lbtc-pegs-stats">
     <div class="item">
       <h5 class="card-title" i18n="dashboard.lbtc-pegs-in-circulation">L-BTC in circulation</h5>
       <ng-container *ngIf="(currentPeg$ | async) as currentPeg; else loadingTransactions">
-        <p i18n-ngbTooltip="liquid.last-elements-audit-block" [ngbTooltip]="'L-BTC supply last updated at Liquid block ' + (currentPeg.lastBlockUpdate)" placement="top" class="card-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></p>
+        <div i18n-ngbTooltip="liquid.last-elements-audit-block" [ngbTooltip]="'L-BTC supply last updated at Liquid block ' + (currentPeg.lastBlockUpdate)" placement="top" class="card-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></div>
       </ng-container>
     </div>
     <div class="item">
@@ -296,7 +296,7 @@
         <h5 class="card-title"><ng-container i18n="dashboard.btc-reserves">BTC Reserves</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: #4a68b9"></fa-icon></h5>
       </a>
       <ng-container *ngIf="(currentReserves$ | async) as currentReserves; else loadingTransactions">
-        <p i18n-ngbTooltip="liquid.last-bitcoin-audit-block" [ngbTooltip]="'BTC reserves last updated at Bitcoin block ' + (currentReserves.lastBlockUpdate)" placement="top" class="card-text">{{ +(currentReserves.amount) / 100000000 | number: '1.2-2' }} <span class="bitcoin-color">BTC</span></p>
+        <div i18n-ngbTooltip="liquid.last-bitcoin-audit-block" [ngbTooltip]="'BTC reserves last updated at Bitcoin block ' + (currentReserves.lastBlockUpdate)" placement="top" class="card-text">{{ +(currentReserves.amount) / 100000000 | number: '1.2-2' }} <span class="bitcoin-color">BTC</span></div>
       </ng-container>
     </div>
   </div>

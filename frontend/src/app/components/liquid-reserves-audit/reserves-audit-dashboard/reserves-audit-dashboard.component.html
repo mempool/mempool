@@ -17,13 +17,13 @@
           <app-reserves-ratio-stats [fullHistory$]="fullHistory$"></app-reserves-ratio-stats>
         </div>
         <div class="card-body pl-0" style="padding-top: 10px;">
-          <app-reserves-ratio-graph [data]="fullHistory$ | async"></app-reserves-ratio-graph>
+          <app-reserves-ratio-graph [data]="fullHistory$ | async" [height]="pegRatioGraphHeight"></app-reserves-ratio-graph>
         </div>
       </div>
     </div>
 
     <div class="col">
-      <div class="card">
+      <div class="card smaller">
         <div class="card-body">
           <app-recent-pegs-stats [pegsVolume$]="pegsVolume$"></app-recent-pegs-stats>
           <app-recent-pegs-list [recentPegIns$]="recentPegIns$" [recentPegOuts$]="recentPegOuts$"[widget]="true"></app-recent-pegs-list>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card">
+      <div class="card smaller">
         <div class="card-body">
           <app-federation-addresses-stats [federationAddresses$]="federationAddresses$" [federationAddressesOneMonthAgo$]="federationAddressesOneMonthAgo$"></app-federation-addresses-stats>
           <app-federation-addresses-list [federationAddresses$]="federationAddresses$" [widget]="true"></app-federation-addresses-list>

@@ -23,6 +23,21 @@ li.nav-item {
   margin: auto 10px;
   padding-left: 10px;
   padding-right: 10px;
+  @media (max-width: 992px) {
+    margin: auto 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  @media (max-width: 429px) {
+    margin: auto 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  @media (max-width: 369px) {
+    margin: auto 3px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
 }
 
 @media (min-width: 992px) {

@@ -1,6 +1,7 @@
 .fee-estimation-container {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
   @media (min-width: 376px) {
     flex-direction: row;
   }  

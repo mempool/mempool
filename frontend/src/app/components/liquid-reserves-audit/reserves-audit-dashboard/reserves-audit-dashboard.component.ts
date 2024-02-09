@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { StateService } from '../../../services/state.service';
@@ -25,6 +25,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   federationAddressesOneMonthAgo$: Observable<any>;
   liquidPegsMonth$: Observable<any>;
   liquidReservesMonth$: Observable<any>;
+  pegRatioGraphHeight: number = 320;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
   private lastPegBlockUpdate: number = 0;
@@ -207,6 +208,17 @@ export class ReservesAuditDashboardComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next(1);
     this.destroy$.complete();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.pegRatioGraphHeight = 320;
+    } else if (window.innerWidth >= 768) {
+      this.pegRatioGraphHeight = 230;
+    } else {
+      this.pegRatioGraphHeight = 220;
+    }
   }
 
 }

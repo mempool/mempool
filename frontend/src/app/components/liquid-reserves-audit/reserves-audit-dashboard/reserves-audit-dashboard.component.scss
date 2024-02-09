@@ -8,6 +8,13 @@
 
 .card {
   background-color: #1d1f31;
+  height: 418px;
+  @media (min-width: 992px) {
+    height: 512px;
+  }
+  &.smaller {
+    height: 408px;
+  }
 }
 
 .card-title {
@@ -118,16 +125,6 @@
   .table-cell-acceleration-count {
     text-align: right;
     width: 20%;
-  }
-}
-
-.card {
-  height: 385px;
-}
-.list-card {
-  height: 410px;
-  @media (max-width: 767px) {
-    height: auto;
   }
 }
 
