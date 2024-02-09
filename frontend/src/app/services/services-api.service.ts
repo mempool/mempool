@@ -1,3 +1,4 @@
+import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { StateService } from './state.service';
@@ -30,16 +31,20 @@ const SERVICES_API_PREFIX = `/api/v1/services`;
   providedIn: 'root'
 })
 export class ServicesApiServices {
-  private apiBaseUrl: string; // base URL is protocol, hostname, and port
-  private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+  apiBaseUrl: string; // base URL is protocol, hostname, and port
+  apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   userSubject$ = new ReplaySubject<IUser | null>(1);
+  currentAuth = null;
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router,
   ) {
+    this.currentAuth = localStorage.getItem('auth');
+
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
       this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
@@ -59,6 +64,15 @@ export class ServicesApiServices {
     }
 
     this.getUserInfo$().subscribe();
+    console.log('refresh user');
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (this.currentAuth !== localStorage.getItem('auth')) {
+          console.log('refresh user');
+          this.getUserInfo$().subscribe();
+        }
+      }
+    });
   }
 
   /**
