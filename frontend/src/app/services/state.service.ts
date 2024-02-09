@@ -9,6 +9,7 @@ import { filter, map, scan, shareReplay } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { hasTouchScreen } from '../shared/pipes/bytes-pipe/utils';
 import { ApiService } from './api.service';
+import { ActiveFilter } from '../shared/filters.utils';
 
 export interface MarkBlockState {
   blockHeight?: number;
@@ -150,7 +151,7 @@ export class StateService {
   searchFocus$: Subject<boolean> = new Subject<boolean>();
   menuOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  activeGoggles$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+  activeGoggles$: BehaviorSubject<ActiveFilter> = new BehaviorSubject({ mode: 'and', filters: [] });
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: any,

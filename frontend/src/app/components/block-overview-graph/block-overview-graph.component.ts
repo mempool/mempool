@@ -9,6 +9,7 @@ import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
 
 const unmatchedOpacity = 0.2;
 const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
@@ -42,7 +43,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() showFilters: boolean = false;
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
-  @Input() filterMode: 'and' | 'or' = 'and';
+  @Input() filterMode: FilterMode = 'and';
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -119,10 +120,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     }
   }
 
-  setFilterFlags(flags?: bigint | null): void {
-    this.activeFilterFlags = this.filterFlags || flags || null;
+  setFilterFlags(goggle?: ActiveFilter): void {
+    this.filterMode = goggle?.mode || this.filterMode;
+    this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
     if (this.scene) {
-      if (this.activeFilterFlags != null) {
+      if (this.activeFilterFlags != null && this.filtersAvailable) {
         this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
       } else {
         this.scene.setColorFunction(this.overrideColors);
@@ -157,7 +159,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   // initialize the scene without any entry transition
   setup(transactions: TransactionStripped[]): void {
-    this.filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
+    const filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
+    if (filtersAvailable !== this.filtersAvailable) {
+      this.setFilterFlags();
+    }
+    this.filtersAvailable = filtersAvailable;
     if (this.scene) {
       this.scene.setup(transactions);
       this.readyNextFrame = true;
@@ -523,8 +529,9 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
+    console.log('getting filter color function: ', flags, this.filterMode);
     return (tx: TxView) => {
-      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (tx.bigintFlags & flags) > 0n)) {
+      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
         return defaultColorFunction(tx);
       } else {
         return defaultColorFunction(
