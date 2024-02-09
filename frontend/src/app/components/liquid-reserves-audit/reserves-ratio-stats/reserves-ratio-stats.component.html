@@ -14,7 +14,7 @@
         <h5 class="card-title" i18n="liquid.avg-peg-ratio">Avg Peg Ratio</h5> 
         <div class="card-text">
           <div class="fee-text" [ngClass]="{'danger' : unbackedMonths.avg < 1, 'correct': unbackedMonths.avg >= 1}">
-            {{ unbackedMonths.avg.toFixed(5) }}
+            {{ (unbackedMonths.avg * 100).toFixed(3) }} %
           </div>
         </div>
       </div>
