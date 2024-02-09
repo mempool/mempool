@@ -64,11 +64,9 @@ export class ServicesApiServices {
     }
 
     this.getUserInfo$().subscribe();
-    console.log('refresh user');
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (this.currentAuth !== localStorage.getItem('auth')) {
-          console.log('refresh user');
           this.getUserInfo$().subscribe();
         }
       }
