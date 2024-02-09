@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     { index: 0, name: 'All', mode: 'and', filters: [] },
     { index: 1, name: 'Consolidation', mode: 'and', filters: ['consolidation'] },
     { index: 2, name: 'Coinjoin', mode: 'and', filters: ['coinjoin'] },
-    { index: 3, name: '💩', mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'] },
+    { index: 3, name: 'Data', mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'] },
   ];
   goggleFlags = 0n;
   goggleMode: FilterMode = 'and';
