@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, EMPTY, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
-import { catchError, delayWhen, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { combineLatest, EMPTY, fromEvent, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
@@ -33,6 +33,7 @@ interface MempoolStatsData {
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   featuredAssets$: Observable<any>;
+  nbFeaturedAssets = 6;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -58,6 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currencySubscription: Subscription;
   currency: string;
   incomingGraphHeight: number = 300;
+  lbtcPegGraphHeight: number = 320;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
@@ -153,16 +155,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    this.featuredAssets$ = this.apiService.listFeaturedAssets$()
-      .pipe(
-        map((featured) => {
+    const windowResize$ = fromEvent(window, 'resize').pipe(
+      distinctUntilChanged(),
+      startWith(null)
+    );
+  
+    this.featuredAssets$ = combineLatest([
+      this.apiService.listFeaturedAssets$(),
+      windowResize$
+    ]).pipe(
+        map(([featured, _]) => {
           const newArray = [];
           for (const feature of featured) {
             if (feature.ticker !== 'L-BTC' && feature.asset) {
               newArray.push(feature);
             }
           }
-          return newArray.slice(0, 6);
+          return newArray.slice(0, this.nbFeaturedAssets);
         }),
       );
 
@@ -362,17 +371,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return block.height;
   }
 
+  getArrayFromNumber(num: number): number[] {
+    return Array.from({ length: num }, (_, i) => i + 1);
+  }
+  
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;
       this.goggleResolution = 82;
+      this.lbtcPegGraphHeight = 320;
+      this.nbFeaturedAssets = 6;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
       this.goggleResolution = 80;
+      this.lbtcPegGraphHeight = 230;
+      this.nbFeaturedAssets = 4;
     } else {
       this.incomingGraphHeight = 180;
       this.goggleResolution = 86;
+      this.lbtcPegGraphHeight = 220;
+      this.nbFeaturedAssets = 4;
     }
   }
 }
