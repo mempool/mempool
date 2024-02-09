@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
-import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
-import { Outspend, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
-import { MenuGroup } from '../interfaces/services.interface';
 import { StorageService } from './storage.service';
-
-// Todo - move to config.json
-const SERVICES_API_PREFIX = `/api/v1/services`;
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -38,12 +34,6 @@ export class ApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
-
-    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
-      this.getServicesBackendInfo$().subscribe(version => {
-        this.stateService.servicesBackendInfo$.next(version);
-      })
-    }
   }
 
   private generateCacheKey(functionName: string, params: any[]): string {
@@ -178,8 +168,48 @@ export class ApiService {
     return this.httpClient.get<RbfTree[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/' + (fullRbf ? 'fullrbf/' : '') + 'replacements/' + (after || ''));
   }
 
+  liquidPegs$(): Observable<CurrentPegs> {
+    return this.httpClient.get<CurrentPegs>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs');
+  }
+
+  pegsVolume$(): Observable<PegsVolume[]> {
+    return this.httpClient.get<PegsVolume[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/volume');
+  }
+
   listLiquidPegsMonth$(): Observable<LiquidPegs[]> {
     return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
+  }
+
+  liquidReserves$(): Observable<CurrentPegs> {
+    return this.httpClient.get<CurrentPegs>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves');
+  }
+
+  listLiquidReservesMonth$(): Observable<LiquidPegs[]> {
+    return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/month');
+  }
+
+  federationAuditSynced$(): Observable<AuditStatus> {
+    return this.httpClient.get<AuditStatus>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/status');
+  }
+
+  federationAddresses$(): Observable<FederationAddress[]> {
+    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses');
+  }
+
+  federationUtxos$(): Observable<FederationUtxo[]> {
+    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
+  }
+
+  recentPegOuts$(): Observable<RecentPeg[]> {
+    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegouts');
+  }
+
+  federationAddressesOneMonthAgo$(): Observable<any> {
+    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/previous-month');
+  }
+
+  federationUtxosOneMonthAgo$(): Observable<any> {
+    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/previous-month');
   }
 
   listFeaturedAssets$(): Observable<any[]> {
@@ -377,63 +407,5 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
     );
-  }
-
-  /**
-   * Services
-   */
-
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
-  }
-
-  getUserMenuGroups$(): Observable<MenuGroup[]> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
-  }
-
-  getUserInfo$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
-  }
-
-  logout$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    localStorage.removeItem('auth');
-    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
-  }
-
-  getServicesBackendInfo$(): Observable<IBackendInfo> {
-    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
-  }
-
-  estimate$(txInput: string) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
-  }
-
-  accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
-  }
-
-  getAccelerations$(): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
-  }
-
-  getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
-    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
   }
 }

@@ -31,6 +31,9 @@ const curveP = BigInt(`0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
  * @returns {boolean} true if the point is on the SECP256K1 curve
  */
 export function isPoint(pointHex: string): boolean {
+  if (!pointHex?.length) {
+    return false;
+  }
   if (
     !(
       // is uncompressed

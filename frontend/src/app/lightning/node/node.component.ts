@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, of, EMPTY } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap, share } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
@@ -8,6 +8,7 @@ import { LightningApiService } from '../lightning-api.service';
 import { GeolocationData } from '../../shared/components/geolocation/geolocation.component';
 import { ILiquidityAd, parseLiquidityAdHex } from './liquidity-ad';
 import { haversineDistance, kmToMiles } from '../../../app/shared/common.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 interface CustomRecord {
   type: string;
@@ -43,6 +44,7 @@ export class NodeComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private lightningApiService: LightningApiService,
     private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
@@ -155,7 +157,7 @@ export class NodeComponent implements OnInit {
     this.nodeOwner$ = this.activatedRoute.paramMap
       .pipe(
         switchMap((params: ParamMap) => {
-          return this.apiService.getNodeOwner$(params.get('public_key')).pipe(
+          return this.servicesApiService.getNodeOwner$(params.get('public_key')).pipe(
             switchMap((response) =>  {
               if (response.status === 204) {
                 return of(false);

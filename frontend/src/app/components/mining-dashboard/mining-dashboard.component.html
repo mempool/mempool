@@ -26,9 +26,11 @@
 
     <!-- pool distribution -->
     <div class="col" style="margin-bottom: 1.47rem">
-      <div class="card graph-card">
+      <div class="card">
         <div class="card-body pl-2 pr-2">
-          <app-pool-ranking [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
+          <div class="mempool-graph">
+            <app-pool-ranking [height]="graphHeight" [attr.data-cy]="'pool-distribution'" [widget]=true></app-pool-ranking>
+          </div>
           <div class="mt-1"><a [attr.data-cy]="'pool-distribution-view-more'" [routerLink]="['/graphs/mining/pools' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>
@@ -38,7 +40,9 @@
     <div class="col" style="margin-bottom: 1.47rem">
       <div class="card">
         <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
-          <app-hashrate-chart [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
+          <div class="fixed-mempool-graph">
+            <app-hashrate-chart [height]="graphHeight" [attr.data-cy]="'hashrate-graph'" [widget]="true"></app-hashrate-chart>
+          </div>
           <div class="mt-1"><a [routerLink]="['/graphs/mining/hashrate-difficulty' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { NodeSocket } from '../repositories/NodesSocketsRepository';
 import { isIP } from 'net';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
+import logger from '../logger';
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -245,7 +246,8 @@ export class Common {
     } else if (tx.version === 2) {
       flags |= TransactionFlags.v2;
     }
-    const reusedAddresses: { [address: string ]: number } = {};
+    const reusedInputAddresses: { [address: string ]: number } = {};
+    const reusedOutputAddresses: { [address: string ]: number } = {};
     const inValues = {};
     const outValues = {};
     let rbf = false;
@@ -261,6 +263,9 @@ export class Common {
         case 'v0_p2wpkh': flags |= TransactionFlags.p2wpkh; break;
         case 'v0_p2wsh': flags |= TransactionFlags.p2wsh; break;
         case 'v1_p2tr': {
+          if (!vin.witness?.length) {
+            throw new Error('Taproot input missing witness data');
+          }
           flags |= TransactionFlags.p2tr;
           // in taproot, if the last witness item begins with 0x50, it's an annex
           const hasAnnex = vin.witness?.[vin.witness.length - 1].startsWith('50');
@@ -286,7 +291,7 @@ export class Common {
       }
 
       if (vin.prevout?.scriptpubkey_address) {
-        reusedAddresses[vin.prevout?.scriptpubkey_address] = (reusedAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
+        reusedInputAddresses[vin.prevout?.scriptpubkey_address] = (reusedInputAddresses[vin.prevout?.scriptpubkey_address] || 0) + 1;
       }
       inValues[vin.prevout?.value || Math.random()] = (inValues[vin.prevout?.value || Math.random()] || 0) + 1;
     }
@@ -301,7 +306,7 @@ export class Common {
         case 'p2pk': {
           flags |= TransactionFlags.p2pk;
           // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
-          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey.slice(2, -2));
+          hasFakePubkey = hasFakePubkey || !isPoint(vout.scriptpubkey?.slice(2, -2));
         } break;
         case 'multisig': {
           flags |= TransactionFlags.p2ms;
@@ -321,7 +326,7 @@ export class Common {
         case 'op_return': flags |= TransactionFlags.op_return; break;
       }
       if (vout.scriptpubkey_address) {
-        reusedAddresses[vout.scriptpubkey_address] = (reusedAddresses[vout.scriptpubkey_address] || 0) + 1;
+        reusedOutputAddresses[vout.scriptpubkey_address] = (reusedOutputAddresses[vout.scriptpubkey_address] || 0) + 1;
       }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
     }
@@ -331,7 +336,7 @@ export class Common {
     
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
-    const addressReuse = Object.values(reusedAddresses).reduce((acc, count) => Math.max(acc, count), 0) > 1;
+    const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
     if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
       flags |= TransactionFlags.coinjoin;
     }
@@ -348,7 +353,12 @@ export class Common {
   }
 
   static classifyTransaction(tx: TransactionExtended): TransactionClassified {
-    const flags = Common.getTransactionFlags(tx);
+    let flags = 0;
+    try {
+      flags = Common.getTransactionFlags(tx);
+    } catch (e) {
+      logger.warn('Failed to add classification flags to transaction: ' + (e instanceof Error ? e.message : e));
+    }
     tx.flags = flags;
     return {
       ...Common.stripTransaction(tx),
@@ -505,6 +515,13 @@ export class Common {
     return (
       Common.indexingEnabled() &&
       config.MEMPOOL.BLOCKS_SUMMARIES_INDEXING === true
+    );
+  }
+
+  static gogglesIndexingEnabled(): boolean {
+    return (
+      Common.blocksSummariesIndexingEnabled() &&
+      config.MEMPOOL.GOGGLES_INDEXING === true
     );
   }
 

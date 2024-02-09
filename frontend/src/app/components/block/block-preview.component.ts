@@ -10,6 +10,7 @@ import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.in
 import { ApiService } from '../../services/api.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block-preview',
@@ -42,7 +43,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private openGraphService: OpenGraphService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
   ) { }
 
   ngOnInit() {
@@ -134,7 +136,7 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
                   return of(transactions);
                 })
               ),
-            this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.apiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+            this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
           ]);
         }
       ),
