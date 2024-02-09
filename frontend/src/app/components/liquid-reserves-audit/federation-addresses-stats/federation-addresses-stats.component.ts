@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable, combineLatest, map } from 'rxjs';
+import { Observable, combineLatest, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-federation-addresses-stats',
@@ -16,8 +16,8 @@ export class FederationAddressesStatsComponent implements OnInit {
 
   ngOnInit(): void {
     this.federationWalletStats$ = combineLatest([
-      this.federationAddressesNumber$,
-      this.federationUtxosNumber$
+      this.federationAddressesNumber$ ?? of(undefined),
+      this.federationUtxosNumber$ ?? of(undefined)
     ]).pipe(
       map(([address_count, utxo_count]) => {
         return { address_count, utxo_count}
