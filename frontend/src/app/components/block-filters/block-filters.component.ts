@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, HostListener, Input, ChangeDetectorRef, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
-import { FilterGroups, TransactionFilters } from '../../shared/filters.utils';
+import { ActiveFilter, FilterGroups, FilterMode, TransactionFilters } from '../../shared/filters.utils';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @Input() cssWidth: number = 800;
   @Input() excludeFilters: string[] = [];
-  @Output() onFilterChanged: EventEmitter<bigint | null> = new EventEmitter();
+  @Output() onFilterChanged: EventEmitter<ActiveFilter | null> = new EventEmitter();
 
   filterSubscription: Subscription;
 
@@ -21,6 +21,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   disabledFilters: { [key: string]: boolean } = {};
   activeFilters: string[] = [];
   filterFlags: { [key: string]: boolean } = {};
+  filterMode: FilterMode = 'and';
   menuOpen: boolean = false;
 
   constructor(
@@ -29,15 +30,16 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.filterSubscription = this.stateService.activeGoggles$.subscribe((activeFilters: string[]) => {
+    this.filterSubscription = this.stateService.activeGoggles$.subscribe((active: ActiveFilter) => {
+      this.filterMode = active.mode;
       for (const key of Object.keys(this.filterFlags)) {
         this.filterFlags[key] = false;
       }
-      for (const key of activeFilters) {
+      for (const key of active.filters) {
         this.filterFlags[key] = !this.disabledFilters[key];
       }
-      this.activeFilters = [...activeFilters.filter(key => !this.disabledFilters[key])];
-      this.onFilterChanged.emit(this.getBooleanFlags());
+      this.activeFilters = [...active.filters.filter(key => !this.disabledFilters[key])];
+      this.onFilterChanged.emit({ mode: active.mode, filters: this.activeFilters });
     });
   }
 
@@ -51,6 +53,12 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
         this.disabledFilters[filter] = true;
       });
     }
+  }
+
+  setFilterMode(mode): void {
+    this.filterMode = mode;
+    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters });
+    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters] });
   }
 
   toggleFilter(key): void {
@@ -73,8 +81,8 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
       this.activeFilters = this.activeFilters.filter(f => f != key);
     }
     const booleanFlags = this.getBooleanFlags();
-    this.onFilterChanged.emit(booleanFlags);
-    this.stateService.activeGoggles$.next([...this.activeFilters]);
+    this.onFilterChanged.emit({ mode: this.filterMode, filters: this.activeFilters });
+    this.stateService.activeGoggles$.next({ mode: this.filterMode, filters: [...this.activeFilters] });
   }
   
   getBooleanFlags(): bigint | null {
@@ -90,7 +98,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('document:click', ['$event'])
   onClick(event): boolean {
     // click away from menu
-    if (!event.target.closest('button')) {
+    if (!event.target.closest('button') && !event.target.closest('label')) {
       this.menuOpen = false;
     }
     return true;
