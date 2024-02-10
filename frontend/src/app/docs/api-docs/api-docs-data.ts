@@ -9955,8 +9955,8 @@ export const restApiDocsData = [
           headers: "api_key: stacksats",
           response: `{
   "balance": 99900000,
-  "hold": 0,
-  "feesPaid": 200000
+  "hold": 101829,
+  "feesPaid": 133721
 }`,
         },
       }
@@ -10044,15 +10044,15 @@ export const restApiDocsData = [
     fragment: "history",
     title: "GET Acceleration History",
     description: {
-      default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.</p>"
+      default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
-    urlString: "/v1/services/accelerator/history?status=:status",
+    urlString: "/v1/services/accelerator/history?status=:status&details=:details",
     showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `/api/v1/services/accelerator/history?status=all`,
+          curl: `/api/v1/services/accelerator/history?status=all&details=true`,
           commonJS: ``,
           esModule: ``
         },
