@@ -70,9 +70,15 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
-  added: TransactionStripped[],
-  removed: string[],
-  changed?: { txid: string, rate: number | undefined, acc: boolean | undefined }[];
+  added: TransactionStripped[];
+  removed: string[];
+  changed: { txid: string, rate: number, flags: number, acc: boolean }[];
+}
+
+export interface MempoolBlockDeltaCompressed {
+  added: TransactionCompressed[];
+  removed: string[];
+  changed: MempoolDeltaChange[];
 }
 
 export interface MempoolInfo {
@@ -96,6 +102,11 @@ export interface TransactionStripped {
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'censored' | 'selected' | 'rbf' | 'accelerated';
   context?: 'projected' | 'actual';
 }
+
+// [txid, fee, vsize, value, rate, flags, acceleration?]
+export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+// [txid, rate, flags, acceleration?]
+export type MempoolDeltaChange = [string, number, number, (1|0)];
 
 export interface IBackendInfo {
   hostname?: string;

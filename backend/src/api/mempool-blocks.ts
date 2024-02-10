@@ -1,6 +1,6 @@
 import { GbtGenerator, GbtResult, ThreadTransaction as RustThreadTransaction, ThreadAcceleration as RustThreadAcceleration } from 'rust-gbt';
 import logger from '../logger';
-import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified } from '../mempool.interfaces';
+import { MempoolBlock, MempoolTransactionExtended, MempoolBlockWithTransactions, MempoolBlockDelta, Ancestor, CompactThreadTransaction, EffectiveFeeStats, PoolTag, TransactionClassified, TransactionCompressed, MempoolDeltaChange } from '../mempool.interfaces';
 import { Common, OnlineFeeStatsCalculator } from './common';
 import config from '../config';
 import { Worker } from 'worker_threads';
@@ -171,7 +171,7 @@ class MempoolBlocks {
     for (let i = 0; i < Math.max(mempoolBlocks.length, prevBlocks.length); i++) {
       let added: TransactionClassified[] = [];
       let removed: string[] = [];
-      const changed: { txid: string, rate: number | undefined, acc: boolean | undefined }[] = [];
+      const changed: TransactionClassified[] = [];
       if (mempoolBlocks[i] && !prevBlocks[i]) {
         added = mempoolBlocks[i].transactions;
       } else if (!mempoolBlocks[i] && prevBlocks[i]) {
@@ -194,14 +194,14 @@ class MempoolBlocks {
           if (!prevIds[tx.txid]) {
             added.push(tx);
           } else if (tx.rate !== prevIds[tx.txid].rate || tx.acc !== prevIds[tx.txid].acc) {
-            changed.push({ txid: tx.txid, rate: tx.rate, acc: tx.acc });
+            changed.push(tx);
           }
         });
       }
       mempoolBlockDeltas.push({
-        added,
+        added: added.map(this.compressTx),
         removed,
-        changed,
+        changed: changed.map(this.compressDeltaChange),
       });
     }
     return mempoolBlockDeltas;
@@ -690,6 +690,38 @@ class MempoolBlocks {
       }
     });
     return { blocks: convertedBlocks, blockWeights, rates: convertedRates, clusters: convertedClusters, overflow: convertedOverflow };
+  }
+
+  public compressTx(tx: TransactionClassified): TransactionCompressed {
+    if (tx.acc) {
+      return [
+        tx.txid,
+        tx.fee,
+        tx.vsize,
+        tx.value,
+        Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
+        tx.flags,
+        1
+      ];
+    } else {
+      return [
+        tx.txid,
+        tx.fee,
+        tx.vsize,
+        tx.value,
+        Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
+        tx.flags,
+      ];
+    }
+  }
+
+  public compressDeltaChange(tx: TransactionClassified): MempoolDeltaChange {
+    return [
+      tx.txid,
+      Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
+      tx.flags,
+      tx.acc ? 1 : 0,
+    ];
   }
 }
 
