@@ -10,6 +10,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { Router } from '@angular/router';
 import { Color } from '../block-overview-graph/sprite-types';
 import TxView from '../block-overview-graph/tx-view';
+import { FilterMode } from '../../shared/filters.utils';
 
 @Component({
   selector: 'app-mempool-block-overview',
@@ -22,7 +23,7 @@ export class MempoolBlockOverviewComponent implements OnInit, OnDestroy, OnChang
   @Input() showFilters: boolean = false;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Input() filterFlags: bigint | undefined = undefined;
-  @Input() filterMode: 'and' | 'or' = 'and';
+  @Input() filterMode: FilterMode = 'and';
   @Output() txPreviewEvent = new EventEmitter<TransactionStripped | void>();
 
   @ViewChild('blockGraph') blockGraph: BlockOverviewGraphComponent;

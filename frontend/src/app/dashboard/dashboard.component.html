@@ -26,7 +26,7 @@
             <div class="quick-filter">
               <div class="btn-group btn-group-toggle">
                 <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
-                  <input type="radio" [value]="'3m'" fragment="3m" (click)="goggleIndex = filter.index" [attr.data-cy]="'3m'"> {{ filter.name }}
+                  <input type="radio" [value]="'3m'" fragment="3m" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'"> {{ filter.name }}
                 </label>
               </div>
             </div>
@@ -34,8 +34,8 @@
               <app-mempool-block-overview
                 [index]="0"
                 [resolution]="goggleResolution"
-                [filterFlags]="goggleCycle[goggleIndex].flag"
-                filterMode="or"
+                [filterFlags]="goggleFlags"
+                [filterMode]="goggleMode"
               ></app-mempool-block-overview>
             </div>
           </ng-template>
@@ -44,7 +44,7 @@
               <ng-container *ngTemplateOutlet="stateService.network === 'liquid' ? lbtcPegs : mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
               <hr>
             </div>
-            <app-lbtc-pegs-graph [data]="fullHistory$ | async"></app-lbtc-pegs-graph>
+            <app-lbtc-pegs-graph [data]="fullHistory$ | async" [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </ng-template>
         </div>
       </div>
@@ -187,7 +187,7 @@
 <ng-template #loadingAssetsTable>
   <table class="table table-borderless table-striped asset-table">
     <tbody>
-      <tr *ngFor="let i of [1,2,3,4,5,6]">
+      <tr *ngFor="let i of getArrayFromNumber(this.nbFeaturedAssets)">
         <td class="asset-icon">
           <div class="skeleton-loader skeleton-loader-transactions"></div>
         </td>
