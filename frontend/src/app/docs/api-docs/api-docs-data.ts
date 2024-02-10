@@ -10042,7 +10042,7 @@ export const restApiDocsData = [
     category: "accelerator",
     httpRequestMethod: "GET",
     fragment: "accelerator-history",
-    title: "GET Acceleration History",
+    title: "GET Private Acceleration History",
     description: {
       default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
@@ -10214,7 +10214,7 @@ export const restApiDocsData = [
     category: "accelerator",
     httpRequestMethod: "GET",
     fragment: "accelerator-public-history",
-    title: "GET Acceleration History",
+    title: "GET Public Acceleration History",
     description: {
       default: `<p>Return a list of accelerated transactions.
       Filters can be applied such as<ul>
