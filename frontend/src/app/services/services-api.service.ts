@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { StateService } from './state.service';
 import { StorageService } from './storage.service';
 import { MenuGroup } from '../interfaces/services.interface';
-import { Observable, of, ReplaySubject, tap, catchError, share } from 'rxjs';
+import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap } from 'rxjs';
 import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
 
@@ -64,13 +64,10 @@ export class ServicesApiServices {
     }
 
     this.getUserInfo$().subscribe();
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        if (this.currentAuth !== localStorage.getItem('auth')) {
-          this.getUserInfo$().subscribe();
-        }
-      }
-    });
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationStart && this.currentAuth !== localStorage.getItem('auth')),
+      switchMap(() => this.getUserInfo$()),
+    ).subscribe();
   }
 
   /**
