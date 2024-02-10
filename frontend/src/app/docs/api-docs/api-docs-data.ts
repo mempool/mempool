@@ -9885,7 +9885,7 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "accelerator",
     httpRequestMethod: "GET",
-    fragment: "get-deposit-history",
+    fragment: "accelerator-deposit-history",
     title: "GET Deposit History",
     description: {
       default: "<p>Returns a list of deposits made as prepayment for the accelerator service.</p>"
@@ -9933,7 +9933,7 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "accelerator",
     httpRequestMethod: "GET",
-    fragment: "balance",
+    fragment: "accelerator-balance",
     title: "GET Available Balance",
     description: {
       default: "<p>Returns your currently available balance, currently locked funds, and total fees paid so far.</p>"
@@ -9967,7 +9967,7 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "accelerator",
     httpRequestMethod: "POST",
-    fragment: "estimate",
+    fragment: "accelerator-estimate",
     title: "POST Calculate Estimated Costs",
     description: {
       default: "<p>Returns estimated costs to accelerate a transaction.</p>"
@@ -10011,7 +10011,7 @@ export const restApiDocsData = [
     type: "endpoint",
     category: "accelerator",
     httpRequestMethod: "POST",
-    fragment: "accelerate",
+    fragment: "accelerator-accelerate",
     title: "POST Accelerate A Transaction",
     description: {
       default: "<p>Send a request to accelerate a transaction.</p>"
@@ -10039,9 +10039,9 @@ export const restApiDocsData = [
   {
     options: { officialOnly: true },
     type: "endpoint",
-    category: "history",
+    category: "accelerator",
     httpRequestMethod: "GET",
-    fragment: "history",
+    fragment: "accelerator-history",
     title: "GET Acceleration History",
     description: {
       default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
@@ -10149,6 +10149,117 @@ export const restApiDocsData = [
       {
         "event": "complete-at-block-827670",
         "timestamp": 1706380231
+      }
+    ]
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "GET",
+    fragment: "accelerator-pending",
+    title: "GET Pending Acceleration",
+    description: {
+      default: "<p>Return the list of currently accelerated transactions.</p>"
+    },
+    urlString: "/v1/services/accelerator/accelerations",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `[
+  {
+    "txid": "8a183c8ae929a2afb857e7f2acd440aaefdf2797f8f7eab1c5f95ff8602abc81",
+    "added": 1707558316,
+    "feeDelta": 3500,
+    "effectiveVsize": 111,
+    "effectiveFee": 1671,
+    "pools": [
+      111
+    ]
+  },
+  {
+    "txid": "6097f295e21bdd8d725bd8d9ad4dd72b05bd795dc648bfef52150a9b2b7f7a45",
+    "added": 1707560464,
+    "feeDelta": 60000,
+    "effectiveVsize": 812,
+    "effectiveFee": 7790,
+    "pools": [
+      111
+    ]
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: "endpoint",
+    category: "accelerator",
+    httpRequestMethod: "GET",
+    fragment: "accelerator-public-history",
+    title: "GET Acceleration History",
+    description: {
+      default: `<p>Return a list of accelerated transactions.
+      Filters can be applied such as<ul>
+      <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
+      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>all</code></li>
+      <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">https://github.com/mempool/mining-pools/blob/master/pools-v2.json</a>
+      <li><code>blockHash</code>: a block hash</a>
+      <li><code>blockHeight</code>: a block height</a>
+      <li><code>page</code>: the requested page number if using pagination</a>
+      <li><code>pageLength</code>: the page lenght if using pagination</a>
+      </ul></p>`
+    },
+    urlString: "/v1/services/accelerator/accelerations/history",
+    showConditions: [""],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations/history?blockHash=00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `[
+  {
+    "txid": "d7e1796d8eb4a09d4e6c174e36cfd852f1e6e6c9f7df4496339933cd32cbdd1d",
+    "status": "completed",
+    "feePaid": 53239,
+    "added": 1707421053,
+    "lastUpdated": 1707422952,
+    "baseFee": 50000,
+    "vsizeFee": 0,
+    "effectiveFee": 146,
+    "effectiveVsize": 141,
+    "feeDelta": 14000,
+    "blockHash": "00000000000000000000482f0746d62141694b9210a813b97eb8445780a32003",
+    "blockHeight": 829559,
+    "pools": [
+      {
+        "pool_unique_id": 111,
+        "username": "foundryusa"
       }
     ]
   }
