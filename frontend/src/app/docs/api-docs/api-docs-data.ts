@@ -9888,7 +9888,7 @@ export const restApiDocsData = [
     fragment: "accelerator-deposit-history",
     title: "GET Deposit History",
     description: {
-      default: "<p>Returns a list of deposits made as prepayment for the accelerator service.</p>"
+      default: "<p>Returns a list of deposits the user has made as prepayment for the accelerator service.</p>"
     },
     urlString: "/v1/services/accelerator/deposit-history",
     showConditions: [""],
@@ -9936,7 +9936,7 @@ export const restApiDocsData = [
     fragment: "accelerator-balance",
     title: "GET Available Balance",
     description: {
-      default: "<p>Returns your currently available balance, currently locked funds, and total fees paid so far.</p>"
+      default: "<p>Returns the user's currently available balance, currently locked funds, and total fees paid so far.</p>"
     },
     urlString: "/v1/services/accelerator/balance",
     showConditions: [""],
@@ -10014,7 +10014,7 @@ export const restApiDocsData = [
     fragment: "accelerator-accelerate",
     title: "POST Accelerate A Transaction",
     description: {
-      default: "<p>Send a request to accelerate a transaction.</p>"
+      default: "<p>Sends a request to accelerate a transaction.</p>"
     },
     urlString: "/v1/services/accelerator/accelerate",
     showConditions: [""],
@@ -10044,7 +10044,7 @@ export const restApiDocsData = [
     fragment: "accelerator-history",
     title: "GET Private Acceleration History",
     description: {
-      default: "<p>Return the history of previous acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
+      default: "<p>Returns the user's past acceleration requests.</p><p>Pass one of the following for <code>:status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>. Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>"
     },
     urlString: "/v1/services/accelerator/history?status=:status&details=:details",
     showConditions: [""],
@@ -10163,9 +10163,9 @@ export const restApiDocsData = [
     category: "accelerator",
     httpRequestMethod: "GET",
     fragment: "accelerator-pending",
-    title: "GET Pending Acceleration",
+    title: "GET Pending Accelerations",
     description: {
-      default: "<p>Return the list of currently accelerated transactions.</p>"
+      default: "<p>Returns all transactions currently being accelerated.</p>"
     },
     urlString: "/v1/services/accelerator/accelerations",
     showConditions: [""],
@@ -10216,8 +10216,8 @@ export const restApiDocsData = [
     fragment: "accelerator-public-history",
     title: "GET Public Acceleration History",
     description: {
-      default: `<p>Return a list of accelerated transactions.
-      Filters can be applied such as<ul>
+      default: `<p>Returns all past accelerated transactions.
+      Filters can be applied:<ul>
       <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
       <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>all</code></li>
       <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">https://github.com/mempool/mining-pools/blob/master/pools-v2.json</a>
