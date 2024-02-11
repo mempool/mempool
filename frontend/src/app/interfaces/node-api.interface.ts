@@ -54,6 +54,7 @@ export interface DifficultyAdjustment {
   previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
   timeOffset: number;
   expectedBlocks: number;
 }

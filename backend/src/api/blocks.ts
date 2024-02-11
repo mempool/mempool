@@ -37,6 +37,7 @@ class Blocks {
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
+  private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
 
@@ -775,6 +776,16 @@ class Blocks {
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
     }
+    if (this.currentBlockHeight >= 503) {
+      try {
+        const quarterEpochBlockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight - 503);
+        const quarterEpochBlock = await bitcoinApi.$getBlock(quarterEpochBlockHash);
+        this.quarterEpochBlockTime = quarterEpochBlock?.timestamp;
+      } catch (e) {
+        this.quarterEpochBlockTime = null;
+        logger.warn('failed to update last epoch block time: ' + (e instanceof Error ? e.message : e));
+      }
+    }
 
     if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
       logger.info(`${blockHeightTip - this.currentBlockHeight} blocks since tip. Fast forwarding to the ${config.MEMPOOL.INITIAL_BLOCKS_AMOUNT} recent blocks`);
@@ -1306,6 +1317,10 @@ class Blocks {
 
   public getPreviousDifficultyRetarget(): number {
     return this.previousDifficultyRetarget;
+  }
+
+  public getQuarterEpochBlockTime(): number | null {
+    return this.quarterEpochBlockTime;
   }
 
   public getCurrentBlockHeight(): number {
