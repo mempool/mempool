@@ -1,9 +1,10 @@
+import { Router, NavigationStart } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { StateService } from './state.service';
 import { StorageService } from './storage.service';
 import { MenuGroup } from '../interfaces/services.interface';
-import { Observable, of, ReplaySubject, tap, catchError, share } from 'rxjs';
+import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap } from 'rxjs';
 import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
 
@@ -30,16 +31,20 @@ const SERVICES_API_PREFIX = `/api/v1/services`;
   providedIn: 'root'
 })
 export class ServicesApiServices {
-  private apiBaseUrl: string; // base URL is protocol, hostname, and port
-  private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+  apiBaseUrl: string; // base URL is protocol, hostname, and port
+  apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
 
   userSubject$ = new ReplaySubject<IUser | null>(1);
+  currentAuth = null;
 
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private router: Router,
   ) {
+    this.currentAuth = localStorage.getItem('auth');
+
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
       this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
@@ -59,6 +64,10 @@ export class ServicesApiServices {
     }
 
     this.getUserInfo$().subscribe();
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationStart && this.currentAuth !== localStorage.getItem('auth')),
+      switchMap(() => this.getUserInfo$()),
+    ).subscribe();
   }
 
   /**
