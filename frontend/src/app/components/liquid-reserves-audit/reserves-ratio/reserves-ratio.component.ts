@@ -95,7 +95,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
           },
           title: {
             show: true,
-            offsetCenter: [0, '-117.5%'],
+            offsetCenter: [0, '-127%'],
             fontSize: 18,
             color: '#4a68b9',
             fontFamily: 'inherit',

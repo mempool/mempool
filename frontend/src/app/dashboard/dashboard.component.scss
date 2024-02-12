@@ -413,3 +413,39 @@
   margin-top: 5px;
   margin-bottom: 6px;
 }
+
+.card-liquid {
+  background-color: #1d1f31;
+  height: 418px;
+  @media (min-width: 992px) {
+    height: 512px;
+  }
+  &.smaller {
+    height: 408px;
+  }
+}
+
+.card-title-liquid {
+  padding-top: 20px;
+}
+
+.peg-historical-data {
+  font-size: 18px;
+
+  @media (min-width: 768px) {
+    padding-top: 22px;
+  }
+
+  @media (min-width: 992px) {
+    padding-top: 27px;
+  }
+}
+
+.in-progress-message {
+  position: relative;
+  color: #ffffff91;
+  margin-top: 20px;
+  text-align: center;
+  padding-bottom: 3px;
+  font-weight: 500;
+}

@@ -15,7 +15,7 @@ import { SeoService } from '../../../services/seo.service';
 })
 export class RecentPegsListComponent implements OnInit {
   @Input() widget: boolean = false;
-  @Input() recentPegsList$: Observable<RecentPeg[]> = of([]);
+  @Input() recentPegsList$: Observable<RecentPeg[]>;
 
   env: Env;
   isLoading = true;

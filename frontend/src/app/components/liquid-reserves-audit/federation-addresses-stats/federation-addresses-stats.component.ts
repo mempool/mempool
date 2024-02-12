@@ -20,6 +20,9 @@ export class FederationAddressesStatsComponent implements OnInit {
       this.federationUtxosNumber$ ?? of(undefined)
     ]).pipe(
       map(([address_count, utxo_count]) => {
+        if (address_count === undefined || utxo_count === undefined) {
+          return undefined;
+        }
         return { address_count, utxo_count}
       })
     )
