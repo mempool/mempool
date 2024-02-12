@@ -200,8 +200,12 @@ export class ApiService {
     return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
   }
 
-  recentPegOuts$(): Observable<RecentPeg[]> {
-    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegouts');
+  recentPegsList$(count: number = 0): Observable<RecentPeg[]> {
+    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/list/' + count);
+  }
+
+  pegsCount$(): Observable<any> {
+    return this.httpClient.get<number>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/count');
   }
 
   federationAddressesNumber$(): Observable<any> {

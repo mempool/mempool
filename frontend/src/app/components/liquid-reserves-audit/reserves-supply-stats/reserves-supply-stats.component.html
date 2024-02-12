@@ -6,7 +6,7 @@
         <div class="card-text">
           <div class="fee-text">{{ (+currentPeg.amount) / 100000000 | number: '1.2-2' }} <span>L-BTC</span></div>
           <span class="fiat">
-            <span>As of block&nbsp;<a [routerLink]="['/block', currentPeg.hash]">{{ currentPeg.lastBlockUpdate }}</a></span>
+            <span><ng-container i18n="shared.as-of-block">As of block</ng-container>&nbsp;<a [routerLink]="['/block', currentPeg.hash]">{{ currentPeg.lastBlockUpdate }}</a></span>
           </span>
         </div>
       </div>
@@ -15,7 +15,7 @@
         <div class="card-text">
           <div class="fee-text">{{ (+currentReserves.amount) / 100000000 | number: '1.2-2' }} <span style="color: #b86d12;">BTC</span></div>
           <span class="fiat">
-            <span>As of block&nbsp;<a href="{{ env.MEMPOOL_WEBSITE_URL + '/block/' + currentReserves.hash }}" target="_blank" style="color:#b86d12">{{ currentReserves.lastBlockUpdate }}</a></span>
+            <span><ng-container i18n="shared.as-of-block">As of block</ng-container>&nbsp;<a href="{{ env.MEMPOOL_WEBSITE_URL + '/block/' + currentReserves.hash }}" target="_blank" style="color:#b86d12">{{ currentReserves.lastBlockUpdate }}</a></span>
           </span>
         </div>
       </div>
@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="item">
-      <h5 class="card-title" i18n="dashboard.btc-reserves">BTC Reserves</h5>
+      <h5 class="card-title" i18n="dashboard.btc-holdings">BTC Holdings</h5>
       <div class="card-text">
         <div class="skeleton-loader"></div>
         <div class="skeleton-loader"></div>

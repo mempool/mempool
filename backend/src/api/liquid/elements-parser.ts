@@ -412,10 +412,10 @@ class ElementsParser {
     return rows[0];
   }
 
-  // Get recent pegouts from the federation (3 months old)
-  public async $getRecentPegouts(): Promise<any> {
-    const query = `SELECT txid, txindex, amount, bitcoinaddress, bitcointxid, bitcoinindex, datetime AS blocktime FROM elements_pegs WHERE amount < 0 AND datetime > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -90, CURRENT_TIMESTAMP())) ORDER BY blocktime;`;
-    const [rows] = await DB.query(query);
+  // Get recent pegs in / out
+  public async $getPegsList(count: number = 0): Promise<any> {
+    const query = `SELECT txid, txindex, amount, bitcoinaddress, bitcointxid, bitcoinindex, datetime AS blocktime FROM elements_pegs ORDER BY block DESC LIMIT 15 OFFSET ?;`;
+    const [rows] = await DB.query(query, [count]);
     return rows;
   }
 
@@ -427,6 +427,12 @@ class ElementsParser {
       pegInQuery[0][0],
       pegOutQuery[0][0]
     ];
+  }
+
+  // Get the total pegs number
+  public async $getPegsCount(): Promise<any> {
+    const [rows] = await DB.query(`SELECT COUNT(*) AS pegs_count FROM elements_pegs;`);
+    return rows[0];
   }
 }
 

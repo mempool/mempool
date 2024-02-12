@@ -17,9 +17,7 @@ export class ReservesAuditDashboardComponent implements OnInit {
   auditUpdated$: Observable<boolean>;
   currentPeg$: Observable<CurrentPegs>;
   currentReserves$: Observable<CurrentPegs>;
-  federationUtxos$: Observable<FederationUtxo[]>;
-  recentPegIns$: Observable<RecentPeg[]>;
-  recentPegOuts$: Observable<RecentPeg[]>;
+  recentPegsList$: Observable<RecentPeg[]>;
   pegsVolume$: Observable<PegsVolume[]>;
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesNumber$: Observable<number>;
@@ -101,32 +99,10 @@ export class ReservesAuditDashboardComponent implements OnInit {
       share()
     );
 
-    this.federationUtxos$ = this.auditUpdated$.pipe(
+    this.recentPegsList$ = this.auditUpdated$.pipe(
       filter(auditUpdated => auditUpdated === true),
       throttleTime(40000),
-      switchMap(_ => this.apiService.federationUtxos$()),
-      share()
-    );
-
-    this.recentPegIns$ = this.federationUtxos$.pipe(
-      map(federationUtxos => federationUtxos.filter(utxo => utxo.pegtxid).map(utxo => {
-        return {
-          txid: utxo.pegtxid,
-          txindex: utxo.pegindex,
-          amount: utxo.amount,
-          bitcoinaddress: utxo.bitcoinaddress,
-          bitcointxid: utxo.txid,
-          bitcoinindex: utxo.txindex,
-          blocktime: utxo.pegblocktime,
-        }
-      })),
-      share()
-    );
-
-    this.recentPegOuts$ = this.auditUpdated$.pipe(
-      filter(auditUpdated => auditUpdated === true),
-      throttleTime(40000),
-      switchMap(_ => this.apiService.recentPegOuts$()),
+      switchMap(_ => this.apiService.recentPegsList$()),
       share()
     );
 

@@ -15,7 +15,7 @@
         <th class="output text-left" *ngIf="!widget" i18n="liquid.fund-redemption-tx">Fund / Redemption Tx</th>
         <th class="address text-left" *ngIf="!widget" i18n="liquid.bitcoin-address">BTC Address</th>
       </thead>
-      <tbody *ngIf="recentPegs$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+      <tbody *ngIf="recentPegsList$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
           <tr *ngFor="let peg of pegs | slice:0:5">
             <td class="transaction text-left widget">
@@ -39,7 +39,7 @@
           </tr>
         </ng-container>
         <ng-template #regularRows>
-          <tr *ngFor="let peg of pegs | slice:(page - 1) * pageSize:page * pageSize">
+          <tr *ngFor="let peg of pegs;">
             <td class="transaction text-left">
               <ng-container *ngIf="peg.amount > 0">
                 <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
@@ -117,8 +117,8 @@
       </ng-template>
     </table>
 
-    <ngb-pagination *ngIf="!widget && recentPegs$ | async as pegs" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
-      [collectionSize]="pegs.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+    <ngb-pagination *ngIf="!widget && pegsCount$ | async as pegsCount" class="pagination-container float-right mt-2" [class]="isLoading || isPegCountLoading ? 'disabled' : ''"
+      [collectionSize]="pegsCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
       (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
     </ngb-pagination>
 

@@ -17,10 +17,11 @@ class LiquidRoutes {
       app
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/list/:count', this.$getPegsList)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/volume', this.$getPegsVolumeDaily)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/count', this.$getPegsCount)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
-        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegouts', this.$getPegOuts)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/total', this.$getFederationAddressesNumber)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
@@ -178,13 +179,13 @@ class LiquidRoutes {
     }
   }
 
-  private async $getPegOuts(req: Request, res: Response) {
+  private async $getPegsList(req: Request, res: Response) {
     try {
-      const recentPegOuts = await elementsParser.$getRecentPegouts();
+      const recentPegs = await elementsParser.$getPegsList(parseInt(req.params?.count));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
-      res.json(recentPegOuts);
+      res.json(recentPegs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
@@ -197,6 +198,18 @@ class LiquidRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
       res.json(pegsVolume);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsCount(req: Request, res: Response) {
+    try {
+      const pegsCount = await elementsParser.$getPegsCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsCount);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
