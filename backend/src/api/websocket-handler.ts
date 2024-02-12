@@ -23,6 +23,7 @@ import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
+import statistics from './statistics/statistics';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -723,6 +724,7 @@ class WebsocketHandler {
     }
 
     this.printLogs();
+    await statistics.runStatistics();
 
     const _memPool = memPool.getMempool();
 
@@ -1014,6 +1016,8 @@ class WebsocketHandler {
         client.send(this.serializeResponse(response));
       }
     });
+
+    await statistics.runStatistics();
   }
 
   // takes a dictionary of JSON serialized values

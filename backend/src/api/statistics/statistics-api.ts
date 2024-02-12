@@ -285,7 +285,7 @@ class StatisticsApi {
 
   public async $list2H(): Promise<OptimizedStatistic[]> {
     try {
-      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY statistics.added DESC LIMIT 120`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL 2 HOUR) AND NOW() ORDER BY statistics.added DESC`;
       const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
       return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
@@ -296,7 +296,7 @@ class StatisticsApi {
 
   public async $list24H(): Promise<OptimizedStatistic[]> {
     try {
-      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics ORDER BY statistics.added DESC LIMIT 1440`;
+      const query = `SELECT *, UNIX_TIMESTAMP(added) as added FROM statistics WHERE added BETWEEN DATE_SUB(NOW(), INTERVAL 24 HOUR) AND NOW() ORDER BY statistics.added DESC`;
       const [rows] = await DB.query({ sql: query, timeout: this.queryTimeout });
       return this.mapStatisticToOptimizedStatistic(rows as Statistic[]);
     } catch (e) {
