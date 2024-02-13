@@ -24,6 +24,7 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
+import rebroadcaster from './rebroadcaster';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -805,6 +806,8 @@ class WebsocketHandler {
           block.extras.expectedWeight = totalWeight;
           block.extras.similarity = similarity;
         }
+
+        rebroadcaster.missed(censored);
       }
     } else if (block.extras) {
       const mBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();

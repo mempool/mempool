@@ -45,6 +45,7 @@ import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
+import rebroadcaster from './api/rebroadcaster';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -215,6 +216,7 @@ class Server {
       }
       indexer.$run();
       priceUpdater.$run();
+      rebroadcaster.$run();
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;

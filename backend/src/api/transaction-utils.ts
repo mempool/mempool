@@ -129,6 +129,7 @@ class TransactionUtils {
       feePerVsize: feePerVbytes,
       adjustedFeePerVsize: adjustedFeePerVsize,
       effectiveFeePerVsize: adjustedFeePerVsize,
+      purged: false,
     });
     if (!transactionExtended?.status?.confirmed && !transactionExtended.firstSeen) {
       transactionExtended.firstSeen = Math.round((Date.now() / 1000));

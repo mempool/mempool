@@ -107,6 +107,7 @@ export interface MempoolTransactionExtended extends TransactionExtended {
   inputs?: number[];
   lastBoosted?: number;
   cpfpDirty?: boolean;
+  purged: boolean;
 }
 
 export interface AuditTransaction {

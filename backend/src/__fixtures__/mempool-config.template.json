@@ -137,6 +137,10 @@
     "AUDIT_START_HEIGHT": 774000,
     "SERVERS": []
   },
+  "REBROADCAST": {
+    "ENABLED": false,
+    "FREQUENCY": 3600
+  },
   "MEMPOOL_SERVICES": {
     "API": "",
     "ACCELERATIONS": false

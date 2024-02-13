@@ -11,6 +11,7 @@ import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import rbfCache from './rbf-cache';
 import { Acceleration } from './services/acceleration';
 import redisCache from './redis-cache';
+import rebroadcaster from './rebroadcaster';
 
 class Mempool {
   private inSync: boolean = false;
@@ -361,6 +362,7 @@ class Mempool {
       await redisCache.$removeTransactions(deletedTransactions.map(tx => tx.txid));
       await rbfCache.updateCache();
     }
+    rebroadcaster.remove(deletedTransactions.map(tx => tx.txid));
 
     const end = new Date().getTime();
     const time = end - start;

@@ -36,6 +36,7 @@ class Logger {
     mining: 'Mining',
     ln: 'Lightning',
     goggles: 'Goggles',
+    rebroadcaster: 'Rebroadcaster',
   };  
 
   // @ts-ignore

@@ -6,6 +6,7 @@ import config from '../config';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import mempool from './mempool';
+import rebroadcaster from './rebroadcaster';
 
 const MAX_UINT32 = Math.pow(2, 32) - 1;
 
@@ -112,6 +113,7 @@ class MempoolBlocks {
     let blockWeight = 0;
     let blockVsize = 0;
     let blockFees = 0;
+    const purgeRate = mempool.getMempoolInfo().mempoolminfee * 100000;
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     let transactionIds: string[] = [];
     let transactions: MempoolTransactionExtended[] = [];
@@ -156,6 +158,16 @@ class MempoolBlocks {
         blockFees = tx.fee;
         transactionIds = [tx.txid];
         transactions = [tx];
+      }
+
+      if (tx.purged) {
+        if (tx.effectiveFeePerVsize >= purgeRate) {
+          rebroadcaster.unpurge(tx.txid);
+          tx.purged = false;
+        }
+      } else if (tx.effectiveFeePerVsize < purgeRate) {
+        rebroadcaster.purge(tx.txid);
+        tx.purged = true;
       }
     });
     if (transactions.length) {
@@ -452,12 +464,12 @@ class MempoolBlocks {
     }
   }
 
-  private processBlockTemplates(mempool: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
+  private processBlockTemplates(mempoolTxs: { [txid: string]: MempoolTransactionExtended }, blocks: string[][], blockWeights: number[] | null, rates: [string, number][], clusters: string[][], accelerations, accelerationPool, saveResults): MempoolBlockWithTransactions[] {
     for (const [txid, rate] of rates) {
-      if (txid in mempool) {
-        mempool[txid].cpfpDirty = (rate !== mempool[txid].effectiveFeePerVsize);
-        mempool[txid].effectiveFeePerVsize = rate;
-        mempool[txid].cpfpChecked = false;
+      if (txid in mempoolTxs) {
+        mempoolTxs[txid].cpfpDirty = (rate !== mempoolTxs[txid].effectiveFeePerVsize);
+        mempoolTxs[txid].effectiveFeePerVsize = rate;
+        mempoolTxs[txid].cpfpChecked = false;
       }
     }
 
@@ -469,7 +481,7 @@ class MempoolBlocks {
       if (blockWeights && blockWeights[7] !== null) {
         stackWeight = blockWeights[7];
       } else {
-        stackWeight = blocks[lastBlockIndex].reduce((total, tx) => total + (mempool[tx]?.weight || 0), 0);
+        stackWeight = blocks[lastBlockIndex].reduce((total, tx) => total + (mempoolTxs[tx]?.weight || 0), 0);
       }
       hasBlockStack = stackWeight > config.MEMPOOL.BLOCK_WEIGHT_UNITS;
       feeStatsCalculator = new OnlineFeeStatsCalculator(stackWeight, 0.5, [10, 20, 30, 40, 50, 60, 70, 80, 90]);
@@ -477,7 +489,7 @@ class MempoolBlocks {
 
     for (const cluster of clusters) {
       for (const memberTxid of cluster) {
-        const mempoolTx = mempool[memberTxid];
+        const mempoolTx = mempoolTxs[memberTxid];
         if (mempoolTx) {
           const ancestors: Ancestor[] = [];
           const descendants: Ancestor[] = [];
@@ -488,12 +500,12 @@ class MempoolBlocks {
             } else {
               const relative = {
                 txid: txid,
-                fee: mempool[txid].fee,
-                weight: (mempool[txid].adjustedVsize * 4),
+                fee: mempoolTxs[txid].fee,
+                weight: (mempoolTxs[txid].adjustedVsize * 4),
               };
               if (matched) {
                 descendants.push(relative);
-                mempoolTx.lastBoosted = Math.max(mempoolTx.lastBoosted || 0, mempool[txid].firstSeen || 0);
+                mempoolTx.lastBoosted = Math.max(mempoolTx.lastBoosted || 0, mempoolTxs[txid].firstSeen || 0);
               } else {
                 ancestors.push(relative);
               }
@@ -508,6 +520,7 @@ class MempoolBlocks {
     }
 
     const isAccelerated : { [txid: string]: boolean } = {};
+    const purgeRate = mempool.getMempoolInfo().mempoolminfee * 100000;
 
     const sizeLimit = (config.MEMPOOL.BLOCK_WEIGHT_UNITS / 4) * 1.2;
     // update this thread's mempool with the results
@@ -520,7 +533,7 @@ class MempoolBlocks {
       const transactions: MempoolTransactionExtended[] = [];
       for (const txid of block) {
         if (txid) {
-          mempoolTx = mempool[txid];
+          mempoolTx = mempoolTxs[txid];
           // save position in projected blocks
           mempoolTx.position = {
             block: blockIndex,
@@ -544,10 +557,10 @@ class MempoolBlocks {
             }
             mempoolTx.acceleration = true;
             for (const ancestor of mempoolTx.ancestors || []) {
-              if (!mempool[ancestor.txid].acceleration) {
-                mempool[ancestor.txid].cpfpDirty = true;
+              if (!mempoolTxs[ancestor.txid].acceleration) {
+                mempoolTxs[ancestor.txid].cpfpDirty = true;
               }
-              mempool[ancestor.txid].acceleration = true;
+              mempoolTxs[ancestor.txid].acceleration = true;
               isAccelerated[ancestor.txid] = true;
             }
           } else {
@@ -560,6 +573,17 @@ class MempoolBlocks {
           // online calculation of stack-of-blocks fee stats
           if (hasBlockStack && blockIndex === lastBlockIndex && feeStatsCalculator) {
             feeStatsCalculator.processNext(mempoolTx);
+          }
+
+          // update purge status
+          if (mempoolTx.purged) {
+            if (mempoolTx.effectiveFeePerVsize >= purgeRate) {
+              rebroadcaster.unpurge(mempoolTx.txid);
+              mempoolTx.purged = false;
+            }
+          } else if (mempoolTx.effectiveFeePerVsize < purgeRate) {
+            rebroadcaster.purge(mempoolTx.txid);
+            mempoolTx.purged = true;
           }
 
           totalSize += mempoolTx.size;

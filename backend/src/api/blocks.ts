@@ -29,6 +29,7 @@ import websocketHandler from './websocket-handler';
 import redisCache from './redis-cache';
 import rbfCache from './rbf-cache';
 import { calcBitsDifference } from './difficulty-adjustment';
+import rebroadcaster from './rebroadcaster';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -974,6 +975,7 @@ class Blocks {
         await redisCache.$removeTransactions(txIds);
         await rbfCache.updateCache();
       }
+      rebroadcaster.remove(txIds);
 
       handledBlocks++;
     }

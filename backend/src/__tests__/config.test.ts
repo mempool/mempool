@@ -140,6 +140,11 @@ describe('Mempool Backend Config', () => {
         SERVERS: []
       });
 
+      expect(config.REBROADCAST).toStrictEqual({
+        ENABLED: false,
+        FREQUENCY: 3600
+      });
+
       expect(config.MEMPOOL_SERVICES).toStrictEqual({
         API: "",
         ACCELERATIONS: false,

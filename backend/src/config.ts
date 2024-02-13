@@ -147,6 +147,10 @@ interface IConfig {
     AUDIT_START_HEIGHT: number;
     SERVERS: string[];
   },
+  REBROADCAST: {
+    ENABLED: boolean;
+    FREQUENCY: number;
+  },
   MEMPOOL_SERVICES: {
     API: string;
     ACCELERATIONS: boolean;
@@ -303,6 +307,10 @@ const defaults: IConfig = {
     'AUDIT_START_HEIGHT': 774000,
     'SERVERS': [],
   },
+  'REBROADCAST': {
+    'ENABLED': false,
+    'FREQUENCY': 3600,
+  },
   'MEMPOOL_SERVICES': {
     'API': '',
     'ACCELERATIONS': false,
@@ -331,6 +339,7 @@ class Config implements IConfig {
   EXTERNAL_DATA_SERVER: IConfig['EXTERNAL_DATA_SERVER'];
   MAXMIND: IConfig['MAXMIND'];
   REPLICATION: IConfig['REPLICATION'];
+  REBROADCAST: IConfig['REBROADCAST'];
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
 
@@ -352,6 +361,7 @@ class Config implements IConfig {
     this.EXTERNAL_DATA_SERVER = configs.EXTERNAL_DATA_SERVER;
     this.MAXMIND = configs.MAXMIND;
     this.REPLICATION = configs.REPLICATION;
+    this.REBROADCAST = configs.REBROADCAST;
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
   }
