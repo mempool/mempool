@@ -62,7 +62,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currencySubscription: Subscription;
   currency: string;
   incomingGraphHeight: number = 300;
-  lbtcPegGraphHeight: number = 250;
+  lbtcPegGraphHeight: number = 320;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
@@ -398,15 +398,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;
       this.goggleResolution = 82;
-      this.lbtcPegGraphHeight = 270;
+      this.lbtcPegGraphHeight = 320;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
       this.goggleResolution = 80;
-      this.lbtcPegGraphHeight = 190;
+      this.lbtcPegGraphHeight = 230;
     } else {
       this.incomingGraphHeight = 180;
       this.goggleResolution = 86;
-      this.lbtcPegGraphHeight = 200;
+      this.lbtcPegGraphHeight = 220;
     }
   }
 }

@@ -162,21 +162,20 @@
   
       <div class="col">
         <div class="card-liquid card">
-          <div class="card-body">
+          <div class="card-title card-title-liquid">
             <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
-            <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
+          </div>
+          <div class="card-body pl-0" style="padding-top: 10px;">
+            <app-lbtc-pegs-graph [data]="fullHistory$ | async" [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </div>
         </div>
       </div>
   
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card"> 
-          <div class="card-title card-title-liquid">
+          <div class="card-body">
             <app-reserves-ratio-stats [fullHistory$]="fullHistory$"></app-reserves-ratio-stats>
-          </div>
-          <h5 *ngIf="fullHistory$ | async" class="card-title peg-historical-data">Peg Historical Data</h5>
-          <div class="card-body pl-0" style="padding-top: 10px;">
-            <app-lbtc-pegs-graph [data]="fullHistory$ | async" [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
+            <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
           </div>
         </div>
       </div>
@@ -287,20 +286,20 @@
   
       <div class="col">
         <div class="card-liquid card">
-          <div class="card-body">
+          <div class="card-title card-title-liquid">
             <app-reserves-supply-stats></app-reserves-supply-stats>
-            <app-reserves-ratio></app-reserves-ratio>
+          </div>
+          <div class="card-body pl-0" style="padding-top: 10px;">
+            <app-lbtc-pegs-graph [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </div>
         </div>
       </div>
   
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card"> 
-          <div class="card-title card-title-liquid">
+          <div class="card-body">
             <app-reserves-ratio-stats></app-reserves-ratio-stats>
-          </div>
-          <div class="card-body pl-0" style="padding-top: 10px;">
-            <app-lbtc-pegs-graph></app-lbtc-pegs-graph>
+            <app-reserves-ratio></app-reserves-ratio>
           </div>
         </div>
       </div>
