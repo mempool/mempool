@@ -7,6 +7,13 @@ export interface Filter {
   important?: boolean,
 }
 
+export type FilterMode = 'and' | 'or';
+
+export interface ActiveFilter {
+  mode: FilterMode,
+  filters: string[],
+}
+
 // binary flags for transaction classification
 export const TransactionFlags = {
   // features
@@ -42,6 +49,14 @@ export const TransactionFlags = {
   sighash_default:0b00001000_00000000_00000000_00000000_00000000_00000000n,
   sighash_acp:    0b00010000_00000000_00000000_00000000_00000000_00000000n,
 };
+
+export function toFlags(filters: string[]): bigint {
+  let flag = 0n;
+  for (const filter of filters) {
+    flag |= TransactionFlags[filter];
+  }
+  return flag;
+}
 
 export const TransactionFilters: { [key: string]: Filter } = {
     /* features */

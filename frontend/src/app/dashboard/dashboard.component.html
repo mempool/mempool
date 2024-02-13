@@ -25,7 +25,7 @@
           <div class="quick-filter">
             <div class="btn-group btn-group-toggle">
               <label class="btn btn-primary btn-xs" [class.active]="filter.index === goggleIndex"  *ngFor="let filter of goggleCycle">
-                <input type="radio" [value]="'3m'" fragment="3m" (click)="goggleIndex = filter.index" [attr.data-cy]="'3m'"> {{ filter.name }}
+                <input type="radio" [value]="'3m'" fragment="3m" (click)="setFilter(filter.index)" [attr.data-cy]="'3m'"> {{ filter.name }}
               </label>
             </div>
           </div>
@@ -33,8 +33,8 @@
             <app-mempool-block-overview
               [index]="0"
               [resolution]="goggleResolution"
-              [filterFlags]="goggleCycle[goggleIndex].flag"
-              filterMode="or"
+              [filterFlags]="goggleFlags"
+              [filterMode]="goggleMode"
             ></app-mempool-block-overview>
           </div>
         </div>

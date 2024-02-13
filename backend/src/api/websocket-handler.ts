@@ -23,6 +23,7 @@ import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
+import statistics from './statistics/statistics';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -259,7 +260,7 @@ class WebsocketHandler {
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
               response['projected-block-transactions'] = JSON.stringify({
                 index: index,
-                blockTransactions: mBlocksWithTransactions[index]?.transactions || [],
+                blockTransactions: (mBlocksWithTransactions[index]?.transactions || []).map(mempoolBlocks.compressTx),
               });
             } else {
               client['track-mempool-block'] = null;
@@ -723,6 +724,7 @@ class WebsocketHandler {
     }
 
     this.printLogs();
+    await statistics.runStatistics();
 
     const _memPool = memPool.getMempool();
 
@@ -999,7 +1001,7 @@ class WebsocketHandler {
           if (mBlockDeltas[index].added.length > (mBlocksWithTransactions[index]?.transactions.length / 2)) {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-full-${index}`, {
               index: index,
-              blockTransactions: mBlocksWithTransactions[index].transactions,
+              blockTransactions: mBlocksWithTransactions[index].transactions.map(mempoolBlocks.compressTx),
             });
           } else {
             response['projected-block-transactions'] = getCachedResponse(`projected-block-transactions-delta-${index}`, {
@@ -1014,6 +1016,8 @@ class WebsocketHandler {
         client.send(this.serializeResponse(response));
       }
     });
+
+    await statistics.runStatistics();
   }
 
   // takes a dictionary of JSON serialized values

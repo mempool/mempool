@@ -311,27 +311,29 @@ yarn add @mempool/liquid.js`;
       text = text.replace('%{' + indexNumber + '}', textReplace);
     }
 
+    const headersString = code.headers ? ` -H "${code.headers}"` : ``;
+    
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '') {
         if (this.method === 'POST') {
-          return `curl -X POST -sSLd "${text}"`;
+          return `curl${headersString} -X POST -sSLd "${text}"`;
         }
-        return `curl -sSL "${this.hostname}${text}"`;
+        return `curl${headersString} -sSL "${this.hostname}${text}"`;
       }
       if (this.method === 'POST') {
-        return `curl -X POST -sSLd "${text}"`;
+        return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return `curl -sSL "${this.hostname}/${this.network}${text}"`;
+      return `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"`;
     } else if (this.env.BASE_MODULE === 'liquid') {
       if (this.method === 'POST') {
         if (this.network !== 'liquid') {
           text = text.replace('/api', `/${this.network}/api`);
         }
-        return `curl -X POST -sSLd "${text}"`;
+        return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return ( this.network === 'liquid' ? `curl -sSL "${this.hostname}${text}"` : `curl -sSL "${this.hostname}/${this.network}${text}"` );
+      return ( this.network === 'liquid' ? `curl${headersString} -sSL "${this.hostname}${text}"` : `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"` );
     } else {
-        return `curl -sSL "${this.hostname}${text}"`;
+        return `curl${headersString} -sSL "${this.hostname}${text}"`;
     }
 
   }

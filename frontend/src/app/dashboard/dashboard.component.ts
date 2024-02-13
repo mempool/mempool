@@ -7,6 +7,7 @@ import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
 import { WebsocketService } from '../services/websocket.service';
 import { SeoService } from '../services/seo.service';
+import { ActiveFilter, FilterMode, toFlags } from '../shared/filters.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -58,6 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   federationUtxosNumber$: Observable<number>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
+  filterSubscription: Subscription;
   mempoolInfoSubscription: Subscription;
   currencySubscription: Subscription;
   currency: string;
@@ -68,13 +70,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastReservesBlockUpdate: number = 0;
 
   goggleResolution = 82;
-  goggleCycle = [
-    { index: 0, name: 'All' },
-    { index: 1, name: 'Consolidations', flag: 0b00000010_00000000_00000000_00000000_00000000n },
-    { index: 2, name: 'Coinjoin', flag: 0b00000001_00000000_00000000_00000000_00000000n },
-    { index: 3, name: '💩', flag: 0b00000100_00000000_00000000_00000000n | 0b00000010_00000000_00000000_00000000n | 0b00000001_00000000_00000000_00000000n },
+  goggleCycle: { index: number, name: string, mode: FilterMode, filters: string[] }[] = [
+    { index: 0, name: 'All', mode: 'and', filters: [] },
+    { index: 1, name: 'Consolidation', mode: 'and', filters: ['consolidation'] },
+    { index: 2, name: 'Coinjoin', mode: 'and', filters: ['coinjoin'] },
+    { index: 3, name: 'Data', mode: 'or', filters: ['inscription', 'fake_pubkey', 'op_return'] },
   ];
-  goggleIndex = 0; // Math.floor(Math.random() * this.goggleCycle.length);
+  goggleFlags = 0n;
+  goggleMode: FilterMode = 'and';
+  goggleIndex = 0;
 
   private destroy$ = new Subject();
 
@@ -90,6 +94,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.filterSubscription.unsubscribe();
     this.mempoolInfoSubscription.unsubscribe();
     this.currencySubscription.unsubscribe();
     this.websocketService.stopTrackRbfSummary();
@@ -109,6 +114,30 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         map((indicators) => indicators.mempool !== undefined ? indicators.mempool : 100)
       );
+
+    this.filterSubscription = this.stateService.activeGoggles$.subscribe((active: ActiveFilter) => {
+      const activeFilters = active.filters.sort().join(',');
+      for (const goggle of this.goggleCycle) {
+        if (goggle.mode === active.mode) {
+          const goggleFilters = goggle.filters.sort().join(',');
+          if (goggleFilters === activeFilters) {
+            this.goggleIndex = goggle.index;
+            this.goggleFlags = toFlags(goggle.filters);
+            this.goggleMode = goggle.mode;
+            return;
+          }
+        }
+      }
+      this.goggleCycle.push({
+        index: this.goggleCycle.length,
+        name: 'Custom',
+        mode: active.mode,
+        filters: active.filters,
+      });
+      this.goggleIndex = this.goggleCycle.length - 1;
+      this.goggleFlags = toFlags(active.filters);
+      this.goggleMode = active.mode;
+    });
 
     this.mempoolInfoData$ = combineLatest([
       this.stateService.mempoolInfo$,
@@ -391,6 +420,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getArrayFromNumber(num: number): number[] {
     return Array.from({ length: num }, (_, i) => i + 1);
+  }
+  
+  setFilter(index): void {
+    const selected = this.goggleCycle[index];
+    this.stateService.activeGoggles$.next(selected);
   }
 
   @HostListener('window:resize', ['$event'])
