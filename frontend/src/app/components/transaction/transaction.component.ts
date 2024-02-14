@@ -26,6 +26,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
 import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
+import { EnterpriseService } from '../../services/enterprise.service';
 
 @Component({
   selector: 'app-transaction',
@@ -116,11 +117,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private servicesApiService: ServicesApiServices,
     private seoService: SeoService,
     private priceService: PriceService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private enterpriseService: EnterpriseService,
   ) {}
 
   ngOnInit() {
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    this.enterpriseService.page();
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
@@ -527,6 +531,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.txId) {
       return;
     }
+    this.enterpriseService.goal(8);
     this.showAccelerationSummary = true && this.acceleratorAvailable;
     this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
     return false;
