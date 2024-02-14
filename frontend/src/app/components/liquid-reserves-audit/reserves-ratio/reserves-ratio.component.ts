@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, OnChanges, OnInit, HostListener } from '@angular/core';
 import { EChartsOption } from '../../../graphs/echarts';
 import { CurrentPegs } from '../../../interfaces/node-api.interface';
 
@@ -32,6 +32,10 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.updateChartOptions();
+  }
+
+  updateChartOptions() {
     if (!this.currentPeg || !this.currentReserves || this.currentPeg.amount === '0') {
       return;
     }
@@ -46,6 +50,36 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
   }
 
   createChartOptions(currentPeg: CurrentPegs, currentReserves: CurrentPegs): EChartsOption {
+    const value = parseFloat(currentReserves.amount) / parseFloat(currentPeg.amount);
+    const hideMaxAxisLabels = value >= 1.001;
+    const hideMinAxisLabels = value <= 0.999;
+
+    let axisFontSize = 14;
+    let pointerLength = '50%';
+    let pointerWidth = 16;
+    let offsetCenter = ['0%', '-22%'];
+    if (window.innerWidth >= 992) {
+      axisFontSize = 14;
+      pointerLength = '50%';
+      pointerWidth = 16;
+      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-30%'] : ['0%', '-22%'];
+    } else if (window.innerWidth >= 768) {
+      axisFontSize = 10;
+      pointerLength = '35%';
+      pointerWidth = 12;
+      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-37%'] : ['0%', '-27%'];
+    } else if (window.innerWidth >= 450) {
+      axisFontSize = 14;
+      pointerLength = '45%';
+      pointerWidth = 14;
+      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-32%'] : ['0%', '-22%'];
+    } else {
+      axisFontSize = 10;
+      pointerLength = '35%';
+      pointerWidth = 12;
+      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-37%'] : ['0%', '-27%'];
+    }
+
     return {
       series: [
         {
@@ -68,13 +102,23 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
           },
           axisLabel: {
             color: 'inherit',        
-            fontFamily: 'inherit',    
+            fontFamily: 'inherit',  
+            fontSize: axisFontSize,  
+            formatter: function (value) {
+              if (value === 0.999) {
+                return hideMinAxisLabels ? '' : '99.9%';
+              } else if (value === 1.001) {
+                return hideMaxAxisLabels ? '' : '100.1%';
+              } else {
+                return '100%';
+              }
+            },
           },
           pointer: {
             icon: 'path://M2090.36389,615.30999 L2090.36389,615.30999 C2091.48372,615.30999 2092.40383,616.194028 2092.44859,617.312956 L2096.90698,728.755929 C2097.05155,732.369577 2094.2393,735.416212 2090.62566,735.56078 C2090.53845,735.564269 2090.45117,735.566014 2090.36389,735.566014 L2090.36389,735.566014 C2086.74736,735.566014 2083.81557,732.63423 2083.81557,729.017692 C2083.81557,728.930412 2083.81732,728.84314 2083.82081,728.755929 L2088.2792,617.312956 C2088.32396,616.194028 2089.24407,615.30999 2090.36389,615.30999 Z',
-            length: '50%',
-            width: 16,
-            offsetCenter: [0, '-27%'],
+            length: pointerLength,
+            width: pointerWidth,
+            offsetCenter: offsetCenter,
             itemStyle: {
               color: 'auto'
             }
@@ -108,19 +152,24 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             fontFamily: 'inherit',
             fontWeight: 500,
             formatter: function (value) {
-              return (value * 100).toFixed(3) + ' %';
+              return (value * 100).toFixed(3) + '%';
             },
             color: 'inherit'
           },
           data: [
             {
-              value: parseFloat(currentReserves.amount) / parseFloat(currentPeg.amount),
+              value: value,
               name: 'Assets vs Liabilities'
             }
           ]
         }
       ]
     };
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.updateChartOptions();
   }
 }
 
