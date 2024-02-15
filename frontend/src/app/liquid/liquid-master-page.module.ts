@@ -15,17 +15,10 @@ import { AssetsComponent } from '../components/assets/assets.component';
 import { AssetsFeaturedComponent } from '../components/assets/assets-featured/assets-featured.component'
 import { AssetComponent } from '../components/asset/asset.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
-import { ReservesAuditDashboardComponent } from '../components/liquid-reserves-audit/reserves-audit-dashboard/reserves-audit-dashboard.component';
-import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
-import { RecentPegsStatsComponent } from '../components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
 import { RecentPegsListComponent } from '../components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
 import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
 import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
-import { FederationAddressesStatsComponent } from '../components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
 import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
-import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
-import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
-import { ReservesRatioGraphComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio-graph.component';
 
 const routes: Routes = [
   {
@@ -76,18 +69,6 @@ const routes: Routes = [
         component: StartComponent,
         data: { preload: true, networkSpecific: true },
         loadChildren: () => import('../components/block/block.module').then(m => m.BlockModule),
-      },
-      {
-        path: 'audit',
-        data: { networks: ['liquid'] },
-        component: StartComponent,
-        children: [
-          {
-            path: '',
-            data: { networks: ['liquid'] },
-            component: ReservesAuditDashboardComponent,
-          }
-        ]
       },
       {
         path: 'audit/wallet',
@@ -180,17 +161,8 @@ export class LiquidRoutingModule { }
   ],
   declarations: [
     LiquidMasterPageComponent,
-    ReservesAuditDashboardComponent,
-    ReservesSupplyStatsComponent,
-    RecentPegsStatsComponent,
-    RecentPegsListComponent,
     FederationWalletComponent,
     FederationUtxosListComponent,
-    FederationAddressesStatsComponent,
-    FederationAddressesListComponent,
-    ReservesRatioComponent,
-    ReservesRatioStatsComponent,
-    ReservesRatioGraphComponent,
   ]
 })
 export class LiquidMasterPageModule { }

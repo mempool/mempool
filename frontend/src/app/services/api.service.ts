@@ -200,16 +200,20 @@ export class ApiService {
     return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
   }
 
-  recentPegOuts$(): Observable<RecentPeg[]> {
-    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegouts');
+  recentPegsList$(count: number = 0): Observable<RecentPeg[]> {
+    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/list/' + count);
   }
 
-  federationAddressesOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/previous-month');
+  pegsCount$(): Observable<any> {
+    return this.httpClient.get<number>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/count');
   }
 
-  federationUtxosOneMonthAgo$(): Observable<any> {
-    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/previous-month');
+  federationAddressesNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/total');
+  }
+
+  federationUtxosNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/total');
   }
 
   listFeaturedAssets$(): Observable<any[]> {

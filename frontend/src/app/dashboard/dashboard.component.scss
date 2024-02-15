@@ -59,6 +59,10 @@
     display: flex;
     flex-direction: row;
   }
+  &.lbtc-pegs-stats { 
+    display: flex;
+    flex-direction: row;
+  }
   h5 {
     margin-bottom: 10px;
   }
@@ -408,4 +412,28 @@
 .quick-filter {
   margin-top: 5px;
   margin-bottom: 6px;
+}
+
+.card-liquid {
+  background-color: #1d1f31;
+  height: 418px;
+  @media (min-width: 992px) {
+    height: 512px;
+  }
+  &.smaller {
+    height: 408px;
+  }
+}
+
+.card-title-liquid {
+  padding-top: 20px;
+}
+
+.in-progress-message {
+  position: relative;
+  color: #ffffff91;
+  margin-top: 20px;
+  text-align: center;
+  padding-bottom: 3px;
+  font-weight: 500;
 }

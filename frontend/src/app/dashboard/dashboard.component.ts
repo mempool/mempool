@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, EMPTY, fromEvent, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { AuditStatus, BlockExtended, CurrentPegs, OptimizedMempoolStats } from '../interfaces/node-api.interface';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, OptimizedMempoolStats, PegsVolume, RecentPeg } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -33,8 +33,6 @@ interface MempoolStatsData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
-  featuredAssets$: Observable<any>;
-  nbFeaturedAssets = 6;
   network$: Observable<string>;
   mempoolBlocksData$: Observable<MempoolBlocksData>;
   mempoolInfoData$: Observable<MempoolInfoData>;
@@ -54,6 +52,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   auditUpdated$: Observable<boolean>;
   liquidReservesMonth$: Observable<any>;
   currentReserves$: Observable<CurrentPegs>;
+  recentPegsList$: Observable<RecentPeg[]>;
+  pegsVolume$: Observable<PegsVolume[]>;
+  federationAddresses$: Observable<FederationAddress[]>;
+  federationAddressesNumber$: Observable<number>;
+  federationUtxosNumber$: Observable<number>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
   filterSubscription: Subscription;
@@ -184,26 +187,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    const windowResize$ = fromEvent(window, 'resize').pipe(
-      distinctUntilChanged(),
-      startWith(null)
-    );
-  
-    this.featuredAssets$ = combineLatest([
-      this.apiService.listFeaturedAssets$(),
-      windowResize$
-    ]).pipe(
-        map(([featured, _]) => {
-          const newArray = [];
-          for (const feature of featured) {
-            if (feature.ticker !== 'L-BTC' && feature.asset) {
-              newArray.push(feature);
-            }
-          }
-          return newArray.slice(0, this.nbFeaturedAssets);
-        }),
-      );
-
     this.transactions$ = this.stateService.transactions$
       .pipe(
         scan((acc, tx) => {
@@ -269,7 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         share(),
       );
 
-    if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
+    if (this.stateService.network === 'liquid') {
       this.auditStatus$ = this.stateService.blocks$.pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
@@ -277,22 +260,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         tap(() => this.isLoad = false),
         switchMap(() => this.apiService.federationAuditSynced$()),
         shareReplay(1)
-      );
-
-      ////////// Pegs historical data //////////
-      this.liquidPegsMonth$ = this.auditStatus$.pipe(
-        throttleTime(60 * 60 * 1000),
-        switchMap(() => this.apiService.listLiquidPegsMonth$()),
-        map((pegs) => {
-          const labels = pegs.map(stats => stats.date);
-          const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
-          series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
-          return {
-            series,
-            labels
-          };
-        }),
-        share(),
       );
 
       this.currentPeg$ = this.auditStatus$.pipe(
@@ -307,7 +274,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         share()
       );
 
-      ////////// BTC Reserves historical data //////////
       this.auditUpdated$ = combineLatest([
         this.auditStatus$,
         this.currentPeg$
@@ -322,21 +288,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           const amountCheck = currentPegAmount !== this.lastPegAmount;
           this.lastPegAmount = currentPegAmount;
           return of(blockAuditCheck || amountCheck);
-        })
-      );
-
-      this.liquidReservesMonth$ = this.auditStatus$.pipe(
-        throttleTime(60 * 60 * 1000),
-        switchMap((auditStatus) => {
-          return auditStatus.isAuditSynced ? this.apiService.listLiquidReservesMonth$() : EMPTY;
-        }),
-        map(reserves => {
-          const labels = reserves.map(stats => stats.date);
-          const series = reserves.map(stats => parseFloat(stats.amount) / 100000000);
-          return {
-            series,
-            labels
-          };
         }),
         share()
       );
@@ -355,11 +306,78 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         share()
       );
 
-      this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$.pipe(startWith(null)), this.currentReserves$.pipe(startWith(null))])
+      this.recentPegsList$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.recentPegsList$()),
+        share()
+      );
+  
+      this.pegsVolume$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.pegsVolume$()),
+        share()
+      );
+  
+      this.federationAddresses$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationAddresses$()),
+        share()
+      );
+  
+      this.federationAddressesNumber$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationAddressesNumber$()),
+        map(count => count.address_count),
+        share()
+      );
+  
+      this.federationUtxosNumber$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.federationUtxosNumber$()),
+        map(count => count.utxo_count),
+        share()
+      );
+  
+      this.liquidPegsMonth$ = interval(60 * 60 * 1000)
+        .pipe(
+          startWith(0),
+          switchMap(() => this.apiService.listLiquidPegsMonth$()),
+          map((pegs) => {
+            const labels = pegs.map(stats => stats.date);
+            const series = pegs.map(stats => parseFloat(stats.amount) / 100000000);
+            series.reduce((prev, curr, i) => series[i] = prev + curr, 0);
+            return {
+              series,
+              labels
+            };
+          }),
+          share(),
+        );
+  
+      this.liquidReservesMonth$ = interval(60 * 60 * 1000).pipe(
+        startWith(0),
+        switchMap(() => this.apiService.listLiquidReservesMonth$()),
+        map(reserves => {
+          const labels = reserves.map(stats => stats.date);
+          const series = reserves.map(stats => parseFloat(stats.amount) / 100000000);
+          return {
+            series,
+            labels
+          };
+        }),
+        share()
+      );
+  
+      this.fullHistory$ = combineLatest([this.liquidPegsMonth$, this.currentPeg$, this.liquidReservesMonth$, this.currentReserves$])
         .pipe(
           map(([liquidPegs, currentPeg, liquidReserves, currentReserves]) => {
             liquidPegs.series[liquidPegs.series.length - 1] = parseFloat(currentPeg.amount) / 100000000;
-
+  
             if (liquidPegs.series.length === liquidReserves?.series.length) {
               liquidReserves.series[liquidReserves.series.length - 1] = parseFloat(currentReserves?.amount) / 100000000;
             } else if (liquidPegs.series.length === liquidReserves?.series.length + 1) {
@@ -371,7 +389,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 labels: []
               };
             }
-
+  
             return {
               liquidPegs,
               liquidReserves
@@ -415,17 +433,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.incomingGraphHeight = 300;
       this.goggleResolution = 82;
       this.lbtcPegGraphHeight = 320;
-      this.nbFeaturedAssets = 6;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
       this.goggleResolution = 80;
       this.lbtcPegGraphHeight = 230;
-      this.nbFeaturedAssets = 4;
     } else {
       this.incomingGraphHeight = 180;
       this.goggleResolution = 86;
       this.lbtcPegGraphHeight = 220;
-      this.nbFeaturedAssets = 4;
     }
   }
 }
