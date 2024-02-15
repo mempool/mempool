@@ -105,6 +105,7 @@ export class AssetComponent implements OnInit, OnDestroy {
           if (!this.assetContract) {
             this.assetContract = [null, '?', 'Unknown', 0];
           }
+          this.seoService.setDescription($localize`:@@meta.description.liquid.asset:Browse an overview of the Liquid asset ${this.assetContract[2]}:INTERPOLATION: (${this.assetContract[1]}:INTERPOLATION:): see issued amount, burned amount, circulating amount, related transactions, and more.`);
           this.blindedIssuance = this.asset.chain_stats.has_blinded_issuances || this.asset.mempool_stats.has_blinded_issuances;
           this.isNativeAsset = asset.asset_id === this.nativeAssetId;
           this.updateChainStats();
