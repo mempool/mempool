@@ -155,6 +155,7 @@ export const restApiDocsData = [
   previousRetarget: -4.807005268478962,
   nextRetargetHeight: 741888,
   timeAvg: 302328,
+  adjustedTimeAvg: 302328,
   timeOffset: 0
 }`
         },
@@ -171,6 +172,7 @@ export const restApiDocsData = [
   previousRetarget: -4.807005268478962,
   nextRetargetHeight: 741888,
   timeAvg: 302328,
+  adjustedTimeAvg: 302328,
   timeOffset: 0
 }`
         },
@@ -187,6 +189,7 @@ export const restApiDocsData = [
   previousRetarget: -4.807005268478962,
   nextRetargetHeight: 741888,
   timeAvg: 302328,
+  adjustedTimeAvg: 302328,
   timeOffset: 0
 }`
         },
@@ -203,6 +206,7 @@ export const restApiDocsData = [
   previousRetarget: -4.807005268478962,
   nextRetargetHeight: 741888,
   timeAvg: 302328,
+  adjustedTimeAvg: 302328,
   timeOffset: 0
 }`
         }
