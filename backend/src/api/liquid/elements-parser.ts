@@ -398,39 +398,24 @@ class ElementsParser {
     return rows;
   }
 
-  // Get all of the federation addresses one month ago, most balances first
-  public async $getFederationAddressesOneMonthAgo(): Promise<any> {
-    const query = `
-    SELECT COUNT(*) AS addresses_count_one_month FROM (
-      SELECT bitcoinaddress, SUM(amount) AS balance
-      FROM federation_txos 
-      WHERE
-          (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
-        AND
-          ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP()))))
-      GROUP BY bitcoinaddress
-    ) AS result;`;
+  // Get the total number of federation addresses
+  public async $getFederationAddressesNumber(): Promise<any> {
+    const query = `SELECT COUNT(DISTINCT bitcoinaddress) AS address_count FROM federation_txos WHERE unspent = 1;`;
     const [rows] = await DB.query(query);
     return rows[0];
   }
 
-  // Get all of the UTXOs held by the federation one month ago, most recent first
-  public async $getFederationUtxosOneMonthAgo(): Promise<any> {
-    const query = `
-    SELECT COUNT(*) AS utxos_count_one_month FROM federation_txos 
-    WHERE
-        (blocktime < UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP())))
-      AND
-        ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -30, CURRENT_TIMESTAMP()))))
-    ORDER BY blocktime DESC;`;
+  // Get the total number of federation utxos
+  public async $getFederationUtxosNumber(): Promise<any> {
+    const query = `SELECT COUNT(*) AS utxo_count FROM federation_txos WHERE unspent = 1;`;
     const [rows] = await DB.query(query);
     return rows[0];
   }
 
-  // Get recent pegouts from the federation (3 months old)
-  public async $getRecentPegouts(): Promise<any> {
-    const query = `SELECT txid, txindex, amount, bitcoinaddress, bitcointxid, bitcoinindex, datetime AS blocktime FROM elements_pegs WHERE amount < 0 AND datetime > UNIX_TIMESTAMP(TIMESTAMPADD(DAY, -90, CURRENT_TIMESTAMP())) ORDER BY blocktime;`;
-    const [rows] = await DB.query(query);
+  // Get recent pegs in / out
+  public async $getPegsList(count: number = 0): Promise<any> {
+    const query = `SELECT txid, txindex, amount, bitcoinaddress, bitcointxid, bitcoinindex, datetime AS blocktime FROM elements_pegs ORDER BY block DESC LIMIT 15 OFFSET ?;`;
+    const [rows] = await DB.query(query, [count]);
     return rows;
   }
 
@@ -442,6 +427,12 @@ class ElementsParser {
       pegInQuery[0][0],
       pegOutQuery[0][0]
     ];
+  }
+
+  // Get the total pegs number
+  public async $getPegsCount(): Promise<any> {
+    const [rows] = await DB.query(`SELECT COUNT(*) AS pegs_count FROM elements_pegs;`);
+    return rows[0];
   }
 }
 
