@@ -10,6 +10,16 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: start;
+
+  & > * {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
+  h3 {
+    text-align: center;
+    margin: 0 1em;
+  }
 }
 
 .pagination {
@@ -19,6 +29,8 @@
 }
 
 .table {
+  margin-top: 0.5em;
+
   td, th {
     padding: 0.15rem 0.5rem;
 

@@ -94,7 +94,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
               - addressBalance.chain_stats.spent_txo_sum
               - addressBalance.mempool_stats.spent_txo_sum;
             this.balance += this.addresses[address];
-            this.confirmed += this.addresses[address];
+            this.confirmed += (addressBalance.chain_stats.funded_txo_sum - addressBalance.chain_stats.spent_txo_sum);
           }
           this.addressInfo[address] = addressData[2] ? addressData[2] as AddressInformation : null;
         }
