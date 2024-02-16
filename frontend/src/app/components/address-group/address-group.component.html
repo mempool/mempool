@@ -1,5 +1,8 @@
 <div class="frame {{ screenSize }}" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
-  <h3 i18n="addresses.balance">Balances</h3>
+  <div class="heading">
+    <h3 i18n="addresses.balance">Balances</h3>
+    <app-svg-images name="officialMempoolSpace" style="width: 144px; height: 36px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
+  </div>
   <table class="table table-borderless table-striped table-fixed">
     <tr>
       <th class="address" i18n="addresses.total">Total</th>

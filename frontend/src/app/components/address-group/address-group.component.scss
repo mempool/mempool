@@ -5,6 +5,13 @@
   height: calc(100% + 60px);
 }
 
+.heading {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: start;
+}
+
 .pagination {
   position: absolute;
   bottom: 0.5rem;
