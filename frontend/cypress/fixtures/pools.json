@@ -555,6 +555,10 @@
         "Entrustus" : {
             "name": "Entrust Charity Pool",
             "link": "pool.entustus.org"
+        },
+        "Public-Pool" :{
+            "name": "Public-Pool",
+            "link": "https://web.public-pool.io"
         }
     },
     "payout_addresses" : {
