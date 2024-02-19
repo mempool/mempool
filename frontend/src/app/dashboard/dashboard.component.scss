@@ -44,8 +44,11 @@
 
 .graph-card {
   height: 100%;
+  @media (min-width: 768px) {
+    height: 415px;
+  }
   @media (min-width: 992px) {
-    height: 385px;
+    height: 510px;
   }
 }
 
@@ -53,6 +56,10 @@
   min-height: 56px;
   display: block;
   @media (min-width: 485px) {
+    display: flex;
+    flex-direction: row;
+  }
+  &.lbtc-pegs-stats { 
     display: flex;
     flex-direction: row;
   }
@@ -66,7 +73,7 @@
     @media (min-width: 485px) {
       margin: 0px auto 10px;
     }
-    @media (min-width: 785px) {
+    @media (min-width: 768px) {
       margin: 0px auto 0px;
     }
     &:last-child {
@@ -96,6 +103,9 @@
       span {
         color: #ffffff66;
         font-size: 12px;
+      }
+      .bitcoin-color {
+        color: #b86d12;
       }
     }
     .progress {
@@ -255,6 +265,12 @@
 
 .mempool-graph {
   height: 255px;
+  @media (min-width: 768px) {
+    height: 285px;
+  }
+  @media (min-width: 992px) {
+    height: 370px;
+  }
 }
 .loadingGraphs{
   height: 250px;
@@ -360,4 +376,64 @@
   margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
+}
+
+.mempool-block-wrapper {
+  max-height: 410px;
+  max-width: 410px;
+  margin: auto;
+
+  @media (min-width: 768px) {
+    max-height: 344px;
+    max-width: 344px;
+  }
+  @media (min-width: 992px) {
+    max-height: 410px;
+    max-width: 410px;
+  }
+}
+
+.goggle-badge {
+  margin: 6px 5px 8px;
+  background: none;
+  border: solid 2px #105fb0;
+  cursor: pointer;
+
+  &.active {
+    background: #105fb0;
+  }
+}
+
+.btn-xs {
+  padding: 0.35rem 0.5rem;
+  font-size: 12px;
+}
+
+.quick-filter {
+  margin-top: 5px;
+  margin-bottom: 6px;
+}
+
+.card-liquid {
+  background-color: #1d1f31;
+  height: 418px;
+  @media (min-width: 992px) {
+    height: 512px;
+  }
+  &.smaller {
+    height: 408px;
+  }
+}
+
+.card-title-liquid {
+  padding-top: 20px;
+}
+
+.in-progress-message {
+  position: relative;
+  color: #ffffff91;
+  margin-top: 20px;
+  text-align: center;
+  padding-bottom: 3px;
+  font-weight: 500;
 }

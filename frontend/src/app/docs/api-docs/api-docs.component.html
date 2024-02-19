@@ -43,54 +43,56 @@
         <p class="doc-welcome-note api-note" *ngIf="officialMempoolInstance">Note that we enforce rate limits. If you exceed these limits, you will get an HTTP 429 error. If you repeatedly exceed the limits, you may be banned from accessing the service altogether. Consider an <a href="https://mempool.space/enterprise">enterprise sponsorship</a> if you need higher API limits.</p>
 
         <div class="doc-item-container" *ngFor="let item of restDocs">
-          <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
-          <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
-            <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
-            <div class="endpoint-content">
-              <div class="endpoint">
-                <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
-                <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_link_example" #bisq_link_example>
-                  <a [href]="wrapUrl(network.val, item.codeExample.bisq)" target="_blank" rel="nofollow">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+          <div *ngIf="!item.hasOwnProperty('options') || ( item.hasOwnProperty('options') && item.options.hasOwnProperty('officialOnly') && item.options.officialOnly && officialMempoolInstance )">
+            <h3 *ngIf="( item.type === 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )">{{ item.title }}</h3>
+            <div *ngIf="( item.type !== 'category' ) && ( item.showConditions.indexOf(network.val) > -1 )" class="endpoint-container" id="{{ item.fragment }}">
+              <a id="{{ item.fragment + '-tab-header' }}" class="section-header" (click)="anchorLinkClick( $event )" [routerLink]="['./']" fragment="{{ item.fragment }}">{{ item.title }} <span>{{ item.category }}</span></a>
+              <div class="endpoint-content">
+                <div class="endpoint">
+                  <div class="subtitle" i18n="Api docs endpoint">Endpoint</div>
+                  <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_link_example" #bisq_link_example>
+                    <a [href]="wrapUrl(network.val, item.codeExample.bisq)" target="_blank" rel="nofollow">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                  </ng-container>
+                  <ng-template #liquid_link_example>
+                    <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_link_example">
+                      <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                      <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
+                    </ng-container>
+                  </ng-template>
+                  <ng-template #default_link_example>
+                    <ng-container *ngIf="item.httpRequestMethod === 'GET'">
+                      <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
+                      <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
+                    </ng-container>
+                  </ng-template>
+                  <div *ngIf="item.httpRequestMethod === 'POST'">{{ item.httpRequestMethod }} {{ item.urlString }}</div>
+                </div>
+                <div class="description">
+                  <div class="subtitle" i18n>Description</div>
+                  <ng-container *ngIf="network.val === 'bisq' && item.description.hasOwnProperty('bisq');else liquid_description" #bisq_description>
+                    <div [innerHTML]="item.description.bisq" i18n></div>
+                  </ng-container>
+                  <ng-template #liquid_description>
+                    <ng-container *ngIf="network.val === 'liquid' && item.description.hasOwnProperty('liquid');else default_description">
+                      <div [innerHTML]="item.description.liquid" i18n></div>
+                    </ng-container>
+                  </ng-template>
+                  <ng-template #default_description>
+                    <div [innerHTML]="item.description.default" i18n></div>
+                  </ng-template>
+                </div>
+                <ng-container *ngIf="network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_code_example" #bisq_code_example>
+                  <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.bisq" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
                 </ng-container>
-                <ng-template #liquid_link_example>
-                  <ng-container *ngIf="item.httpRequestMethod === 'GET' && network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_link_example">
-                    <a [href]="wrapUrl(network.val, item.codeExample.liquid)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
-                    <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
+                <ng-template #liquid_code_example>
+                  <ng-container *ngIf="network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_code_example">
+                    <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.liquid" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
                   </ng-container>
                 </ng-template>
-                <ng-template #default_link_example>
-                  <ng-container *ngIf="item.httpRequestMethod === 'GET'">
-                    <a [href]="wrapUrl(network.val, item.codeExample.default)" target="_blank" rel="nofollow" *ngIf="item.fragment !== 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</a>
-                    <p *ngIf="item.fragment === 'get-cpfp'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</p>
-                  </ng-container>
+                <ng-template #default_code_example>
+                  <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.default" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
                 </ng-template>
-                <div *ngIf="item.httpRequestMethod === 'POST'">{{ item.httpRequestMethod }} {{ item.urlString }}</div>
               </div>
-              <div class="description">
-                <div class="subtitle" i18n>Description</div>
-                <ng-container *ngIf="network.val === 'bisq' && item.description.hasOwnProperty('bisq');else liquid_description" #bisq_description>
-                  <div [innerHTML]="item.description.bisq" i18n></div>
-                </ng-container>
-                <ng-template #liquid_description>
-                  <ng-container *ngIf="network.val === 'liquid' && item.description.hasOwnProperty('liquid');else default_description">
-                    <div [innerHTML]="item.description.liquid" i18n></div>
-                  </ng-container>
-                </ng-template>
-                <ng-template #default_description>
-                  <div [innerHTML]="item.description.default" i18n></div>
-                </ng-template>
-              </div>
-              <ng-container *ngIf="network.val === 'bisq' && item.codeExample.hasOwnProperty('bisq');else liquid_code_example" #bisq_code_example>
-                <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.bisq" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
-              </ng-container>
-              <ng-template #liquid_code_example>
-                <ng-container *ngIf="network.val === 'liquid' && item.codeExample.hasOwnProperty('liquid');else default_code_example">
-                  <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.liquid" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
-                </ng-container>
-              </ng-template>
-              <ng-template #default_code_example>
-                <app-code-template [hostname]="hostname" [baseNetworkUrl]="baseNetworkUrl" [method]="item.httpRequestMethod" [code]="item.codeExample.default" [network]="network.val" [showCodeExample]="item.showJsExamples"></app-code-template>
-              </ng-template>
             </div>
           </div>
         </div>

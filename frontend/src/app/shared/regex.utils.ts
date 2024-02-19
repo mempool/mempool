@@ -77,11 +77,15 @@ const ADDRESS_CHARS: {
       + `)`,
   },
   liquid: {
-    base58: `[GHPQ]` // G|H is P2PKH, P|Q is P2SH
-      + BASE58_CHARS
-      + `{33}`, // All min-max lengths are 34
+    base58: `[GHPQ]` // PQ is P2PKH, GH is P2SH
+        + BASE58_CHARS
+        + `{33}` // All min-max lengths are 34
+      + `|`
+        + `[V][TJ]` // Confidential P2PKH or P2SH starts with VT or VJ
+        + BASE58_CHARS
+        + `{78}`, 
     bech32: `(?:`
-        + `(?:` // bech32 liquid starts with ex1 or lq1
+        + `(?:` // bech32 liquid starts with ex1 (unconfidential) or lq1 (confidential)
           + `ex1`
           + `|`
           + `lq1`

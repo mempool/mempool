@@ -9,6 +9,8 @@ import { Price } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { Subscription } from 'rxjs';
 import { defaultColorFunction, setOpacity, defaultFeeColors, defaultAuditFeeColors, defaultMarginalFeeColors, defaultAuditColors } from './utils';
+import { ActiveFilter, FilterMode, toFlags } from '../../shared/filters.utils';
+import { detectWebGL } from '../../shared/graphs.utils';
 
 const unmatchedOpacity = 0.2;
 const unmatchedFeeColors = defaultFeeColors.map(c => setOpacity(c, unmatchedOpacity));
@@ -42,6 +44,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   @Input() showFilters: boolean = false;
   @Input() excludeFilters: string[] = [];
   @Input() filterFlags: bigint | null = null;
+  @Input() filterMode: FilterMode = 'and';
   @Input() blockConversion: Price;
   @Input() overrideColors: ((tx: TxView) => Color) | null = null;
   @Output() txClickEvent = new EventEmitter<{ tx: TransactionStripped, keyModifier: boolean}>();
@@ -75,11 +78,14 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   filtersAvailable: boolean = true;
   activeFilterFlags: bigint | null = null;
 
+  webGlEnabled = true;
+
   constructor(
     readonly ngZone: NgZone,
     readonly elRef: ElementRef,
     private stateService: StateService,
   ) {
+    this.webGlEnabled = detectWebGL();
     this.vertexArray = new FastVertexArray(512, TxSprite.dataSize);
     this.searchSubscription = this.stateService.searchText$.subscribe((text) => {
       this.searchText = text;
@@ -113,16 +119,17 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
     if (changes.overrideColor && this.scene) {
       this.scene.setColorFunction(this.overrideColors);
     }
-    if ((changes.filterFlags || changes.showFilters)) {
+    if ((changes.filterFlags || changes.showFilters || changes.filterMode)) {
       this.setFilterFlags();
     }
   }
 
-  setFilterFlags(flags?: bigint | null): void {
-    this.activeFilterFlags = this.filterFlags || flags || null;
+  setFilterFlags(goggle?: ActiveFilter): void {
+    this.filterMode = goggle?.mode || this.filterMode;
+    this.activeFilterFlags = goggle?.filters ? toFlags(goggle.filters) : this.filterFlags;
     if (this.scene) {
-      if (flags != null) {
-        this.scene.setColorFunction(this.getFilterColorFunction(flags));
+      if (this.activeFilterFlags != null && this.filtersAvailable) {
+        this.scene.setColorFunction(this.getFilterColorFunction(this.activeFilterFlags));
       } else {
         this.scene.setColorFunction(this.overrideColors);
       }
@@ -156,7 +163,11 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   // initialize the scene without any entry transition
   setup(transactions: TransactionStripped[]): void {
-    this.filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
+    const filtersAvailable = transactions.reduce((flagSet, tx) => flagSet || tx.flags > 0, false);
+    if (filtersAvailable !== this.filtersAvailable) {
+      this.setFilterFlags();
+    }
+    this.filtersAvailable = filtersAvailable;
     if (this.scene) {
       this.scene.setup(transactions);
       this.readyNextFrame = true;
@@ -499,11 +510,13 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
   }
 
   onTxClick(cssX: number, cssY: number, keyModifier: boolean = false) {
-    const x = cssX * window.devicePixelRatio;
-    const y = cssY * window.devicePixelRatio;
-    const selected = this.scene.getTxAt({ x, y });
-    if (selected && selected.txid) {
-      this.txClickEvent.emit({ tx: selected, keyModifier });
+    if (this.scene) {
+      const x = cssX * window.devicePixelRatio;
+      const y = cssY * window.devicePixelRatio;
+      const selected = this.scene.getTxAt({ x, y });
+      if (selected && selected.txid) {
+        this.txClickEvent.emit({ tx: selected, keyModifier });
+      }
     }
   }
 
@@ -523,7 +536,7 @@ export class BlockOverviewGraphComponent implements AfterViewInit, OnDestroy, On
 
   getFilterColorFunction(flags: bigint): ((tx: TxView) => Color) {
     return (tx: TxView) => {
-      if ((tx.bigintFlags & flags) === flags) {
+      if ((this.filterMode === 'and' && (tx.bigintFlags & flags) === flags) || (this.filterMode === 'or' && (flags === 0n || (tx.bigintFlags & flags) > 0n))) {
         return defaultColorFunction(tx);
       } else {
         return defaultColorFunction(

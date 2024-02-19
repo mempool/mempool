@@ -54,6 +54,7 @@ export interface DifficultyAdjustment {
   previousTime: number;
   nextRetargetHeight: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
   timeOffset: number;
   expectedBlocks: number;
 }
@@ -74,6 +75,51 @@ export interface AddressInformation {
 export interface LiquidPegs {
   amount: string;
   date: string;
+}
+
+export interface CurrentPegs {
+  amount: string;
+  lastBlockUpdate: number;
+  hash: string;
+}
+
+export interface PegsVolume {
+  volume: string;
+  number: number;
+}
+
+export interface FederationAddress { 
+  bitcoinaddress: string;
+  balance: string;
+}
+
+export interface FederationUtxo {
+  txid: string;
+  txindex: number;
+  bitcoinaddress: string;
+  amount: number;
+  blocknumber: number;
+  blocktime: number;
+  pegtxid: string;
+  pegindex: number;
+  pegblocktime: number;
+}
+
+export interface RecentPeg {
+  txid: string;
+  txindex: number;
+  amount: number;
+  bitcoinaddress: string;
+  bitcointxid: string;
+  bitcoinindex: number;
+  blocktime: number;
+}
+
+export interface AuditStatus {
+  bitcoinBlocks: number;
+  bitcoinHeaders: number;
+  lastBlockAudit: number;
+  isAuditSynced: boolean;
 }
 
 export interface ITranslators { [language: string]: string; }

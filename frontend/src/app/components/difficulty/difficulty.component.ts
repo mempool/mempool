@@ -19,6 +19,7 @@ interface EpochProgress {
   blocksUntilHalving: number;
   timeUntilHalving: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
 }
 
 type BlockStatus = 'mined' | 'behind' | 'ahead' | 'next' | 'remaining';
@@ -153,6 +154,7 @@ export class DifficultyComponent implements OnInit {
           blocksUntilHalving,
           timeUntilHalving,
           timeAvg: da.timeAvg,
+          adjustedTimeAvg: da.adjustedTimeAvg,
         };
         return data;
       })
