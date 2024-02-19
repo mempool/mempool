@@ -30,6 +30,10 @@ interface IConfig {
     MAX_PAGE_AGE?: number;
     RENDER_TIMEOUT?: number;
   };
+  API: {
+    MEMPOOL: string;
+    ESPLORA: string;
+  }
   SYSLOG: {
     ENABLED: boolean;
     HOST: string;
@@ -53,6 +57,10 @@ const defaults: IConfig = {
     'ENABLED': true,
     'CLUSTER_SIZE': 1,
   },
+  'API': {
+    'MEMPOOL': 'https://mempool.space/api/v1',
+    'ESPLORA': 'https://mempool.space/api',
+  },
   'SYSLOG': {
     'ENABLED': true,
     'HOST': '127.0.0.1',
@@ -66,6 +74,7 @@ class Config implements IConfig {
   SERVER: IConfig['SERVER'];
   MEMPOOL: IConfig['MEMPOOL'];
   PUPPETEER: IConfig['PUPPETEER'];
+  API: IConfig['API'];
   SYSLOG: IConfig['SYSLOG'];
 
   constructor() {
@@ -73,6 +82,7 @@ class Config implements IConfig {
     this.SERVER = configs.SERVER;
     this.MEMPOOL = configs.MEMPOOL;
     this.PUPPETEER = configs.PUPPETEER;
+    this.API = configs.API;
     this.SYSLOG = configs.SYSLOG;
   }
 
