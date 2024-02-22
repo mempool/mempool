@@ -28,7 +28,9 @@
 .chart-widget {
   width: 100%;
   height: 100%;
-  height: 240px;
+  @media (max-width: 767px) {
+    max-height: 240px;
+  }
   @media (max-width: 485px) {
     max-height: 200px;
   }
@@ -38,6 +40,18 @@
   .pools-table th,
   .pools-table td {
     padding: .3em !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pool-name {
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .health-column {
+    display: none;
   }
 }
 

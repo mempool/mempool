@@ -42,6 +42,12 @@ class NodesRoutes {
       switch (config.MEMPOOL.NETWORK) {
         case 'testnet':
           nodesList = [
+            '0259db43b4e4ac0ff12a805f2d81e521253ba2317f6739bc611d8e2fa156d64256',
+            '0352b9944b9a52bd2116c91f1ba70c4ef851ac5ba27e1b20f1d92da3ade010dd10',
+            '03424f5a7601eaa47482cb17100b31a84a04d14fb44b83a57eeceffd8e299878e3',
+            '032850492ee61a5f7006a2fda6925e4b4ec3782f2b6de2ff0e439ef5a38c3b2470',
+            '022c80bace98831c44c32fb69755f2b353434e0ee9e7fbda29507f7ef8abea1421',
+            '02c3559c833e6f99f9ca05fe503e0b4e7524dea9121344edfd3e811101e0c28680',
             '032c7c7819276c4f706a04df1a0f1e10a5495994a7be4c1d3d28ca766e5a2b957b',
             '025a7e38c2834dd843591a4d23d5f09cdeb77ddca85f673c2d944a14220ff14cf7',
             '0395e2731a1673ef21d7a16a727c4fc4d4c35a861c428ce2c819c53d2b81c8bd55',
@@ -64,6 +70,12 @@ class NodesRoutes {
           break;
         case 'signet':
           nodesList = [
+            '029fe3621fc0c6e08056a14b868f8fb9acca1aa28a129512f6cea0f0d7654d9f92',
+            '02f60cd7a3a4f1c953dd9554a6ebd51a34f8b10b8124b7fc43a0b381139b55c883',
+            '03cbbf581774700865eebd1be42d022bc004ba30881274ab304e088a25d70e773d',
+            '0243348cb3741cfe2d8485fa8375c29c7bc7cbb67577c363cb6987a5e5fd0052cc',
+            '02cb73e631af44bee600d80f8488a9194c9dc5c7590e575c421a070d1be05bc8e9',
+            '0306f55ee631aa1e2cd4d9b2bfcbc14404faec5c541cef8b2e6f779061029d09c4',
             '03ddab321b760433cbf561b615ef62ac7d318630c5f51d523aaf5395b90b751956',
             '033d92c7bfd213ef1b34c90e985fb5dc77f9ec2409d391492484e57a44c4aca1de',
             '02ad010dda54253c1eb9efe38b0760657a3b43ecad62198c359c051c9d99d45781',
@@ -86,6 +98,12 @@ class NodesRoutes {
           break;
         default:
           nodesList = [
+            '02b12b889fe3c943cb05645921040ef13d6d397a2e7a4ad000e28500c505ff26d6',
+            '0302240ac9d71b39617cbde2764837ec3d6198bd6074b15b75d2ff33108e89d2e1',
+            '03364a8ace313376e5e4b68c954e287c6388e16df9e9fdbaf0363ecac41105cbf6',
+            '03229ab4b7f692753e094b93df90530150680f86b535b5183b0cffd75b3df583fc',
+            '03a696eb7acde991c1be97a58a9daef416659539ae462b897f5e9ae361f990228e',
+            '0248bf26cf3a63ab8870f34dc0ec9e6c8c6288cdba96ba3f026f34ec0f13ac4055',
             '03fbc17549ec667bccf397ababbcb4cdc0e3394345e4773079ab2774612ec9be61',
             '03da9a8623241ccf95f19cd645c6cecd4019ac91570e976eb0a128bebbc4d8a437',
             '03ca5340cf85cb2e7cf076e489f785410838de174e40be62723e8a60972ad75144',

@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, DoCheck } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, AfterViewChecked } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MarkBlockState, StateService } from '../../services/state.service';
 import { specialBlocks } from '../../app.constants';
@@ -8,8 +8,9 @@ import { BlockExtended } from '../../interfaces/node-api.interface';
   selector: 'app-start',
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StartComponent implements OnInit, OnDestroy, DoCheck {
+export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   @Input() showLoadingIndicator = false;
 
   interval = 60;
@@ -23,13 +24,15 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   chainTipSubscription: Subscription;
-  chainTip: number = -1;
+  chainTip: number = 100;
   tipIsSet: boolean = false;
   lastMark: MarkBlockState;
   markBlockSubscription: Subscription;
   blockCounterSubscription: Subscription;
+  @ViewChild('blockchainWrapper', { static: true }) blockchainWrapper: ElementRef;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
-  resetScrollSubscription: Subscription; 
+  resetScrollSubscription: Subscription;
+  menuSubscription: Subscription;
 
   isMobile: boolean = false;
   isiOS: boolean = false;
@@ -39,7 +42,8 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   blocksPerPage: number = 1;
   pageWidth: number;
   firstPageWidth: number;
-  minScrollWidth: number;
+  minScrollWidth: number = 40 + (155 * (8 + (2 * Math.ceil(window.innerWidth / 155))));
+  currentScrollWidth: number = null;
   pageIndex: number = 0;
   pages: any[] = [];
   pendingMark: number | null = null;
@@ -47,19 +51,24 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   lastUpdate: number = 0;
   lastMouseX: number;
   velocity: number = 0;
-  mempoolOffset: number = 0;
+  mempoolOffset: number = null;
+  mempoolWidth: number = 0;
+  scrollLeft: number = null;
+
+  chainWidth: number = window.innerWidth;
+  menuOpen: boolean = false;
+  menuSliding: boolean = false;
+  menuTimeout: number;
+
+  hasMenu = false;
 
   constructor(
     private stateService: StateService,
+    private cd: ChangeDetectorRef,
   ) {
     this.isiOS = ['iPhone','iPod','iPad'].includes((navigator as any)?.userAgentData?.platform || navigator.platform);
-  }
-
-  ngDoCheck(): void {
-    if (this.pendingOffset != null) {
-      const offset = this.pendingOffset;
-      this.pendingOffset = null;
-      this.addConvertedScrollOffset(offset);
+    if (this.stateService.network === '') {
+      this.hasMenu = true;
     }
   }
 
@@ -69,6 +78,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
       this.blockCount = blocks.length;
       this.dynamicBlocksAmount = Math.min(this.blockCount, this.stateService.env.KEEP_BLOCKS_AMOUNT, 8);
       this.firstPageWidth = 40 + (this.blockWidth * this.dynamicBlocksAmount);
+      this.minScrollWidth = 40 + (8 * this.blockWidth) + (this.pageWidth * 2);
       if (this.blockCount <= Math.min(8, this.stateService.env.KEEP_BLOCKS_AMOUNT)) {
         this.onResize();
       }
@@ -114,7 +124,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
             this.scrollToBlock(scrollToHeight);
           }
         }
-        if (!this.tipIsSet || (blockHeight < 0 && !this.mempoolOffset)) {
+        if (!this.tipIsSet || (blockHeight < 0 && this.mempoolOffset == null)) {
           this.pendingMark = blockHeight;
         }
       }
@@ -137,12 +147,15 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
             }
           }
         }
-        if (specialBlocks[block.height] && specialBlocks[block.height].networks.includes(this.stateService.network || 'mainnet')) {
-          this.specialEvent = true;
-          this.eventName = specialBlocks[block.height].labelEventCompleted;
-          setTimeout(() => {
+        for (const block of blocks) {
+          if (specialBlocks[block.height] && specialBlocks[block.height].networks.includes(this.stateService.network || 'mainnet')) {
+            this.specialEvent = true;
+            this.eventName = specialBlocks[block.height].labelEventCompleted;
+          }
+          if (specialBlocks[block.height - 8] && specialBlocks[block.height - 8].networks.includes(this.stateService.network || 'mainnet')) {
             this.specialEvent = false;
-          }, 60 * 60 * 1000);
+            this.eventName = '';
+          }
         }
       });
     this.resetScrollSubscription = this.stateService.resetScroll$.subscribe(reset => {
@@ -151,17 +164,56 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
         this.stateService.resetScroll$.next(false);
       } 
     });
+
+    this.menuSubscription = this.stateService.menuOpen$.subscribe((open) => {
+      if (this.menuOpen !== open) {
+        this.menuOpen = open;
+        this.applyMenuScroll(this.menuOpen);
+      }
+    });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.currentScrollWidth !== this.blockchainContainer?.nativeElement?.scrollWidth) {
+      this.currentScrollWidth = this.blockchainContainer?.nativeElement?.scrollWidth;
+      if (this.pendingOffset != null) {
+        const delta = this.pendingOffset - (this.mempoolOffset || 0);
+        this.mempoolOffset = this.pendingOffset;
+        this.currentScrollWidth = this.blockchainContainer?.nativeElement?.scrollWidth;
+        this.pendingOffset = null;
+        this.addConvertedScrollOffset(delta);
+        this.applyPendingMarkArrow();
+      } else {
+        this.applyScrollLeft();
+      }
+    }
   }
 
   onMempoolOffsetChange(offset): void {
-    const delta = offset - this.mempoolOffset;
-    this.addConvertedScrollOffset(delta);
-    this.mempoolOffset = offset;
-    this.applyPendingMarkArrow();
+    if (offset !== this.mempoolOffset) {
+      this.pendingOffset = offset;
+    }
+  }
+
+  applyScrollLeft(): void {
+    if (this.blockchainContainer?.nativeElement?.scrollWidth) {
+      let lastScrollLeft = null;
+      while (this.scrollLeft < 0 && this.shiftPagesForward() && lastScrollLeft !== this.scrollLeft) {
+        lastScrollLeft = this.scrollLeft;
+        this.scrollLeft += this.pageWidth;
+      }
+      lastScrollLeft = null;
+      while (this.scrollLeft > this.blockchainContainer.nativeElement.scrollWidth && this.shiftPagesBack() && lastScrollLeft !== this.scrollLeft) {
+        lastScrollLeft = this.scrollLeft;
+        this.scrollLeft -= this.pageWidth;
+      }
+      this.blockchainContainer.nativeElement.scrollLeft = this.scrollLeft;
+    }
+    this.cd.detectChanges();
   }
 
   applyPendingMarkArrow(): void {
-    if (this.pendingMark != null) {
+    if (this.pendingMark != null && this.pendingMark <= this.chainTip) {
       if (this.pendingMark < 0) {
         this.scrollToBlock(this.chainTip - this.pendingMark);
       } else {
@@ -171,39 +223,48 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
+  applyMenuScroll(opening: boolean): void {
+    this.menuSliding = true;
+    window.clearTimeout(this.menuTimeout);
+    this.menuTimeout = window.setTimeout(() => {
+      this.menuSliding = false;
+      this.cd.markForCheck();
+    }, 300);
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.chainWidth = window.innerWidth;
+    this.isMobile = this.chainWidth <= 767.98;
     let firstVisibleBlock;
     let offset;
-    if (this.blockchainContainer?.nativeElement != null) {
-      this.pages.forEach(page => {
-        const left = page.offset - this.getConvertedScrollOffset();
-        const right = left + this.pageWidth;
-        if (left <= 0 && right > 0) {
-          const blockIndex = Math.max(0, Math.floor(left / -this.blockWidth));
-          firstVisibleBlock = page.height - blockIndex;
-          offset = left + (blockIndex * this.blockWidth);
-        }
-      });
-    }
+    this.pages.forEach(page => {
+      const left = page.offset - this.getConvertedScrollOffset(this.scrollLeft);
+      const right = left + this.pageWidth;
+      if (left <= 0 && right > 0) {
+        const blockIndex = Math.max(0, Math.floor(left / -this.blockWidth));
+        firstVisibleBlock = page.height - blockIndex;
+        offset = left + (blockIndex * this.blockWidth);
+      }
+    });
 
-    this.blocksPerPage = Math.ceil(window.innerWidth / this.blockWidth);
+    this.blocksPerPage = Math.ceil(this.chainWidth / this.blockWidth);
     this.pageWidth = this.blocksPerPage * this.blockWidth;
-    this.minScrollWidth = this.firstPageWidth + (this.pageWidth * 2);
+    this.minScrollWidth = 40 + (8 * this.blockWidth) + (this.pageWidth * 2);
 
     if (firstVisibleBlock != null) {
-      this.scrollToBlock(firstVisibleBlock, offset + (this.isMobile ? this.blockWidth : 0));
+      this.scrollToBlock(firstVisibleBlock, offset);
     } else {
       this.updatePages();
     }
+    this.cd.markForCheck();
   }
 
   onMouseDown(event: MouseEvent) {
     if (!(event.which > 1 || event.button > 0)) {
       this.mouseDragStartX = event.clientX;
       this.resetMomentum(event.clientX);
-      this.blockchainScrollLeftInit = this.blockchainContainer.nativeElement.scrollLeft;
+      this.blockchainScrollLeftInit = this.scrollLeft;
     }
   }
   onPointerDown(event: PointerEvent) {
@@ -229,8 +290,8 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     if (this.mouseDragStartX != null) {
       this.updateVelocity(event.clientX);
       this.stateService.setBlockScrollingInProgress(true);
-      this.blockchainContainer.nativeElement.scrollLeft =
-        this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX;
+      this.scrollLeft = this.blockchainScrollLeftInit + this.mouseDragStartX - event.clientX;
+      this.applyScrollLeft();
     }
   }
   @HostListener('document:mouseup', [])
@@ -286,25 +347,31 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
         } else {
           this.velocity += dv;
         }
-        this.blockchainContainer.nativeElement.scrollLeft -= displacement;
+        this.scrollLeft -= displacement;
+        this.applyScrollLeft();
         this.animateMomentum();
       }
     });
   }
 
   onScroll(e) {
+    if (this.blockchainContainer?.nativeElement?.scrollLeft == null) {
+      return;
+    }
+    this.scrollLeft = this.blockchainContainer?.nativeElement?.scrollLeft;
     const middlePage = this.pageIndex === 0 ? this.pages[0] : this.pages[1];
     // compensate for css transform
-    const translation = (this.isMobile ? window.innerWidth * 0.95 : window.innerWidth * 0.5);
+    const translation = (this.isMobile ? this.chainWidth * 0.95 : this.chainWidth * 0.5);
     const backThreshold = middlePage.offset + (this.pageWidth * 0.5) + translation;
     const forwardThreshold = middlePage.offset - (this.pageWidth * 0.5) + translation;
-    const scrollLeft = this.getConvertedScrollOffset();
-    if (scrollLeft > backThreshold) {
+    this.scrollLeft = this.blockchainContainer.nativeElement.scrollLeft;
+    const offsetScroll = this.getConvertedScrollOffset(this.scrollLeft);
+    if (offsetScroll > backThreshold) {
       if (this.shiftPagesBack()) {
         this.addConvertedScrollOffset(-this.pageWidth);
         this.blockchainScrollLeftInit -= this.pageWidth;
       }
-    } else if (scrollLeft < forwardThreshold) {
+    } else if (offsetScroll < forwardThreshold) {
       if (this.shiftPagesForward()) {
         this.addConvertedScrollOffset(this.pageWidth);
         this.blockchainScrollLeftInit += this.pageWidth;
@@ -313,10 +380,6 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   scrollToBlock(height, blockOffset = 0) {
-    if (!this.blockchainContainer?.nativeElement) {
-      setTimeout(() => { this.scrollToBlock(height, blockOffset); }, 50);
-      return;
-    }
     if (this.isMobile) {
       blockOffset -= this.blockWidth;
     }
@@ -324,15 +387,15 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     const pages = [];
     this.pageIndex = Math.max(viewingPageIndex - 1, 0);
     let viewingPage = this.getPageAt(viewingPageIndex);
-    const isLastPage = viewingPage.height < this.blocksPerPage;
+    const isLastPage = viewingPage.height <= 0;
     if (isLastPage) {
       this.pageIndex = Math.max(viewingPageIndex - 2, 0);
       viewingPage = this.getPageAt(viewingPageIndex);
     }
-    const left = viewingPage.offset - this.getConvertedScrollOffset();
+    const left = viewingPage.offset - this.getConvertedScrollOffset(this.scrollLeft);
     const blockIndex = viewingPage.height - height;
     const targetOffset = (this.blockWidth * blockIndex) + left;
-    let deltaOffset = targetOffset - blockOffset;
+    const deltaOffset = targetOffset - blockOffset;
 
     if (isLastPage) {
       pages.push(this.getPageAt(viewingPageIndex - 2));
@@ -362,6 +425,7 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
     pages.push(this.getPageAt(this.pageIndex + 1));
     pages.push(this.getPageAt(this.pageIndex + 2));
     this.pages = pages;
+    this.cd.markForCheck();
   }
 
   shiftPagesBack(): boolean {
@@ -414,49 +478,46 @@ export class StartComponent implements OnInit, OnDestroy, DoCheck {
 
   blockInViewport(height: number): boolean {
     const firstHeight = this.pages[0].height;
-    const translation = (this.isMobile ? window.innerWidth * 0.95 : window.innerWidth * 0.5);
-    const firstX = this.pages[0].offset - this.getConvertedScrollOffset() + translation;
+    const translation = (this.isMobile ? this.chainWidth * 0.95 : this.chainWidth * 0.5);
+    const firstX = this.pages[0].offset - this.getConvertedScrollOffset(this.scrollLeft) + translation;
     const xPos = firstX + ((firstHeight - height) * 155);
-    return xPos > -55 && xPos < (window.innerWidth - 100);
+    return xPos > -55 && xPos < (this.chainWidth - 100);
   }
 
-  getConvertedScrollOffset(): number {
+  getConvertedScrollOffset(scrollLeft): number {
     if (this.timeLtr) {
-      return -(this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
+      return -(scrollLeft || 0) - (this.mempoolOffset || 0);
     } else {
-      return (this.blockchainContainer?.nativeElement?.scrollLeft || 0) - this.mempoolOffset;
+      return (scrollLeft || 0) - (this.mempoolOffset || 0);
     }
   }
 
   setScrollLeft(offset: number): void {
     if (this.timeLtr) {
-      this.blockchainContainer.nativeElement.scrollLeft = offset - this.mempoolOffset;
+      this.scrollLeft = offset - (this.mempoolOffset || 0);
     } else {
-      this.blockchainContainer.nativeElement.scrollLeft = offset + this.mempoolOffset;
+      this.scrollLeft = offset + (this.mempoolOffset || 0);
     }
+    this.applyScrollLeft();
   }
 
   addConvertedScrollOffset(offset: number): void {
-    if (!this.blockchainContainer?.nativeElement) {
-      this.pendingOffset = offset;
-      return;
-    }
     if (this.timeLtr) {
-      this.blockchainContainer.nativeElement.scrollLeft -= offset;
+      this.scrollLeft -= offset;
     } else {
-      this.blockchainContainer.nativeElement.scrollLeft += offset;
+      this.scrollLeft += offset;
     }
+    this.applyScrollLeft();
   }
 
   ngOnDestroy() {
-    if (this.blockchainContainer?.nativeElement) {
-      // clean up scroll position to prevent caching wrong scroll in Firefox
-      this.setScrollLeft(0);
-    }
+    // clean up scroll position to prevent caching wrong scroll in Firefox
+    this.setScrollLeft(0);
     this.timeLtrSubscription.unsubscribe();
     this.chainTipSubscription.unsubscribe();
     this.markBlockSubscription.unsubscribe();
     this.blockCounterSubscription.unsubscribe();
     this.resetScrollSubscription.unsubscribe();
+    this.menuSubscription.unsubscribe();
   }
 }

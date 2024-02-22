@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+hostname=$(hostname)
+
+heat()
+{
+       echo "$1"
+       curl -i -s "$1" | head -1
+}
+
+heatURLs=(
+       '/api/v1/fees/recommended'
+)
+
+while true
+do
+       echo "starting heat cache cycle..."
+
+       for url in $heatURLs
+       do
+               heat "https://${hostname}${url}"
+       done
+
+       sleep 0.5
+done

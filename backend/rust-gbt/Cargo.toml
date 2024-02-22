@@ -1,12 +1,10 @@
 [package]
 name = "gbt"
-version = "0.1.0"
-description = "An inefficient re-implementation of the getBlockTemplate algorithm in Rust"
+version = "1.0.0"
+description = "An efficient re-implementation of the getBlockTemplate algorithm in Rust"
 authors = ["mononaut"]
 edition = "2021"
 publish = false
-
-[workspace]
 
 [lib]
 crate-type = ["cdylib"]

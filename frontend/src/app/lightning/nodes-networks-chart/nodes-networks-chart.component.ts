@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
-import { EChartsOption, graphic, LineSeriesOption} from 'echarts';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
+import { echarts, EChartsOption, LineSeriesOption } from '../../graphs/echarts';
 import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { formatNumber } from '@angular/common';
@@ -26,7 +26,8 @@ import { isMobile } from '../../shared/common.utils';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NodesNetworksChartComponent implements OnInit {
+export class NodesNetworksChartComponent implements OnInit, OnChanges {
+  @Input() height: number = 150;
   @Input() right: number | string = 45;
   @Input() left: number | string = 45;
   @Input() widget = false;
@@ -47,6 +48,9 @@ export class NodesNetworksChartComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
+  chartData: any;
+  maxYAxis: number;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
@@ -65,49 +69,55 @@ export class NodesNetworksChartComponent implements OnInit {
       this.miningWindowPreference = '3y';
     } else {
       this.seoService.setTitle($localize`:@@b420668a91f8ebaf6e6409c4ba87f1d45961d2bd:Lightning Nodes Per Network`);
+      this.seoService.setDescription($localize`:@@meta.description.lightning.nodes-network:See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
     }
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
-    this.nodesNetworkObservable$ = this.radioGroupForm.get('dateSpan').valueChanges
-      .pipe(
-        startWith(this.miningWindowPreference),
-        switchMap((timespan) => {
-          this.timespan = timespan;
-          if (!this.widget && !firstRun) {
-            this.storageService.setValue('lightningWindowPreference', timespan);
-          }
-          firstRun = false;
-          this.miningWindowPreference = timespan;
-          this.isLoading = true;
-          return this.lightningApiService.listStatistics$(timespan)
-            .pipe(
-              tap((response) => {
-                const data = response.body;
-                const chartData = {
-                  tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
-                  clearnet_nodes: data.map(val => [val.added * 1000, val.clearnet_nodes]),
-                  unannounced_nodes: data.map(val => [val.added * 1000, val.unannounced_nodes]),
-                  clearnet_tor_nodes: data.map(val => [val.added * 1000, val.clearnet_tor_nodes]),
-                };
-                let maxYAxis = 0;
-                for (const day of data) {
-                  maxYAxis = Math.max(maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes + day.clearnet_tor_nodes);
-                }
-                maxYAxis = Math.ceil(maxYAxis / 3000) * 3000;
-                this.prepareChartOptions(chartData, maxYAxis);
-                this.isLoading = false;
-              }),
-              map((response) => {
-                return {
-                  days: parseInt(response.headers.get('x-total-count'), 10),
-                };
-              }),
-            );
-        }),
-        share()
-      );
+    this.nodesNetworkObservable$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+      startWith(this.miningWindowPreference),
+      switchMap((timespan) => {
+        this.timespan = timespan;
+        if (!this.widget && !firstRun) {
+          this.storageService.setValue('lightningWindowPreference', timespan);
+        }
+        firstRun = false;
+        this.miningWindowPreference = timespan;
+        this.isLoading = true;
+        return this.lightningApiService.cachedRequest(this.lightningApiService.listStatistics$, 250, timespan)
+          .pipe(
+            tap((response:any) => {
+              const data = response.body;
+              this.chartData = {
+                tor_nodes: data.map(val => [val.added * 1000, val.tor_nodes]),
+                clearnet_nodes: data.map(val => [val.added * 1000, val.clearnet_nodes]),
+                unannounced_nodes: data.map(val => [val.added * 1000, val.unannounced_nodes]),
+                clearnet_tor_nodes: data.map(val => [val.added * 1000, val.clearnet_tor_nodes]),
+              };
+              this.maxYAxis = 0;
+              for (const day of data) {
+                this.maxYAxis = Math.max(this.maxYAxis, day.tor_nodes + day.clearnet_nodes + day.unannounced_nodes + day.clearnet_tor_nodes);
+              }
+              this.maxYAxis = Math.ceil(this.maxYAxis / 3000) * 3000;
+              this.prepareChartOptions(this.chartData, this.maxYAxis);
+              this.isLoading = false;
+            }),
+            map((response) => {
+              return {
+                days: parseInt(response.headers.get('x-total-count'), 10),
+              };
+            }),
+          );
+      }),
+      share()
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.height && this.chartData && this.maxYAxis != null) {
+      this.prepareChartOptions(this.chartData, this.maxYAxis);
+    }
   }
 
   prepareChartOptions(data, maxYAxis): void {
@@ -151,7 +161,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#D81B60' },
           { offset: 1, color: '#D81B60AA' },
         ]),
@@ -173,7 +183,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#be7d4c' },
           { offset: 1, color: '#be7d4cAA' },
         ]),
@@ -194,7 +204,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#FFB300' },
           { offset: 1, color: '#FFB300AA' },
         ]),
@@ -215,7 +225,7 @@ export class NodesNetworksChartComponent implements OnInit {
           opacity: 0.5,
         },
         stack: 'Total',
-        color: new graphic.LinearGradient(0, 0.75, 0, 1, [
+        color: new echarts.graphic.LinearGradient(0, 0.75, 0, 1, [
           { offset: 0, color: '#7D4698' },
           { offset: 1, color: '#7D4698AA' },
         ]),
@@ -227,7 +237,7 @@ export class NodesNetworksChartComponent implements OnInit {
       title: title,
       animation: false,
       grid: {
-        height: this.widget ? 90 : undefined,
+        height: this.widget ? ((this.height || 120) - 60) : undefined,
         top: this.widget ? 20 : 40,
         bottom: this.widget ? 0 : 70,
         right: (isMobile() && this.widget) ? 35 : this.right,
@@ -375,7 +385,7 @@ export class NodesNetworksChartComponent implements OnInit {
         // We create dummy duplicated series so when we use the data zoom, the y axis
         // both scales properly
         const invisibleSerie = {...serie};
-        invisibleSerie.name = 'ignored' + Math.random().toString(); 
+        invisibleSerie.name = 'ignored' + Math.random().toString();
         invisibleSerie.stack = 'ignored';
         invisibleSerie.yAxisIndex = 1;
         invisibleSerie.lineStyle = {

@@ -1,0 +1,16 @@
+<div id="become-sponsor-container" [ngClass]="context">
+  <div class="become-sponsor community">
+    <p style="font-weight: 700; font-size: 18px;">If you're an individual...</p>
+    <a [href]="host + '/sponsor'" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button" (click)="onSponsorClick($event)">Become a Community Sponsor</a>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Exclusive swag</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Your avatar on the About page</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> And more coming soon :)</p>
+  </div>
+  <div class="become-sponsor enterprise">
+    <p style="font-weight: 700; font-size: 18px;">If you're a business...</p>
+    <a [href]="host + '/enterprise'" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button" (click)="onEnterpriseClick($event)">Become an Enterprise Sponsor</a>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Increased API limits</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Co-branded instance</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> 99% service-level agreement</p>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { EChartsOption, graphic } from 'echarts';
+import { echarts, EChartsOption } from '../../graphs/echarts';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { PoolStat } from '../../interfaces/node-api.interface';
@@ -83,6 +83,7 @@ export class PoolPreviewComponent implements OnInit {
           }
 
           this.seoService.setTitle(poolStats.pool.name);
+          this.seoService.setDescription($localize`:@@meta.description.mining.pool:See mining pool stats for ${poolStats.pool.name}\: most recent mined blocks, hashrate over time, total block reward to date, known coinbase addresses, and more.`);
           let regexes = '"';
           for (const regex of poolStats.pool.regexes) {
             regexes += regex + '", "';
@@ -126,7 +127,7 @@ export class PoolPreviewComponent implements OnInit {
       title: title,
       animation: false,
       color: [
-        new graphic.LinearGradient(0, 0, 0, 0.65, [
+        new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
           { offset: 0, color: '#F4511E' },
           { offset: 0.25, color: '#FB8C00' },
           { offset: 0.5, color: '#FFB300' },

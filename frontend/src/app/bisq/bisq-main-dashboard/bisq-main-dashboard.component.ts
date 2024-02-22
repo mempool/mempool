@@ -34,6 +34,7 @@ export class BisqMainDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.resetTitle();
+    this.seoService.resetDescription();
     this.websocketService.want(['blocks']);
 
     this.usdPrice$ = this.stateService.conversions$.asObservable().pipe(

@@ -344,7 +344,7 @@ class Server {
     <meta charset="utf-8">
     <title>${ogTitle}</title>
     <link rel="canonical" href="${canonical}" />
-    <meta name="description" content="The Mempool Open Source Project® - Explore the full Bitcoin ecosystem with mempool.space™"/>
+    <meta name="description" content="The Mempool Open Source Project&reg; - Explore the full Bitcoin ecosystem with mempool.space&reg;"/>
     <meta property="og:image" content="${ogImageUrl}"/>
     <meta property="og:image:type" content="image/png"/>
     <meta property="og:image:width" content="${matchedRoute.render ? 1200 : 1000}"/>

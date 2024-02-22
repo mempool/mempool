@@ -13,8 +13,10 @@ import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
+import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { PriceService, Price } from '../../services/price.service';
 import { CacheService } from '../../services/cache.service';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block',
@@ -102,6 +104,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private priceService: PriceService,
     private cacheService: CacheService,
+    private servicesApiService: ServicesApiServices,
   ) {
     this.webGlEnabled = detectWebGL();
   }
@@ -165,7 +168,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
-        this.stateService.markBlock$.next({});
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -175,6 +177,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         let isBlockHeight = false;
         if (/^[0-9]+$/.test(blockHash)) {
           isBlockHeight = true;
+          this.stateService.markBlock$.next({ blockHeight: parseInt(blockHash, 10)});
         } else {
           this.blockHash = blockHash;
         }
@@ -201,6 +204,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
                   );
+                  this.seoService.updateCanonical(this.location.path());
                   return this.apiService.getBlock$(hash).pipe(
                     catchError((err) => {
                       this.error = err;
@@ -261,6 +265,11 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.setNextAndPreviousBlockLink();
 
         this.seoService.setTitle($localize`:@@block.component.browser-title:Block ${block.height}:BLOCK_HEIGHT:: ${block.id}:BLOCK_ID:`);
+        if( this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ) {
+          this.seoService.setDescription($localize`:@@meta.description.liquid.block:See size, weight, fee range, included transactions, and more for Liquid${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        } else {
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.block:See size, weight, fee range, included transactions, audit (expected v actual), and more for Bitcoin${seoDescriptionNetwork(this.stateService.network)} block ${block.height}:BLOCK_HEIGHT: (${block.id}:BLOCK_ID:).`);
+        }
         this.isLoadingBlock = false;
         this.setBlockSubsidy();
         if (block?.extras?.reward !== undefined) {
@@ -321,15 +330,26 @@ export class BlockComponent implements OnInit, OnDestroy {
                 this.overviewError = err;
                 return of(null);
               })
-            )
+            ),
+          this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
         ]);
       })
     )
-    .subscribe(([transactions, blockAudit]) => {      
+    .subscribe(([transactions, blockAudit, accelerations]) => {
       if (transactions) {
         this.strippedTransactions = transactions;
       } else {
         this.strippedTransactions = [];
+      }
+
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
       }
 
       this.blockAudit = null;
@@ -680,7 +700,7 @@ export class BlockComponent implements OnInit, OnDestroy {
       this.setAuditAvailable(false);
     }
   }
-  
+
   isAuditAvailableFromBlockHeight(blockHeight: number): boolean {
     if (!this.auditSupported) {
       return false;

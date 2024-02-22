@@ -43,6 +43,8 @@ import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
+import accelerationApi from './api/services/acceleration';
+import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -91,11 +93,24 @@ class Server {
   async startServer(worker = false): Promise<void> {
     logger.notice(`Starting Mempool Server${worker ? ' (worker)' : ''}... (${backendInfo.getShortCommitHash()})`);
 
+    // Register cleanup listeners for exit events
+    ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].forEach(event => {
+      process.on(event, () => { this.onExit(event); });
+    });
+    process.on('uncaughtException', (error) => {
+      this.onUnhandledException('uncaughtException', error);
+    });
+    process.on('unhandledRejection', (reason, promise) => {
+      this.onUnhandledException('unhandledRejection', reason);
+    });
+
     if (config.MEMPOOL.BACKEND === 'esplora') {
       bitcoinApi.startHealthChecks();
     }
 
     if (config.DATABASE.ENABLED) {
+      DB.getPidLock();
+
       await DB.checkDbConnection();
       try {
         if (process.env.npm_config_reindex_blocks === 'true') { // Re-index requests
@@ -192,10 +207,11 @@ class Server {
         }
       }
       const newMempool = await bitcoinApi.$getRawMempool();
+      const newAccelerations = await accelerationApi.$fetchAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
-      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerRunning ? 10 : 1);
+      const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
-        await memPool.$updateMempool(newMempool, pollRate);
+        await memPool.$updateMempool(newMempool, newAccelerations, pollRate);
       }
       indexer.$run();
       priceUpdater.$run();
@@ -250,6 +266,7 @@ class Server {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
+          await elementsParser.$updateFederationUtxos();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
@@ -267,6 +284,7 @@ class Server {
   
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
+    bitcoinCoreRoutes.initRoutes(this.app);
     pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);
@@ -305,6 +323,19 @@ class Server {
       this.maxHeapSize = 0;
       this.lastHeapLogTime = now;
     }
+  }
+
+  onExit(exitEvent, code = 0): void {
+    logger.debug(`onExit for signal: ${exitEvent}`);
+    if (config.DATABASE.ENABLED) {
+      DB.releasePidLock();
+    }
+    process.exit(code);
+  }
+
+  onUnhandledException(type, error): void {
+    console.error(`${type}:`, error);
+    this.onExit(type, 1);
   }
 }
 

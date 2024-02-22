@@ -5,6 +5,7 @@ import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import logger from '../logger';
 import config from '../config';
+import pLimit from '../utils/p-limit';
 
 class TransactionUtils {
   constructor() { }
@@ -74,8 +75,12 @@ class TransactionUtils {
 
   public async $getMempoolTransactionsExtended(txids: string[], addPrevouts = false, lazyPrevouts = false, forceCore = false): Promise<MempoolTransactionExtended[]> {
     if (forceCore || config.MEMPOOL.BACKEND !== 'esplora') {
-      const results = await Promise.allSettled(txids.map(txid => this.$getTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore, true)));
-      return (results.filter(r => r.status === 'fulfilled') as PromiseFulfilledResult<MempoolTransactionExtended>[]).map(r => r.value);
+      const limiter = pLimit(8); // Run 8 requests at a time
+      const results = await Promise.allSettled(txids.map(
+        txid => limiter(() => this.$getMempoolTransactionExtended(txid, addPrevouts, lazyPrevouts, forceCore))
+      ));
+      return results.filter(reply => reply.status === 'fulfilled')
+        .map(r => (r as PromiseFulfilledResult<MempoolTransactionExtended>).value);
     } else {
       const transactions = await bitcoinApi.$getMempoolTransactions(txids);
       return transactions.map(transaction => {
@@ -111,7 +116,7 @@ class TransactionUtils {
   public extendMempoolTransaction(transaction: IEsploraApi.Transaction): MempoolTransactionExtended {
     const vsize = Math.ceil(transaction.weight / 4);
     const fractionalVsize = (transaction.weight / 4);
-    const sigops = !Common.isLiquid() ? this.countSigops(transaction) : 0;
+    let sigops = Common.isLiquid() ? 0 : (transaction.sigops != null ? transaction.sigops : this.countSigops(transaction));
     // https://github.com/bitcoin/bitcoin/blob/e9262ea32a6e1d364fb7974844fadc36f931f8c6/src/policy/policy.cpp#L295-L298
     const adjustedVsize = Math.max(fractionalVsize, sigops *  5); // adjusted vsize = Max(weight, sigops * bytes_per_sigop) / witness_scale_factor
     const feePerVbytes = (transaction.fee || 0) / fractionalVsize;
@@ -150,7 +155,7 @@ class TransactionUtils {
       sigops += 20 * (script.match(/OP_CHECKMULTISIG/g)?.length || 0);
     } else {
       // in redeem scripts and witnesses, worth N if preceded by OP_N, 20 otherwise
-      const matches = script.matchAll(/(?:OP_(\d+))? OP_CHECKMULTISIG/g);
+      const matches = script.matchAll(/(?:OP_(?:PUSHNUM_)?(\d+))? OP_CHECKMULTISIG/g);
       for (const match of matches) {
         const n = parseInt(match[1]);
         if (Number.isInteger(n)) {
@@ -182,6 +187,12 @@ class TransactionUtils {
           case input.prevout.scriptpubkey_type === 'v0_p2wsh':
             if (input.witness?.length) {
               sigops += this.countScriptSigops(bitcoinjs.script.toASM(Buffer.from(input.witness[input.witness.length - 1], 'hex')), false, true);
+            }
+            break;
+
+          case input.prevout.scriptpubkey_type === 'p2sh':
+            if (input.inner_redeemscript_asm) {
+              sigops += this.countScriptSigops(input.inner_redeemscript_asm);
             }
             break;
         }

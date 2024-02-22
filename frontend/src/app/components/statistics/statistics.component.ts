@@ -32,9 +32,10 @@ export class StatisticsComponent implements OnInit {
   chartColors = chartColors;
   filterSize = 100000;
   filterFeeIndex = 1;
+  showCount = false;
   maxFeeIndex: number;
   dropDownOpen = false;
-
+  outlierCappingEnabled = false;
   mempoolStats: OptimizedMempoolStats[] = [];
 
   mempoolVsizeFeesData: any;
@@ -46,6 +47,7 @@ export class StatisticsComponent implements OnInit {
   inverted: boolean;
   feeLevelDropdownData = [];
   timespan = '';
+  titleCount = $localize`Count`;
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -62,8 +64,10 @@ export class StatisticsComponent implements OnInit {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
     this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
+    this.outlierCappingEnabled = this.storageService.getValue('cap-outliers') === 'true';
 
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.graphWindowPreference
@@ -153,8 +157,6 @@ export class StatisticsComponent implements OnInit {
     }
     this.maxFeeIndex = maxTier;
 
-    this.capExtremeVbytesValues();
-
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
       series: [mempoolStats.map((stats) => [stats.added * 1000, stats.vbytes_per_second])],
@@ -208,36 +210,10 @@ export class StatisticsComponent implements OnInit {
       }
     });
   }
-
-  /**
-   * All value higher that "median * capRatio" are capped
-   */
-  capExtremeVbytesValues() {
-    if (this.stateService.network.length !== 0) {
-      return; // Only cap on Bitcoin mainnet
-    }
-
-    let capRatio = 10;
-    if (['1m', '3m',  '6m', '1y', '2y', '3y', '4y'].includes(this.graphWindowPreference)) {
-      capRatio = 4;
-    }
-
-    // Find median value
-    const vBytes: number[] = [];
-    for (const stat of this.mempoolStats) {
-      vBytes.push(stat.vbytes_per_second);
-    }
-    const sorted = vBytes.slice().sort((a, b) => a - b);
-    const middle = Math.floor(sorted.length / 2);
-    let median = sorted[middle];
-    if (sorted.length % 2 === 0) {
-      median = (sorted[middle - 1] + sorted[middle]) / 2;
-    }
-
-    // Cap
-    for (const stat of this.mempoolStats) {
-      stat.vbytes_per_second = Math.min(median * capRatio, stat.vbytes_per_second);
-    }
+  
+  onOutlierToggleChange(e): void {
+    this.outlierCappingEnabled = e.target.checked;
+    this.storageService.setValue('cap-outliers', e.target.checked);
   }
 
   onSaveChart(name) {
