@@ -141,8 +141,10 @@ export class EnterpriseService {
 
   page() {
     const matomo = this.getMatomo();
-    matomo.setCustomUrl(this.getCustomUrl());
-    matomo.trackPageView();
+    if (matomo) {
+      matomo.setCustomUrl(this.getCustomUrl());
+      matomo.trackPageView();
+    }
   }
 
   private getCustomUrl(): string {
