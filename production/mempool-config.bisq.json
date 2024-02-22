@@ -12,7 +12,8 @@
   },
   "CORE_RPC": {
     "USERNAME": "__BITCOIN_RPC_USER__",
-    "PASSWORD": "__BITCOIN_RPC_PASS__"
+    "PASSWORD": "__BITCOIN_RPC_PASS__",
+    "SSL":false
   },
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:5000",

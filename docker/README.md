@@ -34,6 +34,7 @@ If you want to use different credentials, specify them in the `docker-compose.ym
       CORE_RPC_PORT: "8332"
       CORE_RPC_USERNAME: "customuser"
       CORE_RPC_PASSWORD: "custompassword"
+      CORE_RPC_SSL: false
       CORE_RPC_TIMEOUT: "60000"
 ```
 
@@ -178,6 +179,7 @@ Corresponding `docker-compose.yml` overrides:
       CORE_RPC_PORT: ""
       CORE_RPC_USERNAME: ""
       CORE_RPC_PASSWORD: ""
+      CORE_RPC_SSL: false
       CORE_RPC_TIMEOUT: 60000
       CORE_RPC_COOKIE: false
       CORE_RPC_COOKIE_PATH: ""
@@ -249,6 +251,7 @@ Corresponding `docker-compose.yml` overrides:
       SECOND_CORE_RPC_PORT: ""
       SECOND_CORE_RPC_USERNAME: ""
       SECOND_CORE_RPC_PASSWORD: ""
+      SECOND_CORE_RPC_SSL: false
       SECOND_CORE_RPC_TIMEOUT: ""
       SECOND_CORE_RPC_COOKIE: false
       SECOND_CORE_RPC_COOKIE_PATH: ""

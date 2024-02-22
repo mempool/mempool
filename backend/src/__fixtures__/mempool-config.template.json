@@ -43,6 +43,7 @@
     "PORT": 15,
     "USERNAME": "__CORE_RPC_USERNAME__",
     "PASSWORD": "__CORE_RPC_PASSWORD__",
+    "SSL": "__CORE_RPC_SSL__",
     "TIMEOUT": 1000,
     "COOKIE": false,
     "COOKIE_PATH": "__CORE_RPC_COOKIE_PATH__"
@@ -66,6 +67,7 @@
     "PORT": 17,
     "USERNAME": "__SECOND_CORE_RPC_USERNAME__",
     "PASSWORD": "__SECOND_CORE_RPC_PASSWORD__",
+    "SSL": "__SECOND_CORE_RPC_SSL__",
     "TIMEOUT": 2000,
     "COOKIE": false,
     "COOKIE_PATH": "__SECOND_CORE_RPC_COOKIE_PATH__"
