@@ -22,8 +22,7 @@
   "CORE_RPC": {
     "PORT": 38332,
     "USERNAME": "__BITCOIN_RPC_USER__",
-    "PASSWORD": "__BITCOIN_RPC_PASS__",
-    "SSL":false
+    "PASSWORD": "__BITCOIN_RPC_PASS__"
   },
   "ESPLORA": {
     "UNIX_SOCKET_PATH": "/bitcoin/socket/esplora-bitcoin-signet",
