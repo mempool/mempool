@@ -251,6 +251,7 @@ class Server {
 
       if (!img) {
         // send local fallback image file
+        res.set('Cache-control', 'no-cache');
         res.sendFile(nodejsPath.join(__dirname, matchedRoute.fallbackImg));
       } else {
         res.contentType('image/png');
