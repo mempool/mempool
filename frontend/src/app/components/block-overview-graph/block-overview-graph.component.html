@@ -13,6 +13,9 @@
       [auditEnabled]="auditHighlighting"
       [blockConversion]="blockConversion"
     ></app-block-overview-tooltip>
-    <app-block-filters *ngIf="showFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+    <app-block-filters *ngIf="webGlEnabled && showFilters && filtersAvailable" [excludeFilters]="excludeFilters" [cssWidth]="cssWidth" (onFilterChanged)="setFilterFlags($event)"></app-block-filters>
+    <div *ngIf="!webGlEnabled" class="placeholder">
+      <span i18n="webgl-disabled">Your browser does not support this feature.</span>
+    </div>
   </div>
 </div>

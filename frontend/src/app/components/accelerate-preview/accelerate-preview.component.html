@@ -25,7 +25,7 @@
     ></app-accelerate-fee-graph>
   </ng-container>
 
-  <ng-container *ngIf="estimate">
+  <ng-container *ngIf="estimate else loadingEstimate">
     <div [class]="{estimateDisabled: error}">
 
       <div *ngIf="user && !estimate.hasAccess">
@@ -244,3 +244,8 @@
     </div>
   </ng-container>
 </div>
+
+<ng-template #loadingEstimate>
+  <div class="skeleton-loader"></div>
+  <br>
+</ng-template>

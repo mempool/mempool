@@ -48,8 +48,15 @@
 
   <div class="navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav {{ network.val }}">
+
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home">
         <a class="nav-link" [routerLink]="['/' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'tachometer-alt']" [fixedWidth]="true" i18n-title="master-page.dashboard" title="Dashboard"></fa-icon></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-home" *ngIf="stateService.env.ACCELERATOR">
+        <a class="nav-link" [routerLink]="['/acceleration' | relativeUrl]" (click)="collapse()">
+          <fa-icon [icon]="['fas', 'rocket']" [fixedWidth]="true" i18n-title="master-page.accelerator-dashboard" title="Accelerator Dashboard"></fa-icon>
+          <span class="badge badge-pill badge-warning beta" i18n="beta">beta</span>
+        </a>
       </li>
       <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-pools" *ngIf="stateService.env.MINING_DASHBOARD">
         <a class="nav-link" [routerLink]="['/mining' | relativeUrl]" (click)="collapse()"><fa-icon [icon]="['fas', 'hammer']" [fixedWidth]="true" i18n-title="mining.mining-dashboard" title="Mining Dashboard"></fa-icon></a>

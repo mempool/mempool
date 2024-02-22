@@ -1,6 +1,7 @@
+import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import logger from '../logger';
-import { BlockSummary, TransactionStripped } from '../mempool.interfaces';
+import { BlockSummary, TransactionClassified } from '../mempool.interfaces';
 
 class BlocksSummariesRepository {
   public async $getByBlockId(id: string): Promise<BlockSummary | undefined> {
@@ -17,30 +18,31 @@ class BlocksSummariesRepository {
     return undefined;
   }
 
-  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionStripped[]): Promise<void> {
+  public async $saveTransactions(blockHeight: number, blockId: string, transactions: TransactionClassified[], version: number): Promise<void> {
     try {
       const transactionsStr = JSON.stringify(transactions);
       await DB.query(`
         INSERT INTO blocks_summaries
-        SET height = ?, transactions = ?, id = ?
-        ON DUPLICATE KEY UPDATE transactions = ?`,
-        [blockHeight, transactionsStr, blockId, transactionsStr]);
+        SET height = ?, transactions = ?, id = ?, version = ?
+        ON DUPLICATE KEY UPDATE transactions = ?, version = ?`,
+        [blockHeight, transactionsStr, blockId, version, transactionsStr, version]);
     } catch (e: any) {
       logger.debug(`Cannot save block summary transactions for ${blockId}. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }
 
-  public async $saveTemplate(params: { height: number, template: BlockSummary}) {
+  public async $saveTemplate(params: { height: number, template: BlockSummary, version: number}): Promise<void> {
     const blockId = params.template?.id;
     try {
       const transactions = JSON.stringify(params.template?.transactions || []);
       await DB.query(`
-        INSERT INTO blocks_templates (id, template)
-        VALUE (?, ?)
+        INSERT INTO blocks_templates (id, template, version)
+        VALUE (?, ?, ?)
         ON DUPLICATE KEY UPDATE
-          template = ?
-      `, [blockId, transactions, transactions]);
+          template = ?,
+          version = ?
+      `, [blockId, transactions, params.version, transactions, params.version]);
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block template for ${blockId} because it has already been indexed, ignoring`);
@@ -57,6 +59,7 @@ class BlocksSummariesRepository {
         return {
           id: templates[0].id,
           transactions: JSON.parse(templates[0].template),
+          version: templates[0].version,
         };
       }
     } catch (e) {
@@ -67,10 +70,45 @@ class BlocksSummariesRepository {
 
   public async $getIndexedSummariesId(): Promise<string[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT id from blocks_summaries`);
+      const [rows] = await DB.query(`SELECT id from blocks_summaries`) as RowDataPacket[][];
       return rows.map(row => row.id);
     } catch (e) {
       logger.err(`Cannot get block summaries id list. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
+  public async $getSummariesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          height,
+          id
+        FROM blocks_summaries
+        WHERE version = ?
+        ORDER BY height DESC;`, [version]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get block summaries with version. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
+  public async $getTemplatesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          blocks_summaries.height as height,
+          blocks_templates.id as id
+        FROM blocks_templates
+        JOIN blocks_summaries ON blocks_templates.id = blocks_summaries.id
+        WHERE blocks_templates.version = ?
+        ORDER BY height DESC;`, [version]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get block summaries with version. Reason: ` + (e instanceof Error ? e.message : e));
     }
 
     return [];

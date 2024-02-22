@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
-import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
-import { ApiService } from '../../../services/api.service';
+import { Observable, catchError, combineLatest, distinctUntilChanged, interval, map, of, share, startWith, switchMap, tap } from 'rxjs';
 import { Color } from '../../block-overview-graph/sprite-types';
 import { hexToColor } from '../../block-overview-graph/utils';
 import TxView from '../../block-overview-graph/tx-view';
 import { feeLevels, mempoolFeeColors } from '../../../app.constants';
+import { ServicesApiServices } from '../../../services/services-api.service';
 
 const acceleratedColor: Color = hexToColor('8F5FF6');
 const normalColors = mempoolFeeColors.map(hex => hexToColor(hex + '5F'));
@@ -30,43 +30,48 @@ export class AcceleratorDashboardComponent implements OnInit {
   minedAccelerations$: Observable<Acceleration[]>;
   loadingBlocks: boolean = true;
 
+  graphHeight: number = 300;
+
   constructor(
     private seoService: SeoService,
     private websocketService: WebsocketService,
-    private apiService: ApiService,
+    private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
   }
 
   ngOnInit(): void {
+    this.onResize();
     this.websocketService.want(['blocks', 'mempool-blocks', 'stats']);
 
     this.pendingAccelerations$ = interval(30000).pipe(
       startWith(true),
       switchMap(() => {
-        return this.apiService.getAccelerations$();
-      }),
-      catchError((e) => {
-        return of([]);
+        return this.serviceApiServices.getAccelerations$().pipe(
+          catchError(() => {
+            return of([]);
+          }),
+        );
       }),
       share(),
     );
 
     this.accelerations$ = this.stateService.chainTip$.pipe(
       distinctUntilChanged(),
-      switchMap((chainTip) => {
-        return this.apiService.getAccelerationHistory$({ timeframe: '1m' });
-      }),
-      catchError((e) => {
-        return of([]);
+      switchMap(() => {
+        return this.serviceApiServices.getAccelerationHistory$({ timeframe: '1m' }).pipe(
+          catchError(() => {
+            return of([]);
+          }),
+        );
       }),
       share(),
     );
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status))
+        return accelerations.filter(acc => ['mined', 'completed', 'failed'].includes(acc.status));
       })
     );
 
@@ -117,6 +122,17 @@ export class AcceleratorDashboardComponent implements OnInit {
       const rate = tx.fee / tx.vsize; // color by simple single-tx fee rate
       const feeLevelIndex = feeLevels.findIndex((feeLvl) => Math.max(1, rate) < feeLvl) - 1;
       return normalColors[feeLevelIndex] || normalColors[mempoolFeeColors.length - 1];
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    if (window.innerWidth >= 992) {
+      this.graphHeight = 330;
+    } else if (window.innerWidth >= 768) {
+      this.graphHeight = 245;
+    } else {
+      this.graphHeight = 210;
     }
   }
 }

@@ -27,12 +27,6 @@
     </form>
   </div>
 
-  <div *ngIf="widget">
-    <div class="item">
-      <h5 class="card-title" i18n="acceleration.block-fees">Out-of-band Fees Per Block</h5>
-    </div>
-  </div>
-
   <div [class.chart]="!widget" [class.chart-widget]="widget" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
     (chartInit)="onChartInit($event)">
   </div>

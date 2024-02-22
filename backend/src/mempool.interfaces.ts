@@ -65,9 +65,9 @@ export interface MempoolBlockWithTransactions extends MempoolBlock {
 }
 
 export interface MempoolBlockDelta {
-  added: TransactionClassified[];
+  added: TransactionCompressed[];
   removed: string[];
-  changed: { txid: string, rate: number | undefined, flags?: number }[];
+  changed: MempoolDeltaChange[];
 }
 
 interface VinStrippedToScriptsig {
@@ -94,7 +94,9 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     vsize: number,
   };
   acceleration?: boolean;
+  replacement?: boolean;
   uid?: number;
+  flags?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
@@ -194,6 +196,11 @@ export interface TransactionClassified extends TransactionStripped {
   flags: number;
 }
 
+// [txid, fee, vsize, value, rate, flags, acceleration?]
+export type TransactionCompressed = [string, number, number, number, number, number, 1?];
+// [txid, rate, flags, acceleration?]
+export type MempoolDeltaChange = [string, number, number, (1|0)];
+
 // binary flags for transaction classification
 export const TransactionFlags = {
   // features
@@ -278,7 +285,8 @@ export interface BlockExtended extends IEsploraApi.Block {
 
 export interface BlockSummary {
   id: string;
-  transactions: TransactionStripped[];
+  transactions: TransactionClassified[];
+  version?: number;
 }
 
 export interface AuditSummary extends BlockAudit {
@@ -286,8 +294,8 @@ export interface AuditSummary extends BlockAudit {
   size?: number,
   weight?: number,
   tx_count?: number,
-  transactions: TransactionStripped[];
-  template?: TransactionStripped[];
+  transactions: TransactionClassified[];
+  template?: TransactionClassified[];
 }
 
 export interface BlockPrice {

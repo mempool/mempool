@@ -20,7 +20,21 @@
     margin-left: 0.5em;
   }
 
+  .info-badges {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    float: right;
+
+    &:hover, &:active {
+      text-decoration: none;
+    }
+  }
+
   .menu-toggle {
+    width: 2em;
+    height: 2em;
+    padding: 0px 1px;
     opacity: 0;
     cursor: pointer;
     color: white;
@@ -60,6 +74,49 @@
 
     &.selected {
       background-color: #105fb0;
+    }
+  }
+
+  &.any-mode {
+    .filter-tag {
+      border: solid 1px #1a9436;
+      &.selected {
+        background-color: #1a9436;
+      }
+    }
+  }
+
+  .btn-group {
+    font-size: 0.9em;
+    margin-right: 0.25em;
+  }
+
+  .mode-toggle {
+    padding: 0.2em 0.5em;
+    pointer-events: all;
+    line-height: 1.5;
+    background: #181b2daf;
+
+    &:first-child {
+      border-top-left-radius: 0.2rem;
+      border-bottom-left-radius: 0.2rem;
+    }
+    &:last-child {
+      border-top-right-radius: 0.2rem;
+      border-bottom-right-radius: 0.2rem;
+    }
+
+    &.blue {
+      border: solid 1px #105fb0;
+      &.active {
+        background: #105fb0;
+      }
+    }
+    &.green {
+      border: solid 1px #1a9436;
+      &.active {
+        background: #1a9436;
+      }
     }
   }
 
@@ -117,6 +174,11 @@
     }
     .filter-tag {
       font-size: 0.7em;
+    }
+    .mode-toggle {
+      font-size: 0.7em;
+      margin-bottom: 5px;
+      margin-top: 2px;
     }
   }
 

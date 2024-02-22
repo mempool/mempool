@@ -2,8 +2,19 @@
   <div class="d-flex menu-click">
 
     <nav class="scrollable menu-click">
-      <span *ngIf="userAuth" class="menu-click">
-        <strong class="menu-click text-nowrap ellipsis">@ {{ userAuth.user.username }}</strong>
+      <span *ngIf="user$ | async as user" class="menu-click">
+        <span class="menu-click text-nowrap ellipsis">
+          <strong>
+            <span *ngIf="user.username.includes('@'); else usernamenospace">{{ user.username }}</span>
+            <ng-template #usernamenospace>@{{ user.username }}</ng-template>
+          </strong>
+        </span>
+        <span class="badge mr-1 badge-og" *ngIf="user.ogRank">
+          OG #{{ user.ogRank }}
+        </span>
+        <span class="badge mr-1 badge-default" [class]="'badge-' + user.subscription_tag" *ngIf="user.subscription_tag !== 'free'">
+          {{ user.subscription_tag.toUpperCase() }}
+        </span>
       </span>
       <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
         <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
