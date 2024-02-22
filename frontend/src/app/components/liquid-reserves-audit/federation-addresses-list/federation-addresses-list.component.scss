@@ -4,6 +4,12 @@
   margin-top: 13px;
 }
 
+.extra-margin-right {
+  @media (max-width: 380px) {
+    margin-left: -10px;
+  }
+}
+
 tr, td, th {
   border: 0px;
   padding-top: 0.65rem;
