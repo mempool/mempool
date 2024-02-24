@@ -22,6 +22,7 @@ export const TransactionFlags = {
   v1:                                                          0b00000100n,
   v2:                                                          0b00001000n,
   v3:                                                          0b00010000n,
+  nonstandard:                                                 0b00100000n,
   // address types
   p2pk:                                               0b00000001_00000000n,
   p2ms:                                               0b00000010_00000000n,
@@ -66,6 +67,7 @@ export const TransactionFilters: { [key: string]: Filter } = {
     v1: { key: 'v1', label: 'Version 1', flag: TransactionFlags.v1, toggle: 'version' },
     v2: { key: 'v2', label: 'Version 2', flag: TransactionFlags.v2, toggle: 'version' },
     v3: { key: 'v3', label: 'Version 3', flag: TransactionFlags.v3, toggle: 'version' },
+    nonstandard: { key: 'nonstandard', label: 'Non-Standard', flag: TransactionFlags.nonstandard, important: true },
     /* address types */
     p2pk: { key: 'p2pk', label: 'P2PK', flag: TransactionFlags.p2pk, important: true },
     p2ms: { key: 'p2ms', label: 'Bare multisig', flag: TransactionFlags.p2ms, important: true },
@@ -96,7 +98,7 @@ export const TransactionFilters: { [key: string]: Filter } = {
 };
 
 export const FilterGroups: { label: string, filters: Filter[]}[] = [
-  { label: 'Features', filters: ['rbf', 'no_rbf', 'v1', 'v2', 'v3'] },
+  { label: 'Features', filters: ['rbf', 'no_rbf', 'v1', 'v2', 'v3', 'nonstandard'] },
   { label: 'Address Types', filters: ['p2pk', 'p2ms', 'p2pkh', 'p2sh', 'p2wpkh', 'p2wsh', 'p2tr'] },
   { label: 'Behavior', filters: ['cpfp_parent', 'cpfp_child', 'replacement', 'acceleration'] },
   { label: 'Data', filters: ['op_return', 'fake_pubkey', 'inscription'] },
