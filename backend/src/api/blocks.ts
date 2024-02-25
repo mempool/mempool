@@ -40,6 +40,7 @@ class Blocks {
   private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
+  private classifyingBlocks: boolean = false;
 
   private mainLoopTimeout: number = 120000;
 
@@ -568,6 +569,11 @@ class Blocks {
    * [INDEXING] Index transaction classification flags for Goggles
    */
   public async $classifyBlocks(): Promise<void> {
+    if (this.classifyingBlocks) {
+      return;
+    }
+    this.classifyingBlocks = true;
+
     // classification requires an esplora backend
     if (!Common.gogglesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
       return;
@@ -679,6 +685,8 @@ class Blocks {
         indexedThisRun = 0;
       }
     }
+
+    this.classifyingBlocks = false;
   }
 
   /**

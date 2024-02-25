@@ -139,6 +139,14 @@ export class EnterpriseService {
     this.getMatomo()?.trackGoal(id);
   }
 
+  page() {
+    const matomo = this.getMatomo();
+    if (matomo) {
+      matomo.setCustomUrl(this.getCustomUrl());
+      matomo.trackPageView();
+    }
+  }
+
   private getCustomUrl(): string {
     let url = window.location.origin + '/';
     let route = this.activatedRoute;
