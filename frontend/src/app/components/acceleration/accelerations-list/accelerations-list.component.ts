@@ -47,9 +47,11 @@ export class AccelerationsListComponent implements OnInit {
         const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistoryObserveResponse$({ timeframe: '1m', page: page }));
         return accelerationObservable$.pipe(
           switchMap(response => {
-            const accelerations = response.body;
-            this.accelerationCount = parseInt(response.headers.get('x-total-count'), 10);
-            console.log(this.accelerationCount);
+            let accelerations = response;
+            if (response.body) {
+              accelerations = response.body;
+              this.accelerationCount = parseInt(response.headers.get('x-total-count'), 10);
+            }
             if (this.pending) {
               for (const acceleration of accelerations) {
                 acceleration.status = acceleration.status || 'accelerating';
