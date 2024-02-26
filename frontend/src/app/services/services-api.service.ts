@@ -147,4 +147,8 @@ export class ServicesApiServices {
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
   }
+
+  getAccelerationHistoryObserveResponse$(params: AccelerationHistoryParams): Observable<any> {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params }, observe: 'response'});
+  }
 }
