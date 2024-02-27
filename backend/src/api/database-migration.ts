@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 68;
+  private static currentVersion = 69;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -580,6 +580,11 @@ class DatabaseMigration {
       await this.$executeQuery(`INSERT INTO state VALUES('last_bitcoin_block_audit', 0, NULL);`);
       await this.updateToSchemaVersion(68);
     }
+
+    if (databaseSchemaVersion < 69 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(this.getCreateAccelerationsTableQuery(), await this.$checkIfTableExists('accelerations'));
+      await this.updateToSchemaVersion(69);
+    }
   }
 
   /**
@@ -1120,6 +1125,23 @@ class DatabaseMigration {
       txid binary(32) NOT NULL,
       cluster binary(32) DEFAULT NULL,
       PRIMARY KEY (txid)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateAccelerationsTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS accelerations (
+      txid varchar(65) NOT NULL,
+      added date NOT NULL,
+      height int(10) NOT NULL,
+      pool smallint unsigned NULL,
+      effective_vsize int(10) NOT NULL,
+      effective_fee bigint(20) unsigned NOT NULL,
+      boost_rate float unsigned,
+      boost_cost bigint(20) unsigned NOT NULL,
+      PRIMARY KEY (txid),
+      INDEX (added),
+      INDEX (height),
+      INDEX (pool)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
