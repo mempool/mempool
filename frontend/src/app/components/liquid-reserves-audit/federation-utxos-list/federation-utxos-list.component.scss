@@ -72,7 +72,7 @@ tr, td, th {
   @media (max-width: 800px) {
     display: none;
   }
-  @media (max-width: 1000px) {
+  @media (max-width: 1190px) {
     .relative-time {
       display: none;
     }
@@ -88,6 +88,18 @@ tr, td, th {
   }
 
   @media (max-width: 500px) {
+    display: none;
+  }
+}
+
+.expires-in {
+  @media (max-width: 987px) {
+    display: none;
+  }
+}
+
+.is-dust {
+  @media (max-width: 1090px) {
     display: none;
   }
 }

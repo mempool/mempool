@@ -13,6 +13,7 @@ import { IncomingTransactionsGraphComponent } from '../components/incoming-trans
 import { MempoolGraphComponent } from '../components/mempool-graph/mempool-graph.component';
 import { LbtcPegsGraphComponent } from '../components/lbtc-pegs-graph/lbtc-pegs-graph.component';
 import { ReservesSupplyStatsComponent } from '../components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component';
+import { ExpiredUtxosStatsComponent } from '../components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component';
 import { ReservesRatioStatsComponent } from '../components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component';
 import { ReservesRatioComponent } from '../components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
 import { RecentPegsStatsComponent } from '../components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
@@ -56,6 +57,7 @@ import { CommonModule } from '@angular/common';
     MempoolGraphComponent,
     LbtcPegsGraphComponent,
     ReservesSupplyStatsComponent,
+    ExpiredUtxosStatsComponent,
     ReservesRatioStatsComponent,
     ReservesRatioComponent,
     RecentPegsStatsComponent,

@@ -92,8 +92,8 @@ class ElementsParser {
       await DB.query(`INSERT IGNORE INTO federation_addresses (bitcoinaddress) VALUES (?)`, [bitcoinaddress]);
 
       // Add the UTXO to the federation txos table
-      const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, txid, txindex, blockTime];
+      const query_utxos = `INSERT IGNORE INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, 4032, 0, 0, txid, txindex, blockTime];
       await DB.query(query_utxos, params_utxos);
       const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`)
       await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
@@ -206,7 +206,7 @@ class ElementsParser {
 
   // Get the UTXOs that need to be scanned in block height (UTXOs that were last updated in the block height - 1)
   protected async $getFederationUtxosToScan(height: number) { 
-    const query = `SELECT txid, txindex, bitcoinaddress, amount FROM federation_txos WHERE lastblockupdate = ? AND unspent = 1`;
+    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, timelock, expiredAt FROM federation_txos WHERE lastblockupdate = ? AND unspent = 1`;
     const [rows] = await DB.query(query, [height - 1]);
     return rows as any[];
   }
@@ -227,16 +227,26 @@ class ElementsParser {
   protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: any[], unspentAsTip: any[], confirmedTip: number, redeemAddressesData: any[] = []) {
     const redeemAddresses: string[] = redeemAddressesData.map(redeemAddress => redeemAddress.bitcoinaddress);
     for (const tx of block.tx) {
-      let mightRedeemInThisTx = false; // If a Federation UTXO is spent in this block, we might find a peg-out address in the outputs...
+      let mightRedeemInThisTx = false;
       // Check if the Federation UTXOs that was spent as of tip are spent in this block
       for (const input of tx.vin) {
         const txo = spentAsTip.find(txo => txo.txid === input.txid && txo.txindex === input.vout);
         if (txo) {
-          mightRedeemInThisTx = true;
-          await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
+          mightRedeemInThisTx = true; // A Federation UTXO is spent in this block: we might find a peg-out address in the outputs
+          if (txo.expiredAt > 0 ) {
+            if (input.txinwitness?.length !== 13) { // Check if the witness data of the input contains the 11 signatures: if it doesn't, emergency keys are being used
+              await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ?, emergencyKey = 1 WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
+              logger.debug(`Expired Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height} using emergency keys!`);
+             } else {
+              await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
+              logger.debug(`Expired Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height} using regular 11-of-15 signatures`);
+            }
+          } else {
+            await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, lasttimeupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, txo.txid, txo.txindex]);
+            logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}`);
+          }
           // Remove the TXO from the utxo array
           spentAsTip.splice(spentAsTip.indexOf(txo), 1);
-          logger.debug(`Federation UTXO ${txo.txid}:${txo.txindex} (${txo.amount} sats) was spent in block ${block.height}`);
         }
       }
       // Check if an output is sent to a change address of the federation
@@ -245,17 +255,21 @@ class ElementsParser {
           // Check that the UTXO was not already added in the DB by previous scans
           const [rows_check] = await DB.query(`SELECT txid FROM federation_txos WHERE txid = ? AND txindex = ?`, [tx.txid, output.n]) as any[];
           if (rows_check.length === 0) {
-            const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, '', 0, 0];
+            const timelock = output.scriptPubKey.address === federationChangeAddresses[0] ? 4032 : 2016; // P2WSH change address has a 4032 timelock, P2SH change address has a 2016 timelock
+            const query_utxos = `INSERT INTO federation_txos (txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, unspent, lastblockupdate, lasttimeupdate, timelock, expiredAt, emergencyKey, pegtxid, pegindex, pegblocktime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const params_utxos: (string | number)[] = [tx.txid, output.n, output.scriptPubKey.address, output.value * 100000000, block.height, block.time, 1, block.height, 0, timelock, 0, 0, '', 0, 0];
             await DB.query(query_utxos, params_utxos);
             // Add the UTXO to the utxo array
             spentAsTip.push({
               txid: tx.txid,
               txindex: output.n,
               bitcoinaddress: output.scriptPubKey.address,
-              amount: output.value * 100000000
+              amount: output.value * 100000000,
+              blocknumber: block.height,
+              timelock: timelock,
+              expiredAt: 0,
             });
-            logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${output.value * 100000000} sats), change address: ${output.scriptPubKey.address}`);
+            logger.debug(`Added new Federation UTXO ${tx.txid}:${output.n} (${Math.round(output.value * 100000000)} sats), change address: ${output.scriptPubKey.address}`);
           }
         }
         if (mightRedeemInThisTx && output.scriptPubKey.address && redeemAddresses.includes(output.scriptPubKey.address)) {
@@ -282,13 +296,22 @@ class ElementsParser {
       }
     }
 
-
-    for (const utxo of spentAsTip) {
-      await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, utxo.txid, utxo.txindex]);    
+    for (const utxo of spentAsTip) {   
+      if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
+        await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, utxo.txid, utxo.txindex]);
+      } else {
+        await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, utxo.txid, utxo.txindex]);
+      }
     }
 
     for (const utxo of unspentAsTip) {
+      if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
+        await DB.query(`UPDATE federation_txos SET unspent = 0, lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, block.time, utxo.txid, utxo.txindex]);
+      } else if (utxo.expiredAt === 0 && confirmedTip >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring before the tip: we need to keep track of it
+        await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [utxo.blocknumber + utxo.timelock - 1, utxo.txid, utxo.txindex]); 
+      } else {
       await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, utxo.txid, utxo.txindex]);
+      }
     }
   }
 
@@ -328,6 +351,10 @@ class ElementsParser {
     return rows;
   }
 
+  protected isDust(amount: number, feeRate: number): boolean {
+    return amount <= (450 * feeRate); // A P2WSH 11-of-15 multisig input is around 450 bytes
+  }
+
   ///////////// DATA QUERY //////////////
 
   public async $getAuditStatus(): Promise<any> {
@@ -354,6 +381,8 @@ class ElementsParser {
         (blocktime > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime) - INTERVAL 1 MONTH) + INTERVAL 1 DAY))
       AND 
         ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY)))
+      AND 
+        (expiredAt = 0 OR expiredAt > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY))
     GROUP BY 
         date;`;          
     const [rows] = await DB.query(query);
@@ -374,7 +403,7 @@ class ElementsParser {
 
   // Get the current reserves of the federation and the last Bitcoin block it was updated
   public async $getCurrentFederationReserves(): Promise<any> {
-    const [rows] = await DB.query(`SELECT SUM(amount) AS total_balance FROM federation_txos WHERE unspent = 1;`);
+    const [rows] = await DB.query(`SELECT SUM(amount) AS total_balance FROM federation_txos WHERE unspent = 1 AND expiredAt = 0;`);
     const lastblockaudit = await this.$getLastBlockAudit();
     const hash = await bitcoinSecondClient.getBlockHash(lastblockaudit);
     return {
@@ -386,28 +415,53 @@ class ElementsParser {
 
   // Get all of the federation addresses, most balances first
   public async $getFederationAddresses(): Promise<any> {
-    const query = `SELECT bitcoinaddress, SUM(amount) AS balance FROM federation_txos WHERE unspent = 1 GROUP BY bitcoinaddress ORDER BY balance DESC;`;
+    const query = `SELECT bitcoinaddress, SUM(amount) AS balance FROM federation_txos WHERE unspent = 1 AND expiredAt = 0 GROUP BY bitcoinaddress ORDER BY balance DESC;`;
     const [rows] = await DB.query(query);
     return rows;
   }
 
   // Get all of the UTXOs held by the federation, most recent first
   public async $getFederationUtxos(): Promise<any> {
-    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex, pegblocktime FROM federation_txos WHERE unspent = 1 ORDER BY blocktime DESC;`;
+    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex, pegblocktime, timelock, expiredAt FROM federation_txos WHERE unspent = 1 AND expiredAt = 0 ORDER BY blocktime DESC;`;
     const [rows] = await DB.query(query);
     return rows;
   }
 
+  // Get expired UTXOs, most recent first
+  public async $getExpiredUtxos(): Promise<any> {
+    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex, pegblocktime, timelock, expiredAt FROM federation_txos WHERE unspent = 1 AND expiredAt > 0 ORDER BY blocktime DESC;`;
+    const [rows]: any[] = await DB.query(query);
+    const feeRate = Math.round((await bitcoinSecondClient.estimateSmartFee(1)).feerate * 100000000 / 1000);
+    for (const row of rows) {
+      row.isDust = this.isDust(row.amount, feeRate);
+    }
+    return rows;
+  }
+
+    // Get utxos that were spent using emergency keys
+    public async $getEmergencySpentUtxos(): Promise<any> {
+      const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, blocktime, pegtxid, pegindex, pegblocktime, timelock, expiredAt FROM federation_txos WHERE emergencyKey = 1 ORDER BY blocktime DESC;`;
+      const [rows] = await DB.query(query);
+      return rows;
+    }
+  
   // Get the total number of federation addresses
   public async $getFederationAddressesNumber(): Promise<any> {
-    const query = `SELECT COUNT(DISTINCT bitcoinaddress) AS address_count FROM federation_txos WHERE unspent = 1;`;
+    const query = `SELECT COUNT(DISTINCT bitcoinaddress) AS address_count FROM federation_txos WHERE unspent = 1 AND expiredAt = 0;`;
     const [rows] = await DB.query(query);
     return rows[0];
   }
 
   // Get the total number of federation utxos
   public async $getFederationUtxosNumber(): Promise<any> {
-    const query = `SELECT COUNT(*) AS utxo_count FROM federation_txos WHERE unspent = 1;`;
+    const query = `SELECT COUNT(*) AS utxo_count FROM federation_txos WHERE unspent = 1 AND expiredAt = 0;`;
+    const [rows] = await DB.query(query);
+    return rows[0];
+  }
+
+  // Get the total number of emergency spent utxos and their total amount
+  public async $getEmergencySpentUtxosStats(): Promise<any> {
+    const query = `SELECT COUNT(*) AS utxo_count, SUM(amount) AS total_amount FROM federation_txos WHERE emergencyKey = 1;`;
     const [rows] = await DB.query(query);
     return rows[0];
   }
