@@ -154,6 +154,6 @@ export class ServicesApiServices {
   }
 
   getAccelerationStats$(): Observable<AccelerationStats> {
-    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/stats`);
+    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`);
   }
 }
