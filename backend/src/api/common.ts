@@ -245,6 +245,8 @@ export class Common {
       flags |= TransactionFlags.v1;
     } else if (tx.version === 2) {
       flags |= TransactionFlags.v2;
+    } else if (tx.version === 3) {
+      flags |= TransactionFlags.v3;
     }
     const reusedInputAddresses: { [address: string ]: number } = {};
     const reusedOutputAddresses: { [address: string ]: number } = {};

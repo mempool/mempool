@@ -1017,7 +1017,7 @@ export const restApiDocsData = [
     fragment: "get-address-transactions",
     title: "GET Address Transactions",
     description: {
-      default: "Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using <code>:last_seen_txid</code> (see below)."
+      default: "Get transaction history for the specified address/scripthash, sorted with newest first. Returns up to 50 mempool transactions plus the first 25 confirmed transactions. You can request more confirmed transactions using an <code>after_txid</code> query parameter."
     },
     urlString: "/address/:address/txs",
     showConditions: bitcoinNetworks.concat(liquidNetworks),
@@ -10070,8 +10070,7 @@ export const restApiDocsData = [
     "id": 89,
     "user_id": 1,
     "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
-    "status": "failed",
-    "estimated_fee": 247,
+    "status": "failed"
     "fee_paid": 0,
     "added": 1706378712,
     "last_updated": 1706378712,
@@ -10100,8 +10099,7 @@ export const restApiDocsData = [
     "id": 88,
     "user_id": 1,
     "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
-    "status": "completed",
-    "estimated_fee": 223,
+    "status": "completed"
     "fee_paid": 140019,
     "added": 1706378704,
     "last_updated": 1706380231,
@@ -10130,8 +10128,7 @@ export const restApiDocsData = [
     "id": 87,
     "user_id": 1,
     "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
-    "status": "completed",
-    "estimated_fee": 115,
+    "status": "completed"
     "fee_paid": 90062,
     "added": 1706378684,
     "last_updated": 1706380231,
