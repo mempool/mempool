@@ -29,7 +29,7 @@ import { ApiService } from '../../../services/api.service';
 })
 export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   @Input() widget: boolean = false;
-  @Input() height: number | string = '200';
+  @Input() height: number = 300;
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
   @Input() accelerations$: Observable<Acceleration[]>;
@@ -177,11 +177,11 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       ],
       animation: false,
       grid: {
-        height: this.height,
+        height: (this.widget && this.height) ? this.height - 30 : undefined,
+        top: this.widget ? 20 : 40,
+        bottom: this.widget ? 30 : 80,
         right: this.right,
         left: this.left,
-        bottom: this.widget ? 30 : 80,
-        top: this.widget ? 20 : (this.isMobile() ? 10 : 50),
       },
       tooltip: {
         show: !this.isMobile(),
