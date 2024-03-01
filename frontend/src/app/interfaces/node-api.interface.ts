@@ -393,8 +393,11 @@ export interface Acceleration {
 }
 
 export interface AccelerationHistoryParams {
-  timeframe?: string,
-  status?: string,
-  pool?: string,
-  blockHash?: string,
+  status?: string;
+  timeframe?: string;
+  poolUniqueId?: number;
+  blockHash?: string;
+  blockHeight?: number;
+  page?: number;
+  pageLength?: number;
 }
