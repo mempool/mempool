@@ -1,0 +1,35 @@
+.tomahawk {
+  .status-panel {
+    max-width: 720px;
+    margin: auto;
+    margin-top: 2em;
+    padding: 1em;
+    background: #24273e;
+  }
+
+  .status-table {
+    width: 100%;
+
+    td, th {
+      padding: 0.25em;
+      &.rtt, &.height {
+        text-align: right;
+      }
+    }
+
+    td {
+      cursor: pointer;
+    }
+  }
+
+  .mempoolStatus {
+    width: 100%;
+    height: 270px;
+  }
+
+  .hostLink {
+    text-align: center;
+    margin: auto;
+    margin-top: 1em;
+  }
+}
