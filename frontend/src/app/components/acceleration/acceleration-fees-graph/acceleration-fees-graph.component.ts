@@ -172,7 +172,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         nameTextStyle: {
           padding: [10, 0, 0, 0],
         },
-        type: 'category',
+        type: 'time',
         boundaryGap: false,
         axisLine: { onZero: true },
         axisLabel: {
