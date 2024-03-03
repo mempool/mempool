@@ -1,14 +1,5 @@
 <div [ngClass]="{'widget': widget}">
 
-  <div *ngIf="!widget" class="form-check">
-    <div style="padding-left: 0.75rem;">
-      <input style="margin-top: 6px" class="form-check-input" type="checkbox" [checked]="showExpiredUtxosToggle$ | async" id="show-expired-utxos" (change)="onShowExpiredUtxosToggleChange($event)">
-      <label class="form-check-label" for="show-expired-utxos">
-        <small i18n="liquid.include-expired-utxos">Expired UTXOs</small>
-      </label>
-    </div>
-  </div>
-
   <div class="clearfix"></div>
   
   <div style="min-height: 295px">

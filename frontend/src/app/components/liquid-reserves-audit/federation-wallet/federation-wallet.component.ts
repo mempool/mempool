@@ -17,4 +17,8 @@ export class FederationWalletComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  isExpiredFragment(): boolean {
+    return location.hash === '#expired';
+  }
+
 }

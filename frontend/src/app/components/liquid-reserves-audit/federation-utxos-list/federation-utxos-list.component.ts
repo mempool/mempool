@@ -120,12 +120,6 @@ export class FederationUtxosListComponent implements OnInit {
     this.page = page;
   }
 
-  onShowExpiredUtxosToggleChange(e): void {
-    const fragment = e.target.checked ? 'expired' : null;
-    this.router.navigate([], { fragment });
-    this.isLoading = true;
-  }
-
   getGradientColor(value: number): string {
     const distanceToGreen = Math.abs(4032 - value);
     const green = '#7CB342';
