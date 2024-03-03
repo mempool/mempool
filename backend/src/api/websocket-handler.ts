@@ -26,6 +26,7 @@ import mempool from './mempool';
 import statistics from './statistics/statistics';
 import accelerationCosts from './acceleration';
 import accelerationRepository from '../repositories/AccelerationRepository';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -39,6 +40,7 @@ const wantable = [
   'mempool-blocks',
   'live-2h-chart',
   'stats',
+  'tomahawk',
 ];
 
 class WebsocketHandler {
@@ -123,7 +125,7 @@ class WebsocketHandler {
             for (const sub of wantable) {
               const key = `want-${sub}`;
               const wants = parsedMessage.data.includes(sub);
-              if (wants && client['wants'] && !client[key]) {
+              if (wants && !client[key]) {
                 wantNow[key] = true;
               }
               client[key] = wants;
@@ -145,6 +147,10 @@ class WebsocketHandler {
             response['vBytesPerSecond'] = this.socketData['vBytesPerSecond'];
             response['fees'] = this.socketData['fees'];
             response['da'] = this.socketData['da'];
+          }
+
+          if (wantNow['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+            response['tomahawk'] = JSON.stringify(bitcoinApi.getHealthStatus());
           }
 
           if (parsedMessage && parsedMessage['track-tx']) {
@@ -546,6 +552,10 @@ class WebsocketHandler {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
       }
 
+      if (client['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+        response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
+      }
+
       if (client['track-mempool-tx']) {
         const tx = newTransactions.find((t) => t.txid === client['track-mempool-tx']);
         if (tx) {
@@ -907,6 +917,10 @@ class WebsocketHandler {
 
       if (mBlocks && client['want-mempool-blocks']) {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
+      }
+
+      if (client['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+        response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
       }
 
       if (client['track-tx']) {
