@@ -23,6 +23,9 @@
         <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '1m'">
           <input type="radio" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan"> 1M
         </label>
+        <label class="btn btn-primary btn-sm" [class.active]="radioGroupForm.get('dateSpan').value === '3m'">
+          <input type="radio" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan"> 3M
+        </label>
       </div>
     </form>
   </div>
