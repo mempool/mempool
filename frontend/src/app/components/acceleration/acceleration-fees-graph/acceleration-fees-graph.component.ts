@@ -148,7 +148,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         },
         borderColor: '#000',
         formatter: (ticks) => {
-          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10) * 1000)}</b><br>`;
+          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(ticks[0].axisValue, 10))}</b><br>`;
 
           if (ticks[0].data[1] > 10_000_000) {
             tooltip += `${ticks[0].marker} ${ticks[0].seriesName}: ${formatNumber(ticks[0].data[1] / 100_000_000, this.locale, '1.0-0')} BTC<br>`;
@@ -172,7 +172,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         nameTextStyle: {
           padding: [10, 0, 0, 0],
         },
-        type: 'category',
+        type: 'time',
         boundaryGap: false,
         axisLine: { onZero: true },
         axisLabel: {
