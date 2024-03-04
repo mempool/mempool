@@ -24,6 +24,8 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
+import accelerationCosts from './acceleration';
+import accelerationRepository from '../repositories/AccelerationRepository';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -728,6 +730,28 @@ class WebsocketHandler {
 
     const _memPool = memPool.getMempool();
 
+    const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
+
+
+    if (isAccelerated) {
+      const blockTxs: { [txid: string]: MempoolTransactionExtended } = {};
+      for (const tx of transactions) {
+        blockTxs[tx.txid] = tx;
+      }
+      const accelerations = Object.values(mempool.getAccelerations());
+      const boostRate = accelerationCosts.calculateBoostRate(
+        accelerations.map(acc => ({ txid: acc.txid, max_bid: acc.feeDelta })),
+        transactions
+      );
+      for (const acc of accelerations) {
+        if (blockTxs[acc.txid]) {
+          const tx = blockTxs[acc.txid];
+          const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
+          accelerationRepository.$saveAcceleration(accelerationInfo, block, block.extras.pool.id);
+        }
+      }
+    }
+
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleMinedRbfTransactions(rbfTransactions);
     memPool.removeFromSpendMap(transactions);
@@ -735,7 +759,6 @@ class WebsocketHandler {
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
       let auditMempool = _memPool;
-      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;

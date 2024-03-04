@@ -209,6 +209,7 @@ export const TransactionFlags = {
   v1:                                                          0b00000100n,
   v2:                                                          0b00001000n,
   v3:                                                          0b00010000n,
+  nonstandard:                                                 0b00100000n,
   // address types
   p2pk:                                               0b00000001_00000000n,
   p2ms:                                               0b00000010_00000000n,

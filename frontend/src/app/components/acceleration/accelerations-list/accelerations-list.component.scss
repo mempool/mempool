@@ -63,16 +63,28 @@ tr, td, th {
 }
 
 .txid {
-  @media (max-width: 500px) {
+  width: 20%;
+}
+
+.fee {
+  width: 15%;
+}
+
+.block {
+  width: 15%;
+  @media (max-width: 700px) {
     display: none;
   }
 }
 
-.fee, .block, .status {
-  width: 15%;
+.status {
+  width: 13%;
+}
 
-  @media (max-width: 720px) {
-    width: 20%;
+.date {
+  width: 20%;
+  @media (max-width: 600px) {
+    display: none;
   }
 }
 
@@ -83,23 +95,12 @@ tr, td, th {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 30%;
-    @media (max-width: 1060px) and (min-width: 768px) {
-      display: none;
-    }
-    @media (max-width: 500px) {
-      display: none;
-    }
   }
 
   .fee-rate {
     width: 20%;
-    @media (max-width: 1060px) and (min-width: 768px) {
-      text-align: start !important;
-    }
-    @media (max-width: 500px) {
-      text-align: start !important;
-    }
-    @media (max-width: 840px) and (min-width: 768px) {
+    text-align: end !important;
+    @media (max-width: 975px) and (min-width: 768px) {
       display: none;
     }
     @media (max-width: 410px) {
@@ -108,32 +109,31 @@ tr, td, th {
   }
 
   .bid {
+    text-align: end !important;
     width: 30%;
     min-width: 150px;
-    @media (max-width: 840px) and (min-width: 768px) {
-      text-align: start !important;
-    }
-    @media (max-width: 410px) {
-      text-align: start !important;
-    }
   }
 
   .time {
     width: 25%;
+    @media (max-width: 600px) {
+      display: none;
+    }
+    @media (max-width: 1200px) and (min-width: 768px) {
+      display: none;
+    }
   }
 
   .fee {
     width: 30%;
-    @media (max-width: 1060px) and (min-width: 768px) {
-      text-align: start !important;
-    }
-    @media (max-width: 500px) {
-      text-align: start !important;
-    }
+    text-align: end !important;
   }
 
   .block {
     width: 20%;
+    @media (max-width: 1200px) and (min-width: 768px) {
+      display: none;
+    }
   }
 
   .status {

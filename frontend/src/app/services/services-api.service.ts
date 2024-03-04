@@ -7,6 +7,7 @@ import { MenuGroup } from '../interfaces/services.interface';
 import { Observable, of, ReplaySubject, tap, catchError, share, filter, switchMap } from 'rxjs';
 import { IBackendInfo } from '../interfaces/websocket.interface';
 import { Acceleration, AccelerationHistoryParams } from '../interfaces/node-api.interface';
+import { AccelerationStats } from '../components/acceleration/acceleration-stats/acceleration-stats.component';
 
 export type ProductType = 'enterprise' | 'community' | 'mining_pool' | 'custom';
 export interface IUser {
@@ -144,7 +145,19 @@ export class ServicesApiServices {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations`);
   }
 
+  getAggregatedAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
+    return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history/aggregated`, { params: { ...params } });
+  }
+
   getAccelerationHistory$(params: AccelerationHistoryParams): Observable<Acceleration[]> {
     return this.httpClient.get<Acceleration[]>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params } });
+  }
+
+  getAccelerationHistoryObserveResponse$(params: AccelerationHistoryParams): Observable<any> {
+    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/accelerator/accelerations/history`, { params: { ...params }, observe: 'response'});
+  }
+
+  getAccelerationStats$(): Observable<AccelerationStats> {
+    return this.httpClient.get<AccelerationStats>(`${SERVICES_API_PREFIX}/accelerator/accelerations/stats`);
   }
 }

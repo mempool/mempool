@@ -3,16 +3,16 @@
     <div class="item">
       <h5 class="card-title" i18n="accelerator.requests">Requests</h5>
       <div class="card-text">
-        <div>{{ stats.count }}</div>
+        <div>{{ stats.totalRequested }}</div>
         <div class="symbol" i18n="accelerator.total-accelerated">accelerated</div>
       </div>
     </div>
     <div class="item">
       <h5 class="card-title" i18n="accelerator.total-boost">Total Bid Boost</h5>
       <div class="card-text">
-        <div>{{ stats.totalFeesPaid / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
+        <div>{{ stats.totalBidBoost / 100_000_000 | amountShortener: 4 }} <span class="symbol" i18n="shared.btc|BTC">BTC</span></div>
         <span class="fiat">
-          <app-fiat [value]="stats.totalFeesPaid"></app-fiat>
+          <app-fiat [value]="stats.totalBidBoost"></app-fiat>
         </span>
       </div>
     </div>
