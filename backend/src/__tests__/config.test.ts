@@ -14,6 +14,7 @@ describe('Mempool Backend Config', () => {
 
       expect(config.MEMPOOL).toStrictEqual({
         ENABLED: true,
+        OFFICIAL: false,
         NETWORK: 'mainnet',
         BACKEND: 'none',
         BLOCKS_SUMMARIES_INDEXING: false,
