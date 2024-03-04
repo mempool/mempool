@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 69;
+  private static currentVersion = 70;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -585,6 +585,11 @@ class DatabaseMigration {
       await this.$executeQuery(this.getCreateAccelerationsTableQuery(), await this.$checkIfTableExists('accelerations'));
       await this.updateToSchemaVersion(69);
     }
+
+    if (databaseSchemaVersion < 70 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery('ALTER TABLE accelerations MODIFY COLUMN added DATETIME;');
+      await this.updateToSchemaVersion(70);
+    }
   }
 
   /**
@@ -1131,7 +1136,7 @@ class DatabaseMigration {
   private getCreateAccelerationsTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS accelerations (
       txid varchar(65) NOT NULL,
-      added date NOT NULL,
+      added datetime NOT NULL,
       height int(10) NOT NULL,
       pool smallint unsigned NULL,
       effective_vsize int(10) NOT NULL,
