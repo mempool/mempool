@@ -59,7 +59,7 @@ export default class TxView implements TransactionStripped {
     this.acc = tx.acc;
     this.rate = tx.rate;
     this.status = tx.status;
-    this.bigintFlags = tx.flags ? (BigInt(tx.flags) ^ (this.acc ? TransactionFlags.acceleration : 0n)): 0n;
+    this.bigintFlags = tx.flags ? (BigInt(tx.flags) | (this.acc ? TransactionFlags.acceleration : 0n)): 0n;
     this.initialised = false;
     this.vertexArray = scene.vertexArray;
 

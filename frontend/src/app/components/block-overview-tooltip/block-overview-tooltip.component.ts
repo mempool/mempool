@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStra
 import { Position } from '../../components/block-overview-graph/sprite-types.js';
 import { Price } from '../../services/price.service';
 import { TransactionStripped } from '../../interfaces/node-api.interface.js';
+import { TransactionFlags } from '../../shared/filters.utils';
 
 @Component({
   selector: 'app-block-overview-tooltip',
@@ -22,6 +23,7 @@ export class BlockOverviewTooltipComponent implements OnChanges {
   feeRate = 0;
   effectiveRate;
   acceleration;
+  hasEffectiveRate: boolean = false;
 
   tooltipPosition: Position = { x: 0, y: 0 };
 
@@ -55,6 +57,8 @@ export class BlockOverviewTooltipComponent implements OnChanges {
       this.feeRate = this.fee / this.vsize;
       this.effectiveRate = tx.rate;
       this.acceleration = tx.acc;
+      this.hasEffectiveRate = Math.abs((this.fee / this.vsize) - this.effectiveRate) > 0.05
+        || (tx.bigintFlags && (tx.bigintFlags & (TransactionFlags.cpfp_child | TransactionFlags.cpfp_parent)) > 0n);
     }
   }
 }
