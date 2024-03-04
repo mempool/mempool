@@ -344,16 +344,20 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   public getHealthStatus(): HealthCheckHost[] {
-    return this.failoverRouter.sortHosts().map(host => ({
-      host: host.host,
-      active: host === this.failoverRouter.activeHost,
-      rtt: host.rtt,
-      latestHeight: host.latestHeight || 0,
-      socket: !!host.socket,
-      outOfSync: !!host.outOfSync,
-      unreachable: !!host.unreachable,
-      checked: !!host.checked,
-    }));
+    if (config.MEMPOOL.OFFICIAL) {
+      return this.failoverRouter.sortHosts().map(host => ({
+        host: host.host,
+        active: host === this.failoverRouter.activeHost,
+        rtt: host.rtt,
+        latestHeight: host.latestHeight || 0,
+        socket: !!host.socket,
+        outOfSync: !!host.outOfSync,
+        unreachable: !!host.unreachable,
+        checked: !!host.checked,
+      }));
+    } else {
+      return [];
+    }
   }
 }
 

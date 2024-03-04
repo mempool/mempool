@@ -149,7 +149,7 @@ class WebsocketHandler {
             response['da'] = this.socketData['da'];
           }
 
-          if (wantNow['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+          if (wantNow['want-tomahawk']) {
             response['tomahawk'] = JSON.stringify(bitcoinApi.getHealthStatus());
           }
 
@@ -552,7 +552,7 @@ class WebsocketHandler {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
       }
 
-      if (client['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+      if (client['want-tomahawk']) {
         response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
       }
 
@@ -919,7 +919,7 @@ class WebsocketHandler {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
       }
 
-      if (client['want-tomahawk'] && config.MEMPOOL.BACKEND === 'esplora' && config.ESPLORA.FALLBACK?.length) {
+      if (client['want-tomahawk']) {
         response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
       }
 
