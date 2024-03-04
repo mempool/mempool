@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, SecurityContext } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
-import { Observable, Subject, map, tap } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { HealthCheckHost } from '../../interfaces/websocket.interface';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -11,10 +11,9 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./server-health.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ServerHealthComponent implements OnInit, OnDestroy {
+export class ServerHealthComponent implements OnInit {
   hosts$: Observable<HealthCheckHost[]>;
   tip$: Subject<number>;
-  hosts: HealthCheckHost[] = [];
 
   constructor(
     private websocketService: WebsocketService,
@@ -33,36 +32,17 @@ export class ServerHealthComponent implements OnInit, OnDestroy {
             statusUrl = window.location.host + subpath + '/status';
             linkHost = window.location.host + subpath;
           } else {
-            statusUrl = host.host.slice(0, -4) + subpath + '/status';
-            linkHost = host.host.slice(0, -4) + subpath;
+            const hostUrl = new URL(host.host);
+            statusUrl = 'https://' + hostUrl.hostname + subpath + '/status';
+            linkHost = hostUrl.hostname + subpath;
           }
           host.statusPage = this.sanitizer.bypassSecurityTrustResourceUrl(this.sanitizer.sanitize(SecurityContext.URL, statusUrl));
           host.link = linkHost;
         }
         return hosts;
-      }),
-      tap((hosts) => {
-        if (this.hosts.length !== hosts.length) {
-          this.hosts = hosts;
-        }
       })
     );
     this.tip$ = this.stateService.chainTip$;
     this.websocketService.want(['blocks', 'tomahawk']);
-  }
-
-  scrollTo(host: HealthCheckHost): void {
-    const el = document.getElementById(host.host);
-    if (el) {
-      el.scrollIntoView();
-    }
-  }
-
-  trackByFn(index: number, host: HealthCheckHost): string {
-    return host.host;
-  }
-
-  ngOnDestroy(): void {
-    this.hosts = [];
   }
 }

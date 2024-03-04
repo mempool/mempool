@@ -54,6 +54,7 @@ import { AssetsComponent } from '../components/assets/assets.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
 import { StatusViewComponent } from '../components/status-view/status-view.component';
 import { ServerHealthComponent } from '../components/server-health/server-health.component';
+import { ServerStatusComponent } from '../components/server-health/server-status.component';
 import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
@@ -153,6 +154,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AssetsComponent,
     StatusViewComponent,
     ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,
@@ -280,6 +282,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     AssetsComponent,
     StatusViewComponent,
     ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,

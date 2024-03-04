@@ -1,4 +1,10 @@
-<div class="tomahawk">
+<div class="tomahawk container-xl dashboard-container">
+  <div class="links">
+    <span>Status</span>
+    <a [routerLink]='"/network"'>Live</a>
+  </div>
+  <h1 class="dashboard-title">Node Status</h1>
+
   <ng-container *ngIf="(hosts$ | async) as hosts">
     <div class="status-panel">
       <table class="status-table table table-borderless table-striped" *ngIf="(tip$ | async) as tip">
@@ -9,7 +15,7 @@
             <th class="rtt">RTT</th>
             <th class="height">Height</th>
           </tr>
-          <tr *ngFor="let host of hosts;" (click)="scrollTo(host)">
+          <tr *ngFor="let host of hosts;">
             <td class="active"><span *ngIf="host.active">⭐️</span></td>
             <td class="host">{{ host.host }}</td>
             <td class="rtt">{{ host.rtt | number : '1.0-0' }} {{ host.rtt == null ? '' : 'ms'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
@@ -18,12 +24,5 @@
         </tbody>
       </table>
     </div>
-  </ng-container>
-
-  <ng-container *ngFor="let host of hosts; trackBy: trackByFn">
-    <h5 [id]="host.host" class="hostLink">
-      <a [href]="host.link">{{ host.link }}</a>
-    </h5>
-    <iframe class="mempoolStatus" [src]="host.statusPage"></iframe>
   </ng-container>
 </div>

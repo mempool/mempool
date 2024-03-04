@@ -6,7 +6,6 @@ import { EightBlocksComponent } from './components/eight-blocks/eight-blocks.com
 import { MempoolBlockViewComponent } from './components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from './components/clock/clock.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
-import { ServerHealthComponent } from './components/server-health/server-health.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -31,11 +30,6 @@ let routes: Routes = [
         path: 'status',
         data: { networks: ['bitcoin', 'liquid'] },
         component: StatusViewComponent
-      },
-      {
-        path: 'nodes',
-        data: { networks: ['bitcoin', 'liquid'] },
-        component: ServerHealthComponent
       },
       {
         path: '',
@@ -71,11 +65,6 @@ let routes: Routes = [
         path: 'status',
         data: { networks: ['bitcoin', 'liquid'] },
         component: StatusViewComponent
-      },
-      {
-        path: 'nodes',
-        data: { networks: ['bitcoin', 'liquid'] },
-        component: ServerHealthComponent
       },
       {
         path: '',
@@ -146,11 +135,6 @@ let routes: Routes = [
     component: StatusViewComponent
   },
   {
-    path: 'nodes',
-    data: { networks: ['bitcoin', 'liquid'] },
-    component: ServerHealthComponent
-  },
-  {
     path: '',
     loadChildren: () => import('./bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
     data: { preload: true },
@@ -188,11 +172,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
           path: 'status',
           data: { networks: ['bitcoin', 'liquid'] },
           component: StatusViewComponent
-        },
-        {
-          path: 'nodes',
-          data: { networks: ['bitcoin', 'liquid'] },
-          component: ServerHealthComponent
         },
         {
           path: '',
@@ -233,11 +212,6 @@ if (browserWindowEnv && browserWindowEnv.BASE_MODULE === 'liquid') {
       path: 'status',
       data: { networks: ['bitcoin', 'liquid']},
       component: StatusViewComponent
-    },
-    {
-      path: 'nodes',
-      data: { networks: ['bitcoin', 'liquid'] },
-      component: ServerHealthComponent
     },
     {
       path: '',
