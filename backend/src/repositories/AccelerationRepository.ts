@@ -56,6 +56,9 @@ class AccelerationRepository {
   }
 
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {
+    if (!interval || !['24h', '3d', '1w', '1m'].includes(interval)) {
+      interval = '1m';
+    }
     interval = Common.getSqlInterval(interval);
 
     if (!config.MEMPOOL_SERVICES.ACCELERATIONS || (interval == null && poolSlug == null && height == null)) {

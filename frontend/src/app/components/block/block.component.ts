@@ -9,7 +9,7 @@ import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
-import { BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
+import { AccelerationInfo, BlockAudit, BlockExtended, TransactionStripped } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '../../shared/graphs.utils';
@@ -43,6 +43,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   latestBlock: BlockExtended;
   latestBlocks: BlockExtended[] = [];
   transactions: Transaction[];
+  oobFees: number = 0;
   isLoadingTransactions = true;
   strippedTransactions: TransactionStripped[];
   overviewTransitionDirection: string;
@@ -85,6 +86,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   timeLtr: boolean;
   childChangeSubscription: Subscription;
   auditPrefSubscription: Subscription;
+  oobSubscription: Subscription;
   
   priceSubscription: Subscription;
   blockConversion: Price;
@@ -168,6 +170,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.page = 1;
         this.error = undefined;
         this.fees = undefined;
+        this.oobFees = 0;
 
         if (history.state.data && history.state.data.blockHeight) {
           this.blockHeight = history.state.data.blockHeight;
@@ -446,7 +449,7 @@ export class BlockComponent implements OnInit, OnDestroy {
             inBlock[tx.txid] = true;
           }
 
-          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - this.block.extras.totalFees) / blockAudit.expectedFees : 0;
+          blockAudit.feeDelta = blockAudit.expectedFees > 0 ? (blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / blockAudit.expectedFees : 0;
           blockAudit.weightDelta = blockAudit.expectedWeight > 0 ? (blockAudit.expectedWeight - this.block.weight) / blockAudit.expectedWeight : 0;
           blockAudit.txDelta = blockAudit.template.length > 0 ? (blockAudit.template.length - this.block.tx_count) / blockAudit.template.length : 0;
           this.blockAudit = blockAudit;
@@ -460,6 +463,32 @@ export class BlockComponent implements OnInit, OnDestroy {
 
       this.isLoadingOverview = false;
       this.setupBlockGraphs();
+    });
+
+    this.oobSubscription = block$.pipe(
+      switchMap((block) => this.apiService.getAccelerationsByHeight$(block.height)
+        .pipe(
+          map(accelerations => {
+            return { block, accelerations };
+          }),
+          catchError((err) => {
+            return of({ block, accelerations: [] });
+        }))
+      ),
+    ).subscribe(({ block, accelerations}) => {
+      let totalFees = 0;
+      for (const acc of accelerations) {
+        totalFees += acc.boost_cost;
+      }
+      this.oobFees = totalFees;
+      if (block.height === this.block.height && this.blockAudit) {
+        this.blockAudit.feeDelta = this.blockAudit.expectedFees > 0 ? (this.blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / this.blockAudit.expectedFees : 0;
+      }
+    },
+    (error) => {
+      this.error = error;
+      this.isLoadingBlock = false;
+      this.isLoadingOverview = false;
     });
 
     this.networkChangedSubscription = this.stateService.networkChanged$
@@ -529,6 +558,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.unsubscribeNextBlockSubscriptions();
     this.childChangeSubscription?.unsubscribe();
     this.priceSubscription?.unsubscribe();
+    this.oobSubscription?.unsubscribe();
   }
 
   unsubscribeNextBlockSubscriptions() {

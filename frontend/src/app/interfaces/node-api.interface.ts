@@ -401,3 +401,17 @@ export interface AccelerationHistoryParams {
   page?: number;
   pageLength?: number;
 }
+
+export interface AccelerationInfo {
+  txid: string,
+  height: number,
+  pool: {
+    id: number,
+    slug: string,
+    name: string,
+  },
+  effective_vsize: number,
+  effective_fee: number,
+  boost_rate: number,
+  boost_cost: number,
+}

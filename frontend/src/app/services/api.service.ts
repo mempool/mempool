@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume } from '../interfaces/node-api.interface';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo } from '../interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
 import { Transaction } from '../interfaces/electrs.interface';
@@ -410,6 +410,24 @@ export class ApiService {
     return this.httpClient.get<Conversion>(
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
+    );
+  }
+
+  getAccelerationsByPool$(slug: string): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/accelerations/pool/${slug}`
+    );
+  }
+
+  getAccelerationsByHeight$(height: number): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/accelerations/block/${height}`
+    );
+  }
+
+  getRecentAccelerations$(interval: string | undefined): Observable<AccelerationInfo[]> {
+    return this.httpClient.get<AccelerationInfo[]>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/interval' + (interval !== undefined ? `/${interval}` : '')
     );
   }
 }
