@@ -5,6 +5,7 @@ const configFromFile = require(
 interface IConfig {
   MEMPOOL: {
     ENABLED: boolean;
+    OFFICIAL: boolean;
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
@@ -161,6 +162,7 @@ interface IConfig {
 const defaults: IConfig = {
   'MEMPOOL': {
     'ENABLED': true,
+    'OFFICIAL': false,
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,

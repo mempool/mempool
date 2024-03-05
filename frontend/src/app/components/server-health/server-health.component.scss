@@ -1,0 +1,34 @@
+.tomahawk {
+  .links {
+    float: right;
+    text-align: right;
+    margin-top: 1em;
+
+    a, span {
+      margin-left: 1em;
+    }
+  }
+
+  .dashboard-title {
+    text-align: left;
+  }
+
+  .status-panel {
+    max-width: 720px;
+    margin: auto;
+    margin-top: 2em;
+    padding: 1em;
+    background: #24273e;
+  }
+
+  .status-table {
+    width: 100%;
+
+    td, th {
+      padding: 0.25em;
+      &.rtt, &.height {
+        text-align: right;
+      }
+    }
+  }
+}
