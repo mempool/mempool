@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+check_frontend_git_commit_hash() {
+	echo -n $(curl -s https://node$1.$2.mempool.space/resources/config.js|grep GIT_COMMIT_HASH|cut -d "'" -f2|cut -c1-8)
+}
+
+check_html_md5_hash() {
+	echo -n $(curl -s https://node$1.$2.mempool.space|md5|cut -c1-8)
+}
+
+for site in fmt va1 fra tk7;do
+	echo "${site}"
+	for node in 201 202 203 204 205 206 207 208 209 210 211 212 213 214;do
+		[ "${site}" = "fmt" ] && [ "${node}" -gt 206 ] && continue
+		[ "${site}" = "tk7" ] && [ "${node}" -gt 206 ] && continue
+		echo -n "node${node}.${site}: "
+		check_frontend_git_commit_hash $node $site
+		echo -n " "
+		check_html_md5_hash $node $site
+		echo
+	done
+done
+
