@@ -29,8 +29,8 @@ export class ServerHealthComponent implements OnInit {
           let statusUrl = '';
           let linkHost = '';
           if (host.socket) {
-            statusUrl = window.location.host + subpath + '/status';
-            linkHost = window.location.host + subpath;
+            statusUrl = 'https://' + window.location.hostname + subpath + '/status';
+            linkHost = window.location.hostname + subpath;
           } else {
             const hostUrl = new URL(host.host);
             statusUrl = 'https://' + hostUrl.hostname + subpath + '/status';
@@ -38,11 +38,30 @@ export class ServerHealthComponent implements OnInit {
           }
           host.statusPage = this.sanitizer.bypassSecurityTrustResourceUrl(this.sanitizer.sanitize(SecurityContext.URL, statusUrl));
           host.link = linkHost;
+          host.flag = this.parseFlag(host.host);
         }
         return hosts;
       })
     );
     this.tip$ = this.stateService.chainTip$;
     this.websocketService.want(['blocks', 'tomahawk']);
+  }
+
+  trackByFn(index: number, host: HealthCheckHost): string {
+    return host.host;
+  }
+
+  private parseFlag(host: string): string {
+    if (host.includes('.fra.')) {
+      return '🇩🇪';
+    } else if (host.includes('.tk7.')) {
+      return '🇯🇵';
+    } else if (host.includes('.fmt.')) {
+      return '🇺🇸';
+    } else if (host.includes('.va1.')) {
+      return '🇺🇸';
+    } else {
+      return '';
+    }
   }
 }

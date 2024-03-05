@@ -31,8 +31,8 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
           let statusUrl = '';
           let linkHost = '';
           if (host.socket) {
-            statusUrl = window.location.host + subpath + '/status';
-            linkHost = window.location.host + subpath;
+            statusUrl = 'https://' + window.location.hostname + subpath + '/status';
+            linkHost = window.location.hostname + subpath;
           } else {
             const hostUrl = new URL(host.host);
             statusUrl = 'https://' + hostUrl.hostname + subpath + '/status';

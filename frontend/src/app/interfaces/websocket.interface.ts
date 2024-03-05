@@ -134,4 +134,5 @@ export interface HealthCheckHost {
   checked: boolean;
   link?: string;
   statusPage?: SafeResourceUrl;
+  flag?: string;
 }

@@ -26,8 +26,46 @@
 
     td, th {
       padding: 0.25em;
-      &.rtt, &.height {
+
+      &.rank, &.flag {
+        width: 28px;
         text-align: right;
+      }
+      &.rtt, &.height {
+        width: 92px;
+        text-align: right;
+      }
+      &.only-small {
+        display: table-cell;
+        &.rtt {
+          width: 60px;
+        }
+      }
+      &.only-large {
+        display: none;
+      }
+      &.height {
+        padding-right: 0.5em;
+      }
+      &.host {
+        width: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      @media (min-width: 576px) {
+        &.rank, &.flag {
+          width: 32px;
+        }
+        &.rtt, &.height {
+          width: 96px;
+        }
+        &.only-small {
+          display: none;
+        }
+        &.only-large {
+          display: table-cell;
+        }
       }
     }
   }
