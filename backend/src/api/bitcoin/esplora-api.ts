@@ -1,5 +1,5 @@
 import config from '../../config';
-import axios from 'axios';
+import axios, { AxiosResponse, isAxiosError } from 'axios';
 import http from 'http';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
@@ -10,6 +10,7 @@ interface FailoverHost {
   host: string,
   rtts: number[],
   rtt: number,
+  timedOut?: boolean,
   failures: number,
   latestHeight?: number,
   socket?: boolean,
@@ -108,11 +109,17 @@ class FailoverRouter {
           host.rtts = [];
           host.rtt = Infinity;
         }
+        host.timedOut = false;
       } catch (e) {
         host.outOfSync = true;
         host.unreachable = true;
         host.rtts = [];
         host.rtt = Infinity;
+        if (isAxiosError(e) && (e.code === 'ECONNABORTED' || e.code === 'ETIMEDOUT')) {
+          host.timedOut = true;
+        } else {
+          host.timedOut = false;
+        }
       }
       host.checked = true;
       
@@ -143,7 +150,7 @@ class FailoverRouter {
 
   private formatRanking(index: number, host: FailoverHost, active: FailoverHost, maxHeight: number): string {
     const heightStatus = !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅'));
-    return `${host === active ? '⭐️' : '  '} ${host.rtt < Infinity ? Math.round(host.rtt).toString().padStart(5, ' ') + 'ms' : '    -  '} ${!host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅')} | block: ${host.latestHeight || '??????'} ${heightStatus} | ${host.host} ${host === active ? '⭐️' : '  '}`;
+    return `${host === active ? '⭐️' : '  '} ${host.rtt < Infinity ? Math.round(host.rtt).toString().padStart(5, ' ') + 'ms' : (host.timedOut ? '  ⌛️💥 ' : '    -  ')} ${!host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅')} | block: ${host.latestHeight || '??????'} ${heightStatus} | ${host.host} ${host === active ? '⭐️' : '  '}`;
   }
 
   private updateFallback(): FailoverHost[] {
