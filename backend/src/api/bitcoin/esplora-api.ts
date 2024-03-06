@@ -18,6 +18,7 @@ interface FailoverHost {
   unreachable?: boolean,
   preferred?: boolean,
   checked: boolean,
+  lastChecked?: number,
 }
 
 class FailoverRouter {
@@ -122,7 +123,7 @@ class FailoverRouter {
         }
       }
       host.checked = true;
-      
+      host.lastChecked = Date.now();
 
       // switch if the current host is out of sync or significantly slower than the next best alternative
       const rankOrder = this.sortHosts();
@@ -361,6 +362,7 @@ class ElectrsApi implements AbstractBitcoinApi {
         outOfSync: !!host.outOfSync,
         unreachable: !!host.unreachable,
         checked: !!host.checked,
+        lastChecked: host.lastChecked || 0,
       }));
     } else {
       return [];

@@ -132,6 +132,7 @@ export interface HealthCheckHost {
   outOfSync: boolean;
   unreachable: boolean;
   checked: boolean;
+  lastChecked: number;
   link?: string;
   statusPage?: SafeResourceUrl;
   flag?: string;
