@@ -29,6 +29,16 @@ li.nav-item {
     padding-left: 8px;
     padding-right: 8px;
   }
+  @media (max-width: 429px) {
+    margin: auto 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  @media (max-width: 369px) {
+    margin: auto 3px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -64,7 +74,10 @@ li.nav-item {
   }
   a {
     font-size: 0.8em;
-    @media (min-width: 375px) {
+    @media (min-width: 370px) {
+      font-size: 0.9em;
+    }
+    @media (min-width: 430px) {
       font-size: 1em;
     }
   }
@@ -198,7 +211,15 @@ nav {
   margin: 24px 0px 0px -15px;
   font-size: 8px;
   @media (max-width: 767.98px) {
-    margin: 33px 0px 0px -19px;
+    margin: 30px 0px 0px -19px;
+    font-size: 7px;
+  }
+  @media (max-width: 3429px) {
+    margin: 25px 0px 0px -19px;
+    font-size: 7px;
+  }
+  @media (max-width: 369px) {
+    margin: 20px 0px 0px -19px;
     font-size: 7px;
   }
 }
@@ -238,4 +259,15 @@ nav {
 main {
   transition: 0.2s;
   transition-property: max-width;
+}
+
+// empty sidenav
+.empty-sidenav {
+  z-index: 1;
+  background-color: transparent;
+  width: 0px;
+  height: calc(100vh - 65px);
+  position: sticky;
+  top: 65px;
+  padding-bottom: 20px;
 }

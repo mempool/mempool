@@ -19,6 +19,7 @@ interface EpochProgress {
   blocksUntilHalving: number;
   timeUntilHalving: number;
   timeAvg: number;
+  adjustedTimeAvg: number;
 }
 
 type BlockStatus = 'mined' | 'behind' | 'ahead' | 'next' | 'remaining';
@@ -153,6 +154,7 @@ export class DifficultyComponent implements OnInit {
           blocksUntilHalving,
           timeUntilHalving,
           timeAvg: da.timeAvg,
+          adjustedTimeAvg: da.adjustedTimeAvg,
         };
         return data;
       })
@@ -194,7 +196,7 @@ export class DifficultyComponent implements OnInit {
 
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event): void {
-    if (this.epochSvgElement.nativeElement?.contains(event.target)) {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
       this.onPointerMove(event);
       event.preventDefault();
     }
@@ -202,7 +204,7 @@ export class DifficultyComponent implements OnInit {
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event): void {
-    if (this.epochSvgElement.nativeElement?.contains(event.target)) {
+    if (this.epochSvgElement?.nativeElement?.contains(event.target)) {
       this.tooltipPosition = { x: event.clientX, y: event.clientY };
       this.cd.markForCheck();
     }

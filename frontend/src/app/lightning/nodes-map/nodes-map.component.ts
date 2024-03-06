@@ -3,7 +3,7 @@ import { SeoService } from '../../services/seo.service';
 import { ApiService } from '../../services/api.service';
 import { Observable, BehaviorSubject, switchMap, tap, combineLatest } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
-import { EChartsOption, registerMap } from 'echarts';
+import { EChartsOption, echarts } from '../../graphs/echarts';
 import { lerpColor } from '../../shared/graphs.utils';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
@@ -63,7 +63,7 @@ export class NodesMap implements OnInit, OnChanges {
       this.assetsService.getWorldMapJson$,
       this.nodes$
     ).pipe(tap((data) => {
-      registerMap('world', data[0]);
+      echarts.registerMap('world', data[0]);
 
       let maxLiquidity = data[1].maxLiquidity;
       let inputNodes: any[] = data[1].nodes;
@@ -114,7 +114,7 @@ export class NodesMap implements OnInit, OnChanges {
           node[3], // Alias
           node[2], // Public key
           node[5], // Channels
-          node[6].en, // Country
+          node[6]?.en, // Country
           node[7], // ISO Code
         ]);
       }

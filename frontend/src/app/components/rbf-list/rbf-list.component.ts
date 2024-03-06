@@ -55,7 +55,7 @@ export class RbfList implements OnInit, OnDestroy {
       })
     );
 
-    this.seoService.setTitle($localize`:@@meta.title.rbf-list:RBF Replacements`);
+    this.seoService.setTitle($localize`:@@5e3d5a82750902f159122fcca487b07f1af3141f:RBF Replacements`);
     this.seoService.setDescription($localize`:@@meta.description.rbf-list:See the most recent RBF replacements on the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network, updated in real-time.`);
   }
 

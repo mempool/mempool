@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '../../services/electrs-api.service';
 import { switchMap, tap, throttleTime, catchError, shareReplay, startWith, pairwise, filter } from 'rxjs/operators';
-import { of, Subscription, asyncScheduler } from 'rxjs';
+import { of, Subscription, asyncScheduler, forkJoin } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
 import { OpenGraphService } from '../../services/opengraph.service';
@@ -10,6 +10,7 @@ import { BlockExtended, TransactionStripped } from '../../interfaces/node-api.in
 import { ApiService } from '../../services/api.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 import { BlockOverviewGraphComponent } from '../../components/block-overview-graph/block-overview-graph.component';
+import { ServicesApiServices } from '../../services/services-api.service';
 
 @Component({
   selector: 'app-block-preview',
@@ -42,7 +43,8 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     public stateService: StateService,
     private seoService: SeoService,
     private openGraphService: OpenGraphService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
   ) { }
 
   ngOnInit() {
@@ -121,21 +123,37 @@ export class BlockPreviewComponent implements OnInit, OnDestroy {
     this.overviewSubscription = block$.pipe(
       startWith(null),
       pairwise(),
-      switchMap(([prevBlock, block]) => this.apiService.getStrippedBlockTransactions$(block.id)
-        .pipe(
-          catchError((err) => {
-            this.overviewError = err;
-            this.openGraphService.fail('block-viz-' + this.rawId);
-            return of([]);
-          }),
-          switchMap((transactions) => {
-            return of({ transactions, direction: 'down' });
-          })
-        )
+      switchMap(([prevBlock, block]) => {
+          return forkJoin([
+            this.apiService.getStrippedBlockTransactions$(block.id)
+              .pipe(
+                catchError((err) => {
+                  this.overviewError = err;
+                  this.openGraphService.fail('block-viz-' + this.rawId);
+                  return of([]);
+                }),
+                switchMap((transactions) => {
+                  return of(transactions);
+                })
+              ),
+            this.stateService.env.ACCELERATOR === true && block.height > 819500 ? this.servicesApiService.getAccelerationHistory$({ blockHash: block.id }) : of([])
+          ]);
+        }
       ),
     )
-    .subscribe(({transactions, direction}: {transactions: TransactionStripped[], direction: string}) => {
+    .subscribe(([transactions, accelerations]) => {
       this.strippedTransactions = transactions;
+
+      const acceleratedInBlock = {};
+      for (const acc of accelerations) {
+        acceleratedInBlock[acc.txid] = acc;
+      }
+      for (const tx of transactions) {
+        if (acceleratedInBlock[tx.txid]) {
+          tx.acc = true;
+        }
+      }
+
       this.isLoadingOverview = false;
       if (this.blockGraph) {
         this.blockGraph.destroy();

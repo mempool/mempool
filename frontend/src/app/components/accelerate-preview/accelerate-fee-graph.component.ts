@@ -58,13 +58,15 @@ export class AccelerateFeeGraphComponent implements OnInit, OnChanges {
         fee: option.fee,
       }
     });
-    bars.push({
-      rate: this.estimate.targetFeeRate,
-      style: this.getStyle(this.estimate.targetFeeRate, maxRate, baseHeight),
-      class: 'target',
-      label: 'next block',
-      fee: this.estimate.nextBlockFee - this.estimate.txSummary.effectiveFee
-    });
+    if (this.estimate.nextBlockFee > this.estimate.txSummary.effectiveFee) {
+      bars.push({
+        rate: this.estimate.targetFeeRate,
+        style: this.getStyle(this.estimate.targetFeeRate, maxRate, baseHeight),
+        class: 'target',
+        label: 'next block',
+        fee: this.estimate.nextBlockFee - this.estimate.txSummary.effectiveFee
+      });
+    }
     bars.push({
       rate: baseRate,
       style: this.getStyle(baseRate, maxRate, 0),

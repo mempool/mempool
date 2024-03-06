@@ -69,6 +69,7 @@ export class BisqBlockComponent implements OnInit, OnDestroy {
                   this.location.replaceState(
                     this.router.createUrlTree(['/bisq/block/', hash]).toString()
                   );
+                  this.seoService.updateCanonical(this.location.path());
                   return this.bisqApiService.getBlock$(this.blockHash)
                     .pipe(catchError(this.caughtHttpError.bind(this)));
                 }),

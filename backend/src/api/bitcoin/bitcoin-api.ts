@@ -1,5 +1,5 @@
 import * as bitcoinjs from 'bitcoinjs-lib';
-import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
@@ -60,11 +60,24 @@ class BitcoinApi implements AbstractBitcoinApi {
       });
   }
 
+  async $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
+    const txs: IEsploraApi.Transaction[] = [];
+    for (const txid of txids) {
+      try {
+        const tx = await this.$getRawTransaction(txid, false, true);
+        txs.push(tx);
+      } catch (err) {
+        // skip failures
+      }
+    }
+    return txs;
+  }
+
   $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getMempoolTransactions not supported by the Bitcoin RPC API.');
   }
 
-  $getAllMempoolTransactions(lastTxid: string): Promise<IEsploraApi.Transaction[]> {
+  $getAllMempoolTransactions(lastTxid?: string, max_txs?: number): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getAllMempoolTransactions not supported by the Bitcoin RPC API.');
 
   }
@@ -193,6 +206,19 @@ class BitcoinApi implements AbstractBitcoinApi {
     const outspends: IEsploraApi.Outspend[][] = [];
     for (const tx of txId) {
       const outspend = await this.$getOutspends(tx);
+      outspends.push(outspend);
+    }
+    return outspends;
+  }
+
+  async $getBatchedOutspendsInternal(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
+    return this.$getBatchedOutspends(txId);
+  }
+
+  async $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]> {
+    const outspends: IEsploraApi.Outspend[] = [];
+    for (const outpoint of outpoints) {
+      const outspend = await this.$getOutspend(outpoint.txid, outpoint.vout);
       outspends.push(outspend);
     }
     return outspends;
@@ -356,6 +382,10 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   public startHealthChecks(): void {};
+
+  public getHealthStatus() {
+    return [];
+  }
 }
 
 export default BitcoinApi;

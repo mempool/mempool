@@ -1,6 +1,6 @@
 <div class="container-xl">
   <div class="text-center">
-    <h2>Calculator</h2>
+    <h2 i18n="shared.calculator">Calculator</h2>
   </div>
 
   <ng-container *ngIf="price$ | async; else loading">
@@ -26,7 +26,7 @@
 
         <div class="input-group input-group-lg mb-1">
           <div class="input-group-prepend">
-            <span class="input-group-text">sats</span>
+            <span class="input-group-text" i18n="shared.sats">sats</span>
           </div>
           <input type="text" class="form-control" formControlName="satoshis" (input)="transformInput('satoshis')" (click)="selectAll($event)">
           <app-clipboard [button]="true" [text]="form.get('satoshis').value" [class]="'btn btn-lg btn-secondary ml-1'"></app-clipboard>
@@ -41,7 +41,7 @@
       <div class="bitcoin-satoshis-text">
         ₿
          <span [innerHTML]="form.get('bitcoin').value | bitcoinsatoshis"></span> 
-        <span class="sats"> sats</span>
+        <span class="sats" i18n="shared.sats">sats</span>
       </div>
     </div>
 

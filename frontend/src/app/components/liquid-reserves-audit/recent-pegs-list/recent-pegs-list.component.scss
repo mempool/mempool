@@ -1,0 +1,123 @@
+.spinner-border {
+  height: 25px;
+  width: 25px;
+  margin-top: 13px;
+}
+
+tr, td, th {
+  border: 0px;
+  padding-top: 0.65rem;
+  padding-bottom: 0.6rem;
+  padding-right: 2rem;
+  .widget &.widget {
+    padding-right: 1rem;
+    @media (max-width: 510px) {
+      padding-right: 0.5rem;
+    }
+  }
+}
+
+.clear-link {
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.progress {
+  background-color: #2d3348;
+}
+
+.transaction {
+  width: 65%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+}
+.transaction.widget {
+  width: 100%;
+  
+}
+
+.address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 527px) {
+    display: none;
+  }
+}
+
+.amount {
+  width: 0%;
+}
+
+.output {
+  width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 800px) {
+    display: none;
+  }
+}
+
+.address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.timestamp {
+  width: 0%;
+  @media (max-width: 650px) {
+    display: none;
+  }
+  @media (max-width: 1000px) {
+    .relative-time {
+      display: none;
+    }
+  }
+}
+.timestamp.widget {
+  @media (min-width: 768px) AND (max-width: 1050px) {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    display: block;
+  }
+
+  @media (max-width: 510px) {
+    display: none;
+  }
+}
+
+.credit {
+  color: #7CB342;
+}
+
+.debit {
+  color: #D81B60;
+}
+
+.glow-effect {
+  animation: color-oscillation 1s ease-in-out infinite alternate;
+}
+
+@keyframes color-oscillation {
+  0% {
+      color: #777983;
+  }
+  100% {
+      color: #D81B60;
+  }
+}

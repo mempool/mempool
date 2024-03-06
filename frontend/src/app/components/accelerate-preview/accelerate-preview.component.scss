@@ -8,9 +8,6 @@
     align-items: center;
     justify-content: center;
 
-    .fee {
-      font-size: 1.2em;
-    }
     .rate {
       font-size: 0.9em;
       .symbol {
@@ -28,7 +25,10 @@
 .feerate.active {
   background-color: #105fb0 !important;
   opacity: 1;
-  border: 1px solid white !important;
+  border: 1px solid #007fff !important;
+}
+.feerate:focus {
+  box-shadow: none !important;
 }
 
 .estimateDisabled {
@@ -41,10 +41,26 @@
   margin-top: 0.5em;
 }
 
+.tab {
+  &:first-child {
+    margin-right: 1px;
+  }
+  border: solid 1px black;
+  border-bottom: none;
+  background-color: #323655;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+.tab.active {
+  background-color: #5d659d !important;
+  opacity: 1;
+}
+.tab:focus {
+  box-shadow: none !important;
+}
+
 .table-accelerator {
   tr {
-    text-wrap: wrap;
-
     td {
       padding-top: 0;
       padding-bottom: 0;
@@ -68,6 +84,7 @@
     }
     &.info {
       color: #6c757d;
+      white-space: initial;
     }
     &.amt {
       text-align: right;
@@ -76,6 +93,9 @@
     &.units {
       padding-left: 0.2em;
       white-space: nowrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 }
@@ -85,4 +105,8 @@
   flex-direction: row;
   align-items: stretch;
   margin-top: 1em;
+}
+
+.item {
+  white-space: initial;
 }

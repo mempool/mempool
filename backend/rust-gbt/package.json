@@ -1,7 +1,7 @@
 {
   "name": "gbt",
-  "version": "3.0.0-dev",
-  "description": "An inefficient re-implementation of the getBlockTemplate algorithm in Rust",
+  "version": "3.0.1",
+  "description": "An efficient re-implementation of the getBlockTemplate algorithm in Rust",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -25,7 +25,7 @@
     }
   },
   "dependencies": {
-    "@napi-rs/cli": "^2.16.1"
+    "@napi-rs/cli": "2.18.0"
   },
   "engines": {
     "node": ">= 12"

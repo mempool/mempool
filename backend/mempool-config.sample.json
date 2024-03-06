@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": false,
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
     "ENABLED": true,
@@ -16,6 +17,7 @@
     "MEMPOOL_BLOCKS_AMOUNT": 8,
     "INDEXING_BLOCKS_AMOUNT": 11000,
     "BLOCKS_SUMMARIES_INDEXING": false,
+    "GOGGLES_INDEXING": false,
     "USE_SECOND_NODE_FOR_MINFEE": false,
     "EXTERNAL_ASSETS": [],
     "EXTERNAL_MAX_RETRY": 1,
@@ -33,14 +35,17 @@
     "DISK_CACHE_BLOCK_INTERVAL": 6,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 1
+    "PRICE_UPDATES_PER_HOUR": 1,
+    "MAX_TRACKED_ADDRESSES": 100
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "ELECTRUM": {
     "HOST": "127.0.0.1",
@@ -50,7 +55,10 @@
   "ESPLORA": {
     "REST_API_URL": "http://127.0.0.1:3000",
     "UNIX_SOCKET_PATH": "/tmp/esplora-bitcoin-mainnet",
+    "BATCH_QUERY_BASE_SIZE": 1000,
     "RETRY_UNIX_SOCKET_AFTER": 30000,
+    "REQUEST_TIMEOUT": 10000,
+    "FALLBACK_TIMEOUT": 5000,
     "FALLBACK": []
   },
   "SECOND_CORE_RPC": {
@@ -58,7 +66,9 @@
     "PORT": 8332,
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 60000
+    "TIMEOUT": 60000,
+    "COOKIE": false,
+    "COOKIE_PATH": "/path/to/bitcoin/.cookie"
   },
   "DATABASE": {
     "ENABLED": true,
@@ -68,7 +78,8 @@
     "DATABASE": "mempool",
     "USERNAME": "mempool",
     "PASSWORD": "mempool",
-    "TIMEOUT": 180000
+    "TIMEOUT": 180000,
+    "PID_DIR": ""
   },
   "SYSLOG": {
     "ENABLED": true,
@@ -124,6 +135,11 @@
     "LIQUID_ONION": "http://liquidmom47f6s3m53ebfxn47p76a6tlnxib3wp6deux7wuzotdr6cyd.onion/api/v1",
     "BISQ_URL": "https://bisq.markets/api",
     "BISQ_ONION": "http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion/api"
+  },
+  "REDIS": {
+    "ENABLED": false,
+    "UNIX_SOCKET_PATH": "/tmp/redis.sock",
+    "BATCH_QUERY_BASE_SIZE": 5000
   },
   "REPLICATION": {
     "ENABLED": false,

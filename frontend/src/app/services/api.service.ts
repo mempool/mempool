@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators,
-  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit } from '../interfaces/node-api.interface';
-import { Observable, of } from 'rxjs';
+  PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights, RbfTree, BlockAudit, Acceleration, AccelerationHistoryParams, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume } from '../interfaces/node-api.interface';
+import { BehaviorSubject, Observable, catchError, filter, of, shareReplay, take, tap } from 'rxjs';
 import { StateService } from './state.service';
-import { IBackendInfo, WebsocketResponse } from '../interfaces/websocket.interface';
-import { Outspend, Transaction } from '../interfaces/electrs.interface';
+import { Transaction } from '../interfaces/electrs.interface';
 import { Conversion } from './price.service';
-import { MenuGroup } from '../interfaces/services.interface';
 import { StorageService } from './storage.service';
-
-// Todo - move to config.json
-const SERVICES_API_PREFIX = `/api/v1/services`;
+import { WebsocketResponse } from '../interfaces/websocket.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +15,8 @@ const SERVICES_API_PREFIX = `/api/v1/services`;
 export class ApiService {
   private apiBaseUrl: string; // base URL is protocol, hostname, and port
   private apiBasePath: string; // network path is /testnet, etc. or '' for mainnet
+
+  private requestCache = new Map<string, { subject: BehaviorSubject<any>, expiry: number }>;
 
   constructor(
     private httpClient: HttpClient,
@@ -36,12 +34,46 @@ export class ApiService {
       }
       this.apiBasePath = network ? '/' + network : '';
     });
+  }
 
-    if (this.stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE) {
-      this.getServicesBackendInfo$().subscribe(version => {
-        this.stateService.servicesBackendInfo$.next(version);
-      })
+  private generateCacheKey(functionName: string, params: any[]): string {
+    return functionName + JSON.stringify(params);
+  }
+
+  // delete expired cache entries
+  private cleanExpiredCache(): void {
+    this.requestCache.forEach((value, key) => {
+      if (value.expiry < Date.now()) {
+        this.requestCache.delete(key);
+      }
+    });
+  }
+
+  cachedRequest<T, F extends (...args: any[]) => Observable<T>>(
+    apiFunction: F,
+    expireAfter: number, // in ms
+    ...params: Parameters<F>
+  ): Observable<T> {
+    this.cleanExpiredCache();
+
+    const cacheKey = this.generateCacheKey(apiFunction.name, params);
+    if (!this.requestCache.has(cacheKey)) {
+      const subject = new BehaviorSubject<T | null>(null);
+      this.requestCache.set(cacheKey, { subject, expiry: Date.now() + expireAfter });
+
+      apiFunction.bind(this)(...params).pipe(
+        tap(data => {
+          subject.next(data as T);
+        }),
+        catchError((error) => {
+          subject.error(error);
+          return of(null);
+        }),
+        shareReplay(1),
+      ).subscribe();
     }
+
+    return this.requestCache.get(cacheKey).subject.asObservable().pipe(filter(val => val !== null), take(1));
   }
 
   list2HStatistics$(): Observable<OptimizedMempoolStats[]> {
@@ -96,14 +128,6 @@ export class ApiService {
     return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
   }
 
-  getOutspendsBatched$(txIds: string[]): Observable<Outspend[][]> {
-    let params = new HttpParams();
-    txIds.forEach((txId: string) => {
-      params = params.append('txId[]', txId);
-    });
-    return this.httpClient.get<Outspend[][]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/outspends', { params });
-  }
-
   getAboutPageProfiles$(): Observable<any[]> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + '/api/v1/services/sponsors');
   }
@@ -144,8 +168,52 @@ export class ApiService {
     return this.httpClient.get<RbfTree[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/' + (fullRbf ? 'fullrbf/' : '') + 'replacements/' + (after || ''));
   }
 
+  liquidPegs$(): Observable<CurrentPegs> {
+    return this.httpClient.get<CurrentPegs>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs');
+  }
+
+  pegsVolume$(): Observable<PegsVolume[]> {
+    return this.httpClient.get<PegsVolume[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/volume');
+  }
+
   listLiquidPegsMonth$(): Observable<LiquidPegs[]> {
     return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/month');
+  }
+
+  liquidReserves$(): Observable<CurrentPegs> {
+    return this.httpClient.get<CurrentPegs>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves');
+  }
+
+  listLiquidReservesMonth$(): Observable<LiquidPegs[]> {
+    return this.httpClient.get<LiquidPegs[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/month');
+  }
+
+  federationAuditSynced$(): Observable<AuditStatus> {
+    return this.httpClient.get<AuditStatus>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/status');
+  }
+
+  federationAddresses$(): Observable<FederationAddress[]> {
+    return this.httpClient.get<FederationAddress[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses');
+  }
+
+  federationUtxos$(): Observable<FederationUtxo[]> {
+    return this.httpClient.get<FederationUtxo[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos');
+  }
+
+  recentPegsList$(count: number = 0): Observable<RecentPeg[]> {
+    return this.httpClient.get<RecentPeg[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/list/' + count);
+  }
+
+  pegsCount$(): Observable<any> {
+    return this.httpClient.get<number>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/pegs/count');
+  }
+
+  federationAddressesNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/addresses/total');
+  }
+
+  federationUtxosNumber$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/liquid/reserves/utxos/total');
   }
 
   listFeaturedAssets$(): Observable<any[]> {
@@ -191,6 +259,10 @@ export class ApiService {
 
   getBlock$(hash: string): Observable<BlockExtended> {
     return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash);
+  }
+
+  getBlockDataFromTimestamp$(timestamp: number): Observable<any> {
+    return this.httpClient.get<number>(this.apiBaseUrl + this.apiBasePath + '/api/v1/mining/blocks/timestamp/' + timestamp);
   }
 
   getStrippedBlockTransactions$(hash: string): Observable<TransactionStripped[]> {
@@ -277,7 +349,7 @@ export class ApiService {
   }
 
   getEnterpriseInfo$(name: string): Observable<any> {
-    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/enterprise/info/` + name);
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + `/api/v1/services/enterprise/info/` + name);
   }
 
   getChannelByTxIds$(txIds: string[]): Observable<any[]> {
@@ -339,55 +411,5 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
         (timestamp ? `?timestamp=${timestamp}` : '')
     );
-  }
-
-  /**
-   * Services
-   */
-
-  getNodeOwner$(publicKey: string): Observable<any> {
-    let params = new HttpParams()
-      .set('node_public_key', publicKey);
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/lightning/claim/current`, { params, observe: 'response' });
-  }
-
-  getUserMenuGroups$(): Observable<MenuGroup[]> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    return this.httpClient.get<MenuGroup[]>(`${SERVICES_API_PREFIX}/account/menu`);
-  }
-
-  getUserInfo$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    return this.httpClient.get<any>(`${SERVICES_API_PREFIX}/account`);
-  }
-
-  logout$(): Observable<any> {
-    const auth = this.storageService.getAuth();
-    if (!auth) {
-      return of(null);
-    }
-
-    localStorage.removeItem('auth');
-    return this.httpClient.post(`${SERVICES_API_PREFIX}/auth/logout`, {});
-  }
-
-  getServicesBackendInfo$(): Observable<IBackendInfo> {
-    return this.httpClient.get<IBackendInfo>(`${SERVICES_API_PREFIX}/version`);
-  }
-
-  estimate$(txInput: string) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
-  }
-
-  accelerate$(txInput: string, userBid: number) {
-    return this.httpClient.post<any>(`${SERVICES_API_PREFIX}/accelerator/accelerate`, { txInput: txInput, userBid: userBid });
   }
 }

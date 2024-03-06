@@ -8,6 +8,7 @@ import { ApiService } from './api.service';
 import { take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { CacheService } from './cache.service';
+import { uncompressDeltaChange, uncompressTx } from '../shared/common.utils';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -76,15 +77,20 @@ export class WebsocketService {
 
         this.stateService.resetChainTip();
 
-        this.websocketSubject.complete();
-        this.subscription.unsubscribe();
-        this.websocketSubject = webSocket<WebsocketResponse>(
-          this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
-        );
-
-        this.startSubscription();
+        this.reconnectWebsocket();
       });
     }
+  }
+
+  reconnectWebsocket(retrying = false, hasInitData = false) {
+    console.log('reconnecting websocket');
+    this.websocketSubject.complete();
+    this.subscription.unsubscribe();
+    this.websocketSubject = webSocket<WebsocketResponse>(
+      this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
+    );
+
+    this.startSubscription(retrying, hasInitData);
   }
 
   startSubscription(retrying = false, hasInitData = false) {
@@ -178,14 +184,18 @@ export class WebsocketService {
   }
 
   startTrackMempoolBlock(block: number) {
-    this.websocketSubject.next({ 'track-mempool-block': block });
-    this.isTrackingMempoolBlock = true
-    this.trackingMempoolBlock = block
+    // skip duplicate tracking requests
+    if (this.trackingMempoolBlock !== block) {
+      this.websocketSubject.next({ 'track-mempool-block': block });
+      this.isTrackingMempoolBlock = true;
+      this.trackingMempoolBlock = block;
+    }
   }
 
   stopTrackMempoolBlock() {
     this.websocketSubject.next({ 'track-mempool-block': -1 });
-    this.isTrackingMempoolBlock = false
+    this.isTrackingMempoolBlock = false;
+    this.trackingMempoolBlock = null;
   }
 
   startTrackRbf(mode: 'all' | 'fullRbf') {
@@ -237,7 +247,7 @@ export class WebsocketService {
     this.goneOffline = true;
     this.stateService.connectionState$.next(0);
     window.setTimeout(() => {
-      this.startSubscription(true);
+      this.reconnectWebsocket(true);
     }, retryDelay);
   }
 
@@ -358,6 +368,12 @@ export class WebsocketService {
       });
     }
 
+    if (response['address-removed-transactions']) {
+      response['address-removed-transactions'].forEach((addressTransaction: Transaction) => {
+        this.stateService.mempoolRemovedTransactions$.next(addressTransaction);
+      });
+    }
+
     if (response['block-transactions']) {
       response['block-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.blockTransactions$.next(addressTransaction);
@@ -367,9 +383,9 @@ export class WebsocketService {
     if (response['projected-block-transactions']) {
       if (response['projected-block-transactions'].index == this.trackingMempoolBlock) {
         if (response['projected-block-transactions'].blockTransactions) {
-          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions);
+          this.stateService.mempoolBlockTransactions$.next(response['projected-block-transactions'].blockTransactions.map(uncompressTx));
         } else if (response['projected-block-transactions'].delta) {
-          this.stateService.mempoolBlockDelta$.next(response['projected-block-transactions'].delta);
+          this.stateService.mempoolBlockDelta$.next(uncompressDeltaChange(response['projected-block-transactions'].delta));
         }
       }
     }
@@ -397,6 +413,10 @@ export class WebsocketService {
 
     if (response.previousRetarget !== undefined) {
       this.stateService.previousRetarget$.next(response.previousRetarget);
+    }
+
+    if (response['tomahawk']) {
+      this.stateService.serverHealth$.next(response['tomahawk']);
     }
 
     if (response['git-commit']) {

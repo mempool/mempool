@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, HostBinding, NgZone, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { combineLatest, map, Observable, share, startWith, Subject, switchMap, tap } from 'rxjs';
 import { chartColors } from '../../app.constants';
 import { ApiService } from '../../services/api.service';
@@ -18,6 +18,7 @@ import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pi
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesPerISPChartComponent implements OnInit {
+  @Input() height: number = 300;
   @Input() widget: boolean = false;
 
   isLoading = true;

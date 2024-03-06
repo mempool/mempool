@@ -35,6 +35,7 @@ class Logger {
   public tags = {
     mining: 'Mining',
     ln: 'Lightning',
+    goggles: 'Goggles',
   };  
 
   // @ts-ignore
@@ -156,5 +157,7 @@ class Logger {
     return months[month] + ' ' + day + ' ' + hours + ':' + minutes + ':' + seconds;
   }
 }
+
+export type LogLevel = 'emerg' | 'alert' | 'crit' | 'err' | 'warn' | 'notice' | 'info' | 'debug';
 
 export default new Logger();

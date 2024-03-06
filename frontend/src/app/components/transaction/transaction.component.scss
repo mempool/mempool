@@ -60,8 +60,13 @@
 	top: -1px;
 }
 
+.badge.badge-accelerated {
+  background-color: #653b9c;
+  color: white;
+}
+
 .btn-small-height {
-	line-height: 1.1;
+	line-height: 1;
 }
 
 .arrow-green {
@@ -152,6 +157,16 @@
 	@media (min-width: 768px){
 		display: inline-block;
 	}
+  @media (max-width: 425px){
+		display: flex;
+    flex-direction: column;
+	}
+}
+
+.effective-fee-rating {
+  @media (max-width: 767px){
+    margin-right: 0px !important;
+  }
 }
 
 .title {
@@ -169,7 +184,7 @@
 	}
 }
 
-.details-button, .flow-toggle {
+.details-button, .flow-toggle, .accelerator-toggle {
   margin-top: -5px;
   margin-left: 10px;
 	@media (min-width: 768px){
@@ -218,8 +233,33 @@
   }
 }
 
-.link.accelerator {
-  cursor: pointer;
+.alert-purple {
+  background-color: #5c3a88;
+  width: 100%;
+}
+
+// Blinking block
+@keyframes shadowyBackground {
+  0% {
+    box-shadow: 0px 0px 20px rgba(#eba814, 1);
+  }
+  50% {
+    box-shadow: 0px 0px 20px rgba(#eba814, .3);
+  }
+  100% {
+    box-shadow: 0px 0px 20px rgba(#ffae00, 1);
+  }
+}
+
+.blink-bg {
+  color: #fff;
+  background: repeating-linear-gradient(#daad0a 0%, #daad0a 5%, #987805 100%) !important;
+  animation: shadowyBackground 1s infinite;
+  box-shadow: 0px 0px 20px rgba(#eba814, 1);
+  transition: 100ms all ease-in;
+  margin-right: 8px;
+  font-size: 16px;
+  border: 1px solid gold;
 }
 
 .eta {
@@ -234,7 +274,6 @@
 .accelerate {
   display: flex !important;
   align-self: auto;
-  margin-top: 3px;
   margin-left: auto;
   background-color: #653b9c;
   @media (max-width: 849px) {

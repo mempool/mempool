@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, NgZone, OnInit, HostBinding } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EChartsOption, PieSeriesOption } from 'echarts';
+import { EChartsOption, PieSeriesOption } from '../../graphs/echarts';
 import { merge, Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../services/seo.service';
@@ -20,6 +20,7 @@ import { isMobile } from '../../shared/common.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
+  @Input() height: number = 300;
   @Input() widget = false;
 
   miningWindowPreference: string;
@@ -162,7 +163,7 @@ export class PoolRankingComponent implements OnInit {
             const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toString() + ' PH/s' +
+                pool.lastEstimatedHashrate.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -200,7 +201,7 @@ export class PoolRankingComponent implements OnInit {
           const i = totalBlockOther.toString();
           if (this.miningWindowPreference === '24h') {
             return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
-              totalEstimatedHashrateOther.toString() + ' PH/s' +
+              totalEstimatedHashrateOther.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
               `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
           } else {
             return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +

@@ -6,6 +6,7 @@ import statisticsApi from './statistics-api';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
+  protected lastRun: number = 0;
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
@@ -23,15 +24,21 @@ class Statistics {
     setTimeout(() => {
       this.runStatistics();
       this.intervalTimer = setInterval(() => {
-        this.runStatistics();
+        this.runStatistics(true);
       }, 1 * 60 * 1000);
     }, difference);
   }
 
-  private async runStatistics(): Promise<void> {
+  public async runStatistics(skipIfRecent = false): Promise<void> {
     if (!memPool.isInSync()) {
       return;
     }
+
+    if (skipIfRecent && new Date().getTime() / 1000 - this.lastRun < 30) {
+      return;
+    }
+
+    this.lastRun = new Date().getTime() / 1000;
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();
@@ -89,6 +96,9 @@ class Statistics {
       }
     });
 
+    // get minFee and convert to sats/vb
+    const minFee = memPool.getMempoolInfo().mempoolminfee * 100000;
+
     try {
       const insertId = await statisticsApi.$create({
         added: 'NOW()',
@@ -98,6 +108,7 @@ class Statistics {
         mempool_byte_weight: totalWeight,
         total_fee: totalFee,
         fee_data: '',
+        min_fee: minFee,
         vsize_1: weightVsizeFees['1'] || 0,
         vsize_2: weightVsizeFees['2'] || 0,
         vsize_3: weightVsizeFees['3'] || 0,

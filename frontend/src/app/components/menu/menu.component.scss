@@ -9,17 +9,27 @@
   margin-left: -250px;
   box-shadow: 5px 0px 30px 0px #000;
   padding-bottom: 20px;
+  @media (max-width: 613px) {
+    top: 105px;
+  }
+}
+
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .scrollable {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .sidenav.open {
   margin-left: 0px;
   left: 0px;
   display: block;
+  background-color: #1d1f31;
 }
 
 .sidenav a, button{
@@ -45,4 +55,36 @@
 
 @media screen and (max-height: 450px) {
   .sidenav a {font-size: 18px;}
+}
+
+.badge-default {
+  background-color: black;
+}
+
+.badge-og {
+  background-color: #4a68b9;
+}
+
+.badge-pleb {
+  background-color: #3ccbe3;
+}
+
+.badge-chad {
+  background-color: #957d0b;
+}
+
+.badge-whale {
+  background-color: #653b9c;
+}
+
+.badge-silver {
+  background-color: #95a5a6;
+}
+
+.badge-gold {
+  background-color: #f1c40f;
+}
+
+.badge-platinum {
+  background-color: #653b9c;
 }
