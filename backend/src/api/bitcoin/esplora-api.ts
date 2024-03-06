@@ -1,7 +1,7 @@
 import config from '../../config';
 import axios, { AxiosResponse, isAxiosError } from 'axios';
 import http from 'http';
-import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
@@ -164,7 +164,7 @@ class FailoverRouter {
   }
 
   // sort hosts by connection quality, and update default fallback
-  private sortHosts(): FailoverHost[] {
+  public sortHosts(): FailoverHost[] {
     // sort by connection quality
     return this.hosts.slice().sort((a, b) => {
       if ((a.unreachable || a.outOfSync) === (b.unreachable || b.outOfSync)) {
@@ -348,6 +348,23 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   public startHealthChecks(): void {
     this.failoverRouter.startHealthChecks();
+  }
+
+  public getHealthStatus(): HealthCheckHost[] {
+    if (config.MEMPOOL.OFFICIAL) {
+      return this.failoverRouter.sortHosts().map(host => ({
+        host: host.host,
+        active: host === this.failoverRouter.activeHost,
+        rtt: host.rtt,
+        latestHeight: host.latestHeight || 0,
+        socket: !!host.socket,
+        outOfSync: !!host.outOfSync,
+        unreachable: !!host.unreachable,
+        checked: !!host.checked,
+      }));
+    } else {
+      return [];
+    }
   }
 }
 

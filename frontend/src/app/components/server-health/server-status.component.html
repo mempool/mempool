@@ -1,0 +1,16 @@
+<div class="tomahawk">
+  <div class="container-xl dashboard-container">
+    <div class="links">
+      <a [routerLink]='"/nodes"'>Status</a>
+      <span>Live</span>
+    </div>
+    <h1 class="dashboard-title">Live Network</h1>
+  </div>
+
+  <ng-container *ngFor="let host of hosts; trackBy: trackByFn">
+    <h5 [id]="host.host" class="hostLink">
+      <a [href]="'https://' + host.link">{{ host.link }}</a>
+    </h5>
+    <iframe class="mempoolStatus" [src]="host.statusPage"></iframe>
+  </ng-container>
+</div>

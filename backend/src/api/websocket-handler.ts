@@ -24,6 +24,9 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
+import accelerationCosts from './acceleration';
+import accelerationRepository from '../repositories/AccelerationRepository';
+import bitcoinApi from './bitcoin/bitcoin-api-factory';
 
 interface AddressTransactions {
   mempool: MempoolTransactionExtended[],
@@ -37,6 +40,7 @@ const wantable = [
   'mempool-blocks',
   'live-2h-chart',
   'stats',
+  'tomahawk',
 ];
 
 class WebsocketHandler {
@@ -121,7 +125,7 @@ class WebsocketHandler {
             for (const sub of wantable) {
               const key = `want-${sub}`;
               const wants = parsedMessage.data.includes(sub);
-              if (wants && client['wants'] && !client[key]) {
+              if (wants && !client[key]) {
                 wantNow[key] = true;
               }
               client[key] = wants;
@@ -143,6 +147,10 @@ class WebsocketHandler {
             response['vBytesPerSecond'] = this.socketData['vBytesPerSecond'];
             response['fees'] = this.socketData['fees'];
             response['da'] = this.socketData['da'];
+          }
+
+          if (wantNow['want-tomahawk']) {
+            response['tomahawk'] = JSON.stringify(bitcoinApi.getHealthStatus());
           }
 
           if (parsedMessage && parsedMessage['track-tx']) {
@@ -544,6 +552,10 @@ class WebsocketHandler {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
       }
 
+      if (client['want-tomahawk']) {
+        response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
+      }
+
       if (client['track-mempool-tx']) {
         const tx = newTransactions.find((t) => t.txid === client['track-mempool-tx']);
         if (tx) {
@@ -728,6 +740,28 @@ class WebsocketHandler {
 
     const _memPool = memPool.getMempool();
 
+    const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
+
+
+    if (isAccelerated) {
+      const blockTxs: { [txid: string]: MempoolTransactionExtended } = {};
+      for (const tx of transactions) {
+        blockTxs[tx.txid] = tx;
+      }
+      const accelerations = Object.values(mempool.getAccelerations());
+      const boostRate = accelerationCosts.calculateBoostRate(
+        accelerations.map(acc => ({ txid: acc.txid, max_bid: acc.feeDelta })),
+        transactions
+      );
+      for (const acc of accelerations) {
+        if (blockTxs[acc.txid]) {
+          const tx = blockTxs[acc.txid];
+          const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
+          accelerationRepository.$saveAcceleration(accelerationInfo, block, block.extras.pool.id);
+        }
+      }
+    }
+
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleMinedRbfTransactions(rbfTransactions);
     memPool.removeFromSpendMap(transactions);
@@ -735,7 +769,6 @@ class WebsocketHandler {
     if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
       let projectedBlocks;
       let auditMempool = _memPool;
-      const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
       // template calculation functions have mempool side effects, so calculate audits using
       // a cloned copy of the mempool if we're running a different algorithm for mempool updates
       const separateAudit = config.MEMPOOL.ADVANCED_GBT_AUDIT !== config.MEMPOOL.ADVANCED_GBT_MEMPOOL;
@@ -884,6 +917,10 @@ class WebsocketHandler {
 
       if (mBlocks && client['want-mempool-blocks']) {
         response['mempool-blocks'] = getCachedResponse('mempool-blocks', mBlocks);
+      }
+
+      if (client['want-tomahawk']) {
+        response['tomahawk'] = getCachedResponse('tomahawk', bitcoinApi.getHealthStatus());
       }
 
       if (client['track-tx']) {

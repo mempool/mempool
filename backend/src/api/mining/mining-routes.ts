@@ -8,6 +8,7 @@ import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import mining from "./mining";
 import PricesRepository from '../../repositories/PricesRepository';
+import AccelerationRepository from '../../repositories/AccelerationRepository';
 
 class MiningRoutes {
   public initRoutes(app: Application) {
@@ -34,6 +35,10 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/audit/:hash', this.$getBlockAudit)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/timestamp/:timestamp', this.$getHeightFromTimestamp)
       .get(config.MEMPOOL.API_URL_PREFIX + 'historical-price', this.$getHistoricalPrice)
+
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/pool/:slug', this.$getAccelerationsByPool)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/block/:height', this.$getAccelerationsByHeight)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/recent/:interval', this.$getRecentAccelerations)
     ;
   }
 
@@ -348,6 +353,52 @@ class MiningRoutes {
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
       res.json(audit || 'null');
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getAccelerationsByPool(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      res.status(200).send(await AccelerationRepository.$getAccelerationInfo(req.params.slug));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getAccelerationsByHeight(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 3600 * 24).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      const height = req.params.height === undefined ? undefined : parseInt(req.params.height, 10);
+      res.status(200).send(await AccelerationRepository.$getAccelerationInfo(null, height));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getRecentAccelerations(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      res.status(200).send(await AccelerationRepository.$getAccelerationInfo(null, null, req.params.interval));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

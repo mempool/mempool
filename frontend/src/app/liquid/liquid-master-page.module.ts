@@ -19,6 +19,8 @@ import { RecentPegsListComponent } from '../components/liquid-reserves-audit/rec
 import { FederationWalletComponent } from '../components/liquid-reserves-audit/federation-wallet/federation-wallet.component';
 import { FederationUtxosListComponent } from '../components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component';
 import { FederationAddressesListComponent } from '../components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
+import { ServerHealthComponent } from '../components/server-health/server-health.component';
+import { ServerStatusComponent } from '../components/server-health/server-status.component';
 
 const routes: Routes = [
   {
@@ -139,6 +141,19 @@ const routes: Routes = [
     ],
   },
 ];
+
+if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
+  routes[0].children.push({
+    path: 'nodes',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerHealthComponent
+  });
+  routes[0].children.push({
+    path: 'network',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerStatusComponent
+  });
+}
 
 @NgModule({
   imports: [

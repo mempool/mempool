@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8999,
@@ -21,7 +22,8 @@
     "DISK_CACHE_BLOCK_INTERVAL": 1,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 12
+    "PRICE_UPDATES_PER_HOUR": 12,
+    "MAX_TRACKED_ADDRESSES": 10
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"
