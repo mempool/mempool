@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { combineLatest, BehaviorSubject, Observable, catchError, of, switchMap, tap } from 'rxjs';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
 import { WebsocketService } from '../../../services/websocket.service';
@@ -21,9 +21,10 @@ export class AccelerationsListComponent implements OnInit {
   isLoading = true;
   paginationMaxSize: number;
   page = 1;
-  lastPage = 1;
+  accelerationCount: number;
   maxSize = window.innerWidth <= 767.98 ? 3 : 5;
   skeletonLines: number[] = [];
+  pageSubject: BehaviorSubject<number> = new BehaviorSubject(this.page);
 
   constructor(
     private servicesApiService: ServicesApiServices,
@@ -40,32 +41,45 @@ export class AccelerationsListComponent implements OnInit {
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     this.paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;
-
-    const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistory$({ timeframe: '1m' }));
-    this.accelerationList$ = accelerationObservable$.pipe(
-      switchMap(accelerations => {
-        if (this.pending) {
-          for (const acceleration of accelerations) {
-            acceleration.status = acceleration.status || 'accelerating';
-          }
-        }
-        for (const acc of accelerations) {
-          acc.boost = acc.feePaid - acc.baseFee - acc.vsizeFee;
-        }
-        if (this.widget) {
-          return of(accelerations.slice(-6).reverse());
-        } else {
-          return of(accelerations.reverse());
-        }
-      }),
-      catchError((err) => {
-        this.isLoading = false;
-        return of([]);
-      }),
-      tap(() => {
-        this.isLoading = false;
+    
+    this.accelerationList$ = this.pageSubject.pipe(
+      switchMap((page) => {
+        const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistoryObserveResponse$({ timeframe: '1y', page: page }));
+        return accelerationObservable$.pipe(
+          switchMap(response => {
+            let accelerations = response;
+            if (response.body) {
+              accelerations = response.body;
+              this.accelerationCount = parseInt(response.headers.get('x-total-count'), 10);
+            }
+            if (this.pending) {
+              for (const acceleration of accelerations) {
+                acceleration.status = acceleration.status || 'accelerating';
+              }
+            }
+            for (const acc of accelerations) {
+              acc.boost = acc.feePaid - acc.baseFee - acc.vsizeFee;
+            }
+            if (this.widget) {
+              return of(accelerations.slice(0, 6));
+            } else {
+              return of(accelerations);
+            }
+          }),
+          catchError((err) => {
+            this.isLoading = false;
+            return of([]);
+          }),
+          tap(() => {
+            this.isLoading = false;
+          })
+        );
       })
     );
+  }
+
+  pageChange(page: number): void {
+    this.pageSubject.next(page);
   }
 
   trackByBlock(index: number, block: BlockExtended): number {

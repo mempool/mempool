@@ -1,6 +1,7 @@
 {
   "MEMPOOL": {
     "ENABLED": true,
+    "OFFICIAL": false,
     "NETWORK": "__MEMPOOL_NETWORK__",
     "BACKEND": "__MEMPOOL_BACKEND__",
     "BLOCKS_SUMMARIES_INDEXING": true,
@@ -79,7 +80,8 @@
     "USERNAME": "__DATABASE_USERNAME__",
     "PASSWORD": "__DATABASE_PASSWORD__",
     "PID_DIR": "__DATABASE_PID_FILE__",
-    "TIMEOUT": 3000
+    "TIMEOUT": 3000,
+    "POOL_SIZE": 100
   },
   "SYSLOG": {
     "ENABLED": false,

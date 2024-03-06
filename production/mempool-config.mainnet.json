@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
     "HTTP_PORT": 8999,
@@ -21,7 +22,8 @@
     "DISK_CACHE_BLOCK_INTERVAL": 1,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 12
+    "PRICE_UPDATES_PER_HOUR": 12,
+    "MAX_TRACKED_ADDRESSES": 10
   },
   "SYSLOG" : {
     "MIN_PRIORITY": "debug"
@@ -78,15 +80,7 @@
       "http://node203.tk7.mempool.space:3000",
       "http://node204.tk7.mempool.space:3000",
       "http://node205.tk7.mempool.space:3000",
-      "http://node206.tk7.mempool.space:3000",
-      "http://node207.tk7.mempool.space:3000",
-      "http://node208.tk7.mempool.space:3000",
-      "http://node209.tk7.mempool.space:3000",
-      "http://node210.tk7.mempool.space:3000",
-      "http://node211.tk7.mempool.space:3000",
-      "http://node212.tk7.mempool.space:3000",
-      "http://node213.tk7.mempool.space:3000",
-      "http://node214.tk7.mempool.space:3000"
+      "http://node206.tk7.mempool.space:3000"
     ]
   },
   "DATABASE": {
@@ -145,15 +139,7 @@
       "node203.tk7.mempool.space",
       "node204.tk7.mempool.space",
       "node205.tk7.mempool.space",
-      "node206.tk7.mempool.space",
-      "node207.tk7.mempool.space",
-      "node208.tk7.mempool.space",
-      "node209.tk7.mempool.space",
-      "node210.tk7.mempool.space",
-      "node211.tk7.mempool.space",
-      "node212.tk7.mempool.space",
-      "node213.tk7.mempool.space",
-      "node214.tk7.mempool.space"
+      "node206.tk7.mempool.space"
     ]
   },
   "REDIS": {

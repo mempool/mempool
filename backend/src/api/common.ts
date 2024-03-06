@@ -7,6 +7,24 @@ import { isIP } from 'net';
 import transactionUtils from './transaction-utils';
 import { isPoint } from '../utils/secp256k1';
 import logger from '../logger';
+import { getVarIntLength, opcodes, parseMultisigScript } from '../utils/bitcoin-script';
+
+// Bitcoin Core default policy settings
+const TX_MAX_STANDARD_VERSION = 2;
+const MAX_STANDARD_TX_WEIGHT = 400_000;
+const MAX_BLOCK_SIGOPS_COST = 80_000;
+const MAX_STANDARD_TX_SIGOPS_COST = (MAX_BLOCK_SIGOPS_COST / 5);
+const MIN_STANDARD_TX_NONWITNESS_SIZE = 65;
+const MAX_P2SH_SIGOPS = 15;
+const MAX_STANDARD_P2WSH_STACK_ITEMS = 100;
+const MAX_STANDARD_P2WSH_STACK_ITEM_SIZE = 80;
+const MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE = 80;
+const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
+const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
+const DUST_RELAY_TX_FEE = 3;
+const MAX_OP_RETURN_RELAY = 83;
+const DEFAULT_PERMIT_BAREMULTISIG = true;
+
 export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
@@ -177,6 +195,141 @@ export class Common {
     );
   }
 
+  /**
+   * Validates most standardness rules
+   *
+   * returns true early if any standardness rule is violated, otherwise false
+   * (except for non-mandatory-script-verify-flag and p2sh script evaluation rules which are *not* enforced)
+   */
+  static isNonStandard(tx: TransactionExtended): boolean {
+    // version
+    if (tx.version > TX_MAX_STANDARD_VERSION) {
+      return true;
+    }
+
+    // tx-size
+    if (tx.weight > MAX_STANDARD_TX_WEIGHT) {
+      return true;
+    }
+
+    // tx-size-small
+    if (this.getNonWitnessSize(tx) < MIN_STANDARD_TX_NONWITNESS_SIZE) {
+      return true;
+    }
+
+    // bad-txns-too-many-sigops
+    if (tx.sigops && tx.sigops > MAX_STANDARD_TX_SIGOPS_COST) {
+      return true;
+    }
+
+    // input validation
+    for (const vin of tx.vin) {
+      if (vin.is_coinbase) {
+        // standardness rules don't apply to coinbase transactions
+        return false;
+      }
+      // scriptsig-size
+      if ((vin.scriptsig.length / 2) > MAX_STANDARD_SCRIPTSIG_SIZE) {
+        return true;
+      }
+      // scriptsig-not-pushonly
+      if (vin.scriptsig_asm) {
+        for (const op of vin.scriptsig_asm.split(' ')) {
+          if (opcodes[op] && opcodes[op] > opcodes['OP_16']) {
+            return true;
+          }
+        }
+      }
+      // bad-txns-nonstandard-inputs
+      if (vin.prevout?.scriptpubkey_type === 'p2sh') {
+        // TODO: evaluate script (https://github.com/bitcoin/bitcoin/blob/1ac627c485a43e50a9a49baddce186ee3ad4daad/src/policy/policy.cpp#L177)
+        // countScriptSigops returns the witness-scaled sigops, so divide by 4 before comparison with MAX_P2SH_SIGOPS
+        const sigops = (transactionUtils.countScriptSigops(vin.inner_redeemscript_asm) / 4);
+        if (sigops > MAX_P2SH_SIGOPS) {
+          return true;
+        }
+      } else if (['unknown', 'provably_unspendable', 'empty'].includes(vin.prevout?.scriptpubkey_type || '')) {
+        return true;
+      }
+      // TODO: bad-witness-nonstandard
+    }
+
+    // output validation
+    let opreturnCount = 0;
+    for (const vout of tx.vout) {
+      // scriptpubkey
+      if (['unknown', 'provably_unspendable', 'empty'].includes(vout.scriptpubkey_type)) {
+        // (non-standard output type)
+        return true;
+      } else if (vout.scriptpubkey_type === 'multisig') {
+        if (!DEFAULT_PERMIT_BAREMULTISIG) {
+          // bare-multisig
+          return true;
+        }
+        const mOfN = parseMultisigScript(vout.scriptpubkey_asm);
+        if (!mOfN || mOfN.n < 1 || mOfN.n > 3 || mOfN.m < 1 || mOfN.m > mOfN.n) {
+          // (non-standard bare multisig threshold)
+          return true;
+        }
+      } else if (vout.scriptpubkey_type === 'op_return') {
+        opreturnCount++;
+        if ((vout.scriptpubkey.length / 2) > MAX_OP_RETURN_RELAY) {
+          // over default datacarrier limit
+          return true;
+        }
+      }
+      // dust
+      // (we could probably hardcode this for the different output types...)
+      if (vout.scriptpubkey_type !== 'op_return') {
+        let dustSize = (vout.scriptpubkey.length / 2);
+        // add varint length overhead
+        dustSize += getVarIntLength(dustSize);
+        // add value size
+        dustSize += 8;
+        if (['v0_p2wpkh', 'v0_p2wsh', 'v1_p2tr'].includes(vout.scriptpubkey_type)) {
+          dustSize += 67;
+        } else {
+          dustSize += 148;
+        }
+        if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
+          // under minimum output size
+          console.log(`NON-STANDARD | dust | ${vout.value} | ${dustSize} ${dustSize * DUST_RELAY_TX_FEE} `, tx.txid);
+          return true;
+        }
+      }
+    }
+
+    // multi-op-return
+    if (opreturnCount > 1) {
+      return true;
+    }
+
+    // TODO: non-mandatory-script-verify-flag
+
+    return false;
+  }
+
+  static getNonWitnessSize(tx: TransactionExtended): number {
+    let weight = tx.weight;
+    let hasWitness = false;
+    for (const vin of tx.vin) {
+      if (vin.witness?.length) {
+        hasWitness = true;
+        // witness count
+        weight -= getVarIntLength(vin.witness.length);
+        for (const witness of vin.witness) {
+          // witness item size + content
+          weight -= getVarIntLength(witness.length / 2) + (witness.length / 2);
+        }
+      }
+    }
+    if (hasWitness) {
+      // marker & segwit flag
+      weight -= 2;
+    }
+    return Math.ceil(weight / 4);
+  }
+
   static setSegwitSighashFlags(flags: bigint, witness: string[]): bigint {
     for (const w of witness) {
       if (this.isDERSig(w)) {
@@ -245,6 +398,8 @@ export class Common {
       flags |= TransactionFlags.v1;
     } else if (tx.version === 2) {
       flags |= TransactionFlags.v2;
+    } else if (tx.version === 3) {
+      flags |= TransactionFlags.v3;
     }
     const reusedInputAddresses: { [address: string ]: number } = {};
     const reusedOutputAddresses: { [address: string ]: number } = {};
@@ -347,6 +502,10 @@ export class Common {
     // less than 1:5 input:output ratio
     if (tx.vin.length / tx.vout.length <= 0.2) {
       flags |= TransactionFlags.batch_payout;
+    }
+
+    if (this.isNonStandard(tx)) {
+      flags |= TransactionFlags.nonstandard;
     }
 
     return Number(flags);

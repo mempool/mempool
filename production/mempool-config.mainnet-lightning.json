@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "ENABLED": false,
     "NETWORK": "mainnet",
     "BACKEND": "esplora",
@@ -57,15 +58,7 @@
       "http://node203.tk7.mempool.space:3000",
       "http://node204.tk7.mempool.space:3000",
       "http://node205.tk7.mempool.space:3000",
-      "http://node206.tk7.mempool.space:3000",
-      "http://node207.tk7.mempool.space:3000",
-      "http://node208.tk7.mempool.space:3000",
-      "http://node209.tk7.mempool.space:3000",
-      "http://node210.tk7.mempool.space:3000",
-      "http://node211.tk7.mempool.space:3000",
-      "http://node212.tk7.mempool.space:3000",
-      "http://node213.tk7.mempool.space:3000",
-      "http://node214.tk7.mempool.space:3000"
+      "http://node206.tk7.mempool.space:3000"
     ]
   },
   "LIGHTNING": {

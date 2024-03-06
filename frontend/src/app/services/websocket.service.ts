@@ -433,6 +433,10 @@ export class WebsocketService {
       this.stateService.previousRetarget$.next(response.previousRetarget);
     }
 
+    if (response['tomahawk']) {
+      this.stateService.serverHealth$.next(response['tomahawk']);
+    }
+
     if (response['git-commit']) {
       this.stateService.backendInfo$.next(response['git-commit']);
     }

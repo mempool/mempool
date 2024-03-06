@@ -11,6 +11,7 @@
   text-align: left;
   min-width: 320px;
   pointer-events: none;
+  z-index: 11;
 
   &.clickable {
     pointer-events: all;

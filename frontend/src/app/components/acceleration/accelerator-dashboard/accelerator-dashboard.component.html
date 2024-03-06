@@ -22,12 +22,12 @@
     <div class="col">
       <div class="main-title">
         <span [attr.data-cy]="'acceleration-stats'" i18n="accelerator.acceleration-stats">Acceleration stats</span>&nbsp;
-        <span style="font-size: xx-small" i18n="mining.144-blocks">(1 month)</span>
+        <span style="font-size: xx-small" i18n="mining.3-months">(3 months)</span>
       </div>
       <div class="card-wrapper">
         <div class="card">
           <div class="card-body more-padding">
-            <app-acceleration-stats timespan="1m" [accelerations$]="minedAccelerations$"></app-acceleration-stats>
+            <app-acceleration-stats></app-acceleration-stats>
           </div>
         </div>
       </div>
@@ -59,7 +59,6 @@
               [height]="graphHeight"
               [attr.data-cy]="'acceleration-fees'"
               [widget]=true
-              [accelerations$]="accelerations$"
             ></app-acceleration-fees-graph>
           </div>
           <div class="mt-1"><a [attr.data-cy]="'acceleration-fees-view-more'" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" i18n="dashboard.view-more">View more &raquo;</a></div>
@@ -84,7 +83,7 @@
           <div class="title-link">
             <h5 class="card-title d-inline" i18n="accelerator.pending-accelerations">Active Accelerations</h5>
           </div>
-          <app-accelerations-list [attr.data-cy]="'pending-accelerations'" [widget]=true [pending]="true" [accelerations$]="pendingAccelerations$"></app-accelerations-list>
+          <app-accelerations-list [attr.data-cy]="'pending-accelerations'" [widget]=true [pending]=true [accelerations$]="pendingAccelerations$"></app-accelerations-list>
         </div>
       </div>
     </div>
