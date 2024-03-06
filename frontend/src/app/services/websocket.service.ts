@@ -32,6 +32,7 @@ export class WebsocketService {
   private isTrackingRbf: 'all' | 'fullRbf' | false = false;
   private isTrackingRbfSummary = false;
   private isTrackingAddress: string | false = false;
+  private isTrackingAddresses: string[] | false = false;
   private trackingMempoolBlock: number;
   private latestGitCommit = '';
   private onlineCheckTimeout: number;
@@ -126,6 +127,9 @@ export class WebsocketService {
           if (this.isTrackingAddress) {
             this.startTrackAddress(this.isTrackingAddress);
           }
+          if (this.isTrackingAddresses) {
+            this.startTrackAddresses(this.isTrackingAddresses);
+          }
           this.stateService.connectionState$.next(2);
         }
 
@@ -173,6 +177,16 @@ export class WebsocketService {
   stopTrackingAddress() {
     this.websocketSubject.next({ 'track-address': 'stop' });
     this.isTrackingAddress = false;
+  }
+
+  startTrackAddresses(addresses: string[]) {
+    this.websocketSubject.next({ 'track-addresses': addresses });
+    this.isTrackingAddresses = addresses;
+  }
+
+  stopTrackingAddresses() {
+    this.websocketSubject.next({ 'track-addresses': [] });
+    this.isTrackingAddresses = false;
   }
 
   startTrackAsset(asset: string) {
@@ -372,6 +386,10 @@ export class WebsocketService {
       response['address-removed-transactions'].forEach((addressTransaction: Transaction) => {
         this.stateService.mempoolRemovedTransactions$.next(addressTransaction);
       });
+    }
+
+    if (response['multi-address-transactions']) {
+      this.stateService.multiAddressTransactions$.next(response['multi-address-transactions']);
     }
 
     if (response['block-transactions']) {

@@ -6,6 +6,7 @@ import { SharedModule } from './shared/shared.module';
 
 import { StartComponent } from './components/start/start.component';
 import { AddressComponent } from './components/address/address.component';
+import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
