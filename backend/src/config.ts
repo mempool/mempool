@@ -42,6 +42,7 @@ interface IConfig {
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
     MAX_TRACKED_ADDRESSES: number;
+    CURRENCY_API_KEY: string;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -200,6 +201,7 @@ const defaults: IConfig = {
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
     'MAX_TRACKED_ADDRESSES': 1,
+    'CURRENCY_API_KEY': '',
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
