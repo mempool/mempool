@@ -16,9 +16,9 @@
   </ng-container>
 
   <a class="navbar-brand" [ngClass]="{'dual-logos': subdomain}" [routerLink]="['/' | relativeUrl]" (click)="brandClick($event)">
-  <ng-template [ngIf]="subdomain">
+  <ng-template [ngIf]="subdomain && enterpriseInfo">
     <div class="subdomain_container">
-      <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo'" class="subdomain_logo">
+      <img [src]="'/api/v1/services/enterprise/images/' + subdomain + '/logo?imageMd5=' + enterpriseInfo.imageMd5" class="subdomain_logo">
     </div>
   </ng-template>
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
