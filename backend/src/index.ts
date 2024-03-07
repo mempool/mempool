@@ -164,8 +164,8 @@ class Server {
       };
       // Run once on startup.
       refreshIcons();
-      // Matches electrs hard coded refresh interval for asset db.
-      setInterval(refreshIcons, 15000);
+      // Matches crontab refresh interval for asset db.
+      setInterval(refreshIcons, 3600_000);
     }
 
     priceUpdater.$run();
