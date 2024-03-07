@@ -46,6 +46,7 @@ import { BlockOverviewGraphComponent } from '../components/block-overview-graph/
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
 import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressComponent } from '../components/address/address.component';
+import { AddressGroupComponent } from '../components/address-group/address-group.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -53,6 +54,8 @@ import { AssetComponent } from '../components/asset/asset.component';
 import { AssetsComponent } from '../components/assets/assets.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
 import { StatusViewComponent } from '../components/status-view/status-view.component';
+import { ServerHealthComponent } from '../components/server-health/server-health.component';
+import { ServerStatusComponent } from '../components/server-health/server-status.component';
 import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
@@ -145,12 +148,15 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
     AssetComponent,
     AssetsComponent,
     StatusViewComponent,
+    ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,
@@ -271,12 +277,15 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
     AssetComponent,
     AssetsComponent,
     StatusViewComponent,
+    ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,

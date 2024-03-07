@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": true,
     "NETWORK": "liquid",
     "BACKEND": "esplora",
     "HTTP_PORT": 8994,

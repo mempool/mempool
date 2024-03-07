@@ -155,11 +155,17 @@ class Server {
     }
 
     if (Common.isLiquid()) {
-      try {
-        icons.loadIcons();
-      } catch (e) {
-        logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
-      }
+      const refreshIcons = () => {
+        try {
+          icons.loadIcons();
+        } catch (e) {
+          logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
+        }
+      };
+      // Run once on startup.
+      refreshIcons();
+      // Matches crontab refresh interval for asset db.
+      setInterval(refreshIcons, 3600_000);
     }
 
     priceUpdater.$run();

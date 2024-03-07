@@ -6,10 +6,13 @@ import { SharedModule } from './shared/shared.module';
 
 import { StartComponent } from './components/start/start.component';
 import { AddressComponent } from './components/address/address.component';
+import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
 import { RbfList } from './components/rbf-list/rbf-list.component';
+import { ServerHealthComponent } from './components/server-health/server-health.component';
+import { ServerStatusComponent } from './components/server-health/server-status.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -95,6 +98,19 @@ const routes: Routes = [
     ],
   }
 ];
+
+if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
+  routes[0].children.push({
+    path: 'monitoring',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerHealthComponent
+  });
+  routes[0].children.push({
+    path: 'nodes',
+    data: { networks: ['bitcoin', 'liquid'] },
+    component: ServerStatusComponent
+  });
+}
 
 @NgModule({
   imports: [

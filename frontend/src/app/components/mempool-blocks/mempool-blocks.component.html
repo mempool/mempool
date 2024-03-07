@@ -1,7 +1,7 @@
 <ng-container *ngIf="(loadingBlocks$ | async) === false; else loadingBlocks" [class.minimal]="minimal">
   <div class="mempool-blocks-container" [class.time-ltr]="timeLtr" [style.--block-size]="blockWidth+'px'" *ngIf="(difficultyAdjustments$ | async) as da;">
-    <div class="flashing">
-      <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks$ | async" let-i="index" [ngForTrackBy]="trackByFn">
+    <div class="flashing" *ngIf="(mempoolBlocks$ | async) as mempoolBlocks">
+      <ng-template ngFor let-projectedBlock [ngForOf]="mempoolBlocks" let-i="index" [ngForTrackBy]="trackByFn">
         <div
           *ngIf="minimal && spotlight > 0 && spotlight === i + 1"
           class="spotlight-bottom"

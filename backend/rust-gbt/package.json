@@ -25,7 +25,7 @@
     }
   },
   "dependencies": {
-    "@napi-rs/cli": "2.16.1"
+    "@napi-rs/cli": "2.18.0"
   },
   "engines": {
     "node": ">= 12"

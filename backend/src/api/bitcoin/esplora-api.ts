@@ -1,7 +1,7 @@
 import config from '../../config';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, isAxiosError } from 'axios';
 import http from 'http';
-import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
+import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
 import { IEsploraApi } from './esplora-api.interface';
 import logger from '../../logger';
 import { Common } from '../common';
@@ -10,6 +10,7 @@ interface FailoverHost {
   host: string,
   rtts: number[],
   rtt: number,
+  timedOut?: boolean,
   failures: number,
   latestHeight?: number,
   socket?: boolean,
@@ -17,6 +18,7 @@ interface FailoverHost {
   unreachable?: boolean,
   preferred?: boolean,
   checked: boolean,
+  lastChecked?: number,
 }
 
 class FailoverRouter {
@@ -108,14 +110,20 @@ class FailoverRouter {
           host.rtts = [];
           host.rtt = Infinity;
         }
+        host.timedOut = false;
       } catch (e) {
         host.outOfSync = true;
         host.unreachable = true;
         host.rtts = [];
         host.rtt = Infinity;
+        if (isAxiosError(e) && (e.code === 'ECONNABORTED' || e.code === 'ETIMEDOUT')) {
+          host.timedOut = true;
+        } else {
+          host.timedOut = false;
+        }
       }
       host.checked = true;
-      
+      host.lastChecked = Date.now();
 
       // switch if the current host is out of sync or significantly slower than the next best alternative
       const rankOrder = this.sortHosts();
@@ -143,7 +151,7 @@ class FailoverRouter {
 
   private formatRanking(index: number, host: FailoverHost, active: FailoverHost, maxHeight: number): string {
     const heightStatus = !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅'));
-    return `${host === active ? '⭐️' : '  '} ${host.rtt < Infinity ? Math.round(host.rtt).toString().padStart(5, ' ') + 'ms' : '    -  '} ${!host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅')} | block: ${host.latestHeight || '??????'} ${heightStatus} | ${host.host} ${host === active ? '⭐️' : '  '}`;
+    return `${host === active ? '⭐️' : '  '} ${host.rtt < Infinity ? Math.round(host.rtt).toString().padStart(5, ' ') + 'ms' : (host.timedOut ? '  ⌛️💥 ' : '    -  ')} ${!host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅')} | block: ${host.latestHeight || '??????'} ${heightStatus} | ${host.host} ${host === active ? '⭐️' : '  '}`;
   }
 
   private updateFallback(): FailoverHost[] {
@@ -157,7 +165,7 @@ class FailoverRouter {
   }
 
   // sort hosts by connection quality, and update default fallback
-  private sortHosts(): FailoverHost[] {
+  public sortHosts(): FailoverHost[] {
     // sort by connection quality
     return this.hosts.slice().sort((a, b) => {
       if ((a.unreachable || a.outOfSync) === (b.unreachable || b.outOfSync)) {
@@ -341,6 +349,24 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   public startHealthChecks(): void {
     this.failoverRouter.startHealthChecks();
+  }
+
+  public getHealthStatus(): HealthCheckHost[] {
+    if (config.MEMPOOL.OFFICIAL) {
+      return this.failoverRouter.sortHosts().map(host => ({
+        host: host.host,
+        active: host === this.failoverRouter.activeHost,
+        rtt: host.rtt,
+        latestHeight: host.latestHeight || 0,
+        socket: !!host.socket,
+        outOfSync: !!host.outOfSync,
+        unreachable: !!host.unreachable,
+        checked: !!host.checked,
+        lastChecked: host.lastChecked || 0,
+      }));
+    } else {
+      return [];
+    }
   }
 }
 

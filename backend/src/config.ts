@@ -5,6 +5,7 @@ const configFromFile = require(
 interface IConfig {
   MEMPOOL: {
     ENABLED: boolean;
+    OFFICIAL: boolean;
     NETWORK: 'mainnet' | 'testnet' | 'signet' | 'liquid' | 'liquidtestnet';
     BACKEND: 'esplora' | 'electrum' | 'none';
     HTTP_PORT: number;
@@ -103,6 +104,7 @@ interface IConfig {
     PASSWORD: string;
     TIMEOUT: number;
     PID_DIR: string;
+    POOL_SIZE: number;
   };
   SYSLOG: {
     ENABLED: boolean;
@@ -161,6 +163,7 @@ interface IConfig {
 const defaults: IConfig = {
   'MEMPOOL': {
     'ENABLED': true,
+    'OFFICIAL': false,
     'NETWORK': 'mainnet',
     'BACKEND': 'none',
     'HTTP_PORT': 8999,
@@ -240,6 +243,7 @@ const defaults: IConfig = {
     'PASSWORD': 'mempool',
     'TIMEOUT': 180000,
     'PID_DIR': '',
+    'POOL_SIZE': 100,
   },
   'SYSLOG': {
     'ENABLED': true,
