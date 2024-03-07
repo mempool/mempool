@@ -8,6 +8,7 @@ import BitflyerApi from './price-feeds/bitflyer-api';
 import CoinbaseApi from './price-feeds/coinbase-api';
 import GeminiApi from './price-feeds/gemini-api';
 import KrakenApi from './price-feeds/kraken-api';
+import FreeCurrencyApi from './price-feeds/free-currency-api';
 
 export interface PriceFeed {
   name: string;
@@ -23,6 +24,16 @@ export interface PriceHistory {
   [timestamp: number]: ApiPrice;
 }
 
+export interface ConversionFeed {
+  $getQuota(): Promise<any>;
+  $fetchLatestConversionRates(): Promise<any>;
+  $fetchConversionRates(date: string): Promise<any>;
+}
+
+export interface ConversionRates {
+  [currency: string]: number
+}
+
 function getMedian(arr: number[]): number {
   const sortedArr = arr.slice().sort((a, b) => a - b);
   const mid = Math.floor(sortedArr.length / 2);
@@ -33,6 +44,8 @@ function getMedian(arr: number[]): number {
 
 class PriceUpdater {
   public historyInserted = false;
+  private additionalCurrenciesHistoryInserted = false;
+  private additionalCurrenciesHistoryRunning = false;
   private timeBetweenUpdatesMs = 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
   private cyclePosition = -1;
   private firstRun = true;
@@ -42,6 +55,10 @@ class PriceUpdater {
   private feeds: PriceFeed[] = [];
   private currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
   private latestPrices: ApiPrice;
+  private currencyConversionFeed: ConversionFeed | undefined;
+  private newCurrencies: string[] = ['BGN', 'BRL', 'CNY', 'CZK', 'DKK', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'ZAR'];
+  private lastTimeConversionsRatesFetched: number = 0;
+  private latestConversionsRatesFromFeed: ConversionRates = {};
   private ratesChangedCallback: ((rates: ApiPrice) => void) | undefined;
 
   constructor() {
@@ -53,6 +70,7 @@ class PriceUpdater {
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
 
+    this.currencyConversionFeed = new FreeCurrencyApi(config.MEMPOOL.CURRENCY_API_KEY);
     this.setCyclePosition();
   }
 
@@ -70,6 +88,32 @@ class PriceUpdater {
       CHF: -1,
       AUD: -1,
       JPY: -1,
+      BGN: -1,
+      BRL: -1,
+      CNY: -1,
+      CZK: -1,
+      DKK: -1,
+      HKD: -1,
+      HRK: -1,
+      HUF: -1,
+      IDR: -1,
+      ILS: -1,
+      INR: -1,
+      ISK: -1,
+      KRW: -1,
+      MXN: -1,
+      MYR: -1,
+      NOK: -1,
+      NZD: -1,
+      PHP: -1,
+      PLN: -1,
+      RON: -1,
+      RUB: -1,
+      SEK: -1,
+      SGD: -1,
+      THB: -1,
+      TRY: -1,
+      ZAR: -1,
     };
   }
 
@@ -99,12 +143,27 @@ class PriceUpdater {
     if ((Math.round(new Date().getTime() / 1000) - this.lastHistoricalRun) > 3600 * 24) {
       // Once a day, look for missing prices (could happen due to network connectivity issues)
       this.historyInserted = false;
+      this.additionalCurrenciesHistoryInserted = false;
+    }
+
+    if (config.MEMPOOL.CURRENCY_API_KEY && this.currencyConversionFeed && (Math.round(new Date().getTime() / 1000) - this.lastTimeConversionsRatesFetched) > 3600 * 24) {
+      // Once a day, fetch conversion rates from api: we don't need more granularity for fiat currencies and have a limited number of requests
+      try {
+        this.latestConversionsRatesFromFeed = await this.currencyConversionFeed.$fetchLatestConversionRates();
+        this.lastTimeConversionsRatesFetched = Math.round(new Date().getTime() / 1000);
+        logger.debug(`Fetched currencies conversion rates from external API: ${JSON.stringify(this.latestConversionsRatesFromFeed)}`);
+      } catch (e) {
+        logger.err(`Cannot fetch conversion rates from the API. Reason: ${(e instanceof Error ? e.message : e)}`);
+      }
     }
 
     try {
       await this.$updatePrice();
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
+      }
+      if (this.additionalCurrenciesHistoryInserted === false && config.DATABASE.ENABLED === true && config.MEMPOOL.CURRENCY_API_KEY && !this.additionalCurrenciesHistoryRunning) {
+        await this.$insertMissingAdditionalPrices();
       }
     } catch (e: any) {
       logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
@@ -182,6 +241,14 @@ class PriceUpdater {
         this.latestPrices[currency] = -1;
       } else {
         this.latestPrices[currency] = Math.round(getMedian(prices));
+      }
+    }
+
+    if (config.MEMPOOL.CURRENCY_API_KEY && this.latestPrices.USD > 0 && Object.keys(this.latestConversionsRatesFromFeed).length > 0) {
+      for (const conversionCurrency of this.newCurrencies) {
+        if (this.latestConversionsRatesFromFeed[conversionCurrency] > 0 && this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency] < MAX_PRICES[conversionCurrency]) {
+          this.latestPrices[conversionCurrency] = Math.round(this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency]);
+        }
       }
     }
 
@@ -319,6 +386,75 @@ class PriceUpdater {
     } else {
       logger.debug(`Inserted ${totalInserted} ${type === 'day' ? 'dai' : 'hour'}ly historical prices into the db`, logger.tags.mining);
     }
+  }
+
+  /**
+   * Find missing prices for additional currencies and insert them in the database
+   * We calculate the additional prices from the USD price and the conversion rates
+   */
+  private async $insertMissingAdditionalPrices(): Promise<void> {
+    this.additionalCurrenciesHistoryRunning = true;
+    const priceTimesToFill = await PricesRepository.$getPricesTimesWithMissingFields();
+    if (priceTimesToFill.length === 0) {
+      return;
+    }
+    logger.debug(`Fetching missing conversion rates from external API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
+
+    let conversionRates: { [timestamp: number]: ConversionRates } = {};
+    let totalInserted = 0;
+
+    let requestCounter = 0;
+
+    for (const priceTime of priceTimesToFill) {
+      const missingLegacyCurrencies = this.getMissingLegacyCurrencies(priceTime); // In the case a legacy currency (EUR, GBP, CAD, CHF, AUD, JPY)
+      const year = new Date(priceTime.time * 1000).getFullYear();                 // is missing, we use the same process as for the new currencies
+      const yearTimestamp = new Date(year, 0, 1).getTime() / 1000;
+      if (conversionRates[yearTimestamp] === undefined) {
+        try {
+          if (requestCounter >= 10) {
+            await new Promise(resolve => setTimeout(resolve, 60_000)); // avoid getting 429'd
+            requestCounter = 0;
+          }
+          conversionRates[yearTimestamp] = await this.currencyConversionFeed?.$fetchConversionRates(`${year}-01-01`);
+          ++requestCounter;
+        } catch (e) {
+          logger.err(`Cannot fetch conversion rates from the API for year ${year}. Reason: ${(e instanceof Error ? e.message : e)}`);
+        }
+      }
+
+      if (conversionRates[yearTimestamp] === undefined) {
+        continue;
+      }
+
+      const prices: ApiPrice = this.getEmptyPricesObj();
+      
+      let willInsert = false;
+      for (const conversionCurrency of this.newCurrencies.concat(missingLegacyCurrencies)) {
+        if (conversionRates[yearTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
+          prices[conversionCurrency] = year >= 2013 ? Math.round(priceTime.USD * conversionRates[yearTimestamp][conversionCurrency]) : Math.round(priceTime.USD * conversionRates[yearTimestamp][conversionCurrency] * 100) / 100;
+          willInsert = true;
+        }
+      }
+      
+      if (willInsert) {
+        await PricesRepository.$saveAdditionalCurrencyPrices(priceTime.time, prices, missingLegacyCurrencies);
+        ++totalInserted;
+      }
+    }
+    logger.debug(`Inserted ${totalInserted} missing additional currency prices into the db`, logger.tags.mining);
+    this.additionalCurrenciesHistoryInserted = true;
+    this.additionalCurrenciesHistoryRunning = false;
+  }
+
+  // Helper function to get legacy missing currencies in a row (EUR, GBP, CAD, CHF, AUD, JPY)
+  private getMissingLegacyCurrencies(priceTime: any): string[] {
+    const missingCurrencies: string[] = [];
+    ['eur', 'gbp', 'cad', 'chf', 'aud', 'jpy'].forEach(currency => {
+      if (priceTime[`${currency}_missing`]) {
+        missingCurrencies.push(currency.toUpperCase());
+      }
+    });
+    return missingCurrencies;
   }
 }
 
