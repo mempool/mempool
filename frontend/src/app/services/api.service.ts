@@ -405,7 +405,7 @@ export class ApiService {
     );
   }
 
-  getHistoricalPrice$(timestamp: number | undefined): Observable<Conversion> {
+  getHistoricalPrice$(timestamp: number | undefined, currency?: string): Observable<Conversion> {
     if (this.stateService.isAnyTestnet()) {
       return of({
         prices: [],
@@ -416,12 +416,47 @@ export class ApiService {
           USDCHF: 0,
           USDAUD: 0,
           USDJPY: 0,
+          USDBGN: 0,
+          USDBRL: 0,
+          USDCNY: 0,
+          USDCZK: 0,
+          USDDKK: 0,
+          USDHKD: 0,
+          USDHRK: 0,
+          USDHUF: 0,
+          USDIDR: 0,
+          USDILS: 0,
+          USDINR: 0,
+          USDISK: 0,
+          USDKRW: 0,
+          USDMXN: 0,
+          USDMYR: 0,
+          USDNOK: 0,
+          USDNZD: 0,
+          USDPHP: 0,
+          USDPLN: 0,
+          USDRON: 0,
+          USDRUB: 0,
+          USDSEK: 0,
+          USDSGD: 0,
+          USDTHB: 0,
+          USDTRY: 0,
+          USDZAR: 0,
         }
       });
     }
+    const queryParams = [];
+
+    if (timestamp) {
+      queryParams.push(`timestamp=${timestamp}`);
+    }
+
+    if (currency) {
+      queryParams.push(`currency=${currency}`);
+    }
     return this.httpClient.get<Conversion>(
-      this.apiBaseUrl + this.apiBasePath + '/api/v1/historical-price' +
-        (timestamp ? `?timestamp=${timestamp}` : '')
+      `${this.apiBaseUrl}${this.apiBasePath}/api/v1/historical-price` +
+        (queryParams.length > 0 ? `?${queryParams.join('&')}` : '')
     );
   }
 }

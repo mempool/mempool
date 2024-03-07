@@ -315,7 +315,7 @@ class PricesRepository {
     return rates[0] as ApiPrice;
   }
 
-  public async $getNearestHistoricalPrice(timestamp: number | undefined): Promise<Conversion | null> {
+  public async $getNearestHistoricalPrice(timestamp: number | undefined, currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`
         SELECT ${ApiPriceFields}
@@ -379,7 +379,23 @@ class PricesRepository {
           USDCHF: computeFx(latestPrice.USD, latestPrice.CHF),
           USDAUD: computeFx(latestPrice.USD, latestPrice.AUD),
           USDJPY: computeFx(latestPrice.USD, latestPrice.JPY),
+      };
+
+      if (currency) {
+        if (!latestPrice[currency]) {
+          return null;
+        }
+        const filteredRates = rates.map((rate: any) => {
+          return {
+            time: rate.time,
+            [currency]: rate[currency]
+          };
+        });
+        return {
+          prices: filteredRates as ApiPrice[],
+          exchangeRates: exchangeRates
         };
+      }
 
       return {
         prices: rates as ApiPrice[],
@@ -391,7 +407,7 @@ class PricesRepository {
     }
   }
 
-  public async $getHistoricalPrices(): Promise<Conversion | null> {
+  public async $getHistoricalPrices(currency?: string): Promise<Conversion | null> {
     try {
       const [rates] = await DB.query(`
         SELECT ${ApiPriceFields}
@@ -411,7 +427,7 @@ class PricesRepository {
       const computeFx = (usd: number, other: number): number =>
         Math.round(Math.max(other, 0) / Math.max(usd, 1) * 100) / 100;
       
-        const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
+      const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
@@ -452,7 +468,23 @@ class PricesRepository {
           USDCHF: computeFx(latestPrice.USD, latestPrice.CHF),
           USDAUD: computeFx(latestPrice.USD, latestPrice.AUD),
           USDJPY: computeFx(latestPrice.USD, latestPrice.JPY),
+      };
+
+      if (currency) {
+        if (!latestPrice[currency]) {
+          return null;
+        }
+        const filteredRates = rates.map((rate: any) => {
+          return {
+            time: rate.time,
+            [currency]: rate[currency]
+          };
+        });
+        return {
+          prices: filteredRates as ApiPrice[],
+          exchangeRates: exchangeRates
         };
+      }
 
       return {
         prices: rates as ApiPrice[],
