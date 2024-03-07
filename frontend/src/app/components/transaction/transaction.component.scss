@@ -149,6 +149,10 @@
 		.btn {
 			display: block;
 		}
+
+    &.wrap-cell {
+      white-space: normal;
+    }
 	}
 }
 

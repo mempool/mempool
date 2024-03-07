@@ -8,10 +8,11 @@ import {
   retryWhen,
   delay,
   mergeMap,
-  tap
+  tap,
+  map
 } from 'rxjs/operators';
 import { Transaction } from '../../interfaces/electrs.interface';
-import { of, merge, Subscription, Observable, Subject, from, throwError } from 'rxjs';
+import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest } from 'rxjs';
 import { StateService } from '../../services/state.service';
 import { CacheService } from '../../services/cache.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -27,6 +28,21 @@ import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { EnterpriseService } from '../../services/enterprise.service';
+
+interface Pool {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface AuditStatus {
+  seen: boolean;
+  expected: boolean;
+  added: boolean;
+  delayed?: number;
+  accelerated: boolean;
+  conflict: boolean;
+}
 
 @Component({
   selector: 'app-transaction',
@@ -58,6 +74,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   urlFragmentSubscription: Subscription;
   mempoolBlocksSubscription: Subscription;
   blocksSubscription: Subscription;
+  miningSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -67,11 +84,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   accelerationInfo: Acceleration | null = null;
   sigops: number | null;
   adjustedVsize: number | null;
+  pool: Pool | null;
+  auditStatus: AuditStatus | null;
   showCpfpDetails = false;
   fetchCpfp$ = new Subject<string>();
   fetchRbfHistory$ = new Subject<string>();
   fetchCachedTx$ = new Subject<string>();
   fetchAcceleration$ = new Subject<string>();
+  fetchMiningInfo$ = new Subject<{ hash: string, height: number, txid: string }>();
   isCached: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
@@ -100,6 +120,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   acceleratorAvailable: boolean = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
   showAccelerationSummary = false;
   scrollIntoAccelPreview = false;
+  auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
 
   @ViewChild('graphContainer')
   graphContainer: ElementRef;
@@ -266,6 +287,52 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    this.miningSubscription = this.fetchMiningInfo$.pipe(
+      filter((target) => target.txid === this.txId),
+      tap(() => {
+        this.pool = null;
+        this.auditStatus = null;
+      }),
+      switchMap(({ hash, height, txid }) => {
+        const foundBlock = this.cacheService.getCachedBlock(height) || null;
+        const auditAvailable = this.isAuditAvailable(height);
+        return combineLatest([
+          foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
+            map(block => {
+              return block.extras.pool;
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          ),
+          auditAvailable ? this.apiService.getBlockAudit$(hash).pipe(
+            map(audit => {
+              const isAdded = audit.addedTxs.includes(txid);
+              const isAccelerated = audit.acceleratedTxs.includes(txid);
+              const isConflict = audit.fullrbfTxs.includes(txid);
+              const isExpected = audit.template.some(tx => tx.txid === txid);
+              return {
+                seen: isExpected || !(isAdded || isConflict),
+                expected: isExpected,
+                added: isAdded,
+                conflict: isConflict,
+                accelerated: isAccelerated,
+              };
+            }),
+            catchError(() => {
+              return of(null);
+            })
+          ) : of(null)
+        ]);
+      }),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe(([pool, auditStatus]) => {
+      this.pool = pool;
+      this.auditStatus = auditStatus;
+    });
+
     this.mempoolPositionSubscription = this.stateService.mempoolTxPosition$.subscribe(txPosition => {
       this.now = Date.now();
       if (txPosition && txPosition.txid === this.txId && txPosition.position) {
@@ -396,6 +463,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           } else {
             this.fetchAcceleration$.next(tx.status.block_hash);
+            this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
           }
 
@@ -453,6 +521,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.audioService.playSound('magic');
         }
         this.fetchAcceleration$.next(block.id);
+        this.fetchMiningInfo$.next({ hash: block.id, height: block.height, txid: this.tx.txid });
       }
     });
 
@@ -606,6 +675,29 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.featuresEnabled = this.segwitEnabled || this.taprootEnabled || this.rbfEnabled;
   }
 
+  isAuditAvailable(blockHeight: number): boolean {
+    if (!this.auditEnabled) {
+      return false;
+    }
+    switch (this.stateService.network) {
+      case 'testnet':
+        if (blockHeight < this.stateService.env.TESTNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
+      case 'signet':
+        if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
+      default:
+        if (blockHeight < this.stateService.env.MAINNET_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+    }
+    return true;
+  }
+
   resetTransaction() {
     this.error = undefined;
     this.tx = null;
@@ -625,6 +717,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accelerationInfo = null;
     this.txInBlockIndex = null;
     this.mempoolPosition = null;
+    this.pool = null;
+    this.auditStatus = null;
     document.body.scrollTo(0, 0);
     this.leaveTransaction();
   }
@@ -712,6 +806,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolPositionSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
+    this.miningSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 }
