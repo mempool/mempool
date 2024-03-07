@@ -481,7 +481,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         totalFees += acc.boost_cost;
       }
       this.oobFees = totalFees;
-      if (block.height === this.block.height && this.blockAudit) {
+      if (block && this.block && this.blockAudit && block?.height === this.block?.height) {
         this.blockAudit.feeDelta = this.blockAudit.expectedFees > 0 ? (this.blockAudit.expectedFees - (this.block.extras.totalFees + this.oobFees)) / this.blockAudit.expectedFees : 0;
       }
     },
