@@ -26,7 +26,7 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.hostSubscription = this.stateService.serverHealth$.pipe(
       map((hosts) => {
-        const subpath = window.location.pathname.slice(0, -8);
+        const subpath = window.location.pathname.slice(0, -6);
         for (const host of hosts) {
           let statusUrl = '';
           let linkHost = '';
@@ -66,7 +66,7 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
     this.tip$ = this.stateService.chainTip$;
-    this.websocketService.want(['blocks', 'tomahawk']);
+    this.websocketService.want(['mempool-blocks', 'stats', 'blocks', 'tomahawk']);
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {

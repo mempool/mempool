@@ -49,4 +49,5 @@ export interface HealthCheckHost {
   outOfSync: boolean;
   unreachable: boolean;
   checked: boolean;
+  lastChecked: number;
 }

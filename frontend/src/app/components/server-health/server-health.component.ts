@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, SecurityContext } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '../../services/websocket.service';
 import { Observable, Subject, map } from 'rxjs';
 import { StateService } from '../../services/state.service';
@@ -14,17 +14,20 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class ServerHealthComponent implements OnInit {
   hosts$: Observable<HealthCheckHost[]>;
   tip$: Subject<number>;
+  interval: number;
+  now: number = Date.now();
 
   constructor(
     private websocketService: WebsocketService,
     private stateService: StateService,
+    private cd: ChangeDetectorRef,
     public sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
     this.hosts$ = this.stateService.serverHealth$.pipe(
       map((hosts) => {
-        const subpath = window.location.pathname.slice(0, -6);
+        const subpath = window.location.pathname.slice(0, -11);
         for (const host of hosts) {
           let statusUrl = '';
           let linkHost = '';
@@ -44,11 +47,25 @@ export class ServerHealthComponent implements OnInit {
       })
     );
     this.tip$ = this.stateService.chainTip$;
-    this.websocketService.want(['blocks', 'tomahawk']);
+    this.websocketService.want(['mempool-blocks', 'stats', 'blocks', 'tomahawk']);
+
+    this.interval = window.setInterval(() => {
+      this.now = Date.now();
+      this.cd.markForCheck();
+    }, 1000);
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {
     return host.host;
+  }
+
+  getLastUpdateSeconds(host: HealthCheckHost): string {
+    if (host.lastChecked) {
+      const seconds = Math.ceil((this.now - host.lastChecked) / 1000);
+      return `${seconds} second${seconds > 1 ? 's' : '  '} ago`;
+    } else {
+      return '~';
+    }
   }
 
   private parseFlag(host: string): string {

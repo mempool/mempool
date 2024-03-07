@@ -1,21 +1,17 @@
 .tomahawk {
   .links {
-    float: right;
     text-align: right;
-    margin-top: 1em;
+    margin-inline-end: 1em;
 
     a, span {
       margin-left: 1em;
     }
   }
 
-  .dashboard-title {
-    text-align: left;
-  }
-
   .mempoolStatus {
     width: 100%;
     height: 270px;
+    border: none;
   }
 
   .hostLink {
