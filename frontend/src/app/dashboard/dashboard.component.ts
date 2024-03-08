@@ -234,7 +234,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                   acc.unshift(stats);
                   acc = acc.slice(0, 120);
                   return acc;
-                }, mempoolStats)
+                }, (mempoolStats || []))
               ),
             of(mempoolStats)
           );
