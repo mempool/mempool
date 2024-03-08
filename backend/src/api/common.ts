@@ -293,7 +293,6 @@ export class Common {
         }
         if (vout.value < (dustSize * DUST_RELAY_TX_FEE)) {
           // under minimum output size
-          console.log(`NON-STANDARD | dust | ${vout.value} | ${dustSize} ${dustSize * DUST_RELAY_TX_FEE} `, tx.txid);
           return true;
         }
       }
@@ -456,6 +455,8 @@ export class Common {
       flags |= TransactionFlags.no_rbf;
     }
     let hasFakePubkey = false;
+    let P2WSHCount = 0;
+    let olgaSize = 0;
     for (const vout of tx.vout) {
       switch (vout.scriptpubkey_type) {
         case 'p2pk': {
@@ -482,6 +483,20 @@ export class Common {
       }
       if (vout.scriptpubkey_address) {
         reusedOutputAddresses[vout.scriptpubkey_address] = (reusedOutputAddresses[vout.scriptpubkey_address] || 0) + 1;
+      }
+      if (vout.scriptpubkey_type === 'v0_p2wsh') {
+        if (!P2WSHCount) {
+          olgaSize = parseInt(vout.scriptpubkey.slice(4, 8), 16);
+        }
+        P2WSHCount++;
+        if (P2WSHCount === Math.ceil((olgaSize + 2) / 32)) {
+          const nullBytes = (P2WSHCount * 32) - olgaSize - 2;
+          if (vout.scriptpubkey.endsWith(''.padEnd(nullBytes * 2, '0'))) {
+            flags |= TransactionFlags.fake_scripthash;
+          }
+        }
+      } else {
+        P2WSHCount = 0;
       }
       outValues[vout.value || Math.random()] = (outValues[vout.value || Math.random()] || 0) + 1;
     }
