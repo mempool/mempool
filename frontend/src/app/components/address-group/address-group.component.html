@@ -1,0 +1,24 @@
+<div class="frame {{ screenSize }}" [class.liquid-address]="network === 'liquid' || network === 'liquidtestnet'">
+  <div class="heading">
+    <app-svg-images name="officialMempoolSpace" style="width: 144px; height: 36px" width="500" height="126" viewBox="0 0 500 126"></app-svg-images>
+    <h3 i18n="addresses.balance">Balances</h3>
+    <div class="spacer"></div>
+  </div>
+  <table class="table table-borderless table-striped table-fixed">
+    <tr>
+      <th class="address" i18n="addresses.total">Total</th>
+      <th class="btc"><app-amount [satoshis]="balance" [digitsInfo]="digitsInfo" [noFiat]="true"></app-amount></th>
+      <th class="fiat"><app-fiat [value]="balance"></app-fiat></th>
+    </tr>
+    <tr *ngFor="let address of page">
+      <td class="address">
+        <app-truncate [text]="address" [lastChars]="8" [link]="['/address/' | relativeUrl, address]" [external]="true"></app-truncate>
+      </td>
+      <td class="btc"><app-amount [satoshis]="addresses[address]" [digitsInfo]="digitsInfo" [noFiat]="true"></app-amount></td>
+      <td class="fiat"><app-fiat [value]="addresses[address]"></app-fiat></td>
+    </tr>
+  </table>
+  <div *ngIf="addressStrings.length > itemsPerPage" class="pagination">
+    <ngb-pagination class="pagination-container float-right" [collectionSize]="addressStrings.length" [rotate]="true" [pageSize]="itemsPerPage" [(page)]="pageIndex" (pageChange)="pageChange(pageIndex)" [boundaryLinks]="false" [ellipses]="false"></ngb-pagination>
+  </div>
+</div>

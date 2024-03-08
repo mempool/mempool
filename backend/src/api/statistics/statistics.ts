@@ -6,6 +6,7 @@ import statisticsApi from './statistics-api';
 
 class Statistics {
   protected intervalTimer: NodeJS.Timer | undefined;
+  protected lastRun: number = 0;
   protected newStatisticsEntryCallback: ((stats: OptimizedStatistic) => void) | undefined;
 
   public setNewStatisticsEntryCallback(fn: (stats: OptimizedStatistic) => void) {
@@ -23,15 +24,21 @@ class Statistics {
     setTimeout(() => {
       this.runStatistics();
       this.intervalTimer = setInterval(() => {
-        this.runStatistics();
+        this.runStatistics(true);
       }, 1 * 60 * 1000);
     }, difference);
   }
 
-  private async runStatistics(): Promise<void> {
+  public async runStatistics(skipIfRecent = false): Promise<void> {
     if (!memPool.isInSync()) {
       return;
     }
+
+    if (skipIfRecent && new Date().getTime() / 1000 - this.lastRun < 30) {
+      return;
+    }
+
+    this.lastRun = new Date().getTime() / 1000;
     const currentMempool = memPool.getMempool();
     const txPerSecond = memPool.getTxPerSecond();
     const vBytesPerSecond = memPool.getVBytesPerSecond();

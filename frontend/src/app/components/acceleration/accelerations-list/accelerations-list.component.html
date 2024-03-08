@@ -1,10 +1,10 @@
-<div class="container-xl" style="min-height: 335px" [class.widget]="widget" [class.full-height]="!widget">
+<div class="container-lg widget-container" [class.widget]="widget" [class.full-height]="!widget">
   <h1 *ngIf="!widget" class="float-left" i18n="master-page.blocks">Accelerations</h1>
   <div *ngIf="!widget && isLoading" class="spinner-border ml-3" role="status"></div>
 
   <div class="clearfix"></div>
 
-  <div style="min-height: 295px" *ngIf="accelerationList$ | async as accelerations">
+  <div class="acceleration-list" *ngIf="accelerationList$ | async as accelerations">
     <table *ngIf="!accelerations || accelerations.length; else noData" class="table table-borderless table-fixed">
       <thead>
         <th class="txid text-left" i18n="dashboard.latest-transactions.txid">TXID</th>
@@ -14,9 +14,10 @@
           <th class="time text-right" i18n="accelerator.block">Requested</th>
         </ng-container>
         <ng-container *ngIf="!pending">
-          <th class="fee text-right" i18n="transaction.fee|Transaction fee">Out-of-band Fee</th>
+          <th class="fee text-right" i18n="transaction.bid-boost|Bid Boost">Bid Boost</th>
           <th class="block text-right" i18n="accelerator.block">Block</th>
           <th class="status text-right" i18n="transaction.status|Transaction Status">Status</th>
+          <th class="date text-right" i18n="" *ngIf="!this.widget">Requested</th>
         </ng-container>
       </thead>
       <tbody *ngIf="accelerations; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
@@ -39,7 +40,7 @@
           </ng-container>
           <ng-container *ngIf="!pending">
             <td *ngIf="acceleration.feePaid" class="fee text-right">
-              {{ (acceleration.feePaid) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
+              {{ (acceleration.boost) | number }} <span class="symbol" i18n="shared.sat|sat">sat</span>
             </td>
             <td *ngIf="!acceleration.feePaid" class="fee text-right">
               ~
@@ -48,9 +49,13 @@
               <a [routerLink]="['/block' | relativeUrl, acceleration.blockHeight]">{{ acceleration.blockHeight }}</a>
             </td>
             <td class="status text-right">
-              <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="transaction.rbf.mined">Pending</span>
-              <span *ngIf="acceleration.status === 'mined' || acceleration.status === 'completed'" class="badge badge-success" i18n="transaction.rbf.mined">Mined</span>
+              <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>
+              <span *ngIf="acceleration.status === 'mined'" class="badge badge-info" i18n="transaction.rbf.mined">Mined</span>
+              <span *ngIf="acceleration.status === 'completed'" class="badge badge-success" i18n="">Completed</span>
               <span *ngIf="acceleration.status === 'failed'" class="badge badge-danger" i18n="accelerator.canceled">Canceled</span>
+            </td>
+            <td class="date text-right" *ngIf="!this.widget">
+              <app-time kind="since" [time]="acceleration.added" [fastRender]="true"></app-time>
             </td>
           </ng-container>
         </tr>
@@ -74,6 +79,11 @@
         </tbody>
       </ng-template>
     </table>
+
+    <ngb-pagination *ngIf="!widget" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+      [collectionSize]="this.accelerationCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination>
 
     <ng-template [ngIf]="!widget">
       <div class="clearfix"></div>

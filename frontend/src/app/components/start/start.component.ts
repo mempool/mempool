@@ -147,12 +147,15 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
             }
           }
         }
-        if (specialBlocks[block.height] && specialBlocks[block.height].networks.includes(this.stateService.network || 'mainnet')) {
-          this.specialEvent = true;
-          this.eventName = specialBlocks[block.height].labelEventCompleted;
-          setTimeout(() => {
+        for (const block of blocks) {
+          if (specialBlocks[block.height] && specialBlocks[block.height].networks.includes(this.stateService.network || 'mainnet')) {
+            this.specialEvent = true;
+            this.eventName = specialBlocks[block.height].labelEventCompleted;
+          }
+          if (specialBlocks[block.height - 8] && specialBlocks[block.height - 8].networks.includes(this.stateService.network || 'mainnet')) {
             this.specialEvent = false;
-          }, 60 * 60 * 1000);
+            this.eventName = '';
+          }
         }
       });
     this.resetScrollSubscription = this.stateService.resetScroll$.subscribe(reset => {

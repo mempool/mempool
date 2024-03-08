@@ -20,6 +20,7 @@ import { isMobile } from '../../shared/common.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoolRankingComponent implements OnInit {
+  @Input() height: number = 300;
   @Input() widget = false;
 
   miningWindowPreference: string;
@@ -162,7 +163,7 @@ export class PoolRankingComponent implements OnInit {
             const i = pool.blockCount.toString();
             if (this.miningWindowPreference === '24h') {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
-                pool.lastEstimatedHashrate.toString() + ' PH/s' +
+                pool.lastEstimatedHashrate.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
                 `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
             } else {
               return `<b style="color: white">${pool.name} (${pool.share}%)</b><br>` +
@@ -200,7 +201,7 @@ export class PoolRankingComponent implements OnInit {
           const i = totalBlockOther.toString();
           if (this.miningWindowPreference === '24h') {
             return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +
-              totalEstimatedHashrateOther.toString() + ' PH/s' +
+              totalEstimatedHashrateOther.toString() + ' ' + miningStats.miningUnits.hashrateUnit +
               `<br>` + $localize`${ i }:INTERPOLATION: blocks`;
           } else {
             return `<b style="color: white">` + $localize`Other (${percentage})` + `</b><br>` +

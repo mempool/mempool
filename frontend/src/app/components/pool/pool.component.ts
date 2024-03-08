@@ -115,13 +115,13 @@ export class PoolComponent implements OnInit {
 
   prepareChartOptions(data) {
     let title: object;
-    if (data.length === 0) {
+    if (data.length <= 1) {
       title = {
         textStyle: {
           color: 'grey',
           fontSize: 15
         },
-        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        text: $localize`Not enough data yet`,
         left: 'center',
         top: 'center'
       };
@@ -172,14 +172,14 @@ export class PoolComponent implements OnInit {
           `;
         }.bind(this)
       },
-      xAxis: data.length === 0 ? undefined : {
+      xAxis: data.length <= 1 ? undefined : {
         type: 'time',
         splitNumber: (this.isMobile()) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      yAxis: data.length === 0 ? undefined : [
+      yAxis: data.length <= 1 ? undefined : [
         {
           min: (value) => {
             return value.min * 0.9;
@@ -198,7 +198,7 @@ export class PoolComponent implements OnInit {
           }
         },
       ],
-      series: data.length === 0 ? undefined : [
+      series: data.length <= 1 ? undefined : [
         {
           zlevel: 0,
           name: 'Hashrate',
@@ -211,7 +211,7 @@ export class PoolComponent implements OnInit {
           },
         },
       ],
-      dataZoom: data.length === 0 ? undefined : [{
+      dataZoom: data.length <= 1 ? undefined : [{
         type: 'inside',
         realtime: true,
         zoomLock: true,

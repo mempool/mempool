@@ -4,7 +4,7 @@ import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstra
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faChartArea, faCogs, faCubes, faHammer, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faTv, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
-  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+  faFileAlt, faRedoAlt, faArrowAltCircleRight, faExternalLinkAlt, faBook, faListUl, faDownload, faQrcode, faArrowRightArrowLeft, faArrowsRotate, faCircleLeft, faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck, faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced } from '@fortawesome/free-solid-svg-icons';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MenuComponent } from '../components/menu/menu.component';
 import { PreviewTitleComponent } from '../components/master-page-preview/preview-title.component';
@@ -44,7 +44,9 @@ import { StartComponent } from '../components/start/start.component';
 import { TransactionsListComponent } from '../components/transactions-list/transactions-list.component';
 import { BlockOverviewGraphComponent } from '../components/block-overview-graph/block-overview-graph.component';
 import { BlockOverviewTooltipComponent } from '../components/block-overview-tooltip/block-overview-tooltip.component';
+import { BlockFiltersComponent } from '../components/block-filters/block-filters.component';
 import { AddressComponent } from '../components/address/address.component';
+import { AddressGroupComponent } from '../components/address-group/address-group.component';
 import { SearchFormComponent } from '../components/search-form/search-form.component';
 import { AddressLabelsComponent } from '../components/address-labels/address-labels.component';
 import { FooterComponent } from '../components/footer/footer.component';
@@ -52,6 +54,8 @@ import { AssetComponent } from '../components/asset/asset.component';
 import { AssetsComponent } from '../components/assets/assets.component';
 import { AssetsNavComponent } from '../components/assets/assets-nav/assets-nav.component';
 import { StatusViewComponent } from '../components/status-view/status-view.component';
+import { ServerHealthComponent } from '../components/server-health/server-health.component';
+import { ServerStatusComponent } from '../components/server-health/server-status.component';
 import { FeesBoxComponent } from '../components/fees-box/fees-box.component';
 import { DifficultyComponent } from '../components/difficulty/difficulty.component';
 import { DifficultyTooltipComponent } from '../components/difficulty/difficulty-tooltip.component';
@@ -141,14 +145,18 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     StartComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
     AssetComponent,
     AssetsComponent,
     StatusViewComponent,
+    ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,
@@ -266,14 +274,18 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     StartComponent,
     BlockOverviewGraphComponent,
     BlockOverviewTooltipComponent,
+    BlockFiltersComponent,
     TransactionsListComponent,
     AddressComponent,
+    AddressGroupComponent,
     SearchFormComponent,
     AddressLabelsComponent,
     FooterComponent,
     AssetComponent,
     AssetsComponent,
     StatusViewComponent,
+    ServerHealthComponent,
+    ServerStatusComponent,
     FeesBoxComponent,
     DifficultyComponent,
     DifficultyMiningComponent,
@@ -319,7 +331,7 @@ import { OnlyVsizeDirective, OnlyWeightDirective } from './components/weight-dir
     ClockFaceComponent,
 
     OnlyVsizeDirective,
-    OnlyWeightDirective
+    OnlyWeightDirective,
   ]
 })
 export class SharedModule {
@@ -381,5 +393,7 @@ export class SharedModule {
     library.addIcons(faCircleCheck);
     library.addIcons(faUserCircle);
     library.addIcons(faCheck);
+    library.addIcons(faRocket);
+    library.addIcons(faScaleBalanced);
   }
 }

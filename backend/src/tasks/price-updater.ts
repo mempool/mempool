@@ -23,6 +23,14 @@ export interface PriceHistory {
   [timestamp: number]: ApiPrice;
 }
 
+function getMedian(arr: number[]): number {
+  const sortedArr = arr.slice().sort((a, b) => a - b);
+  const mid = Math.floor(sortedArr.length / 2);
+  return sortedArr.length % 2 !== 0
+      ? sortedArr[mid]
+      : (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+}
+
 class PriceUpdater {
   public historyInserted = false;
   private timeBetweenUpdatesMs = 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
@@ -173,7 +181,7 @@ class PriceUpdater {
       if (prices.length === 0) {
         this.latestPrices[currency] = -1;
       } else {
-        this.latestPrices[currency] = Math.round((prices.reduce((partialSum, a) => partialSum + a, 0)) / prices.length);
+        this.latestPrices[currency] = Math.round(getMedian(prices));
       }
     }
 
@@ -300,9 +308,7 @@ class PriceUpdater {
         if (grouped[time][currency].length === 0) {
           continue;
         }
-        prices[currency] = Math.round((grouped[time][currency].reduce(
-          (partialSum, a) => partialSum + a, 0)
-        ) / grouped[time][currency].length);
+        prices[currency] = Math.round(getMedian(grouped[time][currency]));
       }
       await PricesRepository.$savePrices(parseInt(time, 10), prices);
       ++totalInserted;

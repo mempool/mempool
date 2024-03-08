@@ -44,6 +44,7 @@ import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
+import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -154,11 +155,17 @@ class Server {
     }
 
     if (Common.isLiquid()) {
-      try {
-        icons.loadIcons();
-      } catch (e) {
-        logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
-      }
+      const refreshIcons = () => {
+        try {
+          icons.loadIcons();
+        } catch (e) {
+          logger.err('Cannot load liquid icons. Ignoring. Reason: ' + (e instanceof Error ? e.message : e));
+        }
+      };
+      // Run once on startup.
+      refreshIcons();
+      // Matches crontab refresh interval for asset db.
+      setInterval(refreshIcons, 3600_000);
     }
 
     priceUpdater.$run();
@@ -265,6 +272,7 @@ class Server {
       blocks.setNewBlockCallback(async () => {
         try {
           await elementsParser.$parse();
+          await elementsParser.$updateFederationUtxos();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
@@ -282,6 +290,7 @@ class Server {
   
   setUpHttpApiRoutes(): void {
     bitcoinRoutes.initRoutes(this.app);
+    bitcoinCoreRoutes.initRoutes(this.app);
     pricesRoutes.initRoutes(this.app);
     if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED && config.MEMPOOL.ENABLED) {
       statisticsRoutes.initRoutes(this.app);

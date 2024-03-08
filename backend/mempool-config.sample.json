@@ -1,5 +1,6 @@
 {
   "MEMPOOL": {
+    "OFFICIAL": false,
     "NETWORK": "mainnet",
     "BACKEND": "electrum",
     "ENABLED": true,
@@ -16,6 +17,7 @@
     "MEMPOOL_BLOCKS_AMOUNT": 8,
     "INDEXING_BLOCKS_AMOUNT": 11000,
     "BLOCKS_SUMMARIES_INDEXING": false,
+    "GOGGLES_INDEXING": false,
     "USE_SECOND_NODE_FOR_MINFEE": false,
     "EXTERNAL_ASSETS": [],
     "EXTERNAL_MAX_RETRY": 1,
@@ -33,7 +35,8 @@
     "DISK_CACHE_BLOCK_INTERVAL": 6,
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
-    "PRICE_UPDATES_PER_HOUR": 1
+    "PRICE_UPDATES_PER_HOUR": 1,
+    "MAX_TRACKED_ADDRESSES": 100
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",

@@ -9,6 +9,7 @@ import { Component, Input, Inject, LOCALE_ID, ChangeDetectionStrategy } from '@a
 export class TruncateComponent {
   @Input() text: string;
   @Input() link: any = null;
+  @Input() external: boolean = false;
   @Input() lastChars: number = 4;
   @Input() maxWidth: number = null;
   @Input() inline: boolean = false;

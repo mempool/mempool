@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionStripped, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -37,8 +37,10 @@ class Blocks {
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
   private previousDifficultyRetarget = 0;
+  private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private newAsyncBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]) => Promise<void>)[] = [];
+  private classifyingBlocks: boolean = false;
 
   private mainLoopTimeout: number = 120000;
 
@@ -201,7 +203,8 @@ class Blocks {
         txid: tx.txid,
         vsize: tx.weight / 4,
         fee: tx.fee ? Math.round(tx.fee * 100000000) : 0,
-        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000)
+        value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0) * 100000000),
+        flags: 0,
       };
     });
 
@@ -214,7 +217,7 @@ class Blocks {
   public summarizeBlockTransactions(hash: string, transactions: TransactionExtended[]): BlockSummary {
     return {
       id: hash,
-      transactions: Common.stripTransactions(transactions),
+      transactions: Common.classifyTransactions(transactions),
     };
   }
 
@@ -450,7 +453,9 @@ class Blocks {
         if (config.MEMPOOL.BACKEND === 'esplora') {
           const txs = (await bitcoinApi.$getTxsForBlock(block.hash)).map(tx => transactionUtils.extendTransaction(tx));
           const cpfpSummary = await this.$indexCPFP(block.hash, block.height, txs);
-          await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
+          if (cpfpSummary) {
+            await this.$getStrippedBlockTransactions(block.hash, true, true, cpfpSummary, block.height); // This will index the block summary
+          }
         } else {
           await this.$getStrippedBlockTransactions(block.hash, true, true); // This will index the block summary
         }
@@ -561,6 +566,130 @@ class Blocks {
   }
 
   /**
+   * [INDEXING] Index transaction classification flags for Goggles
+   */
+  public async $classifyBlocks(): Promise<void> {
+    if (this.classifyingBlocks) {
+      return;
+    }
+    this.classifyingBlocks = true;
+
+    // classification requires an esplora backend
+    if (!Common.gogglesIndexingEnabled() || config.MEMPOOL.BACKEND !== 'esplora') {
+      return;
+    }
+
+    const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+    const currentBlockHeight = blockchainInfo.blocks;
+
+    const unclassifiedBlocksList = await BlocksSummariesRepository.$getSummariesWithVersion(0);
+    const unclassifiedTemplatesList = await BlocksSummariesRepository.$getTemplatesWithVersion(0);
+
+    // nothing to do
+    if (!unclassifiedBlocksList?.length && !unclassifiedTemplatesList?.length) {
+      return;
+    }
+
+    let timer = Date.now();
+    let indexedThisRun = 0;
+    let indexedTotal = 0;
+
+    const minHeight = Math.min(
+      unclassifiedBlocksList[unclassifiedBlocksList.length - 1]?.height ?? Infinity,
+      unclassifiedTemplatesList[unclassifiedTemplatesList.length - 1]?.height ?? Infinity,
+    );
+    const numToIndex = Math.max(
+      unclassifiedBlocksList.length,
+      unclassifiedTemplatesList.length,
+    );
+
+    const unclassifiedBlocks = {};
+    const unclassifiedTemplates = {};
+    for (const block of unclassifiedBlocksList) {
+      unclassifiedBlocks[block.height] = block.id;
+    }
+    for (const template of unclassifiedTemplatesList) {
+      unclassifiedTemplates[template.height] = template.id;
+    }
+
+    logger.debug(`Classifying blocks and templates from #${currentBlockHeight} to #${minHeight}`, logger.tags.goggles);
+
+    for (let height = currentBlockHeight; height >= 0; height--) {
+      try {
+        let txs: TransactionExtended[] | null = null;
+        if (unclassifiedBlocks[height]) {
+          const blockHash = unclassifiedBlocks[height];
+          // fetch transactions
+          txs = (await bitcoinApi.$getTxsForBlock(blockHash)).map(tx => transactionUtils.extendTransaction(tx)) || [];
+          // add CPFP
+          const cpfpSummary = Common.calculateCpfp(height, txs, true);
+          // classify
+          const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+          await BlocksSummariesRepository.$saveTransactions(height, blockHash, classifiedTxs, 1);
+          await Common.sleep$(250);
+        }
+        if (unclassifiedTemplates[height]) {
+          // classify template
+          const blockHash = unclassifiedTemplates[height];
+          const template = await BlocksSummariesRepository.$getTemplate(blockHash);
+          const alreadyClassified = template?.transactions?.reduce((classified, tx) => (classified || tx.flags > 0), false);
+          let classifiedTemplate = template?.transactions || [];
+          if (!alreadyClassified) {
+            const templateTxs: (TransactionExtended | TransactionClassified)[] = [];
+            const blockTxMap: { [txid: string]: TransactionExtended } = {};
+            for (const tx of (txs || [])) {
+              blockTxMap[tx.txid] = tx;
+            }
+            for (const templateTx of (template?.transactions || [])) {
+              let tx: TransactionExtended | null = blockTxMap[templateTx.txid];
+              if (!tx) {
+                try {
+                  tx = await transactionUtils.$getTransactionExtended(templateTx.txid, false, true, false);
+                } catch (e) {
+                  // transaction probably not found
+                }
+              }
+              templateTxs.push(tx || templateTx);
+            }
+            const cpfpSummary = Common.calculateCpfp(height, templateTxs?.filter(tx => tx['effectiveFeePerVsize'] != null) as TransactionExtended[], true);
+            // classify
+            const { transactions: classifiedTxs } = this.summarizeBlockTransactions(blockHash, cpfpSummary.transactions);
+            const classifiedTxMap: { [txid: string]: TransactionClassified } = {};
+            for (const tx of classifiedTxs) {
+              classifiedTxMap[tx.txid] = tx;
+            }
+            classifiedTemplate = classifiedTemplate.map(tx => {
+              if (classifiedTxMap[tx.txid]) {
+                tx.flags = classifiedTxMap[tx.txid].flags || 0;
+              }
+              return tx;
+            });
+          }
+          await BlocksSummariesRepository.$saveTemplate({ height, template: { id: blockHash, transactions: classifiedTemplate }, version: 1 });
+          await Common.sleep$(250);
+        }
+      } catch (e) {
+        logger.warn(`Failed to classify template or block summary at ${height}`, logger.tags.goggles);
+      }
+
+      // timing & logging
+      if (unclassifiedBlocks[height] || unclassifiedTemplates[height]) {
+        indexedThisRun++;
+        indexedTotal++;
+      }
+      const elapsedSeconds = (Date.now() - timer) / 1000;
+      if (elapsedSeconds > 5) {
+        const perSecond = indexedThisRun / elapsedSeconds;
+        logger.debug(`Classified #${height}: ${indexedTotal} / ${numToIndex} blocks (${perSecond.toFixed(1)}/s)`);
+        timer = Date.now();
+        indexedThisRun = 0;
+      }
+    }
+
+    this.classifyingBlocks = false;
+  }
+
+  /**
    * [INDEXING] Index all blocks metadata for the mining dashboard
    */
   public async $generateBlockDatabase(): Promise<boolean> {
@@ -654,6 +783,16 @@ class Blocks {
       this.currentBlockHeight = Math.max(blockHeightTip - config.MEMPOOL.INITIAL_BLOCKS_AMOUNT, -1);
     } else {
       this.currentBlockHeight = this.blocks[this.blocks.length - 1].height;
+    }
+    if (this.currentBlockHeight >= 503) {
+      try {
+        const quarterEpochBlockHash = await bitcoinApi.$getBlockHash(this.currentBlockHeight - 503);
+        const quarterEpochBlock = await bitcoinApi.$getBlock(quarterEpochBlockHash);
+        this.quarterEpochBlockTime = quarterEpochBlock?.timestamp;
+      } catch (e) {
+        this.quarterEpochBlockTime = null;
+        logger.warn('failed to update last epoch block time: ' + (e instanceof Error ? e.message : e));
+      }
     }
 
     if (blockHeightTip - this.currentBlockHeight > config.MEMPOOL.INITIAL_BLOCKS_AMOUNT * 2) {
@@ -877,11 +1016,11 @@ class Blocks {
     return state;
   }
 
-  private updateTimerProgress(state, msg) {
+  private updateTimerProgress(state, msg): void {
     state.progress = msg;
   }
 
-  private clearTimer(state) {
+  private clearTimer(state): void {
     if (state.timer) {
       clearTimeout(state.timer);
     }
@@ -945,7 +1084,7 @@ class Blocks {
   }
 
   public async $getStrippedBlockTransactions(hash: string, skipMemoryCache = false,
-    skipDBLookup = false, cpfpSummary?: CpfpSummary, blockHeight?: number): Promise<TransactionStripped[]>
+    skipDBLookup = false, cpfpSummary?: CpfpSummary, blockHeight?: number): Promise<TransactionClassified[]>
   {
     if (skipMemoryCache === false) {
       // Check the memory cache
@@ -965,23 +1104,33 @@ class Blocks {
 
     let height = blockHeight;
     let summary: BlockSummary;
+    let summaryVersion = 0;
     if (cpfpSummary && !Common.isLiquid()) {
       summary = {
         id: hash,
         transactions: cpfpSummary.transactions.map(tx => {
+          let flags: number = 0;
+          try {
+            flags = tx.flags || Common.getTransactionFlags(tx);
+          } catch (e) {
+            logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
+          }
           return {
             txid: tx.txid,
             fee: tx.fee || 0,
             vsize: tx.vsize,
             value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
-            rate: tx.effectiveFeePerVsize
+            rate: tx.effectiveFeePerVsize,
+            flags: flags,
           };
         }),
       };
+      summaryVersion = 1;
     } else {
       if (config.MEMPOOL.BACKEND === 'esplora') {
         const txs = (await bitcoinApi.$getTxsForBlock(hash)).map(tx => transactionUtils.extendTransaction(tx));
         summary = this.summarizeBlockTransactions(hash, txs);
+        summaryVersion = 1;
       } else {
         // Call Core RPC
         const block = await bitcoinClient.getBlock(hash, 2);
@@ -996,7 +1145,7 @@ class Blocks {
 
     // Index the response if needed
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions);
+      await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions, summaryVersion);
     }
 
     return summary.transactions;
@@ -1112,16 +1261,18 @@ class Blocks {
         if (cleanBlock.fee_amt_percentiles === null) {
 
           let summary;
+          let summaryVersion = 0;
           if (config.MEMPOOL.BACKEND === 'esplora') {
             const txs = (await bitcoinApi.$getTxsForBlock(cleanBlock.hash)).map(tx => transactionUtils.extendTransaction(tx));
             summary = this.summarizeBlockTransactions(cleanBlock.hash, txs);
+            summaryVersion = 1;
           } else {
             // Call Core RPC
             const block = await bitcoinClient.getBlock(cleanBlock.hash, 2);
             summary = this.summarizeBlock(block);
           }
 
-          await BlocksSummariesRepository.$saveTransactions(cleanBlock.height, cleanBlock.hash, summary.transactions);
+          await BlocksSummariesRepository.$saveTransactions(cleanBlock.height, cleanBlock.hash, summary.transactions, summaryVersion);
           cleanBlock.fee_amt_percentiles = await BlocksSummariesRepository.$getFeePercentilesByBlockId(cleanBlock.hash);
         }
         if (cleanBlock.fee_amt_percentiles !== null) {
@@ -1160,7 +1311,7 @@ class Blocks {
     return blocks;
   }
 
-  public async $getBlockAuditSummary(hash: string): Promise<any> {
+  public async $getBlockAuditSummary(hash: string): Promise<BlockAudit | null> {
     if (['mainnet', 'testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
       return BlocksAuditsRepository.$getBlockAudit(hash);
     } else {
@@ -1176,11 +1327,15 @@ class Blocks {
     return this.previousDifficultyRetarget;
   }
 
+  public getQuarterEpochBlockTime(): number | null {
+    return this.quarterEpochBlockTime;
+  }
+
   public getCurrentBlockHeight(): number {
     return this.currentBlockHeight;
   }
 
-  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary> {
+  public async $indexCPFP(hash: string, height: number, txs?: TransactionExtended[]): Promise<CpfpSummary | null> {
     let transactions = txs;
     if (!transactions) {
       if (config.MEMPOOL.BACKEND === 'esplora') {
@@ -1195,14 +1350,19 @@ class Blocks {
       }
     }
 
-    const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
+    if (transactions?.length != null) {
+      const summary = Common.calculateCpfp(height, transactions as TransactionExtended[]);
 
-    await this.$saveCpfp(hash, height, summary);
+      await this.$saveCpfp(hash, height, summary);
 
-    const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
-    await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
+      const effectiveFeeStats = Common.calcEffectiveFeeStatistics(summary.transactions);
+      await blocksRepository.$saveEffectiveFeeStats(hash, effectiveFeeStats);
 
-    return summary;
+      return summary;
+    } else {
+      logger.err(`Cannot index CPFP for block ${height} - missing transaction data`);
+      return null;
+    }
   }
 
   public async $saveCpfp(hash: string, height: number, cpfpSummary: CpfpSummary): Promise<void> {

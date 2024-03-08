@@ -1,0 +1,137 @@
+<div [ngClass]="{'container-xl': !widget, 'widget': widget}">
+
+  <div *ngIf="!widget">
+    <h1 i18n="liquid.recent-pegs">Recent Peg-In / Out's</h1>
+  </div>
+
+  <div class="clearfix"></div>
+  
+  <div style="min-height: 295px">
+    <table class="table table-borderless">
+      <thead style="vertical-align: middle;">
+        <th class="transaction text-left" [ngClass]="{'widget': widget}" i18n="shared.transaction">Transaction</th>
+        <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
+        <th class="output text-left" *ngIf="!widget" i18n="liquid.fund-redemption-tx">Fund / Redemption Tx</th>
+        <th class="address text-left" *ngIf="!widget" i18n="liquid.bitcoin-address">BTC Address</th>
+      </thead>
+      <tbody *ngIf="recentPegsList$ | async as pegs; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
+        <ng-container *ngIf="widget; else regularRows">
+          <tr *ngFor="let peg of pegs | slice:0:5">
+            <td class="transaction text-left widget">
+              <ng-container *ngIf="peg.amount > 0">
+                <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
+                  <app-truncate [text]="peg.txid"></app-truncate>
+                </a>
+              </ng-container>
+              <ng-container *ngIf="peg.amount < 0">
+                <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vout=' + peg.txindex">
+                  <app-truncate [text]="peg.txid"></app-truncate>
+                </a>
+              </ng-container>
+            </td>
+            <td class="timestamp text-left widget">
+              <app-time kind="since" [time]="peg.blocktime"></app-time>
+            </td>
+            <td class="amount text-right widget" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
+              <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #regularRows>
+          <tr *ngFor="let peg of pegs;">
+            <td class="transaction text-left">
+              <ng-container *ngIf="peg.amount > 0">
+                <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vin=' + peg.txindex">
+                  <app-truncate [text]="peg.txid" [lastChars]="6"></app-truncate>
+                </a>
+              </ng-container>
+              <ng-container *ngIf="peg.amount < 0">
+                <a [routerLink]="['/tx' | relativeUrl, peg.txid]" [fragment]="'vout=' + peg.txindex">
+                  <app-truncate [text]="peg.txid" [lastChars]="6"></app-truncate>
+                </a>
+              </ng-container>
+            </td>
+            <td class="timestamp text-left">
+              &lrm;{{ peg.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
+              <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="peg.blocktime"></app-time>)</i></div>
+            </td>
+            <td class="amount text-right" [ngClass]="{'credit': peg.amount > 0, 'debit': peg.amount < 0, 'glow-effect': peg.amount < 0 && peg.bitcoinaddress && !peg.bitcointxid}">
+              <app-amount [satoshis]="peg.amount" [noFiat]="true" [forceBtc]="true" [addPlus]="true"></app-amount>
+            </td>
+            <td class="output text-left">
+              <ng-container *ngIf="peg.bitcointxid; else redeemInProgress">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/tx/' + peg.bitcointxid + ':' + peg.bitcoinindex }}" target="_blank" style="color:#b86d12">
+                  <app-truncate [text]="peg.bitcointxid + ':' + peg.bitcoinindex" [lastChars]="6"></app-truncate>
+                </a>
+              </ng-container>
+              <ng-template #redeemInProgress>
+                <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
+                  <i><span class="text-muted" i18n="liquid.redemption-in-progress">Peg out in progress...</span></i>
+                </ng-container>
+              </ng-template>
+            </td>
+            <td class="address text-left">
+              <ng-container *ngIf="peg.bitcoinaddress; else noRedeem">
+                <a href="{{ env.MEMPOOL_WEBSITE_URL + '/address/' + peg.bitcoinaddress }}" target="_blank" style="color:#b86d12">
+                  <app-truncate [text]="peg.bitcoinaddress" [lastChars]="6"></app-truncate>
+                </a>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+      <ng-template #skeleton>
+        <tbody *ngIf="widget; else regularRowsSkeleton">
+          <tr *ngFor="let item of skeletonLines">
+            <td class="transaction text-left widget">
+              <span class="skeleton-loader" style="max-width: 400px"></span>
+            </td>
+            <td class="timestamp text-left widget">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="amount text-right widget">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+          </tr>
+        </tbody>
+        <ng-template #regularRowsSkeleton>
+          <tr *ngFor="let item of skeletonLines">
+            <td class="transaction text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="timestamp text-left">
+              <span class="skeleton-loader" style="max-width: 240px"></span>
+            </td>
+            <td class="amount text-right">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+            <td class="output text-left">
+              <span class="skeleton-loader" style="max-width: 300px"></span>
+            </td>
+            <td class="address text-left">
+              <span class="skeleton-loader" style="max-width: 240px"></span>
+            </td>
+          </tr>
+        </ng-template>
+      </ng-template>
+    </table>
+
+    <ngb-pagination *ngIf="!widget && pegsCount$ | async as pegsCount" class="pagination-container float-right mt-2" [class]="isLoading || isPegCountLoading ? 'disabled' : ''"
+      [collectionSize]="pegsCount" [rotate]="true" [maxSize]="maxSize" [pageSize]="15" [(page)]="page"
+      (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
+    </ngb-pagination>
+
+    <ng-template [ngIf]="!widget">
+      <div class="clearfix"></div>
+      <br>
+    </ng-template>
+  </div>
+  
+</div>
+
+<br>
+
+<ng-template #noRedeem>
+  <span class="text-muted">-</span>
+</ng-template>

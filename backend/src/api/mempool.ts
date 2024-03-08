@@ -100,6 +100,9 @@ class Mempool {
       if (this.mempoolCache[txid].order == null) {
         this.mempoolCache[txid].order = transactionUtils.txidToOrdering(txid);
       }
+      for (const vin of this.mempoolCache[txid].vin) {
+        transactionUtils.addInnerScriptsToVin(vin);
+      }
       count++;
       if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
         await redisCache.$addTransaction(this.mempoolCache[txid]);

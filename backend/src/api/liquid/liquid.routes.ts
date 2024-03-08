@@ -15,7 +15,18 @@ class LiquidRoutes {
     
     if (config.DATABASE.ENABLED) {
       app
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs', this.$getElementsPegs)
         .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/month', this.$getElementsPegsByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/list/:count', this.$getPegsList)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/volume', this.$getPegsVolumeDaily)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/pegs/count', this.$getPegsCount)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves', this.$getFederationReserves)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/month', this.$getFederationReservesByMonth)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses', this.$getFederationAddresses)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/addresses/total', this.$getFederationAddressesNumber)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos', this.$getFederationUtxos)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/utxos/total', this.$getFederationUtxosNumber)
+        .get(config.MEMPOOL.API_URL_PREFIX + 'liquid/reserves/status', this.$getFederationAuditStatus)
         ;
     }
   }
@@ -63,11 +74,147 @@ class LiquidRoutes {
   private async $getElementsPegsByMonth(req: Request, res: Response) {
     try {
       const pegs = await elementsParser.$getPegDataByMonth();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60).toUTCString());
       res.json(pegs);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
   }
+
+  private async $getFederationReservesByMonth(req: Request, res: Response) {
+    try {
+      const reserves = await elementsParser.$getFederationReservesByMonth();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60 * 60).toUTCString());
+      res.json(reserves);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getElementsPegs(req: Request, res: Response) {
+    try {
+      const currentSupply = await elementsParser.$getCurrentLbtcSupply();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(currentSupply);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationReserves(req: Request, res: Response) {
+    try {
+      const currentReserves = await elementsParser.$getCurrentFederationReserves();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(currentReserves);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAuditStatus(req: Request, res: Response) {
+    try {
+      const auditStatus = await elementsParser.$getAuditStatus();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(auditStatus);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAddresses(req: Request, res: Response) {
+    try {
+      const federationAddresses = await elementsParser.$getFederationAddresses();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationAddresses);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationAddressesNumber(req: Request, res: Response) {
+    try {
+      const federationAddresses = await elementsParser.$getFederationAddressesNumber();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationAddresses);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationUtxos(req: Request, res: Response) {
+    try {
+      const federationUtxos = await elementsParser.$getFederationUtxos();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getFederationUtxosNumber(req: Request, res: Response) {
+    try {
+      const federationUtxos = await elementsParser.$getFederationUtxosNumber();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(federationUtxos);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsList(req: Request, res: Response) {
+    try {
+      const recentPegs = await elementsParser.$getPegsList(parseInt(req.params?.count));
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(recentPegs);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsVolumeDaily(req: Request, res: Response) {
+    try {
+      const pegsVolume = await elementsParser.$getPegsVolumeDaily();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsVolume);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getPegsCount(req: Request, res: Response) {
+    try {
+      const pegsCount = await elementsParser.$getPegsCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());
+      res.json(pegsCount);
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
 }
 
 export default new LiquidRoutes();

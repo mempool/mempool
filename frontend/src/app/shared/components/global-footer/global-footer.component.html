@@ -7,11 +7,11 @@
           <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
         </div>
-        <p class="d-block d-sm-none">
+        <p class="explore-tagline-mobile">
           <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
+          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
         </p>
-        <div class="site-options float-right d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
+        <div class="site-options language-selector d-flex justify-content-center align-items-center" [class]="{'services': isServicesPage}">
           <div class="selector">
             <app-language-selector></app-language-selector>
           </div>
@@ -26,13 +26,13 @@
             <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
           </a>
         </div>
-        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-3 mb-2" [routerLink]="['/login' | relativeUrl]">
+        <a *ngIf="servicesEnabled" class="btn btn-purple sponsor d-flex d-sm-none justify-content-center ml-auto mr-auto mt-0 mb-2" [routerLink]="['/login' | relativeUrl]">
           <span *ngIf="loggedIn" i18n="shared.my-account">My Account</span>
           <span *ngIf="!loggedIn" i18n="shared.sign-in">Sign In</span>
         </a>
-        <p class="d-none d-sm-block">
+        <p class="explore-tagline-desktop">
           <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-          <ng-template [ngIf]="locale.substr(0, 2) === 'en'"> &trade;</ng-template>
+          <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>
         </p>
       </div>
     </div>
@@ -77,6 +77,7 @@
           <p><a [routerLink]="['/terms-of-service']" i18n="shared.terms-of-service|Terms of Service">Terms of Service</a></p>
           <p><a [routerLink]="['/privacy-policy']" i18n="shared.privacy-policy|Privacy Policy">Privacy Policy</a></p>
           <p><a [routerLink]="['/trademark-policy']" i18n="shared.trademark-policy|Trademark Policy">Trademark Policy</a></p>
+          <p><a [routerLink]="['/3rdpartylicenses.txt']" i18n="shared.trademark-policy|Third-party Licenses">Third-party Licenses</a></p>
         </div>
     </div>
     <div class="row social-links">
@@ -94,7 +95,7 @@
       <div class="col-sm-12">
         <p *ngIf="officialMempoolSpace">
           <span>{{ (backendInfo$ | async)?.hostname }} (v{{ (backendInfo$ | async )?.version }}) [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}">{{ (backendInfo$ | async )?.gitCommit | slice:0:8 }}</a>]</span>
-          <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE"> - (v{{ (servicesBackendInfo$ | async )?.version }}) [{{ (servicesBackendInfo$ | async )?.gitCommit | slice:0:8 }}]</span>
+          <span *ngIf="stateService.env.GIT_COMMIT_HASH_MEMPOOL_SPACE">[{{ (servicesBackendInfo$ | async )?.gitCommit | slice:0:8 }}]</span>
         </p>
         <p *ngIf="!officialMempoolSpace">v{{ packetJsonVersion }} [<a target="_blank" href="https://github.com/mempool/mempool/commit/{{ frontendGitCommitHash }}">{{ frontendGitCommitHash }}</a>]</p>
       </div>

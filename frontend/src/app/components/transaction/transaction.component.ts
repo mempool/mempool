@@ -7,7 +7,6 @@ import {
   catchError,
   retryWhen,
   delay,
-  map,
   mergeMap,
   tap
 } from 'rxjs/operators';
@@ -26,6 +25,8 @@ import { LiquidUnblinding } from './liquid-ublinding';
 import { RelativeUrlPipe } from '../../shared/pipes/relative-url/relative-url.pipe';
 import { Price, PriceService } from '../../services/price.service';
 import { isFeatureActive } from '../../bitcoin.utils';
+import { ServicesApiServices } from '../../services/services-api.service';
+import { EnterpriseService } from '../../services/enterprise.service';
 
 @Component({
   selector: 'app-transaction',
@@ -113,13 +114,17 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService,
     private apiService: ApiService,
+    private servicesApiService: ServicesApiServices,
     private seoService: SeoService,
     private priceService: PriceService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private enterpriseService: EnterpriseService,
   ) {}
 
   ngOnInit() {
     this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
+
+    this.enterpriseService.page();
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.stateService.networkChanged$.subscribe(
@@ -242,11 +247,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.fetchAccelerationSubscription = this.fetchAcceleration$.pipe(
+      filter(() => this.stateService.env.ACCELERATOR === true),
       tap(() => {
         this.accelerationInfo = null;
       }),
       switchMap((blockHash: string) => {
-        return this.apiService.getAccelerationHistory$({ blockHash });
+        return this.servicesApiService.getAccelerationHistory$({ blockHash });
       }),
       catchError(() => {
         return of(null);
@@ -254,7 +260,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
         if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'mined') && acceleration.feePaid > 0) {
-          acceleration.actualFeeDelta = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
+          acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
           this.accelerationInfo = acceleration;
         }
       }
@@ -312,7 +318,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.setTitle(
             $localize`:@@bisq.transaction.browser-title:Transaction: ${this.txId}:INTERPOLATION:`
           );
-          this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} transaction with txid {txid}.`);
+          const network = this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet' ? 'Liquid' : 'Bitcoin';
+          const seoDescription = seoDescriptionNetwork(this.stateService.network);
+          this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
           return merge(
             of(true),
@@ -439,7 +447,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
-        this.audioService.playSound('magic');
+        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'mined', 'completed'].includes(this.accelerationInfo.status))) {
+          this.audioService.playSound('wind-chimes-harp-ascend');
+        } else {
+          this.audioService.playSound('magic');
+        }
         this.fetchAcceleration$.next(block.id);
       }
     });
@@ -500,7 +512,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
-      if (!found && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
+      if (!found && mempoolBlocks.length && txFeePerVSize < mempoolBlocks[mempoolBlocks.length - 1].feeRange[0]) {
         this.txInBlockIndex = 7;
       }
     });
@@ -519,6 +531,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.txId) {
       return;
     }
+    this.enterpriseService.goal(8);
     this.showAccelerationSummary = true && this.acceleratorAvailable;
     this.scrollIntoAccelPreview = !this.scrollIntoAccelPreview;
     return false;

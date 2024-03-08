@@ -12,6 +12,7 @@ export interface DifficultyAdjustment {
   previousTime: number;          // Unix time in ms
   nextRetargetHeight: number;    // Block Height
   timeAvg: number;               // Duration of time in ms
+  adjustedTimeAvg;               // Expected block interval with hashrate implied over last 504 blocks
   timeOffset: number;            // (Testnet) Time since last block (cap @ 20min) in ms
   expectedBlocks: number;         // Block count
 }
@@ -80,6 +81,7 @@ export function calcBitsDifference(oldBits: number, newBits: number): number {
 
 export function calcDifficultyAdjustment(
   DATime: number,
+  quarterEpochTime: number | null,
   nowSeconds: number,
   blockHeight: number,
   previousRetarget: number,
@@ -100,8 +102,20 @@ export function calcDifficultyAdjustment(
 
   let difficultyChange = 0;
   let timeAvgSecs = blocksInEpoch ? diffSeconds / blocksInEpoch : BLOCK_SECONDS_TARGET;
+  let adjustedTimeAvgSecs = timeAvgSecs;
 
-  difficultyChange = (BLOCK_SECONDS_TARGET / (actualTimespan / (blocksInEpoch + 1)) - 1) * 100;
+  // for the first 504 blocks of the epoch, calculate the expected avg block interval
+  // from a sliding window over the last 504 blocks
+  if (quarterEpochTime && blocksInEpoch < 503) {
+    const timeLastEpoch = DATime - quarterEpochTime;
+    const adjustedTimeLastEpoch = timeLastEpoch * (1 + (previousRetarget / 100));
+    const adjustedTimeSpan = diffSeconds + adjustedTimeLastEpoch;
+    adjustedTimeAvgSecs = adjustedTimeSpan / 503;
+    difficultyChange = (BLOCK_SECONDS_TARGET / (adjustedTimeSpan / 504) - 1) * 100;
+  } else {
+    difficultyChange = (BLOCK_SECONDS_TARGET / (actualTimespan / (blocksInEpoch + 1)) - 1) * 100;
+  }
+
   // Max increase is x4 (+300%)
   if (difficultyChange > 300) {
     difficultyChange = 300;
@@ -126,7 +140,8 @@ export function calcDifficultyAdjustment(
   }
 
   const timeAvg = Math.floor(timeAvgSecs * 1000);
-  const remainingTime = remainingBlocks * timeAvg;
+  const adjustedTimeAvg = Math.floor(adjustedTimeAvgSecs * 1000);
+  const remainingTime = remainingBlocks * adjustedTimeAvg;
   const estimatedRetargetDate = remainingTime + nowSeconds * 1000;
 
   return {
@@ -139,6 +154,7 @@ export function calcDifficultyAdjustment(
     previousTime: DATime,
     nextRetargetHeight,
     timeAvg,
+    adjustedTimeAvg,
     timeOffset,
     expectedBlocks,
   };
@@ -155,9 +171,10 @@ class DifficultyAdjustmentApi {
       return null;
     }
     const nowSeconds = Math.floor(new Date().getTime() / 1000);
+    const quarterEpochBlockTime = blocks.getQuarterEpochBlockTime();
 
     return calcDifficultyAdjustment(
-      DATime, nowSeconds, blockHeight, previousRetarget,
+      DATime, quarterEpochBlockTime, nowSeconds, blockHeight, previousRetarget,
       config.MEMPOOL.NETWORK, latestBlock.timestamp
     );
   }
