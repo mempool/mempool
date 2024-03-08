@@ -36,12 +36,13 @@ interface Pool {
 }
 
 interface AuditStatus {
-  seen: boolean;
-  expected: boolean;
-  added: boolean;
+  seen?: boolean;
+  expected?: boolean;
+  added?: boolean;
   delayed?: number;
-  accelerated: boolean;
-  conflict: boolean;
+  accelerated?: boolean;
+  conflict?: boolean;
+  coinbase?: boolean;
 }
 
 @Component({
@@ -296,6 +297,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap(({ hash, height, txid }) => {
         const foundBlock = this.cacheService.getCachedBlock(height) || null;
         const auditAvailable = this.isAuditAvailable(height);
+        const isCoinbase = this.tx.vin.some(v => v.is_coinbase);
+        const fetchAudit = auditAvailable && !isCoinbase;
         return combineLatest([
           foundBlock ? of(foundBlock.extras.pool) : this.apiService.getBlock$(hash).pipe(
             map(block => {
@@ -305,7 +308,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               return of(null);
             })
           ),
-          auditAvailable ? this.apiService.getBlockAudit$(hash).pipe(
+          fetchAudit ? this.apiService.getBlockAudit$(hash).pipe(
             map(audit => {
               const isAdded = audit.addedTxs.includes(txid);
               const isAccelerated = audit.acceleratedTxs.includes(txid);
@@ -322,7 +325,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             catchError(() => {
               return of(null);
             })
-          ) : of(null)
+          ) : of(isCoinbase ? { coinbase: true } : null)
         ]);
       }),
       catchError(() => {

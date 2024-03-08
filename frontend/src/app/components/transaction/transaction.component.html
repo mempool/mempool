@@ -78,7 +78,8 @@
                       {{ pool.name }}
                     </a>
                     <ng-container *ngIf="auditStatus">
-                      <span *ngIf="auditStatus.expected; else seen" class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span>
+                      <span *ngIf="auditStatus.coinbase; else expected" class="badge badge-primary mr-1" i18n="tx-features.tag.coinbase|Coinbase">Coinbase</span>
+                      <ng-template #expected><span *ngIf="auditStatus.expected; else seen" class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span></ng-template>
                       <ng-template #seen><span *ngIf="auditStatus.seen; else notSeen" class="badge badge-success mr-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span></ng-template>
                       <ng-template #notSeen><span class="badge badge-warning mr-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span></ng-template>
                       <span *ngIf="auditStatus.added" class="badge badge-primary mr-1" i18n-ngbTooltip="Added transaction tooltip" ngbTooltip="This transaction may have been added or prioritized out-of-band" placement="bottom" i18n="tx-features.tag.added|Added">Added</span>
