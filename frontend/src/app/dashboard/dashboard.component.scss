@@ -321,6 +321,9 @@
     flex-direction: column;
     justify-content: space-around;
     padding: 22px 20px;
+    &.liquid {
+      height: 124.5px;
+    }
   }
   .less-padding {
     padding: 20px 20px;

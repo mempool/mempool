@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
-import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, OptimizedMempoolStats, PegsVolume, RecentPeg } from '../interfaces/node-api.interface';
+import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, PegsVolume, RecentPeg } from '../interfaces/node-api.interface';
 import { MempoolInfo, TransactionStripped, ReplacementInfo } from '../interfaces/websocket.interface';
 import { ApiService } from '../services/api.service';
 import { StateService } from '../services/state.service';
@@ -57,6 +57,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   federationAddresses$: Observable<FederationAddress[]>;
   federationAddressesNumber$: Observable<number>;
   federationUtxosNumber$: Observable<number>;
+  expiredUtxos$: Observable<FederationUtxo[]>;
+  emergencySpentUtxosStats$: Observable<any>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
   filterSubscription: Subscription;
@@ -64,7 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currencySubscription: Subscription;
   currency: string;
   incomingGraphHeight: number = 300;
-  lbtcPegGraphHeight: number = 320;
+  lbtcPegGraphHeight: number = 360;
   private lastPegBlockUpdate: number = 0;
   private lastPegAmount: string = '';
   private lastReservesBlockUpdate: number = 0;
@@ -342,6 +344,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         map(count => count.utxo_count),
         share()
       );
+
+      this.expiredUtxos$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.expiredUtxos$()),
+        share()
+      );
+
+      this.emergencySpentUtxosStats$ = this.auditUpdated$.pipe(
+        filter(auditUpdated => auditUpdated === true),
+        throttleTime(40000),
+        switchMap(_ => this.apiService.emergencySpentUtxosStats$()),
+        share()
+      );
   
       this.liquidPegsMonth$ = interval(60 * 60 * 1000)
         .pipe(
@@ -432,15 +448,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (window.innerWidth >= 992) {
       this.incomingGraphHeight = 300;
       this.goggleResolution = 82;
-      this.lbtcPegGraphHeight = 320;
+      this.lbtcPegGraphHeight = 360;
     } else if (window.innerWidth >= 768) {
       this.incomingGraphHeight = 215;
       this.goggleResolution = 80;
-      this.lbtcPegGraphHeight = 230;
+      this.lbtcPegGraphHeight = 270;
     } else {
       this.incomingGraphHeight = 180;
       this.goggleResolution = 86;
-      this.lbtcPegGraphHeight = 220;
+      this.lbtcPegGraphHeight = 270;
     }
   }
 }

@@ -10,6 +10,9 @@
         <th class="amount text-right" [ngClass]="{'widget': widget}" i18n="shared.amount">Amount</th>
         <th class="pegin text-left" *ngIf="!widget" i18n="liquid.related-peg-in">Related Peg-In</th>
         <th class="timestamp text-left" i18n="shared.date" [ngClass]="{'widget': widget}">Date</th>
+        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === false" i18n="liquid.expires-in">Expires in</th>
+        <th class="expires-in text-left" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.expired-since">Expired since</th>
+        <th class="is-dust text-right" *ngIf="!widget && showExpiredUtxos === true" i18n="liquid.is-dust">Is Dust</th>
       </thead>
       <tbody *ngIf="federationUtxos$ | async as utxos; else skeleton" [style]="isLoading ? 'opacity: 0.75' : ''">
         <ng-container *ngIf="widget; else regularRows">
@@ -56,6 +59,13 @@
               &lrm;{{ utxo.blocktime * 1000 | date:'yyyy-MM-dd HH:mm' }}
               <div class="symbol lg-inline relative-time"><i>(<app-time kind="since" [time]="utxo.blocktime"></app-time>)</i></div>
             </td>
+            <td class="expires-in text-left" [ngStyle]="{ 'color': getGradientColor(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) }">
+              {{ utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate < 0 ? -(utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate) : utxo.blocknumber + utxo.timelock - lastReservesBlockUpdate }} <span i18n="shared.blocks" class="symbol">blocks</span>
+            </td>
+            <td *ngIf="!widget && showExpiredUtxos === true" class="is-dust text-right" [ngStyle]="{ 'color': !utxo.isDust ? '#D81B60' : '' }">
+              <div i18n="shared.yes" *ngIf="utxo.isDust">Yes</div>
+              <div i18n="shared.no" *ngIf="!utxo.isDust">No</div>
+            </td>
           </tr>
         </ng-template>
       </tbody>
@@ -88,6 +98,9 @@
               <span class="skeleton-loader" style="max-width: 300px"></span>
             </td>
             <td class="timestamp text-left">
+              <span class="skeleton-loader" style="max-width: 140px"></span>
+            </td>
+            <td class="expires-in text-left">
               <span class="skeleton-loader" style="max-width: 140px"></span>
             </td>
           </tr>

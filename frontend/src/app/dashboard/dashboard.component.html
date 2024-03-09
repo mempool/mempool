@@ -159,12 +159,28 @@
   <div class="container-xl dashboard-container" *ngIf="(auditStatus$ | async)?.isAuditSynced; else auditInProgress">
 
     <div class="row row-cols-1 row-cols-md-2">
+
+      <div class="col card-wrapper liquid">
+        <div class="main-title" i18n="liquid.federation-holdings">Liquid Federation Holdings</div>
+        <div class="card">
+          <div class="card-body liquid">
+            <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
+          </div>
+        </div>
+      </div>
+
+      <div class="col card-wrapper liquid">
+        <div class="main-title" i18n="liquid.federation-expired-utxos">Federation Timelock-Expired UTXOs</div>
+        <div class="card">
+          <div class="card-body liquid">
+            <app-expired-utxos-stats [expiredUtxos$]="expiredUtxos$"></app-expired-utxos-stats>
+          </div>
+        </div>
+      </div>
   
       <div class="col">
         <div class="card-liquid card">
-          <div class="card-title card-title-liquid">
-            <app-reserves-supply-stats [currentPeg$]="currentPeg$" [currentReserves$]="currentReserves$"></app-reserves-supply-stats>
-          </div>
+          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-against-btc-holdings">L-BTC Supply Against BTC Holdings</h5>
           <div class="card-body pl-0" style="padding-top: 10px;">
             <app-lbtc-pegs-graph [data]="fullHistory$ | async" [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </div>
@@ -174,7 +190,7 @@
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card"> 
           <div class="card-body">
-            <app-reserves-ratio-stats [fullHistory$]="fullHistory$"></app-reserves-ratio-stats>
+            <app-reserves-ratio-stats [fullHistory$]="fullHistory$" [emergencyUtxosStats$]="emergencySpentUtxosStats$"></app-reserves-ratio-stats>
             <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
           </div>
         </div>
@@ -283,13 +299,29 @@
   <div class="container-xl dashboard-container">
 
     <div class="row row-cols-1 row-cols-md-2">
+
+      <div class="col card-wrapper liquid">
+        <div class="main-title" i18n="liquid.federation-holdings">Liquid Federation Holdings</div>
+        <div class="card">
+          <div class="card-body liquid">
+            <app-reserves-supply-stats></app-reserves-supply-stats>
+          </div>
+        </div>
+      </div>
+
+      <div class="col card-wrapper liquid">
+        <div class="main-title" i18n="liquid.federation-expired-utxos">Federation Timelock-Expired UTXOs</div>
+        <div class="card">
+          <div class="card-body liquid">
+            <app-expired-utxos-stats></app-expired-utxos-stats>
+          </div>
+        </div>
+      </div>
   
       <div class="col">
         <div class="card-liquid card">
-          <div class="card-title card-title-liquid">
-            <app-reserves-supply-stats></app-reserves-supply-stats>
-          </div>
-          <div class="card-body pl-0" style="padding-top: 10px;">
+          <h5 class="card-title" style="padding-top: 20px;" i18n="dashboard.lbtc-supply-against-btc-holdings">L-BTC Supply Against BTC Holdings</h5>
+          <div class="card-body pl-0" style="padding-top: 25px;">
             <app-lbtc-pegs-graph [height]="lbtcPegGraphHeight"></app-lbtc-pegs-graph>
           </div>
         </div>

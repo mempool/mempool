@@ -103,6 +103,9 @@ export interface FederationUtxo {
   pegtxid: string;
   pegindex: number;
   pegblocktime: number;
+  timelock: number;
+  expiredAt: number;
+  isDust?: boolean;
 }
 
 export interface RecentPeg {
