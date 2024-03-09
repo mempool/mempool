@@ -61,6 +61,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   transactionsError: any = null;
   overviewError: any = null;
   webGlEnabled = true;
+  auditParamEnabled: boolean = false;
   auditSupported: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   auditModeEnabled: boolean = !this.stateService.hideAudit.value;
   auditAvailable = true;
@@ -124,9 +125,16 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.setAuditAvailable(this.auditSupported);
 
     if (this.auditSupported) {
-      this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
-        this.auditModeEnabled = !hide;
-        this.showAudit = this.auditAvailable && this.auditModeEnabled;
+      this.isAuditEnabledFromParam().subscribe(auditParam => {
+        if (this.auditParamEnabled) {
+          console.log(`auditParamEnabled: ${auditParam}`);
+          this.auditModeEnabled = auditParam;
+        } else {
+          this.auditPrefSubscription = this.stateService.hideAudit.subscribe(hide => {
+            this.auditModeEnabled = !hide;
+            this.showAudit = this.auditAvailable && this.auditModeEnabled;
+          });
+        }
       });
     }
 
@@ -723,12 +731,40 @@ export class BlockComponent implements OnInit, OnDestroy {
 
   toggleAuditMode(): void {
     this.stateService.hideAudit.next(this.auditModeEnabled);
+
+    this.route.queryParams.subscribe(params => {
+      let queryParams = { ...params };
+      delete queryParams['audit'];
+
+      let newUrl = this.router.url.split('?')[0];
+      let queryString = new URLSearchParams(queryParams).toString();
+      if (queryString) {
+        newUrl += '?' + queryString;
+      }
+  
+      this.location.replaceState(newUrl);
+    });
+
+    this.auditPrefSubscription = this.stateService.hideAudit.subscribe((hide) => {
+      this.auditModeEnabled = !hide;
+      this.showAudit = this.auditAvailable && this.auditModeEnabled;
+    });
   }
 
   updateAuditAvailableFromBlockHeight(blockHeight: number): void {
     if (!this.isAuditAvailableFromBlockHeight(blockHeight)) {
       this.setAuditAvailable(false);
     }
+  }
+
+  isAuditEnabledFromParam(): Observable<boolean> {
+    return this.route.queryParams.pipe(
+      map(params => {
+        this.auditParamEnabled = 'audit' in params;
+        
+        return this.auditParamEnabled ? !(params['audit'] === 'false') : true;
+      })
+    );
   }
 
   isAuditAvailableFromBlockHeight(blockHeight: number): boolean {
