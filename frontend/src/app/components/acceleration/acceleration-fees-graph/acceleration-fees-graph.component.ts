@@ -250,6 +250,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
           type: 'bar',
           barWidth: '90%',
           large: true,
+          barMinHeight: 1,
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{
