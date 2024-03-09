@@ -329,14 +329,29 @@ class PricesRepository {
         throw Error(`Cannot get single historical price from the database`);
       }
 
+      let pricesUsedForExchangeRates; // If we don't have a fx API key, we need to use the latest prices to compute the exchange rates
+      if (!config.MEMPOOL.CURRENCY_API_KEY) {
+        const [latestPrices] = await DB.query(`
+          SELECT ${ApiPriceFields}
+          FROM prices
+          ORDER BY time DESC
+          LIMIT 1
+        `);
+        if (!Array.isArray(latestPrices)) {
+          throw Error(`Cannot get single historical price from the database`);
+        }
+        pricesUsedForExchangeRates = latestPrices[0] as ApiPrice;
+      } else {
+        pricesUsedForExchangeRates = rates[0] as ApiPrice;
+      }
+      
       // Compute fiat exchange rates
-      let latestPrice = rates[0] as ApiPrice;
+      let latestPrice = pricesUsedForExchangeRates;
       if (!latestPrice || latestPrice.USD === -1) {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }
 
-      const computeFx = (usd: number, other: number): number =>
-        Math.round(Math.max(other, 0) / Math.max(usd, 1) * 100) / 100;
+      const computeFx = (usd: number, other: number): number => usd <= 0.05 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
       
       const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
         {
@@ -388,7 +403,8 @@ class PricesRepository {
         const filteredRates = rates.map((rate: any) => {
           return {
             time: rate.time,
-            [currency]: rate[currency]
+            [currency]: rate[currency],
+            ['USD']: rate['USD']
           };
         });
         return {
@@ -424,8 +440,8 @@ class PricesRepository {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }
 
-      const computeFx = (usd: number, other: number): number =>
-        Math.round(Math.max(other, 0) / Math.max(usd, 1) * 100) / 100;
+      const computeFx = (usd: number, other: number): number => 
+        usd <= 0 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
       
       const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
         {
@@ -477,7 +493,8 @@ class PricesRepository {
         const filteredRates = rates.map((rate: any) => {
           return {
             time: rate.time,
-            [currency]: rate[currency]
+            [currency]: rate[currency],
+            ['USD']: rate['USD']
           };
         });
         return {

@@ -98,6 +98,8 @@ export class PriceService {
 
   lastQueriedTimestamp: number;
   lastPriceHistoryUpdate: number;
+  lastQueriedCurrency: string;
+  lastQueriedHistoricalCurrency: string;
 
   historicalPrice: ConversionDict = {
     prices: null,
@@ -130,7 +132,7 @@ export class PriceService {
     };
   }
 
-  getBlockPrice$(blockTimestamp: number, singlePrice = false): Observable<Price | undefined> {
+  getBlockPrice$(blockTimestamp: number, singlePrice = false, currency: string): Observable<Price | undefined> {
     if (this.stateService.env.BASE_MODULE !== 'mempool' || !this.stateService.env.HISTORICAL_PRICE) {
       return of(undefined);
     }
@@ -142,9 +144,10 @@ export class PriceService {
      * query a different timestamp than the last one
      */
     if (singlePrice) {
-      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && blockTimestamp !== this.lastQueriedTimestamp)) {
-        this.singlePriceObservable$ = this.apiService.getHistoricalPrice$(blockTimestamp).pipe(shareReplay());
+      if (!this.singlePriceObservable$ || (this.singlePriceObservable$ && (blockTimestamp !== this.lastQueriedTimestamp || currency !== this.lastQueriedCurrency))) {
+        this.singlePriceObservable$ = this.apiService.getHistoricalPrice$(blockTimestamp, currency).pipe(shareReplay());
         this.lastQueriedTimestamp = blockTimestamp;
+        this.lastQueriedCurrency = currency;
       }
 
       return this.singlePriceObservable$.pipe(
@@ -177,9 +180,10 @@ export class PriceService {
      * Query all price history only once. The observable is invalidated after 1 hour
      */
     else {
-      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600))) {
-        this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined).pipe(shareReplay());
+      if (!this.priceObservable$ || (this.priceObservable$ && (now - this.lastPriceHistoryUpdate > 3600 || currency !== this.lastQueriedHistoricalCurrency))) {
+        this.priceObservable$ = this.apiService.getHistoricalPrice$(undefined, currency).pipe(shareReplay());
         this.lastPriceHistoryUpdate = new Date().getTime() / 1000;
+        this.lastQueriedHistoricalCurrency = currency;
       }
 
       return this.priceObservable$.pipe(

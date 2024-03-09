@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, OnInit } from '@angular/core';
-import { tap } from 'rxjs';
+import { Subscription, of, switchMap, tap } from 'rxjs';
 import { Price, PriceService } from '../../services/price.service';
 import { StateService } from '../../services/state.service';
 import { environment } from '../../../environments/environment';
@@ -35,6 +35,7 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
 
   tooltipPosition = { x: 0, y: 0 };
   blockConversion: Price;
+  currencyChangeSubscription: Subscription;
 
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
@@ -47,11 +48,14 @@ export class TxBowtieGraphTooltipComponent implements OnChanges {
 
   ngOnChanges(changes): void {
     if (changes.line?.currentValue) {
-      this.priceService.getBlockPrice$(changes.line?.currentValue.timestamp, true).pipe(
-        tap((price) => {
-          this.blockConversion = price;
-        })
-      ).subscribe();
+      this.currencyChangeSubscription?.unsubscribe();
+          this.currencyChangeSubscription = this.stateService.fiatCurrency$.pipe(
+            switchMap((currency) => {
+              return changes.line?.currentValue.timestamp ? this.priceService.getBlockPrice$(changes.line?.currentValue.timestamp, true, currency).pipe(
+                tap((price) => this.blockConversion = price),
+              ) : of(undefined);
+            })
+          ).subscribe();
     }
 
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
