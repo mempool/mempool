@@ -83,7 +83,7 @@ const routes = {
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/previews/dashboard.png',
+    fallbackImg: '/resources/previews/mempool-space-preview.png',
     routes: {
       ...routes // all routes supported
     }
