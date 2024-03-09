@@ -2028,7 +2028,7 @@
         </context-group>
         <note priority="1" from="description">dashboard.recent-accelerations</note>
       </trans-unit>
-      <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
+      <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
         <source>Accelerator Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.ts</context>
@@ -2036,15 +2036,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3590f5c3ef2810f637316edb8aaa86b8e907f152" datatype="html">
@@ -2174,7 +2166,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.address" datatype="html">
-        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network===&apos;liquid&apos;||this.stateService.network===&apos;liquidtestnet&apos;?&apos;Liquid&apos;:&apos;Bitcoin&apos;"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network===&apos;liquid&apos;||this.stateService.network===&apos;liquidtestnet&apos;?&apos;Liquid&apos;:&apos;Bitcoin&apos;"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -4671,13 +4663,21 @@
         </context-group>
         <note priority="1" from="description">dashboard.btc-holdings</note>
       </trans-unit>
-      <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
-        <source>Accelerator Dashboard</source>
+      <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
+        <source>Mining Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">62</context>
         </context-group>
-        <note priority="1" from="description">master-page.accelerator-dashboard</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">mining.mining-dashboard</note>
       </trans-unit>
       <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
         <source>Lightning Explorer</source>

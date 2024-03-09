@@ -40,7 +40,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
   ) {
-    this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
+    this.seoService.setTitle($localize`:@@6b867dc61c6a92f3229f1950f9f2d414790cce95:Accelerator Dashboard`);
     this.ogService.setManualOgImage('accelerator.jpg');
   }
 
