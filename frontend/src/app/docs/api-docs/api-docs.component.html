@@ -39,7 +39,7 @@
 
       <div class="doc-content">
 
-        <div id="enterprise-cta-mobile" *ngIf="showMobileEnterpriseUpsell">
+        <div id="enterprise-cta-mobile" *ngIf="officialMempoolInstance && showMobileEnterpriseUpsell">
           <p>Get higher API limits with <span class="no-line-break">Mempool Enterprise®</span></p>
           <div class="button-group">
             <a class="btn btn-small btn-secondary" (click)="showMobileEnterpriseUpsell = false">No Thanks</a>
