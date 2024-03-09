@@ -116,7 +116,7 @@ export class WebsocketService {
             this.startMultiTrackTransaction(this.trackingTxId);
           }
           if (this.isTrackingMempoolBlock) {
-            this.startTrackMempoolBlock(this.trackingMempoolBlock);
+            this.startTrackMempoolBlock(this.trackingMempoolBlock, true);
           }
           if (this.isTrackingRbf) {
             this.startTrackRbf(this.isTrackingRbf);
@@ -197,9 +197,9 @@ export class WebsocketService {
     this.websocketSubject.next({ 'track-asset': 'stop' });
   }
 
-  startTrackMempoolBlock(block: number) {
+  startTrackMempoolBlock(block: number, force: boolean = false) {
     // skip duplicate tracking requests
-    if (this.trackingMempoolBlock !== block) {
+    if (force || this.trackingMempoolBlock !== block) {
       this.websocketSubject.next({ 'track-mempool-block': block });
       this.isTrackingMempoolBlock = true;
       this.trackingMempoolBlock = block;

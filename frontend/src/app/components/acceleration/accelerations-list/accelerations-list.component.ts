@@ -44,7 +44,7 @@ export class AccelerationsListComponent implements OnInit {
     
     this.accelerationList$ = this.pageSubject.pipe(
       switchMap((page) => {
-        const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistoryObserveResponse$({ timeframe: '1y', page: page }));
+        const accelerationObservable$ = this.accelerations$ || (this.pending ? this.servicesApiService.getAccelerations$() : this.servicesApiService.getAccelerationHistoryObserveResponse$({ page: page }));
         return accelerationObservable$.pipe(
           switchMap(response => {
             let accelerations = response;

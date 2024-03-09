@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
-import { Observable, Subscription, combineLatest, fromEvent } from 'rxjs';
+import { Observable, Subscription, combineLatest, fromEvent, share } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { SeoService } from '../../../services/seo.service';
 import { formatNumber } from '@angular/common';
@@ -41,8 +41,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
     renderer: 'svg',
   };
 
-  hrStatsObservable$: Observable<any>;
-  statsObservable$: Observable<any>;
+  aggregatedHistory$: Observable<any>;
   statsSubscription: Subscription;
   isLoading = true;
   formatNumber = formatNumber;
@@ -50,6 +49,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
   chartInstance: any = undefined;
 
   currency: string;
+  daysAvailable: number = 0;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -81,7 +81,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
         this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
       }
     });
-    this.statsObservable$ = combineLatest([
+    this.aggregatedHistory$ = combineLatest([
       this.radioGroupForm.get('dateSpan').valueChanges.pipe(
         startWith(this.radioGroupForm.controls.dateSpan.value),
         switchMap((timespan) => {
@@ -95,14 +95,17 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
       ),
       fromEvent(window, 'resize').pipe(startWith(null)),
     ]).pipe(
-      tap(([history]) => {
+      tap(([response]) => {
+        const history: Acceleration[] = response.body;
+        this.daysAvailable = (new Date().getTime() / 1000 - response.headers.get('x-oldest-accel')) / (24 * 3600);
         this.isLoading = false;
         this.prepareChartOptions(history);
         this.cd.markForCheck();
-      })
+      }),
+      share(),
     );
 
-    this.statsObservable$.subscribe();
+    this.aggregatedHistory$.subscribe();
   }
 
   prepareChartOptions(data) {
@@ -247,6 +250,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnDestroy {
           type: 'bar',
           barWidth: '90%',
           large: true,
+          barMinHeight: 1,
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{

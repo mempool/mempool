@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Env, StateService } from '../../services/state.service';
-import { Observable, merge, of } from 'rxjs';
+import { Observable, merge, of, Subscription } from 'rxjs';
 import { LanguageService } from '../../services/language.service';
 import { EnterpriseService } from '../../services/enterprise.service';
 import { NavigationService } from '../../services/navigation.service';
@@ -14,7 +14,7 @@ import { ApiService } from '../../services/api.service';
   templateUrl: './master-page.component.html',
   styleUrls: ['./master-page.component.scss'],
 })
-export class MasterPageComponent implements OnInit {
+export class MasterPageComponent implements OnInit, OnDestroy {
   @Input() headerVisible = true;
   @Input() footerVisibleOverride: boolean | null = null;
 
@@ -32,6 +32,9 @@ export class MasterPageComponent implements OnInit {
   user: any = undefined;
   servicesEnabled = false;
   menuOpen = false;
+  
+  enterpriseInfo: any;
+  enterpriseInfo$: Subscription;
 
   @ViewChild(MenuComponent)
   public menuComponent!: MenuComponent;
@@ -64,12 +67,21 @@ export class MasterPageComponent implements OnInit {
         this.footerVisible = this.footerVisibleOverride;
       }
     });
+    this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
+      this.enterpriseInfo = info;
+    });
     
     this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
     this.refreshAuth();
 
     const isServicesPage = this.router.url.includes('/services/');
     this.menuOpen = isServicesPage && !this.isSmallScreen();
+  }
+
+  ngOnDestroy() {
+    if (this.enterpriseInfo$) {
+      this.enterpriseInfo$.unsubscribe();
+    }
   }
 
   collapse(): void {
