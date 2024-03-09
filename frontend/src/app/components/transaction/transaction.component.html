@@ -78,7 +78,8 @@
                       {{ pool.name }}
                     </a>
                     <ng-container *ngIf="auditStatus">
-                      <span *ngIf="auditStatus.coinbase; else expected" class="badge badge-primary mr-1" i18n="tx-features.tag.coinbase|Coinbase">Coinbase</span>
+                      <span *ngIf="auditStatus.coinbase; else accelerated" class="badge badge-primary mr-1" i18n="tx-features.tag.coinbase|Coinbase">Coinbase</span>
+                      <ng-template #accelerated><span *ngIf="auditStatus.accelerated || accelerationInfo || (tx && tx.acceleration) ; else expected" class="badge badge-accelerated mr-1" i18n="transaction.audit.accelerated">Accelerated</span></ng-template>
                       <ng-template #expected><span *ngIf="auditStatus.expected; else seen" class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span></ng-template>
                       <ng-template #seen><span *ngIf="auditStatus.seen; else notSeen" class="badge badge-success mr-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span></ng-template>
                       <ng-template #notSeen><span class="badge badge-warning mr-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span></ng-template>
@@ -554,10 +555,6 @@
 
             <ng-template [ngIf]="tx?.status?.confirmed || tx.acceleration || accelerationInfo">
               <app-tx-fee-rating *ngIf="!(tx.acceleration || accelerationInfo) && (tx.fee || tx.effectiveFeePerVsize)" class="ml-2 mr-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
-              <ng-container *ngIf="accelerationInfo || tx.acceleration">
-                &nbsp;
-                <span class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
-              </ng-container>
             </ng-template>
           </div>
           <button *ngIf="cpfpInfo?.bestDescendant || cpfpInfo?.descendants?.length || cpfpInfo?.ancestors?.length" type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="showCpfpDetails = !showCpfpDetails">CPFP <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></button>
