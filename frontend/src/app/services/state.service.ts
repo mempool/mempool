@@ -89,6 +89,7 @@ const defaultEnv: Env = {
 })
 export class StateService {
   isBrowser: boolean = isPlatformBrowser(this.platformId);
+  isMempoolSpaceBuild = window['isMempoolSpaceBuild'] ?? false;
   network = '';
   lightning = false;
   blockVSize: number;

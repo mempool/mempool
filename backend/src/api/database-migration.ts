@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 71;
+  private static currentVersion = 72;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -605,6 +605,12 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `federation_txos` ADD expiredAt INT NOT NULL DEFAULT 0');
       await this.$executeQuery('ALTER TABLE `federation_txos` ADD emergencyKey TINYINT NOT NULL DEFAULT 0');
       await this.updateToSchemaVersion(71);
+    }
+
+    if (databaseSchemaVersion < 72 && isBitcoin === true) {
+      // reindex Goggles flags for mined block templates above height 833000
+      await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
+      await this.updateToSchemaVersion(72);
     }
   }
 
