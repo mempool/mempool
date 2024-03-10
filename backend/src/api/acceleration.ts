@@ -33,7 +33,7 @@ interface GraphTx {
   vsize: number;
   weight: number;
   fees: {
-    base: number;
+    base: number; // in sats
   };
   depends: string[];
   spentby: string[];
@@ -42,7 +42,7 @@ interface GraphTx {
 interface MempoolTx extends GraphTx {
   ancestorcount: number;
   ancestorsize: number;
-  fees: {
+  fees: { // in sats
     base: number;
     ancestor: number;
   };
@@ -317,7 +317,7 @@ class AccelerationCosts {
       throw new Error('invalid_tx_dependencies');
     }
 
-    let totalFee = Math.round(tx.fees.ancestor * 100_000_000);
+    let totalFee = tx.fees.ancestor;
 
     // transaction is already CPFP-d above the target rate by some descendant
     if (includedInCluster) {
@@ -325,7 +325,7 @@ class AccelerationCosts {
       let clusterFee = 0;
       includedInCluster.forEach(entry => {
         clusterSize += entry.vsize;
-        clusterFee += (entry.fees.base * 100_000_000);
+        clusterFee += entry.fees.base;
       });
       const clusterRate = clusterFee / clusterSize;
       totalFee = Math.ceil(tx.ancestorsize * clusterRate);
@@ -448,8 +448,8 @@ class AccelerationCosts {
    * @param tx 
    */
   private setAncestorScores(tx: MempoolTx): void {
-    tx.individualRate = (tx.fees.base * 100_000_000) / tx.vsize;
-    tx.ancestorRate = (tx.fees.ancestor * 100_000_000) / tx.ancestorsize;
+    tx.individualRate = tx.fees.base / tx.vsize;
+    tx.ancestorRate = tx.fees.ancestor / tx.ancestorsize;
     tx.score = Math.min(tx.individualRate, tx.ancestorRate);
   }
 

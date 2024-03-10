@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 72;
+  private static currentVersion = 73;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -611,6 +611,13 @@ class DatabaseMigration {
       // reindex Goggles flags for mined block templates above height 833000
       await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
       await this.updateToSchemaVersion(72);
+    }
+
+    if (databaseSchemaVersion < 73 && isBitcoin === true) {
+      // Clear bad data
+      await this.$executeQuery(`TRUNCATE accelerations`);
+      this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
+      await this.updateToSchemaVersion(73);
     }
   }
 
