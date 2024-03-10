@@ -6,6 +6,7 @@ import { Transaction } from '../../interfaces/electrs.interface';
 import { nextRoundNumber } from '../../shared/common.utils';
 import { ServicesApiServices } from '../../services/services-api.service';
 import { AudioService } from '../../services/audio.service';
+import { StateService } from '../../services/state.service';
 
 export type AccelerationEstimate = {
   txSummary: TxSummary;
@@ -63,6 +64,7 @@ export class AcceleratePreviewComponent implements OnInit, OnDestroy, OnChanges 
   maxRateOptions: RateOption[] = [];
 
   constructor(
+    public stateService: StateService,
     private servicesApiService: ServicesApiServices,
     private storageService: StorageService,
     private audioService: AudioService,
