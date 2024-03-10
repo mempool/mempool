@@ -41,7 +41,7 @@ export class AcceleratorDashboardComponent implements OnInit {
     private stateService: StateService,
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
-    this.ogService.setManualOgImage('acceleration.jpg');
+    this.ogService.setManualOgImage('accelerator.jpg');
   }
 
   ngOnInit(): void {
