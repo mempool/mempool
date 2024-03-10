@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
 import { SeoService } from '../../../services/seo.service';
+import { OpenGraphService } from '../../../services/opengraph.service';
 import { WebsocketService } from '../../../services/websocket.service';
 import { Acceleration, BlockExtended } from '../../../interfaces/node-api.interface';
 import { StateService } from '../../../services/state.service';
@@ -34,11 +35,13 @@ export class AcceleratorDashboardComponent implements OnInit {
 
   constructor(
     private seoService: SeoService,
+    private ogService: OpenGraphService,
     private websocketService: WebsocketService,
     private serviceApiServices: ServicesApiServices,
     private stateService: StateService,
   ) {
     this.seoService.setTitle($localize`:@@a681a4e2011bb28157689dbaa387de0dd0aa0c11:Accelerator Dashboard`);
+    this.ogService.setManualOgImage('acceleration.jpg');
   }
 
   ngOnInit(): void {
