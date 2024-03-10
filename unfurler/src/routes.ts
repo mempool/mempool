@@ -30,7 +30,7 @@ const routes = {
   },
   lightning: {
     title: "Lightning",
-    fallbackImg: '/resources/previews/lightning.png',
+    fallbackImg: '/resources/previews/lightning.jpg',
     routes: {
       node: {
         render: true,
@@ -68,7 +68,7 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/previews/mining.png',
+    fallbackImg: '/resources/previews/mining.jpg',
     routes: {
       pool: {
         render: true,
@@ -83,7 +83,7 @@ const routes = {
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/previews/mempool-space-preview.png',
+    fallbackImg: '/resources/previews/mempool-space-preview.jpg',
     routes: {
       ...routes // all routes supported
     }
