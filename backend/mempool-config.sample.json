@@ -36,8 +36,7 @@
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
     "PRICE_UPDATES_PER_HOUR": 1,
-    "MAX_TRACKED_ADDRESSES": 100,
-    "CURRENCY_API_KEY": "your-api-key-from-freecurrencyapi.com"
+    "MAX_TRACKED_ADDRESSES": 100
   },
   "CORE_RPC": {
     "HOST": "127.0.0.1",
@@ -156,5 +155,9 @@
   "MEMPOOL_SERVICES": {
     "API": "https://mempool.space/api",
     "ACCELERATIONS": false
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "API_KEY": "your-api-key-from-freecurrencyapi.com"
   }
 }

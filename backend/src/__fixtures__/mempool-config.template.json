@@ -37,8 +37,7 @@
     "MAX_PUSH_TX_SIZE_WEIGHT": 4000000,
     "ALLOW_UNREACHABLE": true,
     "PRICE_UPDATES_PER_HOUR": 1,
-    "MAX_TRACKED_ADDRESSES": 1,
-    "CURRENCY_API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
+    "MAX_TRACKED_ADDRESSES": 1
   },
   "CORE_RPC": {
     "HOST": "__CORE_RPC_HOST__",
@@ -148,5 +147,9 @@
     "ENABLED": false,
     "UNIX_SOCKET_PATH": "/tmp/redis.sock",
     "BATCH_QUERY_BASE_SIZE": 5000
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
   }
 }
