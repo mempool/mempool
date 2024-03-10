@@ -6,6 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 import { seoDescriptionNetwork } from '../../shared/common.utils';
 
 @Component({
@@ -39,6 +40,7 @@ export class BlocksList implements OnInit {
     public stateService: StateService,
     private cd: ChangeDetectorRef,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
   ) {
     this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
   }
@@ -57,6 +59,7 @@ export class BlocksList implements OnInit {
 
     if (!this.widget) {
       this.seoService.setTitle($localize`:@@m8a7b4bd44c0ac71b2e72de0398b303257f7d2f54:Blocks`);
+      this.ogService.setManualOgImage('recent-blocks.jpg');
     }
     if( this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet' ) {
       this.seoService.setDescription($localize`:@@meta.description.liquid.blocks:See the most recent Liquid${seoDescriptionNetwork(this.stateService.network)} blocks along with basic stats such as block height, block size, and more.`);
