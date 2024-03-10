@@ -53,7 +53,7 @@ export class OpenGraphService {
     const lang = this.LanguageService.getLanguage();
     const ogImageUrl = `${window.location.protocol}//${window.location.host}/render/${lang}/preview${this.router.url}`;
     this.metaService.updateTag({ property: 'og:image', content: ogImageUrl });
-    this.metaService.updateTag({ property: 'twitter:image:src', content: ogImageUrl });
+    this.metaService.updateTag({ name: 'twitter:image', content: ogImageUrl });
     this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1200' });
     this.metaService.updateTag({ property: 'og:image:height', content: '600' });
@@ -61,7 +61,7 @@ export class OpenGraphService {
 
   clearOgImage() {
     this.metaService.updateTag({ property: 'og:image', content: this.defaultImageUrl });
-    this.metaService.updateTag({ property: 'twitter:image:src', content: this.defaultImageUrl });
+    this.metaService.updateTag({ name: 'twitter:image', content: this.defaultImageUrl });
     this.metaService.updateTag({ property: 'og:image:type', content: 'image/png' });
     this.metaService.updateTag({ property: 'og:image:width', content: '1000' });
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
