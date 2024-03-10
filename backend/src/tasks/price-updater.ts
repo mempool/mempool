@@ -70,7 +70,7 @@ class PriceUpdater {
     this.feeds.push(new BitfinexApi());
     this.feeds.push(new GeminiApi());
 
-    this.currencyConversionFeed = new FreeCurrencyApi(config.MEMPOOL.CURRENCY_API_KEY);
+    this.currencyConversionFeed = new FreeCurrencyApi(config.FIAT_PRICE.API_KEY);
     this.setCyclePosition();
   }
 
@@ -146,7 +146,7 @@ class PriceUpdater {
       this.additionalCurrenciesHistoryInserted = false;
     }
 
-    if (config.MEMPOOL.CURRENCY_API_KEY && this.currencyConversionFeed && (Math.round(new Date().getTime() / 1000) - this.lastTimeConversionsRatesFetched) > 3600 * 24) {
+    if (config.FIAT_PRICE.API_KEY && this.currencyConversionFeed && (Math.round(new Date().getTime() / 1000) - this.lastTimeConversionsRatesFetched) > 3600 * 24) {
       // Once a day, fetch conversion rates from api: we don't need more granularity for fiat currencies and have a limited number of requests
       try {
         this.latestConversionsRatesFromFeed = await this.currencyConversionFeed.$fetchLatestConversionRates();
@@ -162,7 +162,7 @@ class PriceUpdater {
       if (this.historyInserted === false && config.DATABASE.ENABLED === true) {
         await this.$insertHistoricalPrices();
       }
-      if (this.additionalCurrenciesHistoryInserted === false && config.DATABASE.ENABLED === true && config.MEMPOOL.CURRENCY_API_KEY && !this.additionalCurrenciesHistoryRunning) {
+      if (this.additionalCurrenciesHistoryInserted === false && config.DATABASE.ENABLED === true && config.FIAT_PRICE.API_KEY && !this.additionalCurrenciesHistoryRunning) {
         await this.$insertMissingAdditionalPrices();
       }
     } catch (e: any) {
@@ -244,7 +244,7 @@ class PriceUpdater {
       }
     }
 
-    if (config.MEMPOOL.CURRENCY_API_KEY && this.latestPrices.USD > 0 && Object.keys(this.latestConversionsRatesFromFeed).length > 0) {
+    if (config.FIAT_PRICE.API_KEY && this.latestPrices.USD > 0 && Object.keys(this.latestConversionsRatesFromFeed).length > 0) {
       for (const conversionCurrency of this.newCurrencies) {
         if (this.latestConversionsRatesFromFeed[conversionCurrency] > 0 && this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency] < MAX_PRICES[conversionCurrency]) {
           this.latestPrices[conversionCurrency] = Math.round(this.latestPrices.USD * this.latestConversionsRatesFromFeed[conversionCurrency]);

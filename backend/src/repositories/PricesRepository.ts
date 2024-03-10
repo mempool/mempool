@@ -40,7 +40,7 @@ export interface ApiPrice {
   ZAR: number,
 }
 
-const ApiPriceFields = config.MEMPOOL.CURRENCY_API_KEY ?
+const ApiPriceFields = config.FIAT_PRICE.API_KEY ?
     `
       UNIX_TIMESTAMP(time) as time,
       USD,
@@ -181,7 +181,7 @@ class PricesRepository {
     }
     
     try {
-      if (!config.MEMPOOL.CURRENCY_API_KEY) { // Store only the 7 main currencies
+      if (!config.FIAT_PRICE.API_KEY) { // Store only the 7 main currencies
           await DB.query(`
           INSERT INTO prices(time,             USD, EUR, GBP, CAD, CHF, AUD, JPY)
           VALUE             (FROM_UNIXTIME(?), ?,   ?,   ?,   ?,   ?,   ?,   ?  )`,
@@ -330,7 +330,7 @@ class PricesRepository {
       }
 
       let pricesUsedForExchangeRates; // If we don't have a fx API key, we need to use the latest prices to compute the exchange rates
-      if (!config.MEMPOOL.CURRENCY_API_KEY) {
+      if (!config.FIAT_PRICE.API_KEY) {
         const [latestPrices] = await DB.query(`
           SELECT ${ApiPriceFields}
           FROM prices
@@ -353,7 +353,7 @@ class PricesRepository {
 
       const computeFx = (usd: number, other: number): number => usd <= 0.05 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
       
-      const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),
@@ -443,7 +443,7 @@ class PricesRepository {
       const computeFx = (usd: number, other: number): number => 
         usd <= 0 ? 0 : Math.round(Math.max(other, 0) / usd * 100) / 100;
       
-      const exchangeRates: ExchangeRates = config.MEMPOOL.CURRENCY_API_KEY ? 
+      const exchangeRates: ExchangeRates = config.FIAT_PRICE.API_KEY ? 
         {
           USDEUR: computeFx(latestPrice.USD, latestPrice.EUR),
           USDGBP: computeFx(latestPrice.USD, latestPrice.GBP),

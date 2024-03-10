@@ -116,7 +116,7 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet'].includes(config.MEMPOOL.NETWORK)) {
+        if (!['testnet', 'signet'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
           let lastestPriceId;
           try {
             lastestPriceId = await PricesRepository.$getLatestPriceId();
@@ -148,10 +148,12 @@ class Indexer {
       return;
     }
 
-    try {
-      await priceUpdater.$run();
-    } catch (e) {
-      logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
+    if (config.FIAT_PRICE.ENABLED) {
+      try {
+        await priceUpdater.$run();
+      } catch (e) {
+        logger.err(`Running priceUpdater failed. Reason: ` + (e instanceof Error ? e.message : e));
+      }
     }
 
     // Do not attempt to index anything unless Bitcoin Core is fully synced
