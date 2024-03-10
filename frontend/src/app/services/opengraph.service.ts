@@ -67,6 +67,15 @@ export class OpenGraphService {
     this.metaService.updateTag({ property: 'og:image:height', content: '500' });
   }
 
+  setManualOgImage(imageFilename) {
+    const ogImage = `${window.location.protocol}//${window.location.host}/resources/previews/${imageFilename}`;
+    this.metaService.updateTag({ property: 'og:image', content: ogImage });
+    this.metaService.updateTag({ property: 'og:image:type', content: 'image/jpeg' });
+    this.metaService.updateTag({ property: 'og:image:width', content: '2000' });
+    this.metaService.updateTag({ property: 'og:image:height', content: '1000' });
+    this.metaService.updateTag({ name: 'twitter:image', content: ogImage });
+  }
+
   /// register an event that needs to resolve before we can take a screenshot
   waitFor(event) {
     if (!this.previewLoadingEvents[event]) {
