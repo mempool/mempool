@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Env, StateService } from '../../services/state.service';
 import { SeoService } from '../../services/seo.service';
+import { OpenGraphService } from '../../services/opengraph.service';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -13,10 +14,12 @@ export class PrivacyPolicyComponent {
   constructor(
     private stateService: StateService,
     private seoService: SeoService,
+    private ogService: OpenGraphService,
   ) { }
 
   ngOnInit(): void {
     this.seoService.setTitle('Privacy Policy');
     this.seoService.setDescription('Trusted third parties are security holes, as are trusted first parties...you should only trust your own self-hosted instance of The Mempool Open Source Project®.');
+    this.ogService.setManualOgImage('privacy.jpg');
   }
 }
