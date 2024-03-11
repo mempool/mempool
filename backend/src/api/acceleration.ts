@@ -238,7 +238,7 @@ class AccelerationCosts {
   private convertToGraphTx(tx: MempoolTransactionExtended): GraphTx {
     return {
       txid: tx.txid,
-      vsize: tx.vsize,
+      vsize: Math.ceil(tx.weight / 4),
       weight: tx.weight,
       fees: {
         base: 0, // dummy
@@ -256,7 +256,7 @@ class AccelerationCosts {
         ancestor: tx.fees.base,
       },
       ancestorcount: 1,
-      ancestorsize: tx.vsize,
+      ancestorsize: Math.ceil(tx.weight / 4),
       ancestors: new Map<string, MempoolTx>(),
       ancestorRate: 0,
       individualRate: 0,
@@ -493,7 +493,7 @@ interface MinerTransaction extends TemplateTransaction {
 * Build a block using an approximation of the transaction selection algorithm from Bitcoin Core
 * (see BlockAssembler in https://github.com/bitcoin/bitcoin/blob/master/src/node/miner.cpp)
 */
-function makeBlockTemplate(candidates: IEsploraApi.Transaction[], accelerations: Acceleration[], maxBlocks: number = 8, weightLimit: number = BLOCK_WEIGHT_UNITS, sigopLimit: number = BLOCK_SIGOPS): TemplateTransaction[] {
+export function makeBlockTemplate(candidates: IEsploraApi.Transaction[], accelerations: Acceleration[], maxBlocks: number = 8, weightLimit: number = BLOCK_WEIGHT_UNITS, sigopLimit: number = BLOCK_SIGOPS): TemplateTransaction[] {
   const auditPool: Map<string, MinerTransaction> = new Map();
   const mempoolArray: MinerTransaction[] = [];
   
