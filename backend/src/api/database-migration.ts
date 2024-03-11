@@ -613,7 +613,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(72);
     }
 
-    if (databaseSchemaVersion < 73 config.MEMPOOL.NETWORK === 'mainnet') {
+    if (databaseSchemaVersion < 73 && config.MEMPOOL.NETWORK === 'mainnet') {
       // Clear bad data
       await this.$executeQuery(`TRUNCATE accelerations`);
       this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
