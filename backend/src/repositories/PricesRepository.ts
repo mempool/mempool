@@ -329,24 +329,18 @@ class PricesRepository {
         throw Error(`Cannot get single historical price from the database`);
       }
 
-      let pricesUsedForExchangeRates; // If we don't have a fx API key, we need to use the latest prices to compute the exchange rates
-      if (!config.FIAT_PRICE.API_KEY) {
-        const [latestPrices] = await DB.query(`
-          SELECT ${ApiPriceFields}
-          FROM prices
-          ORDER BY time DESC
-          LIMIT 1
-        `);
-        if (!Array.isArray(latestPrices)) {
-          throw Error(`Cannot get single historical price from the database`);
-        }
-        pricesUsedForExchangeRates = latestPrices[0] as ApiPrice;
-      } else {
-        pricesUsedForExchangeRates = rates[0] as ApiPrice;
-      }
+      const [latestPrices] = await DB.query(`
+        SELECT ${ApiPriceFields}
+        FROM prices
+        ORDER BY time DESC
+        LIMIT 1
+      `);
+      if (!Array.isArray(latestPrices)) {
+        throw Error(`Cannot get single historical price from the database`);
+      }      
       
       // Compute fiat exchange rates
-      let latestPrice = pricesUsedForExchangeRates;
+      let latestPrice = latestPrices[0] as ApiPrice;
       if (!latestPrice || latestPrice.USD === -1) {
         latestPrice = priceUpdater.getEmptyPricesObj();
       }

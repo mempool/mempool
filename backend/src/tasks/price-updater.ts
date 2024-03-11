@@ -26,8 +26,8 @@ export interface PriceHistory {
 
 export interface ConversionFeed {
   $getQuota(): Promise<any>;
-  $fetchLatestConversionRates(): Promise<any>;
-  $fetchConversionRates(date: string): Promise<any>;
+  $fetchLatestConversionRates(): Promise<ConversionRates>;
+  $fetchConversionRates(date: string): Promise<ConversionRates>;
 }
 
 export interface ConversionRates {
@@ -46,6 +46,7 @@ class PriceUpdater {
   public historyInserted = false;
   private additionalCurrenciesHistoryInserted = false;
   private additionalCurrenciesHistoryRunning = false;
+  private lastFailedHistoricalRun = 0;
   private timeBetweenUpdatesMs = 360_0000 / config.MEMPOOL.PRICE_UPDATES_PER_HOUR;
   private cyclePosition = -1;
   private firstRun = true;
@@ -146,6 +147,11 @@ class PriceUpdater {
       this.additionalCurrenciesHistoryInserted = false;
     }
 
+    if (this.lastFailedHistoricalRun > 0 && (Math.round(new Date().getTime() / 1000) - this.lastFailedHistoricalRun) > 60) {
+      // If the last attempt to insert missing prices failed, we try again after 60 seconds
+      this.additionalCurrenciesHistoryInserted = false;
+    }
+
     if (config.FIAT_PRICE.API_KEY && this.currencyConversionFeed && (Math.round(new Date().getTime() / 1000) - this.lastTimeConversionsRatesFetched) > 3600 * 24) {
       // Once a day, fetch conversion rates from api: we don't need more granularity for fiat currencies and have a limited number of requests
       try {
@@ -165,6 +171,7 @@ class PriceUpdater {
       if (this.additionalCurrenciesHistoryInserted === false && config.DATABASE.ENABLED === true && config.FIAT_PRICE.API_KEY && !this.additionalCurrenciesHistoryRunning) {
         await this.$insertMissingAdditionalPrices();
       }
+
     } catch (e: any) {
       logger.err(`Cannot save BTC prices in db. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
     }
@@ -393,46 +400,53 @@ class PriceUpdater {
    * We calculate the additional prices from the USD price and the conversion rates
    */
   private async $insertMissingAdditionalPrices(): Promise<void> {
-    this.additionalCurrenciesHistoryRunning = true;
+    this.lastFailedHistoricalRun = 0;
     const priceTimesToFill = await PricesRepository.$getPricesTimesWithMissingFields();
     if (priceTimesToFill.length === 0) {
       return;
     }
+    try {
+      const remainingQuota = await this.currencyConversionFeed?.$getQuota();
+      if (remainingQuota['month']['remaining'] < 500) { // We need some calls left for the daily updates
+        logger.debug(`Not enough currency API credit to insert missing prices in ${priceTimesToFill.length} rows (${remainingQuota['month']['remaining']} calls left).`, logger.tags.mining);
+        this.additionalCurrenciesHistoryInserted = true; // Do not try again until next day
+        return;
+      }
+    } catch (e) {
+      logger.err(`Cannot fetch currency API credit, insertion of missing prices aborted. Reason: ${(e instanceof Error ? e.message : e)}`);
+      return;
+    }
+
+    this.additionalCurrenciesHistoryRunning = true;
     logger.debug(`Fetching missing conversion rates from external API to fill ${priceTimesToFill.length} rows`, logger.tags.mining);
 
     let conversionRates: { [timestamp: number]: ConversionRates } = {};
     let totalInserted = 0;
 
-    let requestCounter = 0;
-
-    for (const priceTime of priceTimesToFill) {
+    for (let i = 0; i < priceTimesToFill.length; i++) {
+      const priceTime = priceTimesToFill[i];
       const missingLegacyCurrencies = this.getMissingLegacyCurrencies(priceTime); // In the case a legacy currency (EUR, GBP, CAD, CHF, AUD, JPY)
       const year = new Date(priceTime.time * 1000).getFullYear();                 // is missing, we use the same process as for the new currencies
-      const yearTimestamp = new Date(year, 0, 1).getTime() / 1000;
-      if (conversionRates[yearTimestamp] === undefined) {
-        try {
-          if (requestCounter >= 10) {
-            await new Promise(resolve => setTimeout(resolve, 60_000)); // avoid getting 429'd
-            requestCounter = 0;
-          }
-          conversionRates[yearTimestamp] = await this.currencyConversionFeed?.$fetchConversionRates(`${year}-01-01`);
-          ++requestCounter;
-        } catch (e) {
-          logger.err(`Cannot fetch conversion rates from the API for year ${year}. Reason: ${(e instanceof Error ? e.message : e)}`);
+      const month = new Date(priceTime.time * 1000).getMonth();
+      const yearMonthTimestamp = new Date(year, month, 1).getTime() / 1000;
+      if (conversionRates[yearMonthTimestamp] === undefined) {
+        conversionRates[yearMonthTimestamp] = await this.currencyConversionFeed?.$fetchConversionRates(`${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-01`) || { USD: -1 };
+        if (conversionRates[yearMonthTimestamp]['USD'] < 0) {
+          logger.err(`Cannot fetch conversion rates from the API for ${year}-${month + 1 < 10 ? `0${month + 1}` : `${month + 1}`}-01. Aborting insertion of missing prices.`, logger.tags.mining);
+          this.lastFailedHistoricalRun = Math.round(new Date().getTime() / 1000);
+          break;
         }
-      }
-
-      if (conversionRates[yearTimestamp] === undefined) {
-        continue;
       }
 
       const prices: ApiPrice = this.getEmptyPricesObj();
       
       let willInsert = false;
       for (const conversionCurrency of this.newCurrencies.concat(missingLegacyCurrencies)) {
-        if (conversionRates[yearTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
-          prices[conversionCurrency] = year >= 2013 ? Math.round(priceTime.USD * conversionRates[yearTimestamp][conversionCurrency]) : Math.round(priceTime.USD * conversionRates[yearTimestamp][conversionCurrency] * 100) / 100;
+        if (conversionRates[yearMonthTimestamp][conversionCurrency] > 0 && priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency] < MAX_PRICES[conversionCurrency]) {
+          prices[conversionCurrency] = year >= 2013 ? Math.round(priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency]) : Math.round(priceTime.USD * conversionRates[yearMonthTimestamp][conversionCurrency] * 100) / 100;
           willInsert = true;
+        } else {
+          prices[conversionCurrency] = 0;
         }
       }
       
@@ -441,6 +455,7 @@ class PriceUpdater {
         ++totalInserted;
       }
     }
+
     logger.debug(`Inserted ${totalInserted} missing additional currency prices into the db`, logger.tags.mining);
     this.additionalCurrenciesHistoryInserted = true;
     this.additionalCurrenciesHistoryRunning = false;

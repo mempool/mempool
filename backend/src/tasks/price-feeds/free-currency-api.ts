@@ -33,6 +33,7 @@ const emptyRates = {
   SGD: -1,
   THB: -1,
   TRY: -1,
+  USD: -1,
   ZAR: -1,
 };
 
