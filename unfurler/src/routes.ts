@@ -7,11 +7,33 @@ interface Match {
 }
 
 const routes = {
+  about: {
+    title: "About",
+    fallbackImg: '/resources/previews/about.jpg',
+  },
+  acceleration: {
+    title: "Acceleration",
+    fallbackImg: '/resources/previews/accelerator.jpg',
+  },
+  accelerator: {
+    title: "Mempool Accelerator",
+    fallbackImg: '/resources/previews/accelerator.jpg',
+  },
   block: {
     render: true,
     params: 1,
     getTitle(path) {
       return `Block: ${path[0]}`;
+    }
+  },
+  docs: {
+    title: "Docs",
+    fallbackImg: '/resources/previews/faq.jpg',
+    routes: {
+      faq: {
+        title: "FAQ",
+        fallbackImg: '/resources/previews/faq.jpg',
+      }
     }
   },
   address: {
@@ -26,6 +48,11 @@ const routes = {
     params: 1,
     getTitle(path) {
       return `Transaction: ${path[0]}`;
+    },
+    routes: {
+      push: {
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
     }
   },
   lightning: {
@@ -78,7 +105,23 @@ const routes = {
         }
       }
     }
-  }
+  },
+  privacy-policy: {
+    title: "Privacy Policy",
+    fallbackImg: '/resources/previews/privacy-policy.jpg',
+  },
+  rbf: {
+    title: "RBF",
+    fallbackImg: '/resources/previews/rbf.jpg',
+  },
+  terms-of-service: {
+    title: "Terms of Service",
+    fallbackImg: '/resources/previews/terms-of-service.jpg',
+  },
+  trademark-policy: {
+    title: "Trademark Policy",
+    fallbackImg: '/resources/previews/trademark-policy.jpg',
+  },
 };
 
 const networks = {
