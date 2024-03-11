@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 72;
+  private static currentVersion = 74;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -607,7 +607,20 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(71);
     }
 
-    if (databaseSchemaVersion < 72) {
+    if (databaseSchemaVersion < 72 && isBitcoin === true) {
+      // reindex Goggles flags for mined block templates above height 832000
+      await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
+      await this.updateToSchemaVersion(72);
+    }
+
+    if (databaseSchemaVersion < 73 && config.MEMPOOL.NETWORK === 'mainnet') {
+      // Clear bad data
+      await this.$executeQuery(`TRUNCATE accelerations`);
+      this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
+      await this.updateToSchemaVersion(73);
+    }
+
+    if (databaseSchemaVersion < 74) {
       await this.$executeQuery('ALTER TABLE `prices` ADD `BGN` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `BRL` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `CNY` float DEFAULT "-1"');
@@ -634,7 +647,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
       await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
-      await this.updateToSchemaVersion(72);
+      await this.updateToSchemaVersion(74);
     }
   }
 

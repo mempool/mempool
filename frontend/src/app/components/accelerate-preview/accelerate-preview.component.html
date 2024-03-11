@@ -219,12 +219,21 @@
               </ng-container>
 
               <!-- LOGIN CTA -->
-              <ng-container *ngIf="!isLoggedIn()">
+              <ng-container *ngIf="stateService.isMempoolSpaceBuild && !isLoggedIn()">
                 <tr class="group-first group-last" style="border-top: 1px dashed grey">
                   <td class="item"></td>
                   <td class="amt"></td>
                   <td class="units d-flex">
                     <a [routerLink]="['/login']" [queryParams]="{redirectTo: '/tx/' + tx.txid + '#accelerate'}" class="btn btn-purple flex-grow-1">Login</a>
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="!stateService.isMempoolSpaceBuild">
+                <tr class="group-first group-last" style="border-top: 1px dashed grey">
+                  <td class="item"></td>
+                  <td class="amt"></td>
+                  <td class="units d-flex">
+                    <a [href]="'https://mempool.space/tx/' + tx.txid + '#accelerate'" class="btn btn-purple flex-grow-1">Accelerate on mempool.space</a>
                   </td>
                 </tr>
               </ng-container>

@@ -7,11 +7,37 @@ interface Match {
 }
 
 const routes = {
+  about: {
+    title: "About",
+    fallbackImg: '/resources/previews/about.jpg',
+  },
+  acceleration: {
+    title: "Acceleration",
+    fallbackImg: '/resources/previews/accelerator.jpg',
+  },
+  accelerator: {
+    title: "Mempool Accelerator",
+    fallbackImg: '/resources/previews/accelerator.jpg',
+  },
   block: {
     render: true,
     params: 1,
     getTitle(path) {
       return `Block: ${path[0]}`;
+    }
+  },
+  blocks: {
+    title: "Blocks",
+    fallbackImg: '/resources/previews/blocks.jpg',
+  },
+  docs: {
+    title: "Docs",
+    fallbackImg: '/resources/previews/faq.jpg',
+    routes: {
+      faq: {
+        title: "FAQ",
+        fallbackImg: '/resources/previews/faq.jpg',
+      }
     }
   },
   address: {
@@ -26,11 +52,17 @@ const routes = {
     params: 1,
     getTitle(path) {
       return `Transaction: ${path[0]}`;
+    },
+    routes: {
+      push: {
+        title: "Push Transaction",
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
     }
   },
   lightning: {
     title: "Lightning",
-    fallbackImg: '/resources/previews/lightning.png',
+    fallbackImg: '/resources/previews/lightning.jpg',
     routes: {
       node: {
         render: true,
@@ -68,7 +100,7 @@ const routes = {
   },
   mining: {
     title: "Mining",
-    fallbackImg: '/resources/previews/mining.png',
+    fallbackImg: '/resources/previews/mining.jpg',
     routes: {
       pool: {
         render: true,
@@ -78,12 +110,28 @@ const routes = {
         }
       }
     }
-  }
+  },
+  "privacy-policy": {
+    title: "Privacy Policy",
+    fallbackImg: '/resources/previews/privacy-policy.jpg',
+  },
+  rbf: {
+    title: "RBF",
+    fallbackImg: '/resources/previews/rbf.jpg',
+  },
+  "terms-of-service": {
+    title: "Terms of Service",
+    fallbackImg: '/resources/previews/terms-of-service.jpg',
+  },
+  "trademark-policy": {
+    title: "Trademark Policy",
+    fallbackImg: '/resources/previews/trademark-policy.jpg',
+  },
 };
 
 const networks = {
   bitcoin: {
-    fallbackImg: '/resources/previews/dashboard.png',
+    fallbackImg: '/resources/previews/mempool-space-preview.jpg',
     routes: {
       ...routes // all routes supported
     }
