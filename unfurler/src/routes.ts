@@ -26,6 +26,10 @@ const routes = {
       return `Block: ${path[0]}`;
     }
   },
+  blocks: {
+    title: "Blocks",
+    fallbackImg: '/resources/previews/blocks.jpg',
+  },
   docs: {
     title: "Docs",
     fallbackImg: '/resources/previews/faq.jpg',
@@ -51,6 +55,7 @@ const routes = {
     },
     routes: {
       push: {
+        title: "Push Transaction",
         fallbackImg: '/resources/previews/tx-push.jpg',
       }
     }
