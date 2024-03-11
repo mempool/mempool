@@ -73,7 +73,8 @@ class AccelerationRepository {
 
     if (interval) {
       query += ` WHERE accelerations.added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() `;
-    } else if (height != null) {
+    }
+    if (height != null) {
       query += ` WHERE accelerations.height = ? `;
       params.push(height);
     } else if (poolSlug != null) {
