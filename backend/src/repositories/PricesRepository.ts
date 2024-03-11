@@ -281,7 +281,7 @@ class PricesRepository {
       WHERE USD != -1 
       AND -1 IN (EUR, GBP, CAD, CHF, AUD, JPY, BGN, BRL, CNY, CZK, DKK, HKD, HRK, HUF, IDR, ILS, INR, ISK, KRW, 
                  MXN, MYR, NOK, NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, ZAR)
-      ORDER BY time
+      ORDER BY time DESC
     `);
     if (!Array.isArray(times)) {
       return [];
