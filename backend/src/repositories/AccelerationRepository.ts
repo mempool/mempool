@@ -70,15 +70,26 @@ class AccelerationRepository {
       JOIN pools on pools.unique_id = accelerations.pool
     `;
     let params: any[] = [];
+    let hasFilter = false;
 
     if (interval) {
       query += ` WHERE accelerations.added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() `;
+      hasFilter = true;
     }
+
     if (height != null) {
-      query += ` WHERE accelerations.height = ? `;
+      if (hasFilter) {
+        query += ` AND accelerations.height = ? `;
+      } else {
+        query += ` WHERE accelerations.height = ? `;
+      }
       params.push(height);
     } else if (poolSlug != null) {
-      query += ` WHERE pools.slug = ? `;
+      if (hasFilter) {
+        query += ` AND pools.slug = ? `;
+      } else {
+        query += ` WHERE pools.slug = ? `;
+      }
       params.push(poolSlug);
     }
 
