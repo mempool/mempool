@@ -106,7 +106,7 @@ const routes = {
       }
     }
   },
-  privacy-policy: {
+  "privacy-policy": {
     title: "Privacy Policy",
     fallbackImg: '/resources/previews/privacy-policy.jpg',
   },
@@ -114,11 +114,11 @@ const routes = {
     title: "RBF",
     fallbackImg: '/resources/previews/rbf.jpg',
   },
-  terms-of-service: {
+  "terms-of-service": {
     title: "Terms of Service",
     fallbackImg: '/resources/previews/terms-of-service.jpg',
   },
-  trademark-policy: {
+  "trademark-policy": {
     title: "Trademark Policy",
     fallbackImg: '/resources/previews/trademark-policy.jpg',
   },
