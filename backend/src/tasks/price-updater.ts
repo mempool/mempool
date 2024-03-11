@@ -320,7 +320,7 @@ class PriceUpdater {
     await this.$insertMissingRecentPrices('hour');
 
     this.historyInserted = true;
-    this.lastHistoricalRun = new Date().getTime();
+    this.lastHistoricalRun = Math.round(new Date().getTime() / 1000);
   }
 
   /**
