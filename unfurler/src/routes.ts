@@ -19,6 +19,13 @@ const routes = {
     title: "Mempool Accelerator",
     fallbackImg: '/resources/previews/accelerator.jpg',
   },
+  address: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Address: ${path[0]}`;
+    }
+  },
   block: {
     render: true,
     params: 1,
@@ -37,26 +44,6 @@ const routes = {
       faq: {
         title: "FAQ",
         fallbackImg: '/resources/previews/faq.jpg',
-      }
-    }
-  },
-  address: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Address: ${path[0]}`;
-    }
-  },
-  tx: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Transaction: ${path[0]}`;
-    },
-    routes: {
-      push: {
-        title: "Push Transaction",
-        fallbackImg: '/resources/previews/tx-push.jpg',
       }
     }
   },
@@ -127,6 +114,19 @@ const routes = {
     title: "Trademark Policy",
     fallbackImg: '/resources/previews/trademark-policy.jpg',
   },
+  tx: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Transaction: ${path[0]}`;
+    },
+    routes: {
+      push: {
+        title: "Push Transaction",
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
+    }
+  }
 };
 
 const networks = {
