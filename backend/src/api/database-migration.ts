@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 73;
+  private static currentVersion = 74;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -618,6 +618,11 @@ class DatabaseMigration {
       await this.$executeQuery(`TRUNCATE accelerations`);
       this.uniqueLog(logger.notice, `'accelerations' table has been truncated`);
       await this.updateToSchemaVersion(73);
+    }
+
+    if (databaseSchemaVersion < 74 && config.MEMPOOL.NETWORK === 'mainnet') {
+      await this.$executeQuery(`INSERT INTO state(name, number) VALUE ('last_acceleration_block', 0);`);
+      await this.updateToSchemaVersion(74);
     }
   }
 
