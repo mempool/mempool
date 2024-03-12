@@ -70,7 +70,7 @@ class AccelerationRepository {
     let params: any[] = [];
     let hasFilter = false;
 
-    if (interval) {
+    if (interval && height === null) {
       query += ` WHERE accelerations.added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() `;
       hasFilter = true;
     }
