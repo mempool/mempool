@@ -127,7 +127,6 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.auditSupported) {
       this.isAuditEnabledFromParam().subscribe(auditParam => {
         if (this.auditParamEnabled) {
-          console.log(`auditParamEnabled: ${auditParam}`);
           this.auditModeEnabled = auditParam;
         } else {
           this.auditPrefSubscription = this.stateService.hideAudit.subscribe(hide => {
