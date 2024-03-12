@@ -401,6 +401,13 @@ class PricesRepository {
             ['USD']: rate['USD']
           };
         });
+        if (filteredRates.length === 0) { // No price data before 2010-07-19: add a fake entry
+          filteredRates.push({
+            time: 1279497600,
+            [currency]: 0,
+            ['USD']: 0
+          });
+        }
         return {
           prices: filteredRates as ApiPrice[],
           exchangeRates: exchangeRates
