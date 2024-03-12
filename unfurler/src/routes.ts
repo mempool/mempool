@@ -47,6 +47,10 @@ const routes = {
       }
     }
   },
+  enterprise: {
+    title: "Mempool Enterprise",
+    fallbackImg: '/resources/previews/enterprise.jpg',
+  },
   lightning: {
     title: "Lightning",
     fallbackImg: '/resources/previews/lightning.jpg',
@@ -105,6 +109,10 @@ const routes = {
   rbf: {
     title: "RBF",
     fallbackImg: '/resources/previews/rbf.jpg',
+  },
+  sponsor: {
+    title: "Community Sponsors",
+    fallbackImg: '/resources/previews/sponsor.jpg',
   },
   "terms-of-service": {
     title: "Terms of Service",
