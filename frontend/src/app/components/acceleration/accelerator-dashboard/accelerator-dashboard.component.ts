@@ -74,7 +74,7 @@ export class AcceleratorDashboardComponent implements OnInit {
 
     this.minedAccelerations$ = this.accelerations$.pipe(
       map(accelerations => {
-        return accelerations.filter(acc => ['mined', 'completed'].includes(acc.status));
+        return accelerations.filter(acc => ['completed_provisional', 'completed'].includes(acc.status));
       })
     );
 
@@ -103,7 +103,7 @@ export class AcceleratorDashboardComponent implements OnInit {
         }
         const accelerationsByBlock: { [ hash: string ]: Acceleration[] } = {};
         for (const acceleration of accelerations) {
-          if (['mined', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
+          if (['completed_provisional', 'failed_provisional', 'completed'].includes(acceleration.status) && acceleration.pools.includes(blockMap[acceleration.blockHash]?.extras.pool.id)) {
             if (!accelerationsByBlock[acceleration.blockHash]) {
               accelerationsByBlock[acceleration.blockHash] = [];
             }
