@@ -29,7 +29,7 @@ jobs:
 
       - name: Read rust-toolchain file from repository
         id: gettoolchain
-        run: echo "::set-output name=toolchain::$(cat rust-toolchain)"
+        run: echo "::set-output name=toolchain::$(cat ./rust/gbt/rust-toolchain)"
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain

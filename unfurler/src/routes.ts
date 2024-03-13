@@ -19,6 +19,13 @@ const routes = {
     title: "Mempool Accelerator",
     fallbackImg: '/resources/previews/accelerator.jpg',
   },
+  address: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Address: ${path[0]}`;
+    }
+  },
   block: {
     render: true,
     params: 1,
@@ -40,25 +47,9 @@ const routes = {
       }
     }
   },
-  address: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Address: ${path[0]}`;
-    }
-  },
-  tx: {
-    render: true,
-    params: 1,
-    getTitle(path) {
-      return `Transaction: ${path[0]}`;
-    },
-    routes: {
-      push: {
-        title: "Push Transaction",
-        fallbackImg: '/resources/previews/tx-push.jpg',
-      }
-    }
+  enterprise: {
+    title: "Mempool Enterprise",
+    fallbackImg: '/resources/previews/enterprise.jpg',
   },
   lightning: {
     title: "Lightning",
@@ -119,6 +110,10 @@ const routes = {
     title: "RBF",
     fallbackImg: '/resources/previews/rbf.jpg',
   },
+  sponsor: {
+    title: "Community Sponsors",
+    fallbackImg: '/resources/previews/sponsor.jpg',
+  },
   "terms-of-service": {
     title: "Terms of Service",
     fallbackImg: '/resources/previews/terms-of-service.jpg',
@@ -127,6 +122,19 @@ const routes = {
     title: "Trademark Policy",
     fallbackImg: '/resources/previews/trademark-policy.jpg',
   },
+  tx: {
+    render: true,
+    params: 1,
+    getTitle(path) {
+      return `Transaction: ${path[0]}`;
+    },
+    routes: {
+      push: {
+        title: "Push Transaction",
+        fallbackImg: '/resources/previews/tx-push.jpg',
+      }
+    }
+  }
 };
 
 const networks = {

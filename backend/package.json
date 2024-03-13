@@ -22,10 +22,12 @@
   "main": "index.ts",
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc -p tsconfig.build.json",
-    "build": "npm run rust-build && npm run tsc && npm run create-resources",
+    "build": "npm run tsc && npm run create-resources",
+    "clean": "rm -rf ./dist/ ./node_modules/ ./package/ ./rust-gbt/",
     "create-resources": "cp ./src/tasks/price-feeds/mtgox-weekly.json ./dist/tasks && node dist/api/fetch-version.js",
     "package": "./npm_package.sh",
     "package-rm-build-deps": "./npm_package_rm_build_deps.sh",
+    "preinstall": "cd ../rust/gbt && npm run build-release && npm run to-backend",
     "start": "node --max-old-space-size=2048 dist/index.js",
     "start-production": "node --max-old-space-size=16384 dist/index.js",
     "reindex-updated-pools": "npm run start-production --update-pools",
@@ -34,9 +36,7 @@
     "test:ci": "CI=true ./node_modules/.bin/jest --coverage",
     "lint": "./node_modules/.bin/eslint . --ext .ts",
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
-    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\"",
-    "rust-clean": "cd rust-gbt && rm -f *.node index.d.ts index.js && rm -rf target && cd ../",
-    "rust-build": "npm run rust-clean && cd rust-gbt && npm run build-release"
+    "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
   },
   "dependencies": {
     "@babel/core": "^7.24.0",

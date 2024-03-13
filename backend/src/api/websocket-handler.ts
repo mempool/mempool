@@ -24,7 +24,6 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
-import accelerationCosts from './acceleration';
 import accelerationRepository from '../repositories/AccelerationRepository';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 
@@ -742,25 +741,8 @@ class WebsocketHandler {
 
     const isAccelerated = config.MEMPOOL_SERVICES.ACCELERATIONS && accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
 
-
-    if (isAccelerated) {
-      const blockTxs: { [txid: string]: MempoolTransactionExtended } = {};
-      for (const tx of transactions) {
-        blockTxs[tx.txid] = tx;
-      }
-      const accelerations = Object.values(mempool.getAccelerations());
-      const boostRate = accelerationCosts.calculateBoostRate(
-        accelerations.map(acc => ({ txid: acc.txid, max_bid: acc.feeDelta })),
-        transactions
-      );
-      for (const acc of accelerations) {
-        if (blockTxs[acc.txid]) {
-          const tx = blockTxs[acc.txid];
-          const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
-          accelerationRepository.$saveAcceleration(accelerationInfo, block, block.extras.pool.id);
-        }
-      }
-    }
+    const accelerations = Object.values(mempool.getAccelerations());
+    await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, transactions);
 
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleMinedRbfTransactions(rbfTransactions);
