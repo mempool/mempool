@@ -533,7 +533,7 @@
       <tr *ngIf="isMobile && (network === 'liquid' || network === 'liquidtestnet' || !featuresEnabled || network === '')"></tr>
       <tr>
         <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
-        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="blockConversion" [value]="tx.fee"></app-fiat></span></td>
+        <td>{{ tx.fee | number }} <span class="symbol" i18n="shared.sat|sat">sat</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></td>
       </tr>
       <tr>
         <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
