@@ -39,6 +39,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/pool/:slug', this.$getAccelerationsByPool)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/block/:height', this.$getAccelerationsByHeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/recent/:interval', this.$getRecentAccelerations)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'accelerations/total', this.$getAccelerationTotals)
     ;
   }
 
@@ -399,6 +400,21 @@ class MiningRoutes {
         return;
       }
       res.status(200).send(await AccelerationRepository.$getAccelerationInfo(null, null, req.params.interval));
+    } catch (e) {
+      res.status(500).send(e instanceof Error ? e.message : e);
+    }
+  }
+
+  private async $getAccelerationTotals(req: Request, res: Response): Promise<void> {
+    try {
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || ['testnet', 'signet', 'liquidtestnet', 'liquid'].includes(config.MEMPOOL.NETWORK)) {
+        res.status(400).send('Acceleration data is not available.');
+        return;
+      }
+      res.status(200).send(await AccelerationRepository.$getAccelerationTotals(<string>req.query.pool, <string>req.query.interval));
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }
