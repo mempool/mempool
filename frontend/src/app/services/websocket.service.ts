@@ -330,8 +330,8 @@ export class WebsocketService {
       this.stateService.rbfLatest$.next(response.rbfLatest);
     }
 
-    if (response.rbfLatestSummary) {
-      this.stateService.rbfLatestSummary$.next(response.rbfLatestSummary);
+    if (response.rbfLatestSummary !== undefined) {
+      this.stateService.rbfLatestSummary$.next(response.rbfLatestSummary || []);
     }
 
     if (response.txReplaced) {
