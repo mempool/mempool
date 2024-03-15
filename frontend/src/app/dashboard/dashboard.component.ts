@@ -189,17 +189,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
 
-    this.transactions$ = this.stateService.transactions$
-      .pipe(
-        scan((acc, tx) => {
-          if (acc.find((t) => t.txid == tx.txid)) {
-            return acc;
-          }
-          acc.unshift(tx);
-          acc = acc.slice(0, 6);
-          return acc;
-        }, []),
-      );
+    this.transactions$ = this.stateService.transactions$;
 
     this.blocks$ = this.stateService.blocks$
       .pipe(
