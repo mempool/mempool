@@ -107,7 +107,7 @@ class AccelerationCosts {
         }
       }
       if (!isPrioritized) {
-        if (!isAccelerated || !lastEffectiveRate) {
+        if (!isAccelerated) {
           lastEffectiveRate = tx.effectiveFeePerVsize;
         }
       }

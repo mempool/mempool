@@ -32,11 +32,14 @@ export class TransactionsListComponent implements OnInit, OnChanges {
   @Input() outputIndex: number;
   @Input() address: string = '';
   @Input() rowLimit = 12;
+  @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
 
   @Output() loadMore = new EventEmitter();
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
+  currencyChangeSubscription: Subscription;
+  currency: string;
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
@@ -125,6 +128,35 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           )
         ,
     ).subscribe(() => this.ref.markForCheck());
+
+    this.currencyChangeSubscription = this.stateService.fiatCurrency$
+    .subscribe(currency => {
+      this.currency = currency;
+      this.refreshPrice();
+    });
+  }
+
+  refreshPrice(): void {
+    // Loop over all transactions
+    if (!this.transactions || !this.transactions.length || !this.currency) {
+      return;
+    }
+    const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
+    if (!this.blockTime) {
+      this.transactions.forEach((tx) => {
+        if (!this.blockTime) {
+          if (tx.status.block_time) {
+            this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+              tap((price) => tx['price'] = price),
+            ).subscribe();
+          }
+        }
+      });
+    } else {
+      this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
+        tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+      ).subscribe();
+    }
   }
 
   ngOnChanges(changes): void {
@@ -148,6 +180,7 @@ export class TransactionsListComponent implements OnInit, OnChanges {
       this.transactionsLength = this.transactions.length;
       this.cacheService.setTxCache(this.transactions);
 
+      const confirmedTxs = this.transactions.filter((tx) => tx.status.confirmed).length;
       this.transactions.forEach((tx) => {
         tx['@voutLimit'] = true;
         tx['@vinLimit'] = true;
@@ -197,10 +230,18 @@ export class TransactionsListComponent implements OnInit, OnChanges {
           }
         }
 
-        this.priceService.getBlockPrice$(tx.status.block_time).pipe(
-          tap((price) => tx['price'] = price)
-        ).subscribe();
+        if (!this.blockTime && tx.status.block_time && this.currency) {
+          this.priceService.getBlockPrice$(tx.status.block_time, confirmedTxs < 10, this.currency).pipe(
+            tap((price) => tx['price'] = price),
+          ).subscribe();
+        }
       });
+
+      if (this.blockTime && this.transactions?.length && this.currency) {
+        this.priceService.getBlockPrice$(this.blockTime, true, this.currency).pipe(
+          tap((price) => this.transactions.forEach((tx) => tx['price'] = price)),
+        ).subscribe();
+      }
       const txIds = this.transactions.filter((tx) => !tx._outspends).map((tx) => tx.txid);
       if (txIds.length && !this.cached) {
         this.refreshOutspends$.next(txIds);
@@ -308,5 +349,6 @@ export class TransactionsListComponent implements OnInit, OnChanges {
 
   ngOnDestroy(): void {
     this.outspendsSubscription.unsubscribe();
+    this.currencyChangeSubscription?.unsubscribe();
   }
 }

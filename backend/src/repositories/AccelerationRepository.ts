@@ -244,7 +244,7 @@ class AccelerationRepository {
           break;
         }
         for (const acc of accelerations) {
-          if (acc.status !== 'mined' && acc.status !== 'completed') {
+          if (acc.status !== 'completed_provisional' && acc.status !== 'completed') {
             continue;
           }
           if (!lastSyncedHeight || acc.blockHeight > lastSyncedHeight) {

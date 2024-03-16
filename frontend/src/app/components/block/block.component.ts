@@ -533,9 +533,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     if (this.priceSubscription) {
       this.priceSubscription.unsubscribe();
     }
-    this.priceSubscription = block$.pipe(
-      switchMap((block) => {
-        return this.priceService.getBlockPrice$(block.timestamp).pipe(
+    this.priceSubscription = combineLatest([this.stateService.fiatCurrency$, block$]).pipe(
+      switchMap(([currency, block]) => {
+        return this.priceService.getBlockPrice$(block.timestamp, true, currency).pipe(
           tap((price) => {
             this.blockConversion = price;
           })

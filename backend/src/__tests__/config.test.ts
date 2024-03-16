@@ -152,6 +152,11 @@ describe('Mempool Backend Config', () => {
         UNIX_SOCKET_PATH: '',
         BATCH_QUERY_BASE_SIZE: 5000,
       });
+
+      expect(config.FIAT_PRICE).toStrictEqual({
+        ENABLED: true,
+        API_KEY: '',
+      });
     });
   });
 

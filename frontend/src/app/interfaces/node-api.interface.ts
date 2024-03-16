@@ -378,7 +378,7 @@ export interface INode {
 
 export interface Acceleration {
   txid: string;
-  status: 'requested' | 'accelerating' | 'mined' | 'completed' | 'failed';
+  status: 'requested' | 'accelerating' | 'completed_provisional' | 'completed' | 'failed' | 'failed_provisional';
   pools: number[];
   feePaid: number;
   added: number; // timestamp
