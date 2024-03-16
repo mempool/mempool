@@ -51,13 +51,20 @@ class MiningRoutes {
         res.status(400).send('Prices are not available on testnets.');
         return;
       }
-      if (req.query.timestamp) {
-        res.status(200).send(await PricesRepository.$getNearestHistoricalPrice(
-          parseInt(<string>req.query.timestamp ?? 0, 10)
-        ));
+      const timestamp = parseInt(req.query.timestamp as string, 10) || 0;
+      const currency = req.query.currency as string;
+      
+      let response;
+      if (timestamp && currency) {
+        response = await PricesRepository.$getNearestHistoricalPrice(timestamp, currency);
+      } else if (timestamp) {
+        response = await PricesRepository.$getNearestHistoricalPrice(timestamp);
+      } else if (currency) {
+        response = await PricesRepository.$getHistoricalPrices(currency);
       } else {
-        res.status(200).send(await PricesRepository.$getHistoricalPrices());
+        response = await PricesRepository.$getHistoricalPrices();
       }
+      res.status(200).send(response);
     } catch (e) {
       res.status(500).send(e instanceof Error ? e.message : e);
     }

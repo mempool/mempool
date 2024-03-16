@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 74;
+  private static currentVersion = 75;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -608,7 +608,7 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 72 && isBitcoin === true) {
-      // reindex Goggles flags for mined block templates above height 833000
+      // reindex Goggles flags for mined block templates above height 832000
       await this.$executeQuery('UPDATE blocks_summaries SET version = 0 WHERE height >= 832000;');
       await this.updateToSchemaVersion(72);
     }
@@ -623,6 +623,36 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 74 && config.MEMPOOL.NETWORK === 'mainnet') {
       await this.$executeQuery(`INSERT INTO state(name, number) VALUE ('last_acceleration_block', 0);`);
       await this.updateToSchemaVersion(74);
+    }
+
+    if (databaseSchemaVersion < 75) {
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BGN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `BRL` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CNY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `CZK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `DKK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HKD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HRK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `HUF` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `IDR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ILS` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `INR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ISK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `KRW` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MXN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `MYR` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NOK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `NZD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PHP` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `PLN` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RON` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `RUB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SEK` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `SGD` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `THB` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `TRY` float DEFAULT "-1"');
+      await this.$executeQuery('ALTER TABLE `prices` ADD `ZAR` float DEFAULT "-1"');
+      await this.updateToSchemaVersion(75);
     }
   }
 

@@ -76,6 +76,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   mempoolBlocksSubscription: Subscription;
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
+  currencyChangeSubscription: Subscription;
   fragmentParams: URLSearchParams;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
@@ -108,7 +109,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
-  blockConversion: Price;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
 
@@ -493,10 +493,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.fetchRbfHistory$.next(this.tx.txid);
-
-          this.priceService.getBlockPrice$(tx.status?.block_time, true).pipe(
-            tap((price) => {
-              this.blockConversion = price;
+          this.currencyChangeSubscription?.unsubscribe();
+          this.currencyChangeSubscription = this.stateService.fiatCurrency$.pipe(
+            switchMap((currency) => {
+              return tx.status.block_time ? this.priceService.getBlockPrice$(tx.status.block_time, true, currency).pipe(
+                tap((price) => tx['price'] = price),
+              ) : of(undefined);
             })
           ).subscribe();
 
@@ -810,6 +812,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mempoolBlocksSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
+    this.currencyChangeSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 }

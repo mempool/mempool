@@ -131,7 +131,7 @@ class Server {
       .use(express.text({ type: ['text/plain', 'application/base64'] }))
       ;
 
-    if (config.DATABASE.ENABLED) {
+    if (config.DATABASE.ENABLED && config.FIAT_PRICE.ENABLED) {
       await priceUpdater.$initializeLatestPriceWithDb();
     }
 
@@ -168,7 +168,9 @@ class Server {
       setInterval(refreshIcons, 3600_000);
     }
 
-    priceUpdater.$run();
+    if (config.FIAT_PRICE.ENABLED) {
+      priceUpdater.$run();
+    }
     await chainTips.updateOrphanedBlocks();
 
     this.setUpHttpApiRoutes();
@@ -220,7 +222,9 @@ class Server {
         await memPool.$updateMempool(newMempool, newAccelerations, pollRate);
       }
       indexer.$run();
-      priceUpdater.$run();
+      if (config.FIAT_PRICE.ENABLED) {
+        priceUpdater.$run();
+      }
 
       // rerun immediately if we skipped the mempool update, otherwise wait POLL_RATE_MS
       const elapsed = Date.now() - start;
@@ -284,7 +288,9 @@ class Server {
       memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
       blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
-    priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    if (config.FIAT_PRICE.ENABLED) {
+      priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
+    }
     loadingIndicators.setProgressChangedCallback(websocketHandler.handleLoadingChanged.bind(websocketHandler));
   }
   

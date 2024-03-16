@@ -158,6 +158,10 @@ interface IConfig {
     UNIX_SOCKET_PATH: string;
     BATCH_QUERY_BASE_SIZE: number;
   },
+  FIAT_PRICE: {
+    ENABLED: boolean;
+    API_KEY: string;
+  },
 }
 
 const defaults: IConfig = {
@@ -316,6 +320,10 @@ const defaults: IConfig = {
     'UNIX_SOCKET_PATH': '',
     'BATCH_QUERY_BASE_SIZE': 5000,
   },
+  'FIAT_PRICE': {
+    'ENABLED': true,
+    'API_KEY': '',
+  },
 };
 
 class Config implements IConfig {
@@ -337,6 +345,7 @@ class Config implements IConfig {
   REPLICATION: IConfig['REPLICATION'];
   MEMPOOL_SERVICES: IConfig['MEMPOOL_SERVICES'];
   REDIS: IConfig['REDIS'];
+  FIAT_PRICE: IConfig['FIAT_PRICE'];
 
   constructor() {
     const configs = this.merge(configFromFile, defaults);
@@ -358,6 +367,7 @@ class Config implements IConfig {
     this.REPLICATION = configs.REPLICATION;
     this.MEMPOOL_SERVICES = configs.MEMPOOL_SERVICES;
     this.REDIS = configs.REDIS;
+    this.FIAT_PRICE = configs.FIAT_PRICE;
   }
 
   merge = (...objects: object[]): IConfig => {

@@ -147,5 +147,9 @@
     "ENABLED": false,
     "UNIX_SOCKET_PATH": "/tmp/redis.sock",
     "BATCH_QUERY_BASE_SIZE": 5000
+  },
+  "FIAT_PRICE": {
+    "ENABLED": true,
+    "API_KEY": "__MEMPOOL_CURRENCY_API_KEY__"
   }
 }

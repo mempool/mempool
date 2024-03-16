@@ -335,7 +335,7 @@
     </div>
     <div class="clearfix"></div>
 
-    <app-transactions-list [transactions]="transactions" [paginated]="true"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [paginated]="true" [blockTime]="block.timestamp"></app-transactions-list>
 
     <ng-template [ngIf]="transactionsError">
       <div class="text-center">
