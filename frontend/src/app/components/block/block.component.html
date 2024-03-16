@@ -226,7 +226,7 @@
         fragment="actual" (click)="changeMode('actual')">Actual</a>
     </div>
     <div class="row">
-      <div class="col-sm">
+      <div class="col-sm audit-col" [class.mobile]="isMobile">
         <h3 class="block-subtitle" *ngIf="!isMobile"><ng-container i18n="block.expected-block">Expected Block</ng-container></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphProjected [isLoading]="isLoadingOverview" [resolution]="86"
@@ -241,7 +241,7 @@
           </ng-template>
         </ng-container>
       </div>
-      <div class="col-sm" *ngIf="!isMobile">
+      <div class="col-sm audit-col" *ngIf="!isMobile">
         <h3 class="block-subtitle actual" *ngIf="!isMobile"><ng-container i18n="block.actual-block">Actual Block</ng-container><a class="info-link" [routerLink]="['/docs/faq' | relativeUrl ]" fragment="how-do-block-audits-work"><fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon></a></h3>
         <div class="block-graph-wrapper">
           <app-block-overview-graph #blockGraphActual [isLoading]="isLoadingOverview" [resolution]="86"
@@ -431,10 +431,10 @@
     <tbody>
       <tr>
         <td i18n="block.total-fees|Total fees in a block">Total fees</td>
-        <td>
+        <td class="text-wrap">
           <app-amount [satoshis]="block.extras.totalFees" digitsInfo="1.2-3" [noFiat]="true"></app-amount>
           <span *ngIf="oobFees" class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band">
-             +<app-amount [satoshis]="oobFees" digitsInfo="1.2-4" [noFiat]="true"></app-amount>
+             +<app-amount [satoshis]="oobFees" digitsInfo="1.2-8" [noFiat]="true"></app-amount>
           </span>
           <span *ngIf="blockAudit.feeDelta" class="difference" [class.positive]="blockAudit.feeDelta <= 0" [class.negative]="blockAudit.feeDelta > 0">
             {{ blockAudit.feeDelta < 0 ? '+' : '' }}{{ (-blockAudit.feeDelta * 100) | amountShortener: 2 }}%
