@@ -343,7 +343,7 @@ export class WebsocketService {
     }
 
     if (response.transactions) {
-      response.transactions.forEach((tx) => this.stateService.transactions$.next(tx));
+      this.stateService.transactions$.next(response.transactions.slice(0, 6));
     }
 
     if (response['bsq-price']) {

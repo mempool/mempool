@@ -103,7 +103,7 @@ export class StateService {
   lightningChanged$ = new ReplaySubject<boolean>(1);
   blocksSubject$ = new BehaviorSubject<BlockExtended[]>([]);
   blocks$: Observable<BlockExtended[]>;
-  transactions$ = new ReplaySubject<TransactionStripped>(6);
+  transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
   conversions$ = new ReplaySubject<any>(1);
   bsqPrice$ = new ReplaySubject<number>(1);
   mempoolInfo$ = new ReplaySubject<MempoolInfo>(1);
@@ -219,7 +219,7 @@ export class StateService {
     }
 
     this.networkChanged$.subscribe((network) => {
-      this.transactions$ = new ReplaySubject<TransactionStripped>(6);
+      this.transactions$ = new BehaviorSubject<TransactionStripped[]>(null);
       this.blocksSubject$.next([]);
     });
 
