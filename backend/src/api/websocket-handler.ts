@@ -52,7 +52,7 @@ class WebsocketHandler {
 
   private socketData: { [key: string]: string } = {};
   private serializedInitData: string = '{}';
-  private lastRbfSummary: ReplacementInfo | null = null;
+  private lastRbfSummary: ReplacementInfo[] | null = null;
 
   constructor() { }
 
@@ -464,10 +464,11 @@ class WebsocketHandler {
     let rbfReplacements;
     let fullRbfReplacements;
     let rbfSummary;
-    if (Object.keys(rbfChanges.trees).length) {
+    if (Object.keys(rbfChanges.trees).length || !this.lastRbfSummary) {
       rbfReplacements = rbfCache.getRbfTrees(false);
       fullRbfReplacements = rbfCache.getRbfTrees(true);
-      rbfSummary = rbfCache.getLatestRbfSummary();
+      rbfSummary = rbfCache.getLatestRbfSummary() || [];
+      this.lastRbfSummary = rbfSummary;
     }
 
     for (const deletedTx of deletedTransactions) {
