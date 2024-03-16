@@ -477,4 +477,18 @@ export class ApiService {
       this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/interval' + (interval !== undefined ? `/${interval}` : '')
     );
   }
+
+  getAccelerationTotals$(pool?: string, interval?: string): Observable<{ cost: number, count: number }> {
+    const queryParams = new URLSearchParams();
+    if (pool) {
+      queryParams.append('pool', pool);
+    }
+    if (interval) {
+      queryParams.append('interval', interval);
+    }
+    const queryString = queryParams.toString();
+    return this.httpClient.get<{ cost: number, count: number }>(
+      this.apiBaseUrl + this.apiBasePath + '/api/v1/accelerations/total' + (queryString?.length ? '?' + queryString : '')
+    );
+  }
 }

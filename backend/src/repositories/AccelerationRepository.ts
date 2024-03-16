@@ -118,6 +118,45 @@ class AccelerationRepository {
     }
   }
 
+  public async $getAccelerationTotals(poolSlug: string | null = null, interval: string | null = null): Promise<{ cost: number, count: number }> {
+    interval = Common.getSqlInterval(interval);
+
+    if (!config.MEMPOOL_SERVICES.ACCELERATIONS) {
+      return { cost: 0, count: 0 };
+    }
+
+    let query = `
+      SELECT SUM(boost_cost) as total_cost, COUNT(txid) as count FROM accelerations
+      JOIN pools on pools.unique_id = accelerations.pool
+    `;
+    let params: any[] = [];
+    let hasFilter = false;
+
+    if (interval) {
+      query += ` WHERE accelerations.added BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW() `;
+      hasFilter = true;
+    }
+    if (poolSlug != null) {
+      if (hasFilter) {
+        query += ` AND pools.slug = ? `;
+      } else {
+        query += ` WHERE pools.slug = ? `;
+      }
+      params.push(poolSlug);
+    }
+
+    try {
+      const [rows] = await DB.query(query, params) as RowDataPacket[][];
+      return {
+        cost: rows[0]?.total_cost || 0,
+        count: rows[0]?.count || 0,
+      };
+    } catch (e) {
+      logger.err(`Cannot query acceleration totals. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
   public async $getLastSyncedHeight(): Promise<number> {
     try {
       const [rows] = await DB.query(`
