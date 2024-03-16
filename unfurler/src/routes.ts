@@ -179,7 +179,7 @@ export function matchRoute(network: string, path: string): Match {
   match.fallbackImg = route.fallbackImg;
 
   // traverse the route tree until we run out of route or tree, or hit a renderable match
-  while (!route.render && route.routes && parts.length && route.routes[parts[0]]) {
+  while (route.routes && parts.length && route.routes[parts[0]]) {
     route = route.routes[parts[0]];
     parts.shift();
     if (route.fallbackImg) {
