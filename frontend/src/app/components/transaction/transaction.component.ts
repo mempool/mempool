@@ -281,7 +281,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     ).subscribe((accelerationHistory) => {
       for (const acceleration of accelerationHistory) {
-        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'mined') && acceleration.feePaid > 0) {
+        if (acceleration.txid === this.txId && (acceleration.status === 'completed' || acceleration.status === 'completed_provisional')) {
           acceleration.acceleratedFee = Math.max(acceleration.effectiveFee, acceleration.effectiveFee + acceleration.feePaid - acceleration.baseFee - acceleration.vsizeFee);
           this.accelerationInfo = acceleration;
         }
@@ -520,7 +520,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           block_time: block.timestamp,
         };
         this.stateService.markBlock$.next({ blockHeight: block.height });
-        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'mined', 'completed'].includes(this.accelerationInfo.status))) {
+        if (this.tx.acceleration || (this.accelerationInfo && ['accelerating', 'completed_provisional', 'completed'].includes(this.accelerationInfo.status))) {
           this.audioService.playSound('wind-chimes-harp-ascend');
         } else {
           this.audioService.playSound('magic');
