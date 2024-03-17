@@ -114,7 +114,7 @@ export class BlocksList implements OnInit {
             this.lastPage = this.page;
             return blocks[0];
           }
-          if (blocks[1]) {
+          if (blocks[1] && blocks[1].length) {
             this.blocksCount = Math.max(this.blocksCount, blocks[1][0].height) + 1;
             if (this.isMempoolModule) {
               // @ts-ignore: Need to add an extra field for the template
