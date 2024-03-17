@@ -52,9 +52,6 @@ export class ServicesApiServices {
     }
     this.apiBasePath = ''; // assume mainnet by default
     this.stateService.networkChanged$.subscribe((network) => {
-      if (network === 'bisq' && !this.stateService.env.BISQ_SEPARATE_BACKEND) {
-        network = '';
-      }
       this.apiBasePath = network ? '/' + network : '';
     });
 
