@@ -253,7 +253,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
-    this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId)
+    (this.address.is_pubkey
+    ? this.electrsApiService.getScriptHashTransactions$((this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac', this.lastTransactionTxId)
+    : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
