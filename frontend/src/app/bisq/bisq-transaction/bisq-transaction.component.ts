@@ -14,7 +14,7 @@ import { WebsocketService } from '../../services/websocket.service';
 @Component({
   selector: 'app-bisq-transaction',
   templateUrl: './bisq-transaction.component.html',
-  styleUrls: ['./bisq-transaction.component.scss']
+  styleUrls: ['./../../components/transaction/transaction.component.scss']
 })
 export class BisqTransactionComponent implements OnInit, OnDestroy {
   bisqTx: BisqTransaction;
