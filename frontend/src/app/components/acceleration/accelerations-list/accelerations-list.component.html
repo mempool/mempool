@@ -46,7 +46,8 @@
               ~
             </td>
             <td class="block text-right">
-              <a [routerLink]="['/block' | relativeUrl, acceleration.blockHeight]">{{ acceleration.blockHeight }}</a>
+              <a *ngIf="acceleration.blockHeight" [routerLink]="['/block' | relativeUrl, acceleration.blockHeight]">{{ acceleration.blockHeight }}</a>
+              <span *ngIf="!acceleration.blockHeight">~</span>
             </td>
             <td class="status text-right">
               <span *ngIf="acceleration.status === 'accelerating'" class="badge badge-warning" i18n="accelerator.pending">Pending</span>
