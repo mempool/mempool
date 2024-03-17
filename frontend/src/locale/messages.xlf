@@ -257,6 +257,14 @@
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
         <note priority="1" from="description">shared.address</note>
       </trans-unit>
       <trans-unit id="a9b87c3aa4731edee661c8287ef3aab71799c0b8" datatype="html">
@@ -309,6 +317,10 @@
           <context context-type="sourcefile">src/app/components/address/address.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
         <note priority="1" from="description">address.balance</note>
       </trans-unit>
       <trans-unit id="27387c2af5dcaf343a548feba821515f5dc00faa" datatype="html">
@@ -323,7 +335,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">326</context>
+          <context context-type="linenumber">330</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -347,7 +359,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">327</context>
+          <context context-type="linenumber">331</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blockchain-blocks/blockchain-blocks.component.html</context>
@@ -504,7 +516,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">104</context>
         </context-group>
         <note priority="1" from="description">Bisq block height header</note>
       </trans-unit>
@@ -536,15 +548,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">418</context>
+          <context context-type="linenumber">422</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">447</context>
+          <context context-type="linenumber">454</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">471</context>
+          <context context-type="linenumber">478</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/blocks-list/blocks-list.component.html</context>
@@ -580,7 +592,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">69</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -750,23 +762,23 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <note priority="1" from="description">dashboard.view-more</note>
       </trans-unit>
@@ -879,6 +891,10 @@
           <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-wallet/federation-wallet.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
@@ -946,6 +962,14 @@
           <context context-type="linenumber">4</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
@@ -965,8 +989,16 @@
           <context context-type="linenumber">18</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">157</context>
+          <context context-type="linenumber">134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="23b4db80cfba2937f6b087d8776cb5cd6725a16b" datatype="html">
@@ -1010,7 +1042,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">168</context>
+          <context context-type="linenumber">188</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1025,11 +1057,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">268</context>
+          <context context-type="linenumber">272</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">340</context>
         </context-group>
         <note priority="1" from="description">transaction.version</note>
       </trans-unit>
@@ -1045,6 +1077,10 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
@@ -1086,7 +1122,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">145</context>
+          <context context-type="linenumber">165</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
@@ -1125,11 +1161,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">286</context>
+          <context context-type="linenumber">306</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">446</context>
+          <context context-type="linenumber">466</context>
         </context-group>
         <note priority="1" from="description">transaction.details</note>
       </trans-unit>
@@ -1145,11 +1181,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">273</context>
+          <context context-type="linenumber">293</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">417</context>
+          <context context-type="linenumber">437</context>
         </context-group>
         <note priority="1" from="description">Transaction inputs and outputs</note>
         <note priority="1" from="meaning">transaction.inputs-and-outputs</note>
@@ -1166,7 +1202,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">314</context>
+          <context context-type="linenumber">389</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bisq.transaction" datatype="html">
@@ -1195,15 +1231,15 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">189</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">70</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="bfa87f9724434e4245b30f2bdd11d97477048cd1" datatype="html">
@@ -1491,7 +1527,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="linenumber">78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.about" datatype="html">
@@ -1509,11 +1545,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-overview-tooltip/block-overview-tooltip.component.html</context>
@@ -1529,7 +1565,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">515</context>
+          <context context-type="linenumber">535</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -1650,7 +1686,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">sat/vB</note>
         <note priority="1" from="meaning">shared.sat-vbyte</note>
@@ -1663,31 +1703,22 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <note priority="1" from="description">accelerator.acceleration-fees</note>
       </trans-unit>
-      <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
-        <source>Total Bid Boost</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
-          <context context-type="linenumber">11</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
-          <context context-type="linenumber">39</context>
-        </context-group>
-        <note priority="1" from="description">acceleration.total-bid-boost</note>
-      </trans-unit>
-      <trans-unit id="4793828002882320882" datatype="html">
-        <source>At block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+      <trans-unit id="7920806087360513675" datatype="html">
+        <source>No accelerated transaction for this timeframe</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">211</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4793828002882320882" datatype="html">
+        <source>At block: <x id="PH" equiv-text="ticks[0].data[2]"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
@@ -1703,10 +1734,10 @@
         </context-group>
       </trans-unit>
       <trans-unit id="8918254921747459635" datatype="html">
-        <source>Around block: <x id="PH" equiv-text="data[0].data[2]"/></source>
+        <source>Around block: <x id="PH" equiv-text="ticks[0].data[2]"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/acceleration-fees-graph/acceleration-fees-graph.component.ts</context>
-          <context context-type="linenumber">213</context>
+          <context context-type="linenumber">165</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-fee-rates-graph/block-fee-rates-graph.component.ts</context>
@@ -1748,6 +1779,22 @@
           <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">accelerator.total-accelerated</note>
+      </trans-unit>
+      <trans-unit id="bdb8bbb38e4ca3c73e19dc4167fbe4aec316f818" datatype="html">
+        <source>Total Bid Boost</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/acceleration-stats/acceleration-stats.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <note priority="1" from="description">accelerator.total-boost</note>
       </trans-unit>
       <trans-unit id="53475bdf4a94f0103f33211d02102859e9a8fe3e" datatype="html">
         <source>BTC</source>
@@ -1814,6 +1861,10 @@
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
         <note priority="1" from="description">accelerator.block</note>
       </trans-unit>
       <trans-unit id="57cde27765d527a0d9195212fa5a7ce06408c827" datatype="html">
@@ -1853,7 +1904,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channels-list/channels-list.component.html</context>
@@ -1866,7 +1917,7 @@
         <source>Pending</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <note priority="1" from="description">accelerator.pending</note>
       </trans-unit>
@@ -1874,7 +1925,7 @@
         <source>Mined</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool/pool.component.html</context>
@@ -1894,19 +1945,26 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">85</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">120</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <note priority="1" from="description">transaction.rbf.mined</note>
+      </trans-unit>
+      <trans-unit id="a7c328c4773db932ff14a1954e15e43dca58e7b7" datatype="html">
+        <source>Completed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="96d56ec71c6e78cb4d6204c4a9359a3d38fcdb59" datatype="html">
         <source>Canceled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <note priority="1" from="description">accelerator.canceled</note>
       </trans-unit>
@@ -1914,7 +1972,7 @@
         <source>There are no active accelerations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="linenumber">96</context>
         </context-group>
         <note priority="1" from="description">accelerations.no-accelerations</note>
       </trans-unit>
@@ -1922,7 +1980,7 @@
         <source>There are no recent accelerations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerations-list/accelerations-list.component.html</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">97</context>
         </context-group>
         <note priority="1" from="description">accelerations.no-accelerations</note>
       </trans-unit>
@@ -1934,7 +1992,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <note priority="1" from="description">accelerator.pending-accelerations</note>
       </trans-unit>
@@ -1946,39 +2004,39 @@
         </context-group>
         <note priority="1" from="description">accelerator.acceleration-stats</note>
       </trans-unit>
-      <trans-unit id="0efb19c3388cbcc9f3cd257f389843f9ad2a1f31" datatype="html">
-        <source>(1 month)</source>
+      <trans-unit id="12ad90f635ec3df50b367b133c213b27912325cc" datatype="html">
+        <source>(3 months)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <note priority="1" from="description">mining.144-blocks</note>
+        <note priority="1" from="description">mining.3-months</note>
+      </trans-unit>
+      <trans-unit id="f26767fd3fbdc174a0f961fc538d10f80eaec6d8" datatype="html">
+        <source>Mempool Goggles: Accelerations</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.mempool-goggles-accelerations</note>
       </trans-unit>
       <trans-unit id="f0ae1220633178276128371f3965fb53d63581d4" datatype="html">
         <source>Recent Accelerations</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">96</context>
         </context-group>
         <note priority="1" from="description">dashboard.recent-accelerations</note>
       </trans-unit>
-      <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
+      <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
         <source>Accelerator Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/acceleration/accelerator-dashboard/accelerator-dashboard.component.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">59</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3590f5c3ef2810f637316edb8aaa86b8e907f152" datatype="html">
@@ -2020,6 +2078,22 @@
           <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="description">accelerator.percent-of-next-block</note>
+      </trans-unit>
+      <trans-unit id="b45214d1bf328d07f0aea939dfc197f5c59f421b" datatype="html">
+        <source>Balances</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <note priority="1" from="description">addresses.balance</note>
+      </trans-unit>
+      <trans-unit id="d04d5b5d13ac9acf9750f1807f0227eeee98b247" datatype="html">
+        <source>Total</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/address-group/address-group.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">addresses.total</note>
       </trans-unit>
       <trans-unit id="address-label.multisig" datatype="html">
         <source>Multisig <x id="multisigM" equiv-text="ms.m"/> of <x id="multisigN" equiv-text="ms.n"/></source>
@@ -2076,7 +2150,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">168</context>
+          <context context-type="linenumber">145</context>
         </context-group>
         <note priority="1" from="description">shared.confidential</note>
       </trans-unit>
@@ -2088,18 +2162,18 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.address" datatype="html">
-        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network===&apos;liquid&apos;||this.stateService.network===&apos;liquidtestnet&apos;?&apos;Liquid&apos;:&apos;Bitcoin&apos;"/> <x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
+        <source>See mempool transactions, confirmed transactions, balance, and more for <x id="PH" equiv-text="this.stateService.network===&apos;liquid&apos;||this.stateService.network===&apos;liquidtestnet&apos;?&apos;Liquid&apos;:&apos;Bitcoin&apos;"/><x id="PH_1" equiv-text="seoDescriptionNetwork(this.stateService.network)"/> address <x id="INTERPOLATION" equiv-text="this.addressString"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address-preview.component.ts</context>
           <context context-type="linenumber">72</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/address/address.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="714e34125b3343df73f19ec800b43be95217d5d4" datatype="html">
@@ -2583,11 +2657,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">197</context>
+          <context context-type="linenumber">202</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/indexing-progress/indexing-progress.component.html</context>
@@ -2611,6 +2685,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block-filters/block-filters.component.html</context>
           <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">58</context>
         </context-group>
         <note priority="1" from="description">beta</note>
       </trans-unit>
@@ -2678,6 +2756,14 @@
         </context-group>
         <note priority="1" from="description">block.not-available</note>
       </trans-unit>
+      <trans-unit id="f13653cd063e5c83ac884349e4657d68d804126e" datatype="html">
+        <source>Your browser does not support this feature.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block-overview-graph/block-overview-graph.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">webgl-disabled</note>
+      </trans-unit>
       <trans-unit id="cb1b52c13b95fa29ea4044f2bbe0ac623b890c80" datatype="html">
         <source>Fee</source>
         <context-group purpose="location">
@@ -2694,7 +2780,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">514</context>
+          <context context-type="linenumber">534</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
@@ -2702,7 +2788,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">159</context>
+          <context context-type="linenumber">136</context>
         </context-group>
         <note priority="1" from="description">Transaction fee</note>
         <note priority="1" from="meaning">transaction.fee</note>
@@ -2715,11 +2801,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">192</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">518</context>
+          <context context-type="linenumber">538</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-box/channel-box.component.html</context>
@@ -2744,7 +2830,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">529</context>
+          <context context-type="linenumber">549</context>
         </context-group>
         <note priority="1" from="description">Effective transaction fee rate</note>
         <note priority="1" from="meaning">transaction.effective-fee-rate</note>
@@ -2770,11 +2856,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">190</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">298</context>
+          <context context-type="linenumber">318</context>
         </context-group>
         <note priority="1" from="description">Transaction Virtual Size</note>
         <note priority="1" from="meaning">transaction.vsize</note>
@@ -2791,7 +2877,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">191</context>
         </context-group>
         <note priority="1" from="description">Transaction Weight</note>
         <note priority="1" from="meaning">transaction.weight</note>
@@ -2884,7 +2970,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">539</context>
+          <context context-type="linenumber">559</context>
         </context-group>
         <note priority="1" from="description">transaction.audit.accelerated</note>
       </trans-unit>
@@ -2974,11 +3060,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">294</context>
+          <context context-type="linenumber">314</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="919f2fd60a898850c24b1584362bbf18a4628bcb" datatype="html">
@@ -3001,19 +3087,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">414</context>
+          <context context-type="linenumber">418</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">438</context>
+          <context context-type="linenumber">445</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">467</context>
+          <context context-type="linenumber">474</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">310</context>
+          <context context-type="linenumber">330</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4786852746659896870" datatype="html">
@@ -3035,11 +3121,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.ts</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">102</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">265</context>
+          <context context-type="linenumber">270</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.liquid.block" datatype="html">
@@ -3050,11 +3136,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.ts</context>
-          <context context-type="linenumber">102</context>
+          <context context-type="linenumber">104</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">267</context>
+          <context context-type="linenumber">272</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.block" datatype="html">
@@ -3065,11 +3151,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block-preview.component.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.ts</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">274</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0b47a777f024ab4e3cdf0062acb4d86e9ae1f635" datatype="html">
@@ -3080,7 +3166,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">135</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -3096,23 +3182,23 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">146</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">408</context>
+          <context context-type="linenumber">412</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">429</context>
+          <context context-type="linenumber">433</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">463</context>
+          <context context-type="linenumber">470</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -3129,7 +3215,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <note priority="1" from="description">block.miner</note>
       </trans-unit>
@@ -3239,11 +3325,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">143</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">312</context>
+          <context context-type="linenumber">321</context>
         </context-group>
         <note priority="1" from="description">unknown</note>
       </trans-unit>
@@ -3251,7 +3337,7 @@
         <source>Fee span</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">129</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mempool-block/mempool-block.component.html</context>
@@ -3263,7 +3349,7 @@
         <source>Based on average native segwit transaction of 140 vBytes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">139</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/fees-box/fees-box.component.html</context>
@@ -3291,11 +3377,11 @@
         <source>Subsidy + fees</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">159</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">Total subsidy and fees in a block</note>
         <note priority="1" from="meaning">block.subsidy-and-fees</note>
@@ -3304,7 +3390,7 @@
         <source>Expected</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">222</context>
+          <context context-type="linenumber">224</context>
         </context-group>
         <note priority="1" from="description">block.expected</note>
       </trans-unit>
@@ -3312,7 +3398,7 @@
         <source>Actual</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">224</context>
+          <context context-type="linenumber">226</context>
         </context-group>
         <note priority="1" from="description">block.actual</note>
       </trans-unit>
@@ -3320,7 +3406,7 @@
         <source>Expected Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">228</context>
+          <context context-type="linenumber">230</context>
         </context-group>
         <note priority="1" from="description">block.expected-block</note>
       </trans-unit>
@@ -3328,7 +3414,7 @@
         <source>Actual Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">242</context>
+          <context context-type="linenumber">245</context>
         </context-group>
         <note priority="1" from="description">block.actual-block</note>
       </trans-unit>
@@ -3336,7 +3422,7 @@
         <source>Taproot</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">273</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tx-features/tx-features.component.html</context>
@@ -3365,7 +3451,7 @@
         <source>Bits</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">272</context>
+          <context context-type="linenumber">276</context>
         </context-group>
         <note priority="1" from="description">block.bits</note>
       </trans-unit>
@@ -3373,7 +3459,7 @@
         <source>Merkle root</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">276</context>
+          <context context-type="linenumber">280</context>
         </context-group>
         <note priority="1" from="description">block.merkle-root</note>
       </trans-unit>
@@ -3381,7 +3467,7 @@
         <source>Difficulty</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">287</context>
+          <context context-type="linenumber">291</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-adjustments-table/difficulty-adjustments-table.component.html</context>
@@ -3397,11 +3483,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">310</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">391</context>
+          <context context-type="linenumber">397</context>
         </context-group>
         <note priority="1" from="description">block.difficulty</note>
       </trans-unit>
@@ -3409,7 +3495,7 @@
         <source>Nonce</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">291</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <note priority="1" from="description">block.nonce</note>
       </trans-unit>
@@ -3417,7 +3503,7 @@
         <source>Block Header Hex</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">295</context>
+          <context context-type="linenumber">299</context>
         </context-group>
         <note priority="1" from="description">block.header</note>
       </trans-unit>
@@ -3425,7 +3511,7 @@
         <source>Audit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">313</context>
+          <context context-type="linenumber">317</context>
         </context-group>
         <note priority="1" from="description">Toggle Audit</note>
         <note priority="1" from="meaning">block.toggle-audit</note>
@@ -3434,11 +3520,11 @@
         <source>Details</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">324</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">278</context>
+          <context context-type="linenumber">298</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel.component.html</context>
@@ -3467,11 +3553,11 @@
         <source>Error loading data.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">339</context>
+          <context context-type="linenumber">343</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">378</context>
+          <context context-type="linenumber">382</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/channel/channel-preview.component.html</context>
@@ -3491,9 +3577,17 @@
         <source>Why is this block empty?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/block/block.component.html</context>
-          <context context-type="linenumber">400</context>
+          <context context-type="linenumber">404</context>
         </context-group>
         <note priority="1" from="description">block.empty-block-explanation</note>
+      </trans-unit>
+      <trans-unit id="958d4960ca7a46c7893e7b81ce7465872bb5a44f" datatype="html">
+        <source>Acceleration fees paid out-of-band</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/block/block.component.html</context>
+          <context context-type="linenumber">436</context>
+        </context-group>
+        <note priority="1" from="description">Acceleration Fees</note>
       </trans-unit>
       <trans-unit id="e70fcca5a99575cffef3ff8cbd5e69f06ffd0f1c" datatype="html">
         <source>Pool</source>
@@ -3508,10 +3602,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
           <context context-type="linenumber">92</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">121</context>
         </context-group>
         <note priority="1" from="description">mining.pool-name</note>
       </trans-unit>
@@ -3587,11 +3677,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">254</context>
+          <context context-type="linenumber">283</context>
         </context-group>
         <note priority="1" from="description">dashboard.txs</note>
       </trans-unit>
@@ -3659,7 +3749,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">258</context>
+          <context context-type="linenumber">287</context>
         </context-group>
         <note priority="1" from="description">Memory usage</note>
         <note priority="1" from="meaning">dashboard.memory-usage</note>
@@ -3676,7 +3766,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">252</context>
+          <context context-type="linenumber">281</context>
         </context-group>
         <note priority="1" from="description">Unconfirmed count</note>
         <note priority="1" from="meaning">dashboard.unconfirmed</note>
@@ -3721,7 +3811,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">74</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.remaining</note>
       </trans-unit>
@@ -3734,7 +3824,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">67,68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
@@ -3759,7 +3849,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">68,69</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
@@ -3775,7 +3865,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.estimate</note>
       </trans-unit>
@@ -3783,11 +3873,11 @@
         <source>Previous</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty/difficulty.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.previous</note>
       </trans-unit>
@@ -3795,7 +3885,7 @@
         <source>Current Period</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.current-period</note>
       </trans-unit>
@@ -3803,15 +3893,11 @@
         <source>Next Halving</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">47</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">51</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/difficulty-mining/difficulty-mining.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">88</context>
         </context-group>
         <note priority="1" from="description">difficulty-box.next-halving</note>
       </trans-unit>
@@ -3985,10 +4071,6 @@
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">284</context>
-        </context-group>
         <note priority="1" from="description">dashboard.backend-is-synchronizing</note>
       </trans-unit>
       <trans-unit id="50904e472d4671388a20fbbb1ee9dfc0a4586fa1" datatype="html">
@@ -3996,10 +4078,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">13</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">289</context>
         </context-group>
         <note priority="1" from="description">vB/s</note>
         <note priority="1" from="meaning">shared.vbytes-per-second</note>
@@ -4009,10 +4087,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/footer/footer.component.html</context>
           <context context-type="linenumber">14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">290</context>
         </context-group>
         <note priority="1" from="description">WU/s</note>
         <note priority="1" from="meaning">shared.weight-per-second</note>
@@ -4031,6 +4105,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/graphs/graphs.component.html</context>
           <context context-type="linenumber">7</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">74</context>
         </context-group>
         <note priority="1" from="description">mining</note>
       </trans-unit>
@@ -4086,11 +4164,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">141</context>
         </context-group>
         <note priority="1" from="description">lightning.nodes-networks</note>
       </trans-unit>
@@ -4106,11 +4184,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note priority="1" from="description">lightning.network-capacity</note>
       </trans-unit>
@@ -4122,7 +4200,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <note priority="1" from="description">lightning.nodes-per-isp</note>
       </trans-unit>
@@ -4182,11 +4260,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">293</context>
+          <context context-type="linenumber">299</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">379</context>
+          <context context-type="linenumber">385</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.html</context>
@@ -4206,7 +4284,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <note priority="1" from="description">mining.hashrate-difficulty</note>
       </trans-unit>
@@ -4214,25 +4292,25 @@
         <source>See hashrate and difficulty for the Bitcoin<x id="PH" equiv-text="seoDescriptionNetwork(this.network)"/> network visualized over time.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">75</context>
+          <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8105839921891777281" datatype="html">
         <source>Hashrate (MA)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">312</context>
+          <context context-type="linenumber">318</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrate-chart/hashrate-chart.component.ts</context>
-          <context context-type="linenumber">402</context>
+          <context context-type="linenumber">408</context>
         </context-group>
       </trans-unit>
       <trans-unit id="mining.pools-historical-dominance" datatype="html">
         <source>Pools Historical Dominance</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/hashrates-chart-pools/hashrate-chart-pools.component.ts</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5ee5eb7db86675abd5f0b0db835bf362ee9b23ff" datatype="html">
@@ -4257,7 +4335,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">72</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/statistics/statistics.component.ts</context>
@@ -4265,23 +4343,351 @@
         </context-group>
         <note priority="1" from="description">master-page.graphs</note>
       </trans-unit>
-      <trans-unit id="6b867dc61c6a92f3229f1950f9f2d414790cce95" datatype="html">
-        <source>Accelerator Dashboard</source>
+      <trans-unit id="b4f212e7d0333eb600f835e4664846f9a1a58424" datatype="html">
+        <source>Non-Dust Expired</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">3</context>
         </context-group>
-        <note priority="1" from="description">master-page.accelerator-dashboard</note>
+        <note priority="1" from="description">liquid.non-dust-expired</note>
       </trans-unit>
-      <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
-        <source>Lightning Explorer</source>
+      <trans-unit id="506d3b3e461d170c39745288b9ea96b9ac9b7f78" datatype="html">
+        <source>Total amount of BTC held in non-dust Federation UTXOs that have expired timelocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">liquid.expired-utxos-non-dust</note>
+      </trans-unit>
+      <trans-unit id="0aa722d7f1a3122b0d3e360ed3e91049bef3d9f4" datatype="html">
+        <source>UTXOs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">shared.utxos</note>
+      </trans-unit>
+      <trans-unit id="5754c4f243f1eca150768c8435b70657f42eceb8" datatype="html">
+        <source>Total Expired</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">liquid.total-expired</note>
+      </trans-unit>
+      <trans-unit id="a1351919fe237825d7d5844cff22192f88bd1eb4" datatype="html">
+        <source>Total amount of BTC held in Federation UTXOs that have expired timelocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/expired-utxos-stats/expired-utxos-stats.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <note priority="1" from="description">liquid.expired-utxos</note>
+      </trans-unit>
+      <trans-unit id="993e5bc509c26db81d93018e24a6afe6e50cae52" datatype="html">
+        <source>Liquid Federation Wallet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-wallet/federation-wallet.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-wallet/federation-wallet.component.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">liquid.federation-wallet</note>
+      </trans-unit>
+      <trans-unit id="aaf6d7c1f6bc35ffe3e131be28b444f6f8bd76b4" datatype="html">
+        <source>addresses</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <note priority="1" from="description">shared.addresses</note>
+      </trans-unit>
+      <trans-unit id="7a080851e25a41e898776a9c90cf8dbe81027f9a" datatype="html">
+        <source>Output</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">transaction.output</note>
+      </trans-unit>
+      <trans-unit id="4e3a7555e83abb62ac42d78275cf01b81793cd92" datatype="html">
+        <source>Related Peg-In</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="description">liquid.related-peg-in</note>
+      </trans-unit>
+      <trans-unit id="f093a73f10804563b96cab97e4e0516ce684e036" datatype="html">
+        <source>Expires in</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">liquid.expires-in</note>
+      </trans-unit>
+      <trans-unit id="7f37d56e12d893cd46fc8ccba015d51f32d83131" datatype="html">
+        <source>Expired since</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">liquid.expired-since</note>
+      </trans-unit>
+      <trans-unit id="24874d20368f931c1b644bba3eef6f2cb5f753fb" datatype="html">
+        <source>Is Dust</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <note priority="1" from="description">liquid.is-dust</note>
+      </trans-unit>
+      <trans-unit id="a5d0bd2f3fedabd093937eb13a9edb9bcd00b919" datatype="html">
+        <source>Change output</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">liquid.change-output</note>
+      </trans-unit>
+      <trans-unit id="1a8246eba9a999ee881248c4767d63b875ef07fe" datatype="html">
+        <source>blocks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <note priority="1" from="description">shared.blocks</note>
+      </trans-unit>
+      <trans-unit id="4f20f2d5a6882190892e58b85f6ccbedfa737952" datatype="html">
+        <source>Yes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <note priority="1" from="description">shared.yes</note>
+      </trans-unit>
+      <trans-unit id="3d3ae7deebc5949b0c1c78b9847886a94321d9fd" datatype="html">
+        <source>No</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-utxos-list/federation-utxos-list.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <note priority="1" from="description">shared.no</note>
+      </trans-unit>
+      <trans-unit id="b4a7d4e1363be9ed70ec20dbf1a97bff3e94e5b7" datatype="html">
+        <source>Timelock-Expired UTXOs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/federation-wallet/federation-wallet.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">liquid.timelock-expired-utxos</note>
+      </trans-unit>
+      <trans-unit id="a8b0889ea1b41888f1e247f2731cc9322198ca04" datatype="html">
+        <source>Recent Peg-In / Out&apos;s</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note priority="1" from="description">liquid.recent-pegs</note>
+      </trans-unit>
+      <trans-unit id="3669efae1ff592688b4df067abf0a272e90af226" datatype="html">
+        <source>Fund / Redemption Tx</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <note priority="1" from="description">liquid.fund-redemption-tx</note>
+      </trans-unit>
+      <trans-unit id="4dbfcaee1d2f0308bd20b3b6b6655ba1e04330dc" datatype="html">
+        <source>BTC Address</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <note priority="1" from="description">liquid.bitcoin-address</note>
+      </trans-unit>
+      <trans-unit id="2e37a2401f3cb55f2b0c108f77c28bb9738f09e0" datatype="html">
+        <source>Peg out in progress...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <note priority="1" from="description">liquid.redemption-in-progress</note>
+      </trans-unit>
+      <trans-unit id="92b8788842b6cced2a7dad59e5fa1803daff1ca2" datatype="html">
+        <source>24h Peg-In Volume</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">liquid.peg-ins-volume-day</note>
+      </trans-unit>
+      <trans-unit id="ee326b7b6e8d816ec80f0c81aedad2a132467309" datatype="html">
+        <source>BTC</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">shared.addresses</note>
+      </trans-unit>
+      <trans-unit id="44cfc2e57619bf9beab1ef5b4bedfa52246f5e27" datatype="html">
+        <source>Peg-Ins</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">liquid.peg-ins</note>
+      </trans-unit>
+      <trans-unit id="544fb5f2a64924b4b9d7d2bc25b8925492bd6d64" datatype="html">
+        <source>24h Peg-Out Volume</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">liquid.peg-out-volume-day</note>
+      </trans-unit>
+      <trans-unit id="3e7a5b4cf20d583207c96127eb0f0d1b91358544" datatype="html">
+        <source>Peg-Outs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">liquid.peg-outs</note>
+      </trans-unit>
+      <trans-unit id="380175a30ef4d977ec376044b17cf505d0e8ede0" datatype="html">
+        <source>Unpeg</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">liquid.unpeg</note>
+      </trans-unit>
+      <trans-unit id="34e09704961f3373354d01328a1bb907ffbe44a6" datatype="html">
+        <source>Unpeg Event</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">liquid.unpeg-event</note>
+      </trans-unit>
+      <trans-unit id="a4c3af092f04fb531a39f0a85e2f7b13ef6e9512" datatype="html">
+        <source>Avg Peg Ratio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">liquid.avg-peg-ratio</note>
+      </trans-unit>
+      <trans-unit id="6ffd2b9ed79c063071099b61933a45f68f7ff5a2" datatype="html">
+        <source>Emergency Keys</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">liquid.emergency-keys</note>
+      </trans-unit>
+      <trans-unit id="81f05fa58fc9f3fb248f0b4f5710163461d06ea1" datatype="html">
+        <source>usage</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-ratio-stats/reserves-ratio-stats.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <note priority="1" from="description">shared.usage</note>
+      </trans-unit>
+      <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
+        <source>L-BTC in circulation</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.lbtc-pegs-in-circulation</note>
+      </trans-unit>
+      <trans-unit id="bda0c55e9a859780b954c2718f66496d8ea13b63" datatype="html">
+        <source>As of block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <note priority="1" from="description">shared.as-of-block</note>
+      </trans-unit>
+      <trans-unit id="0ae529953ee15ef7af41fe3a3c30a10de5347f34" datatype="html">
+        <source>BTC Holdings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/liquid-reserves-audit/reserves-supply-stats/reserves-supply-stats.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.btc-holdings</note>
+      </trans-unit>
+      <trans-unit id="a681a4e2011bb28157689dbaa387de0dd0aa0c11" datatype="html">
+        <source>Mining Dashboard</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">mining.mining-dashboard</note>
+      </trans-unit>
+      <trans-unit id="142e923d3b04186ac6ba23387265d22a2fa404e0" datatype="html">
+        <source>Lightning Explorer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
@@ -4293,7 +4699,7 @@
         <source>Documentation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/master-page/master-page.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/docs/docs.component.html</context>
@@ -4351,7 +4757,7 @@
         <source>Sign in</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/menu/menu.component.html</context>
-          <context context-type="linenumber">10</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">shared.sign-in</note>
       </trans-unit>
@@ -4375,11 +4781,11 @@
         <source>Recent Blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
@@ -4391,7 +4797,7 @@
         <source>Adjustments</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">70</context>
         </context-group>
         <note priority="1" from="description">dashboard.adjustments</note>
       </trans-unit>
@@ -4399,7 +4805,7 @@
         <source>Get real-time Bitcoin mining stats like hashrate, difficulty adjustment, block rewards, pool dominance, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/mining-dashboard/mining-dashboard.component.ts</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2711844b4304254e88358d1761f9c732e5aefc69" datatype="html">
@@ -4566,44 +4972,44 @@
         <source>Mining Pools</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.bitcoin.graphs.pool-ranking" datatype="html">
         <source>See the top Bitcoin mining pools ranked by number of blocks mined, over your desired timeframe.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="312539377512157124" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="i"/> blocks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">167</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">170</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">205</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">208</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3666195172774554282" datatype="html">
         <source>Other (<x id="PH" equiv-text="percentage"/>)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/pool-ranking/pool-ranking.component.ts</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">207</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country-chart/nodes-per-country-chart.component.ts</context>
@@ -4615,11 +5021,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">177</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2158ea60725d3a97aed6f0f00aa7df48d7bb42ff" datatype="html">
@@ -4805,7 +5211,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">336</context>
+          <context context-type="linenumber">356</context>
         </context-group>
         <note priority="1" from="description">transaction.hex</note>
       </trans-unit>
@@ -4847,7 +5253,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">86</context>
         </context-group>
         <note priority="1" from="description">transaction.full-rbf</note>
       </trans-unit>
@@ -4874,7 +5280,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">132</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.html</context>
@@ -4928,7 +5334,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">102</context>
+          <context context-type="linenumber">87</context>
         </context-group>
         <note priority="1" from="description">RBF</note>
         <note priority="1" from="meaning">tx-features.tag.rbf</note>
@@ -4941,7 +5347,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">257</context>
+          <context context-type="linenumber">277</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -5059,32 +5465,32 @@
         </context-group>
         <note priority="1" from="description">search-form.search-title</note>
       </trans-unit>
-      <trans-unit id="0673b255ba8db0bc5e2cccd5962d31dc88c24578" datatype="html">
-        <source>Bitcoin Block Height</source>
+      <trans-unit id="920339d7b35b44632c8ec42aa2bd2cf5929e7619" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ networkName }}"/> Block Height</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">search.bitcoin-block-height</note>
       </trans-unit>
-      <trans-unit id="8b786a14d8c948e31bfb84369f123847a21dbf50" datatype="html">
-        <source>Bitcoin Transaction</source>
+      <trans-unit id="c6a48e5ee096fba914fb4927d16a5d2e0941e0fe" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ networkName }}"/> Transaction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">search.bitcoin-transaction</note>
       </trans-unit>
-      <trans-unit id="aacf72635ebf6cfe00590e3a426ea6002c43a729" datatype="html">
-        <source>Bitcoin Address</source>
+      <trans-unit id="1f8b2a9743e513d1e645f6986bae2130e914c34b" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ networkName }}"/> Address</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
         <note priority="1" from="description">search.bitcoin-address</note>
       </trans-unit>
-      <trans-unit id="97089c008af92d87389ff1ec5fb2cc96a6ecef0e" datatype="html">
-        <source>Bitcoin Block</source>
+      <trans-unit id="ba18d02396f5998bb46cd5d771de107bfab6e177" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ networkName }}"/> Block</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">33</context>
@@ -5099,8 +5505,8 @@
         </context-group>
         <note priority="1" from="description">search.other-networks</note>
       </trans-unit>
-      <trans-unit id="e89c09d708a1da5f6a59ba6c38ba3db78031fe0e" datatype="html">
-        <source>Bitcoin Addresses</source>
+      <trans-unit id="1221b439226cb36736030a9398c7c3a07d61bdb4" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ networkName }}"/> Addresses</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
           <context context-type="linenumber">47</context>
@@ -5123,11 +5529,19 @@
         </context-group>
         <note priority="1" from="description">search.lightning-channels</note>
       </trans-unit>
+      <trans-unit id="f091ae234382282726f5a93bb7b3802ed468e8b9" datatype="html">
+        <source>Liquid Asset</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <note priority="1" from="description">search.liquid-asset</note>
+      </trans-unit>
       <trans-unit id="2abc4d0d3ae0b49fa9e94a2efb8c2e1a47e680f4" datatype="html">
         <source>Go to &quot;<x id="INTERPOLATION" equiv-text="{{ x }}"/>&quot;</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/search-form/search-results/search-results.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <note priority="1" from="description">search.go-to</note>
       </trans-unit>
@@ -5213,78 +5627,11 @@
         <source>Just now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="time-since" datatype="html">
         <source><x id="DATE" equiv-text="dateStrings.i18nYear"/> ago</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">118</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">119</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">120</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">121</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">122</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">123</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">124</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">128</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">129</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">130</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">132</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">133</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">134</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="time-until" datatype="html">
-        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">141</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">142</context>
-        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">143</context>
@@ -5307,11 +5654,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">148</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">149</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
@@ -5333,17 +5680,17 @@
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">157</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
       </trans-unit>
-      <trans-unit id="time-span" datatype="html">
-        <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">165</context>
-        </context-group>
+      <trans-unit id="time-until" datatype="html">
+        <source>In ~<x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">166</context>
@@ -5366,11 +5713,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
@@ -5391,6 +5738,73 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
           <context context-type="linenumber">180</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">182</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="time-span" datatype="html">
+        <source>After <x id="DATE" equiv-text="dateStrings.i18nYear"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">191</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">192</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">193</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">194</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">195</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">199</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">200</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">202</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">203</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">204</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/time/time.component.ts</context>
+          <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7e06b8dd9f29261827018351cd71efe1c87839de" datatype="html">
@@ -5417,7 +5831,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.ts</context>
-          <context context-type="linenumber">318</context>
+          <context context-type="linenumber">393</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0094b97dd052620710f173e7aedf6807a1eba1f5" datatype="html">
@@ -5429,11 +5843,105 @@
         <note priority="1" from="description">RBF replacement</note>
         <note priority="1" from="meaning">transaction.rbf.replacement</note>
       </trans-unit>
+      <trans-unit id="99551db56b5be0e273a794836599b422d5700c20" datatype="html">
+        <source>Coinbase</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <note priority="1" from="description">Coinbase</note>
+        <note priority="1" from="meaning">tx-features.tag.coinbase</note>
+      </trans-unit>
+      <trans-unit id="bbd31e1edb0c089cca11d3d718b6588f3496e9e1" datatype="html">
+        <source>This transaction was projected to be included in the block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+        <note priority="1" from="description">Expected in block tooltip</note>
+      </trans-unit>
+      <trans-unit id="e75410f8ab03085a3dbecf82de6acd9679fefb75" datatype="html">
+        <source>Expected in Block</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+        <note priority="1" from="description">Expected in Block</note>
+        <note priority="1" from="meaning">tx-features.tag.expected</note>
+      </trans-unit>
+      <trans-unit id="2533fb35288295dac23fe0bdfcc2685b025a9f2e" datatype="html">
+        <source>This transaction was seen in the mempool prior to mining</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <note priority="1" from="description">Seen in mempool tooltip</note>
+      </trans-unit>
+      <trans-unit id="08c516e1fe345b4ae1fcae5fd4e5a0cd22e646dd" datatype="html">
+        <source>Seen in Mempool</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <note priority="1" from="description">Seen in Mempool</note>
+        <note priority="1" from="meaning">tx-features.tag.seen</note>
+      </trans-unit>
+      <trans-unit id="5f79b588d43d16312a9a2e6df1e76922ffe3c45d" datatype="html">
+        <source>This transaction was missing from our mempool prior to mining</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <note priority="1" from="description">Not seen in mempool tooltip</note>
+      </trans-unit>
+      <trans-unit id="53d5fe49e4a07a663eb2f26ceeb76afceef86334" datatype="html">
+        <source>Not seen in Mempool</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <note priority="1" from="description">Not seen in Mempool</note>
+        <note priority="1" from="meaning">tx-features.tag.not-seen</note>
+      </trans-unit>
+      <trans-unit id="27cfc2e9b85f248383f32fcd7def5c29e7abb6b2" datatype="html">
+        <source>This transaction may have been added or prioritized out-of-band</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <note priority="1" from="description">Added transaction tooltip</note>
+      </trans-unit>
+      <trans-unit id="73d42175ea0544a652c4f989afbec127367e8681" datatype="html">
+        <source>Added</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <note priority="1" from="description">Added</note>
+        <note priority="1" from="meaning">tx-features.tag.added</note>
+      </trans-unit>
+      <trans-unit id="7ef1a8a56ad5696e527a8da06a13661f883ad6b2" datatype="html">
+        <source>This transaction conflicted with another version in our mempool</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <note priority="1" from="description">Conflict in mempool tooltip</note>
+      </trans-unit>
+      <trans-unit id="52d9050d910141e93c3005296a01ec5c7e62934b" datatype="html">
+        <source>Conflict</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <note priority="1" from="description">Conflict</note>
+        <note priority="1" from="meaning">tx-features.tag.conflict</note>
+      </trans-unit>
       <trans-unit id="ec972116b4da9e2c5bc0e6e6586061d60cd13e56" datatype="html">
         <source>Hide accelerator</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">110</context>
         </context-group>
         <note priority="1" from="description">hide-accelerator</note>
       </trans-unit>
@@ -5441,7 +5949,7 @@
         <source>ETA</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">118</context>
+          <context context-type="linenumber">138</context>
         </context-group>
         <note priority="1" from="description">Transaction ETA</note>
         <note priority="1" from="meaning">transaction.eta</note>
@@ -5450,7 +5958,7 @@
         <source>In several hours (or more)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">126</context>
+          <context context-type="linenumber">146</context>
         </context-group>
         <note priority="1" from="description">Transaction ETA in several hours or more</note>
         <note priority="1" from="meaning">transaction.eta.in-several-hours</note>
@@ -5459,11 +5967,11 @@
         <source>Accelerate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">147</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">157</context>
         </context-group>
         <note priority="1" from="description">Accelerate button label</note>
         <note priority="1" from="meaning">transaction.accelerate</note>
@@ -5472,11 +5980,11 @@
         <source>Descendant</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">211</context>
         </context-group>
         <note priority="1" from="description">Descendant</note>
         <note priority="1" from="meaning">transaction.descendant</note>
@@ -5485,7 +5993,7 @@
         <source>Ancestor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">223</context>
         </context-group>
         <note priority="1" from="description">Transaction Ancestor</note>
         <note priority="1" from="meaning">transaction.ancestor</note>
@@ -5494,7 +6002,7 @@
         <source>RBF History</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">222</context>
+          <context context-type="linenumber">242</context>
         </context-group>
         <note priority="1" from="description">RBF History</note>
         <note priority="1" from="meaning">transaction.rbf-history</note>
@@ -5503,11 +6011,11 @@
         <source>Flow</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">231</context>
+          <context context-type="linenumber">251</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">406</context>
         </context-group>
         <note priority="1" from="description">Transaction flow</note>
         <note priority="1" from="meaning">transaction.flow</note>
@@ -5516,7 +6024,7 @@
         <source>Hide diagram</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">234</context>
+          <context context-type="linenumber">254</context>
         </context-group>
         <note priority="1" from="description">hide-diagram</note>
       </trans-unit>
@@ -5524,7 +6032,7 @@
         <source>Show more</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">255</context>
+          <context context-type="linenumber">275</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transactions-list/transactions-list.component.html</context>
@@ -5540,7 +6048,7 @@
         <source>Show diagram</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">297</context>
         </context-group>
         <note priority="1" from="description">show-diagram</note>
       </trans-unit>
@@ -5548,7 +6056,7 @@
         <source>Adjusted vsize</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">322</context>
         </context-group>
         <note priority="1" from="description">Transaction Adjusted VSize</note>
         <note priority="1" from="meaning">transaction.adjusted-vsize</note>
@@ -5557,7 +6065,7 @@
         <source>Locktime</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">324</context>
+          <context context-type="linenumber">344</context>
         </context-group>
         <note priority="1" from="description">transaction.locktime</note>
       </trans-unit>
@@ -5565,7 +6073,7 @@
         <source>Sigops</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">328</context>
+          <context context-type="linenumber">348</context>
         </context-group>
         <note priority="1" from="description">Transaction Sigops</note>
         <note priority="1" from="meaning">transaction.sigops</note>
@@ -5574,7 +6082,7 @@
         <source>Transaction not found.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">495</context>
+          <context context-type="linenumber">515</context>
         </context-group>
         <note priority="1" from="description">transaction.error.transaction-not-found</note>
       </trans-unit>
@@ -5582,7 +6090,7 @@
         <source>Waiting for it to appear in the mempool...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">496</context>
+          <context context-type="linenumber">516</context>
         </context-group>
         <note priority="1" from="description">transaction.error.waiting-for-it-to-appear</note>
       </trans-unit>
@@ -5590,7 +6098,7 @@
         <source>Accelerated fee rate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/transaction/transaction.component.html</context>
-          <context context-type="linenumber">528</context>
+          <context context-type="linenumber">548</context>
         </context-group>
         <note priority="1" from="description">Accelerated transaction fee rate</note>
         <note priority="1" from="meaning">transaction.accelerated-fee-rate</note>
@@ -5747,18 +6255,6 @@
         </context-group>
         <note priority="1" from="description">transaction.input</note>
       </trans-unit>
-      <trans-unit id="7a080851e25a41e898776a9c90cf8dbe81027f9a" datatype="html">
-        <source>Output</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
-          <context context-type="linenumber">43</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tx-bowtie-graph-tooltip/tx-bowtie-graph-tooltip.component.html</context>
-          <context context-type="linenumber">54</context>
-        </context-group>
-        <note priority="1" from="description">transaction.output</note>
-      </trans-unit>
       <trans-unit id="25d58cd5c18fd9c1c89d6062d67dcc2482161410" datatype="html">
         <source>This transaction saved <x id="INTERPOLATION" equiv-text="{{ segwitGains.realizedSegwitGains * 100 | number:  &apos;1.0-0&apos; }}"/>% on fees by using native SegWit</source>
         <context-group purpose="location">
@@ -5898,11 +6394,27 @@
         </context-group>
         <note priority="1" from="description">fees-box.transaction-fees</note>
       </trans-unit>
+      <trans-unit id="c385e9c0bacd3003ae141bcef7b2193aec618937" datatype="html">
+        <source>Mempool Goggles</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.mempool-goggles</note>
+      </trans-unit>
+      <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
+        <source>Incoming Transactions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.incoming-transactions</note>
+      </trans-unit>
       <trans-unit id="4fe744df6d36b5e9b0afab728b77fc635b99f040" datatype="html">
         <source>Recent Replacements</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <note priority="1" from="description">dashboard.recent-rbf-replacements</note>
       </trans-unit>
@@ -5910,7 +6422,7 @@
         <source>Previous fee</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <note priority="1" from="description">dashboard.previous-transaction-fee</note>
       </trans-unit>
@@ -5918,7 +6430,7 @@
         <source>New fee</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">72</context>
         </context-group>
         <note priority="1" from="description">dashboard.new-transaction-fee</note>
       </trans-unit>
@@ -5926,15 +6438,51 @@
         <source>Recent Transactions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <note priority="1" from="description">dashboard.recent-transactions</note>
+      </trans-unit>
+      <trans-unit id="2d70cb7985eaebe99c35bcdfa7dc49b2662c345b" datatype="html">
+        <source>Liquid Federation Holdings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">304</context>
+        </context-group>
+        <note priority="1" from="description">liquid.federation-holdings</note>
+      </trans-unit>
+      <trans-unit id="bbdf5ec7a729b8323727675b26e4dffccaaf60f0" datatype="html">
+        <source>Federation Timelock-Expired UTXOs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">173</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">313</context>
+        </context-group>
+        <note priority="1" from="description">liquid.federation-expired-utxos</note>
+      </trans-unit>
+      <trans-unit id="061051c88f1c686bcf3b40a81c8e824ef2ca7ae0" datatype="html">
+        <source>L-BTC Supply Against BTC Holdings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">323</context>
+        </context-group>
+        <note priority="1" from="description">dashboard.lbtc-supply-against-btc-holdings</note>
       </trans-unit>
       <trans-unit id="1f9a922cb4010ee20eb9a241a22307b670f7628c" datatype="html">
         <source>Minimum fee</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">245</context>
+          <context context-type="linenumber">274</context>
         </context-group>
         <note priority="1" from="description">Minimum mempool fee</note>
         <note priority="1" from="meaning">dashboard.minimum-fee</note>
@@ -5943,26 +6491,18 @@
         <source>Purging</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">246</context>
+          <context context-type="linenumber">275</context>
         </context-group>
         <note priority="1" from="description">Purgin below fee</note>
         <note priority="1" from="meaning">dashboard.purging</note>
       </trans-unit>
-      <trans-unit id="eb7a000cd340b44291d790f7b56f7b926edc275b" datatype="html">
-        <source>L-BTC in circulation</source>
+      <trans-unit id="1edcd31b8dd9822cd73885d593c32048c178ad24" datatype="html">
+        <source>Audit in progress: Bitcoin block height #<x id="INTERPOLATION" equiv-text="{{ auditStatus.lastBlockAudit }}"/> / #<x id="INTERPOLATION_1" equiv-text="{{ auditStatus.bitcoinHeaders }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">272</context>
+          <context context-type="linenumber">363,365</context>
         </context-group>
-        <note priority="1" from="description">dashboard.lbtc-pegs-in-circulation</note>
-      </trans-unit>
-      <trans-unit id="9dfdbeb922d811d7b7b3fecd48360a059e52aaba" datatype="html">
-        <source>Incoming Transactions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
-          <context context-type="linenumber">281</context>
-        </context-group>
-        <note priority="1" from="description">dashboard.incoming-transactions</note>
+        <note priority="1" from="description">liquid.audit-in-progress</note>
       </trans-unit>
       <trans-unit id="999bb1a0150c2815a6b4dd64a1850e763603e525" datatype="html">
         <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="mempool.space mer"/>mempool.space merely provides data about the Bitcoin network.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> It cannot help you with retrieving funds, wallet issues, etc.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="For any such requ"/>For any such requests, you need to get in touch with the entity that helped make the transaction (wallet software, exchange company, etc).<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -5976,7 +6516,7 @@
         <source>REST API service</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">50</context>
         </context-group>
         <note priority="1" from="description">api-docs.title</note>
       </trans-unit>
@@ -5984,11 +6524,11 @@
         <source>Endpoint</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <note priority="1" from="description">Api docs endpoint</note>
       </trans-unit>
@@ -5996,11 +6536,11 @@
         <source>Description</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">119</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/group/group.component.html</context>
@@ -6011,7 +6551,7 @@
         <source>Default push: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="&apos;track-ad"/> action: &apos;want&apos;, data: [&apos;blocks&apos;, ...] <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to express what you want pushed. Available: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>mempool-blocks<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>live-2h-chart<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>stats<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>.<x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/><x id="LINE_BREAK" ctype="lb" equiv-text="Push transa"/>Push transactions related to address: <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/><x id="INTERPOLATION" equiv-text="&apos;track-ad"/> &apos;track-address&apos;: &apos;3PbJ...bF9B&apos; <x id="INTERPOLATION_1" equiv-text="{{ &apos;}&apos; }}"/><x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> to receive all new transactions containing that address as input or output. Returns an array of transactions. <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>address-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new mempool transactions, and <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>block-transactions<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> for new block confirmed transactions.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/docs/api-docs/api-docs.component.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">120</context>
         </context-group>
         <note priority="1" from="description">api-docs.websocket.websocket</note>
       </trans-unit>
@@ -6386,11 +6926,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">211</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">283</context>
+          <context context-type="linenumber">291</context>
         </context-group>
         <note priority="1" from="description">lightning.capacity</note>
       </trans-unit>
@@ -6861,11 +7401,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">260</context>
+          <context context-type="linenumber">268</context>
         </context-group>
         <note priority="1" from="description">lightning.channels</note>
       </trans-unit>
@@ -6958,7 +7498,7 @@
         <source>Lightning Network History</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <note priority="1" from="description">lightning.network-history</note>
       </trans-unit>
@@ -6966,7 +7506,7 @@
         <source>Liquidity Ranking</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-capacity/top-nodes-per-capacity.component.html</context>
@@ -6986,7 +7526,7 @@
         <source>Connectivity Ranking</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">80</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-ranking/top-nodes-per-channels/top-nodes-per-channels.component.html</context>
@@ -7006,7 +7546,7 @@
         <source>Get stats on the Lightning network (aggregate capacity, connectivity, etc), Lightning nodes (channels, liquidity, etc) and Lightning channels (status, fees, etc).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/lightning-dashboard/lightning-dashboard.component.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7b8687bbc13bbf62288689606dcab9784a3eb53b" datatype="html">
@@ -7111,7 +7651,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.ts</context>
-          <context context-type="linenumber">63</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="43b48b9c15083a164b401bf3775a4b99f3917699" datatype="html">
@@ -7253,7 +7793,7 @@
         <source>Node: <x id="PH" equiv-text="node.alias"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/node/node.component.ts</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7cac1c3013423d82d5149a5854d709bd08411430" datatype="html">
@@ -7316,51 +7856,51 @@
         <source>See the number of Lightning network nodes visualized over time by network: clearnet only (IPv4, IPv6), darknet (Tor, I2p, cjdns), and both.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6391724349488018234" datatype="html">
         <source>Indexing in progress</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">121</context>
         </context-group>
       </trans-unit>
       <trans-unit id="599038141003770125" datatype="html">
         <source>Clearnet and Darknet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">313</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1282458597026430784" datatype="html">
         <source>Clearnet Only (IPv4, IPv6)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">195</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">296</context>
+          <context context-type="linenumber">305</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2165336009914523952" datatype="html">
         <source>Darknet Only (Tor, I2P, cjdns)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">216</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-networks-chart/nodes-networks-chart.component.ts</context>
-          <context context-type="linenumber">288</context>
+          <context context-type="linenumber">297</context>
         </context-group>
       </trans-unit>
       <trans-unit id="0bd8b27f60a1f098a53e06328426d818e3508ff9" datatype="html">
@@ -7394,11 +7934,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7032954508645880700" datatype="html">
@@ -7436,14 +7976,14 @@
         <source>Lightning nodes in <x id="PH" equiv-text="response.country.en"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-country" datatype="html">
         <source>Explore all the Lightning nodes hosted in <x id="PH" equiv-text="response.country.en"/> and see an overview of each node&apos;s capacity, number of open channels, and more.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-country/nodes-per-country.component.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6b4442323c695a8211357c7e4486dd620c443822" datatype="html">
@@ -7530,11 +8070,11 @@
         <source><x id="PH" equiv-text="this.amountShortenerPipe.transform(isp[2] / 100000000, 2)"/> BTC</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component.ts</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="c18497e4f0db0d0ad0c71ba294295f42b3d312c9" datatype="html">
@@ -7573,7 +8113,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="meta.description.lightning.nodes-isp" datatype="html">
@@ -7584,7 +8124,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/nodes-per-isp/nodes-per-isp.component.ts</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="d82f436f033a7d81680b8430275f94dda530151c" datatype="html">
@@ -7673,7 +8213,7 @@
         <source>See the capacity of the Lightning network visualized over time in terms of the number of open channels and total bitcoin capacity.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/lightning/statistics-chart/lightning-statistics-chart.component.ts</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8e623d3cfecb7c560c114390db53c1f430ffd0de" datatype="html">
@@ -7725,7 +8265,11 @@
         <source>sat/WU</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
-          <context context-type="linenumber">3</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/fee-rate/fee-rate.component.html</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">sat/WU</note>
         <note priority="1" from="meaning">shared.sat-weight-units</note>
@@ -7931,6 +8475,15 @@
           <context context-type="linenumber">79</context>
         </context-group>
         <note priority="1" from="description">Trademark Policy</note>
+        <note priority="1" from="meaning">shared.trademark-policy</note>
+      </trans-unit>
+      <trans-unit id="3acac5d996ebd58adf283129c084bd8f837689f1" datatype="html">
+        <source>Third-party Licenses</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/global-footer/global-footer.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <note priority="1" from="description">Third-party Licenses</note>
         <note priority="1" from="meaning">shared.trademark-policy</note>
       </trans-unit>
       <trans-unit id="64dd13424d9486cf3d680d934987ec685bac0b3d" datatype="html">
