@@ -34,6 +34,7 @@ interface Xput {
   pegout?: string;
   confidential?: boolean;
   timestamp?: number;
+  blockHeight?: number;
   asset?: string;
 }
 
@@ -178,6 +179,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegout: v?.pegout?.scriptpubkey_address,
         confidential: (this.isLiquid && v?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.asset,
       } as Xput;
     });
@@ -200,6 +202,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
         pegin: v?.is_pegin,
         confidential: (this.isLiquid && v?.prevout?.value === undefined),
         timestamp: this.tx.status.block_time,
+        blockHeight: this.tx.status.block_height,
         asset: v?.prevout?.asset,
       } as Xput;
     });
