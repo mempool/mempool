@@ -140,13 +140,13 @@
                   <table class="table table-xs table-data">
                     <thead>
                       <tr>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1w">Out-of-band Fees (1w)</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="1m">1m</th>
-                        <th scope="col" class="data-title text-center" style="width: 33%" i18n="all">All</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="1w">Out-of-band Fees (1w)</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="1m">1m</th>
+                        <th scope="col" class="data-title clip text-center" style="width: 33%" i18n="all">All</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <td *ngFor="let total of oob" class="text-center"><app-amount [satoshis]="total.cost"></app-amount></td>
+                      <td *ngFor="let total of oob" class="text-center clip"><app-amount [satoshis]="total.cost" [digitsInfo]="isMobile() ? '1.2-4' : '1.8-8'"></app-amount></td>
                     </tbody>
                   </table>
                 </td>
