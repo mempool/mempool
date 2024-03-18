@@ -32,7 +32,6 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('blockchainWrapper', { static: true }) blockchainWrapper: ElementRef;
   @ViewChild('blockchainContainer') blockchainContainer: ElementRef;
   resetScrollSubscription: Subscription;
-  menuSubscription: Subscription;
 
   isMobile: boolean = false;
   isiOS: boolean = false;
@@ -56,9 +55,6 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
   scrollLeft: number = null;
 
   chainWidth: number = window.innerWidth;
-  menuOpen: boolean = false;
-  menuSliding: boolean = false;
-  menuTimeout: number;
 
   hasMenu = false;
 
@@ -165,12 +161,6 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
       } 
     });
 
-    this.menuSubscription = this.stateService.menuOpen$.subscribe((open) => {
-      if (this.menuOpen !== open) {
-        this.menuOpen = open;
-        this.applyMenuScroll(this.menuOpen);
-      }
-    });
   }
 
   ngAfterViewChecked(): void {
@@ -221,15 +211,6 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
       this.pendingMark = null;
     }
-  }
-
-  applyMenuScroll(opening: boolean): void {
-    this.menuSliding = true;
-    window.clearTimeout(this.menuTimeout);
-    this.menuTimeout = window.setTimeout(() => {
-      this.menuSliding = false;
-      this.cd.markForCheck();
-    }, 300);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -518,6 +499,5 @@ export class StartComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.markBlockSubscription.unsubscribe();
     this.blockCounterSubscription.unsubscribe();
     this.resetScrollSubscription.unsubscribe();
-    this.menuSubscription.unsubscribe();
   }
 }
