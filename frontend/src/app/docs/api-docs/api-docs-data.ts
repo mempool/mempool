@@ -262,9 +262,9 @@ export const restApiDocsData = [
     fragment: "get-historical-price",
     title: "GET Historical Price",
     description: {
-      default: "Returns bitcoin historical price denominated in main currencies."
+      default: "Returns bitcoin historical price denominated in main currencies. Available query parameters: <code>currency</code>, <code>timestamp</code>. If no parameter is provided, the full price history for all currencies is returned."
     },
-    urlString: "/v1/historical-price",
+    urlString: "/v1/historical-price?currency=EUR&timestamp=1500000000",
     showConditions: [""],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
@@ -272,7 +272,7 @@ export const restApiDocsData = [
         codeTemplate: {
           commonJS: ``,
           esModule: ``,
-          curl: `/api/v1/historical-price`,
+          curl: `/api/v1/historical-price?currency=EUR&timestamp=1500000000`,
         },
         codeSampleMainnet: {
           esModule: [],
@@ -281,34 +281,18 @@ export const restApiDocsData = [
           response: `{
   prices: [
     {
-      time: 1703692800,
-      USD: 42972,
-      EUR: 39590,
-      GBP: 36803,
-      CAD: 56883,
-      CHF: 36486,
-      AUD: 63006,
-      JPY: 6124530
-    },
-    ...
-    {
-      time: 1279497600,
-      USD: 0.08584,
-      EUR: -1,
-      GBP: -1,
-      CAD: -1,
-      CHF: -1,
-      AUD: -1,
-      JPY: -1
+      "time": 1499904000,
+      "EUR": 1964,
+      "USD": 2254.9
     }
   ],
   exchangeRates: {
-    USDEUR: 0.92,
-    USDGBP: 0.86,
-    USDCAD: 1.32,
-    USDCHF: 0.85,
-    USDAUD: 1.47,
-    USDJPY: 142.52
+    "USDEUR": 0.92,
+    "USDGBP": 0.78,
+    "USDCAD": 1.36,
+    "USDCHF": 0.89,
+    "USDAUD": 1.53,
+    "USDJPY": 149.48
   }
 }
 `
