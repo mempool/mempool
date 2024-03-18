@@ -44,6 +44,10 @@ const routes = {
       faq: {
         title: "FAQ",
         fallbackImg: '/resources/previews/faq.jpg',
+      },
+      api: {
+        title: "API Docs",
+        fallbackImg: '/resources/previews/docs-api.jpg',
       }
     }
   },
