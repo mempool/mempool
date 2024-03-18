@@ -7,7 +7,6 @@ import { LiquidMasterPageComponent } from '../components/liquid-master-page/liqu
 
 
 import { StartComponent } from '../components/start/start.component';
-import { AddressComponent } from '../components/address/address.component';
 import { PushTransactionComponent } from '../components/push-transaction/push-transaction.component';
 import { BlocksList } from '../components/blocks-list/blocks-list.component';
 import { AssetGroupComponent } from '../components/assets/asset-group/asset-group.component';
@@ -50,15 +49,6 @@ const routes: Routes = [
       {
         path: 'trademark-policy',
         loadChildren: () => import('../components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent,
-        data: {
-          ogImage: true,
-          networkSpecific: true,
-        }
       },
       {
         path: 'tx',

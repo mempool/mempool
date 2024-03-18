@@ -32,12 +32,15 @@ import { AcceleratorDashboardComponent } from '../components/acceleration/accele
 import { HashrateChartComponent } from '../components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '../components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '../components/block-health-graph/block-health-graph.component';
+import { AddressComponent } from '../components/address/address.component';
+import { AddressGraphComponent } from '../components/address-graph/address-graph.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     MempoolBlockComponent,
+    AddressComponent,
 
     MiningDashboardComponent,
     AcceleratorDashboardComponent,
@@ -67,6 +70,7 @@ import { CommonModule } from '@angular/common';
     HashrateChartComponent,
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
+    AddressGraphComponent,
   ],
   imports: [
     CommonModule,

@@ -5,8 +5,6 @@ import { MasterPageComponent } from './components/master-page/master-page.compon
 import { SharedModule } from './shared/shared.module';
 
 import { StartComponent } from './components/start/start.component';
-import { AddressComponent } from './components/address/address.component';
-import { AddressGroupComponent } from './components/address-group/address-group.component';
 import { PushTransactionComponent } from './components/push-transaction/push-transaction.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { BlocksList } from './components/blocks-list/blocks-list.component';
@@ -55,15 +53,6 @@ const routes: Routes = [
       {
         path: 'trademark-policy',
         loadChildren: () => import('./components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
-      },
-      {
-        path: 'address/:id',
-        children: [],
-        component: AddressComponent,
-        data: {
-          ogImage: true,
-          networkSpecific: true,
-        }
       },
       {
         path: 'tx',
