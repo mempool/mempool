@@ -81,6 +81,7 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    SSL: boolean;
     TIMEOUT: number;
     COOKIE: boolean;
     COOKIE_PATH: string;
@@ -90,6 +91,7 @@ interface IConfig {
     PORT: number;
     USERNAME: string;
     PASSWORD: string;
+    SSL: boolean;
     TIMEOUT: number;
     COOKIE: boolean;
     COOKIE_PATH: string;
@@ -224,6 +226,7 @@ const defaults: IConfig = {
     'PORT': 8332,
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
+    'SSL': false,
     'TIMEOUT': 60000,
     'COOKIE': false,
     'COOKIE_PATH': '/bitcoin/.cookie'
@@ -233,6 +236,7 @@ const defaults: IConfig = {
     'PORT': 8332,
     'USERNAME': 'mempool',
     'PASSWORD': 'mempool',
+    'SSL': false,
     'TIMEOUT': 60000,
     'COOKIE': false,
     'COOKIE_PATH': '/bitcoin/.cookie'

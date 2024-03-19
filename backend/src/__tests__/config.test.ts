@@ -70,6 +70,7 @@ describe('Mempool Backend Config', () => {
         PORT: 8332,
         USERNAME: 'mempool',
         PASSWORD: 'mempool',
+        SSL: false,
         TIMEOUT: 60000,
         COOKIE: false,
         COOKIE_PATH: '/bitcoin/.cookie'
@@ -80,6 +81,7 @@ describe('Mempool Backend Config', () => {
         PORT: 8332,
         USERNAME: 'mempool',
         PASSWORD: 'mempool',
+        SSL: false,
         TIMEOUT: 60000,
         COOKIE: false,
         COOKIE_PATH: '/bitcoin/.cookie'
