@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, timer, of } from 'rxjs';
-import { delayWhen, map, retryWhen, scan, switchMap, tap } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, combineLatest, Observable, timer, of, Subscription } from 'rxjs';
+import { delayWhen, filter, map, retryWhen, scan, switchMap, take, tap } from 'rxjs/operators';
 import { BlockExtended } from '../../interfaces/node-api.interface';
 import { ApiService } from '../../services/api.service';
 import { StateService } from '../../services/state.service';
@@ -33,6 +34,8 @@ export class BlocksList implements OnInit {
   fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
   skeletonLines: number[] = [];
   lastBlockHeight = -1;
+  blocksCountInitialized$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  blocksCountInitializedSubscription: Subscription;
 
   constructor(
     private apiService: ApiService,
@@ -41,6 +44,8 @@ export class BlocksList implements OnInit {
     private cd: ChangeDetectorRef,
     private seoService: SeoService,
     private ogService: OpenGraphService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.isMempoolModule = this.stateService.env.BASE_MODULE === 'mempool';
   }
@@ -52,6 +57,16 @@ export class BlocksList implements OnInit {
 
     if (!this.widget) {
       this.websocketService.want(['blocks']);
+      this.blocksCountInitializedSubscription = this.blocksCountInitialized$.pipe(
+        filter(blocksCountInitialized => blocksCountInitialized),
+        take(1),
+        switchMap(() => this.route.queryParams),
+        take(1),
+        tap(params => {
+          this.page = +params['page'] || 1;
+          this.pageChange(this.page);
+        })
+      ).subscribe();
     }
 
     this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
@@ -77,6 +92,7 @@ export class BlocksList implements OnInit {
               tap(blocks => {
                 if (this.blocksCount === undefined) {
                   this.blocksCount = blocks[0].height + 1;
+                  this.blocksCountInitialized$.next(true);
                 }
                 this.isLoading = false;
                 this.lastBlockHeight = Math.max(...blocks.map(o => o.height));
@@ -138,6 +154,7 @@ export class BlocksList implements OnInit {
   }
 
   pageChange(page: number): void {
+    this.router.navigate([], { queryParams: { page: page } });
     this.fromHeightSubject.next((this.blocksCount - 1) - (page - 1) * 15);
   }
 
@@ -147,5 +164,9 @@ export class BlocksList implements OnInit {
 
   isEllipsisActive(e): boolean {
     return (e.offsetWidth < e.scrollWidth);
+  }
+
+  ngOnDestroy(): void {
+    this.blocksCountInitializedSubscription?.unsubscribe();
   }
 }
