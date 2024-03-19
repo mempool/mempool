@@ -41,6 +41,7 @@ __TESTNET_BLOCK_AUDIT_START_HEIGHT__=${TESTNET_BLOCK_AUDIT_START_HEIGHT:=0}
 __SIGNET_BLOCK_AUDIT_START_HEIGHT__=${SIGNET_BLOCK_AUDIT_START_HEIGHT:=0}
 __ACCELERATOR__=${ACCELERATOR:=false}
 __HISTORICAL_PRICE__=${HISTORICAL_PRICE:=true}
+__ADDITIONAL_CURRENCIES__=${ADDITIONAL_CURRENCIES:=false}
 
 # Export as environment variables to be used by envsubst
 export __TESTNET_ENABLED__
@@ -68,6 +69,7 @@ export __TESTNET_BLOCK_AUDIT_START_HEIGHT__
 export __SIGNET_BLOCK_AUDIT_START_HEIGHT__
 export __ACCELERATOR__
 export __HISTORICAL_PRICE__
+export __ADDITIONAL_CURRENCIES__
 
 folder=$(find /var/www/mempool -name "config.js" | xargs dirname)
 echo ${folder}
